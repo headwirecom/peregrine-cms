@@ -137,7 +137,7 @@ export function stripNulls(data) {
 }
 
 export function jsonEqualizer(name, value) {
-    if(value === null || value.length === 0) {
+    if(value === null || value === undefined || value.length === 0) {
         return undefined
     }
     return value
