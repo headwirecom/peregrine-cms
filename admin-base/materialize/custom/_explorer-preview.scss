@@ -50,6 +50,10 @@
     flex-direction: column;
     height: 100%;
 
+    .panel-title {
+      position: initial;
+    }
+
     .vue-form-generator {
       overflow: auto;
       height: 100%;
