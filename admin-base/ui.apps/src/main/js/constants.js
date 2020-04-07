@@ -62,7 +62,8 @@ export const Icon = {
   EDIT: 'edit',
   LIST: 'list',
   CHECK: 'check',
-  CANCEL: 'close'
+  CANCEL: 'close',
+  MORE_VERT: 'more_vert'
 }
 export const NodeType = {
   PAGE: 'page',

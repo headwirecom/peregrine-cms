@@ -30,6 +30,11 @@
               :class="{'active': isTab(Tab.REFERENCES)}"
               @click="setActiveTab(Tab.REFERENCES)">
           </admin-components-explorerpreviewnavitem>
+          <admin-components-explorerpreviewnavitem
+              :icon="Icon.MORE_VERT"
+              :title="'actions'"
+              :class="{'active': isTab(Tab.ACTIONS)}"
+              @click="setActiveTab(Tab.ACTIONS)"/>
         </ul>
 
         <ul class="nav-right"></ul>
@@ -39,7 +44,7 @@
         <slot></slot>
       </template>
 
-      <template v-if="isTab([Tab.INFO, Tab.OG_TAGS])">
+      <template v-else-if="isTab([Tab.INFO, Tab.OG_TAGS])">
         <div v-if="hasInfoView && !edit"
              :class="`${nodeType}-info-view`">
           <img v-if="isImage"
@@ -77,29 +82,7 @@
             </button>
           </template>
           <template v-else>
-            <template v-if="allowOperations">
-              <button
-                  class="btn btn-raised waves-effect waves-light right"
-                  type="button"
-                  :title="`rename ${nodeType}`"
-                  @click="renameNode()">
-                <i class="material-icons">{{Icon.TEXT_FORMAT}}</i>
-              </button>
-              <button
-                  class="btn btn-raised waves-effect waves-light right"
-                  type="button"
-                  :title="`move ${nodeType}`"
-                  @click="moveNode()">
-                <i class="material-icons">{{Icon.COMPARE_ARROWS}}</i>
-              </button>
-              <button
-                  class="btn btn-raised waves-effect waves-light right"
-                  type="button"
-                  :title="`delete ${nodeType}`"
-                  @click="deleteNode()">
-                <i class="material-icons">{{Icon.DELETE}}</i>
-              </button>
-            </template>
+            <span></span>
             <button
                 class="btn btn-raised waves-effect waves-light right"
                 type="button"
@@ -130,6 +113,23 @@
             <span class="right">{{item.path}}</span>
           </li>
         </ul>
+      </template>
+
+      <template v-else-if="isTab(Tab.ACTIONS)">
+        <div v-if="allowOperations" class="action-list">
+          <div class="action" :title="`rename ${nodeType}`" @click="renameNode()">
+            <i class="material-icons">{{Icon.TEXT_FORMAT}}</i>
+            Rename {{nodeType}}
+          </div>
+          <div class="action" :title="`move ${nodeType}`" @click="moveNode()">
+            <i class="material-icons">{{Icon.COMPARE_ARROWS}}</i>
+            Move {{nodeType}}
+          </div>
+          <div class="action" :title="`delete ${nodeType}`" @click="deleteNode()">
+            <i class="material-icons">{{Icon.DELETE}}</i>
+            Delete {{nodeType}}
+          </div>
+        </div>
       </template>
     </template>
 
@@ -164,7 +164,8 @@
     INFO: 'info',
     OG_TAGS: 'og-tags',
     REFERENCES: 'references',
-    COMPONENTS: 'components'
+    COMPONENTS: 'components',
+    ACTIONS: 'actions'
   };
 
   const SchemaKey = {

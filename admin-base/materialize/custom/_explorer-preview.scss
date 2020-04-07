@@ -56,6 +56,32 @@
       padding: 0 0.75rem;
     }
 
+    .action-list {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+      align-items: center;
+
+      .action {
+        width: 100%;
+        display: flex;
+        padding: 1rem 2rem;
+        align-items: center;
+        border-bottom: 1px solid rgba(0, 0, 0, .1);
+        transition: background-color 0.25s ease-out;
+        cursor: pointer;
+
+        &:hover {
+          background-color: rgba(0, 0, 0, .1)
+        }
+
+        .material-icons {
+          margin-right: 1rem;
+        }
+      }
+    }
+
     .explorer-confirm-dialog {
       display: flex;
       justify-content: space-between;
