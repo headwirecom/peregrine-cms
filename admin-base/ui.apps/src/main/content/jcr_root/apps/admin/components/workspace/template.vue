@@ -64,7 +64,7 @@
               <i class="material-icons">fullscreen</i>
             </button>
 
-            <!--component
+            <component
               v-if         = "state.editorVisible"
               v-bind:is    = "getChildByPath('editor').component"
               v-bind:model = "getChildByPath('editor')">
@@ -74,8 +74,7 @@
               v-else
               v-bind:is    = "getChildByPath('components').component"
               v-bind:model = "getChildByPath('components')">
-            </component-->
-            <admin-components-sidenav/>
+            </component>
         </aside>
     </div>
 </template>
