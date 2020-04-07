@@ -61,7 +61,8 @@ export const Icon = {
   INFO: 'info',
   EDIT: 'edit',
   LIST: 'list',
-  CHECK: 'check'
+  CHECK: 'check',
+  CANCEL: 'close'
 }
 export const NodeType = {
   PAGE: 'page',
