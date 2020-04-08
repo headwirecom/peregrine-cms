@@ -158,7 +158,7 @@
 </template>
 
 <script>
-  import {Icon, MimeType, NodeType} from '../../../../../../js/constants';
+  import {Icon, MimeType, NodeType, SUFFIX_PARAM_SEPARATOR} from '../../../../../../js/constants';
 
   const Tab = {
     INFO: 'info',
@@ -194,6 +194,10 @@
       tab: {
         type: String,
         default: Tab.INFO
+      },
+      isEdit: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
@@ -379,7 +383,8 @@
           const that = this;
           $perAdminApp.stateAction(`rename${this.uNodeType}`, {
             path: this.currentObject,
-            name: newName
+            name: newName,
+            edit: this.isEdit
           }).then(() => {
             if (that.nodeType === 'asset' || that.nodeType === 'object') {
               const currNode = $perAdminApp.getNodeFromView(`/state/tools/${that.nodeType}/show`)
@@ -407,8 +412,13 @@
       deleteNode() {
         const really = confirm(`Are you sure you want to delete this ${this.nodeType}?`);
         if (really) {
-          $perAdminApp.stateAction(`delete${this.uNodeType}`, this.node.path);
-          $perAdminApp.stateAction(`unselect${this.uNodeType}`, {});
+          $perAdminApp.stateAction(`delete${this.uNodeType}`, this.node.path).then(() => {
+            $perAdminApp.stateAction(`unselect${this.uNodeType}`, {})
+          }).then(() => {
+            const path = $perAdminApp.getNodeFromView('/state/tools/pages')
+            $perAdminApp.loadContent(
+                '/content/admin/pages/pages.html/path' + SUFFIX_PARAM_SEPARATOR + path)
+          })
           this.isOpen = false;
         }
       },

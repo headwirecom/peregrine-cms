@@ -3,6 +3,7 @@
       :key="getBasePath()"
       :tab="tab"
       :model="model"
+      :is-edit="isEditPage"
       :nodeType="NodeType.PAGE"
       :browserRoot="`${getBasePath()}/pages`"
       :currentPath="`${getBasePath()}/pages`">
