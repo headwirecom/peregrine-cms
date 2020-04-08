@@ -51,7 +51,7 @@
                 :key="`section-${section.name}`"
                 tag="li"
                 :model="getSectionModel(section)"
-                :class="{active: getActiveSection() === section.name}"
+                :class="{active: getActiveSection() === section.name, 'show-on-medium': !section.mobile}"
                 class="nav-link"/>
             <admin-components-action
                 v-if="state.tenant"
@@ -69,7 +69,11 @@
       </div>
       <ul class="nav-right hide-on-small-and-down nav-mobile">
         <li class="nav-link">
-          <a :title="$i18n('help')" href="#" class="icon-link" :class="{disabled: !help}" @click="onHelpClick">
+          <a :title="$i18n('help')"
+             href="#"
+             class="icon-link"
+             :class="{disabled: !help}"
+             @click="onHelpClick">
             <i class="material-icons">help_outline</i>
           </a>
         </li>
@@ -120,7 +124,7 @@
         state: $perAdminApp.getView().state,
         tenants: $perAdminApp.getView().admin.tenants || [],
         sections: [
-          {name: 'welcome', title: 'Dashboard'},
+          {name: 'welcome', title: 'Dashboard', mobile: true},
           {name: 'pages', title: 'Pages'},
           {name: 'assets', title: 'Assets'},
           {name: 'objects', title: 'Objects'},

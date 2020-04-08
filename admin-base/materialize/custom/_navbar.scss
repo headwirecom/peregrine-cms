@@ -21,6 +21,12 @@ nav {
       border-bottom: 3px solid transparent;
       background-color: transparent;
       transition: border-color .35s ease-out, backgorund-color .35s ease-out;
+
+      .show-on-medium {
+        @media #{$medium-and-down} {
+          display: none;
+        }
+      }
     }
 
     .nav-left {
