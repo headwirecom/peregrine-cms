@@ -253,6 +253,9 @@
 			opacity: 0;
 			transition: opacity .1s ease-in-out;
 			.material-icons {
+				position: absolute;
+				right: -7px;
+				top: -7px;
 				font-size: 30px;
 				color: color("blue-grey", "lighten-1");
 			}
