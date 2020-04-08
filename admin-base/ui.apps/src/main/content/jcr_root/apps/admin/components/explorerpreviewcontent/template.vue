@@ -202,7 +202,6 @@
     },
     data() {
       return {
-        console: console,
         Icon: Icon,
         Tab: Tab,
         SchemaKey: SchemaKey,
