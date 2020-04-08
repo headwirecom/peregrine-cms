@@ -316,7 +316,6 @@
         if (this.nodeType === NodeType.OBJECT) {
           component = this.getObjectComponent();
         }
-        console.log(view.admin.componentDefinitions, component, schemaKey)
         let schema = view.admin.componentDefinitions[component][schemaKey];
         if (this.edit) {
           return schema;
