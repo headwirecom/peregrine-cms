@@ -39,6 +39,7 @@ import java.util.function.Function;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_COMPONENT_DEFINITION;
 import static com.peregrine.commons.Strings.COLON;
+import static com.peregrine.commons.Strings.SLASH;
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.*;
 import static java.util.Objects.nonNull;
@@ -114,8 +115,8 @@ public final class ComponentDefinitionServlet extends AbstractBaseServlet {
         final String answer = ServletHelper.asString(is).toString();
         if (startsWith(path, _CONTENT_)) {
             String tenantPath = substringAfter(path, _CONTENT_);
-            tenantPath = _CONTENT_ + substringBefore(tenantPath, "/");
-            return answer.replaceAll("\"/content/[^/]*/", "\"" + tenantPath + "/");
+            tenantPath = _CONTENT_ + substringBefore(tenantPath, SLASH);
+            return answer.replaceAll("\"/content/[^/]*/", "\"" + tenantPath + SLASH);
         }
 
         return answer;
