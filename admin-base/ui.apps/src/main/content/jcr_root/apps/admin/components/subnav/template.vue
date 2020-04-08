@@ -24,22 +24,24 @@
   -->
 <template>
     <div class="nav-content sub-nav" :class="classes">
+        <div v-if="isEditPage" class="page-tree">
+            <!-- Dropdown Trigger -->
+            <a class='dropdown-button btn' href='#' data-activates='dropdown1'>pages</a>
+
+            <!-- Dropdown Structure -->
+            <ul id='dropdown1' class='dropdown-content'>
+                <li><a href="#!">one</a></li>
+                <li><a href="#!">two</a></li>
+                <li class="divider"></li>
+                <li><a href="#!">three</a></li>
+                <li><a href="#!"><i class="material-icons">view_module</i>four</a></li>
+                <li><a href="#!"><i class="material-icons">cloud</i>five</a></li>
+            </ul>
+        </div>
         <template v-for="child in model.children">
             <div v-bind:is="child.component" v-bind:model="child"></div>
         </template>
-        <!-- <template v-if="isEditor()">
-            <admin-components-separator></admin-components-separator>
-            <admin-components-action
-                v-bind:model="{
-                  command: 'selectPath',
-                  download: getDownloadPath(),
-                  target: getPath() + '/jcr:content.xml',
-                  tooltipTitle: $i18n('exportModule'),
-                  title: 'Export',
-                  type: 'download'
-                }"
-            ></admin-components-action>
-        </template> -->
+        <span v-if="isEditPage" class="center-keeper"></span>
     </div>
 </template>
 
@@ -52,7 +54,23 @@ export default {
                 return this.model.classes
             }
             return 'navright'
-        }
+        },
+        isEditPage() {
+            return this.model.classes && this.model.classes.indexOf('navcenter') >= 0
+        },
+    },
+    mounted() {
+        $('.dropdown-button').dropdown({
+                inDuration: 300,
+                outDuration: 225,
+                constrainWidth: false, // Does not change width of dropdown to that of the activator
+                hover: false, // Activate on hover
+                gutter: 0, // Spacing from edge
+                belowOrigin: false, // Displays dropdown below the button
+                alignment: 'left', // Displays dropdown with edge aligned to the left of button
+                stopPropagation: false // Stops event propagation
+            }
+        );
     },
     methods: {
         isEditor: function() {
