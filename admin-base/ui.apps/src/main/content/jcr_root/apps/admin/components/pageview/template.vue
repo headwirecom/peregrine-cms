@@ -1,6 +1,7 @@
 <template>
   <admin-components-explorerpreviewcontent
       :key="getBasePath()"
+      :tab="tab"
       :model="model"
       :nodeType="NodeType.PAGE"
       :browserRoot="`${getBasePath()}/pages`"
@@ -24,11 +25,9 @@
     computed: {
       isEditPage() {
         return this.model.path === '/jcr:content/workspace/right-panel'
-      }
-    },
-    mounted() {
-      if (this.isEditPage) {
-        this.$root.$emit('explorerpreviewcontent-tab-update', 'components')
+      },
+      tab() {
+        return this.isEditPage? 'components' : 'info'
       }
     },
     methods: {

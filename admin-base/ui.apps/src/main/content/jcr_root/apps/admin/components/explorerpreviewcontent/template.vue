@@ -190,6 +190,10 @@
       currentPath: {
         type: String,
         required: true
+      },
+      tab: {
+        type: String,
+        default: Tab.INFO
       }
     },
     data() {
@@ -199,7 +203,7 @@
         Tab: Tab,
         SchemaKey: SchemaKey,
         NodeType: NodeType,
-        activeTab: Tab.INFO,
+        activeTab: null,
         edit: false,
         valid: {
           state: true,
@@ -293,9 +297,7 @@
       }
     },
     created() {
-      this.$root.$on('explorerpreviewcontent-tab-update', (data) => {
-        this.setActiveTab(data)
-      });
+      this.activeTab = this.tab
     },
     mounted() {
       this.path.selected = this.selectedPath
@@ -314,6 +316,7 @@
         if (this.nodeType === NodeType.OBJECT) {
           component = this.getObjectComponent();
         }
+        console.log(view.admin.componentDefinitions, component, schemaKey)
         let schema = view.admin.componentDefinitions[component][schemaKey];
         if (this.edit) {
           return schema;
@@ -480,6 +483,7 @@
       },
       setActiveTab(clickedTab) {
         this.activeTab = clickedTab;
+        console.log('setActiveTab', clickedTab)
       },
       isTab(arg) {
         if (Array.isArray(arg)) {
