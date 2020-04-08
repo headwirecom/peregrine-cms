@@ -482,7 +482,6 @@
       },
       setActiveTab(clickedTab) {
         this.activeTab = clickedTab;
-        console.log('setActiveTab', clickedTab)
       },
       isTab(arg) {
         if (Array.isArray(arg)) {
