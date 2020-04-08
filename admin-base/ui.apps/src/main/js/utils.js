@@ -22,10 +22,10 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from './logger'
-let logger = LoggerFactory.logger('utils').setLevelDebug()
+import {LoggerFactory} from './logger'
+import {DATA_EXTENSION, SUFFIX_PARAM_SEPARATOR} from './constants.js'
 
-import { DATA_EXTENSION, SUFFIX_PARAM_SEPARATOR } from './constants.js'
+let logger = LoggerFactory.logger('utils').setLevelDebug()
 
 export function makePathInfo(path) {
 
@@ -141,4 +141,8 @@ export function jsonEqualizer(name, value) {
         return undefined
     }
     return value
+}
+
+export const deepClone = (obj) => {
+    return JSON.parse(JSON.stringify(obj))
 }
