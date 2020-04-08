@@ -61,7 +61,8 @@
             :schema="getSchemaByActiveTab()"
             :model="node"
             :options="options"
-            @validated="onValidated()">
+            @validated="onValidated()"
+            @model-updated="onModelUpdate">
         </vue-form-generator>
         <div class="explorer-confirm-dialog">
           <template v-if="edit">
@@ -158,7 +159,8 @@
 </template>
 
 <script>
-  import {Icon, MimeType, NodeType, SUFFIX_PARAM_SEPARATOR} from '../../../../../../js/constants';
+  import {Icon, MimeType, NodeType, SUFFIX_PARAM_SEPARATOR} from '../../../../../../js/constants'
+  import {deepClone} from '../../../../../../js/utils'
 
   const Tab = {
     INFO: 'info',
@@ -229,6 +231,9 @@
         path: {
           current: null,
           selected: null
+        },
+        formGenerator: {
+          changes: []
         }
       }
     },
@@ -326,7 +331,7 @@
         if (!schema) {
           return {};
         }
-        schema = JSON.parse(JSON.stringify(schema));
+        schema = deepClone(schema);
         schema.fields.forEach((field) => {
           field.preview = true;
           field.readonly = true;
@@ -358,16 +363,24 @@
         return string.charAt(0).toUpperCase() + string.slice(1);
       },
       onEdit() {
-        this.edit = true;
+        this.edit = true
+        this.formGenerator.original = deepClone(this.node)
       },
       onCancel() {
-        const payload = {selected: this.currentObject};
-        this.edit = false;
-        if (this.nodeTypeGroups.selectStateAction.indexOf(this.nodeType) > -1) {
-          $perAdminApp.stateAction(`select${this.uNodeType}`, payload)
-        } else {
-          $perAdminApp.stateAction(`show${this.uNodeType}Info`, payload);
-        }
+        const payload = {selected: this.currentObject}
+        this.edit = false
+        let node = this.node
+        this.formGenerator.changes.forEach((ch) => {
+          node[ch.key] = ch.oldVal
+        })
+        this.formGenerator.changes = []
+      },
+      onModelUpdate(newVal, schemaKey) {
+        this.formGenerator.changes.push({
+          key: schemaKey,
+          oldVal: this.formGenerator.original[schemaKey],
+          newVal: newVal
+        })
       },
       onValidated(isValid, errors) {
         if (this.edit) {
