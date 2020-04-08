@@ -69,25 +69,6 @@
       </div>
       <ul class="nav-right hide-on-small-and-down nav-mobile">
         <li class="nav-link">
-          <a :title="$i18n('help')"
-             href="#"
-             class="icon-link"
-             :class="{disabled: !help}"
-             @click="onHelpClick">
-            <i class="material-icons">help_outline</i>
-          </a>
-        </li>
-        <li class="nav-link">
-          <a :title="$i18n('tutorials')" href="#" class="icon-link" @click="onTutorialsClick">
-            <i class="material-icons">book</i>
-          </a>
-        </li>
-        <li class="nav-link">
-          <a :title="$i18n('aboutNavBtn')" href="#" class="icon-link" @click="onAboutClick">
-            <i class="material-icons">info</i>
-          </a>
-        </li>
-        <li class="nav-link">
           <vue-multiselect
               :value="language"
               deselect-label=""
@@ -106,6 +87,23 @@
              href="/system/sling/logout?resource=/index.html">
             {{$root.$data.state.user[0].toUpperCase()}}
           </a>
+        </li>
+        <li class="nav-link more-link">
+          <a href="#" ref="more" data-activates="more-content">
+            <i class="material-icons">more_vert</i>
+          </a>
+          <ul id="more-content" class="dropdown-content">
+            <li class="item" :class="{disabled: !help}" :title="$i18n('help')" @click="onHelpClick">
+              {{ $i18n('help') }}
+            </li>
+            <li class="item" :title="$i18n('tutorials')" @click="onTutorialsClick">
+              {{ $i18n('tutorials') }}
+            </li>
+            <li class="item-separator"></li>
+            <li class="item" :title="$i18n('aboutNavBtn')" href="#" @click="onAboutClick">
+              {{ $i18n('aboutNavBtn') }}
+            </li>
+          </ul>
         </li>
       </ul>
     </div>
@@ -159,7 +157,11 @@
       })
     },
     mounted() {
-      $(this.$refs.ddToggle).dropdown()
+      $(this.$refs.more).dropdown({
+        alignment: 'right',
+        belowOrigin: true,
+        gutter: 10
+      });
     },
     methods: {
       getSectionModel(section) {

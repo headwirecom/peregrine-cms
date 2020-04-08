@@ -1,7 +1,6 @@
 <template>
   <li>
     <a :title="title"
-       class="waves-effect waves-light"
        v-on:click.stop.prevent="onClick">
       <i class="editor-icon material-icons">{{ icon }}</i>
     </a>
@@ -31,7 +30,3 @@
     }
   }
 </script>
-
-<style scoped>
-
-</style>
