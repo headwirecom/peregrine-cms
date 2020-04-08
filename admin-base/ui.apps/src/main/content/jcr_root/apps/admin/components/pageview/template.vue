@@ -1,5 +1,6 @@
 <template>
   <admin-components-explorerpreviewcontent
+      :key="getBasePath()"
       :model="model"
       :nodeType="NodeType.PAGE"
       :browserRoot="`${getBasePath()}/pages`"
@@ -33,7 +34,7 @@
     methods: {
       getBasePath() {
         const view = $perAdminApp.getView()
-        let tenant = {name: 'example'}
+        let tenant = {name: 'themeclean'}
         if (view.state.tenant) {
           tenant = view.state.tenant
         }
