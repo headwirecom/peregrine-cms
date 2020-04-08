@@ -99,7 +99,7 @@
             <li class="item" :title="$i18n('tutorials')" @click="onTutorialsClick">
               {{ $i18n('tutorials') }}
             </li>
-            <li class="item-separator"></li>
+            <li class="item disabled"></li>
             <li class="item" :title="$i18n('aboutNavBtn')" href="#" @click="onAboutClick">
               {{ $i18n('aboutNavBtn') }}
             </li>
@@ -160,7 +160,7 @@
       $(this.$refs.more).dropdown({
         alignment: 'right',
         belowOrigin: true,
-        gutter: 10
+        gutter: 5
       });
     },
     methods: {

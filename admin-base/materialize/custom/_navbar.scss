@@ -94,6 +94,40 @@ nav {
           }
         }
       }
+
+      .more-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        border-bottom-width: 0;
+
+        > a {
+          padding: 0 .5rem;
+
+          .material-icons {
+            margin-top: 4px;
+          }
+        }
+      }
+
+      .dropdown-content {
+        border: 1px solid var(--pcms-blue-grey-darken-3);
+        min-width: 200px;
+
+        .item {
+          width: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          content: '--------------------';
+
+          &.disabled {
+            cursor: default;
+            background: none !important;
+          }
+        }
+      }
     }
 
     .brand-logo {
