@@ -90,36 +90,42 @@ public final class ComponentDefinitionServlet extends AbstractBaseServlet {
         final String componentPath = component.getPath();
         answer.writeAttribute(PATH, componentPath);
         answer.writeAttribute(NAME, ServletHelper.componentPathToName(componentPath));
-        writeInheritedChildRaw(path, component, isPage ? EXPLORER_DIALOG_JSON : DIALOG_JSON, answer, MODEL);
-        writeInheritedChildRaw(path, component, OG_TAG_DIALOG_JSON, answer, OG_TAGS);
+
+        String value = writeInheritedDialogRaw(path, component, isPage ? EXPLORER_DIALOG_JSON : DIALOG_JSON);
+        if (isNotBlank(value)) {
+            answer.writeAttributeRaw(MODEL, value);
+        }
+
+        value = writeInheritedDialogRaw(path, component, OG_TAG_DIALOG_JSON);
+        if (isNotBlank(value)) {
+            answer.writeAttributeRaw(OG_TAGS, value);
+        }
 
         return answer;
     }
 
-    private void writeInheritedChildRaw(
-            final String path,
-            final Resource component,
-            final String relPath,
-            final JsonResponse target,
-            final String name
-    ) throws IOException {
-        final Resource resource = getInheritedChild(component, relPath);
-        if (nonNull(resource)) {
-            target.writeAttributeRaw(name, rewriteDialogToTenant(path, resource));
-        }
+    private String writeInheritedDialogRaw(final String path, final Resource component, final String relPath) {
+        return Optional.ofNullable(component)
+                .map(c -> getInheritedChild(c, relPath))
+                .map(r -> rewriteDialogToTenant(path, r))
+                .orElse(null);
     }
 
     /* quick method to serialize the dialog and convert all template specific paths to tenant paths */
-    private String rewriteDialogToTenant(final String path, final Resource dialog) throws IOException {
+    private String rewriteDialogToTenant(final String path, final Resource dialog) {
         final InputStream is = dialog.adaptTo(InputStream.class);
-        final String answer = ServletHelper.asString(is).toString();
-        if (startsWith(path, _CONTENT_)) {
-            String tenantPath = substringAfter(path, _CONTENT_);
-            tenantPath = _CONTENT_ + substringBefore(tenantPath, SLASH);
-            return answer.replaceAll("\"/content/[^/]*/", "\"" + tenantPath + SLASH);
-        }
+        try {
+            final String answer = ServletHelper.asString(is).toString();
+            if (startsWith(path, _CONTENT_)) {
+                String tenantPath = substringAfter(path, _CONTENT_);
+                tenantPath = _CONTENT_ + substringBefore(tenantPath, SLASH);
+                return answer.replaceAll("\"/content/[^/]*/", "\"" + tenantPath + SLASH);
+            }
 
-        return answer;
+            return answer;
+        } catch (final IOException e) {
+            return null;
+        }
     }
 
     private Resource findTypedResource(final Resource resource) {
