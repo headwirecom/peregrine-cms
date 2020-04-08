@@ -259,8 +259,6 @@
 		}
 		.toggle-fullscreen {
 			position: absolute;
-			right: 1rem;
-			top: 1rem;
 			border: 0;
 			background: none;
 			padding: 0;
@@ -299,7 +297,7 @@
 			}
 		}
 		.right-panel {
-			flex-basis:300px;
+			flex-basis: 350px;
 			&.fullscreen {
 				position: absolute;
 				top: 0;

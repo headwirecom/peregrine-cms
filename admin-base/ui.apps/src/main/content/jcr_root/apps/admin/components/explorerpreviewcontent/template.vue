@@ -5,6 +5,12 @@
       <div class="explorer-preview-nav">
         <ul class="nav-left" v-if="hasMultipleTabs">
           <admin-components-explorerpreviewnavitem
+              v-if="!!($slots.default)"
+              icon="view_list"
+              title="component explorer"
+              :class="{'active': isTab(Tab.COMPONENTS)}"
+              @click="setActiveTab(Tab.COMPONENTS)"/>
+          <admin-components-explorerpreviewnavitem
               :icon="Icon.SETTINGS"
               :title="`${nodeType}-info`"
               :class="{'active': isTab(Tab.INFO)}"
@@ -24,45 +30,21 @@
               :class="{'active': isTab(Tab.REFERENCES)}"
               @click="setActiveTab(Tab.REFERENCES)">
           </admin-components-explorerpreviewnavitem>
+          <admin-components-explorerpreviewnavitem
+              :icon="Icon.MORE_VERT"
+              :title="'actions'"
+              :class="{'active': isTab(Tab.ACTIONS)}"
+              @click="setActiveTab(Tab.ACTIONS)"/>
         </ul>
 
-        <ul class="nav-right">
-          <template v-if="allowOperations">
-            <admin-components-explorerpreviewnavitem
-                :icon="Icon.TEXT_FORMAT"
-                :title="`rename ${nodeType}`"
-                @click="renameNode()">
-            </admin-components-explorerpreviewnavitem>
-            <admin-components-explorerpreviewnavitem
-                v-if="allowMove"
-                :icon="Icon.COMPARE_ARROWS"
-                :title="`move ${nodeType}`"
-                @click="moveNode()">
-            </admin-components-explorerpreviewnavitem>
-            <admin-components-explorerpreviewnavitem
-                :icon="Icon.DELETE"
-                :title="`delete ${nodeType}`"
-                @click="deleteNode()">
-            </admin-components-explorerpreviewnavitem>
-          </template>
-          <template>
-            <admin-components-explorerpreviewnavitem
-                v-if="edit"
-                :icon="Icon.INFO"
-                :title="`cancel edit`"
-                @click="onCancel()">
-            </admin-components-explorerpreviewnavitem>
-            <admin-components-explorerpreviewnavitem
-                v-else
-                :icon="Icon.EDIT"
-                :title="`edit`"
-                @click="onEdit()">
-            </admin-components-explorerpreviewnavitem>
-          </template>
-        </ul>
+        <ul class="nav-right"></ul>
       </div>
 
-      <template v-if="isTab([Tab.INFO, Tab.OG_TAGS])">
+      <template v-if="isTab([Tab.COMPONENTS])">
+        <slot></slot>
+      </template>
+
+      <template v-else-if="isTab([Tab.INFO, Tab.OG_TAGS])">
         <div v-if="hasInfoView && !edit"
              :class="`${nodeType}-info-view`">
           <img v-if="isImage"
@@ -81,15 +63,34 @@
             :options="options"
             @validated="onValidated()">
         </vue-form-generator>
-        <div v-if="edit" class="explorer-confirm-dialog">
-          <button
-              class="btn btn-raised waves-effect waves-light right"
-              type="button"
-              :title="`save ${nodeType} properties`"
-              :disabled="!valid"
-              @click.stop.prevent="save()">
-            <i class="material-icons">{{Icon.CHECK}}</i>
-          </button>
+        <div class="explorer-confirm-dialog">
+          <template v-if="edit">
+            <button
+                class="btn btn-raised waves-effect waves-light right"
+                type="button"
+                :title="`cancel editing ${nodeType} properties`"
+                @click.stop.prevent="onCancel()">
+              <i class="material-icons">{{Icon.CANCEL}}</i>
+            </button>
+            <button
+                class="btn btn-raised waves-effect waves-light right"
+                type="button"
+                :title="`save ${nodeType} properties`"
+                :disabled="!valid"
+                @click.stop.prevent="save()">
+              <i class="material-icons">{{Icon.CHECK}}</i>
+            </button>
+          </template>
+          <template v-else>
+            <span></span>
+            <button
+                class="btn btn-raised waves-effect waves-light right"
+                type="button"
+                :title="`edit ${nodeType} properties`"
+                @click.stop.prevent="onEdit()">
+              <i class="material-icons">{{Icon.EDIT}}</i>
+            </button>
+          </template>
         </div>
       </template>
 
@@ -112,6 +113,23 @@
             <span class="right">{{item.path}}</span>
           </li>
         </ul>
+      </template>
+
+      <template v-else-if="isTab(Tab.ACTIONS)">
+        <div v-if="allowOperations" class="action-list">
+          <div class="action" :title="`rename ${nodeType}`" @click="renameNode()">
+            <i class="material-icons">{{Icon.TEXT_FORMAT}}</i>
+            Rename {{nodeType}}
+          </div>
+          <div class="action" :title="`move ${nodeType}`" @click="moveNode()">
+            <i class="material-icons">{{Icon.COMPARE_ARROWS}}</i>
+            Move {{nodeType}}
+          </div>
+          <div class="action" :title="`delete ${nodeType}`" @click="deleteNode()">
+            <i class="material-icons">{{Icon.DELETE}}</i>
+            Delete {{nodeType}}
+          </div>
+        </div>
       </template>
     </template>
 
@@ -145,7 +163,9 @@
   const Tab = {
     INFO: 'info',
     OG_TAGS: 'og-tags',
-    REFERENCES: 'references'
+    REFERENCES: 'references',
+    COMPONENTS: 'components',
+    ACTIONS: 'actions'
   };
 
   const SchemaKey = {
@@ -224,8 +244,8 @@
         return obj;
       },
       node() {
-        if(this.nodeType === NodeType.OBJECT) {
-              return this.rawCurrentObject.data
+        if (this.nodeType === NodeType.OBJECT) {
+          return this.rawCurrentObject.data
         }
         return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, this.currentObject);
       },
@@ -261,7 +281,7 @@
       },
       nodeName() {
         let nodeName = this.node.name;
-        if (this.nodeType === NodeType.OBJECT){
+        if (this.nodeType === NodeType.OBJECT) {
           nodeName = this.node.path.split('/').slice(-1).pop()
         }
         return nodeName
@@ -271,6 +291,11 @@
       edit(newVal) {
         $perAdminApp.getNodeFromView('/state/tools').edit = newVal;
       }
+    },
+    created() {
+      this.$root.$on('explorerpreviewcontent-tab-update', (data) => {
+        this.setActiveTab(data)
+      });
     },
     mounted() {
       this.path.selected = this.selectedPath
@@ -351,28 +376,29 @@
         if (newName) {
           const that = this;
           $perAdminApp.stateAction(`rename${this.uNodeType}`, {
-              path: this.currentObject,
-              name: newName
-            }).then( () => {
-              if(that.nodeType === 'asset' || that.nodeType === 'object') {
-                const currNode = $perAdminApp.getNodeFromView(`/state/tools/${that.nodeType}/show`)
-                const currNodeArr = currNode.split('/');
-                currNodeArr[currNodeArr.length -1 ] = newName
-                $perAdminApp.getNodeFromView(`/state/tools/${that.nodeType}`).show = currNodeArr.join('/')
-              } else { // page and template handling
-                const currNode = $perAdminApp.getNodeFromView('/state/tools')[that.nodeType]
-                const currNodeArr = currNode.split('/');
-                currNodeArr[currNodeArr.length -1 ] = newName
-                $perAdminApp.getNodeFromView('/state/tools')[that.nodeType] = currNodeArr.join('/')
-              }
+            path: this.currentObject,
+            name: newName
+          }).then(() => {
+            if (that.nodeType === 'asset' || that.nodeType === 'object') {
+              const currNode = $perAdminApp.getNodeFromView(`/state/tools/${that.nodeType}/show`)
+              const currNodeArr = currNode.split('/');
+              currNodeArr[currNodeArr.length - 1] = newName
+              $perAdminApp.getNodeFromView(`/state/tools/${that.nodeType}`).show = currNodeArr.join(
+                  '/')
+            } else { // page and template handling
+              const currNode = $perAdminApp.getNodeFromView('/state/tools')[that.nodeType]
+              const currNodeArr = currNode.split('/');
+              currNodeArr[currNodeArr.length - 1] = newName
+              $perAdminApp.getNodeFromView('/state/tools')[that.nodeType] = currNodeArr.join('/')
+            }
           });
         }
       },
       moveNode() {
         $perAdminApp.getApi().populateNodesForBrowser(this.path.current, 'pathBrowser')
-        .then(() => {
-          this.isOpen = true;
-        }).catch(() => {
+            .then(() => {
+              this.isOpen = true;
+            }).catch(() => {
           $perAdminApp.getApi().populateNodesForBrowser(`/content/${site.tenant}`, 'pathBrowser');
         });
       },
@@ -413,7 +439,7 @@
       saveObject() {
         let data = this.node;
         let {show} = this.rawCurrentObject;
-        let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted") || {};
+        let _deleted = $perAdminApp.getNodeFromView('/state/tools/_deleted') || {};
 
         //Find child nodes with subchildren for our edited object
         for (const key in data) {
@@ -464,40 +490,3 @@
     }
   }
 </script>
-<style scoped>
-
-  .editor-icon {
-    height: 44px;
-    margin-right: 5px;
-    margin-left: 5px;
-  }
-
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-right,
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-left {
-    margin: 0;
-    padding: 0;
-    display: flex;
-  }
-
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-left {
-    margin-right: auto;
-  }
-
-  .info-view-image {
-  }
-
-  .info-view-iframe {
-    width: 100%;
-    height: 60%;
-  }
-
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-content.preview-asset .asset-info-view {
-    max-height: 50%;
-    height: unset;
-  }
-
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-content.preview-asset .asset-info-view img {
-    max-height: 100%;
-    padding-top: 1em;
-  }
-</style>

@@ -194,6 +194,8 @@
 
 <script>
 
+    import {set} from '../../../../../../js/utils';
+
     export default {
         props: ['model'],
 
@@ -582,8 +584,16 @@
             },
 
             editPage: function(me, target) {
-                const tenant = $perAdminApp.getView().state.tenant
+                const view = $perAdminApp.getView()
+                const tenant = view.state.tenant
                 const path = me.pt.path
+
+                if(target.startsWith(`/content/${tenant.name}/pages`)) {
+                    set(view, '/state/tools/page', target)
+                } else if(target.startsWith(`/content/${tenant.name}/templates`)) {
+                    set(view, '/state/tools/template', target)
+                }
+
                 if(path.startsWith(`/content/${tenant.name}/objects`)) {
                     const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
                     me.selectedObject = path
