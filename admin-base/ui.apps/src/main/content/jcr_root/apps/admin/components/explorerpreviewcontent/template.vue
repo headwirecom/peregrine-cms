@@ -57,6 +57,7 @@
           </iframe>
         </div>
         <vue-form-generator
+            v-if="node && getSchemaByActiveTab()"
             :class="{'vfg-preview': !edit}"
             :schema="getSchemaByActiveTab()"
             :model="node"
@@ -100,7 +101,7 @@
           <li class="collection-header">
             referenced in {{referencedBy.length}} locations
           </li>
-          <li class="collection-item" v-for="item in referencedBy">
+          <li v-for="item in referencedBy" :key="item.path" class="collection-item">
               <span>
                 <admin-components-action
                     v-bind:model="{
@@ -376,11 +377,13 @@
         this.formGenerator.changes = []
       },
       onModelUpdate(newVal, schemaKey) {
-        this.formGenerator.changes.push({
-          key: schemaKey,
-          oldVal: this.formGenerator.original[schemaKey],
-          newVal: newVal
-        })
+        if (this.edit) {
+          this.formGenerator.changes.push({
+            key: schemaKey,
+            oldVal: this.formGenerator.original[schemaKey],
+            newVal: newVal
+          })
+        }
       },
       onValidated(isValid, errors) {
         if (this.edit) {

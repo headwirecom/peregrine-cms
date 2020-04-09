@@ -1,8 +1,8 @@
 <template>
   <admin-components-explorerpreviewcontent
       :key="getBasePath()"
-      :tab="tab"
       :model="model"
+      :tab="tab"
       :is-edit="isEditPage"
       :nodeType="NodeType.PAGE"
       :browserRoot="`${getBasePath()}/pages`"
@@ -14,14 +14,14 @@
 </template>
 
 <script>
-  import {NodeType} from '../../../../../../js/constants';
+  import {NodeType} from '../../../../../../js/constants'
 
   export default {
     props: ['model'],
     data() {
       return {
         NodeType: NodeType
-      };
+      }
     },
     computed: {
       isEditPage() {
@@ -41,7 +41,5 @@
         return `/content/${tenant.name}`
       }
     }
-  };
+  }
 </script>
-<style scoped>
-</style>

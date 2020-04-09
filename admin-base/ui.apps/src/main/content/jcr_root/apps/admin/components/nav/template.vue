@@ -37,11 +37,13 @@
             <admin-components-logo/>
           </admin-components-action>
         </div>
-        <template v-if="!model.hideTenants && state.tenant">
-          <div class="current-tenant-name">
-            {{ state.tenant.name }}
-          </div>
-        </template>
+        <admin-components-materializedropdown
+            v-if="!model.hideTenants && state.tenant"
+            class="current-tenant-name"
+            :below-origin="true"
+            :items="tenantDdItems">
+          {{ state.tenant.name }}
+        </admin-components-materializedropdown>
       </div>
       <div class="nav-center">
         <template v-if="!model.hideTenants">
@@ -51,19 +53,8 @@
                 :key="`section-${section.name}`"
                 tag="li"
                 :model="getSectionModel(section)"
-                :class="{active: getActiveSection() === section.name, 'show-on-medium': !section.mobile}"
+                :class="{active: getActiveSection() === section.name, 'no-mobile': !section.mobile}"
                 class="nav-link"/>
-            <admin-components-action
-                v-if="state.tenant"
-                tag="li"
-                class="nav-link"
-                :class="{active: getActiveSection() === 'tenants'}"
-                :model="{
-                  target: { path: '/content', name: state.tenant.name },
-                  command: 'configureSite',
-                  title: $i18n('Settings'),
-                  tooltipTitle: `${$i18n('configure')} '${state.tenant.title || state.tenant.name}'`
-              }"/>
           </ul>
         </template>
       </div>
@@ -88,23 +79,14 @@
             {{$root.$data.state.user[0].toUpperCase()}}
           </a>
         </li>
-        <li class="nav-link more-link">
-          <a href="#" ref="more" data-activates="more-content">
-            <i class="material-icons">more_vert</i>
-          </a>
-          <ul id="more-content" class="dropdown-content">
-            <li class="item" :class="{disabled: !help}" :title="$i18n('help')" @click="onHelpClick">
-              {{ $i18n('help') }}
-            </li>
-            <li class="item" :title="$i18n('tutorials')" @click="onTutorialsClick">
-              {{ $i18n('tutorials') }}
-            </li>
-            <li class="item disabled"></li>
-            <li class="item" :title="$i18n('aboutNavBtn')" href="#" @click="onAboutClick">
-              {{ $i18n('aboutNavBtn') }}
-            </li>
-          </ul>
-        </li>
+        <admin-components-materializedropdown
+            tag="li"
+            class="nav-link more-link"
+            :below-origin="true"
+            :gutter="2"
+            :items="moreDdItems">
+          <i class="material-icons">more_vert</i>
+        </admin-components-materializedropdown>
       </ul>
     </div>
     <template v-for="child in model.children">
@@ -149,19 +131,42 @@
           return $perAdminApp.findNodeFromPath($perAdminApp.getView().adminPage,
               '/jcr:content/tour')
         }
+      },
+      moreDdItems() {
+        return [
+          {
+            label: 'help',
+            disabled: !this.help,
+            click: this.onHelpClick
+          },
+          {
+            label: 'tutorials',
+            click: this.onTutorialsClick
+          },
+          {label: '--------------------', disabled: true},
+          {
+            label: 'aboutNavBtn',
+            click: this.onAboutClick
+          },
+        ]
+      },
+      tenantDdItems() {
+        return [
+          {
+            label: 'Settings',
+            click: this.onSettingsClick
+          },
+          {
+            label: 'Change Tenant',
+            click: this.onChangeTenantClick
+          }
+        ]
       }
     },
     beforeCreate() {
       $perAdminApp.getApi().populateTenants().then(() => {
         this.refreshTenants()
       })
-    },
-    mounted() {
-      $(this.$refs.more).dropdown({
-        alignment: 'right',
-        belowOrigin: true,
-        gutter: 5
-      });
     },
     methods: {
       getSectionModel(section) {
@@ -187,6 +192,14 @@
       onAboutClick() {
         $('#aboutPeregrine').modal('open');
       },
+      onSettingsClick() {
+        $perAdminApp.action(this, 'configureSite', {
+          path: '/content', name: this.state.tenant.name
+        })
+      },
+      onChangeTenantClick() {
+        $perAdminApp.action(this, 'selectPath', '/content/admin/pages/index')
+      },
       refreshTenants() {
         this.tenants = $perAdminApp.getView().admin.tenants || []
         this.state = $perAdminApp.getView().state
@@ -197,9 +210,6 @@
           return breadcrumbs[0].path.split('/')[4]
         }
         return 'welcome'
-      },
-      onHelpSelect() {
-        console.log('BLA')
       }
     }
   }

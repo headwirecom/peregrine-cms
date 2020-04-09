@@ -22,9 +22,19 @@ nav {
       background-color: transparent;
       transition: border-color .35s ease-out, backgorund-color .35s ease-out;
 
-      .show-on-medium {
+      &.active {
+        border-bottom-color: var(--pcms-orange);
+
+        &:hover {
+          border-bottom-color: var(--pcms-orange-hover);
+        }
+      }
+
+      .no-mobile {
         @media #{$medium-and-down} {
           display: none;
+          visibility: hidden;
+          opacity: 0;
         }
       }
     }
@@ -36,8 +46,16 @@ nav {
       padding-top: 3px;
 
       .current-tenant-name {
-        font-weight: 800;
-        padding: 0 1rem;
+        height: 100%;
+        border-bottom: 0;
+
+        > a {
+          font-weight: 800;
+          padding: 0 1rem;
+          display: flex;
+          height: 100%;
+          align-items: center;
+        }
       }
 
       .current-tenant-settings {
@@ -54,14 +72,6 @@ nav {
       display: flex;
       align-items: center;
       padding-top: 8px;
-
-      .nav-link.active {
-        border-bottom-color: var(--pcms-orange);
-
-        &:hover {
-          border-bottom-color: var(--pcms-orange-hover);
-        }
-      }
     }
 
     .nav-right {
@@ -79,6 +89,14 @@ nav {
         justify-content: center;
         height: 100%;
         padding: 0 5px;
+        border-bottom: 0;
+
+        > a {
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
 
         .user-icon {
           background-color: var(--pcms-orange);
@@ -110,22 +128,22 @@ nav {
           }
         }
       }
+    }
 
-      .dropdown-content {
-        border: 1px solid var(--pcms-blue-grey-darken-3);
-        min-width: 200px;
+    .dropdown-content {
+      border: 1px solid var(--pcms-blue-grey-darken-3);
+      min-width: 200px;
 
-        .item {
-          width: 100%;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          content: '--------------------';
+      .item {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
-          &.disabled {
-            cursor: default;
-            background: none !important;
-          }
+        &.disabled {
+          cursor: default;
+          background: none !important;
+          color: var(--pcms-gray);
         }
       }
     }
