@@ -31,7 +31,7 @@
 
     <title>${resource.jcr:title}</title>
 
-    <sly data-sly-include="styles.html"></sly>
+    <sly data-sly-include="styles.html"/>
 
     <sly data-sly-list="${helper.model.siteCSS}">
         <link rel="stylesheet" href="${item}" type="text/css">
@@ -112,61 +112,71 @@
     <script type="text/javascript" src="${item}"></script>
 </sly>
 
-<sly data-sly-include="renderer.html"></sly>
+<sly data-sly-include="renderer.html" />
 <script>
+    var $perAdminView = {
+        state: {},
+        adminPage: {},
+        adminPageStaged: {},
+        admin: {},
+        pageView: {
+            view: 'desktop'
+        },
+        nodes: {}
+    }
+
     // switch between old and new implementation
     var newImpl = true
-    var $perAdminView = { state: {}, adminPage: {}, adminPageStaged: {}, admin: {}, pageView: { view: 'desktop'}, nodes: {} }
-
-    if(newImpl) {
+    if (newImpl) {
+        var loadComponent = $perAdminApp.loadComponent;
         // define a couple of extra vue components that are used by components
         // but not in the tree of auto loaded components
-        $perAdminApp.loadComponent('admin-components-iconaction')
-        $perAdminApp.loadComponent('admin-components-action')
-        $perAdminApp.loadComponent('admin-components-notifyuser')
-        $perAdminApp.loadComponent('admin-components-askuser')
-        $perAdminApp.loadComponent('admin-components-promptuser')
-        $perAdminApp.loadComponent('admin-components-pathbrowser')
-        $perAdminApp.loadComponent('admin-components-logo')
-        $perAdminApp.loadComponent('admin-components-extensions')
-        $perAdminApp.loadComponent('admin-components-spinner')
-        $perAdminApp.loadComponent('admin-components-tour')
-        $perAdminApp.loadComponent('admin-components-about')
-        $perAdminApp.loadComponent('admin-components-explorerpreview')
-        $perAdminApp.loadComponent('admin-components-explorerpreviewnavitem')
-        $perAdminApp.loadComponent('admin-components-explorerpreviewcontent')
-        $perAdminApp.loadComponent('admin-components-fileupload')
-        $perAdminApp.loadComponent('admin-components-separator')
-        $perAdminApp.loadComponent('admin-components-colorpaletteselector')
-        $perAdminApp.loadComponent('admin-components-materializeswitch')
-        $perAdminApp.loadComponent('admin-components-componentexplorer')
-        $perAdminApp.loadComponent('admin-components-materializedropdown')
+        loadComponent('admin-components-iconaction')
+        loadComponent('admin-components-action')
+        loadComponent('admin-components-notifyuser')
+        loadComponent('admin-components-askuser')
+        loadComponent('admin-components-promptuser')
+        loadComponent('admin-components-pathbrowser')
+        loadComponent('admin-components-logo')
+        loadComponent('admin-components-extensions')
+        loadComponent('admin-components-spinner')
+        loadComponent('admin-components-tour')
+        loadComponent('admin-components-about')
+        loadComponent('admin-components-explorerpreview')
+        loadComponent('admin-components-explorerpreviewnavitem')
+        loadComponent('admin-components-explorerpreviewcontent')
+        loadComponent('admin-components-fileupload')
+        loadComponent('admin-components-separator')
+        loadComponent('admin-components-colorpaletteselector')
+        loadComponent('admin-components-materializeswitch')
+        loadComponent('admin-components-componentexplorer')
+        loadComponent('admin-components-materializedropdown')
 
-        $perAdminApp.loadComponent('field-pathbrowser')
-        $perAdminApp.loadComponent('field-texteditor')
-        $perAdminApp.loadComponent('field-list')
-        $perAdminApp.loadComponent('field-collection')
-        $perAdminApp.loadComponent('field-materialswitch')
-        $perAdminApp.loadComponent('field-material-checkbox')
-        $perAdminApp.loadComponent('field-material-radios')
-        $perAdminApp.loadComponent('field-material-select')
-        $perAdminApp.loadComponent('field-material-checklist')
-        $perAdminApp.loadComponent('field-material-datepicker')
-        $perAdminApp.loadComponent('field-material-timepicker')
-        $perAdminApp.loadComponent('field-material-datetime')
-        $perAdminApp.loadComponent('field-material-textarea')
-        $perAdminApp.loadComponent('field-material-multiselect')
-        $perAdminApp.loadComponent('field-material-range')
-        $perAdminApp.loadComponent('field-listselection')
-        $perAdminApp.loadComponent('field-iconbrowser')
-        $perAdminApp.loadComponent('field-headline')
-        $perAdminApp.loadComponent('field-horizontal-line')
+        loadComponent('field-pathbrowser')
+        loadComponent('field-texteditor')
+        loadComponent('field-list')
+        loadComponent('field-collection')
+        loadComponent('field-materialswitch')
+        loadComponent('field-material-checkbox')
+        loadComponent('field-material-radios')
+        loadComponent('field-material-select')
+        loadComponent('field-material-checklist')
+        loadComponent('field-material-datepicker')
+        loadComponent('field-material-timepicker')
+        loadComponent('field-material-datetime')
+        loadComponent('field-material-textarea')
+        loadComponent('field-material-multiselect')
+        loadComponent('field-material-range')
+        loadComponent('field-listselection')
+        loadComponent('field-iconbrowser')
+        loadComponent('field-headline')
+        loadComponent('field-horizontal-line')
 
-        $perAdminApp.loadComponent('admin-components-iconeditpage')
-        $perAdminApp.loadComponent('admin-components-iconopenfolder')
-        $perAdminApp.loadComponent('admin-components-iconrename')
-        $perAdminApp.loadComponent('admin-components-draghandle')
-        $perAdminApp.loadComponent('admin-components-iconbrowser')
+        loadComponent('admin-components-iconeditpage')
+        loadComponent('admin-components-iconopenfolder')
+        loadComponent('admin-components-iconrename')
+        loadComponent('admin-components-draghandle')
+        loadComponent('admin-components-iconbrowser')
 
         $perAdminApp.loadComponent('pagerendervue-components-placeholder')
 

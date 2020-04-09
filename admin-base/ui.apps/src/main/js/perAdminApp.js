@@ -110,29 +110,6 @@ let OSBrowser = null
 const extensions = []
 
 /**
- * dynamic component initializer\ - this function takes a name of a component and tries to
- * find the matching variable in the global scope if the component has not been registered
- * with vuejs yet.
- *
- * @private
- */
-function loadComponentImpl(name) {
-    if(!loadedComponents[name]) {
-        logger.fine('loading vuejs component', name)
-        var segments = name.split('-')
-        for(var i = 0; i < segments.length; i++) {
-            segments[i] = segments[i].charAt(0).toUpperCase() + segments[i].slice(1)
-        }
-        if(window['cmp'+segments.join('')]) {
-            Vue.component(name, window['cmp'+segments.join('')])
-        }
-        loadedComponents[name] = true
-    } else {
-        logger.fine('component',name, 'already present')
-    }
-}
-
-/**
  * gets the global varibale backing a component by it's name (vuejs - name converted to camel case
  * and cmp added in front of it)
  *
@@ -142,10 +119,31 @@ function loadComponentImpl(name) {
  */
 function getComponentByNameImpl(name) {
     var segments = name.split('-')
-    for(var i = 0; i < segments.length; i++) {
+    for (var i = 0; i < segments.length; i++) {
         segments[i] = segments[i].charAt(0).toUpperCase() + segments[i].slice(1)
     }
-    return window['cmp'+segments.join('')]
+
+    return window['cmp' + segments.join('')]
+}
+
+/**
+ * dynamic component initializer\ - this function takes a name of a component and tries to
+ * find the matching variable in the global scope if the component has not been registered
+ * with vuejs yet.
+ *
+ * @private
+ */
+function loadComponentImpl(name) {
+    if (loadedComponents[name]) {
+        logger.fine('component',name, 'already present')
+    } else {
+        var cmp = getComponentByNameImpl(name)
+        if (cmp) {
+            Vue.component(name, cmp)
+        }
+
+        loadedComponents[name] = true
+    }
 }
 
 /**
@@ -738,7 +736,7 @@ var PerAdminApp = {
      */
     init(perAdminAppView) {
         view = perAdminAppView
-        api = new PeregrineApi(new PerAdminImpl(PerAdminApp))
+        api = new PeregrineApi(new PerAdminImpl(this))
         sessionKeepAlive();
     },
 
