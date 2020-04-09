@@ -157,11 +157,7 @@
       })
     },
     mounted() {
-      $(this.$refs.more).dropdown({
-        alignment: 'right',
-        belowOrigin: true,
-        gutter: 5
-      });
+      $(this.$refs.more).dropdown({belowOrigin: true});
     },
     methods: {
       getSectionModel(section) {
