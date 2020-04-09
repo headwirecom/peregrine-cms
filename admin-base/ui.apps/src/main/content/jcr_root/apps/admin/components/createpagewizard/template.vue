@@ -213,6 +213,7 @@
                     parent: this.formmodel.path,
                     name: this.formmodel.name,
                     template: this.formmodel.templatePath,
+                    title: this.formmodel.title,
                     data: this.formmodel,
                     edit
                 }
