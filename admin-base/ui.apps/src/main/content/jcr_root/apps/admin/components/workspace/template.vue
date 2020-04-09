@@ -71,10 +71,17 @@
             </component>
 
             <component
-              v-else
+              v-else-if    = "getChildByPath('right-panel')"
               v-bind:is    = "getChildByPath('right-panel').component"
               v-bind:model = "getChildByPath('right-panel')">
             </component>
+
+            <component
+                v-else
+                v-bind:is    = "getChildByPath('components').component"
+                v-bind:model = "getChildByPath('components')">
+            </component>
+
         </aside>
     </div>
 </template>

@@ -169,9 +169,8 @@
       <editor jcr:primaryType="nt:unstructured"
         sling:resourceType="admin/components/editor" text="content"/>
 
-      <components jcr:primaryType="nt:unstructured"
-        sling:resourceType="admin/components/componentexplorer" text="components"
-        source="/admin/components"/>
+      <right-panel jcr:primaryType="nt:unstructured"
+        sling:resourceType="admin/components/templateview"/>
 
     </workspace>
 
