@@ -40,6 +40,17 @@ nav {
       .current-tenant-name {
         font-weight: 800;
         padding: 0 1rem;
+        height: 100%;
+
+        > a {
+          display: flex;
+          height: 100%;
+          align-items: center;
+        }
+
+        .dropdown-content {
+          font-weight: normal;
+        }
       }
 
       .current-tenant-settings {
@@ -112,22 +123,22 @@ nav {
           }
         }
       }
+    }
 
-      .dropdown-content {
-        border: 1px solid var(--pcms-blue-grey-darken-3);
-        min-width: 200px;
+    .dropdown-content {
+      border: 1px solid var(--pcms-blue-grey-darken-3);
+      min-width: 200px;
 
-        .item {
-          width: 100%;
-          display: flex;
-          justify-content: center;
-          align-items: center;
+      .item {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
-          &.disabled {
-            cursor: default;
-            background: none !important;
-            color: var(--pcms-gray);
-          }
+        &.disabled {
+          cursor: default;
+          background: none !important;
+          color: var(--pcms-gray);
         }
       }
     }

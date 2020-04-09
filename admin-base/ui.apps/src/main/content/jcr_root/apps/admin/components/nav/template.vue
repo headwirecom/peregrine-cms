@@ -37,11 +37,13 @@
             <admin-components-logo/>
           </admin-components-action>
         </div>
-        <template v-if="!model.hideTenants && state.tenant">
-          <div class="current-tenant-name">
-            {{ state.tenant.name }}
-          </div>
-        </template>
+        <admin-components-materializedropdown
+            v-if="!model.hideTenants && state.tenant"
+            class="current-tenant-name"
+            :below-origin="true"
+            :items="tenantDdItems">
+          {{ state.tenant.name }}
+        </admin-components-materializedropdown>
       </div>
       <div class="nav-center">
         <template v-if="!model.hideTenants">
@@ -53,7 +55,7 @@
                 :model="getSectionModel(section)"
                 :class="{active: getActiveSection() === section.name, 'no-mobile': !section.mobile}"
                 class="nav-link"/>
-            <admin-components-action
+            <!--admin-components-action
                 v-if="state.tenant"
                 tag="li"
                 class="nav-link"
@@ -63,7 +65,7 @@
                   command: 'configureSite',
                   title: $i18n('Settings'),
                   tooltipTitle: `${$i18n('configure')} '${state.tenant.title || state.tenant.name}'`
-              }"/>
+              }"/-->
           </ul>
         </template>
       </div>
@@ -93,8 +95,7 @@
             class="nav-link more-link"
             :below-origin="true"
             :gutter="2"
-            :items="moreDdItems"
-            @item-click="onMoreDdItemClick">
+            :items="moreDdItems">
           <i class="material-icons">more_vert</i>
         </admin-components-materializedropdown>
       </ul>
@@ -159,6 +160,18 @@
             click: this.onAboutClick
           },
         ]
+      },
+      tenantDdItems() {
+        return [
+          {
+            label: 'Settings',
+            click: this.onSettingsClick
+          },
+          {
+            label: 'Change Tenant',
+            click: this.onChangeTenantClick
+          }
+        ]
       }
     },
     beforeCreate() {
@@ -190,6 +203,14 @@
       onAboutClick() {
         $('#aboutPeregrine').modal('open');
       },
+      onSettingsClick() {
+        $perAdminApp.action(this, 'configureSite', {
+          path: '/content', name: this.state.tenant.name
+        })
+      },
+      onChangeTenantClick() {
+        $perAdminApp.action(this, 'selectPath', '/content/admin/pages/index')
+      },
       refreshTenants() {
         this.tenants = $perAdminApp.getView().admin.tenants || []
         this.state = $perAdminApp.getView().state
@@ -200,9 +221,6 @@
           return breadcrumbs[0].path.split('/')[4]
         }
         return 'welcome'
-      },
-      onMoreDdItemClick(item, index) {
-        this.moreDdItems[index].click()
       }
     }
   }

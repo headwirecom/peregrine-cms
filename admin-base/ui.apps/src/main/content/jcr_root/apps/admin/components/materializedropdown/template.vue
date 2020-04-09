@@ -86,7 +86,11 @@
     methods: {
       onItemClick(item, index) {
         if (!item.disabled) {
-          this.$emit('item-click', item, index)
+          if (item.click) {
+            item.click()
+          } else {
+            this.$emit('item-click', item, index)
+          }
         }
       },
       onFocusOut(event) {
