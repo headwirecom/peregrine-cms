@@ -23,42 +23,39 @@
   #L%
   -->
 <template>
-    <div
-        v-bind:class  ="`peregrine-content-view ${viewModeClass}`"
-        v-on:mouseout = "leftOverlayArea">
-        <div
-            id             = "editviewoverlay"
-            v-on:click     = "onClickOverlay"
-            v-on:scroll    = "onScrollOverlay"
-            v-on:mousemove = "mouseMove"
-            v-on:dragover  = "onDragOver"
-            v-on:drop.prevent = "onDrop">
+    <div :class   = "`peregrine-content-view ${viewModeClass}`"
+        @mouseout = "leftOverlayArea">
+        <div id           = "editviewoverlay"
+            @click        = "onClickOverlay"
+            @scroll       = "onScrollOverlay"
+            @mousemove    = "mouseMove"
+            @dragover     = "onDragOver"
+            @drop.prevent = "onDrop">
             <div class="editview-container" ref="editviewContainer">
-                <div
-                    v-bind:class   = "editableClass"
-                    ref            = "editable"
-                    id             = "editable"
-                    :draggable     = "enableEditableFeatures"
-                    v-on:dragstart = "onDragStart"
-                    v-on:touchstart = "onEditableTouchStart"
-                    v-on:touchend  = "onEditableTouchEnd">
+                <div id         = "editable"
+                    ref         = "editable"
+                    :class      = "editableClass"
+                    :draggable  = "enableEditableFeatures"
+                    @dragstart  = "onDragStart"
+                    @touchstart = "onEditableTouchStart"
+                    @touchend   = "onEditableTouchEnd">
                     <div v-if="enableEditableFeatures" class="editable-actions">
                         <ul>
                             <li class="waves-effect waves-light">
-                              <a href="#" v-bind:title="$i18n('copy')"
-                                 v-on:click.stop.prevent="onCopy">
+                              <a href="#" :title="$i18n('copy')"
+                                 @click.stop.prevent="onCopy">
                                     <i class="material-icons">content_copy</i>
                                 </a>
                             </li>
                             <li v-if="clipboard" class="waves-effect waves-light">
-                              <a v-bind:title="$i18n('paste')" href="#"
-                                 v-on:click.stop.prevent="onPaste">
+                              <a :title="$i18n('paste')" href="#"
+                                 @click.stop.prevent="onPaste">
                                     <i class="material-icons">content_paste</i>
                                 </a>
                             </li>
-                            <li v-if="selectedComponent && selectedComponent.getAttribute('data-per-path') !== '/jcr:content'" class="waves-effect waves-light">
-                              <a href="#" v-bind:title="$i18n('deleteComponent')"
-                                 v-on:click.stop.prevent="onDelete">
+                            <li v-if="isComponentSelected" class="waves-effect waves-light">
+                              <a href="#" :title="$i18n('deleteComponent')"
+                                 @click.stop.prevent="onDelete">
                                     <i class="material-icons">delete</i>
                                 </a>
                             </li>
@@ -67,17 +64,106 @@
                 </div>
             </div>
         </div>
-        <iframe
-            v-on:load    = "onIframeLoaded"
-            ref          = "editview"
-            id           = "editview"
-            v-bind:src   = "pagePath"
-            frameborder  = "0"></iframe>
+        <iframe id = "editview"
+            ref    = "editview"
+            @load  = "onIframeLoaded"
+            :src   = "pagePath"
+            frameborder = "0"></iframe>
     </div>
 </template>
 
 <script>
 import { IgnoreContainers } from '../../../../../../js/constants.js';
+
+const KEY_ESC = 27
+const KEY_CTRL = 17
+const KEY_CMD = 91
+const KEY_C = 67
+const KEY_V = 86
+
+function hasCtrlKey(e) {
+    return e.keyCode == KEY_CTRL || e.keyCode == KEY_CMD
+}
+
+function isInputInFocus() {
+    const node = document.activeElement;
+    const nodeName = node.nodeName.toUpperCase()
+    if (nodeName === 'INPUT' || nodeName === 'TEXTAREA') {
+        return true
+    }
+
+    return node.getAttribute('contenteditable') === 'true'
+}
+
+function isClassInFocus(className) {
+    return document.activeElement.className.toString().startsWith(className)
+}
+
+function getBoundingClientRect(e) {
+    const rect = e.getBoundingClientRect()
+    const margin = {
+        top: parseFloat(getElementStyle(e, 'margin-top')),
+        left: parseFloat(getElementStyle(e, 'margin-left')),
+        right: parseFloat(getElementStyle(e, 'margin-right')),
+        bottom: parseFloat(getElementStyle(e, 'margin-bottom'))
+    }
+    const result = {
+        left: rect.left - margin.left,
+        right: rect.right + margin.right,
+        top: rect.top - margin.top,
+        bottom: rect.bottom + margin.bottom,
+    }
+    result.width = result.right - result.left
+    result.height = result.bottom - result.top
+    return result
+}
+
+function getElementStyle(el, styleName) {
+    const defaultView = document.defaultView
+    if (defaultView && defaultView.getComputedStyle) {
+        return defaultView.getComputedStyle(el, '').getPropertyValue(styleName)
+    } 
+
+    const currentStyle = el.currentStyle
+    if (currentStyle) {
+        const name = styleName.replace(/\-(\w)/g, function (strMatch, p) {
+            return p.toUpperCase()
+        });
+        return currentStyle[name]
+    }
+
+    return ''
+}
+
+function isInsideRect(pos, rect) {
+    return pos.x > rect.left && pos.x < rect.right && pos.y > rect.top && pos.y < rect.bottom
+}
+
+function findIn(el, pos) {
+    if (!el || !isInsideRect(pos, getBoundingClientRect(el))) return
+
+    for (let i = 0; i < el.children.length; i++) {
+        const child = findIn(el.children[i], pos)
+        if (child) {
+            return child
+        }
+    }
+
+    return el
+}
+
+function isContainer(el) {
+    let subEl = el;
+    while (subEl && !subEl.getAttribute('data-per-path')) {
+        subEl = subEl.firstElementChild;
+    }
+
+    if (subEl && subEl.getAttribute('data-per-droptarget')) {
+        return true;
+    }
+
+    return false;
+}
 
 export default {
     mounted() {
@@ -85,16 +171,17 @@ export default {
             /* is this a touch device */
             this.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints
             this.isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
-            if(this.isTouch){
+            if (this.isTouch) {
                 /* selected components are not immediatly draggable on touch devices */
-                this.selectedComponentDragable = false
+                this.selected.draggable = false
             }
+
             document.addEventListener('keydown', this.onKeyDown)
             document.addEventListener('keyup', this.onKeyUp)
 
             /* check if page has loaded */
-            var unwatch = $perAdminApp.getApp().$watch('pageView', pageView => {
-                if(pageView.status === 'loaded'){
+            const unwatch = $perAdminApp.getApp().$watch('pageView', pageView => {
+                if (pageView.status === 'loaded') {
                     this.updateOverlay()
                     unwatch() // we dont need to watch the pageView prop anymore
                 }
@@ -104,12 +191,15 @@ export default {
 
     props: ['model'],
 
-    data(){
+    data() {
         return {
             editableVisible: false,
             editableClass: null,
-            selectedComponent: null,
-            selectedComponentDragable: true,
+            selected: {
+                el: null,
+                path: null,
+                draggable: true
+            },
             clipboard: null,
             ctrlDown: false,
             scrollTop: 0,
@@ -118,17 +208,23 @@ export default {
             editableTimer: null
         }
     },
+
     watch: {
-        viewMode: function (newViewMode) {
+        viewMode(newViewMode) {
             this.setIframeScrollState(newViewMode)
         }
     },
 
     computed: {
-        pagePath: function() {
+        isComponentSelected() {
+            return this.selected.path && this.selected.path !== '/jcr:content'
+        },
+
+        pagePath() {
             return $perAdminApp.getNodeFromView('/pageView/path') + '.html'
         },
-        viewMode: function() {
+
+        viewMode() {
             const viewMode = $perAdminApp.getNodeFromViewOrNull('/state/tools/workspace/view')
             const previewMode = $perAdminApp.getNodeFromViewOrNull('/state/tools/workspace/preview')
             let ret = ''
@@ -139,73 +235,74 @@ export default {
             }
             return ret
         },
-        viewModeClass: function() {
+
+        viewModeClass() {
             return this.viewMode
         },
-        enableEditableFeatures: function() {
-            var targetEl = this.selectedComponent
-            if(targetEl == null || targetEl === undefined) return false
-            const path = targetEl.getAttribute('data-per-path')
-            if(path === undefined || path === null) return false
-            var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
-            if(!node) return false
-            return !node.fromTemplate
+
+        enableEditableFeatures() {
+            const node = this.selectedNode
+            return node && !node.fromTemplate
         },
+
         isIgnoreContainersEnabled() {
-            let view = $perAdminApp.getView();
-            return view.state.tools
-                && view.state.tools.workspace
-                && view.state.tools.workspace.ignoreContainers === IgnoreContainers.ENABLED;
+            const tools = $perAdminApp.getView().state.tools
+            return tools
+                && tools.workspace
+                && tools.workspace.ignoreContainers === IgnoreContainers.ENABLED
+        },
+
+        editorVisible() {
+            return $perAdminApp.getNodeFromViewOrNull('/state/editorVisible')
+        },
+
+        selectedNode() {
+            if (this.selected.path) {
+                return $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, this.selected.path)
+            }
         }
     },
 
     methods: {
         /* Window/Document methods =================
         ============================================ */
-        onKeyDown(ev){
-            var nodeName = document.activeElement.nodeName
-            var className = ''+document.activeElement.className
-            /* check no field is currently in focus */
-            if(nodeName === 'INPUT' || nodeName === 'TEXTAREA' || className.startsWith('trumbowyg')){
+        onKeyDown(ev) {
+            if (isInputInFocus() || isClassInFocus('trumbowyg')) {
                 return false
-            } else {
-                var ctrlKey = 17
-                var cmdKey = 91
-                if (ev.keyCode == ctrlKey || ev.keyCode == cmdKey){
-                    this.ctrlDown = true
-                }
-                if(this.selectedComponent !== null){
-                    var cKey = 67
-                    var vKey = 86
-                    if (this.ctrlDown && (ev.keyCode == cKey)){
-                        this.onCopy()
-                    }
-                    if (this.ctrlDown && (ev.keyCode == vKey)){
-                        this.onPaste()
-                    }
-                }
+            }
+
+            if (hasCtrlKey(ev)) {
+                this.ctrlDown = true
             }
         },
 
-        onKeyUp(ev){
-            var nodeName = document.activeElement.nodeName
-            var className = document.activeElement.className
-            /* check no field is currently in focus */
-            if(nodeName === 'INPUT' || nodeName === 'TEXTAREA' || className === 'ql-editor'){
+        onKeyUp(ev) {
+            if (isInputInFocus()) {
+                if (ev.keyCode == KEY_ESC && this.inlineNode) {
+                    this.shiftFocusFromInlineToParent()
+                }
+
                 return false
-            } else {
-                var ctrlKey = 17
-                var cmdKey = 91
-                if (ev.keyCode == ctrlKey || ev.keyCode == cmdKey){
-                    this.ctrlDown = false
+            }
+
+            if (isClassInFocus('ql-editor')) {
+                return false
+            }
+
+            if (hasCtrlKey(ev)) {
+                this.ctrlDown = false
+            } else if (this.selectedNode) {
+                if (ev.keyCode == KEY_C) {
+                    this.onCopy()
+                } else if (ev.keyCode == KEY_V) {
+                    this.onPaste()
                 }
             }
         },
-
 
         /* Iframe (editview) methods ===============
         ============================================ */
-        onIframeLoaded(ev){
+        onIframeLoaded(ev) {
             const iframeDoc = ev.target.contentWindow.document
             this.setIframeScrollState(this.viewMode)
             iframeDoc.body.style.position = 'relative'
@@ -216,34 +313,26 @@ export default {
         },
 
         setIframeScrollState(viewMode) {
-             var iframeDoc = this.$refs.editview.contentWindow.document
-            if(viewMode.endsWith('preview')){
-                iframeDoc.body.style.overflowX = 'hidden'
-                iframeDoc.body.style.overflowY = 'auto'
-            } else {
-                iframeDoc.body.style.overflowX = 'hidden'
-                iframeDoc.body.style.overflowY = 'auto'
-            }
+            const iframeDoc = this.$refs.editview.contentWindow.document
+            iframeDoc.body.style.overflowX = 'hidden'
+            iframeDoc.body.style.overflowY = 'auto'
         },
 
-        updateOverlay(){
+        updateOverlay() {
             this.$nextTick(() => {
                 /* ensure edit container height === iframe body height */
                 this.setEditContainerHeight()
                 /* update editable position if selected */
-                if(this.selectedComponent !== null){
-                    var targetBox = this.getBoundingClientRect(this.selectedComponent)
-                    this.setEditableStyle(targetBox, 'selected')
-                }
+                this.setSelectedEditableStyle()
             })
         },
 
         /*  Overlay (editviewoverlay) methods ======
         ============================================ */
-        onScrollOverlay(ev){
+        onScrollOverlay(ev) {
             this.scrollTop = ev.target.scrollTop
             var editview = this.$refs.editview
-            if(this.isIOS){
+            if(this.isIOS) {
                 /* ios device, use scroll alternative */
                 this.$nextTick(function() {
                     editview.contentWindow.document.body.style.transform = `translateY(-${this.scrollTop}px)`
@@ -256,185 +345,171 @@ export default {
             }
         },
 
-        setEditContainerHeight(){
+        setEditContainerHeight() {
             // make sure the iframe exists before we actually try to read it
             if(this.$refs.editview) {
                 var iframeHeight = this.$refs.editview.contentWindow.document.body.offsetHeight
-                this.$refs.editviewContainer.style.height = iframeHeight + 'px'
+                this.$refs.editviewContainer.style.height = `${iframeHeight}px`
             }
         },
 
-        getPosFromMouse: function(e) {
-            var elRect = this.getBoundingClientRect(this.$refs.editview)
-            if(e) {
-                var posX = e.clientX - elRect.left
-                var posY = e.clientY - elRect.top
-                return {x: posX, y: posY }
+        getPosFromMouse(e) {
+            const rect = getBoundingClientRect(this.$refs.editview)
+            if (e) {
+                return {
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
+                }
             }
-            else {
-                // fix for case where mouse event is not defined
-                return {x: -elRect.left, y: -elRect.top }
+
+            // fix for case where mouse event is not defined
+            return {
+                x: -rect.left,
+                y: -rect.top
             }
         },
 
-        getElementStyle: function (e, styleName) {
-            var styleValue = "";
-            if(document.defaultView && document.defaultView.getComputedStyle) {
-                styleValue = document.defaultView.getComputedStyle(e, "").getPropertyValue(styleName);
-            }
-            else if(e.currentStyle) {
-                styleName = styleName.replace(/\-(\w)/g, function (strMatch, p1) {
-                    return p1.toUpperCase();
-                });
-                styleValue = e.currentStyle[styleName];
-            }
-            return styleValue;
-        },
+        getTarget(e) {
+            const pos = this.getPosFromMouse(e)
+            const editview = this.$refs.editview
+            let el = findIn(editview.contentWindow.document.body, pos)
+            if (!el) return
 
-        getBoundingClientRect: function(e) {
-            let rect = e.getBoundingClientRect()
-            let marginTop = parseFloat(this.getElementStyle(e, 'margin-top'))
-            let marginLeft = parseFloat(this.getElementStyle(e, 'margin-left'))
-            let marginRight = parseFloat(this.getElementStyle(e, 'margin-right'))
-            let marginBottom = parseFloat(this.getElementStyle(e, 'margin-bottom'))
-            let newRect = {
-                left: rect.left - marginLeft,
-                right: rect.right + marginRight,
-                top: rect.top - marginTop,
-                bottom: rect.bottom + marginBottom,
-            }
-            newRect.width = newRect.right - newRect.left
-            newRect.height = newRect.bottom - newRect.top
-            return newRect;
-        },
-
-        findIn: function(el, pos) {
-            if(!el) return null
-            var rect = this.getBoundingClientRect(el)
-            var ret = null
-            if(pos.x > rect.left && pos.x < rect.right && pos.y > rect.top && pos.y < rect.bottom) {
-                ret = el
-                for(var i = 0; i < el.children.length; i++) {
-                    var child = this.findIn(el.children[i], pos)
-                    if(child != null) {
-                        ret = child
-                        break
+            let path, inlineEl, inlineProp
+            while (el && !path) {
+                path = el.getAttribute('data-per-path');
+                if (!inlineEl) {
+                    inlineProp = el.getAttribute('data-per-inline-property')
+                    if (inlineProp){
+                        inlineEl = el
                     }
                 }
-            }
-            return ret
-        },
 
-        getTargetEl: function(e) {
-            var pos = this.getPosFromMouse(e)
-            var editview = this.$refs.editview
-//            if($perAdminApp.getOSBrowser() === 'win'){
-//                var targetEl = this.findIn(editview.contentWindow.document.body, pos)
-//            } else {
-//                var targetEl = editview.contentWindow.document.elementFromPoint(pos.x, pos.y)
-//            }
-            var targetEl = this.findIn(editview.contentWindow.document.body, pos)
-            if(!targetEl) return
-
-            while(!targetEl.getAttribute('data-per-path')) {
-                targetEl = targetEl.parentElement
-                if(!targetEl) { break }
-            }
-            return targetEl
-        },
-
-        onClickOverlay: function(e) {
-            if(!e) return
-            var targetEl = this.getTargetEl(e)
-            if(targetEl) {
-                var path = targetEl.getAttribute('data-per-path')
-                var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
-                if (this.isContainer(targetEl)) {
-                    if (this.isIgnoreContainersEnabled) return;
-                }
-                if(node.fromTemplate) {
-                    $perAdminApp.notifyUser(this.$i18n('templateComponent'), this.$i18n('fromTemplateNotifyMsg'), {
-                        complete: this.removeEditOverlay
-                    })
-                } else {
-                    this.selectedComponent = targetEl
-                    var targetBox = this.getBoundingClientRect(targetEl)
-                    this.setEditableStyle(targetBox, 'selected')
-                    $perAdminApp.action(this, 'showComponentEdit', path)
+                if (!path) {
+                    el = el.parentElement
                 }
             }
+
+            if (!el || !path) return
+
+            const inline = inlineEl ? {
+                el: inlineEl,
+                property: inlineProp
+            } : undefined
+            return {
+                el,
+                path,
+                node: $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path),
+                isDropTarget: el.getAttribute('data-per-droptarget') === 'true',
+                inline
+            }
         },
 
-        leftOverlayArea: function(e) {
-            if($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
+        onClickOverlay(e) {
+            if (!e) return
+            if (e.target && e.target.getAttribute('contenteditable') === 'true') return;
+            const target = this.getTarget(e)
+            if (!target) {
+                return
+            }
+
+            const targetEl = target.el
+            if (this.isIgnoreContainersEnabled && isContainer(targetEl)) return;
+
+            const node = target.node
+            if (!node || node.fromTemplate) {
+                $perAdminApp.notifyUser(this.$i18n('templateComponent'), this.$i18n('fromTemplateNotifyMsg'), {
+                    complete: this.removeEditOverlay
+                })
+            } else {
+                const path = target.path
+                this.selected.el = targetEl
+                this.selected.path = path
+                this.editSelectedComponent()
+            }
+        },
+
+        editSelectedComponent() {
+            this.setSelectedEditableStyle()
+            $perAdminApp.action(this, 'showComponentEdit', this.selected.path)
+        },
+
+        leftOverlayArea(e) {
+            if ($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
 
             // check if we only left the area into the overlay for the actions
-            var targetEl = this.getTargetEl(e)
-            if(targetEl) return
-            this.removeEditOverlay()
+            if (!this.getTarget(e)) {
+                this.removeEditOverlay()
+            }
         },
 
         removeEditOverlay() {
-            this.selectedComponent = null
-            this.editableClass = null
-            if (this.isTouch) this.selectedComponentDragable = false
+            this.clearSelected()
+            if (this.isTouch) this.selected.draggable = false
         },
 
-        mouseMove: function(e) {
-            if(!e || this.isTouch) return
-            if($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
-            var targetEl = this.getTargetEl(e)
-            if(targetEl) {
-                if (this.isContainer(targetEl)) {
-                    if (this.isIgnoreContainersEnabled) return;
-                }
-                if(targetEl.getAttribute('data-per-droptarget')) {
-                    targetEl = targetEl.parentElement
-                }
-                this.selectedComponent = targetEl
-                var targetBox = this.getBoundingClientRect(targetEl)
-                this.setEditableStyle(targetBox, 'selected')
+        clearSelected() {
+            this.selected.el = null
+            this.selected.path = null
+            this.editableClass = null
+        },
+
+        mouseMove(e) {
+            if (!e || this.isTouch) return
+            if ($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
+            const target = this.getTarget(e)
+            if (!target) {
+                return
             }
+
+            let targetEl = target.el
+            if (this.isIgnoreContainersEnabled && isContainer(targetEl)) return;
+
+            if (targetEl.getAttribute('data-per-droptarget')) {
+                this.selected.el = targetEl.parentElement
+                this.selected.path = this.selected.el.getAttribute('data-per-path')
+            } else {
+                this.selected.el = target.el
+                this.selected.path = target.path
+            }
+
+            this.setSelectedEditableStyle()
         },
 
         /* Drag and Drop ===========================
         ============================================ */
         onDragStart(ev) {
-            if(this.selectedComponent === null)return
+            if (!this.selected.path) return
             this.editableClass = 'dragging'
-            ev.dataTransfer.setData('text', this.selectedComponent.getAttribute('data-per-path'))
+            ev.dataTransfer.setData('text', this.selected.path)
         },
 
         onDragOver(ev) {
             ev.preventDefault()
-            var targetEl = this.getTargetEl(ev)
-
-            if(targetEl) {
-                var pos = this.getPosFromMouse(ev)
-                var targetBox = this.getBoundingClientRect(targetEl)
-                var isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
-
-                var isRoot = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, targetEl.getAttribute('data-per-path')).fromTemplate === true
-
-                if(isDropTarget) {
-                    var dropLocation = targetEl.getAttribute('data-per-location')
-                    if(targetBox.bottom - pos.y < 10 && dropLocation === 'after' && !isRoot) {
+            const target = this.getTarget(ev)
+            if (target) {
+                const targetEl = target.el
+                const pos = this.getPosFromMouse(ev)
+                const targetBox = getBoundingClientRect(targetEl)
+                const isRoot = target.node.fromTemplate === true
+                if (target.isDropTarget) {
+                    const dropLocation = targetEl.getAttribute('data-per-location')
+                    if (targetBox.bottom - pos.y < 10 && dropLocation === 'after' && !isRoot) {
                         this.dropPosition = 'after'
                         this.setEditableStyle(targetBox, 'drop-bottom')
-                    } else if(pos.y - targetBox.top < 10 && dropLocation === 'before' && !isRoot) {
+                    } else if (pos.y - targetBox.top < 10 && dropLocation === 'before' && !isRoot) {
                         this.dropPosition = 'before'
                         this.setEditableStyle(targetBox, 'drop-top')
-                    } else if(dropLocation) {
-                        this.dropPosition = 'into-'+dropLocation
-                        this.setEditableStyle(targetBox, 'selected')
+                    } else if (dropLocation) {
+                        this.dropPosition = `into-${dropLocation}`
+                        this.setSelectedEditableStyle()
                     } else {
                         this.dropPosition = 'none'
                         this.leftOverlayArea()
                     }
-                } else if(!isRoot) {
-                    
-                    var y = pos.y - targetBox.top
-                    if(y < targetBox.height/2) {
+                } else if (!isRoot) {                    
+                    const y = pos.y - targetBox.top
+                    if (2 * y < targetBox.height) {
                         this.dropPosition = 'before'
                         this.setEditableStyle(targetBox, 'drop-top')
                     } else {
@@ -449,38 +524,31 @@ export default {
                 this.dropPosition = 'none'
                 this.leftOverlayArea()
             }
-
         },
 
         onDrop(ev) {
             this.editableClass = null
-            if (this.isTouch) this.selectedComponentDragable = false
-            var targetEl = this.getTargetEl(ev)
-            if(typeof targetEl === 'undefined' || targetEl === null){
+            if (this.isTouch) this.selected.draggable = false
+            const target = this.getTarget(ev)
+            if (!target) {
                 return false
             }
-            var targetPath = targetEl.getAttribute('data-per-path');
-            var componentPath = ev.dataTransfer.getData('text')
 
-            if(targetPath === componentPath) {
+            const targetPath = target.path
+            const componentPath = ev.dataTransfer.getData('text')
+
+            if (targetPath === componentPath) {
                 ev.dataTransfer.clearData('text')
                 return false
             }
 
-            var view = $perAdminApp.getView()
-            var payload = {
-                pagePath : view.pageView.path,
-                path: targetEl.getAttribute('data-per-path'),
-                component: componentPath,
-                drop: this.dropPosition
-            }
-            var addOrMove
-            if(componentPath.includes('/components/')) {
+            let addOrMove
+            if (componentPath.includes('/components/')) {
                 addOrMove = 'addComponentToPath';
             } else {
                 addOrMove = 'moveComponentToPath';
-                var targetNode = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, targetPath)
-                if((!targetNode) || (targetNode.fromTemplate)) {
+                const targetNode = target.node
+                if (!targetNode || targetNode.fromTemplate) {
                     $perAdminApp.notifyUser('template component', 'You cannot drag a component into a template section', {
                         complete: this.removeEditOverlay
                     })
@@ -488,112 +556,98 @@ export default {
                 }
             }
 
+            const payload = {
+                pagePath : $perAdminApp.getView().pageView.path,
+                path: targetPath,
+                component: componentPath,
+                drop: this.dropPosition
+            }
             $perAdminApp.stateAction(addOrMove, payload)
             ev.dataTransfer.clearData('text')
         },
 
         /* Editable methods ========================
         ============================================ */
-        onEditableTouchStart: function(ev){
+        onEditableTouchStart(ev) {
             this.editableTimer = setTimeout(this.onLongTouchOverlay, 800)
         },
-        onEditableTouchEnd: function(ev){
+
+        onEditableTouchEnd(ev) {
             clearTimeout(this.editableTimer)
         },
-        onLongTouchOverlay: function(){
-            if(this.selectedComponent === null) return
-            this.selectedComponentDragable = true
+
+        onLongTouchOverlay() {
+            if (!this.selected.path) return
+            this.selected.draggable = true
             this.editableClass = 'draggable'
         },
-        setEditableStyle: function(targetBox, editableClass) {
-            var editable = this.$refs.editable
-            var editview = this.$refs.editview
-            var scrollY = editview ? editview.contentWindow.scrollY : 0
-            var scrollX = editview ? editview.contentWindow.scrollX : 0
-            if(editable) {
-                editable.style.top    = (targetBox.top + scrollY + (this.isIOS ? this.scrollTop : 0)) + 'px'
-                editable.style.left   = (targetBox.left + scrollX) + 'px'
-                editable.style.width  = targetBox.width + 'px'
-                editable.style.height = targetBox.height + 'px'
 
-                if(this.selectedComponent) {
-                    var path = this.selectedComponent.getAttribute('data-per-path')
-                    var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
-                    if(node && node.fromTemplate) {
-                        editable.style['border-color'] = 'orange'
-                    } else {
-                        editable.style['border-color'] = ''
-                    }
-                } else {
-                    editable.style['border-color'] = ''
+        setEditableStyle(targetBox, editableClass) {
+            const editable = this.$refs.editable
+            if (editable) {
+                const editview = this.$refs.editview
+                const scrollY  = editview ? editview.contentWindow.scrollY : 0
+                const scrollX  = editview ? editview.contentWindow.scrollX : 0
+
+                const style  = editable.style;
+                style.top    = `${targetBox.top + scrollY + (this.isIOS ? this.scrollTop : 0)}px`
+                style.left   = `${targetBox.left + scrollX}px`
+                style.width  = `${targetBox.width}px`
+                style.height = `${targetBox.height}px`
+
+                let color = ''
+                const node = this.selectedNode
+                if (node && node.fromTemplate) {
+                    color = 'orange'
                 }
+
+                style['border-color'] = color
             }
+            
             this.editableClass = editableClass
         },
 
-        updateEditablePos: function(top){
-            this.$refs.editable.style.top = top + 'px'
-        },
-
-        onDelete: function(e) {
-            var targetEl = this.selectedComponent
-            var view = $perAdminApp.getView()
-            var pagePath = view.pageView.path
-            var payload = {
-                pagePath: view.pageView.path,
-                path: targetEl.getAttribute('data-per-path')
+        setSelectedEditableStyle() {
+            if (this.selected.path) {
+                let target = this.selected.el;
+                let editableClass = 'selected';
+                const targetBox = getBoundingClientRect(target)
+                this.setEditableStyle(targetBox, editableClass)
             }
-            if(payload.path !== '/jcr:content') {
-                $perAdminApp.stateAction('deletePageNode',  payload)
+        },
+
+        updateEditablePos(top) {
+            this.$refs.editable.style.top = `${top}px`
+        },
+
+        onDelete(e) {
+            if (this.isComponentSelected) {
+                $perAdminApp.stateAction('deletePageNode',  {
+                    pagePath: $perAdminApp.getView().pageView.path,
+                    path: this.selected.path
+                })
             }
-            this.editableClass = null
-            this.selectedComponent = null
+
+            this.clearSelected()
         },
 
-        onCopy: function(e) {
-            var targetEl = this.selectedComponent
-            var node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, targetEl.getAttribute('data-per-path'))
-            this.clipboard = node
+        onCopy(e) {
+            this.clipboard = this.selectedNode
         },
 
-        onPaste: function(e) {
-            var targetEl = this.selectedComponent
-            var nodeFromClipboard = this.clipboard
-            var view = $perAdminApp.getView()
-            var isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
-            var dropPosition
-            isDropTarget ? dropPosition = 'into' : dropPosition = 'after'
-            var payload = {
-                pagePath: view.pageView.path,
-                data: nodeFromClipboard,
-                path: targetEl.getAttribute('data-per-path'),
-                drop: dropPosition
+        onPaste(e) {
+            const payload = {
+                pagePath: $perAdminApp.getView().pageView.path,
+                data: this.clipboard,
+                path: this.selected.path,
+                drop: this.selected.isDropTarget ? 'into' : 'after'
             }
             $perAdminApp.stateAction('addComponentToPath', payload)
         },
+
         refreshEditor(me, target) {
             me.$refs['editview'].contentWindow.location.reload();
-        },
-        isContainer(el) {
-            if (el && el.getAttribute('data-per-droptarget')) {
-                return true;
-            }
-            let subEl = el.firstElementChild;
-            if (!subEl) {
-                return false;
-            }
-            while (!subEl.getAttribute('data-per-path')) {
-                subEl = subEl.firstElementChild;
-                if (!subEl) {
-                    return false;
-                }
-            }
-            if (subEl.getAttribute('data-per-droptarget')) {
-                return true;
-            }
-            return false;
         }
     }
 }
 </script>
-
