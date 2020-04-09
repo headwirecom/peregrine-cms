@@ -22,9 +22,11 @@ nav {
       background-color: transparent;
       transition: border-color .35s ease-out, backgorund-color .35s ease-out;
 
-      .show-on-medium {
+      .no-mobile {
         @media #{$medium-and-down} {
           display: none;
+          visibility: hidden;
+          opacity: 0;
         }
       }
     }

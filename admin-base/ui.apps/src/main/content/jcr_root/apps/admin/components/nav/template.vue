@@ -51,7 +51,7 @@
                 :key="`section-${section.name}`"
                 tag="li"
                 :model="getSectionModel(section)"
-                :class="{active: getActiveSection() === section.name, 'show-on-medium': !section.mobile}"
+                :class="{active: getActiveSection() === section.name, 'no-mobile': !section.mobile}"
                 class="nav-link"/>
             <admin-components-action
                 v-if="state.tenant"
