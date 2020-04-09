@@ -253,14 +253,15 @@
 			opacity: 0;
 			transition: opacity .1s ease-in-out;
 			.material-icons {
+				position: absolute;
+				right: -7px;
+				top: -7px;
 				font-size: 30px;
 				color: color("blue-grey", "lighten-1");
 			}
 		}
 		.toggle-fullscreen {
 			position: absolute;
-			right: 1rem;
-			top: 1rem;
 			border: 0;
 			background: none;
 			padding: 0;
@@ -299,7 +300,7 @@
 			}
 		}
 		.right-panel {
-			flex-basis:300px;
+			flex-basis: 350px;
 			&.fullscreen {
 				position: absolute;
 				top: 0;

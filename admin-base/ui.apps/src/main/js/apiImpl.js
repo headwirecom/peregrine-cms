@@ -251,14 +251,14 @@ class PerAdminImpl {
     .then((data) => populateView('/admin', 'templates', data))
   }
 
-  populateSkeletonPages(path, target = 'nodes', includeParents = false) {
+  populateSkeletonPages(path, target = 'skeletonNodes', includeParents = false) {
     const skeletonPagePath = path.split('/').slice(0,4).join('/')+'/skeleton-pages'
 
-    try {
-      if (get(skeletonPagePath, null)) {
-        this.populateContent(skeletonPagePath)
-      }
-    } catch(err) {}
+    // try {
+    //   if (get(skeletonPagePath, null)) {
+    //     this.populateContent(skeletonPagePath)
+    //   }
+    // } catch(err) {}
 
     return this.populateNodesForBrowser(skeletonPagePath, target, includeParents)
   }

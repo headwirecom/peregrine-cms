@@ -37,7 +37,7 @@
             }"><i class="material-icons">keyboard_arrow_left</i>
         </admin-components-action>
 
-        <aside v-bind:class="`right-panel ${isFullscreen ? 'fullscreen' : 'narrow'}`">
+        <aside v-bind:class="`explorer-preview right-panel ${isFullscreen ? 'fullscreen' : 'narrow'}`">
             <admin-components-action v-if="!state.editorVisible" v-bind:model="{
                 classes: 'hide-right-panel',
                 target: 'rightPanelVisible',
@@ -71,10 +71,17 @@
             </component>
 
             <component
-              v-else
-              v-bind:is    = "getChildByPath('components').component"
-              v-bind:model = "getChildByPath('components')">
+              v-else-if    = "getChildByPath('right-panel')"
+              v-bind:is    = "getChildByPath('right-panel').component"
+              v-bind:model = "getChildByPath('right-panel')">
             </component>
+
+            <component
+                v-else
+                v-bind:is    = "getChildByPath('components').component"
+                v-bind:model = "getChildByPath('components')">
+            </component>
+
         </aside>
     </div>
 </template>
