@@ -277,15 +277,7 @@ export default {
         },
 
         onKeyUp(ev) {
-            if (isInputInFocus()) {
-                if (ev.keyCode == KEY_ESC && this.inlineNode) {
-                    this.shiftFocusFromInlineToParent()
-                }
-
-                return false
-            }
-
-            if (isClassInFocus('ql-editor')) {
+            if (isInputInFocus() || isClassInFocus('ql-editor')) {
                 return false
             }
 
@@ -373,36 +365,21 @@ export default {
             const pos = this.getPosFromMouse(e)
             const editview = this.$refs.editview
             let el = findIn(editview.contentWindow.document.body, pos)
-            if (!el) return
-
-            let path, inlineEl, inlineProp
+            let path
             while (el && !path) {
                 path = el.getAttribute('data-per-path');
-                if (!inlineEl) {
-                    inlineProp = el.getAttribute('data-per-inline-property')
-                    if (inlineProp){
-                        inlineEl = el
+                if (path) {
+                    return {
+                        el,
+                        path,
+                        node: $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path),
+                        isDropTarget: el.getAttribute('data-per-droptarget') === 'true'
                     }
-                }
-
-                if (!path) {
+                } else {
                     el = el.parentElement
                 }
             }
 
-            if (!el || !path) return
-
-            const inline = inlineEl ? {
-                el: inlineEl,
-                property: inlineProp
-            } : undefined
-            return {
-                el,
-                path,
-                node: $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path),
-                isDropTarget: el.getAttribute('data-per-droptarget') === 'true',
-                inline
-            }
         },
 
         onClickOverlay(e) {
