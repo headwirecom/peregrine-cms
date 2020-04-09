@@ -376,11 +376,13 @@
         this.formGenerator.changes = []
       },
       onModelUpdate(newVal, schemaKey) {
-        this.formGenerator.changes.push({
-          key: schemaKey,
-          oldVal: this.formGenerator.original[schemaKey],
-          newVal: newVal
-        })
+        if (this.edit) {
+          this.formGenerator.changes.push({
+            key: schemaKey,
+            oldVal: this.formGenerator.original[schemaKey],
+            newVal: newVal
+          })
+        }
       },
       onValidated(isValid, errors) {
         if (this.edit) {
