@@ -122,11 +122,11 @@ nav {
           display: flex;
           justify-content: center;
           align-items: center;
-          content: '--------------------';
 
           &.disabled {
             cursor: default;
             background: none !important;
+            color: var(--pcms-gray);
           }
         }
       }

@@ -88,23 +88,15 @@
             {{$root.$data.state.user[0].toUpperCase()}}
           </a>
         </li>
-        <li class="nav-link more-link">
-          <a href="#" ref="more" data-activates="more-content">
-            <i class="material-icons">more_vert</i>
-          </a>
-          <ul id="more-content" class="dropdown-content">
-            <li class="item" :class="{disabled: !help}" :title="$i18n('help')" @click="onHelpClick">
-              {{ $i18n('help') }}
-            </li>
-            <li class="item" :title="$i18n('tutorials')" @click="onTutorialsClick">
-              {{ $i18n('tutorials') }}
-            </li>
-            <li class="item disabled"></li>
-            <li class="item" :title="$i18n('aboutNavBtn')" href="#" @click="onAboutClick">
-              {{ $i18n('aboutNavBtn') }}
-            </li>
-          </ul>
-        </li>
+        <admin-components-materializedropdown
+            tag="li"
+            class="nav-link more-link"
+            :below-origin="true"
+            :gutter="2"
+            :items="moreDropDownItems"
+            @item-click="onMoreDropDownItemClick">
+          <i class="material-icons">more_vert</i>
+        </admin-components-materializedropdown>
       </ul>
     </div>
     <template v-for="child in model.children">
@@ -149,15 +141,30 @@
           return $perAdminApp.findNodeFromPath($perAdminApp.getView().adminPage,
               '/jcr:content/tour')
         }
+      },
+      moreDropDownItems() {
+        return [
+          {
+            label: this.$i18n('help'),
+            disabled: !this.help,
+            click: this.onHelpClick
+          },
+          {
+            label: this.$i18n('tutorials'),
+            click: this.onTutorialsClick
+          },
+          { label: '--------------------', disabled: true },
+          {
+            label: this.$i18n('aboutNavBtn'),
+            click: this.onAboutClick
+          },
+        ]
       }
     },
     beforeCreate() {
       $perAdminApp.getApi().populateTenants().then(() => {
         this.refreshTenants()
       })
-    },
-    mounted() {
-      $(this.$refs.more).dropdown({belowOrigin: true});
     },
     methods: {
       getSectionModel(section) {
@@ -194,8 +201,8 @@
         }
         return 'welcome'
       },
-      onHelpSelect() {
-        console.log('BLA')
+      onMoreDropDownItemClick(item, index) {
+        this.moreDropDownItems[index].click()
       }
     }
   }
