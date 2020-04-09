@@ -8,9 +8,9 @@
           :key="`item-${index}`"
           class="item"
           :class="{disabled: item.disabled}"
-          :title="item.title"
+          :title="item.title? $i18n(item.title) : false"
           @click="onItemClick(item, index)">
-        {{ item.label }}
+        {{ $i18n(item.label) }}
       </li>
       <!--li class="item" :title="$i18n('tutorials')" @click="onTutorialsClick">
         {{ $i18n('tutorials') }}
@@ -73,9 +73,9 @@
       }
     },
     computed: {
-        id() {
-          return `materailizedropdown-${this._uid}`
-        }
+      id() {
+        return `materailizedropdown-${this._uid}`
+      }
     },
     mounted() {
       this.$dd = $(this.$refs.dd)

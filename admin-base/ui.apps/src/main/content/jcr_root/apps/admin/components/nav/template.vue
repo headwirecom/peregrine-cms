@@ -145,17 +145,17 @@
       moreDdItems() {
         return [
           {
-            label: this.$i18n('help'),
+            label: 'help',
             disabled: !this.help,
             click: this.onHelpClick
           },
           {
-            label: this.$i18n('tutorials'),
+            label: 'tutorials',
             click: this.onTutorialsClick
           },
-          { label: '--------------------', disabled: true },
+          {label: '--------------------', disabled: true},
           {
-            label: this.$i18n('aboutNavBtn'),
+            label: 'aboutNavBtn',
             click: this.onAboutClick
           },
         ]
