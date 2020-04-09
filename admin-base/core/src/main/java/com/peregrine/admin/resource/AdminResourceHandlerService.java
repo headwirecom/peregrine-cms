@@ -203,7 +203,7 @@ public class AdminResourceHandlerService
     public static final String MISSING_SITE_LOCATIONS = "Resources for site: '%s' could not be found";
     public static final String MISSING_SOURCE_LOCATIONS = "Resources for source site: '%s' could not be found";
 
-    private static final String SOURCE_SITE = "sourceSite";
+    public static final String SOURCE_SITE = "sourceSite";
 
     //Package creation constants
     private static final String PACKAGE_SUFFIX = "-full-package";
