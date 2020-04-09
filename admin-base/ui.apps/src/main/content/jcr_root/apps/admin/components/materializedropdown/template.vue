@@ -12,13 +12,6 @@
           @click="onItemClick(item, index)">
         {{ $i18n(item.label) }}
       </li>
-      <!--li class="item" :title="$i18n('tutorials')" @click="onTutorialsClick">
-        {{ $i18n('tutorials') }}
-      </li>
-      <li class="item disabled"></li>
-      <li class="item" :title="$i18n('aboutNavBtn')" href="#" @click="onAboutClick">
-        {{ $i18n('aboutNavBtn') }}
-      </li-->
     </ul>
   </component>
 </template>
