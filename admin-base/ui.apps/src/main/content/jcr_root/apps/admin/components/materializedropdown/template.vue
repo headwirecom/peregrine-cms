@@ -1,16 +1,21 @@
 <template>
-  <component :is="tag" tabindex="-1" @focusout="onFocusOut">
+  <component :is="tag" tabindex="-1" @focusout="onFocusOut" class="materialize-drop-down">
     <a href="#" ref="dd" :data-activates="id">
       <slot></slot>
     </a>
     <ul :id="id" class="dropdown-content">
+      <li v-if="!!$slots.header" class="header">
+        <slot name="header"></slot>
+      </li>
       <li v-for="(item, index) in items"
           :key="`item-${index}`"
           class="item"
           :class="{disabled: item.disabled}"
           :title="item.title? $i18n(item.title) : false"
           @click="onItemClick(item, index)">
+        <i v-if="item.icon" class="material-icons">{{item.icon}}</i>
         {{ $i18n(item.label) }}
+        <div v-if="item.icon" class="center-keeper"></div>
       </li>
     </ul>
   </component>
