@@ -93,8 +93,8 @@
             class="nav-link more-link"
             :below-origin="true"
             :gutter="2"
-            :items="moreDropDownItems"
-            @item-click="onMoreDropDownItemClick">
+            :items="moreDdItems"
+            @item-click="onMoreDdItemClick">
           <i class="material-icons">more_vert</i>
         </admin-components-materializedropdown>
       </ul>
@@ -142,7 +142,7 @@
               '/jcr:content/tour')
         }
       },
-      moreDropDownItems() {
+      moreDdItems() {
         return [
           {
             label: this.$i18n('help'),
@@ -201,8 +201,8 @@
         }
         return 'welcome'
       },
-      onMoreDropDownItemClick(item, index) {
-        this.moreDropDownItems[index].click()
+      onMoreDdItemClick(item, index) {
+        this.moreDdItems[index].click()
       }
     }
   }
