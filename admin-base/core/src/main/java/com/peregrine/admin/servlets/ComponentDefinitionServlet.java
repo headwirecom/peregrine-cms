@@ -91,12 +91,12 @@ public final class ComponentDefinitionServlet extends AbstractBaseServlet {
         answer.writeAttribute(PATH, componentPath);
         answer.writeAttribute(NAME, ServletHelper.componentPathToName(componentPath));
 
-        String value = writeInheritedDialogRaw(path, component, isPage ? EXPLORER_DIALOG_JSON : DIALOG_JSON);
+        String value = getInheritedDialogRaw(path, component, isPage ? EXPLORER_DIALOG_JSON : DIALOG_JSON);
         if (isNotBlank(value)) {
             answer.writeAttributeRaw(MODEL, value);
         }
 
-        value = writeInheritedDialogRaw(path, component, OG_TAG_DIALOG_JSON);
+        value = getInheritedDialogRaw(path, component, OG_TAG_DIALOG_JSON);
         if (isNotBlank(value)) {
             answer.writeAttributeRaw(OG_TAGS, value);
         }
@@ -104,7 +104,7 @@ public final class ComponentDefinitionServlet extends AbstractBaseServlet {
         return answer;
     }
 
-    private String writeInheritedDialogRaw(final String path, final Resource component, final String relPath) {
+    private String getInheritedDialogRaw(final String path, final Resource component, final String relPath) {
         return Optional.ofNullable(component)
                 .map(c -> getInheritedChild(c, relPath))
                 .map(r -> rewriteDialogToTenant(path, r))
