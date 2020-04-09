@@ -55,17 +55,6 @@
                 :model="getSectionModel(section)"
                 :class="{active: getActiveSection() === section.name, 'no-mobile': !section.mobile}"
                 class="nav-link"/>
-            <!--admin-components-action
-                v-if="state.tenant"
-                tag="li"
-                class="nav-link"
-                :class="{active: getActiveSection() === 'tenants'}"
-                :model="{
-                  target: { path: '/content', name: state.tenant.name },
-                  command: 'configureSite',
-                  title: $i18n('Settings'),
-                  tooltipTitle: `${$i18n('configure')} '${state.tenant.title || state.tenant.name}'`
-              }"/-->
           </ul>
         </template>
       </div>
