@@ -22,6 +22,14 @@ nav {
       background-color: transparent;
       transition: border-color .35s ease-out, backgorund-color .35s ease-out;
 
+      &.active {
+        border-bottom-color: var(--pcms-orange);
+
+        &:hover {
+          border-bottom-color: var(--pcms-orange-hover);
+        }
+      }
+
       .no-mobile {
         @media #{$medium-and-down} {
           display: none;
@@ -38,18 +46,15 @@ nav {
       padding-top: 3px;
 
       .current-tenant-name {
-        font-weight: 800;
-        padding: 0 1rem;
         height: 100%;
+        border-bottom: 0;
 
         > a {
+          font-weight: 800;
+          padding: 0 1rem;
           display: flex;
           height: 100%;
           align-items: center;
-        }
-
-        .dropdown-content {
-          font-weight: normal;
         }
       }
 
@@ -67,14 +72,6 @@ nav {
       display: flex;
       align-items: center;
       padding-top: 8px;
-
-      .nav-link.active {
-        border-bottom-color: var(--pcms-orange);
-
-        &:hover {
-          border-bottom-color: var(--pcms-orange-hover);
-        }
-      }
     }
 
     .nav-right {
@@ -92,6 +89,14 @@ nav {
         justify-content: center;
         height: 100%;
         padding: 0 5px;
+        border-bottom: 0;
+
+        > a {
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
 
         .user-icon {
           background-color: var(--pcms-orange);
