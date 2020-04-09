@@ -98,14 +98,29 @@ nav {
           justify-content: center;
         }
 
-        .user-icon {
+        .user-circle {
           background-color: var(--pcms-orange);
           border-radius: 100%;
-          width: 35px;
+          width: 40px;
           display: flex;
-          height: 35px;
+          height: 40px;
           align-items: center;
           justify-content: center;
+          color: #ffffff;
+
+          &.big {
+            width: 160px;
+            height: 160px;
+            margin-bottom: 1.4rem;
+
+            .material-icons {
+              font-size: 150px;
+            }
+
+            &:hover {
+              background-color: var(--pcms-orange);
+            }
+          }
 
           &:hover {
             background-color: var(--pcms-orange-hover);
@@ -134,6 +149,22 @@ nav {
       border: 1px solid var(--pcms-blue-grey-darken-3);
       min-width: 200px;
 
+      .header {
+        cursor: default;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        padding: 1rem 0 2rem 0;
+        margin-bottom: 2rem;
+        background-color: rgba(0, 0, 0, .025);
+        border-bottom: 1px solid rgba(0, 0, 0, .3);
+
+        &:hover {
+          background-color: rgba(0, 0, 0, .025);
+        }
+      }
+
       .item {
         width: 100%;
         display: flex;
@@ -145,68 +176,37 @@ nav {
           background: none !important;
           color: var(--pcms-gray);
         }
+
+        .material-icons {
+          margin-left: .5rem;
+          margin-right: auto;
+        }
+
+        .center-keeper {
+          margin-right: .5rem;
+          margin-left: auto;
+          width: 24px;
+        }
+      }
+    }
+
+    .materialize-modal {
+      .modal-spacer {
+        height: 200px;
+        width: 100%;
       }
     }
 
     .brand-logo {
       font-weight: 300;
+      width: 48px;
+      height: 48px;
+      fill: var(--pcms-orange);
+      margin-left: .5rem;
 
-      > span {
-        display: inline-block;
-        padding: 0 0.75rem;
-        vertical-align: top;
-
-        &:before {
-          content: '\00BB';
-          margin-left: -0.75rem;
-          margin-right: 0.75rem;
-          display: inline;
-        }
-
-        &:first-child {
-          &:before {
-            content: '';
-          }
-        }
-
-        > a {
-          display: inline-block;
-          line-height: 44px;
-          text-decoration: none;
-          transition: color .3s ease;
-
-          &:hover,
-          &:focus,
-          &:active {
-            color: #ffd8a6;
-          }
-
-          &.peregrine-logo {
-            svg {
-              pointer-events: none;
-              width: 44px;
-              height: 44px;
-              position: relative;
-              top: 6px;
-              fill: var(--pcms-orange);
-
-              .st0 {
-                transition: fill .3s ease;
-              }
-
-              &:hover {
-                .st0 {
-                  fill: #ffd8a6;
-                }
-              }
-            }
-
-            &:hover {
-              svg {
-                fill: var(--pcms-orange-hover);
-              }
-            }
-          }
+      &:hover {
+        svg {
+          fill: var(--pcms-orange-hover);
         }
       }
     }
@@ -218,7 +218,7 @@ nav {
         padding: 0 15px;
 
         &:before {
-          color: #fff;
+          color: var(--pcms-blue-grey-darken-3);
           font-size: 8px;
         }
       }
@@ -226,8 +226,6 @@ nav {
       .multiselect__tags {
         cursor: pointer;
         background: none;
-        color: #fff;
-        border: 0;
         padding-left: 15px;
         display: flex;
         align-items: center;
@@ -242,7 +240,6 @@ nav {
 
       .multiselect__single {
         background: none;
-        color: #fff;
         min-width: 30px;
       }
 
