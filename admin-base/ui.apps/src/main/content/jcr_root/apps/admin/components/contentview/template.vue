@@ -76,6 +76,7 @@
 import { IgnoreContainers } from '../../../../../../js/constants.js';
 
 const KEY_ESC = 27
+const KEY_DEL = 46
 const KEY_CTRL = 17
 const KEY_CMD = 91
 const KEY_C = 67
@@ -284,10 +285,16 @@ export default {
             if (hasCtrlKey(ev)) {
                 this.ctrlDown = false
             } else if (this.selectedNode) {
-                if (ev.keyCode == KEY_C) {
-                    this.onCopy()
-                } else if (ev.keyCode == KEY_V) {
-                    this.onPaste()
+                switch (ev.keyCode) {
+                    case KEY_C:
+                        this.onCopy()
+                        break
+                    case KEY_V:
+                        this.onPaste()
+                        break
+                    case KEY_DEL:
+                        this.onDelete()
+                        break
                 }
             }
         },
