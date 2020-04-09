@@ -34,10 +34,12 @@
 
     create service user distribution-agent-user
     create service user nodejs-service-user
+    create service user admin-service-user
 
 # Create the necessary folders to apply permissions below otherwise the Launchpad will fail during startup
 
     create path (sling:OrderedFolder) /content
+    create path (sling:Folder) /apps
     create path (sling:Folder) /etc
     create path (sling:Folder) /etc/distribution
     create path (sling:Folder) /libs
@@ -61,4 +63,11 @@
 
     set repository ACL for distribution-agent-user
         allow jcr:all
+    end
+
+# Set Permission for Admin Service User
+
+    set ACL for admin-service-user
+        allow jcr:all on /apps
+        allow jcr:all on /content
     end

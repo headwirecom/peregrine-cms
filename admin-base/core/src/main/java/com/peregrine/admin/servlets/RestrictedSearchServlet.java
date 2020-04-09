@@ -58,9 +58,11 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+import com.peregrine.admin.resource.TenantAppsResourceProviderManager;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -73,7 +75,9 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.servlet.Servlet;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Limited Search of either Peregrine:
@@ -105,6 +109,9 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
     public static final String THUMBNAIL_SAMPLE_PNG = "thumbnail-sample.png";
     public static final String THUMBNAIL = "thumbnail";
 
+    @Reference
+    private TenantAppsResourceProviderManager tenantAppsResourceProviderManager;
+
     @Override
     protected Response handleRequest(Request request) throws IOException {
         // Path / Suffix is obtained but not used ?
@@ -131,7 +138,12 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
 
     private Response findComponents(Request request) throws IOException {
         String query = "select * from per:Component order by jcr:path";
-        return findAndOutputToWriterAsJSON(request, query);
+        List<String> tenants = tenantAppsResourceProviderManager.getListOfTenants();
+        List<String> tenantPaths = new ArrayList<>(tenants.size());
+        for(String tenant: tenants) {
+            tenantPaths.add(APPS_ROOT + "/" + tenant);
+        }
+        return findAndOutputToWriterAsJSON(request, query, tenantPaths, COMPONENT_PRIMARY_TYPE);
     }
 
     private Response findTemplates(Request request) throws IOException {
@@ -140,6 +152,10 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
     }
 
     private Response findAndOutputToWriterAsJSON(Request request, String query) throws IOException {
+        return findAndOutputToWriterAsJSON(request, query, null, null);
+    }
+
+    private Response findAndOutputToWriterAsJSON(Request request, String query, List<String> additionalResources, String resourceType) throws IOException {
         JsonResponse answer = new JsonResponse();
         if(query.length() == 0) {
             answer
@@ -196,6 +212,18 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
                             answer.writeAttribute(PATH, node.getPath());
                             answer.writeAttribute(NODE_TYPE, node.getPrimaryNodeType() + "");
                             answer.writeClose();
+                        }
+                    }
+                    if(additionalResources != null) {
+                        for (String additionalResource : additionalResources) {
+                            Resource resource = request.getResourceResolver().getResource(additionalResource);
+                            if(resource != null) {
+                                List<Resource> resourceList = new ArrayList<>();
+                                getResourceRecursively(resource, resourceType, resourceList);
+                                for(Resource component: resourceList) {
+                                    writeComponentResource(component, answer);
+                                }
+                            }
                         }
                     }
                     answer.writeClose();
@@ -290,6 +318,40 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
         }
         answer.writeAttribute(NODE_TYPE, component.getPrimaryNodeType() + "");
         answer.writeClose();
+    }
+
+    private void writeComponentResource(Resource component, JsonResponse answer) throws IOException {
+        answer.writeObject();
+        answer.writeAttribute(NAME, component.getName());
+        answer.writeAttribute(PATH, component.getPath());
+        String group = null;
+        String title = null;
+        ValueMap properties = component.getValueMap();
+        if(properties.containsKey(JCR_TITLE)) {
+            title = properties.get(JCR_TITLE, String.class);
+        }
+        if(properties.containsKey(GROUP)) {
+            group = properties.get(GROUP, String.class);
+        }
+        if(isNotEmpty(title)) {
+            answer.writeAttribute(TITLE, title);
+        }
+        if(isNotEmpty(group)) {
+            answer.writeAttribute(GROUP, group);
+        }
+        answer.writeAttribute(NODE_TYPE, component.getResourceType());
+        answer.writeClose();
+    }
+
+    private void getResourceRecursively(Resource resource, String resourceType, List<Resource> answer) {
+        if(resource.getResourceType().equals(resourceType)) {
+            answer.add(resource);
+        }
+        Iterator<Resource> i = resource.listChildren();
+        while(i.hasNext()) {
+            Resource child = i.next();
+            getResourceRecursively(child, resourceType, answer);
+        }
     }
 }
 

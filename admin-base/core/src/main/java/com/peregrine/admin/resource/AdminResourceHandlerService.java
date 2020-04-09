@@ -263,6 +263,9 @@ public class AdminResourceHandlerService
     @Reference
     private NodeNameValidation nodeNameValidation;
 
+    @Reference
+    private TenantAppsResourceProviderManager tenantAppsResourceProviderManager;
+
     private List<ImageMetadataSelector> imageMetadataSelectors = new ArrayList<>();
 
     @Reference(
@@ -987,7 +990,9 @@ public class AdminResourceHandlerService
         final List<String> superTypes = new ArrayList<>();
 
         final StructureCopier copier = new StructureCopier(resourceResolver, fromName, toName, answer);
-        resourcesToPackage.add(copier.copyApps(superTypes));
+// This is now handled by the Tenant Apps Resource Provider dynamically
+//        resourcesToPackage.add(copier.copyApps(superTypes));
+
         // copy /content/<fromSite>/assets to /content/<fromSite>/assets
         resourcesToPackage.add(copier.copyFromRoot(ASSETS_ROOT));
         // copy /content/<fromSite>/objects to /content/<fromSite>/objects and fix all references
@@ -1040,6 +1045,7 @@ public class AdminResourceHandlerService
 
                 packagePaths.add(CONTENT_ROOT + SLASH + toName);         
             createSitePackage(resourceResolver, toName, packagePaths);
+            tenantAppsResourceProviderManager.registerTenant(toName, fromName);
         } catch (PersistenceException e) {
             logger.error("Failed to create package for site " + toName, e);
         }
@@ -1327,14 +1333,16 @@ public class AdminResourceHandlerService
             throw new ManagementException(String.format(INVALID_SOURCE_SITE, name));
         }
 
-        Resource appsSource = getResource(resourceResolver, APPS_ROOT + SLASH + name);
-        deleteResource(resourceResolver, appsSource);
+//        Resource appsSource = getResource(resourceResolver, APPS_ROOT + SLASH + name);
+//        deleteResource(resourceResolver, appsSource);
 
         Resource contentSource = getResource(resourceResolver, CONTENT_ROOT + SLASH + name);
         deleteResource(resourceResolver, contentSource);
 
         Resource felibsSource = getResource(resourceResolver, FELIBS_ROOT + SLASH + name);
         deleteResource(resourceResolver, felibsSource);
+
+        tenantAppsResourceProviderManager.unregisterTenant(name);
     }
 
     @Override
