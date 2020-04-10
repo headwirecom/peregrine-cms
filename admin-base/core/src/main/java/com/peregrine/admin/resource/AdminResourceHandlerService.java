@@ -988,11 +988,13 @@ public class AdminResourceHandlerService
 
         final List<Resource> resourcesToPackage = new ArrayList<>();
         final List<String> superTypes = new ArrayList<>();
+        // Need to obtain the list of Super Types by just finding all components in the theme
+        Optional<Resource> themeComponents = Optional.ofNullable(
+            getResource(resourceResolver, APPS_ROOT + "/" + fromName + "/" + COMPONENTS));
+        themeComponents.ifPresent(t -> t.listChildren().forEachRemaining(
+            r -> superTypes.add(r.getPath().substring(APPS_ROOT.length() + 1))));
 
         final StructureCopier copier = new StructureCopier(resourceResolver, fromName, toName, answer);
-// This is now handled by the Tenant Apps Resource Provider dynamically
-//        resourcesToPackage.add(copier.copyApps(superTypes));
-
         // copy /content/<fromSite>/assets to /content/<fromSite>/assets
         resourcesToPackage.add(copier.copyFromRoot(ASSETS_ROOT));
         // copy /content/<fromSite>/objects to /content/<fromSite>/objects and fix all references
@@ -1332,9 +1334,6 @@ public class AdminResourceHandlerService
         if (!isPrimaryType(source, SITE_PRIMARY_TYPE)) {
             throw new ManagementException(String.format(INVALID_SOURCE_SITE, name));
         }
-
-//        Resource appsSource = getResource(resourceResolver, APPS_ROOT + SLASH + name);
-//        deleteResource(resourceResolver, appsSource);
 
         Resource contentSource = getResource(resourceResolver, CONTENT_ROOT + SLASH + name);
         deleteResource(resourceResolver, contentSource);

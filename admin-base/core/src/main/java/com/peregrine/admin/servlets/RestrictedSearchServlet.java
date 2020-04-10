@@ -33,6 +33,7 @@ import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
 import static com.peregrine.commons.util.PerConstants.COMPONENTS;
 import static com.peregrine.commons.util.PerConstants.COMPONENT_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.NODE_TYPE;
@@ -75,6 +76,7 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.servlet.Servlet;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -184,35 +186,7 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
                     answer.writeArray(DATA);
                     while(nodes.hasNext()) {
                         Node node = nodes.nextNode();
-                        if(node.getPrimaryNodeType().toString().equals(COMPONENT_PRIMARY_TYPE)) {
-                            // Check if this component supports variations and if then loop over all child nodes
-                            // and add each one of them to the result set
-                            boolean done = false;
-                            Node jcrContent = findChildNodeRecursive(node, JCR_CONTENT);
-                            if(jcrContent != null && jcrContent.hasProperty(VARIATIONS)) {
-                                boolean isVariations = jcrContent.getProperty(VARIATIONS).getBoolean();
-                                if(isVariations) {
-                                    NodeIterator variations = jcrContent.getNodes();
-                                    while(variations.hasNext()) {
-                                        Node variation = variations.nextNode();
-                                        writeComponentNode(node, variation, answer);
-                                        done = true;
-                                    }
-                                }
-                            }
-                            if(!done) {
-                                writeComponentNode(node, null, answer);
-                            }
-                        } else {
-                            answer.writeObject();
-                            answer.writeAttribute(NAME, node.getName());
-                            if(node.hasProperty(JCR_TITLE)) {
-                                answer.writeAttribute(TITLE, node.getProperty(JCR_TITLE).getString());
-                            }
-                            answer.writeAttribute(PATH, node.getPath());
-                            answer.writeAttribute(NODE_TYPE, node.getPrimaryNodeType() + "");
-                            answer.writeClose();
-                        }
+                        writeComponentsAsJSON(request.getResourceResolver(), node, answer);
                     }
                     if(additionalResources != null) {
                         for (String additionalResource : additionalResources) {
@@ -221,22 +195,7 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
                                 List<Resource> resourceList = new ArrayList<>();
                                 getResourceRecursively(resource, resourceType, resourceList);
                                 for(Resource component: resourceList) {
-                                    boolean done = false;
-                                    Resource jcrContent = findChildResourceRecursive(component, JCR_CONTENT);
-                                    if(jcrContent != null) {
-                                        boolean isVariations = jcrContent.getValueMap().get(VARIATIONS, false);
-                                        if(isVariations) {
-                                            Iterator<Resource> i = jcrContent.listChildren();
-                                            while(i.hasNext()) {
-                                                Resource variation = i.next();
-                                                writeComponentResource(component, variation, answer);
-                                                done = true;
-                                            }
-                                        }
-                                    }
-                                    if(!done) {
-                                        writeComponentResource(component, null, answer);
-                                    }
+                                    writeComponentsAsJSON(component, answer);
                                 }
                             }
                         }
@@ -250,89 +209,77 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
         return answer;
     }
 
-    private Node findChildNodeRecursive(Node node, String nodeName) throws RepositoryException {
-        Node jcrContent = null;
-        if(node.hasNode(nodeName)) {
-            jcrContent = node.getNode(nodeName);
+    private void writeComponentsAsJSON(ResourceResolver resourceResolver, Node node, JsonResponse answer) throws RepositoryException, IOException {
+        Resource resource = resourceResolver.getResource(node.getPath());
+        writeComponentsAsJSON(resource, answer);
+    }
+
+    private void writeComponentsAsJSON(Resource resource, JsonResponse answer) throws IOException {
+        ValueMap properties = resource.getValueMap();
+        if(COMPONENT_PRIMARY_TYPE.equals(properties.get(JCR_PRIMARY_TYPE, String.class))) {
+            // Check if this component supports variations and if then loop over all child nodes
+            // and add each one of them to the result set
+            boolean done = false;
+            Resource jcrContent = findChildResourceRecursive(resource, JCR_CONTENT);
+            if(jcrContent != null) {
+                boolean isVariations = jcrContent.getValueMap().get(VARIATIONS, false);
+                if(isVariations) {
+                    Iterator<Resource> i = jcrContent.listChildren();
+                    while(i.hasNext()) {
+                        Resource variation = i.next();
+                        writeComponentResource(resource, variation, answer);
+                        done = true;
+                    }
+                }
+            }
+            if(!done) {
+                writeComponentResource(resource, null, answer);
+            }
         } else {
+            answer.writeObject();
+            answer.writeAttribute(NAME, resource.getName());
+            String title = resource.getValueMap().get(JCR_TITLE, String.class);
+            if(title != null) {
+                answer.writeAttribute(TITLE, title);
+            }
+            answer.writeAttribute(PATH, resource.getPath());
+            answer.writeAttribute(NODE_TYPE, properties.get(JCR_PRIMARY_TYPE, ""));
+            answer.writeClose();
+        }
+    }
+
+    private Resource findChildResourceRecursive(Resource resource, String nodeName) {
+        Resource answer = resource.getChild(nodeName);
+        if(answer == null) {
             // Loop for a sling:resourceSuperType and copy this one in instead
-            Node superTypeNode = node;
+            Resource superTypeResource = resource;
             List<String> alreadyVisitedNodes = new ArrayList<>();
             while(true) {
                 // If we already visited that node then exit to avoid an endless loop
-                if(alreadyVisitedNodes.contains(superTypeNode.getPath())) { break; }
-                alreadyVisitedNodes.add(superTypeNode.getPath());
-                if(superTypeNode.hasProperty(SLING_RESOURCE_SUPER_TYPE)) {
-                    String resourceSuperType = superTypeNode.getProperty(SLING_RESOURCE_SUPER_TYPE).getString();
+                if(alreadyVisitedNodes.contains(superTypeResource.getPath())) { break; }
+                alreadyVisitedNodes.add(superTypeResource.getPath());
+                ValueMap properties = superTypeResource.getValueMap();
+                if(properties.containsKey(SLING_RESOURCE_SUPER_TYPE)) {
+                    String resourceSuperType = properties.get(SLING_RESOURCE_SUPER_TYPE, String.class);
                     if(isNotEmpty(resourceSuperType)) {
-                        try {
-                            superTypeNode = superTypeNode.getSession().getNode(APPS_ROOT + SLASH + resourceSuperType);
-                            logger.trace("Found Resource Super Type: '{}'", superTypeNode.getPath());
+                        superTypeResource = superTypeResource.getResourceResolver().getResource(APPS_ROOT + SLASH + resourceSuperType);
+                        if(superTypeResource != null) {
+                            logger.trace("Found Resource Super Type: '{}'", superTypeResource.getPath());
                             // If we find the JCR Content then we are done here otherwise try to find this one's super resource type
-                            if(superTypeNode.hasNode(nodeName)) {
-                                jcrContent = superTypeNode.getNode(nodeName);
-                                logger.trace("Found Content Node of Super Resource Type: '{}': '{}'", superTypeNode.getPath(), jcrContent.getPath());
+                            Resource temp = superTypeResource.getChild(nodeName);
+                            if(temp != null) {
+                                answer = temp;
+                                logger.trace("Found Content Node of Super Resource Type: '{}': '{}'", superTypeResource.getPath(), answer.getPath());
                                 break;
                             }
-                        } catch(PathNotFoundException e) {
-                            logger.warn("Could not find Resource Super Type Component: " + APPS_ROOT + SLASH + resourceSuperType + " -> ignore component", e);
-                            break;
                         }
+                    } else {
+                        logger.warn("Could not find Resource Super Type Component: " + APPS_ROOT + SLASH + resourceSuperType + " -> ignore component");
                     }
                 }
             }
         }
-        return jcrContent;
-    }
-
-    private void writeComponentNode(Node component, Node variation, JsonResponse answer) throws RepositoryException, IOException {
-        answer.writeObject();
-        answer.writeAttribute(NAME, component.getName());
-        answer.writeAttribute(PATH, component.getPath());
-        String group = null;
-        String title = null;
-        if(variation != null) {
-            String id = variation.getIdentifier();
-            String name = variation.getName();
-            answer.writeAttribute(VARIATION, name);
-            answer.writeAttribute(VARIATION_PATH, id);
-            if(variation.hasProperty(TITLE)) {
-                title = variation.getProperty(TITLE).getString();
-            }
-            if(variation.hasProperty(GROUP)) {
-                group = variation.getProperty(GROUP).getString();
-            }
-        }
-        if(isEmpty(title) && component.hasProperty(JCR_TITLE)) {
-            title = component.getProperty(JCR_TITLE).getString();
-        }
-        if(isEmpty(group) && component.hasProperty(GROUP)) {
-            group = component.getProperty(GROUP).getString();
-        }
-        if(isNotEmpty(title)) {
-            answer.writeAttribute(TITLE, title);
-        }
-        if(isNotEmpty(group)) {
-            answer.writeAttribute(GROUP, group);
-        }
-        if(component.hasProperty(TEMPLATE_COMPONENT)) {
-            Property templateComponent = component.getProperty(TEMPLATE_COMPONENT);
-            if(templateComponent != null) {
-                answer.writeAttribute(TEMPLATE_COMPONENT, templateComponent.getBoolean());
-            }
-        }
-        if(variation == null && findChildNodeRecursive(component, THUMBNAIL_PNG) != null) {
-            answer.writeAttribute(THUMBNAIL, findChildNodeRecursive(component, THUMBNAIL_PNG).getPath());
-        } else if(variation == null && findChildNodeRecursive(component, THUMBNAIL_SAMPLE_PNG) != null) {
-            answer.writeAttribute(THUMBNAIL, findChildNodeRecursive(component, THUMBNAIL_SAMPLE_PNG).getPath());
-        } else if(variation != null) {
-            String thumbnailName = THUMBNAIL + "-" + variation.getName().toLowerCase()+".png";
-            if(findChildNodeRecursive(component, thumbnailName) != null) {
-                answer.writeAttribute(THUMBNAIL, findChildNodeRecursive(component, thumbnailName).getPath());
-            }
-        }
-        answer.writeAttribute(NODE_TYPE, component.getPrimaryNodeType() + "");
-        answer.writeClose();
+        return answer;
     }
 
     private void writeComponentResource(Resource component, Resource variation, JsonResponse answer) throws IOException {
@@ -389,40 +336,6 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
         }
         answer.writeAttribute(NODE_TYPE, component.getResourceType());
         answer.writeClose();
-    }
-
-    private Resource findChildResourceRecursive(Resource resource, String nodeName) {
-        Resource answer = resource.getChild(nodeName);
-        if(answer == null) {
-            // Loop for a sling:resourceSuperType and copy this one in instead
-            Resource superTypeResource = resource;
-            List<String> alreadyVisitedNodes = new ArrayList<>();
-            while(true) {
-                // If we already visited that node then exit to avoid an endless loop
-                if(alreadyVisitedNodes.contains(superTypeResource.getPath())) { break; }
-                alreadyVisitedNodes.add(superTypeResource.getPath());
-                ValueMap properties = superTypeResource.getValueMap();
-                if(properties.containsKey(SLING_RESOURCE_SUPER_TYPE)) {
-                    String resourceSuperType = properties.get(SLING_RESOURCE_SUPER_TYPE, String.class);
-                    if(isNotEmpty(resourceSuperType)) {
-                        superTypeResource = superTypeResource.getResourceResolver().getResource(APPS_ROOT + SLASH + resourceSuperType);
-                        if(superTypeResource != null) {
-                            logger.trace("Found Resource Super Type: '{}'", superTypeResource.getPath());
-                            // If we find the JCR Content then we are done here otherwise try to find this one's super resource type
-                            Resource temp = superTypeResource.getChild(nodeName);
-                            if(temp != null) {
-                                answer = temp;
-                                logger.trace("Found Content Node of Super Resource Type: '{}': '{}'", superTypeResource.getPath(), answer.getPath());
-                                break;
-                            }
-                        }
-                    } else {
-                        logger.warn("Could not find Resource Super Type Component: " + APPS_ROOT + SLASH + resourceSuperType + " -> ignore component");
-                    }
-                }
-            }
-        }
-        return answer;
     }
 
     private void getResourceRecursively(Resource resource, String resourceType, List<Resource> answer) {
