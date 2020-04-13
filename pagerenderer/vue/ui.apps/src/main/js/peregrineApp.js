@@ -302,6 +302,21 @@ function loadContentImpl(path, firstTime, fromPopState, onPage = false) {
     }
 }
 
+function getPerAdminAppImpl() {
+
+    if(window && window.parent && window.frameElement && window.frameElement.attributes['data-per-mode']) {
+        if(window.frameElement.attributes['data-per-mode'].value === 'preview') {
+            return undefined
+        }
+    }
+    if(window && window.parent && window.parent.$perAdminApp) {
+        return window.parent.$perAdminApp
+    }
+    return undefined
+
+
+}
+
 function isAuthorModeImpl() {
 
     if(window && window.parent && window.frameElement && window.frameElement.attributes['data-per-mode']) {
@@ -323,6 +338,107 @@ function getAdminAppNodeImpl(path) {
         return window.parent.$perAdminApp.getNodeFromViewOrNull(path)
     }
     return null
+}
+
+
+function findParentWithAttribute(element, attribute) {
+    while(element) {
+        if(element && element.getAttribute && element.getAttribute(attribute)) {
+            return element;
+        }
+        element = element.parentElement
+    }
+    return element
+}
+
+function findNodeInView(node, path) {
+    if(node.path === path) {
+        return node
+    }
+    if(node.children) {
+        for(let i = 0; i < node.children.length; i++) {
+            const ret = findNodeInView(node.children[i], path)
+            if(ret !== undefined) {
+                return ret
+            }
+        }
+    }
+    return undefined
+}
+
+function setValue(node, field, newValue) {
+    const segments = field.split('.');
+    for(let i = 1; i <= segments.length -2; i++) {
+        node = node[segments[i]]
+    }
+    node[segments[segments.length-1]] = newValue
+}
+
+const editState = { path: '', property: '', enabled: false, init: false }
+s
+function startEditImpl(path, property) {
+    console.log(path, property)
+    if(!editState.init) {
+        // this should load the editor into the page (css, editor)
+        editState.init = true;
+        document.getElementsByTagName('body')[0].setAttribute('contenteditable', true)
+    }
+
+    if(editState.enabled) {
+//        stopEditImpl()
+    }
+
+    editState.path = path
+    editState.property = property
+
+    document.body.setAttribute('contenteditable', true)
+    document.getElementById('peregrine-app').setAttribute('contenteditable', false)
+    document.querySelectorAll('[data-per-inline-property]').forEach( el => {
+        const parent = findParentWithAttribute(el, 'data-per-path')
+        if(parent) {
+            const path = parent.getAttribute('data-per-path')
+            const node = findNodeInView(getPerView().page, path)
+            if(!node.fromTemplate) {
+                el.setAttribute('contenteditable', true) 
+                el.addEventListener('blur', (el) => {
+                    console.log('blur', document.activeElement)
+                })
+                el.addEventListener('input', (el) => {
+                    // console.log(path, el.srcElement.getAttribute('data-per-inline-property'), el.srcElement.innerHTML)
+
+                    // const path = path :-) 
+                    const field = el.srcElement.getAttribute('data-per-inline-property')
+                    const newValue = el.srcElement.innerHTML
+                    setValue(node, field, newValue)
+                    node.text = newValue
+                })
+            }
+        }
+    }) 
+    document.addEventListener('selectionchange', () => {
+        let el = document.getSelection().baseNode
+        let newPath = undefined;
+        while(el) {
+            if(el.getAttribute && el.getAttribute('data-per-path')) {
+                newPath = el.getAttribute('data-per-path')
+                break
+            }
+            el = el.parentElement
+        }
+        if(editState.path !== newPath) {
+            getPerAdminAppImpl().stateAction('editComponent', newPath).then( () => {
+                editState.path = newPath
+            })
+        }
+    })
+    editState.enabled = true
+}
+
+function stopEditImpl() {
+    document.body.setAttribute('contentEditable', false)
+    document.getElementById('peregrine-app').setAttribute('contentEditable', false)
+    document.querySelectorAll('[data-per-inline-property]').forEach( el => el.setAttribute('contentEditable', false) ) 
+    editState.enabled = false
 }
 
 var peregrineApp = {
@@ -366,6 +482,14 @@ var peregrineApp = {
         const server = window.location.protocol + '//' + window.location.hostname;
         const domains = getPerView().page.domains || [];
         return (domains.indexOf(server) >= 0)
+    },
+
+    startEdit(path, editable) {
+        startEditImpl(path, editable)
+    },
+
+    stopEdit() {
+        stopEditImpl()
     }
 
 }

@@ -39,7 +39,7 @@
                     @dragstart  = "onDragStart"
                     @touchstart = "onEditableTouchStart"
                     @touchend   = "onEditableTouchEnd">
-                    <div ref="editContainer">
+                    <!-- <div ref="editContainer">
                         <div id="inlineEditContainer"
                             v-show="inlineEditVisible"
                             @click.stop.prevent
@@ -60,7 +60,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                     <div v-if="enableEditableFeatures" class="editable-actions">
                         <ul>
                             <li class="waves-effect waves-light">
@@ -209,14 +209,14 @@ export default {
                 }
             }, {deep: true })
 
-            const eds = this.inline.editors;
-            eds.simple = $(this.$refs.simpleInlineEdit)
-            eds.rich = $('#inlineEditContainer .trumbowyg-editor')
-            eds.html = $('#inlineEditContainer textarea')
+            // const eds = this.inline.editors;
+            // eds.simple = $(this.$refs.simpleInlineEdit)
+            // eds.rich = $('#inlineEditContainer .trumbowyg-editor')
+            // eds.html = $('#inlineEditContainer textarea')
 
-            eds.simple.blur(this.onInlineBlur)
-            eds.rich.blur(this.onInlineBlur)
-            eds.html.blur(this.onInlineBlur)
+            // eds.simple.blur(this.onInlineBlur)
+            // eds.rich.blur(this.onInlineBlur)
+            // eds.html.blur(this.onInlineBlur)
         })
     },
 
@@ -565,16 +565,18 @@ export default {
         },
 
         focusInline() {
-            const inline = this.inline;
-            const eds = inline.editors;
-            if (inline.isRich) {
-                eds.html.focus()
-                eds.rich.focus()
-            } else {
-                eds.simple.focus()
-            }
+            const iframeWin = this.$refs.editview.contentWindow
+            iframeWin.$peregrineApp.startEdit(this.selected.path, 'model.'+(this.inline.pathSegments.length > 0 ? this.inline.pathSegments.join('.') + '.': '')+this.inline.propertyName)
+            // const inline = this.inline;
+            // const eds = inline.editors;
+            // if (inline.isRich) {
+            //     eds.html.focus()
+            //     eds.rich.focus()
+            // } else {
+            //     eds.simple.focus()
+            // }
 
-            this.inline.isFresh = false
+            // this.inline.isFresh = false
         },
 
         editSelectedComponent() {
@@ -583,19 +585,19 @@ export default {
         },
 
         updateInlineStyle() {
-            // copy styles from original element into this one
-            const style = window.getComputedStyle(this.inline.el)
-            let value = style.cssText.replace('-webkit-user-modify: read-only', '-webkit-user-modify: read-write')
-            const eds = this.inline.editors
-            eds.simple.attr('style', value)
+            // // copy styles from original element into this one
+            // const style = window.getComputedStyle(this.inline.el)
+            // let value = style.cssText.replace('-webkit-user-modify: read-only', '-webkit-user-modify: read-write')
+            // const eds = this.inline.editors
+            // eds.simple.attr('style', value)
 
-            const inline = getBoundingClientRect(this.inline.el)
-            const selected = getBoundingClientRect(this.selected.el)
-            this.$refs.editContainer.setAttribute('style', `background: unset; padding-left: ${inline.left - selected.left}px; padding-top: ${inline.top - selected.top}px; padding-right: ${selected.right - inline.right}px`)
+            // const inline = getBoundingClientRect(this.inline.el)
+            // const selected = getBoundingClientRect(this.selected.el)
+            // // this.$refs.editContainer.setAttribute('style', `background: unset; padding-left: ${inline.left - selected.left}px; padding-top: ${inline.top - selected.top}px; padding-right: ${selected.right - inline.right}px`)
 
-            value = value.replace(/display.+?;/, '')
-            eds.rich.attr('style', value)
-            eds.html.attr('style', value)
+            // value = value.replace(/display.+?;/, '')
+            // eds.rich.attr('style', value)
+            // eds.html.attr('style', value)
         },
 
         leftOverlayArea(e) {
@@ -627,7 +629,11 @@ export default {
             this.inline.propertyName = null
             this.inline.isRich = false
             this.inline.isFresh = true
-            this.$refs.editContainer.setAttribute('style', ``)
+
+            const iframeWin = this.$refs.editview.contentWindow
+            iframeWin.$peregrineApp.stopEdit()
+
+            // this.$refs.editContainer.setAttribute('style', ``)
         },
 
         mouseMove(e) {
@@ -770,6 +776,9 @@ export default {
                 style.left   = `${targetBox.left + scrollX}px`
                 style.width  = `${targetBox.width}px`
                 style.height = `${targetBox.height}px`
+                style['pointer-events'] = 'none'
+                editable.parentElement.style['pointer-events'] = 'none'
+                editable.parentElement.parentElement.style['pointer-events'] = 'none'
 
                 let color = ''
                 const node = this.selectedNode
