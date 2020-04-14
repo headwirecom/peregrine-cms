@@ -97,7 +97,7 @@
             </div>
             <table>
               <tr>
-                <td>Logger In as</td>
+                <td>Logged in as</td>
                 <td>{{ username }}</td>
               </tr>
               <tr>
