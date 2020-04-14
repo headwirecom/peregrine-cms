@@ -170,6 +170,12 @@ nav {
           tr {
             td {
               padding: .33rem;
+
+              &:first-child {
+                &:after {
+                  content: ':'
+                }
+              }
             }
           }
         }
