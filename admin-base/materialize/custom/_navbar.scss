@@ -163,6 +163,16 @@ nav {
         &:hover {
           background-color: rgba(0, 0, 0, .025);
         }
+
+        table {
+          width: 93%;
+
+          tr {
+            td {
+              padding: .33rem;
+            }
+          }
+        }
       }
 
       .item {

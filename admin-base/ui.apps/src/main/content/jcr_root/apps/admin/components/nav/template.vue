@@ -95,8 +95,20 @@
             <div class="user-circle big" :title="$i18n('profile picture')">
               <i class="material-icons">face</i>
             </div>
-            Logged In as:
-            <span>{{ username }}</span>
+            <table>
+              <tr>
+                <td>Logger In as</td>
+                <td>{{ username }}</td>
+              </tr>
+              <tr>
+                <td>Language</td>
+                <td>{{ language.name }}</td>
+              </tr>
+              <tr>
+                <td>Timezone</td>
+                <td>{{ gmtOffset }}</td>
+              </tr>
+            </table>
           </template>
         </admin-components-materializedropdown>
         <admin-components-materializedropdown
@@ -176,6 +188,12 @@
           {label: '', disabled: true},
           {label: 'Logout', icon: 'exit_to_app', click: this.onLogoutClick}
         ]
+      },
+      gmtOffset() {
+        const offsetInMinutes = new Date().getTimezoneOffset()
+        const offset = offsetInMinutes / 60 * -1
+        const algebraicSign = offset >= 0 ? '+' : '-'
+        return `GMT${algebraicSign}${offset}`
       }
     },
     beforeCreate() {
