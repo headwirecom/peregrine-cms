@@ -6,12 +6,12 @@ nav {
 
   &.nav-extended {
     position: relative;
-    z-index: 1;
   }
 
   .nav-wrapper {
     display: flex;
     justify-content: center;
+    height: 67px;
 
     a {
       display: block;
@@ -155,13 +155,29 @@ nav {
         justify-content: center;
         align-items: center;
         flex-direction: column;
-        padding: 1rem 0 2rem 0;
-        margin-bottom: 2rem;
+        padding: 1rem 0 1rem 0;
+        margin-bottom: 1rem;
         background-color: rgba(0, 0, 0, .025);
         border-bottom: 1px solid rgba(0, 0, 0, .3);
 
         &:hover {
           background-color: rgba(0, 0, 0, .025);
+        }
+
+        table {
+          width: 93%;
+
+          tr {
+            td {
+              padding: .33rem;
+
+              &:first-child {
+                &:after {
+                  content: ':'
+                }
+              }
+            }
+          }
         }
       }
 

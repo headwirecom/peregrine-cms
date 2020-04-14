@@ -95,7 +95,20 @@
             <div class="user-circle big" :title="$i18n('profile picture')">
               <i class="material-icons">face</i>
             </div>
-            Logged In as: {{ username }}
+            <table>
+              <tr>
+                <td>Logged in as</td>
+                <td>{{ username }}</td>
+              </tr>
+              <tr>
+                <td>Language</td>
+                <td>{{ language.name }}</td>
+              </tr>
+              <tr>
+                <td>Timezone</td>
+                <td>{{ gmtOffset }}</td>
+              </tr>
+            </table>
           </template>
         </admin-components-materializedropdown>
         <admin-components-materializedropdown
@@ -175,6 +188,12 @@
           {label: '', disabled: true},
           {label: 'Logout', icon: 'exit_to_app', click: this.onLogoutClick}
         ]
+      },
+      gmtOffset() {
+        const offsetInMinutes = new Date().getTimezoneOffset()
+        const offset = offsetInMinutes / 60 * -1
+        const algebraicSign = offset >= 0 ? '+' : '-'
+        return `GMT${algebraicSign}${offset}`
       }
     },
     beforeCreate() {
@@ -218,7 +237,6 @@
         window.location.href = '/system/sling/logout?resource=/index.html';
       },
       onLanguageClick() {
-        console.log(this.$refs.languageModal)
         this.$refs.languageModal.open();
       },
       refreshTenants() {
