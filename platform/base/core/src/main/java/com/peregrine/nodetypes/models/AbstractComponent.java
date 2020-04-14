@@ -34,6 +34,9 @@ import com.peregrine.nodetypes.merge.PageMerge;
 import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
+
+import com.peregrine.nodetypes.merge.RenderContext;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Optional;
 
@@ -56,7 +59,10 @@ public class AbstractComponent implements IComponent {
     }
 
     public Resource getRootResource() {
-        return PageMerge.getRenderContext().getRequest().getResource();
+        return java.util.Optional.ofNullable(PageMerge.getRenderContext())
+                .map(RenderContext::getRequest)
+                .map(SlingHttpServletRequest::getResource)
+                .orElse(resource);
     }
 
     public String getPath() {
