@@ -53,8 +53,8 @@
     export default {
       props: ['model'],
         updated: function() {
-            let stateTools = $perAdminApp.getNodeFromView("/state/tools");
-            stateTools._deleted = {};
+            let stateTools = $perAdminApp.getNodeFromViewWithDefault("/state/tools", {});
+            stateTools._deleted = {}; // reset to empty? 
         },
       mounted(){
         this.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints
@@ -104,7 +104,7 @@
       methods: {
         onOk(e) {
             let data = JSON.parse(JSON.stringify(this.dataModel));
-            let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted");
+            let _deleted = $perAdminApp.getNodeFromViewWithDefault("/state/tools/_deleted", {});
 
             //Merge _deleted child items back into the object that we need to save.
             //Loop through the model for this object/page/asset and find objects that have children
@@ -135,12 +135,16 @@
 
             var view = $perAdminApp.getView()
             $perAdminApp.action(this, 'onEditorExitFullscreen')
-            $perAdminApp.stateAction('savePageEdit', { data: data, path: view.state.editor.path } )
+            $perAdminApp.stateAction('savePageEdit', { data: data, path: view.state.editor.path } ).then( () => {
+                $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
+            })
         },
         onCancel(e) {
             var view = $perAdminApp.getView()
             $perAdminApp.action(this, 'onEditorExitFullscreen')
-            $perAdminApp.stateAction('cancelPageEdit', { pagePath: view.pageView.path, path: view.state.editor.path } )
+            $perAdminApp.stateAction('cancelPageEdit', { pagePath: view.pageView.path, path: view.state.editor.path } ).then( () => {
+                $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
+            })
         },
         onDelete(e) {
             const vm = this;
@@ -150,7 +154,9 @@
                 noText: 'No',
                 yes() {
                     $perAdminApp.action(vm, 'onEditorExitFullscreen')
-                    $perAdminApp.stateAction('deletePageNode', { pagePath: view.pageView.path, path: view.state.editor.path } )
+                    $perAdminApp.stateAction('deletePageNode', { pagePath: view.pageView.path, path: view.state.editor.path } ).then( () => {
+                        $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
+                    })
                 },
                 no() {
                 }
