@@ -397,7 +397,7 @@ function actionImpl(component, command, target) {
     if(component.$options.methods && component.$options.methods[command]) {
         component.$options.methods[command](component, target)
     } else {
-        if(component.$parent === component.$root) {
+        if(!component.$parent || component.$parent === component.$root) {
             if(!findActionInTree(component.$root, command, target)) {
                 logger.error('action', command, 'not found, ignored, traget was', target)
             }

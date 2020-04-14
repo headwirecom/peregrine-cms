@@ -377,11 +377,18 @@ function setValue(node, field, newValue) {
 const editState = { path: '', property: '', enabled: false, init: false }
 s
 function startEditImpl(path, property) {
-    console.log(path, property)
+    // console.log(path, property)
     if(!editState.init) {
         // this should load the editor into the page (css, editor)
         editState.init = true;
-        document.getElementsByTagName('body')[0].setAttribute('contenteditable', true)
+        document.addEventListener('scroll', (evt) => {
+            getPerAdminAppImpl().action(getPerAdminAppImpl().getApp(), 'scrollEditor', window.scrollY)
+        })
+        window.addEventListener('blur', (evt) => {
+            // we are losing focus on the iframe in the author, time to remove all the editing capabilities
+            stopEditImpl()
+            getPerAdminAppImpl().action(getPerAdminAppImpl().getApp(), 'stopInlineEdit', true)
+})
     }
 
     if(editState.enabled) {
@@ -400,9 +407,9 @@ function startEditImpl(path, property) {
             const node = findNodeInView(getPerView().page, path)
             if(!node.fromTemplate) {
                 el.setAttribute('contenteditable', true) 
-                el.addEventListener('blur', (el) => {
-                    console.log('blur', document.activeElement)
-                })
+                // el.addEventListener('blur', (el) => {
+                //     console.log('blur', document.activeElement)
+                // })
                 el.addEventListener('input', (el) => {
                     // console.log(path, el.srcElement.getAttribute('data-per-inline-property'), el.srcElement.innerHTML)
 
@@ -438,6 +445,8 @@ function stopEditImpl() {
     document.body.setAttribute('contentEditable', false)
     document.getElementById('peregrine-app').setAttribute('contentEditable', false)
     document.querySelectorAll('[data-per-inline-property]').forEach( el => el.setAttribute('contentEditable', false) ) 
+    editState.path = ''
+    editState.property = ''
     editState.enabled = false
 }
 

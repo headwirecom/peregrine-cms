@@ -26,6 +26,7 @@
     <div :class   = "`peregrine-content-view ${viewModeClass}`"
         @mouseout = "leftOverlayArea">
         <div id           = "editviewoverlay"
+            ref           = "editviewOverlay"
             @click        = "onClickOverlay"
             @scroll       = "onScrollOverlay"
             @mousemove    = "mouseMove"
@@ -447,18 +448,20 @@ export default {
         /*  Overlay (editviewoverlay) methods ======
         ============================================ */
         onScrollOverlay(ev) {
-            this.scrollTop = ev.target.scrollTop
-            var editview = this.$refs.editview
-            if(this.isIOS) {
-                /* ios device, use scroll alternative */
-                this.$nextTick(function() {
-                    editview.contentWindow.document.body.style.transform = `translateY(-${this.scrollTop}px)`
-                })
-            } else {
-                /* is not IOS device, scroll normally */
-                this.$nextTick(function() {
-                    editview.contentWindow.scrollTo(0, this.scrollTop)
-                })
+            if(this.scrollTop !== ev.target.scrollTop) {
+                this.scrollTop = ev.target.scrollTop
+                var editview = this.$refs.editview
+                if(this.isIOS) {
+                    /* ios device, use scroll alternative */
+                    this.$nextTick(function() {
+                        editview.contentWindow.document.body.style.transform = `translateY(-${this.scrollTop}px)`
+                    })
+                } else {
+                    /* is not IOS device, scroll normally */
+                    this.$nextTick(function() {
+                        editview.contentWindow.scrollTo(0, this.scrollTop)
+                    })
+                }
             }
         },
 
@@ -579,9 +582,46 @@ export default {
             // this.inline.isFresh = false
         },
 
-        editSelectedComponent() {
+        scrollEditor(me, pos) {
+            if(me.scrollTop !== pos) {
+                me.scrollTop = pos
+                me.$refs.editviewOverlay.scrollTop = pos
+            }
+        },
+
+        stopInlineEdit(me, state) {
+            const editable = me.$refs.editable
+            const style  = editable.style;
+            style['pointer-events'] = 'inherit'
+            editable.parentElement.style['pointer-events'] = 'inherit'
+            editable.parentElement.parentElement.style['pointer-events'] = 'inherit'
+
+        },
+
+editSelectedComponent() {
             this.setSelectedEditableStyle()
             $perAdminApp.action(this, 'showComponentEdit', this.selected.path)
+        },
+
+        editComponentDecoration(me, path) {
+                const targetEl = editview.contentWindow.document.body.querySelector(`[data-per-path='${path}']`);
+                console.log('>>>> ',path)
+                me.selected.el = targetEl
+                me.selected.path = path
+                // const inline = target.inline
+                // if (inline) {
+                //     this.inline.el = inline.el
+                //     this.inline.content = inline.el.innerHTML
+                //     this.inline.isRich = inline.el.getAttribute('data-per-inline-is-rich') === 'true'
+
+                //     const segments = inline.property.split('.')
+                //     this.inline.propertyName = segments.pop()
+                //     segments.shift()
+                //     this.inline.pathSegments = segments
+                // } else {
+                //     this.clearInline()
+                // }
+                me.setSelectedEditableStyle()
         },
 
         updateInlineStyle() {
