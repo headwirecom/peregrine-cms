@@ -55,6 +55,16 @@ nav {
           display: flex;
           height: 100%;
           align-items: center;
+
+          &:after {
+            content: '▼';
+            margin-left: .5rem;
+            font-size: 8px;
+          }
+
+          &:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+          }
         }
       }
 
