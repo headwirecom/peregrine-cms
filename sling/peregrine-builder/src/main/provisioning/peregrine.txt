@@ -34,6 +34,7 @@
 
     create service user distribution-agent-user
     create service user nodejs-service-user
+    create service user sitemaps-cache
 
 # Create the necessary folders to apply permissions below otherwise the Launchpad will fail during startup
 
@@ -44,6 +45,7 @@
     create path (sling:Folder) /libs/sling
     create path (sling:Folder) /libs/sling/distribution
     create path (sling:Folder) /var
+    create path (sling:Folder) /var/sitemaps
     create path (sling:Folder) /var/sling
     create path (sling:Folder) /var/sling/distribution
     create path (sling:Folder) /var/sling/distribution/packages
@@ -61,4 +63,11 @@
 
     set repository ACL for distribution-agent-user
         allow jcr:all
+    end
+
+# Set Permissions for Sitemaps Cache
+
+    set ACL for sitemaps-cache
+        allow jcr:read on /content
+        allow jcr:all on /var/sitemaps
     end

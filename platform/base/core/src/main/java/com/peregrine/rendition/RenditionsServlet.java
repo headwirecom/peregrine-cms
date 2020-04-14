@@ -49,6 +49,8 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.resource.Resource;
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -81,11 +83,13 @@ public class RenditionsServlet extends AbstractBaseServlet {
     private Servlet redirectServlet;
 
     @Reference(
+        target = "(component.name=org.apache.sling.servlets.get.impl.RedirectServlet)",
         cardinality = ReferenceCardinality.MULTIPLE,
         policy = ReferencePolicy.DYNAMIC,
         policyOption = ReferencePolicyOption.GREEDY
     )
     void bindServlet(Servlet servlet) {
+        logger.info("Bind Servlet: '{}', Name: '{}'", servlet, servlet.getClass().getName());
         logger.trace("Bind Servlet: '{}', Name: '{}'", servlet, servlet.getClass().getName());
         if(servlet.getClass().getName().equals("org.apache.sling.servlets.get.impl.RedirectServlet")) {
             redirectServlet = servlet;
@@ -93,6 +97,7 @@ public class RenditionsServlet extends AbstractBaseServlet {
         }
     }
     void unbindServlet(Servlet servlet) {
+        logger.info("Unbind Servlet: '{}'", servlet);
         logger.trace("Unbind Servlet: '{}'", servlet);
         if(servlet.getClass().getName().equals("org.apache.sling.servlets.get.impl.RedirectServlet")) { redirectServlet = null; }
     }
