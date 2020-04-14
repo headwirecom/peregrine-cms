@@ -218,7 +218,6 @@
         window.location.href = '/system/sling/logout?resource=/index.html';
       },
       onLanguageClick() {
-        console.log(this.$refs.languageModal)
         this.$refs.languageModal.open();
       },
       refreshTenants() {
