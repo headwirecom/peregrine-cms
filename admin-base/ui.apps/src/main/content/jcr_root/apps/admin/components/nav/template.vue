@@ -95,7 +95,8 @@
             <div class="user-circle big" :title="$i18n('profile picture')">
               <i class="material-icons">face</i>
             </div>
-            Logged In as: {{ username }}
+            Logged In as:
+            <span>{{ username }}</span>
           </template>
         </admin-components-materializedropdown>
         <admin-components-materializedropdown
