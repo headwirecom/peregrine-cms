@@ -46,4 +46,5 @@
   <filter root="/oak:index/perComponent"/>
   <filter root="/oak:index/perObjectDefinition"/>
   <filter root="/oak:index/perPage"/>
+  <filter root="/content/apidocs" mode="merge"/>
 </workspaceFilter>
