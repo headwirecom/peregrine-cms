@@ -42,7 +42,10 @@ export default function(me, target) {
             } else {
                 resolve()
             }
-        })
+        }).catch( error => {
+           reject(error)
+         })
+
     })
     // me.getApi().populateComponentDefinitionFromNode(view.pageView.path+target).then( (name) => {
     //         log.fine('component name is', name)
