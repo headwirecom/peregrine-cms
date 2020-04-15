@@ -466,7 +466,7 @@
       saveObject() {
         let data = this.node;
         let {show} = this.rawCurrentObject;
-        let _deleted = $perAdminApp.getNodeFromView('/state/tools/_deleted') || {};
+        let _deleted = $perAdminApp.getNodeFromViewWithDefault('/state/tools/_deleted', {});
 
         //Find child nodes with subchildren for our edited object
         for (const key in data) {
@@ -501,7 +501,9 @@
             data[key] = targetNode;
           }
         }
-        $perAdminApp.stateAction('saveObjectEdit', {data: data, path: show});
+        $perAdminApp.stateAction('saveObjectEdit', {data: data, path: show}).then( () => {
+          $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
+        });
         $perAdminApp.stateAction('selectObject', {selected: show})
         this.edit = false;
       },
