@@ -97,7 +97,7 @@ public class ReplicationServlet extends AbstractBaseServlet {
     @SuppressWarnings("unused")
     public void bindReplication(Replication replication) {
         String replicationName = replication.getName();
-        logger.error("Register replication with name: '{}': {}", replicationName, replication);
+        logger.trace("Register replication with name: '{}': {}", replicationName, replication);
         if(replicationName != null && !replicationName.isEmpty()) {
             replications.put(replicationName, replication);
         } else {
@@ -122,13 +122,13 @@ public class ReplicationServlet extends AbstractBaseServlet {
     )
     @SuppressWarnings("unused")
     public void bindDefaultReplicationMapper(DefaultReplicationMapper defaultReplicationMapper) {
-        logger.error("Register Default Replication Mapper: '{}'", defaultReplicationMapper.getName());
+        logger.trace("Register Default Replication Mapper: '{}'", defaultReplicationMapper.getName());
         bindReplication(defaultReplicationMapper);
     }
 
     @SuppressWarnings("unused")
     public void unbindDefaultReplicationMapper(DefaultReplicationMapper defaultReplicationMapper) {
-        logger.error("UnRegister Default Replication Mapper: '{}'", defaultReplicationMapper.getName());
+        logger.trace("UnRegister Default Replication Mapper: '{}'", defaultReplicationMapper.getName());
         unbindReplication(defaultReplicationMapper);
     }
 

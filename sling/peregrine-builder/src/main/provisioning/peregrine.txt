@@ -33,6 +33,7 @@
 # Create the two System User Peregrine uses for Service Resource Resolvers
 
     create service user distribution-agent-user
+    create service user nodejs-service
     create service user nodejs-service-user
     create service user sitemaps-cache
 
