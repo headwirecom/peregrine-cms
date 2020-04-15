@@ -91,9 +91,14 @@ export default {
             return this.getPath().split('/').reverse()[0];
         },
         populatePageTree(nodes) {
+            if (!this.isEditPage) return
+
             const tenant = $perAdminApp.getView().state.tenant
             const pageRootNode = $perAdminApp.findNodeFromPath(nodes, tenant.roots.pages)
-            pageRootNode.children.forEach((child) => this.crawl(child))
+
+            if (pageRootNode && pageRootNode.children) {
+                pageRootNode.children.forEach((child) => this.crawl(child))
+            }
         },
         crawl(node) {
             if (this.pageTree.items.filter((item) => item.path === node.path).length <= 0) {
