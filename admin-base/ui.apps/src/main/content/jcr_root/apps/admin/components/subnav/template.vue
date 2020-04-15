@@ -25,18 +25,13 @@
 <template>
     <div class="nav-content sub-nav" :class="classes">
         <div v-if="isEditPage" class="page-tree">
-            <!-- Dropdown Trigger -->
-            <a class='dropdown-button btn' href='#' data-activates='dropdown1'>pages</a>
-
-            <!-- Dropdown Structure -->
-            <ul id='dropdown1' class='dropdown-content'>
-                <li><a href="#!">one</a></li>
-                <li><a href="#!">two</a></li>
-                <li class="divider"></li>
-                <li><a href="#!">three</a></li>
-                <li><a href="#!"><i class="material-icons">view_module</i>four</a></li>
-                <li><a href="#!"><i class="material-icons">cloud</i>five</a></li>
-            </ul>
+            <admin-components-materializedropdown
+                :below-origin="true"
+                :items="pageTree.items">
+                <template>
+                    {{ currentPage }}<span class="caret-down"></span>
+                </template>
+            </admin-components-materializedropdown>
         </div>
         <template v-for="child in model.children">
             <div v-bind:is="child.component" v-bind:model="child" v-bind:key="child.path"></div>
@@ -48,6 +43,13 @@
 <script>
 export default {
     props: ['model'],
+    data() {
+      return {
+          pageTree: {
+              items: []
+          }
+      }
+    },
     computed: {
         classes() {
             if(this.model.classes) {
@@ -58,20 +60,17 @@ export default {
         isEditPage() {
             return this.model.classes && this.model.classes.indexOf('navcenter') >= 0
         },
+        nodes() {
+            return $perAdminApp.getView().admin.nodes
+        },
+        currentPage() {
+            return this.getPath().split('/').pop() || 'loading...'
+        }
     },
-    mounted() {
-        $('.dropdown-button').dropdown( { belowOrigin: true } )
-        // {
-        //         inDuration: 300,
-        //         outDuration: 225,
-        //         constrainWidth: false, // Does not change width of dropdown to that of the activator
-        //         hover: false, // Activate on hover
-        //         gutter: 0, // Spacing from edge
-        //         belowOrigin: true, // Displays dropdown below the button
-        //         alignment: 'left', // Displays dropdown with edge aligned to the left of button
-        //         stopPropagation: false // Stops event propagation
-        //     }
-        // );
+    watch: {
+      nodes(newVal) {
+          this.populatePageTree(newVal)
+      }
     },
     methods: {
         isEditor: function() {
@@ -90,6 +89,32 @@ export default {
         },
         getDownloadPath(){
             return this.getPath().split('/').reverse()[0];
+        },
+        populatePageTree(nodes) {
+            if (!this.isEditPage) return
+
+            const tenant = $perAdminApp.getView().state.tenant
+            const pageRootNode = $perAdminApp.findNodeFromPath(nodes, tenant.roots.pages)
+
+            if (pageRootNode && pageRootNode.children) {
+                pageRootNode.children.forEach((child) => this.crawl(child))
+            }
+        },
+        crawl(node) {
+            if (this.pageTree.items.filter((item) => item.path === node.path).length <= 0) {
+                const shortName = node.path.split('/');
+                shortName.splice(0, 4)
+                this.pageTree.items.push({
+                    label: shortName.join('/'),
+                    icon: 'description',
+                    path: node.path,
+                    click: () => $perAdminApp.stateAction('editPage', node.path)
+                })
+            }
+
+            if (node.children) {
+                node.children.forEach((child) => this.crawl(child))
+            }
         }
     }
 }

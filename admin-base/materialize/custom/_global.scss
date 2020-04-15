@@ -76,9 +76,3 @@ dl {
 a[title='ignore-containers'] {
 	display: none;
 }
-
-.materialize-drop-down {
-	&:focus {
-		outline: 0;
-	}
-}

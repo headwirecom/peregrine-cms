@@ -110,11 +110,11 @@
 	/* tablet styles */
 	@media #{$medium-and-up} {
 		position: absolute;
-		top: 115px;
+		top: $nav-full-height;
 		left: 0;
 		right: 0;
 		bottom: 0;
-		z-index: 0;
+		z-index: -1;
 		.explorer-layout {
 			max-width: 1400px;
 			margin: 0 auto;
