@@ -1,5 +1,5 @@
 <template>
-  <component :is="tag" tabindex="-1" @focusout="onFocusOut" class="materialize-drop-down">
+  <component :is="tag" tabindex="-1" @focusout="close" class="materialize-drop-down">
     <a href="#" ref="dd" :data-activates="id">
       <slot></slot>
     </a>
@@ -63,7 +63,7 @@
       stopPropagation: {
         type: Boolean,
         default: false
-      },
+      }
     },
     data() {
       return {
@@ -98,7 +98,7 @@
           }
         }
       },
-      onFocusOut(event) {
+      close() {
         this.$dd.dropdown('close')
       }
     }
