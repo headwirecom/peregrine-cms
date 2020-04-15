@@ -307,10 +307,25 @@ nav {
           height: 100%;
           justify-content: left;
           align-items: center;
+
+          .caret-down:before {
+            content: '▼';
+            margin-left: .5rem;
+            margin-top: 1px;
+            font-size: 8px;
+            display: flex;
+            height: 100%;
+          }
         }
 
         .dropdown-content {
-          color: #000000 !important;
+          .item {
+            justify-content: left;
+
+            .material-icons {
+              margin-right: .5rem;
+            }
+          }
         }
       }
     }
