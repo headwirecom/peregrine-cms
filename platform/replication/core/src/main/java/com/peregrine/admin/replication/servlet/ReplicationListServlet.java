@@ -25,6 +25,7 @@ package com.peregrine.admin.replication.servlet;
  * #L%
  */
 
+import com.peregrine.admin.replication.DefaultReplicationMapper;
 import com.peregrine.replication.Replication;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.osgi.service.component.annotations.Component;
@@ -99,6 +100,23 @@ public class ReplicationListServlet extends AbstractBaseServlet {
         } else {
             logger.error("Replication: '{}' is not register with operation name: '{}' -> unbinding is ignored", replication, replicationName);
         }
+    }
+
+    @Reference(
+        cardinality = ReferenceCardinality.MULTIPLE,
+        policy = ReferencePolicy.DYNAMIC,
+        policyOption = ReferencePolicyOption.GREEDY
+    )
+    @SuppressWarnings("unused")
+    public void bindDefaultReplicationMapper(DefaultReplicationMapper defaultReplicationMapper) {
+        logger.error("Register Default Replication Mapper: '{}'", defaultReplicationMapper.getName());
+        bindReplication(defaultReplicationMapper);
+    }
+
+    @SuppressWarnings("unused")
+    public void unbindDefaultReplicationMapper(DefaultReplicationMapper defaultReplicationMapper) {
+        logger.error("UnRegister Default Replication Mapper: '{}'", defaultReplicationMapper.getName());
+        unbindReplication(defaultReplicationMapper);
     }
 
     @Override
