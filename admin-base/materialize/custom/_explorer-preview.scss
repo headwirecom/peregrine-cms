@@ -326,7 +326,7 @@
   /* tablet styles */
   @media #{$medium-and-up} {
     &.fullscreen {
-      top: 115px;
+      top: $nav-full-height;
       padding-bottom: 112px;
 
       .explorer-preview-content {
