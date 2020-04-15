@@ -323,7 +323,13 @@ nav {
             justify-content: left;
 
             .material-icons {
-              margin-right: .5rem;
+              margin-right: .7rem;
+            }
+
+            &:hover {
+              .material-icons {
+                margin-right: .4rem;
+              }
             }
           }
         }
