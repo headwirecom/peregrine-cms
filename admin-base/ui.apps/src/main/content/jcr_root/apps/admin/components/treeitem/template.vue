@@ -1,6 +1,6 @@
 <template>
   <li class="tree-item" :class="{'expandable': hasChildren, 'is-open': isOpen}">
-    <div :class="{title: hasChildren}" @click="toggle">
+    <div :class="{title: hasChildren}" @click="toggle" @dblclick="editPage">
       {{ item.name }}
       <span v-if="hasChildren">[{{ isOpen ? '-' : '+' }}]</span>
     </div>
@@ -8,7 +8,8 @@
       <admin-components-treeitem
           v-for="(child, index) in item.children"
           :key="index"
-          :item="child"/>
+          :item="child"
+          @edit-page="$emit('edit-page')"/>
     </ul>
   </li>
 </template>
@@ -19,21 +20,25 @@
     props: {
       item: Object
     },
-    data: function () {
+    data() {
       return {
         isOpen: false
-      };
+      }
     },
     computed: {
-      hasChildren: function () {
-        return this.item.children && this.item.children.length > 0;
+      hasChildren() {
+        return this.item && this.item.children && this.item.children.length > 0
       }
     },
     methods: {
-      toggle: function () {
+      toggle() {
         if (this.hasChildren) {
-          this.isOpen = !this.isOpen;
+          this.isOpen = !this.isOpen
         }
+      },
+      editPage() {
+        $perAdminApp.stateAction('editPage', this.item.path)
+        this.$emit('edit-page')
       }
     }
   }

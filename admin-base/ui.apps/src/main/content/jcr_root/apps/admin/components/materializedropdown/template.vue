@@ -105,7 +105,7 @@
         }
       },
       close() {
-        //this.$dd.dropdown('close')
+        this.$dd.dropdown('close')
       }
     }
   }
