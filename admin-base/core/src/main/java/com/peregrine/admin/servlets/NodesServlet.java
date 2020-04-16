@@ -96,6 +96,7 @@ public class NodesServlet extends AbstractBaseServlet {
 
     public static final String NO_PATH_PROVIDED = "No Path provided";
     public static final String CHILDREN = "children";
+    public static final String HAS_CHILDREN = "hasChildren";
     public static final String MIME_TYPE = "mimeType";
     public static final String ACTIVATED = "activated";
     public static final String DEACTIVATED = "deactivated";
@@ -148,6 +149,15 @@ public class NodesServlet extends AbstractBaseServlet {
         convertResource(json, resource, false);
     }
 
+    private boolean hasNonJcrContentChild(Resource res) {
+        for (Resource child : res.getChildren()) {
+            if(!JCR_CONTENT.equals(child.getName())) {
+                return true;
+            }            
+        }
+        return false;
+    }
+
     private void convertResource(JsonResponse json, ResourceResolver rs, String[] segments, int pos, String fullPath) throws IOException {
         String path = "";
         for(int i = 1; i <= pos; i++) {
@@ -157,6 +167,7 @@ public class NodesServlet extends AbstractBaseServlet {
         Resource res = rs.getResource(path);
         json.writeAttribute(NAME,res.getName());
         json.writeAttribute(PATH,res.getPath());
+        json.writeAttribute(HAS_CHILDREN, hasNonJcrContentChild(res));
         writeProperties(res, json);
         json.writeArray(CHILDREN);
         Iterable<Resource> children = res.getChildren();
@@ -170,6 +181,7 @@ public class NodesServlet extends AbstractBaseServlet {
                     json.writeObject();
                     json.writeAttribute(NAME,child.getName());
                     json.writeAttribute(PATH,child.getPath());
+                    json.writeAttribute(HAS_CHILDREN, hasNonJcrContentChild(child));
                     writeProperties(child, json);
                     if(isPrimaryType(child, ASSET_PRIMARY_TYPE)) {
                         ValueMap props = child.getChild(JCR_CONTENT).getValueMap();
