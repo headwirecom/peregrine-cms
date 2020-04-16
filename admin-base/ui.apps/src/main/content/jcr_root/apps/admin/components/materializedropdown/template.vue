@@ -1,13 +1,14 @@
 <template>
-  <component :is="tag" tabindex="-1" @focusout="close" class="materialize-drop-down">
+  <component :is="tag" tabindex="-1" @focusout="onFocusOut" class="materialize-drop-down">
     <a href="#" ref="dd" :data-activates="id">
       <slot></slot>
     </a>
     <ul :id="id" class="dropdown-content">
       <li v-if="!!$slots.header" class="header">
-        <slot name="header"></slot>
+        <slot name="header" class="header"></slot>
       </li>
-      <li v-for="(item, index) in items"
+      <slot name="content"></slot>
+      <li v-if="items" v-for="(item, index) in items"
           :key="`item-${index}`"
           class="item"
           :class="{disabled: item.disabled}"
@@ -25,8 +26,7 @@
   export default {
     props: {
       items: {
-        type: Array,
-        required: true
+        type: Array
       },
       tag: {
         type: String,
@@ -63,6 +63,12 @@
       stopPropagation: {
         type: Boolean,
         default: false
+      },
+      onFocusOut: {
+        type: Function,
+        default() {
+          this.close()
+        }
       }
     },
     data() {

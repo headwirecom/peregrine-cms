@@ -26,10 +26,19 @@
     <div class="nav-content sub-nav" :class="classes">
         <div v-if="isEditPage" class="page-tree">
             <admin-components-materializedropdown
-                :below-origin="true"
-                :items="pageTree.items">
+                ref="dropdown"
+                :on-focus-out="() => {}"
+                :below-origin="true">
                 <template>
                     {{ currentPage }}<span class="caret-down"></span>
+                </template>
+                <template slot="content">
+                    <admin-components-treeitem
+                        v-for="(node, index) in pageNode.children"
+                        :key="`page-tree-item-${index}`"
+                        :item="node"
+                        @click.native.stop="() => {}"
+                        @edit-page="onTreeItemEditPage"/>
                 </template>
             </admin-components-materializedropdown>
         </div>
@@ -43,13 +52,6 @@
 <script>
 export default {
     props: ['model'],
-    data() {
-      return {
-          pageTree: {
-              items: []
-          }
-      }
-    },
     computed: {
         classes() {
             if(this.model.classes) {
@@ -60,61 +62,43 @@ export default {
         isEditPage() {
             return this.model.classes && this.model.classes.indexOf('navcenter') >= 0
         },
-        nodes() {
-            return $perAdminApp.getView().admin.nodes
+        pageNode() {
+            try {
+                if (this.isEditPage) {
+                    const nodes = $perAdminApp.getView().admin.nodes
+                    const tenant = $perAdminApp.getView().state.tenant
+                    return $perAdminApp.findNodeFromPath(nodes, tenant.roots.pages)
+                } else {
+                    return {}
+                }
+            } catch(err) {
+                return {}
+            }
         },
         currentPage() {
             return this.getPath().split('/').pop() || 'loading...'
         }
     },
-    watch: {
-      nodes(newVal) {
-          this.populatePageTree(newVal)
-      }
-    },
     methods: {
         isEditor: function() {
-            return this.$root.$data.adminPage.title === "editor"
+            return this.$root.$data.adminPage.title === 'editor'
         },
         getPath: function(){
             if( this.$root.$data.pageView){
                 if( this.$root.$data.pageView.path ){
                     return this.$root.$data.pageView.path;
                 } else {
-                    return "";
+                    return '';
                 }
             } else {
-                return "";
+                return '';
             }
         },
         getDownloadPath(){
             return this.getPath().split('/').reverse()[0];
         },
-        populatePageTree(nodes) {
-            if (!this.isEditPage) return
-
-            const tenant = $perAdminApp.getView().state.tenant
-            const pageRootNode = $perAdminApp.findNodeFromPath(nodes, tenant.roots.pages)
-
-            if (pageRootNode && pageRootNode.children) {
-                pageRootNode.children.forEach((child) => this.crawl(child))
-            }
-        },
-        crawl(node) {
-            if (this.pageTree.items.filter((item) => item.path === node.path).length <= 0) {
-                const shortName = node.path.split('/');
-                shortName.splice(0, 4)
-                this.pageTree.items.push({
-                    label: shortName.join('/'),
-                    icon: 'description',
-                    path: node.path,
-                    click: () => $perAdminApp.stateAction('editPage', node.path)
-                })
-            }
-
-            if (node.children) {
-                node.children.forEach((child) => this.crawl(child))
-            }
+        onTreeItemEditPage() {
+            this.$refs.dropdown.close()
         }
     }
 }

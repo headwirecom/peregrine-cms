@@ -23,28 +23,9 @@
   under the License.
   #L%
   -->
-<workspaceFilter version="1.0">
-  <filter root="/i18n/admin"/>
-  <filter root="/perapi/admin"/>
-  <filter root="/perapi/swaggereditor"/>
-  <filter root="/perapi/definitions"/>
-  <filter root="/content/admin">
-    <exclude pattern="/content/admin/objects/tags/.*"/>
-  </filter>
-  <filter root="/content/docs">
-    <exclude pattern="/content/docs/objects/tags/.*"/>
-  </filter>
-  <filter root="/etc/felibs/admin"/>
-  <filter root="/apps/admin">
-    <exclude pattern="/apps/admin/install/.*"/>
-  </filter>
-  <filter root="/apps/field"/>
-  <filter root="/favicon.ico"/>
-  <filter root="/live">
-    <exclude pattern="/live/.*"/>
-  </filter>
-  <filter root="/oak:index/perComponent"/>
-  <filter root="/oak:index/perObjectDefinition"/>
-  <filter root="/oak:index/perPage"/>
-  <filter root="/content/apidocs" mode="merge"/>
-</workspaceFilter>
+
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          jcr:primaryType="per:Component"
+          jcr:title="Tree item"
+          jcr:description=""
+/>
