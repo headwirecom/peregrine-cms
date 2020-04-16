@@ -47,17 +47,15 @@
         </admin-components-materializedropdown>
       </div>
       <div class="nav-center">
-        <template v-if="!model.hideTenants">
-          <ul class="hide-on-small-and-down nav-mobile">
-            <admin-components-action
-                v-for="section in sections"
-                :key="`section-${section.name}`"
-                tag="li"
-                :model="getSectionModel(section)"
-                :class="{active: getActiveSection() === section.name, 'no-mobile': !section.mobile}"
-                class="nav-link"/>
-          </ul>
-        </template>
+        <ul v-if="!model.hideTenants" class="hide-on-small-and-down nav-mobile">
+          <admin-components-action
+              v-for="section in sections"
+              :key="`section-${section.name}`"
+              tag="li"
+              :model="getSectionModel(section)"
+              :class="{active: getActiveSection() === section.name, 'no-mobile': !section.mobile}"
+              class="nav-link"/>
+        </ul>
       </div>
       <ul class="nav-right hide-on-small-and-down nav-mobile">
         <admin-components-materializemodal ref="languageModal">
@@ -71,8 +69,7 @@
                 :options="languages"
                 :searchable="false"
                 :allow-empty="false"
-                @select="onSelectLang"
-            ></vue-multiselect>
+                @select="onSelectLang"/>
             <div class="modal-spacer"></div>
           </template>
           <template slot="footer">
