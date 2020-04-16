@@ -45,7 +45,7 @@
         sling:resourceType="admin/components/row">
 
         <col2 jcr:primaryType="nt:unstructured"
-          sling:resourceType="admin/components/col" classes="col s12 m12 l7">
+          sling:resourceType="admin/components/col" classes="col s12 m12 l12 xl7">
 
           <text1 jcr:primaryType="nt:unstructured"
             sling:resourceType="pagerendervue/components/base"
@@ -67,7 +67,7 @@
         </col2>
 
         <col3 jcr:primaryType="nt:unstructured"
-          sling:resourceType="admin/components/col" classes="col s12 m12 l5">
+          sling:resourceType="admin/components/col" classes="col s12 m12 l12 xl5">
 
           <text1 jcr:primaryType="nt:unstructured"
             sling:resourceType="pagerendervue/components/base"
