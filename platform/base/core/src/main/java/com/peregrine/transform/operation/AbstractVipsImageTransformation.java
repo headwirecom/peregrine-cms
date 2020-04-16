@@ -110,7 +110,6 @@ public abstract class AbstractVipsImageTransformation
                 ProcessContext processContext = runner.execute(commands);
                 vipsInstalled = processContext.getExitCode() == 0;
             } catch(ExternalProcessException e) {
-                log.error("Failed to execute VIPS", e);
                 vipsInstalled = false;
             }
         }
