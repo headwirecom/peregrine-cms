@@ -72,3 +72,29 @@
         allow jcr:read on /content
         allow jcr:all on /var/sitemaps
     end
+
+[configurations]
+    org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended-sitemaps
+        user.mapping=[
+            "com.peregrine-cms.base.core:sitemaps\=sitemaps-cache"
+        ]
+
+    org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended-distributionEventHandler
+        user.mapping=[
+            "com.peregrine-cms.admin.core:peregrine-distribution-sub-service\=distribution-agent-user",
+            "com.peregrine-cms.replication.core:peregrine-distribution-sub-service\=distribution-agent-user"
+        ]
+
+    org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended-distributionAgentService
+        user.mapping=[
+            "org.apache.sling.distribution.core:defaultAgentService\=distribution-agent-user",
+            "org.apache.sling.distribution.core\=distribution-agent-user",
+            "com.peregrine-cms.distribution:test-distribution\=distribution-agent-user"
+        ]
+
+    org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended-nodejs
+        user.mapping=[
+            "com.peregrine-cms.nodejs:nodejs-service\=nodejs-service-user",
+            "com.peregrine-cms.nodejs.scripts:nodejs-service\=nodejs-service-user",
+            "com.peregrine-cms.nodejs.j2v8:nodejs-service\=nodejs-service-user"
+        ]
