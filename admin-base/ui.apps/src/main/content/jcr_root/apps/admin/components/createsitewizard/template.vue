@@ -25,7 +25,7 @@
 <template>
 <div class="container">
     <form-wizard
-      v-bind:title="'create a site'"
+      v-bind:title="'create a website'"
       v-bind:subtitle="''"
       @on-complete="onComplete"
       error-color="#d32f2f"
@@ -50,8 +50,8 @@
                 </div>
             </fieldset>
             <p>
-                This wizard allows you to create a site from an existing theme. If you'd like to create a more complex
-                site please use the commandline tool `percli create project &lt;name&gt;` to create a site managed as a
+                This wizard allows you to create a website from an existing theme. If you'd like to create a more complex
+                website please use the commandline tool `percli create project &lt;name&gt;` to create a website managed as a
                 full project.
             </p>
         </tab-content>
