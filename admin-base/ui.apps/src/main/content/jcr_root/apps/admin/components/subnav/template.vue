@@ -31,6 +31,9 @@
                 <template>
                     {{ currentPage }}<span class="caret-down"></span>
                 </template>
+                <template slot="header">
+                    <admin-components-treeview/>
+                </template>
             </admin-components-materializedropdown>
         </div>
         <template v-for="child in model.children">
