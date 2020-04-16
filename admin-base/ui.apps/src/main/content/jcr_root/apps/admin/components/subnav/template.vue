@@ -26,13 +26,13 @@
     <div class="nav-content sub-nav" :class="classes">
         <div v-if="isEditPage" class="page-tree">
             <admin-components-materializedropdown
-                :below-origin="true"
-                :items="pageTree.items">
+                :on-focus-out="() => {}"
+                :below-origin="true">
                 <template>
                     {{ currentPage }}<span class="caret-down"></span>
                 </template>
-                <template slot="header">
-                    <admin-components-treeview/>
+                <template slot="content">
+                    <admin-components-treeview @click.native.stop="() => {}"/>
                 </template>
             </admin-components-materializedropdown>
         </div>

@@ -1,19 +1,14 @@
 <template>
-  <li>
-    <div
-        :class="{bold: isFolder}"
-        @click="toggle">
+  <li class="tree-item" :class="{'expandable': hasChildren, 'is-open': isOpen}">
+    <div :class="{title: hasChildren}" @click="toggle">
       {{ item.name }}
-      <span v-if="isFolder">[{{ isOpen ? '-' : '+' }}]</span>
+      <span v-if="hasChildren">[{{ isOpen ? '-' : '+' }}]</span>
     </div>
-    <ul v-show="isOpen" v-if="isFolder">
+    <ul v-if="hasChildren" v-show="isOpen" class="content">
       <admin-components-treeitem
-          class="item"
           v-for="(child, index) in item.children"
           :key="index"
-          :item="child"
-          @add-item="$emit('add-item', $event)"/>
-      <li class="add" @click="$emit('add-item', item)">+</li>
+          :item="child"/>
     </ul>
   </li>
 </template>
@@ -30,20 +25,16 @@
       };
     },
     computed: {
-      isFolder: function () {
-        return this.item.children && this.item.children.length;
+      hasChildren: function () {
+        return this.item.children && this.item.children.length > 0;
       }
     },
     methods: {
       toggle: function () {
-        if (this.isFolder) {
+        if (this.hasChildren) {
           this.isOpen = !this.isOpen;
         }
       }
     }
   }
 </script>
-
-<style scoped>
-
-</style>

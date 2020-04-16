@@ -319,16 +319,27 @@ nav {
         }
 
         .dropdown-content {
-          .item {
+          .tree-view {
+            display: flex;
             justify-content: left;
+            padding: 1rem;
 
-            .material-icons {
-              margin-right: .7rem;
-            }
+            .tree-item {
+              justify-content: left;
+              align-items: flex-start;
+              padding-left: .5rem;
+              flex-direction: column;
+              min-height: unset;
 
-            &:hover {
-              .material-icons {
-                margin-right: .4rem;
+              &.expandable {
+                .title {
+                  font-weight: 600;
+                  padding: .5rem 0
+                }
+              }
+
+              &:hover {
+                background-color: transparent;
               }
             }
           }
