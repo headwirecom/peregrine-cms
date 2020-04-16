@@ -90,12 +90,26 @@
             width: calc(100% - 400px) !important;
         }
 
+        #tutorial-spotlight{
+            display: none;
+            float: left;
+            background: radial-gradient(10px 10px at 110px 30px, transparent 0, transparent 60px, rgba(0, 0, 0, 0.5) 65px);
+            position: absolute;
+            z-index: 100000000;
+            bottom: 0px;
+            left: 0px;
+            right: 0px;
+            top: 0px;
+        }
+
     </style>
 
 </head>
 <body>
 
 <div id="waitMask" style="display: none; z-index: 999; position: absolute; top: 0; right: 0; height: 100%; width: 100%; cursor: wait; background-color: black; opacity: 0.2;">&nbsp;</div>
+<div id="tutorial-spotlight"></div>
+<script>document.getElementById('tutorial-spotlight').addEventListener('click', function() {document.getElementById('tutorial-spotlight').style.display = 'none' }, true)</script>
 
 <div id="peregrine-main">
     <div id="peregrine-adminapp">
@@ -105,6 +119,7 @@
     </div>
     <div class="peregrine-tutorial">
         <iframe src="/content/admin/pages/tutorials.html" style="height: 100%; width: 100%; background: white;" data-per-mode="tutorial"></iframe>
+        <div id="tutorial-spotlight"></div>
     </div>
 </div>
 

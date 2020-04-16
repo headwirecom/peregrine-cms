@@ -719,6 +719,17 @@ function sessionKeepAlive() {
     },1000 * 60);
 }
 
+function highlightImpl(term) {
+    var element = document.querySelector(term)
+    var rect = element.getBoundingClientRect()
+    var hilight = document.getElementById('tutorial-spotlight')
+    var width = 65
+    var xpos = rect.left + width/2
+    var ypos = rect.top + width/2
+    hilight.style.display = 'block'
+    hilight.style.background = `radial-gradient(10px 10px at ${xpos}px ${ypos}px, transparent 0, transparent 60px, rgba(0, 0, 0, 0.5) ${width}px)`
+}
+
 /**
  * @exports PerAdminApp
  * @namespace PerAdminApp
@@ -1053,6 +1064,10 @@ var PerAdminApp = {
             .replace(/[\u0300-\u036f]/g, "")
             .replace(/\W/g, separator)
             .toLowerCase();
+    },
+
+    highlight(selector) {
+        highlightImpl(selector)
     }
 
 }
