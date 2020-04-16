@@ -56,6 +56,13 @@
               :class="{active: getActiveSection() === section.name, 'no-mobile': !section.mobile}"
               class="nav-link"/>
         </ul>
+        <ul v-else class="hide-on-small-and-down nav-mobile">
+          <admin-components-action
+              tag="li"
+              :model="getSectionModel({title: 'Home', name: 'index'})"
+              :class="{active: getActiveSection() === 'index'}"
+              class="nav-link"/>
+        </ul>
       </div>
       <ul class="nav-right hide-on-small-and-down nav-mobile">
         <admin-components-materializemodal ref="languageModal">
