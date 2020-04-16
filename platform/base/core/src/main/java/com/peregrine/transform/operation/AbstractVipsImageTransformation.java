@@ -209,7 +209,7 @@ public abstract class AbstractVipsImageTransformation
                     throw new TransformationException(COULD_NOT_CREATE_TEMPORARY_FOLDER + name);
                 }
             } else {
-                log.debug("VIPS not installed -> ignore transformation: '{}'", transformationName);
+                log.warn("VIPS not installed -> ignore transformation: '{}'", transformationName);
             }
         }
     }
