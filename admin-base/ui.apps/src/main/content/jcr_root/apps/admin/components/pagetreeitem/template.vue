@@ -41,6 +41,11 @@
     watch: {
       currentPath(newVal, oldVal) {
         this.initIsOpen()
+      },
+      'item.children'(newVal) {
+        if (!newVal || newVal.length <= 0) {
+          this.isOpen = false
+        }
       }
     },
     mounted() {
@@ -54,12 +59,24 @@
       },
       toggle() {
         if (this.item.hasChildren) {
-          this.isOpen = !this.isOpen
+          if (!this.isOpen && (!this.item.children || this.item.children.length <= 0)) {
+            this.loadChildren().then(() => {
+              this.isOpen = !this.isOpen
+            })
+          } else {
+            this.isOpen = !this.isOpen
+          }
         }
       },
       editPage() {
         $perAdminApp.stateAction('editPage', this.item.path)
         this.$emit('edit-page')
+      },
+      loadChildren() {
+        return $perAdminApp.stateAction('selectToolsNodesPath', {
+          selected: this.item.path,
+          path: '/state/tools/pages'
+        })
       }
     }
   }

@@ -322,6 +322,10 @@ nav {
           padding: .5rem;
           user-select: none;
 
+          > .page-tree-item {
+            padding-left: 0 !important;
+          }
+
           .page-tree-item {
             justify-content: left;
             align-items: flex-start;
