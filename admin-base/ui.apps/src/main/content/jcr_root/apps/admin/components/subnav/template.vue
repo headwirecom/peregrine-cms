@@ -35,7 +35,7 @@
                 <template slot="content">
                     <admin-components-pagetreeitem
                         v-for="(node, index) in pageNode.children"
-                        :key="`page-tree-item-${index}`"
+                        :key="`page-tree-item-${node.path}`"
                         :item="node"
                         @click.native.stop="() => {}"
                         @edit-page="onTreeItemEditPage"/>

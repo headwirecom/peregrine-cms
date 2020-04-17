@@ -13,7 +13,7 @@
     <ul v-if="item.hasChildren" v-show="isOpen" class="content">
       <admin-components-pagetreeitem
           v-for="(child, index) in item.children"
-          :key="index"
+          :key="`page-tree-item-${child.path}`"
           :item="child"
           @edit-page="$emit('edit-page')"/>
     </ul>
@@ -57,7 +57,11 @@
     },
     methods: {
       initIsOpen() {
-        if (this.currentPath.startsWith(this.item.path) && !this.isSelected) {
+        const currPathArr = this.currentPath.split('/')
+        const pathArr = this.item.path.split('/')
+        const partCurrPathArr = currPathArr.splice(0, pathArr.length)
+
+        if (!this.isSelected && partCurrPathArr.join('/') === this.item.path) {
           this.isOpen = true
         }
       },
