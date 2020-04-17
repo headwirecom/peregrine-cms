@@ -172,7 +172,8 @@ public class NodesServlet extends AbstractBaseServlet {
         json.writeArray(CHILDREN);
         Iterable<Resource> children = res.getChildren();
         for(Resource child : children) {
-            if(fullPath.startsWith(child.getPath())) {
+            String childPath = child.getPath();
+            if(fullPath.startsWith(childPath+'/') || fullPath.equals(childPath)) {
                 json.writeObject();
                 convertResource(json, rs, segments, pos+1, fullPath);
                 json.writeClose();
