@@ -1,10 +1,12 @@
 <template>
   <li class="page-tree-item" :class="{'expandable': item.hasChildren, 'is-open': isOpen}">
     <div class="title" :class="{'is-selected': this.isSelected}" @click.stop="editPage">
-      <i v-if="item.hasChildren" class="material-icons hover" @click.stop.prevent="toggle">
-        {{ expandIcon }}
-      </i>
-      <i v-else class="icon-placeholder"></i>
+      <template>
+        <i v-if="item.hasChildren" class="material-icons hover" @click.stop.prevent="toggle">
+          {{ expandIcon }}
+        </i>
+        <i v-else class="icon-placeholder"></i>
+      </template>
       <i class="material-icons">description</i>
       {{ item.name }}
     </div>
