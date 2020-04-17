@@ -63,6 +63,8 @@
 
         if (!this.isSelected && partCurrPathArr.join('/') === this.item.path) {
           this.isOpen = true
+        } else {
+          this.isOpen = false
         }
       },
       toggle() {
