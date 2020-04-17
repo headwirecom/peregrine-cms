@@ -367,7 +367,7 @@ nav {
                 height: auto;
                 line-height: unset;
 
-                &:hover {
+                &.hover:hover {
                   color: var(--pcms-orange-hover)
                 }
 
