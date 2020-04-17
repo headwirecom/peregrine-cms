@@ -27,6 +27,7 @@ package com.peregrine.admin.servlets;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_COMPONENT_DEFINITION;
 import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
+import static com.peregrine.commons.util.PerConstants.CONF_ROOT;
 import static com.peregrine.commons.util.PerConstants.MODEL;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.OG_TAGS;
@@ -86,10 +87,13 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
             resource = resource.getChild(PerConstants.JCR_CONTENT);
         }
         String componentPath = "";
-        if (path.startsWith(APPS_ROOT + SLASH)) {
+        if (path.startsWith(APPS_ROOT + SLASH)|| path.startsWith(CONF_ROOT + SLASH)) {
             componentPath = path;
         } else {
-            componentPath = APPS_ROOT + SLASH + resource.getValueMap().get(SLING_RESOURCE_TYPE, String.class);
+            componentPath = CONF_ROOT + SLASH + resource.getValueMap().get(SLING_RESOURCE_TYPE, String.class);
+            if(request.getResourceByPath(componentPath) == null) {
+                componentPath = APPS_ROOT + SLASH + resource.getValueMap().get(SLING_RESOURCE_TYPE, String.class);
+            }
         }
         Resource component = request.getResourceByPath(componentPath);
         logger.debug("Component Path: '{}', Component: '{}'", componentPath, component);

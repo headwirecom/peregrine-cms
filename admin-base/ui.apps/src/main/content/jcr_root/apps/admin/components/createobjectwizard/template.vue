@@ -119,7 +119,9 @@
                 }
                 const tenant = $perAdminApp.getView().state.tenant;
                 return objects.filter( object => { 
-                    return object.path.startsWith('/apps/admin/') || (tenant && object.path.startsWith(`/apps/${tenant.name}/`))
+                    return object.path.startsWith('/apps/admin/') 
+                        || (tenant && object.path.startsWith(`/apps/${tenant.name}/`)) 
+                        || (tenant && object.path.startsWith(`/conf/${tenant.name}/`))
                 })
             }
         },

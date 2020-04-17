@@ -85,6 +85,7 @@ public class PerConstants {
     public static final String COMPONENTS = "components";
 
     public static final String APPS_ROOT = "/apps";
+    public static final String CONF_ROOT = "/conf";
     public static final String ETC_ROOT = "/etc";
     public static final String CONTENT_ROOT = "/content";
 
