@@ -69,7 +69,9 @@
         }
       },
       editPage() {
-        $perAdminApp.stateAction('editPage', this.item.path)
+        if (!this.isSelected) {
+          $perAdminApp.stateAction('editPage', this.item.path)
+        }
         this.$emit('edit-page')
       },
       loadChildren() {
