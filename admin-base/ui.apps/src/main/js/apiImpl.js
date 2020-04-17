@@ -631,6 +631,7 @@ class PerAdminImpl {
       }
     }
     var data = new FormData()
+    var fileNamesNotUploaded = []
     for (var i = 0; i < files.length; i++) {
         var file = files[i]
         const available  = this.nameAvailable(file.name, path)
@@ -638,47 +639,67 @@ class PerAdminImpl {
             data.append(file.name, file, file.name)
         } else {
         //      if name not available, ask user whether to 'keep both' or 'replace'
-            $perAdminApp.askUser("File exists", "Select to replace the existing one, or keep both", {
-                yesText:"Replace",
-                noText:"Keep both",
-                yes() {
-                    var $api = $perAdminApp.getApi()
-                    logger.info("user selected 'replace' upload file "+ file.name)
-                    var replaceData = new FormData()
-                    replaceData.append(file.name, file, file.name)
-                    return updateWithFormAndConfig('/admin/uploadFiles.json' + path, replaceData, config)
-                        .then(() => $api.populateNodesForBrowser(path))
-                },
-                no() {
-                    logger.info("user selected 'keep both' make the uploaded file name unique and upload")
-                    var $api = $perAdminApp.getApi()
-                    var localNamePart = file.name
-                    var extensionPart  = ""
-                    var indexOfLasDot = file.name.lastIndexOf('.');
-                    var newFileName
-                    if (indexOfLasDot > 0) {
-                        // filename has a dot
-                        localNamePart = file.name.substring(0, indexOfLasDot);
-                        extensionPart = file.name.substring(indexOfLasDot, file.name.length);
+            if (files.length == 1) {
+                $perAdminApp.askUser("File exists", "Select to replace the existing one, or keep both", {
+                    yesText:"Replace",
+                    noText:"Keep both",
+                    yes() {
+                        var $api = $perAdminApp.getApi()
+                        logger.info("user selected 'replace' upload file "+ file.name)
+                        var replaceData = new FormData()
+                        replaceData.append(file.name, file, file.name)
+                        return updateWithFormAndConfig('/admin/uploadFiles.json' + path, replaceData, config)
+                            .then(() => $api.populateNodesForBrowser(path))
+                            .catch( error => {
+                                log.error('Failed to upload: ' + error)
+                                reject('Unable to upload due to an error. '+ error)
+                            })
+                    },
+                    no() {
+                        logger.info("user selected 'keep both' make the uploaded file name unique and upload")
+                        var $api = $perAdminApp.getApi()
+                        var localNamePart = file.name
+                        var extensionPart  = ""
+                        var indexOfLasDot = file.name.lastIndexOf('.');
+                        var newFileName
+                        if (indexOfLasDot > 0) {
+                            // filename has a dot
+                            localNamePart = file.name.substring(0, indexOfLasDot);
+                            extensionPart = file.name.substring(indexOfLasDot, file.name.length);
+                        }
+                        let i = 1
+                        do {
+                          newFileName = localNamePart + i++ + extensionPart
+                        } while (!$api.nameAvailable(newFileName, path));
+                        var keepbothData = new FormData()
+                        keepbothData.append(newFileName, file, newFileName)
+                        return updateWithFormAndConfig('/admin/uploadFiles.json' + path, keepbothData, config)
+                            .then(() => $api.populateNodesForBrowser(path))
+                            .catch( error => {
+                                log.error('Failed to upload: ' + error)
+                                reject('Unable to upload due to an error. '+ error)
+                            })
                     }
-                    let i = 1
-                    do {
-                      newFileName = localNamePart + i++ + extensionPart
-                    } while (!$api.nameAvailable(newFileName, path));
-                    var keepbothData = new FormData()
-                    keepbothData.append(newFileName, file, newFileName)
-                    return updateWithFormAndConfig('/admin/uploadFiles.json' + path, keepbothData, config)
-                        .then(() => $api.populateNodesForBrowser(path))
-                }
-            })
+                })
+            } else {
+                fileNamesNotUploaded.push(file.name)
+            }
         }
+    }
+    if (fileNamesNotUploaded.length > 0) {
+        $perAdminApp.notifyUser("info", "Some files were not uploaded. Assets with same name exists in this location: "+
+        fileNamesNotUploaded.toString())
     }
 //    if there are eny entries
     if ( !data.entries().next().done ) {
         return updateWithFormAndConfig('/admin/uploadFiles.json' + path, data, config)
             .then(() => this.populateNodesForBrowser(path))
+            .catch( error => {
+                log.error('Failed to upload: ' + error)
+                reject('Unable to upload due to an error. '+ error)
+            })
     }
-//    if there are no entries or they are processed by the modal callbacks
+
     return
   }
 
