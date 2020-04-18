@@ -63,6 +63,8 @@
 
         if (!this.isSelected && partCurrPathArr.join('/') === this.item.path) {
           this.isOpen = true
+        } else {
+          this.isOpen = false
         }
       },
       toggle() {
@@ -83,7 +85,7 @@
         this.$emit('edit-page')
       },
       loadChildren() {
-        return $perAdminApp.stateAction('selectToolsNodesPath', {
+        return $perAdminApp.stateAction('loadToolsNodesPath', {
           selected: this.item.path,
           path: '/state/tools/pages'
         })
