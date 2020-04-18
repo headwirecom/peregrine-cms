@@ -184,7 +184,7 @@
             },
             skeletonPages() {
                 const siteRoot = this.formmodel.path.split('/').slice(0,4).join('/') + '/skeleton-pages'
-                const skeletonPageRoot = $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, siteRoot)
+                const skeletonPageRoot = $perAdminApp.findNodeFromPath(this.$root.$data.admin.skeletonNodes, siteRoot)
                 if(skeletonPageRoot) {
                     return skeletonPageRoot.children
                 }
@@ -213,6 +213,7 @@
                     parent: this.formmodel.path,
                     name: this.formmodel.name,
                     template: this.formmodel.templatePath,
+                    title: this.formmodel.title,
                     data: this.formmodel,
                     edit
                 }

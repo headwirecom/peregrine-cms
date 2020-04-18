@@ -23,6 +23,7 @@
  * #L%
  */
 import {LoggerFactory} from './logger'
+import loadToolsNodesPath from './stateActions/loadToolsNodesPath'
 import selectToolsNodesPath from './stateActions/selectToolsNodesPath'
 import createPage from './stateActions/createPage'
 import createPageFromSkeletonPage
@@ -85,6 +86,7 @@ let log = LoggerFactory.logger('actions').setLevelDebug()
 
 let actions = []
 
+actions['loadToolsNodesPath'] = loadToolsNodesPath
 actions['selectToolsNodesPath'] = selectToolsNodesPath
 actions['createSiteWizard'] = createSiteWizard
 actions['createSite'] = createSite

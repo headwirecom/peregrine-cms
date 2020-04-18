@@ -1,0 +1,353 @@
+.explorer-preview {
+  background-color: color("blue-grey", "lighten-5");
+  border-left: 1px solid color("blue-grey", "lighten-4");
+  color: color("blue-grey", "darken-4");
+  position: relative;
+  padding: 45px 0 0 !important;
+  overflow: hidden;
+  height: 100%;
+
+  &:before {
+    content: '';
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 45px;
+    background-color: color("blue-grey", "lighten-4");
+    border-bottom: 1px solid color("blue-grey", "lighten-3");
+  }
+
+  .toggle-fullscreen {
+    display: inline-block;
+    position: absolute;
+    right: 0;
+    top: 0;
+    border: 0;
+    background-color: color("blue-grey", "lighten-4");
+    padding: 0;
+    z-index: 1;
+    width: 45px;
+    height: 44px;
+    line-height: 44px;
+    text-align: center;
+
+    .material-icons {
+      line-height: 44px;
+      color: color("blue-grey", "darken-3");
+    }
+
+    &:hover,
+    &:focus,
+    &:active {
+      background-color: color("blue-grey", "lighten-3");
+    }
+  }
+
+  .explorer-preview-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    .panel-title {
+      position: initial;
+    }
+
+    .vue-form-generator {
+      overflow: auto;
+      height: 100%;
+      padding: 0 0.75rem;
+    }
+
+    .action-list {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+      align-items: center;
+
+      .action {
+        width: 100%;
+        display: flex;
+        padding: 1rem 2rem;
+        align-items: center;
+        border-bottom: 1px solid rgba(0, 0, 0, .1);
+        transition: background-color 0.25s ease-out;
+        cursor: pointer;
+
+        &:hover {
+          background-color: rgba(0, 0, 0, .1)
+        }
+
+        .material-icons {
+          margin-right: 1rem;
+        }
+      }
+    }
+
+    .explorer-confirm-dialog {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem;
+      min-height: 55px;
+      max-height: 55px;
+      background-color: #cfd8dc;
+      border-top: 1px solid #b4c1c8;
+    }
+
+    .explorer-preview-empty {
+      padding: 3rem 0 0;
+      text-align: center;
+
+      > span {
+        display: inline-block;
+        width: 100%;
+      }
+
+      .material-icons {
+        color: color("blue-grey", "lighten-2");
+        font-size: 80px;
+      }
+    }
+
+    .explorer-asset-referenced-by {
+      color: $primary-color-dark;
+
+      .svg-icon {
+        .svg-content {
+          fill: color("blue-grey", "darken-2");
+          transition: fill .3s ease;
+        }
+
+        &:hover {
+          .svg-content {
+            fill: color("orange", "base");
+          }
+        }
+      }
+    }
+
+    &.preview-asset {
+      .asset-info {
+        font-size: 1rem;
+
+        > li {
+          .asset-name {
+            padding-right: 0.75rem;
+            font-weight: 500;
+          }
+
+          .asset-value {
+            font-weight: 400;
+          }
+        }
+      }
+
+      .asset-info-view {
+        display: flex;
+        flex-direction: column;
+        overflow: auto;
+        height: 100%;
+
+        .vue-form-generator {
+          overflow: visible;
+        }
+
+        img {
+          width: auto;
+          max-width: 100%;
+          height: auto;
+          max-height: 50%;
+          align-self: center;
+        }
+
+        iframe {
+          border: 0;
+          max-width: 100%;
+          height: 100%;
+        }
+      }
+    }
+
+    &.preview-object {
+
+    }
+
+    &.preview-page {
+
+    }
+
+    .editor-icon {
+      height: 44px;
+      margin-right: 5px;
+      margin-left: 5px;
+    }
+
+    .info-view-iframe {
+      width: 100%;
+      height: 60%;
+    }
+
+    &.preview-asset {
+      .asset-info-view {
+        max-height: 50%;
+        height: unset;
+
+        img {
+          max-height: 100%;
+          padding-top: 1em;
+        }
+      }
+    }
+  }
+
+  &.fullscreen {
+    position: fixed;
+    top: 104px;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    padding: 45px 0 0;
+  }
+
+  .explorer-preview-nav {
+    display: flex;
+    justify-content: flex-end;
+    text-align: right;
+    position: absolute;
+    overflow: hidden;
+    top: 0;
+    left: 0;
+    right: 45px;
+    margin: 0;
+    padding: 0;
+    height: 45px;
+    border-right: 1px solid color("blue-grey", "lighten-5");
+
+    > li {
+      border-left: 1px solid color("blue-grey", "lighten-5");
+      border-right: 1px solid color("blue-grey", "lighten-3");
+      height: 100%;
+      line-height: 45px;
+
+      &:first-child {
+        border-left: none;
+      }
+
+      > a {
+        padding: 0 0.75rem;
+        height: 100%;
+        display: inline-block;
+
+        .material-icons,
+        .svg-icon {
+          line-height: 45px;
+        }
+
+        .svg-icon {
+          .svg-content {
+            stroke: color("blue-grey", "darken-3");
+          }
+        }
+
+        &:hover,
+        &:focus,
+        &:active {
+          background-color: color("blue-grey", "lighten-3");
+        }
+      }
+    }
+
+    .nav-left,
+    .nav-right {
+      padding: 0;
+      display: flex;
+
+      > li {
+        border-left: 1px solid #eceff1;
+        border-right: 1px solid #b0bec5;
+        height: 100%;
+        line-height: 45px;
+        cursor: pointer;
+
+        &:first-child {
+          border-left: none;
+        }
+
+        > a {
+          padding: 0 0.4rem;
+          height: 100%;
+          display: inline-block;
+
+          &:hover,
+          &:focus,
+          &:active {
+            background-color: #b0bec5;
+          }
+
+          .material-icons,
+          .svg-icon {
+            line-height: 45px;
+          }
+        }
+      }
+    }
+
+    .nav-left {
+      margin: 0 auto 0 0;
+
+      > li {
+        &:first-child {
+          border-left: none;
+        }
+      }
+    }
+
+    .nav-right {
+      margin: 0;
+
+      > li {
+        &:first-child {
+          border-left: 1px solid #b0bec5
+        }
+      }
+    }
+
+
+    li.active a {
+      background-color: #37474f;
+      color: #cfd8dc;
+    }
+  }
+
+  /* tablet styles */
+  @media #{$medium-and-up} {
+    &.fullscreen {
+      top: $nav-full-height;
+      padding-bottom: 112px;
+
+      .explorer-preview-content {
+        padding: 0 10%;
+      }
+    }
+  }
+
+  @media #{$large-and-up} {
+    &.fullscreen {
+      .explorer-preview-content {
+        padding: 0 20%;
+      }
+    }
+  }
+
+  @media #{$extra-large-and-up} {
+    &.fullscreen {
+      .explorer-preview-content {
+        padding: 0 30%;
+      }
+    }
+  }
+}

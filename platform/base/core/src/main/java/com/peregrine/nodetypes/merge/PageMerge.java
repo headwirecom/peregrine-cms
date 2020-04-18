@@ -60,7 +60,7 @@ public class PageMerge implements Use {
 
     private final Logger log = LoggerFactory.getLogger(PageMerge.class);
 
-    private static ThreadLocal<RenderContext> renderContext = new ThreadLocal<RenderContext>();
+    private static ThreadLocal<RenderContext> renderContext = new ThreadLocal<>();
 
     public static final String FROM_TEMPLATE = "fromTemplate";
     public static final String REQUEST = "request";
@@ -201,7 +201,7 @@ public class PageMerge implements Use {
     }
 
     @Override
-    public void init(Bindings bindings) {
+    public void init(final Bindings bindings) {
         request = (SlingHttpServletRequest) bindings.get(REQUEST);
         SlingScriptHelper sling = (SlingScriptHelper) bindings.get(SLING);
         modelFactory = sling.getService(ModelFactory.class);

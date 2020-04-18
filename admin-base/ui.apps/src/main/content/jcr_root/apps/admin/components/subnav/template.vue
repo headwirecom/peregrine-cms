@@ -24,22 +24,28 @@
   -->
 <template>
     <div class="nav-content sub-nav" :class="classes">
+        <div v-if="isEditPage" class="page-tree">
+            <admin-components-materializedropdown
+                ref="dropdown"
+                :on-focus-out="() => {}"
+                :below-origin="true">
+                <template>
+                    {{ currentPage }}<span class="caret-down"></span>
+                </template>
+                <template slot="content">
+                    <admin-components-pagetreeitem
+                        v-for="(node, index) in pageNode.children"
+                        :key="`page-tree-item-${node.path}`"
+                        :item="node"
+                        @click.native.stop="() => {}"
+                        @edit-page="onTreeItemEditPage"/>
+                </template>
+            </admin-components-materializedropdown>
+        </div>
         <template v-for="child in model.children">
-            <div v-bind:is="child.component" v-bind:model="child"></div>
+            <div v-bind:is="child.component" v-bind:model="child" v-bind:key="child.path"></div>
         </template>
-        <!-- <template v-if="isEditor()">
-            <admin-components-separator></admin-components-separator>
-            <admin-components-action
-                v-bind:model="{
-                  command: 'selectPath',
-                  download: getDownloadPath(),
-                  target: getPath() + '/jcr:content.xml',
-                  tooltipTitle: $i18n('exportModule'),
-                  title: 'Export',
-                  type: 'download'
-                }"
-            ></admin-components-action>
-        </template> -->
+        <span v-if="isEditPage" class="center-keeper"></span>
     </div>
 </template>
 
@@ -52,25 +58,47 @@ export default {
                 return this.model.classes
             }
             return 'navright'
+        },
+        isEditPage() {
+            return this.model.classes && this.model.classes.indexOf('navcenter') >= 0
+        },
+        pageNode() {
+            try {
+                if (this.isEditPage) {
+                    const nodes = $perAdminApp.getView().admin.nodes
+                    const tenant = $perAdminApp.getView().state.tenant
+                    return $perAdminApp.findNodeFromPath(nodes, tenant.roots.pages)
+                } else {
+                    return {}
+                }
+            } catch(err) {
+                return {}
+            }
+        },
+        currentPage() {
+            return this.getPath().split('/').pop() || 'loading...'
         }
     },
     methods: {
         isEditor: function() {
-            return this.$root.$data.adminPage.title === "editor"
+            return this.$root.$data.adminPage.title === 'editor'
         },
         getPath: function(){
             if( this.$root.$data.pageView){
                 if( this.$root.$data.pageView.path ){
                     return this.$root.$data.pageView.path;
                 } else {
-                    return "";
+                    return '';
                 }
             } else {
-                return "";
+                return '';
             }
         },
         getDownloadPath(){
             return this.getPath().split('/').reverse()[0];
+        },
+        onTreeItemEditPage() {
+            this.$refs.dropdown.close()
         }
     }
 }

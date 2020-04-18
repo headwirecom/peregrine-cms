@@ -170,6 +170,7 @@
                 <artifactId>wcmio-content-package-maven-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
+                    <serviceURL>http://${sling.host}:${sling.port}/bin/cpm/package.service.html</serviceURL>
                     <userId>${sling.user}</userId>
                     <password>${sling.password}</password>
                     <failOnMissingEmbed>true</failOnMissingEmbed>
@@ -758,6 +759,12 @@
                         <artifactId>wcmio-content-package-maven-plugin</artifactId>
                         <extensions>true</extensions>
                         <inherited>false</inherited>
+                        <configuration>
+                            <userId>${sling.user}</userId>
+                            <password>${sling.password}</password>
+                            <failOnMissingEmbed>true</failOnMissingEmbed>
+                            <group>com.peregrine-cms</group>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>aggregate-install</id>
