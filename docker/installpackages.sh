@@ -50,7 +50,7 @@ rm -rf peregrine-cms
 # Now build themeclean-flex
 git clone https://github.com/headwirecom/themeclean-flex.git
 cd themeclean-flex
-git checkout feature/contentrestructure
+git checkout feature/contentrestructureblog
 mvn clean package
 
 npx @peregrinecms/slingpackager upload -i ./ui.apps/target/themecleanflex.ui.apps-1.0-SNAPSHOT.zip
