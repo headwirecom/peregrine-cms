@@ -624,29 +624,30 @@ class PerAdminImpl {
   }
 
   uploadFiles(path, files, cb) {
-    var config = {
+    const config = {
       onUploadProgress: progressEvent => {
-        var percentCompleted = Math.floor((progressEvent.loaded * 100) / progressEvent.total);
+        const percentCompleted = Math.floor((progressEvent.loaded * 100) / progressEvent.total);
         cb(percentCompleted)
       }
     }
-    var data = new FormData()
-    var fileNamesNotUploaded = []
-    for (var i = 0; i < files.length; i++) {
-        var file = files[i]
+    const data = new FormData()
+    const fileNamesNotUploaded = []
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i]
         const available  = this.nameAvailable(file.name, path)
         if (available) {
             data.append(file.name, file, file.name)
         } else {
-        //      if name not available, ask user whether to 'keep both' or 'replace'
             if (files.length == 1) {
+            // if user is uploading 1 assets && name not available,
+            // Then ask user whether to 'keep both' or 'replace'
                 $perAdminApp.askUser("File exists", "Select to replace the existing one, or keep both", {
                     yesText:"Replace",
                     noText:"Keep both",
                     yes() {
-                        var $api = $perAdminApp.getApi()
+                        const $api = $perAdminApp.getApi()
                         logger.info("user selected 'replace' upload file "+ file.name)
-                        var replaceData = new FormData()
+                        const replaceData = new FormData()
                         replaceData.append(file.name, file, file.name)
                         return updateWithFormAndConfig('/admin/uploadFiles.json' + path, replaceData, config)
                             .then(() => $api.populateNodesForBrowser(path))
@@ -657,11 +658,11 @@ class PerAdminImpl {
                     },
                     no() {
                         logger.info("user selected 'keep both' make the uploaded file name unique and upload")
-                        var $api = $perAdminApp.getApi()
-                        var localNamePart = file.name
-                        var extensionPart  = ""
-                        var indexOfLasDot = file.name.lastIndexOf('.');
-                        var newFileName
+                        const $api = $perAdminApp.getApi()
+                        let localNamePart = file.name
+                        let extensionPart  = ""
+                        const indexOfLasDot = file.name.lastIndexOf('.');
+                        let newFileName
                         if (indexOfLasDot > 0) {
                             // filename has a dot
                             localNamePart = file.name.substring(0, indexOfLasDot);
@@ -671,7 +672,7 @@ class PerAdminImpl {
                         do {
                           newFileName = localNamePart + i++ + extensionPart
                         } while (!$api.nameAvailable(newFileName, path));
-                        var keepbothData = new FormData()
+                        const keepbothData = new FormData()
                         keepbothData.append(newFileName, file, newFileName)
                         return updateWithFormAndConfig('/admin/uploadFiles.json' + path, keepbothData, config)
                             .then(() => $api.populateNodesForBrowser(path))
@@ -687,7 +688,7 @@ class PerAdminImpl {
         }
     }
     if (fileNamesNotUploaded.length > 0) {
-        $perAdminApp.notifyUser("info", "Some files were not uploaded. Assets with same name exists in this location: "+
+        $perAdminApp.notifyUser("Info", "Some assets were not uploaded. Asset exists in this location: "+
         fileNamesNotUploaded.toString())
     }
 //    if there are eny entries
@@ -699,7 +700,6 @@ class PerAdminImpl {
                 reject('Unable to upload due to an error. '+ error)
             })
     }
-
     return
   }
 
