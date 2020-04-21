@@ -33,7 +33,7 @@
                     {{ currentPage }}<span class="caret-down"></span>
                 </template>
                 <template slot="content">
-                    <admin-components-pagetreeitem
+                    <admin-components-nodeTreeItem
                         v-for="(node, index) in pageNode.children"
                         :key="`page-tree-item-${node.path}`"
                         :item="node"
