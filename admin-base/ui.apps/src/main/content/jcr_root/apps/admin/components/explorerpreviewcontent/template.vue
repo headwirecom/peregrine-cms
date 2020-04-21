@@ -235,6 +235,11 @@
         },
         formGenerator: {
           changes: []
+        },
+        error: {
+          buffer: [],
+          timeout: null,
+          delay: 5000
         }
       }
     },
@@ -303,6 +308,14 @@
     watch: {
       edit(newVal) {
         $perAdminApp.getNodeFromView('/state/tools').edit = newVal;
+      },
+      'error.buffer'(val) {
+        clearTimeout(this.error.timeout)
+        this.error.timeout = setTimeout(() => {
+          console.warn('explorerpreviewcontent error buffer:\n', {
+            errors: this.error.buffer
+          })
+        }, this.error.delay)
       }
     },
     created() {
@@ -345,12 +358,16 @@
         return schema;
       },
       getSchemaByActiveTab() {
-        if (this.activeTab === Tab.INFO) {
-          return this.getSchema(SchemaKey.MODEL);
-        } else if (this.activeTab === Tab.OG_TAGS) {
-          return this.getSchema(SchemaKey.OG_TAGS);
-        } else {
-          return {};
+        try {
+          if (this.activeTab === Tab.INFO) {
+            return this.getSchema(SchemaKey.MODEL);
+          } else if (this.activeTab === Tab.OG_TAGS) {
+            return this.getSchema(SchemaKey.OG_TAGS);
+          } else {
+            return {};
+          }
+        } catch (err) {
+          this.error.buffer.push(err)
         }
       },
       getObjectComponent() {
@@ -501,8 +518,8 @@
             data[key] = targetNode;
           }
         }
-        $perAdminApp.stateAction('saveObjectEdit', {data: data, path: show}).then( () => {
-          $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
+        $perAdminApp.stateAction('saveObjectEdit', {data: data, path: show}).then(() => {
+          $perAdminApp.getNodeFromView('/state/tools')._deleted = {}
         });
         $perAdminApp.stateAction('selectObject', {selected: show})
         this.edit = false;

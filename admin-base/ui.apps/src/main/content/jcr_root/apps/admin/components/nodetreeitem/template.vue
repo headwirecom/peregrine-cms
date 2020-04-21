@@ -11,7 +11,7 @@
       {{ item.name }}
     </div>
     <ul v-if="item.hasChildren" v-show="isOpen" class="content">
-      <admin-components-pagetreeitem
+      <admin-components-nodetreeitem
           v-for="(child, index) in item.children"
           :key="`page-tree-item-${child.path}`"
           :item="child"
