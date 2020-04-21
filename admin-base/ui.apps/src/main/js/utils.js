@@ -146,3 +146,7 @@ export function jsonEqualizer(name, value) {
 export const deepClone = (obj) => {
     return JSON.parse(JSON.stringify(obj))
 }
+
+export const capitalizeFirstLetter = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}

@@ -199,6 +199,10 @@ class PerApi {
         return impl.uploadFiles(path, files, cb)
     }
 
+    nameAvailable(value, path) {
+        return impl.nameAvailable(value, path)
+    }
+
     fetchExternalImage(path, url, name, config) {
         return impl.fetchExternalImage(path, url, name, config)
     }

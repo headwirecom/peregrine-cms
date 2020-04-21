@@ -67,7 +67,9 @@
       onFocusOut: {
         type: Function,
         default() {
-          this.close()
+          if (this) {
+            this.close()
+          }
         }
       }
     },

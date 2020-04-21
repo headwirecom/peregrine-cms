@@ -24,28 +24,28 @@
   -->
 <template>
     <div class="nav-content sub-nav" :class="classes">
-        <div v-if="isEditPage" class="page-tree">
+        <div v-if="showNodeTree" class="page-tree">
             <admin-components-materializedropdown
                 ref="dropdown"
                 :on-focus-out="() => {}"
                 :below-origin="true">
                 <template>
-                    {{ currentPage }}<span class="caret-down"></span>
+                    {{ currentNodeName }}<span class="caret-down"></span>
                 </template>
-                <template slot="content">
-                    <admin-components-pagetreeitem
-                        v-for="(node, index) in pageNode.children"
+                <template slot="content" v-if="nodeTreeRootNode && nodeTreeRootNode.children">
+                    <admin-components-nodetreeitem
+                        v-for="(node, index) in nodeTreeRootNode.children"
                         :key="`page-tree-item-${node.path}`"
                         :item="node"
                         @click.native.stop="() => {}"
-                        @edit-page="onTreeItemEditPage"/>
+                        @edit-node="onTreeItemEditNode"/>
                 </template>
             </admin-components-materializedropdown>
         </div>
         <template v-for="child in model.children">
             <div v-bind:is="child.component" v-bind:model="child" v-bind:key="child.path"></div>
         </template>
-        <span v-if="isEditPage" class="center-keeper"></span>
+        <span v-if="showNodeTree" class="center-keeper"></span>
     </div>
 </template>
 
@@ -62,12 +62,25 @@ export default {
         isEditPage() {
             return this.model.classes && this.model.classes.indexOf('navcenter') >= 0
         },
-        pageNode() {
+        tenant() {
+            return $perAdminApp.getView().state.tenant
+        },
+        section() {
+          return this.getPath().split('/')[3]
+        },
+        sectionRoot() {
+            return this.tenant.roots[this.section]
+        },
+        showNodeTree() {
+            return this.isEditPage && ['pages', 'templates'].indexOf(this.section) >= 0
+        },
+        nodes() {
+            return $perAdminApp.getView().admin.nodes
+        },
+        nodeTreeRootNode() {
             try {
-                if (this.isEditPage) {
-                    const nodes = $perAdminApp.getView().admin.nodes
-                    const tenant = $perAdminApp.getView().state.tenant
-                    return $perAdminApp.findNodeFromPath(nodes, tenant.roots.pages)
+                if (this.showNodeTree) {
+                    return $perAdminApp.findNodeFromPath(this.nodes, this.sectionRoot)
                 } else {
                     return {}
                 }
@@ -75,15 +88,15 @@ export default {
                 return {}
             }
         },
-        currentPage() {
+        currentNodeName() {
             return this.getPath().split('/').pop() || 'loading...'
         }
     },
     methods: {
-        isEditor: function() {
+        isEditor() {
             return this.$root.$data.adminPage.title === 'editor'
         },
-        getPath: function(){
+        getPath(){
             if( this.$root.$data.pageView){
                 if( this.$root.$data.pageView.path ){
                     return this.$root.$data.pageView.path;
@@ -97,7 +110,7 @@ export default {
         getDownloadPath(){
             return this.getPath().split('/').reverse()[0];
         },
-        onTreeItemEditPage() {
+        onTreeItemEditNode() {
             this.$refs.dropdown.close()
         }
     }

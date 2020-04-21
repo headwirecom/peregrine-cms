@@ -85,7 +85,7 @@
     <jsonview jcr:primaryType="nt:unstructured"
       sling:resourceType="admin/components/debugger" dataFrom="/"/>
 
-    <tour jcr:primaryType="nt:unstructured"
+    <!-- <tour jcr:primaryType="nt:unstructured"
       sling:resourceType="admin/components/tour">
 
       <item1
@@ -218,7 +218,7 @@
         </experiences>
       </item12>
 
-    </tour>
+    </tour> -->
 
   </jcr:content>
 
