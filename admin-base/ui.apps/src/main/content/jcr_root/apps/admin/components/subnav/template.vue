@@ -38,7 +38,7 @@
                         :key="`page-tree-item-${node.path}`"
                         :item="node"
                         @click.native.stop="() => {}"
-                        @edit-page="onTreeItemEditPage"/>
+                        @edit-node="onTreeItemEditNode"/>
                 </template>
             </admin-components-materializedropdown>
         </div>
@@ -110,7 +110,7 @@ export default {
         getDownloadPath(){
             return this.getPath().split('/').reverse()[0];
         },
-        onTreeItemEditPage() {
+        onTreeItemEditNode() {
             this.$refs.dropdown.close()
         }
     }

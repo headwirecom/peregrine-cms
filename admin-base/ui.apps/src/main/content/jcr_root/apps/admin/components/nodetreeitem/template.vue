@@ -1,6 +1,6 @@
 <template>
   <li class="page-tree-item" :class="{'expandable': item.hasChildren, 'is-open': isOpen}">
-    <div class="title" :class="{'is-selected': this.isSelected}" @click.stop="editPage">
+    <div class="title" :class="{'is-selected': this.isSelected}" @click.stop="editNode">
       <template>
         <i v-if="item.hasChildren" class="material-icons hover" @click.stop.prevent="toggle">
           {{ expandIcon }}
@@ -15,7 +15,7 @@
           v-for="(child, index) in item.children"
           :key="`page-tree-item-${child.path}`"
           :item="child"
-          @edit-page="$emit('edit-page')"/>
+          @edit-node="$emit('edit-node')"/>
     </ul>
   </li>
 </template>
@@ -74,11 +74,11 @@
           }
         }
       },
-      editPage() {
+      editNode() {
         if (!this.isSelected) {
           $perAdminApp.stateAction('editPage', this.item.path)
         }
-        this.$emit('edit-page')
+        this.$emit('edit-node')
       },
       loadChildren() {
         return $perAdminApp.stateAction('loadToolsNodesPath', {
