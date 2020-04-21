@@ -782,6 +782,12 @@ class PerAdminImpl {
           logger.warn(`template ${templateName} does not support palettes`)
         })
   }
+
+  siteSetupReplication(path, withSite) {
+    let formData = new FormData();
+    formData.append('withSite', withSite)
+    return updateWithForm('/admin/siteSetupReplication.json' + path, formData)
+  }
 }
 
 export default PerAdminImpl

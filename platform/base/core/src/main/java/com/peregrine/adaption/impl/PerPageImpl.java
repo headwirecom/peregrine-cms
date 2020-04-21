@@ -102,8 +102,6 @@ public class PerPageImpl extends PerBaseImpl implements PerPage {
             // here otherwise the parent is added through the backdoor.
             if (!JCR_CONTENT.equals(child.getName())) {
                 PerPage page = child.adaptTo(PerPage.class);
-                logger.info("Check Children, child resource: '{}', child page: '{}', child name: '{}'", child, page,
-                        page == null ? "null" : page.getName());
                 if (page != null) {
                     if (filter.include(page)) {
                         children.add(page);

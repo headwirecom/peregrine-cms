@@ -234,6 +234,10 @@ class PerApi {
     getPalettes(templateName) {
         return impl.getPalettes(templateName)
     }
+
+    siteSetupReplication(path) {
+        return impl.siteSetupReplication(path)
+    }
 }
 
 export default PerApi
