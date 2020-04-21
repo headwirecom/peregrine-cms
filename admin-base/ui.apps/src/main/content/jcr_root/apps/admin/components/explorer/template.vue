@@ -45,8 +45,8 @@
                     </admin-components-action>
                 </li>
                 <li
-                    v-for ="(child,i) in children"
-                    v-bind:key="i"
+                    v-for ="child in children"
+                    v-bind:key="child.path"
                     v-bind:class="`collection-item ${isSelected(child) ? 'explorer-item-selected' : ''}`"
                     draggable ="true"
                     v-on:dragstart ="onDragRowStart(child,$event)"
@@ -145,6 +145,36 @@
                             <i class="material-icons">delete</i>
                         </admin-components-action>
                     </div>
+                </li>
+                <li class="collection-item" v-if="isPages(path)">
+                    <admin-components-action
+                        v-bind:model="{
+                            target: '',
+                            command: 'addPage',
+                            tooltipTitle: `${$i18n('add page')}`
+                        }">
+                            <i class="material-icons">add_circle</i> {{$i18n('add page')}}
+                    </admin-components-action>
+                </li>
+                <li class="collection-item" v-if="isObjects(path)">
+                    <admin-components-action
+                        v-bind:model="{
+                            target: '',
+                            command: 'addObject',
+                            tooltipTitle: `${$i18n('add object')}`
+                        }">
+                            <i class="material-icons">add_circle</i> {{$i18n('add object')}}
+                    </admin-components-action>
+                </li>
+                <li class="collection-item" v-if="isTemplates(path)">
+                    <admin-components-action
+                        v-bind:model="{
+                            target: '',
+                            command: 'addTemplate',
+                            tooltipTitle: `${$i18n('add template')}`
+                        }">
+                            <i class="material-icons">add_circle</i> {{$i18n('add template')}}
+                    </admin-components-action>
                 </li>
             </ul>
             <div v-if="children && children.length == 0" class="empty-explorer">
