@@ -61,11 +61,7 @@
         const pathArr = this.item.path.split('/')
         const partCurrPathArr = currPathArr.splice(0, pathArr.length)
 
-        if (!this.isSelected && partCurrPathArr.join('/') === this.item.path) {
-          this.isOpen = true
-        } else {
-          this.isOpen = false
-        }
+        this.isOpen = !this.isSelected && partCurrPathArr.join('/') === this.item.path;
       },
       toggle() {
         if (this.item.hasChildren) {
