@@ -21,6 +21,8 @@
 </template>
 
 <script>
+  import {capitalizeFirstLetter} from '../../../../../../js/utils'
+
   export default {
     name: 'TreeItem',
     props: {
@@ -40,6 +42,12 @@
       },
       isSelected() {
         return this.item.path === this.currentPath
+      },
+      section() {
+        return this.currentPath.split('/')[3] || null
+      },
+      sectionSingular() {
+        return capitalizeFirstLetter(this.section.slice(0, -1)) || null
       }
     },
     watch: {
@@ -61,7 +69,7 @@
         const pathArr = this.item.path.split('/')
         const partCurrPathArr = currPathArr.splice(0, pathArr.length)
 
-        this.isOpen = !this.isSelected && partCurrPathArr.join('/') === this.item.path;
+        this.isOpen = !this.isSelected && partCurrPathArr.join('/') === this.item.path
       },
       toggle() {
         if (this.item.hasChildren) {
@@ -75,8 +83,8 @@
         }
       },
       editNode() {
-        if (!this.isSelected) {
-          $perAdminApp.stateAction('editPage', this.item.path)
+        if (!this.isSelected && this.section) {
+          $perAdminApp.stateAction(`edit${this.sectionSingular}`, this.item.path)
         }
         this.$emit('edit-node')
       },
