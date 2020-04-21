@@ -624,25 +624,98 @@ class PerAdminImpl {
   }
 
   uploadFiles(path, files, cb) {
-    var config = {
+    const config = {
       onUploadProgress: progressEvent => {
-        var percentCompleted = Math.floor((progressEvent.loaded * 100) / progressEvent.total);
+        const percentCompleted = Math.floor((progressEvent.loaded * 100) / progressEvent.total);
         cb(percentCompleted)
       }
     }
-
-    logger.fine('uploading files to', path)
-    logger.fine(files)
-
-    var data = new FormData()
-    for (var i = 0; i < files.length; i++) {
-      var file = files[i]
-      data.append(file.name, file, file.name)
+    const data = new FormData()
+    const fileNamesNotUploaded = []
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+        const available  = this.nameAvailable(file.name, path)
+        if (available) {
+            data.append(file.name, file, file.name)
+        } else {
+            if (files.length == 1) {
+            // if user is uploading 1 assets && name not available,
+            // Then ask user whether to 'keep both' or 'replace'
+                $perAdminApp.askUser("File exists", "Select to replace the existing one, or keep both", {
+                    yesText:"Replace",
+                    noText:"Keep both",
+                    yes() {
+                        const $api = $perAdminApp.getApi()
+                        logger.info("user selected 'replace' upload file "+ file.name)
+                        const replaceData = new FormData()
+                        replaceData.append(file.name, file, file.name)
+                        return updateWithFormAndConfig('/admin/uploadFiles.json' + path, replaceData, config)
+                            .then(() => $api.populateNodesForBrowser(path))
+                            .catch( error => {
+                                log.error('Failed to upload: ' + error)
+                                reject('Unable to upload due to an error. '+ error)
+                            })
+                    },
+                    no() {
+                        logger.info("user selected 'keep both' make the uploaded file name unique and upload")
+                        const $api = $perAdminApp.getApi()
+                        let localNamePart = file.name
+                        let extensionPart  = ""
+                        const indexOfLasDot = file.name.lastIndexOf('.');
+                        let newFileName
+                        if (indexOfLasDot > 0) {
+                            // filename has a dot
+                            localNamePart = file.name.substring(0, indexOfLasDot);
+                            extensionPart = file.name.substring(indexOfLasDot, file.name.length);
+                        }
+                        let i = 1
+                        do {
+                          newFileName = localNamePart + i++ + extensionPart
+                        } while (!$api.nameAvailable(newFileName, path));
+                        const keepbothData = new FormData()
+                        keepbothData.append(newFileName, file, newFileName)
+                        return updateWithFormAndConfig('/admin/uploadFiles.json' + path, keepbothData, config)
+                            .then(() => $api.populateNodesForBrowser(path))
+                            .catch( error => {
+                                log.error('Failed to upload: ' + error)
+                                reject('Unable to upload due to an error. '+ error)
+                            })
+                    }
+                })
+            } else {
+                fileNamesNotUploaded.push(file.name)
+            }
+        }
     }
-
-    return updateWithFormAndConfig('/admin/uploadFiles.json' + path, data, config)
-    .then(() => this.populateNodesForBrowser(path))
+    if (fileNamesNotUploaded.length > 0) {
+        $perAdminApp.notifyUser("Info", "Some assets were not uploaded. Asset exists in this location: "+
+        fileNamesNotUploaded.toString())
+    }
+//    if there are eny entries
+    if ( !data.entries().next().done ) {
+        return updateWithFormAndConfig('/admin/uploadFiles.json' + path, data, config)
+            .then(() => this.populateNodesForBrowser(path))
+            .catch( error => {
+                log.error('Failed to upload: ' + error)
+                reject('Unable to upload due to an error. '+ error)
+            })
+    }
+    return
   }
+
+    nameAvailable(value, path) {
+        if(!value || value.length === 0) {
+            return false
+        } else {
+            const folder = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, path)
+            for(let i = 0; i < folder.children.length; i++) {
+                if(folder.children[i].name === value) {
+                    return false
+                }
+            }
+        }
+        return true
+    }
 
   fetchExternalImage(path, url, name, config) {
     return axios.get(url, {responseType: "blob"})
