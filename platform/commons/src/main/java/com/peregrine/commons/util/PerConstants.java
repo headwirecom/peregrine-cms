@@ -101,6 +101,7 @@ public class PerConstants {
     public static final String FOLDER = "folder";
     public static final String ASSET = "asset";
     public static final String OBJECT = "object";
+    public static final String OBJECT_DEFINITION = "objectDefinition";
     public static final String PAGE = "page";
     public static final String TEMPLATE = "template";
     public static final String COMPONENT = "component";

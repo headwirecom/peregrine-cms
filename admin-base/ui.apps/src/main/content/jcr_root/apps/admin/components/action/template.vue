@@ -154,7 +154,11 @@
         },
         visible() {
             if(this.model.visibility) {
-                return exprEval.Parser.evaluate( this.model.visibility, $perAdminApp.getView() );
+                var parser = new exprEval.Parser();
+                parser.functions.isRoot = function(path) {
+                    return path.split('/').length === 4
+                }
+                return parser.evaluate( this.model.visibility, $perAdminApp.getView() );
             } else {
                 return true;
             }

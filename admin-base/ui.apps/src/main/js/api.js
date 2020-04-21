@@ -163,6 +163,10 @@ class PerApi {
         return impl.createObject(parentPath, name, templatePath)
     }
 
+    createObjectDefinition(parentPath, name) {
+        return impl.createObjectDefinition(parentPath, name)
+    }
+
     deleteObject(path) {
         return impl.deleteObject(path)
     }

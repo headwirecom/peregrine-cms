@@ -584,6 +584,13 @@ class PerAdminImpl {
     .then(() => this.populateNodesForBrowser(parentPath))
   }
 
+  createObjectDefinition(parentPath, name) {
+    let data = new FormData()
+    data.append('name', name)
+    return updateWithForm('/admin/createObjectDefinition.json' + parentPath, data)
+    .then(() => this.populateNodesForBrowser(parentPath))
+  }
+
   moveTemplate(path, to, type) {
     return new Promise((resolve, reject) => {
       let data = new FormData()

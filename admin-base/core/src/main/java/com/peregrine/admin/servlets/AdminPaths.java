@@ -9,6 +9,7 @@ public interface AdminPaths {
     public static final String RESOURCE_TYPE_CREATION_SITE = API_PREFIX + "createSite";
     public static final String RESOURCE_TYPE_DELETE_SITE = API_PREFIX + "deleteSite";
     public static final String RESOURCE_TYPE_CREATION_OBJECT = API_PREFIX + "createObject";
+    public static final String RESOURCE_TYPE_CREATION_OBJECT_DEFINITION = API_PREFIX + "createObjectDefinition";
     public static final String RESOURCE_TYPE_CREATION_PAGE = API_PREFIX + "createPage";
     public static final String RESOURCE_TYPE_CREATION_TEMPLATE = API_PREFIX + "createTemplate";
     public static final String RESOURCE_TYPE_DELETE_NODE = API_PREFIX + "deleteNode";

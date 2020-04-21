@@ -176,6 +176,16 @@
                             <i class="material-icons">add_circle</i> {{$i18n('add template')}}
                     </admin-components-action>
                 </li>
+                <li class="collection-item" v-if="isObjectDefinitions(path)">
+                    <admin-components-action
+                        v-bind:model="{
+                            target: '',
+                            command: 'addObjectDefinition',
+                            tooltipTitle: `${$i18n('add object definition')}`
+                        }">
+                            <i class="material-icons">add_circle</i> {{$i18n('add object definition')}}
+                    </admin-components-action>
+                </li>
             </ul>
             <div v-if="children && children.length == 0" class="empty-explorer">
                 <div v-if="path.includes('assets')">
@@ -288,6 +298,10 @@
 
             isObjects(path) {
                 return path.startsWith(`/content/${this.getTenant().name}/objects`)
+            },
+
+            isObjectDefinitions(path) {
+                return path.startsWith(`/content/${this.getTenant().name}/object-definitions`)
             },
 
             isTemplates(path) {
@@ -480,6 +494,7 @@
             nodeTypeToIcon: function(nodeType) {
                 if(nodeType === 'per:Page')             return 'description'
                 if(nodeType === 'per:Object')           return 'layers'
+                if(nodeType === 'per:ObjectDefinition') return 'insert_drive_file'
                 if(nodeType === 'nt:file')              return 'insert_drive_file'
                 if(nodeType === 'per:Asset')            return 'image'
                 if(nodeType === 'sling:Folder')         return 'folder'
@@ -488,7 +503,7 @@
             },
 
             checkIfAllowed: function(resourceType) {
-                return ['per:Asset', 'nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page', 'sling:OrderedFolder', 'per:Object'].indexOf(resourceType) >= 0
+                return ['per:Asset', 'nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page', 'sling:OrderedFolder', 'per:Object', 'per:ObjectDefinition'].indexOf(resourceType) >= 0
             },
 
             showInfo: function(me, target) {
@@ -559,6 +574,15 @@
                 const path = me.pt.path
                 if(path.startsWith(`/content/${tenant.name}/objects`)) {
                     $perAdminApp.stateAction('createObjectWizard', { path: path, target: target })
+                }
+            },
+
+            addObjectDefinition: function(me, target) {
+                console.log(me)
+                const tenant = $perAdminApp.getView().state.tenant
+                const path = me.pt ? me.pt.path : `/content/${tenant.name}/object-definitions`
+                if(path.startsWith(`/content/${tenant.name}/object-definitions`)) {
+                    $perAdminApp.stateAction('createObjectDefinitionWizard', { path: path, target: target })
                 }
             },
 

@@ -56,6 +56,17 @@ public interface AdminResourceHandler {
      * @param resourceResolver Resource Resolver to manage resources and cannot be null
      * @param parentPath Path to the Parent Resource which cannot be null or empty
      * @param name Name of the Folder which cannot be null or empty
+     * @return Newly created Peregrine Object Resource
+     * @throws ManagementException If the creation failed
+     */
+    Resource createObjectDefinition(ResourceResolver resourceResolver, String parentPath, String name) throws ManagementException;
+
+    /**
+     * Creates an Peregrine Object Resource
+     *
+     * @param resourceResolver Resource Resolver to manage resources and cannot be null
+     * @param parentPath Path to the Parent Resource which cannot be null or empty
+     * @param name Name of the Folder which cannot be null or empty
      * @param templatePath Path to the page template resource (absolute path) which must exist
      * @return Newly created Peregrine Page Resource
      * @throws ManagementException If the creation failed

@@ -85,6 +85,7 @@ import com.peregrine.rendition.BaseResourceHandler;
 import com.peregrine.replication.ImageMetadataSelector;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringBufferInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -329,6 +330,37 @@ public class AdminResourceHandlerService
             return adaptNodeToResource(resourceResolver, newObject);
         } catch (RepositoryException e) {
             logger.debug("Failed to create Object. Parent Path: '{}', Name: '{}'", parentPath, name);
+            throw new ManagementException(String.format(FAILED_TO_HANDLE, OBJECT, parentPath, name), e);
+        }
+    }
+
+    @Override
+    public Resource createObjectDefinition(ResourceResolver resourceResolver, String parentPath, String name) throws ManagementException {
+        if(!nodeNameValidation.isValidPageName(name)) {
+            throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, name));
+        }
+        try {
+            if (isEmpty(name)) {
+                throw new ManagementException(String.format(NAME_UNDEFINED, OBJECT, parentPath));
+            }
+            final Node parent = getNode(resourceResolver, parentPath);
+            if (parent == null) {
+                throw new ManagementException(String.format(PARENT_NOT_FOUND, OBJECT, parentPath, name));
+            }
+            Node newObject = parent.addNode(name, OBJECT_DEFINITION_PRIMARY_TYPE);
+//            newObject.setProperty(JCR_TITLE, name);
+            // if (!isEmpty(resourceType)) {
+            //     newObject.setProperty(SLING_RESOURCE_TYPE, resourceType);
+            // }
+            Node dialog = newObject.addNode("dialog.json", "nt:file");
+            Node resNode = dialog.addNode ("jcr:content", "nt:resource");
+            resNode.setProperty ("jcr:mimeType", "application/json");
+            resNode.setProperty ("jcr:encoding", "UTF-8");
+            resNode.setProperty ("jcr:data", new StringBufferInputStream("{ \"fields\": [] }"));
+            baseResourceHandler.updateModification(resourceResolver, newObject);
+            return adaptNodeToResource(resourceResolver, newObject);
+        } catch (RepositoryException e) {
+            logger.debug("Failed to create Object Definition. Parent Path: '{}', Name: '{}'", parentPath, name);
             throw new ManagementException(String.format(FAILED_TO_HANDLE, OBJECT, parentPath, name), e);
         }
     }
