@@ -199,6 +199,34 @@ function translateFields(fields) {
   }
 }
 
+function editorialEnrichment(path, data) {
+
+  // given the path we should be able to determine:
+  // type (page, template, asset, object)
+
+  // for page/template we should be able to figure out
+  // pagepath
+  // template
+  // skeleton
+  // 
+  // we can now look up by: skeleton/template/pagepath/component what we should apply
+
+  // we should be able to add to the beginning or the end
+  // data.model.fields.unshift({
+  //   type: "label",  
+  //   label: "this component is typically used for xyz on this page",
+  //   model: 'none'
+  // })
+
+  // we should be able to modify visibility
+  // data.model.fields[0].visible = false
+
+  // we should be able to alter the hint
+  // data.model.fields[0].hint = 'holdrio, this is better than sliced bread'
+
+  return data
+}
+
 class PerAdminImpl {
 
   constructor(cb) {
@@ -270,7 +298,7 @@ class PerAdminImpl {
 
   populateComponentDefinitionFor(component) {
     return fetch('/admin/components/' + component)
-    .then((data) => populateView('/admin/componentDefinitions', component, data))
+    .then((data) => populateView('/admin/componentDefinitions', component, editorialEnrichment(null, data)))
   }
 
   populateComponentDefinitionFromNode(path) {
@@ -278,6 +306,7 @@ class PerAdminImpl {
       var name;
       fetch('/admin/componentDefinition.json' + path)
       .then((data) => {
+        data = editorialEnrichment(path, data) // tranformation into an editorial dialog
         name = data.name
         let component = callbacks.getComponentByName(name)
         if (component && component.methods
