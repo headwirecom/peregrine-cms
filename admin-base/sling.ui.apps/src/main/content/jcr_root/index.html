@@ -26,14 +26,9 @@
 <head>
     <link rel="stylesheet" href="http://fonts.googleapis.com/icon?family=Material+Icons" type="text/css">
     <link rel="stylesheet" href="/etc/felibs/materialize/materialize.css" type="text/css">
-    <style>
-        .browser-default a {
-            color: #b66f35;
-        }
-    </style>
 </head>
 <body>
-    <div id="peregrine-adminapp">
+    <!-- <div id="peregrine-adminapp">
         <span>
             <div class="tooling-page">
                 <nav>
@@ -62,19 +57,20 @@
     <div class="welcome-page container" style="margin-top: 40px;">
         <div class="row">
             <div class="col s12 m6 l4">
-                <h5><a href="/content/admin.html">Administration</a></h5>
+                <h5><a href="/content/admin/pages/index.html">Administration</a></h5>
                 Start working in Peregrine CMS.
                 <ul class="browser-default">
-                    <li><a href="/content/admin.html">administration</a><br>General Administration and access to
-                    all areas of Peregrine CMS</li>
-                    <li><a href="/content/admin/pages.html">sites and pages</a><br>
-                        Manage and create new sites and pages for your website.
+                    <li><a href="/content/admin/pages/index.html">administration</a><br>
+                        General Administration and access to all areas of Peregrine CMS
                     </li>
-                    <li><a href="/content/admin/assets.html">assets</a><br>
-                        Manage assets such as images and documents for the use within your websites.
+                    <li><a href="/content/admin/pages/pages.html">pages</a><br>
+                        Manage and create new pages for your website.
                     </li>
-                    <li><a href="/content/admin/objects.html">data</a><br>
-                    Manage objects (general data) for your web sites and assets.
+                    <li><a href="/content/admin/pages/assets.html">assets</a><br>
+                        Manage assets such as images and documents for the use within your website.
+                    </li>
+                    <li><a href="/content/admin/pages/objects.html">data</a><br>
+                        Manage objects (general data) for your website and assets.
                     </li>
                 </ul>
             </div>
@@ -92,7 +88,7 @@
             </div>
             <div class="col s12 m12 l4 center-align">
                 <p class="left-align">
-                    <img style="margin: 10px; width: 100px; max-width: 100px;" src="/etc/felibs/admin/images/peregrine-logo.svg" align="right"/>
+                    <img style="margin: 10px; width: 100px; max-width: 100px;" src="/etc/felibs/admin/peregrine-logo.svg" align="right"/>
                     <img style="width: 0px; height: 0px;" src="https://www.headwire.com/t/peregrine.png"/>
                     Peregrine CMS - a head optional content management system based on Apache Sling
                     and Vue.JS.
@@ -132,7 +128,7 @@
                         <p>Use the links below to administer peregrine-cms.</p>
                     </div>
                     <div class="card-action">
-                        <a href="/content/admin.html">admin</a>
+                        <a href="/content/admin/pages/index.html">admin</a>
                         <a href="/bin/browser.html">composum</a>
                         <a href="/perapi/swaggereditor/">api</a>
                         <a href="/content/apidocs/cms/index.html">javadocs</a>
@@ -146,11 +142,15 @@
                         <p>Peregine-cms contains some sample sites for you to explore using a set of front end technologies. You can adapt these samples to your needs.</p>
                     </div>
                     <div class="card-action">
-                        <a href="/content/sites/example.html">sample site</a>
+                        <a href="/content/example/pages/index.html">sample site</a>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
+    <script>
+        document.location = '/content/admin/pages/index.html';
+    </script>
+    <a href="/content/admin/pages/index.html">go to the admin console</a>
 </body>
 </html>

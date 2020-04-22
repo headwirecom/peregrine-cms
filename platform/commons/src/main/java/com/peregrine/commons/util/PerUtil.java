@@ -28,31 +28,19 @@ package com.peregrine.commons.util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.CaseFormat;
 import org.apache.commons.lang.StringUtils;
-import org.apache.sling.api.resource.LoginException;
-import org.apache.sling.api.resource.ModifiableValueMap;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.api.resource.ResourceUtil;
-import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.api.resource.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import static com.peregrine.commons.util.PerConstants.DASH;
-import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
-import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
-import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
+import static com.peregrine.commons.util.PerConstants.*;
+import static org.apache.commons.lang3.StringUtils.*;
 
 /**
  * Created by Andreas Schaefer on 5/26/17.
@@ -71,9 +59,12 @@ public class PerUtil {
 
     public static final String ENTRY_NOT_KEY_VALUE_PAIR = "Entry: '%s' could not be split into a key value pair, entries: '%s'";
 
-    private static final Logger LOG = LoggerFactory.getLogger(PerUtil.class);
     public static final String RESOURCE_RESOLVER_FACTORY_CANNOT_BE_NULL = "Resource Resolver Factory cannot be null";
     public static final String SERVICE_NAME_CANNOT_BE_EMPTY = "Service Name cannot be empty";
+
+    private static final Logger LOG = LoggerFactory.getLogger(PerUtil.class);
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     /** @return True if the given text is either null or empty **/
     public static boolean isEmpty(String text) {
@@ -247,6 +238,17 @@ public class PerUtil {
         return answer;
     }
 
+    public static String extractName(final String path) {
+        if (isNotBlank(path)) {
+            final int index = path.lastIndexOf('/');
+            if (index < path.length() - 1) {
+                return path.substring(index + 1);
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Obtains the resource with a given path
      * @param source Starting resource if the path is relative
@@ -323,16 +325,29 @@ public class PerUtil {
      * @param goToJcrContent If true then if the given resource is not the JCR Content it will look that one up
      * @return The Value Map of the Resource or JCR Content node
      */
-    public static ValueMap getProperties(Resource resource, boolean goToJcrContent) {
-        ValueMap answer = null;
-        Resource jcrContent = resource;
-        if(goToJcrContent && !jcrContent.getName().equals(PerConstants.JCR_CONTENT)) {
-            jcrContent = jcrContent.getChild(PerConstants.JCR_CONTENT);
+    public static ValueMap getProperties(final Resource resource, final boolean goToJcrContent) {
+        return Optional.ofNullable(goToJcrContent ? getJcrContent(resource) : resource)
+                .map(Resource::getValueMap)
+                .orElse(null);
+    }
+
+    public static Resource getJcrContent(final Resource resource) {
+        if (PerConstants.JCR_CONTENT.equals(resource.getName())) {
+            return resource;
         }
-        if(jcrContent != null) {
-            answer = jcrContent.getValueMap();
+
+        return resource.getChild(PerConstants.JCR_CONTENT);
         }
-        return answer;
+
+    public static Resource getJcrContentOrSelf(final Resource resource) {
+        return Optional.ofNullable(getJcrContent(resource))
+                .orElse(resource);
+    }
+
+    public static ValueMap getJcrContentOrSelfProperties(final Resource resource) {
+        return Optional.ofNullable(getJcrContentOrSelf(resource))
+                .map(Resource::getValueMap)
+                .orElse(null);
     }
 
     /**
@@ -355,15 +370,9 @@ public class PerUtil {
      * @return The Modifiable Value Map of the Resource or JCR Content node
      */
     public static ModifiableValueMap getModifiableProperties(Resource resource, boolean goToJcrContent) {
-        ModifiableValueMap answer = null;
-        Resource jcrContent = resource;
-        if(goToJcrContent && !jcrContent.getName().equals(PerConstants.JCR_CONTENT)) {
-            jcrContent = jcrContent.getChild(PerConstants.JCR_CONTENT);
-        }
-        if(jcrContent != null) {
-            answer = jcrContent.adaptTo(ModifiableValueMap.class);
-        }
-        return answer;
+        return Optional.ofNullable(goToJcrContent ? getJcrContent(resource) : resource)
+                .map(r -> r.adaptTo(ModifiableValueMap.class))
+                .orElse(null);
     }
 
     /**
@@ -373,23 +382,22 @@ public class PerUtil {
      * @param child
      * @return
      */
-    public static List<Resource> listParents(Resource root, Resource child) {
-        List<Resource> answer = new ArrayList<>();
+    public static List<Resource> listParents(final Resource root, final Resource child) {
+        final List<Resource> answer = new ArrayList<>();
         Resource parent = child.getParent();
         while(true) {
             if(parent == null) {
                 // No parent matches 'source' so we ignore it
                 answer.clear();
-                break;
+                return answer;
             }
             if(parent.getPath().equals(root.getPath())) {
                 // Hit the source -> done with loop
-                break;
+                return answer;
             }
             answer.add(parent);
             parent = parent.getParent();
         }
-        return answer;
     }
 
     /**
@@ -403,44 +411,50 @@ public class PerUtil {
      *                         if children resources are traversed
      * @param deep If true this goes down recursively any children
      */
-    public static void listMissingResources(Resource startingResource, List<Resource> response, ResourceChecker resourceChecker, boolean deep) {
+    public static void listMissingResources(
+            final Resource startingResource,
+            final List<Resource> response,
+            final ResourceChecker resourceChecker,
+            final boolean deep) {
         ResourceChecker childResourceChecker = resourceChecker;
-        if(startingResource != null && resourceChecker != null && response != null) {
+        if (startingResource == null || resourceChecker == null || response == null) {
+            return;
+        }
+
             if(resourceChecker.doAdd(startingResource)) {
                 if(!containsResource(response, startingResource)) {
                     response.add(startingResource);
                 }
                 // If this is JCR Content we need to add all children
-                if(startingResource.getName().equals(PerConstants.JCR_CONTENT)) {
+            if (PerConstants.JCR_CONTENT.equals(startingResource.getName())) {
                     childResourceChecker = new AddAllResourceChecker();
                 }
             }
-            if(resourceChecker.doAddChildren(startingResource)) {
-                for(Resource child : startingResource.getChildren()) {
-                    if(child.getName().equals(PerConstants.JCR_CONTENT)) {
-                        listMissingResources(child, response, childResourceChecker, true);
-                    } else if(deep) {
+
+        if (!resourceChecker.doAddChildren(startingResource)) {
+            return;
+        }
+
+        for (final Resource child : startingResource.getChildren()) {
+            if (deep || PerConstants.JCR_CONTENT.equals(child.getName())) {
                         listMissingResources(child, response, childResourceChecker, true);
                     }
                 }
             }
-        }
+
+    public static boolean containsResource(final List<Resource> resources, final Resource check) {
+        if (check == null) {
+            return true;
     }
 
-    public static boolean containsResource(List<Resource> resources, Resource check) {
-        boolean answer = false;
-        if(check != null) {
-            String path = check.getPath();
-            for(Resource item : resources) {
+        final String path = check.getPath();
+        for (final Resource item : resources) {
                 if(path.equals(item.getPath())) {
-                    answer = true;
-                    break;
-                }
+                return true;
             }
-        } else {
-            answer = true;
         }
-        return answer;
+
+        return false;
     }
 
     //AS TODO: This seems to be a duplicate of the method above?
@@ -483,20 +497,23 @@ public class PerUtil {
      * @param source Root of the Child
      * @param resourceChecker Resource Check instance that defined when a parent is added to the missing list
      */
-    public static void listMissingParents(Resource startingResource, List<Resource> response, Resource source, ResourceChecker resourceChecker) {
-        if(startingResource != null && source != null && resourceChecker != null && response != null) {
-            List<Resource> parents = listParents(source, startingResource);
+    public static void listMissingParents(
+            final Resource startingResource,
+            final List<Resource> response,
+            final Resource source,
+            final ResourceChecker resourceChecker) {
+        if (startingResource == null || source == null || resourceChecker == null || response == null) {
+            return;
+        }
+
             // Now we go through all parents, check if the matching parent exists on the target
             // side and if not there add it to the list
-            for(Resource sourceParent : parents) {
-                if(resourceChecker.doAdd(sourceParent)) {
-                    if(!containsResource(response, sourceParent)) {
+        for (final Resource sourceParent : listParents(source, startingResource)) {
+            if (resourceChecker.doAdd(sourceParent) && !containsResource(response, sourceParent)) {
                         response.add(sourceParent);
                     }
                 }
             }
-        }
-    }
 
     /**
      * Tries to obtain the Service Resource Resolver
@@ -506,10 +523,16 @@ public class PerUtil {
      * @throws LoginException If the resolver factory could not obtain the Service Resource Resolver
      * @throws IllegalArgumentException If the resource resolver is null or the service name is empty
      */
-    public static ResourceResolver loginService(ResourceResolverFactory resolverFactory, String serviceName) throws LoginException {
-        if(resolverFactory == null) { throw new IllegalArgumentException(RESOURCE_RESOLVER_FACTORY_CANNOT_BE_NULL); }
-        if(isEmpty(serviceName)) { throw new IllegalArgumentException(SERVICE_NAME_CANNOT_BE_EMPTY); }
-        Map<String, Object> authInfo = new HashMap<String, Object>();
+    public static ResourceResolver loginService(final ResourceResolverFactory resolverFactory, final String serviceName) throws LoginException {
+        if (resolverFactory == null) {
+            throw new IllegalArgumentException(RESOURCE_RESOLVER_FACTORY_CANNOT_BE_NULL);
+        }
+
+        if (isEmpty(serviceName)) {
+            throw new IllegalArgumentException(SERVICE_NAME_CANNOT_BE_EMPTY);
+        }
+
+        final Map<String, Object> authInfo = new HashMap<>();
         authInfo.put(ResourceResolverFactory.SUBSERVICE, serviceName);
         return resolverFactory.getServiceResourceResolver(authInfo);
     }
@@ -519,10 +542,20 @@ public class PerUtil {
      * @param name Name to be adjust
      * @return The given name lowercase and spaces and slashes to underscore or if name is null then null
      */
-    public static String adjustMetadataName(String name) {
-        return name == null ?
-            null :
-            name.toLowerCase().replaceAll(" ", "_").replaceAll("/", "_");
+    public static String adjustMetadataName(final String name) {
+        return Optional.ofNullable(name)
+                .map(String::toLowerCase)
+                .map(s -> s.replace(" ", "_"))
+                .map(s -> s.replace("/", "_"))
+                .orElse(null);
+    }
+
+    public static boolean isPropertyEqual(final Resource resource, final String propertyName, final String value) {
+        return Optional.ofNullable(resource)
+                .map(r -> getProperties(r, false))
+                .map(p -> p.get(propertyName, String.class))
+                .map(v -> v.equals(value))
+                .orElse(false);
     }
 
     /**
@@ -531,13 +564,8 @@ public class PerUtil {
      * @param resourceType Sling Resource Type to test. If null or empty this method returns false
      * @return true if the resource contains a Sling Resource Type that matches the given value
      */
-    public static boolean isResourceType(Resource resource, String resourceType) {
-        String answer = null;
-        if(resource != null) {
-            ValueMap properties = getProperties(resource, false);
-            answer = properties.get(SLING_RESOURCE_TYPE, String.class);
-        }
-        return answer != null && answer.equals(resourceType);
+    public static boolean isResourceType(final Resource resource, final String resourceType) {
+        return isPropertyEqual(resource, SLING_RESOURCE_TYPE, resourceType);
     }
 
     /**
@@ -546,48 +574,34 @@ public class PerUtil {
      * @param primaryType Primary Type to test. If null or empty this method returns false
      * @return true if the resource contains a Primary Type that matches the given value
      */
-    public static boolean isPrimaryType(Resource resource, String primaryType) {
-        String answer = null;
-        if(resource != null) {
-            ValueMap properties = getProperties(resource, false);
-            answer = properties.get(JCR_PRIMARY_TYPE, String.class);
-        }
-        return answer != null && answer.equals(primaryType);
+    public static boolean isPrimaryType(final Resource resource, final String primaryType) {
+        return isPropertyEqual(resource, JCR_PRIMARY_TYPE, primaryType);
     }
 
     /**
      * @param resource Given resource
      * @return Returns the JCR Primary Type property from the resource if that one is not null and if it is found
      */
-    public static String getPrimaryType(Resource resource) {
-        String answer = null;
-        if(resource != null) {
-            ValueMap properties = getProperties(resource, false);
-            answer = properties.get(JCR_PRIMARY_TYPE, String.class);
-        }
-        return answer;
+    public static String getPrimaryType(final Resource resource) {
+        return Optional.ofNullable(resource)
+                .map(r -> getProperties(r, false))
+                .map(props -> props.get(JCR_PRIMARY_TYPE, String.class))
+                .orElse(null);
     }
 
     /** @return Returns the Sling Resource Type of the resource or resource's jcr:content node. Returns null if resource is null or not found **/
-    public static String getResourceType(Resource resource) {
-        String answer = null;
-        if(resource != null) {
-            ValueMap properties = getProperties(resource, true);
-            if(properties == null) {
-                properties = getProperties(resource, false);
-            }
-            if(properties != null) {
-                answer = properties.get(SLING_RESOURCE_TYPE, String.class);
-            }
-        }
-        return answer;
+    public static String getResourceType(final Resource resource) {
+        return Optional.ofNullable(resource)
+                .map(PerUtil::getJcrContentOrSelfProperties)
+                .map(props -> props.get(SLING_RESOURCE_TYPE, String.class))
+                .orElse(null);
     }
 
     /** @return The Mime Type of this resource (in the JCR Content resource) **/
-    public static String getMimeType(Resource resource) {
+    public static String getMimeType(final Resource resource) {
         String answer = null;
         if(resource != null) {
-            ValueMap properties = getProperties(resource, true);
+            ValueMap properties = getProperties(resource);
             if(properties != null) {
                 answer = properties.get(JCR_MIME_TYPE, String.class);
             }
@@ -602,7 +616,7 @@ public class PerUtil {
      * @param key Property Name
      * @return Property Value as string otherwise null
      */
-    public static String getStringOrNull(Map source, String key) {
+    public static String getStringOrNull(Map<?, ?> source, String key) {
         String answer = null;
         if(source != null && source.containsKey(key)) {
             Object temp = source.get(key);
@@ -611,96 +625,6 @@ public class PerUtil {
             }
         }
         return answer;
-    }
-
-    /** Resource Check interface **/
-    public static interface ResourceChecker {
-        /** @return True if the resource checks out **/
-        public boolean doAdd(Resource resource);
-        /** @return False if the resource's children should not be considered **/
-        public boolean doAddChildren(Resource resource);
-    }
-
-    /** Checks all resources that are either missing or are outdated on the target **/
-    public static class MissingOrOutdatedResourceChecker
-        implements ResourceChecker
-    {
-        private Resource source;
-        private Resource target;
-
-        /**
-         * This class will map any children of the source resource to a
-         * child on the target (same relative child path). If missing or
-         * outdated then it will be checked
-         *
-         * @param source Source Root Resource
-         * @param target Target Root Resource
-         */
-        public MissingOrOutdatedResourceChecker(Resource source, Resource target) {
-            this.source = source;
-            this.target = target;
-        }
-
-        @Override
-        public boolean doAdd(Resource resource) {
-            boolean answer = false;
-            String relativePath = relativePath(source, resource);
-            Resource targetResource = target.getChild(relativePath);
-            LOG.trace("Do Add. Resource: '{}', relative path: '{}', target resource: '{}'", resource.getPath(), relativePath, targetResource);
-            if(targetResource == null) {
-                answer = true;
-            } else {
-                //AS TODO This does not work as is. We need to compare the source's last modified timestamp against the target's
-                //AS TODO replicated timestamp
-                Calendar sourceLastModified = resource.getValueMap().get(PER_REPLICATED, Calendar.class);
-                Calendar targetLastModified = targetResource.getValueMap().get(PER_REPLICATED, Calendar.class);
-                if(sourceLastModified != null && targetLastModified != null) {
-                    answer = sourceLastModified.after(targetLastModified);
-                }
-            }
-            return answer;
-        }
-
-        @Override
-        public boolean doAddChildren(Resource resource) { return true; }
-    }
-
-    /**
-     * Checks all resources that exist on the target (same relative path
-     * as on the source)
-     */
-    public static class MatchingResourceChecker
-        implements ResourceChecker
-    {
-        private Resource source;
-        private Resource target;
-
-        public MatchingResourceChecker(Resource source, Resource target) {
-            this.source = source;
-            this.target = target;
-        }
-
-        @Override
-        public boolean doAdd(Resource resource) {
-            String relativePath = relativePath(source, resource);
-            Resource targetResource = target.getChild(relativePath);
-            return targetResource != null;
-        }
-
-        @Override
-        public boolean doAddChildren(Resource resource) { return true; }
-    }
-
-    /** Checks all resources **/
-    public static class AddAllResourceChecker
-        implements ResourceChecker
-    {
-        @Override
-        public boolean doAdd(Resource resource) {
-            return true;
-        }
-        @Override
-        public boolean doAddChildren(Resource resource) { return true; }
     }
 
     /**
@@ -712,27 +636,35 @@ public class PerUtil {
      *         Will Yield: 'one-two-three--four-five'
      *         The double hyphen is due to the / and uppercase F in Four
      */
-    public static String getComponentNameFromResource(Resource resource) {
-        String resourceType = resource.getResourceType();
-        if (resourceType != null) {
-            if(resourceType.startsWith("/")) {
-                resourceType = StringUtils.substringAfter(resourceType, SLASH);
-            }
-            return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, resourceType.replaceAll(SLASH, DASH));
-        } else {
-            return "";
+    public static String getComponentNameFromResource(final Resource resource) {
+        final String normalized = normalizeResourceTypeName(resource.getResourceType());
+        if (isBlank(normalized)) {
+            return EMPTY;
         }
+
+        return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, normalized);
     }
 
-    public static String getComponentVariableNameFromString(String resourceType) {
-        if (resourceType != null) {
-            if(resourceType.startsWith("/")) {
-                resourceType = StringUtils.substringAfter(resourceType, SLASH);
-            }
-            return "cmp"+CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, resourceType.replaceAll(SLASH, DASH));
-        } else {
-            return "";
+    public static String getComponentVariableNameFromString(final String resourceType) {
+        final String normalized = normalizeResourceTypeName(resourceType);
+        if (isBlank(normalized)) {
+            return EMPTY;
         }
+
+        return "cmp" + CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, normalized);
+    }
+
+    private static String normalizeResourceTypeName(final String resourceType) {
+        if (isBlank(resourceType)) {
+            return resourceType;
+        }
+
+        String result = resourceType;
+        if (result.startsWith(SLASH)) {
+            result = substringAfter(result, SLASH);
+        }
+
+        return result.replace(SLASH, DASH);
     }
 
     /**
@@ -741,12 +673,245 @@ public class PerUtil {
      * @return Map representing the JSon Object
      * @throws IOException If it could not been converted
      */
-    public static Map convertToMap(String json) throws IOException {
-        Map answer = new LinkedHashMap();
-        if(json != null) {
-            ObjectMapper mapper = new ObjectMapper();
-            answer = mapper.readValue(json, LinkedHashMap.class);
+    public static Map convertToMap(final String json) throws IOException {
+        if (json != null) {
+            return OBJECT_MAPPER.readValue(json, LinkedHashMap.class);
+        }
+
+        return new LinkedHashMap<>();
+    }
+
+    public static boolean doSave(ResourceResolver resourceResolver, String action) {
+        boolean answer = false;
+        Session session = resourceResolver.adaptTo(Session.class);
+        if(session == null) {
+            LOG.warn("Could not obtain Session to save changes for: '{}'", action);
+        } else {
+            try {
+                session.save();
+                answer = true;
+            } catch (RepositoryException e) {
+                LOG.warn("Failed to save changes for: '{}'", action, e);
+            }
         }
         return answer;
+    }
+
+    public static boolean isNullOrTrue(final Object value) {
+        return value == null || Boolean.TRUE.toString().equalsIgnoreCase(String.valueOf(value));
+    }
+
+    public static String getString(final Map map, final Object key) {
+        return getString(map, key, null);
+    }
+
+    public static String getString(final Map map, final Object key, final String defaultValue) {
+        String answer = defaultValue;
+        final Object value = map.get(key);
+        if (value != null && !value.toString().isEmpty()) {
+            answer = value.toString();
+        }
+        return answer;
+    }
+
+    public static boolean getBoolean(final Map map, final Object key, boolean defaultValue) {
+        boolean answer = defaultValue;
+        final Object value = map.get(key);
+        if (value != null && !value.toString().isEmpty()) {
+            answer = "true".equalsIgnoreCase(value.toString());
+        }
+        return answer;
+    }
+
+    public static int getChildIndex(final Resource parent, final Resource child) {
+        if (parent == null || child == null) {
+            return -1;
+        }
+
+        final String path = child.getPath();
+        if (!StringUtils.equals(getParent(path), parent.getPath())) {
+            return -1;
+        }
+
+        int index = 0;
+        for (final Resource resource: parent.getChildren()) {
+            if (path.equals(resource.getPath())) {
+                return index;
+            }
+
+            index++;
+        }
+
+        return -1;
+    }
+
+    public static Resource getFirstChild(final Resource parent) {
+        return Optional.ofNullable(parent)
+                .map(Resource::getChildren)
+                .map(Iterable::iterator)
+                .filter(Iterator::hasNext)
+                .map(Iterator::next)
+                .orElse(null);
+    }
+
+    public static boolean isPropertyPresentAndEqualsTrue(final Node node, final String propertyName) {
+        try {
+            return node.hasProperty(propertyName)
+                    && node.getProperty(propertyName).getBoolean();
+        } catch (final RepositoryException e) {
+            return false;
+        }
+    }
+
+    public static Node getFirstChild(final Node parent) {
+        try {
+            final NodeIterator iterator = parent.getNodes();
+            if (iterator.hasNext()) {
+                return iterator.nextNode();
+            }
+        } catch (final RepositoryException e) {
+            return null;
+        }
+
+        return null;
+    }
+
+    public static String toStringOrNull(final Object object) {
+        return object == null ? null : object.toString();
+    }
+
+    public static Object getClassOrNull(final Object value) {
+        return value == null ? null : value.getClass();
+    }
+
+    public static String getPropsFromMap(final Map source, final String key, final String defaultValue) {
+        return defaultIfBlank(toStringOrNull(source.get(key)), defaultValue);
+    }
+
+    public static Node getNodeAtPosition(final Node parent, final int position) throws RepositoryException {
+        final NodeIterator i = parent.getNodes();
+        int counter = 0;
+        while (i.hasNext()) {
+            if (counter == position) {
+                return i.nextNode();
+            }
+
+            i.nextNode();
+            counter++;
+        }
+
+        return null;
+    }
+
+    public static Node getNode(final Resource resource) {
+        return Optional.ofNullable(resource)
+                .map(r -> r.adaptTo(Node.class))
+                .orElse(null);
+    }
+
+    public static Node getNode(final ResourceResolver resourceResolver, final String path) {
+        return getNode(
+                Optional.ofNullable(path)
+                .map(p -> getResource(resourceResolver, p))
+                .orElse(null)
+        );
+    }
+
+    public static String getPath(final Resource resource) {
+        return Optional.ofNullable(resource)
+                .map(Resource::getPath)
+                .orElse(null);
+    }
+
+    /** Resource Check interface **/
+    public interface ResourceChecker {
+        /** @return True if the resource checks out **/
+        boolean doAdd(Resource resource);
+        /** @return False if the resource's children should not be considered **/
+        boolean doAddChildren(Resource resource);
+    }
+
+    /** Checks all resources that are either missing or are outdated on the target **/
+    public static class MissingOrOutdatedResourceChecker
+        implements ResourceChecker
+    {
+        private final Resource source;
+        private final Resource target;
+
+        /**
+         * This class will map any children of the source resource to a
+         * child on the target (same relative child path). If missing or
+         * outdated then it will be checked
+         *
+         * @param source Source Root Resource
+         * @param target Target Root Resource
+         */
+        public MissingOrOutdatedResourceChecker(final Resource source, final Resource target) {
+            this.source = source;
+            this.target = target;
+        }
+
+        @Override
+        public boolean doAdd(final Resource resource) {
+            final String relativePath = relativePath(source, resource);
+            final Resource targetResource = Optional.ofNullable(relativePath)
+                    .map(target::getChild)
+                    .orElse(null);
+            LOG.trace("Do Add. Resource: '{}', relative path: '{}', target resource: '{}'", resource.getPath(), relativePath, targetResource);
+            if(targetResource == null) {
+                return true;
+            }
+
+                //AS TODO This does not work as is. We need to compare the source's last modified timestamp against the target's
+                //AS TODO replicated timestamp
+            final Calendar sourceLastModified = resource.getValueMap().get(PER_REPLICATED, Calendar.class);
+            final Calendar targetLastModified = targetResource.getValueMap().get(PER_REPLICATED, Calendar.class);
+
+            return sourceLastModified != null && targetLastModified != null
+                    && sourceLastModified.after(targetLastModified);
+        }
+
+        @Override
+        public boolean doAddChildren(final Resource resource) {
+            return true;
+        }
+    }
+
+    /**
+     * Checks all resources that exist on the target (same relative path
+     * as on the source)
+     */
+    public static class MatchingResourceChecker
+        implements ResourceChecker
+    {
+        private final Resource source;
+        private final Resource target;
+
+        public MatchingResourceChecker(final Resource source, final Resource target) {
+            this.source = source;
+            this.target = target;
+        }
+
+        @Override
+        public boolean doAdd(final Resource resource) {
+            return Optional.ofNullable(relativePath(source, resource))
+                    .map(target::getChild)
+                    .isPresent();
+        }
+
+        @Override
+        public boolean doAddChildren(final Resource resource) { return true; }
+    }
+
+    /** Checks all resources **/
+    public static class AddAllResourceChecker
+        implements ResourceChecker
+    {
+        @Override
+        public boolean doAdd(final Resource resource) {
+            return true;
+        }
+        @Override
+        public boolean doAddChildren(Resource resource) { return true; }
     }
 }

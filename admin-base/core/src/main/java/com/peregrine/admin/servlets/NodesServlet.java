@@ -25,23 +25,29 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.commons.servlets.AbstractBaseServlet;
-import com.peregrine.commons.util.PerUtil;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ValueMap;
-import org.apache.sling.models.factory.ModelFactory;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
-import javax.servlet.Servlet;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_NODES;
-import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerConstants.ALLOWED_OBJECTS;
+import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.COMPONENT;
+import static com.peregrine.commons.util.PerConstants.ECMA_DATE_FORMAT;
+import static com.peregrine.commons.util.PerConstants.ECMA_DATE_FORMAT_LOCALE;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JCR_CREATED;
+import static com.peregrine.commons.util.PerConstants.JCR_CREATED_BY;
+import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED;
+import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED_BY;
+import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
+import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
+import static com.peregrine.commons.util.PerConstants.METAPROPERTIES;
+import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.PATH;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
+import static com.peregrine.commons.util.PerConstants.TAGS;
+import static com.peregrine.commons.util.PerConstants.TITLE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -54,16 +60,32 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.commons.util.PerUtil;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import javax.servlet.Servlet;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.models.factory.ModelFactory;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
 /**
  * List all the resources part of the given Path
  *
  * The API Definition can be found in the Swagger Editor configuration:
- *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
+ *    ui.apps/src/main/content/jcr_root/perapi/definitions/admin.yaml
  */
 @Component(
     service = Servlet.class,
     property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Nodes servlet",
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Nodes Servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
         SLING_SERVLET_METHODS + EQUALS + GET,
         SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_NODES
@@ -74,6 +96,7 @@ public class NodesServlet extends AbstractBaseServlet {
 
     public static final String NO_PATH_PROVIDED = "No Path provided";
     public static final String CHILDREN = "children";
+    public static final String HAS_CHILDREN = "hasChildren";
     public static final String MIME_TYPE = "mimeType";
     public static final String ACTIVATED = "activated";
     public static final String DEACTIVATED = "deactivated";
@@ -93,7 +116,10 @@ public class NodesServlet extends AbstractBaseServlet {
     protected Response handleRequest(Request request) throws IOException {
         String path = request.getParameter(PATH);
         if(path == null || path.isEmpty()) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(NO_PATH_PROVIDED).setRequestPath(path);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(NO_PATH_PROVIDED)
+                .setRequestPath(path);
         }
         String[] segments = path.split("/");
         logger.debug("lookup path {}, {}", path, segments.length);
@@ -123,6 +149,15 @@ public class NodesServlet extends AbstractBaseServlet {
         convertResource(json, resource, false);
     }
 
+    private boolean hasNonJcrContentChild(Resource res) {
+        for (Resource child : res.getChildren()) {
+            if(!JCR_CONTENT.equals(child.getName())) {
+                return true;
+            }            
+        }
+        return false;
+    }
+
     private void convertResource(JsonResponse json, ResourceResolver rs, String[] segments, int pos, String fullPath) throws IOException {
         String path = "";
         for(int i = 1; i <= pos; i++) {
@@ -132,11 +167,13 @@ public class NodesServlet extends AbstractBaseServlet {
         Resource res = rs.getResource(path);
         json.writeAttribute(NAME,res.getName());
         json.writeAttribute(PATH,res.getPath());
+        json.writeAttribute(HAS_CHILDREN, hasNonJcrContentChild(res));
         writeProperties(res, json);
         json.writeArray(CHILDREN);
         Iterable<Resource> children = res.getChildren();
         for(Resource child : children) {
-            if(fullPath.startsWith(child.getPath())) {
+            String childPath = child.getPath();
+            if(fullPath.startsWith(childPath+'/') || fullPath.equals(childPath)) {
                 json.writeObject();
                 convertResource(json, rs, segments, pos+1, fullPath);
                 json.writeClose();
@@ -145,10 +182,36 @@ public class NodesServlet extends AbstractBaseServlet {
                     json.writeObject();
                     json.writeAttribute(NAME,child.getName());
                     json.writeAttribute(PATH,child.getPath());
+                    json.writeAttribute(HAS_CHILDREN, hasNonJcrContentChild(child));
                     writeProperties(child, json);
                     if(isPrimaryType(child, ASSET_PRIMARY_TYPE)) {
-                        String mimeType = child.getChild(JCR_CONTENT).getValueMap().get(JCR_MIME_TYPE, String.class);
+                        ValueMap props = child.getChild(JCR_CONTENT).getValueMap();
+                        String mimeType = props.get(JCR_MIME_TYPE, String.class);
+                        String title = props.get(TITLE, String.class);
+                        String description = props.get("description", String.class);
                         json.writeAttribute(MIME_TYPE, mimeType);
+                        json.writeAttribute(TITLE, title);
+                        json.writeAttribute("description", description);
+
+                        Resource tags = child.getChild("jcr:content/tags");
+                        List<Tag> answer = new ArrayList<Tag>();
+                        if(tags != null) {
+                            for(Resource tag: tags.getChildren()) {
+                                answer.add(new Tag(tag));
+                            }
+                        }
+                        if(answer.size() > 0) {
+                            json.writeArray("tags");
+                            for (Tag tag : answer) {
+                                json.writeObject();
+                                json.writeAttribute(PATH, tag.getPath());
+                                json.writeAttribute(NAME, tag.getName());
+                                json.writeAttribute("value", tag.getValue());
+                                json.writeClose();
+                            }
+                            json.writeClose();
+                        }
+                    
                     }
                     if(isPrimaryType(child, PAGE_PRIMARY_TYPE)) {
                         Resource content = child.getChild(JCR_CONTENT);
@@ -198,7 +261,7 @@ public class NodesServlet extends AbstractBaseServlet {
         writeIfFound(json, ALLOWED_OBJECTS, properties);
 
         // For the Replication data we need to obtain the content properties. If not found
-        // then we try with the resoure's properties for non jcr:content nodes
+        // then we try with the resource's properties for non jcr:content nodes
         ValueMap replicationProperties = getProperties(resource);
         if(replicationProperties == null) { replicationProperties = properties; }
         String replicationDate = writeIfFound(json, PER_REPLICATED, replicationProperties);
@@ -237,5 +300,25 @@ public class NodesServlet extends AbstractBaseServlet {
         }
         return data;
     }
+
+    class Tag {
+        private String path;
+        private String name;
+        private String value;
+
+        public Tag(Resource r) {
+            this.path = r.getPath();
+            this.path = path.substring(path.indexOf("/jcr:content"));
+            this.name = r.getName();
+            this.value = r.getValueMap().get("value", String.class);
+        }
+
+        public String getName() { return name; }
+        public String getValue() { return value; }
+        public String getPath() { return path; }
+        @Override
+        public String toString() { return name; }
+    }
+
 }
 

@@ -23,10 +23,29 @@
   #L%
   -->
 <template>
-    <div class="nav-content sub-nav">
+    <div class="nav-content sub-nav" :class="classes">
+        <div v-if="showNodeTree" class="page-tree">
+            <admin-components-materializedropdown
+                ref="dropdown"
+                :on-focus-out="() => {}"
+                :below-origin="true">
+                <template>
+                    {{ currentNodeName }}<span class="caret-down"></span>
+                </template>
+                <template slot="content" v-if="nodeTreeRootNode && nodeTreeRootNode.children">
+                    <admin-components-nodetreeitem
+                        v-for="(node, index) in nodeTreeRootNode.children"
+                        :key="`page-tree-item-${node.path}`"
+                        :item="node"
+                        @click.native.stop="() => {}"
+                        @edit-node="onTreeItemEditNode"/>
+                </template>
+            </admin-components-materializedropdown>
+        </div>
         <template v-for="child in model.children">
-            <div v-bind:is="child.component" v-bind:model="child"></div>
+            <div v-bind:is="child.component" v-bind:model="child" v-bind:key="child.path"></div>
         </template>
+        <span v-if="showNodeTree" class="center-keeper"></span>
     </div>
 </template>
 
@@ -39,6 +58,60 @@ export default {
                 return this.model.classes
             }
             return 'navright'
+        },
+        isEditPage() {
+            return this.model.classes && this.model.classes.indexOf('navcenter') >= 0
+        },
+        tenant() {
+            return $perAdminApp.getView().state.tenant
+        },
+        section() {
+          return this.getPath().split('/')[3]
+        },
+        sectionRoot() {
+            return this.tenant.roots[this.section]
+        },
+        showNodeTree() {
+            return this.isEditPage && ['pages', 'templates'].indexOf(this.section) >= 0
+        },
+        nodes() {
+            return $perAdminApp.getView().admin.nodes
+        },
+        nodeTreeRootNode() {
+            try {
+                if (this.showNodeTree) {
+                    return $perAdminApp.findNodeFromPath(this.nodes, this.sectionRoot)
+                } else {
+                    return {}
+                }
+            } catch(err) {
+                return {}
+            }
+        },
+        currentNodeName() {
+            return this.getPath().split('/').pop() || 'loading...'
+        }
+    },
+    methods: {
+        isEditor() {
+            return this.$root.$data.adminPage.title === 'editor'
+        },
+        getPath(){
+            if( this.$root.$data.pageView){
+                if( this.$root.$data.pageView.path ){
+                    return this.$root.$data.pageView.path;
+                } else {
+                    return '';
+                }
+            } else {
+                return '';
+            }
+        },
+        getDownloadPath(){
+            return this.getPath().split('/').reverse()[0];
+        },
+        onTreeItemEditNode() {
+            this.$refs.dropdown.close()
         }
     }
 }

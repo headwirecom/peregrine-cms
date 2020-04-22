@@ -25,9 +25,20 @@ package com.peregrine.admin.resource;
  * #L%
  */
 
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.commons.util.PerUtil.isEmpty;
+import static com.peregrine.commons.util.PerUtil.isNotEmpty;
+import static com.peregrine.commons.util.PerUtil.listMissingParents;
+
+import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
 import com.peregrine.replication.Reference;
 import com.peregrine.replication.ReferenceLister;
-import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Activate;
@@ -39,18 +50,6 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerUtil.isEmpty;
-import static com.peregrine.commons.util.PerUtil.isNotEmpty;
-import static com.peregrine.commons.util.PerUtil.listMissingParents;
 
 /**
  * Lists References from and to a given Page
@@ -191,7 +190,7 @@ public class ReferenceListerService
                     if(child != null) {
                         // Check if the resource is not already listed in there
                         if(containsResource(response, child)) {
-                            log.info("Resource is already in the list: '{}'", child);
+                            log.trace("Resource is already in the list: '{}'", child);
                         } else {
                             if(source  != null && target != null) {
                                 listMissingParents(child, response, source, new MissingOrOutdatedResourceChecker(source, target));

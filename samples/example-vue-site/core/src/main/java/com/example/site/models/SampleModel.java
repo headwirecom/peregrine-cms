@@ -25,18 +25,17 @@ package com.example.site.models;
  * #L%
  */
 
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JSON;
+
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
+import java.util.List;
+import javax.inject.Inject;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
-
-import javax.inject.Inject;
-import java.util.List;
-
-import static com.peregrine.commons.util.PerConstants.JACKSON;
-import static com.peregrine.commons.util.PerConstants.JSON;
 
 
 @Model(
@@ -89,26 +88,25 @@ public class SampleModel extends AbstractComponent {
     private String range;
     
     @Inject
-	private String select;
+	  private String select;
     
     @Inject
-	private String time;
+	  private String time;
 
-	@Inject
-	private String date;
+	  @Inject
+	  private String date;
 	
-	@Inject
-	private String datetime;
+	  @Inject
+	  private String datetime;
 	
-	@Inject
-	private List<IComponent> cards;
+	  @Inject
+	  private List<IComponent> cards;
 	
-	@Inject
-	private String color;
+	  @Inject
+	  private String color;
 	
-	@Inject
-	private String icon;
-    
+	  @Inject
+	  private String icon;
 
     public String getText() {
         return text;

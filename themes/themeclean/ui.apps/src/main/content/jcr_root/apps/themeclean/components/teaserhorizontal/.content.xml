@@ -2,8 +2,8 @@
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" jcr:primaryType="per:Component" jcr:title="Teaser Horizontal" group="Features">
   <jcr:content jcr:primaryType="nt:unstructured" aligncontent="left" showtitle="true" showsubtitle="true" showtext="true" showbutton="true" fullheight="false" textwidth="60" backgroundtype="color" bgcolor="#ffffff" gradient="true" color2="#c0c0c0" bottompadding="30" toppadding="30" text="&lt;p>Eligendi fugit asperiores et. Corrupti voluptatum quasi sit. Adipisci ut voluptatem necessitatibus cumque aspernatur.&lt;/p>" isprimary="false" subtitle="Molestiae alias et inventore voluptas" title="Peregrine blocks" buttonsize="default">
     <buttons jcr:primaryType="nt:unstructured">
-      <buttons0 jcr:primaryType="nt:unstructured" buttonlink="/content/sites/themeclean" buttontext="See More" buttoncolor="primary" iconclass=""/>
-      <buttons1 jcr:primaryType="nt:unstructured" buttonlink="/content/sites/themeclean" buttontext="About Us" buttoncolor="primary" iconclass=""/>
+      <buttons0 jcr:primaryType="nt:unstructured" buttonlink="/content/themeclean/pages" buttontext="See More" buttoncolor="primary" iconclass=""/>
+      <buttons1 jcr:primaryType="nt:unstructured" buttonlink="/content/themeclean/pages" buttontext="About Us" buttoncolor="primary" iconclass=""/>
     </buttons>
   </jcr:content>
 </jcr:root>

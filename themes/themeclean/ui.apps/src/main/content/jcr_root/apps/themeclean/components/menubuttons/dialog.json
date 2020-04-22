@@ -37,7 +37,7 @@
         },
         {
           "type": "pathbrowser",
-          "browserRoot": "/content/sites",
+          "browserRoot": "/content/themeclean/pages",
           "placeholder": "buttonlink",
           "label": "Button Link",
           "model": "buttonlink"

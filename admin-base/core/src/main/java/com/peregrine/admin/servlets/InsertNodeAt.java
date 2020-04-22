@@ -25,22 +25,6 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.peregrine.admin.resource.AdminResourceHandler;
-import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
-import com.peregrine.admin.resource.ResourceRelocation;
-import com.peregrine.commons.servlets.AbstractBaseServlet;
-import com.peregrine.commons.servlets.ServletHelper;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.factory.ModelFactory;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
-import javax.servlet.Servlet;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_INSERT_NODE;
 import static com.peregrine.admin.util.AdminConstants.BEFORE_POSTFIX;
 import static com.peregrine.admin.util.AdminConstants.INTO;
@@ -72,11 +56,26 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.peregrine.admin.resource.AdminResourceHandler;
+import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
+import com.peregrine.admin.resource.ResourceRelocation;
+import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.commons.servlets.ServletHelper;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.Servlet;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.factory.ModelFactory;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
 /**
  * Creates a New Node in a given Parent Node either as child or sibling
  *
  * The API Definition can be found in the Swagger Editor configuration:
- *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
+ *    ui.apps/src/main/content/jcr_root/perapi/definitions/admin.yaml
  */
 @Component(
     service = Servlet.class,
@@ -90,8 +89,9 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @SuppressWarnings("serial")
 public class InsertNodeAt extends AbstractBaseServlet {
 
-    public static final String FAILED_TO_CREATE_INTERMEDIATE_RESOURCES = "Failed to create intermediate resources";
-    public static final String RESOURCE_NOT_FOUND_BY_PATH = "Resource not found by Path";
+    private static final String FAILED_TO_CREATE_INTERMEDIATE_RESOURCES = "Failed to create intermediate resources";
+    private static final String RESOURCE_NOT_FOUND_BY_PATH = "Resource not found by Path";
+
     @Reference
     ModelFactory modelFactory;
 
@@ -125,9 +125,13 @@ public class InsertNodeAt extends AbstractBaseServlet {
                                 logger.debug("Node Child Name: '{}', parent resource: '{}', resource found: '{}'", nodeName, intermediate.getPath(), temp == null ? "null" : temp.getPath());
                                 if(temp == null) {
                                     try {
-                                        intermediate = resourceManagement.createNode(intermediate, nodeName, NT_UNSTRUCTURED, null);
+                                        intermediate = resourceManagement
+                                            .createNode(intermediate, nodeName, NT_UNSTRUCTURED, null);
                                     } catch(ManagementException e) {
-                                        return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_CREATE_INTERMEDIATE_RESOURCES).setRequestPath(path);
+                                        return new ErrorResponse()
+                                            .setHttpErrorCode(SC_BAD_REQUEST)
+                                            .setErrorMessage(FAILED_TO_CREATE_INTERMEDIATE_RESOURCES)
+                                            .setRequestPath(path);
                                     }
                                 } else {
                                     intermediate = temp;
@@ -141,7 +145,10 @@ public class InsertNodeAt extends AbstractBaseServlet {
         }
         //AS End of Patch
         if(resource == null) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(RESOURCE_NOT_FOUND_BY_PATH).setRequestPath(path);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(RESOURCE_NOT_FOUND_BY_PATH)
+                .setRequestPath(path);
         }
         String type = request.getParameter(TYPE);
         // Next Block is only here to be backwards compatible
@@ -161,7 +168,7 @@ public class InsertNodeAt extends AbstractBaseServlet {
             properties.putAll(mapper.readValue(data, Map.class));
         }
         if(component != null && !component.isEmpty()) {
-            // Component overrides the JSon component if provided
+            // Component overrides the Json component if provided
             properties.put(COMPONENT, component);
         } else {
             component = getStringOrNull(properties, COMPONENT);
@@ -171,13 +178,16 @@ public class InsertNodeAt extends AbstractBaseServlet {
         }
         String variation = request.getParameter(VARIATION);
         try {
-            Resource newResource = resourceManagement.insertNode(resource, properties, addAsChild, addBefore, variation);
+            Resource newResource = resourceManagement
+                .insertNode(resource, properties, addAsChild, addBefore, variation);
             newResource.getResourceResolver().commit();
             return new RedirectResponse((addAsChild ? path : resource.getParent().getPath()) + MODEL_JSON);
         } catch (ManagementException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setException(e);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(e.getMessage())
+                .setException(e);
         }
-
     }
 }
 

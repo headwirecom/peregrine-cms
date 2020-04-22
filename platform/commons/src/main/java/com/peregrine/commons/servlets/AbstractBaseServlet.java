@@ -2,15 +2,20 @@ package com.peregrine.commons.servlets;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
+import org.apache.tika.parser.txt.CharsetDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +30,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
 
@@ -147,6 +153,13 @@ public abstract class AbstractBaseServlet
             return answer == null ? defaultValue : answer;
         }
 
+        public String getParameterUtf8(String name) {
+            String rawParam = getParameter(name);
+            if(StringUtils.isBlank(rawParam)) return rawParam;
+            CharsetDetector detector = new CharsetDetector();
+            return detector.getString(rawParam.getBytes(), "utf-8");
+        }
+
         public int getIntParameter(String name, int defaultValue) {
             int answer = defaultValue;
             try {
@@ -260,13 +273,82 @@ public abstract class AbstractBaseServlet
         }
 
         private void init() throws IOException {
-            JsonFactory jf = new JsonFactory();
+            ObjectMapper mapper = new ObjectMapper();
+            JsonFactory jf = mapper.getFactory();
             writer = new StringWriter();
             json = jf.createGenerator(writer);
             // Use Pretty Printer that indents Arrays as well
             json.setPrettyPrinter(new PrettyPrinter());
             json.writeStartObject();
             states.push(STATE.object);
+        }
+
+        /**
+         * Merges the Content of the given Source into this
+         * Response by adding it at the current location
+         * @param source Source to be added
+         *
+         * @throws IOException If access to Json fails or we cannot write
+         */
+        public void writeResponse(JsonResponse source) throws IOException {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode tree = mapper.readTree(source.getContent());
+            merge(tree);
+        }
+
+        private void merge(JsonNode source) throws IOException {
+            if (source.isArray()) {
+                Iterator<JsonNode> entries = source.elements();
+                while (entries.hasNext()) {
+                    JsonNode child = entries.next();
+                    switch (child.getNodeType()) {
+                        case STRING:
+                            json.writeString(child.textValue());
+                            break;
+                        case NUMBER:
+                            json.writeNumber(child.intValue());
+                            break;
+                        case BOOLEAN:
+                            json.writeBoolean(child.booleanValue());
+                            break;
+                        case OBJECT:
+                            json.writeStartObject();
+                            merge(child);
+                            json.writeEndObject();
+                            break;
+                        case ARRAY:
+                            json.writeStartArray();
+                            merge(child);
+                            json.writeEndArray();
+                    }
+                }
+            } else {
+                Iterator<String> fieldNames = source.fieldNames();
+                while (fieldNames.hasNext()) {
+                    String fieldName = fieldNames.next();
+                    JsonNode value = source.get(fieldName);
+                    switch (value.getNodeType()) {
+                        case STRING:
+                            json.writeStringField(fieldName, value.textValue());
+                            break;
+                        case NUMBER:
+                            json.writeNumberField(fieldName, value.intValue());
+                            break;
+                        case BOOLEAN:
+                            json.writeBooleanField(fieldName, value.booleanValue());
+                            break;
+                        case OBJECT:
+                            json.writeObjectFieldStart(fieldName);
+                            merge(value);
+                            json.writeEndObject();
+                            break;
+                        case ARRAY:
+                            json.writeArrayFieldStart(fieldName);
+                            merge(value);
+                            json.writeEndArray();
+                    }
+                }
+            }
         }
 
         /**
@@ -364,6 +446,18 @@ public abstract class AbstractBaseServlet
          */
         public JsonResponse writeObject() throws IOException {
             json.writeStartObject();
+            states.push(STATE.object);
+            return this;
+        }
+
+        /**
+         * Starts an JSon object value with the provided name
+         * @param name Name of the object field
+         * @return This instance for method chaining
+         * @throws IOException If starting the object failed
+         */
+        public JsonResponse writeObject(String name) throws IOException {
+            json.writeObjectFieldStart(name);
             states.push(STATE.object);
             return this;
         }

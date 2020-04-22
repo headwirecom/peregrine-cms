@@ -27,13 +27,17 @@
         <template v-for="child in model.children">
             <component v-bind:is="child.component" v-bind:model="child" v-bind:key="child.path"></component>
         </template>
+        <admin-components-about></admin-components-about>
         <admin-components-notifyuser></admin-components-notifyuser>
         <admin-components-askuser></admin-components-askuser>
+        <admin-components-promptuser></admin-components-promptuser>
     </div>
 </template>
 
 <script>
-export default {
+    import {set} from '../../../../../../js/utils'
+
+    export default {
     props: ['model'],
     mounted(){
         // init materialize plugins
@@ -41,12 +45,31 @@ export default {
     },
     methods: {
         selectPath: function(me, target) {
-            $perAdminApp.loadContent(target+'.html')
+            // const view = $perAdminApp.getView()
+            // const tenant = view.state.tenant
+            // const action = target.action || target
+            // const section = action.split('/').slice(-1).pop()
+            // set(view, '/state/current/section/name', section)
+            // const payload = {
+            //     path: `/state/tools/${section}`
+            //     // ,
+            //     // selected: `/content/${tenant.name}/${section}`
+            // }
+            // $perAdminApp.stateAction('selectToolsNodesPath', payload).then(() => {
+            //     $perAdminApp.loadContent(action + '.html')
+            // })
+            $perAdminApp.loadContent(target + '.html')
         },
         editPreview: function(me, target) {
             $perAdminApp.stateAction('editPreview', target)
         },
         editPage: function(me, target) {
+        },
+        addSite: function(me, target) {
+            $perAdminApp.stateAction('createSiteWizard', '/content')
+        },
+        configureSite: function(me, target) {
+            $perAdminApp.stateAction('configureSite', target)
         }
     }
 }

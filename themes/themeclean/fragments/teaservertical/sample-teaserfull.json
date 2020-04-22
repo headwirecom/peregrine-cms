@@ -10,7 +10,7 @@
     "fullheight": "true",
     "custombackground": "true",
     "backgroundtype": "image",
-    "bgimage": "/content/assets/themeclean/images/meeting_room.jpg",
+    "bgimage": "/content/themeclean/assets/images/meeting_room.jpg",
     "overlay":"true",
     "overlaycolor": "#ffffff",
     "overlayopacity": "70", 
@@ -22,12 +22,12 @@
     "title": "Peregrine blocks",
     "buttons": [
       {
-        "buttonlink": "/content/sites/themeclean",
+        "buttonlink": "/content/themeclean/pages",
         "buttontext": "See More",
         "buttoncolor": "primary",
         "iconclass": ""
       },{
-        "buttonlink": "/content/sites/themeclean",
+        "buttonlink": "/content/themeclean/pages",
         "buttontext": "About Us",
         "buttoncolor": "primary",
         "iconclass": ""

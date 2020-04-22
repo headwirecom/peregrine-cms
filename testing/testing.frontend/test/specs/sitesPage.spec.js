@@ -5,7 +5,7 @@ let {ComponentExplorer, ContentView} = Workspace
 describe('Peregrine sites page', function () {
     it('should login', function() {
         sitesPage.open()
-        expect( browser.getUrl() ).to.contain('content/admin/pages.html')
+        expect( browser.getUrl() ).to.contain('content/admin/pages/pages/index.html')
     })
 
     describe('Site Explorer', function() {
@@ -22,7 +22,7 @@ describe('Peregrine sites page', function () {
         it('clicking edit item should load the page editor workspace', function(){
             exampleSite.editButton.click()
             Workspace.container.waitForVisible()
-            expect( browser.getUrl() ).to.contain('content/sites/example' )
+            expect( browser.getUrl() ).to.contain('content/example/pages' )
             expect( Workspace.container.isVisible() ).to.equal(true)
         })
 

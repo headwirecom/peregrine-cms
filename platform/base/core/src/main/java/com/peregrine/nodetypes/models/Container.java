@@ -25,20 +25,18 @@ package com.peregrine.nodetypes.models;
  * #L%
  */
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.annotations.Exporter;
-import org.apache.sling.models.annotations.Model;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import java.util.List;
-import java.util.Map;
-
 import static com.peregrine.commons.util.PerConstants.JACKSON;
 import static com.peregrine.commons.util.PerConstants.JSON;
 import static com.peregrine.nodetypes.models.Constants.PEREGRINE_CONTAINER_TYPE;
 import static com.peregrine.nodetypes.models.Constants.PEREGRINE_PAGE_TYPE;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Named;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.annotations.Exporter;
+import org.apache.sling.models.annotations.Model;
 
 /**
  * Created by rr on 12/2/2016.

@@ -25,22 +25,6 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.admin.resource.AdminResourceHandler;
-import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
-import com.peregrine.commons.servlets.AbstractBaseServlet;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.servlets.ServletResolverConstants;
-import org.apache.sling.models.factory.ModelFactory;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.http.Part;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_UPLOAD_FILES;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
@@ -53,22 +37,37 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+import com.peregrine.admin.resource.AdminResourceHandler;
+import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
+import com.peregrine.commons.servlets.AbstractBaseServlet;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import javax.servlet.http.Part;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.factory.ModelFactory;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
 /**
  * Uploads one or more files as assets to Peregrine
  *
  * The API Definition can be found in the Swagger Editor configuration:
- *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
+ *    ui.apps/src/main/content/jcr_root/perapi/definitions/admin.yaml
  *
  * To Upload a File with CURL you have to do the following:
  *
  * curl -i -u admin:admin \
  *    -F"test3.jpg=@./testme.jpg;type=image/jpeg" \
- *    "http://localhost:8080/perapi/admin/uploadFiles.json/content/assets/test"
+ *    "http://localhost:8080/perapi/admin/uploadFiles.json/content/test/assets"
  *
  * 'test3.jpg' is the name of the asset under the given asset path in the URL,
  * './testme.jpg' is the relative or absolute path to the file to be uploaded
  * 'type=image/jpeg' defines the image content type which must be provided
- * '/content/assets/test' is the path to the resource that will contain the resource
+ * '/content/test/assets' is the path to the resource that will contain the resource
  *
  */
 @Component(
@@ -83,18 +82,22 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @SuppressWarnings("serial")
 public class UploadFilesServlet extends AbstractBaseServlet {
 
-    public static final String RESOURCE_NAME = "resourceName";
-    public static final String RESOURCE_PATH = "resourcePath";
-    public static final String ASSET_NAME = "assetName";
-    public static final String ASSET_PATH = "assetPath";
-    public static final String UPLOAD_FAILED_BECAUSE_OF_SERVLET_PARTS_PROBLEM = "Upload Failed because of Servlet Parts Problem";
+    private static final String RESOURCE_NAME = "resourceName";
+    private static final String RESOURCE_PATH = "resourcePath";
+    private static final String ASSET_NAME = "assetName";
+    private static final String ASSET_PATH = "assetPath";
+    private static final String UPLOAD_FAILED_BECAUSE_OF_SERVLET_PARTS_PROBLEM = "Upload Failed because of Servlet Parts Problem";
+
     @Reference
     ModelFactory modelFactory;
+
     @Reference
     AdminResourceHandler resourceManagement;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
+        String characterEncoding = request.getRequest().getCharacterEncoding();
+        logger.debug("Current Character Encoding: '{}'", characterEncoding);
         String path = request.getParameter(PATH);
         try {
             Resource resource = request.getResourceByPath(path);
@@ -102,10 +105,16 @@ public class UploadFilesServlet extends AbstractBaseServlet {
             List<Resource> assets = new ArrayList<>();
             for (Part part : request.getParts()) {
                 String assetName = part.getName();
+                if(!characterEncoding.equalsIgnoreCase(StandardCharsets.UTF_8.toString())) {
+                    String originalName = assetName;
+                    assetName = new String(originalName.getBytes (characterEncoding), StandardCharsets.UTF_8);
+                    logger.debug("Asset Name, original: '{}', converted: '{}'", originalName, assetName);
+                }
                 String contentType = part.getContentType();
                 logger.debug("part type {}",contentType);
                 logger.debug("part name {}",assetName);
-                Resource asset = resourceManagement.createAssetFromStream(resource, assetName, contentType, part.getInputStream());
+                Resource asset = resourceManagement.
+                    createAssetFromStream(resource, assetName, contentType, part.getInputStream());
                 assets.add(asset);
             }
             resource.getResourceResolver().commit();
@@ -114,7 +123,7 @@ public class UploadFilesServlet extends AbstractBaseServlet {
                 .writeAttribute(RESOURCE_NAME, resource.getName())
                 .writeAttribute(RESOURCE_PATH, resource.getPath())
                 .writeArray("assets");
-            for(Resource asset: assets) {
+            for(Resource asset : assets) {
                 answer.writeObject();
                 answer.writeAttribute(ASSET_NAME, asset.getName());
                 answer.writeAttribute(ASSET_PATH, asset.getPath());
@@ -123,11 +132,18 @@ public class UploadFilesServlet extends AbstractBaseServlet {
             return answer;
         } catch(ManagementException e) {
             logger.debug("Upload Failed", e);
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setRequestPath(path).setException(e);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(e.getMessage())
+                .setRequestPath(path)
+                .setException(e);
         } catch(ServletException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(UPLOAD_FAILED_BECAUSE_OF_SERVLET_PARTS_PROBLEM).setRequestPath(path).setException(e);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(UPLOAD_FAILED_BECAUSE_OF_SERVLET_PARTS_PROBLEM)
+                .setRequestPath(path)
+                .setException(e);
         }
     }
-
 }
 

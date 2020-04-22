@@ -33,16 +33,16 @@
             classes: 'show-right-panel',
             target: 'rightPanelVisible',
             command: 'showHide',
-            tooltipTitle: $i18n('show components panel')
+            tooltipTitle: $i18n('showComponentsPanel')
             }"><i class="material-icons">keyboard_arrow_left</i>
         </admin-components-action>
 
-        <aside v-bind:class="`right-panel ${isFullscreen ? 'fullscreen' : 'narrow'}`">
+        <aside v-bind:class="`explorer-preview right-panel ${isFullscreen ? 'fullscreen' : 'narrow'}`">
             <admin-components-action v-if="!state.editorVisible" v-bind:model="{
                 classes: 'hide-right-panel',
                 target: 'rightPanelVisible',
                 command: 'showHide',
-                tooltipTitle: $i18n('hide components panel')
+                tooltipTitle: $i18n('hideComponentsPanel')
             }">
                 <i class="material-icons">highlight_off</i>
             </admin-components-action>
@@ -59,7 +59,7 @@
               v-if="state.editorVisible && !isFullscreen"
               type="button" 
               class="toggle-fullscreen" 
-              v-bind:title="$i18n('enter fullscreen')"
+              v-bind:title="$i18n('enterFullscreen')"
               v-on:click.prevent="onEditorFullscreen">
               <i class="material-icons">fullscreen</i>
             </button>
@@ -71,10 +71,17 @@
             </component>
 
             <component
-              v-else
-              v-bind:is    = "getChildByPath('components').component"
-              v-bind:model = "getChildByPath('components')">
+              v-else-if    = "getChildByPath('right-panel')"
+              v-bind:is    = "getChildByPath('right-panel').component"
+              v-bind:model = "getChildByPath('right-panel')">
             </component>
+
+            <component
+                v-else
+                v-bind:is    = "getChildByPath('components').component"
+                v-bind:model = "getChildByPath('components')">
+            </component>
+
         </aside>
     </div>
 </template>

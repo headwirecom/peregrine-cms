@@ -1,7 +1,6 @@
 package com.peregrine.admin.servlets;
 
 public interface AdminPaths {
-    public static final String JSON_EXTENSION = "json";
     public static final String API_PREFIX = "perapi/admin/";
     public static final String RESOURCE_TYPE_ACCESS = API_PREFIX + "access";
     public static final String RESOURCE_TYPE_COMPONENT_DEFINITION = API_PREFIX + "componentDefinition";
@@ -20,6 +19,7 @@ public interface AdminPaths {
     public static final String RESOURCE_TYPE_MOVE_NODE = API_PREFIX + "moveNodeTo";
     public static final String RESOURCE_TYPE_MOVE = API_PREFIX + "move";
     public static final String RESOURCE_TYPE_RENAME = API_PREFIX + "rename";
+    public static final String RESOURCE_TYPE_COPY = API_PREFIX + "copy";
     public static final String RESOURCE_TYPE_NODE = API_PREFIX + "node";
     public static final String RESOURCE_TYPE_NODES = API_PREFIX + "nodes";
     public static final String RESOURCE_TYPE_REF = API_PREFIX + "ref";
@@ -28,4 +28,5 @@ public interface AdminPaths {
     public static final String RESOURCE_TYPE_UPDATE_RESOURCE = API_PREFIX + "updateResource";
     public static final String RESOURCE_TYPE_UPLOAD_FILES = API_PREFIX + "uploadFiles";
     public static final String RESOURCE_TYPE_UPDATE_SITE = API_PREFIX + "updateSite";
+    public static final String RESOURCE_TYPE_LIST_TENANTS = API_PREFIX + "listTenants";
 }

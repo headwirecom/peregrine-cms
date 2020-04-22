@@ -1,0 +1,189 @@
+{ "fields":[
+  {
+    "type": "input",
+    "inputType": "text",
+    "model": "name",
+    "label": "Name",
+    "readonly": true,
+    "placeholder": "page name"
+  },
+  {
+    "type": "input",
+    "inputType": "text",
+    "model": "title",
+    "x-model": "jcr:title",
+    "label": "Title",
+    "placeholder": "page title"
+  },
+  {
+    "type": "material-datetime",
+    "inputType": "text",
+    "model": "created",
+    "label": "Created",
+    "readonly": true,
+    "placeholder": "created"
+  },
+  {
+    "type": "input",
+    "inputType": "text",
+    "model": "createdBy",
+    "label": "Created By",
+    "readonly": true,
+    "placeholder": "created by"
+  },
+  {
+    "type": "material-datetime",
+    "inputType": "text",
+    "model": "lastModified",
+    "label": "Last Modified",
+    "readonly": true,
+    "placeholder": "Last Modified"
+  },
+  {
+    "type": "input",
+    "inputType": "text",
+    "model": "lastModifiedBy",
+    "label": "Last Modified By",
+    "readonly": true,
+    "placeholder": "Last Modified By"
+  },
+  {
+    "type": "material-multiselect",
+    "model": "tags",
+    "label": "Tags",
+    "placeholder": "tags",
+    "selectOptions": {
+      "multiple": true,
+      "trackBy": "name",
+      "label": "name",
+      "searchable": true,
+      "clearOnSelect": true,
+      "closeOnSelect": false,
+      "taggable": true,
+      "placeholder": "Select option"
+    },
+    "valuesFrom": "/content/pagerendervue/objects/tags.infinity.json"
+  },
+  {
+    "type": "material-textarea",
+    "inputType": "text",
+    "model": "description",
+    "label": "Description",
+    "rows": 10,
+    "placeholder": "enter a description for this page"
+  },
+  {
+    "type": "collection",
+    "multifield": true,
+    "fieldLabel": [
+      "property",
+      "value"
+    ],
+    "fields": [
+      {
+        "type": "material-select",
+        "label": "Type",
+        "model": "metatype",
+        "selectOptions": {
+          "name": "name",
+          "value": "value"
+        },
+        "values": [
+          {"name": "property", "value": "property" },
+          {"name": "name", "value": "name" }
+        ],
+        "required": true,
+        "validator": "required"
+      },
+      {
+        "type": "input",
+        "inputType": "text",
+        "placeholder": "og:title",
+        "label": "meta property",
+        "model": "key"
+      },
+      {
+        "type": "input",
+        "inputType": "text",
+        "placeholder": "title",
+        "label": "meta content",
+        "model": "value"
+      }
+    ],
+    "label": "Meta Properties",
+    "model": "metaproperties"
+  },
+  {
+    "type": "materialswitch",
+    "label": "Exclude from Sitemap",
+    "model": "excludeFromSitemap",
+    "textOn": "yes",
+    "textOff": "no",
+    "valueOn": "true",
+    "valueOff": "false",
+    "hint": "This property indicates if the Page should be hidden from the Sitemap."
+  },
+  {
+    "type": "material-select",
+    "label": "Page change frequency",
+    "model": "changefreq",
+    "selectOptions": {
+      "name": "name",
+      "value": "value"
+    },
+    "values": [
+      {
+        "name": "always",
+        "value": "always"
+      },
+      {
+        "name": "hourly",
+        "value": "hourly"
+      },
+      {
+        "name": "daily",
+        "value": "daily"
+      },
+      {
+        "name": "weekly",
+        "value": "weekly"
+      },
+      {
+        "name": "monthly",
+        "value": "monthly"
+      },
+      {
+        "name": "yearly",
+        "value": "yearly"
+      },
+      {
+        "name": "never",
+        "value": "never"
+      }
+    ],
+    "hint": "How frequently the page is likely to change. This value provides general information to search engines and may not correlate exactly to how often they crawl the page."
+  },
+  {
+    "type": "material-select",
+    "label": "Page priority",
+    "model": "priority",
+    "selectOptions": {
+      "name": "name",
+      "value": "value"
+    },
+    "values": [
+      { "name": "0.0", "value": "0.0" },
+      { "name": "0.1", "value": "0.1" },
+      { "name": "0.2", "value": "0.2" },
+      { "name": "0.3", "value": "0.3" },
+      { "name": "0.4", "value": "0.4" },
+      { "name": "0.5", "value": "0.5" },
+      { "name": "0.6", "value": "0.6" },
+      { "name": "0.7", "value": "0.7" },
+      { "name": "0.8", "value": "0.8" },
+      { "name": "0.9", "value": "0.9" },
+      { "name": "1.0", "value": "1.0" }
+    ],
+    "hint": "The priority of this URL relative to other URLs on your site. Valid values range from 0.0 to 1.0. This value does not affect how your pages are compared to pages on other sites—it only lets the search engines know which pages you deem most important for the crawlers."
+  }
+]}

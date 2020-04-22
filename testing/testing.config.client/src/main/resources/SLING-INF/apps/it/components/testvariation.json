@@ -1,6 +1,6 @@
 {
   "jcr:primaryType":"per:Component",
-  "sling:resourceSuperType":"pagerender/vue/structure/container",
+  "sling:resourceSuperType":"pagerendervue/structure/container",
   "jcr:title":"test-variation",
   "jcr:content": {
     "jcr:primaryType": "nt:unstructured",

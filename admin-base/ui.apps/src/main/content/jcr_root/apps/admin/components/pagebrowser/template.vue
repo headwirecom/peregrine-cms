@@ -183,7 +183,7 @@
                     </dl>
                 </template>
                 <div v-else class="no-asset-selected">
-                    <span>{{ $i18n('no asset selected') }}</span>
+                    <span>{{ $i18n('noAssetSelected') }}</span>
                     <i class="material-icons">info</i>
                 </div>
             </div>
@@ -230,7 +230,7 @@
                             type: "checkbox",
                             label: "Open in new window?",
                             model: "newWindow",
-                            default: true
+                            default: false
                         }
                     ]
                 },

@@ -16,12 +16,17 @@
 #  specific language governing permissions and limitations
 #  under the License.
 #
-# The :launchpad feature defines Sling's launchpad version
-# Only a single artifact is allowed within this feature.
+
 #
+# The Distribution setup for Peregrine CMS
+#
+
 [feature name=distribution]
 
 [artifacts startLevel=20]
-    org.apache.jackrabbit.vault/org.apache.jackrabbit.vault/3.1.42
+    # Updated the Distribution to 0.3
+    org.apache.jackrabbit.vault/org.apache.jackrabbit.vault/3.2.0
     org.apache.sling/org.apache.sling.distribution.api/0.3.0
-    org.apache.sling/org.apache.sling.distribution.core/0.2.10
+    org.apache.sling/org.apache.sling.distribution.core/0.3.4
+    com.peregrine-cms/base.core/1.0-SNAPSHOT
+    com.peregrine-cms/distribution/1.0-SNAPSHOT

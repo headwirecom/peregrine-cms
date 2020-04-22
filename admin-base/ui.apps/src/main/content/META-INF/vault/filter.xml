@@ -23,50 +23,28 @@
   under the License.
   #L%
   -->
-
-
 <workspaceFilter version="1.0">
-    <!--
-        Any node that will contain customer data needs to be excluded
-        otherwise a Pacakge Installation will wipe them.
-
-        If there is a mix then all provided nodes must be included and
-        all custom nodes excluded.
-
-        If unsure what to do then go to the Composum Package Manager
-        (/bin/packages.html) and create a test package. To to the package
-        filter list and add filter entries until all of the app provides
-        nodes are included but none of the customer generatedd nodes.
-
-        Also any sub pckage of this module needs to exclude /apps/admin/install
-        folder otherwise they wipe all installed bundles.
-    -->
-    <filter root="/i18n/admin"/>
-    <filter root="/perapi/admin"/>
-    <filter root="/perapi/swaggereditor"/>
-    <filter root="/perapi/definitions"/>
-    <filter root="/content/admin"/>
-    <filter root="/content/sites/docs"/>
-    <filter root="/etc/felibs/admin"/>
-    <filter root="/content/objects/tags">
-        <exclude pattern="/content/objects/tags/.*"/>
-    </filter>
-
-    <!--
-        Need to exclude the Install folder otherwise the Bundle will be undeployed
-        as it is in the '/apps/admin/install' folder (see the 'all'
-        package).
-    -->
-    <filter root="/apps/admin">
-        <exclude pattern="/apps/admin/install/.*"/>
-    </filter>
-    <filter root="/apps/field"/>
-    <filter root="/empty.png"/>
-    <filter root="/favicon.ico"/>
-    <filter root="/live">
-        <exclude pattern="/live/.*"/>
-    </filter>
-    <filter root="/oak:index/perComponent"/>
-    <filter root="/oak:index/perObjectDefinition"/>
-    <filter root="/oak:index/perPage"/>
+  <filter root="/i18n/admin"/>
+  <filter root="/perapi/admin"/>
+  <filter root="/perapi/swaggereditor"/>
+  <filter root="/perapi/definitions"/>
+  <filter root="/content/admin">
+    <exclude pattern="/content/admin/objects/tags/.*"/>
+  </filter>
+  <filter root="/content/docs">
+    <exclude pattern="/content/docs/objects/tags/.*"/>
+  </filter>
+  <filter root="/etc/felibs/admin"/>
+  <filter root="/apps/admin">
+    <exclude pattern="/apps/admin/install/.*"/>
+  </filter>
+  <filter root="/apps/field"/>
+  <filter root="/favicon.ico"/>
+  <filter root="/live">
+    <exclude pattern="/live/.*"/>
+  </filter>
+  <filter root="/oak:index/perComponent"/>
+  <filter root="/oak:index/perObjectDefinition"/>
+  <filter root="/oak:index/perPage"/>
+  <filter root="/content/apidocs" mode="merge"/>
 </workspaceFilter>

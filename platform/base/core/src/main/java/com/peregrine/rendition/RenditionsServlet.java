@@ -25,26 +25,8 @@ package com.peregrine.rendition;
  * #L%
  */
 
-import com.peregrine.adaption.PerAsset;
-import com.peregrine.rendition.BaseResourceHandler.HandlerException;
-import com.peregrine.transform.ImageContext;
-import com.peregrine.commons.servlets.AbstractBaseServlet;
-import org.apache.commons.io.IOUtils;
-import org.apache.sling.api.resource.Resource;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
-
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -54,6 +36,24 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
+
+import com.peregrine.adaption.PerAsset;
+import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.rendition.BaseResourceHandler.HandlerException;
+import com.peregrine.transform.ImageContext;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URLDecoder;
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import org.apache.commons.io.IOUtils;
+import org.apache.sling.api.resource.Resource;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 @Component(
     service = Servlet.class,
@@ -70,8 +70,8 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  * This servlet provides renditions of Peregrine Assets (per:Asset)
  * and creates them if they are not available yet
  *
- * Drag an image to the asset page: http://localhost:8080/content/admin/assets.html/path///content/assets
- * Create a thumbnail image with: curl -u admin:admin http://localhost:8080/content/assets/test.png.rendition.json/thumbnail.png
+ * Drag an image to the asset page: http://localhost:8080/content/admin/pages/assets.html/path:/content/test/assets
+ * Create a thumbnail image with: curl -u admin:admin http://localhost:8080/content/test/assets/test.png.rendition.json/thumbnail.png
  */
 public class RenditionsServlet extends AbstractBaseServlet {
 
@@ -114,11 +114,13 @@ public class RenditionsServlet extends AbstractBaseServlet {
         // TODO: If the path changes because of a Mapping then this will fail loading the image
         String resourceName = resource.getName();
         String requestName = request.getRequestPath();
+        requestName = URLDecoder.decode(requestName);
         int index = requestName.lastIndexOf("/");
         if(index >= 0) {
             requestName = requestName.substring(index + 1);
         }
         if(!"rendition".equals(selector) && !resourceName.equals(requestName)) {
+            logger.trace("Redirect as this is not an rendition (selector: '{}') or resource name: '{}' odes not match request: '{}'", selector, resourceName, requestName);
             redirectServlet.service(request.getRequest(), request.getResponse());
             return new ResponseHandledResponse();
         }
@@ -142,6 +144,7 @@ public class RenditionsServlet extends AbstractBaseServlet {
                 imageContext = renditionHandler.createRendition(resource, renditionName, sourceMimeType);
                 request.getResourceResolver().commit();
             } catch(HandlerException e) {
+                logger.debug("Create Rendition failed !!", e);
                 return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setException(e);
             }
             if(imageContext != null) {

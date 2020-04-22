@@ -45,16 +45,18 @@ import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 public class BaseResourceHandlerService
     implements BaseResourceHandler
 {
-    public static final String ETC_FELIBS_ADMIN_IMAGES_BROKEN_IMAGE_SVG = "/etc/felibs/admin/images/broken-image.svg";
+    public static final String ETC_FELIBS_ADMIN_IMAGES_BROKEN_IMAGE_SVG = "/content/admin/assets/images/broken-image.svg";
     public static final String NO_ASSET_RESOURCE_PROVIDED = "No Asset Resource provided";
     public static final String NO_RENDITION_NAME_PROVIDED = "No Rendition Name provided";
     public static final String NO_SOURCE_MIME_TYPE_PROVIDED = "No Source Mime Type provided";
     public static final String RESOURCE_NOT_ADAPTABLE_TO_ASSET = "Resource: '%s' could not be adapted to an Asset";
 
     @Reference
-    MimeTypeService mimeTypeService;
+    private MimeTypeService mimeTypeService;
+
     @Reference
     private ImageTransformationConfigurationProvider imageTransformationConfigurationProvider;
+
     @Reference
     private ImageTransformationProvider imageTransformationProvider;
 
@@ -104,7 +106,7 @@ public class BaseResourceHandlerService
                         logger.error("Resource: '{}' does not contain a data element", resource.getName());
                     }
                 } catch(TransformationException e) {
-                    logger.error("Transformation failed, image ignore", e);
+                    logger.error("Transformation failed, image ignored", e);
                 } catch(RepositoryException e) {
                     logger.error("Failed to create Rendition Node for Resource: '{}', rendition name: '{}'", resource, renditionName);
                 } catch(PersistenceException e) {
@@ -122,7 +124,7 @@ public class BaseResourceHandlerService
                         imageTransformationConfigurationList = imageTransformationConfigurationProvider.getImageTransformationConfigurations("thumbnail.no.crop.png", "/");
                         answer = transform(renditionName, "image/svg+xml", brokenImageStream, PNG_MIME_TYPE, imageTransformationConfigurationList);
                     } catch(TransformationException e) {
-                        logger.error("Transformation failed, image ignore", e);
+                        logger.error("Transformation failed, image ignored", e);
                     }
                 }
                 logger.trace("Broken Image Rendition Context: '{}'", answer);

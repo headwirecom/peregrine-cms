@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
-  peregrine vuejs page renderer - UI Apps
+  peregrine server page renderer - UI Apps
   %%
   Copyright (C) 2017 headwire inc.
   %%
@@ -23,7 +23,6 @@
   under the License.
   #L%
   -->
-
 <vault version="1.0">
   <ignore name=".svn"/>
   <ignore name=".git"/>

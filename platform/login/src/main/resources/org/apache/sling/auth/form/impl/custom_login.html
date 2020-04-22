@@ -1,4 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <!--
 
       Licensed to the Apache Software Foundation (ASF) under one
@@ -21,74 +22,74 @@
 -->
 <html xml:lang="en" lang="en"
       xmlns="http://www.w3.org/1999/xhtml"
+      id="login-page"
 >
 <head>
-   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
    <title>Login</title>
-
-   <style type="text/css">
-   body {
-       font-family: Verdana, Arial, Helvetica, sans-serif;
-       font-size: 10px;
-       color: black;
-       background-color: white;
-   }
-
-   #main {
-       border: 1px solid gray;
-       margin-top: 40vh;
-       margin-left: 40vw;
-       width: 400px;
-       padding: 10px;
-   }
-
-   #loginform {
-       padding: 0px;
-       margin: 0px;
-   }
-
-   #err {
-       color: red;
-   }
-   </style>
-
+   <link rel="stylesheet" href="${contextPath}/etc/felibs/materialize/materialize.css">
 </head>
 
 <body>
+<div class="top-bar">
+   <img border="0"
+        src="${contextPath}/etc/felibs/admin/peregrine-logo.png"
+        alt="Peregrine CMS Logo"/>
+   <!--a href="#help" class="help">Help</a-->
+</div>
 
-<div id="main"><!-- Login Form -->
-<img border="0" src="${contextPath}/etc/felibs/admin/images/peregrine-logo.png" alt="Peregrine CMS Logo"/>
-<!--<img src="http://sling.apache.org/site/media.data/logo.png" width="110" height="63" alt="Sling Logo">-->
-<h3>Peregrine CMS Login:</h3>
-<form id="loginform" method="POST" action="${requestContextPath}/j_security_check"
-        enctype="multipart/form-data" accept-charset="UTF-8">
+<div id="main">
+   <div class="login-wrapper">
+      <!--suppress CssUnknownTarget -->
+      <div class="login-image"></div>
+      <div class="login-form-wrapper">
+         <form id="loginform" method="POST" action="${requestContextPath}/j_security_check"
+               enctype="multipart/form-data" accept-charset="UTF-8">
 
-   <input type="hidden" name="_charset_" value="UTF-8" />
-   <input type="hidden" name="resource" value="${resource}" />
+            <input type="hidden" name="_charset_" value="UTF-8"/>
+            <input type="hidden" name="resource" value="${resource}"/>
 
-   <div id="err">
-      <p>${j_reason}</p>
+            <h3 class="title">Log In</h3>
+
+            <div id="err">
+               <p>${j_reason}</p>
+            </div>
+
+            <div class="form-control">
+               <label for="j_username">Username</label>
+               <input id="j_username" name="j_username" placeholder="Username" autofocus/>
+            </div>
+
+            <div class="form-control">
+               <label for="j_password">Password</label>
+               <input id="j_password" name="j_password" type="password" placeholder="Password"/>
+            </div>
+
+            <!-- <div class="form-control remember-me-forgot-password">
+               <div class="remember-me">
+                  <input type="checkbox"/>
+                  <span>Remember me</span>
+               </div>
+               <div class="forgot-password"><a href="#forgot-password">Forgot Password?</a></div>
+            </div> -->
+
+            <div class="buttongroup form-control">
+               <button id="login" accesskey="l" class="form-button" type="submit">
+                  Log In
+               </button>
+            </div>
+
+            <!-- <div class="sign-up-wrapper form-control">
+               Don't have an account? <a href="#sign-up">Sign up now</a>
+            </div> -->
+         </form>
+      </div>
    </div>
-
-   <div>
-      <label for="j_username" accesskey="u">Username:</label>
+   <div class="legal">
+      <!-- <a href="#terms-and-conditions">Terms & Conditions</a>
+      <span class="separator"></span>
+      <a href="#privacy-policy">Privacy policy</a> -->
    </div>
-   <div>
-      <input id="j_username" name="j_username" type="text" />
-   </div>
-
-
-   <div>
-      <label for="j_password" accesskey="p">Password:</label>
-   </div>
-   <div>
-      <input id="j_password" name="j_password" type="password" />
-   </div>
-
-   <div class="buttongroup">
-      <button id="login" accesskey="l" class="form-button" type="submit">Login</button>
-   </div>
-</form>
 </div>
 
 </body>

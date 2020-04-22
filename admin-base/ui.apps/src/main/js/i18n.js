@@ -1,15 +1,24 @@
+import {LoggerFactory, LogLevel} from './logger'
+
+const log = LoggerFactory.logger('i18n').setLevelDebug()
 let lang = 'en'
 
 function keyToLang(original) {
-    const key = original.toLowerCase()
     try {
+        const lowOriginal = original.toLowerCase();
         const resources = $perAdminApp.getView().admin.i18n[lang]
-        const translation = resources[key]
-        if(translation) {
-            return translation.text
+        if(resources[original]) {
+            return resources[original].text
+        } else if (resources[lowOriginal]){
+            return resources[lowOriginal].text
         }
         if(lang === 'en') return original
-        return 'T['+original+']'
+        if (log.level === LogLevel.FINE) {
+            return `T{${original}]`
+        } else {
+            log.warn(`missing translation for: ${original}`)
+            return original
+        }
     } catch(error) {
         return original
     }

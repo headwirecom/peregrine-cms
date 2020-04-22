@@ -7,15 +7,15 @@
     "bottompadding": 0,
     "slides": [
       {
-        "imagepath": "/content/assets/themeclean/images/background1.jpg",
+        "imagepath": "/content/themeclean/assets/images/background1.jpg",
         "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ",
         "heading": "Slide One"
       },{
-        "imagepath": "/content/assets/themeclean/images/background2.jpg",
+        "imagepath": "/content/themeclean/assets/images/background2.jpg",
         "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ",
         "heading": "Slide Two"
       },{
-        "imagepath": "/content/assets/themeclean/images/background3.jpg",
+        "imagepath": "/content/themeclean/assets/images/background3.jpg",
         "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ",
         "heading": "Slide Three"
       }

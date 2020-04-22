@@ -70,32 +70,32 @@
 
             <resource>
                 <directory>${basedir}/node_modules/jquery/dist</directory>
-                <targetPath>etc/felibs/pagerender-vue/jquery</targetPath>
+                <targetPath>etc/felibs/pagerendervue/jquery</targetPath>
             </resource>
 
             <resource>
                 <directory>${basedir}/node_modules/popper/dist</directory>
-                <targetPath>etc/felibs/pagerender-vue/popper</targetPath>
+                <targetPath>etc/felibs/pagerendervue/popper</targetPath>
             </resource>
 
             <resource>
                 <directory>${basedir}/node_modules/bootstrap/dist</directory>
-                <targetPath>etc/felibs/pagerender-vue/bootstrap</targetPath>
+                <targetPath>etc/felibs/pagerendervue/bootstrap</targetPath>
             </resource>
 
             <resource>
                 <directory>${basedir}/node_modules/axios/dist</directory>
-                <targetPath>etc/felibs/pagerender-vue/axios</targetPath>
+                <targetPath>etc/felibs/pagerendervue/axios</targetPath>
             </resource>
 
             <resource>
                 <directory>${basedir}/node_modules/vue/dist</directory>
-                <targetPath>etc/felibs/pagerender-vue/vue</targetPath>
+                <targetPath>etc/felibs/pagerendervue/vue</targetPath>
             </resource>
 
             <resource>
                 <directory>${basedir}/src/main/js/external</directory>
-                <targetPath>etc/felibs/pagerender-vue/conditional-js</targetPath>
+                <targetPath>etc/felibs/pagerendervue/conditional-js</targetPath>
             </resource>
 
             <resource>
@@ -189,7 +189,7 @@
                             <goal>package</goal>
                         </goals>
                         <configuration>
-                            <embeddedTarget>/apps/pagerender/vue/install</embeddedTarget>
+                            <embeddedTarget>/apps/pagerendervue/install</embeddedTarget>
                             <embeddeds>
                                 <embedded>
                                     <groupId>${project.groupId}</groupId>

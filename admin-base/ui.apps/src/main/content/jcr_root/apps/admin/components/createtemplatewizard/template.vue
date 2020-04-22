@@ -76,6 +76,7 @@
                     formmodel: {
                         path: path,
                         name: '',
+                        title: '',
                         component: null
                     },
                     formOptions: {
@@ -84,14 +85,31 @@
                         validateAfterChanged: true,
                         focusFirstField: true
                     },
+                    nameChanged: false,
                     nameSchema: {
-                        fields: [{
+                        fields: [
+                            {
+                                type: "input",
+                                inputType: "text",
+                                label: "Template Title",
+                                model: "title",
+                                required: true,
+                                onChanged: (model, newVal, oldVal, field) => {
+                                    if(!this.nameChanged) {
+                                        this.formmodel.name = $perAdminApp.normalizeString(newVal);
+                                    }
+                                }
+                            },
+                            {
                             type: "input",
                             inputType: "text",
                             label: "Template Name",
                             model: "name",
                             required: true,
-                            validator: this.nameAvailable
+                            onChanged: (model, newVal, oldVal, field) => {
+                                this.nameChanged = true;
+                            },
+                            validator: [this.nameAvailable, this.validTemplateName]
                         }
                         ]
                     }
@@ -104,14 +122,16 @@
         },
         computed: {
             components: function() {
-                const templates = $perAdminApp.getNodeFromViewOrNull('/admin/components/data')
+                const tenant = $perAdminApp.getView().state.tenant || {name: 'example'}
+                const components = $perAdminApp.getNodeFromViewOrNull('/admin/components/data')
                 const siteRootParts = this.formmodel.path.split('/').slice(0,4)
                 siteRootParts[1] = 'apps'
-                siteRootParts[2] = siteRootParts[3]
+                siteRootParts[2] = tenant.name
                 const siteRoot = siteRootParts.slice(0,3).join('/')
-                return templates.filter( (item) => item.path.startsWith(siteRoot) && (
-                    item.name === 'page' || item.templateComponent
-                ))
+                return components.filter( (component) =>
+                    component.path.startsWith(siteRoot)
+                    && (component.name === 'page' || component.templateComponent)
+                )
             }
         }
         ,
@@ -135,6 +155,15 @@
                     return []
                 }
             },
+            validTemplateName(value) {
+                if(!value || value.length === 0) {
+                    return ['name is required']
+                }
+                if(value.match(/[^0-9a-zA-Z_-]/)) {
+                    return ['template names may only contain letters, numbers, underscores, and dashes']
+                }
+                return [];
+            },
             isSelected: function(target) {
                 return this.formmodel.component === target
             },
@@ -142,7 +171,7 @@
                 const path = this.formmodel.path
                 const siteName = path.split('/')[3]
                 const component = this.formmodel.component.substring(this.formmodel.component.indexOf('/',1)+1)
-                $perAdminApp.stateAction('createTemplate', { parent: this.formmodel.path, name: this.formmodel.name, component: component })
+                $perAdminApp.stateAction('createTemplate', { parent: this.formmodel.path, name: this.formmodel.name, component: component, title: this.formmodel.title })
             },
             validateTabOne: function(me) {
                 me.formErrors.unselectedComponentError = (!me.formmodel.component);

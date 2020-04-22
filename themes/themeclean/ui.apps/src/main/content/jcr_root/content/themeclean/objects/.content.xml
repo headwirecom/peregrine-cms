@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root
+  xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+  xmlns:jcr="http://www.jcp.org/jcr/1.0"
+  xmlns:per="http://www.peregrine-cms.com/jcr/cms/1.0"
+  jcr:primaryType="per:Page"
+  jcr:title="themeclean root object"
+  jcr:description="themeclean Objects Root">
+
+  <jcr:content
+    jcr:primaryType="per:PageContent"
+    sling:resourceType="themeclean/components/page"
+    jcr:title="themeclean root object"
+    brand="themeclean"
+    template="/content/themeclean/templates"/>
+
+</jcr:root>

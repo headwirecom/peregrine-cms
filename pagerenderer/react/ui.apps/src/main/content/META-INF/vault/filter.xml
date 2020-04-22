@@ -38,14 +38,14 @@
         filter list and add filter entries until all of the app provides
         nodes are included but none of the customer generatedd nodes.
 
-        Also any sub pckage of this module needs to exclude /apps/pagerender/vue/install
+        Also any sub pckage of this module needs to exclude /apps/pagerendervue/install
         folder otherwise they wipe all installed bundles.
     -->
     <filter root="/content/pagerenderer/react"/>
     <filter root="/etc/felibs/pagerender-react"/>
     <!--
         Need to exclude the Install folder otherwise the Bundle will be undeployed
-        as it is in the '/apps/pagerender/vue/install' folder (see the 'all'
+        as it is in the '/apps/pagerendervue/install' folder (see the 'all'
         package).
     -->
     <filter root="/apps/pagerender/react">

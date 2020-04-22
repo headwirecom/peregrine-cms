@@ -31,7 +31,7 @@
           auth.sudo.cookie="sling.sudo"
           auth.sudo.parameter="sudo"
           auth.annonymous="false"
-          sling.auth.requirements="[-/perapi/admin/access,-/system/sling/login,-/system/sling/info,-/content/sites,-/content/assets,-/content/templates,-/etc/felibs,-/favicon.ico,-/content/apidocs]"
+          sling.auth.requirements="[-/perapi/admin/access,-/system/sling/login,-/system/sling/info,-/content,-/etc/felibs,-/favicon.ico,-/content/apidocs]"
           sling.auth.anonymous.user=""
           auth.http="preemtive"
           auth.http.realm="peregrine cms"

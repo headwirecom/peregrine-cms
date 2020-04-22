@@ -4,7 +4,7 @@
   "model": {
     "mediatype": "image",
     "videosrc": "https://www.youtube-nocookie.com/embed/NM2wtte1JRE",
-    "imagesrc": "/content/assets/themeclean/images/013.jpg",
+    "imagesrc": "/content/themeclean/assets/images/013.jpg",
     "toppadding": "30",
     "bottompadding": "30",
     "backgroundtype": "color"

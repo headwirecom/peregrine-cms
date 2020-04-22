@@ -25,10 +25,12 @@
 <template>
 <div class="container">
     <form-wizard
-      v-bind:title="'create a site'"
-      v-bind:subtitle="''" @on-complete="onComplete"
+      v-bind:title="'create a website'"
+      v-bind:subtitle="''"
+      @on-complete="onComplete"
       error-color="#d32f2f"
-      color="#546e7a">
+      color="#546e7a"
+      :key="reloadKey">
         <tab-content title="select theme" :before-change="leaveTabOne">
             <fieldset class="vue-form-generator">
                 <div class="form-group required">
@@ -36,6 +38,7 @@
                     <ul class="collection">
                         <li class="collection-item"
                             v-for="item in themes"
+                            v-bind:key="item.name"
                             v-on:click.stop.prevent="selectTheme(null, item.name)"
                             v-bind:class="isSelected(item.name) ? 'active' : ''">
                             <admin-components-action v-bind:model="{ command: 'selectTheme', target: item.name, title: item.name }"></admin-components-action>
@@ -47,13 +50,19 @@
                 </div>
             </fieldset>
             <p>
-                This wizard allows you to create a site from an existing theme. If you'd like to create a more complex
-                site please use the commandline tool `percli create project &lt;name&gt;` to create a site managed as a
+                This wizard allows you to create a website from an existing theme. If you'd like to create a more complex
+                website please use the commandline tool `percli create project &lt;name&gt;` to create a website managed as a
                 full project.
             </p>
         </tab-content>
+        <tab-content v-if="colorPalettes && colorPalettes.length > 0" title="choose color palette">
+            <admin-components-colorpaletteselector
+                :palettes="colorPalettes"
+                :template-path="formmodel.templatePath"
+                @select="onColorPaletteSelect"/>
+        </tab-content>
         <tab-content title="choose name" :before-change="leaveTabTwo">
-            <vue-form-generator 
+            <vue-form-generator
               :model   ="formmodel"
               :schema  ="nameSchema"
               :options ="formOptions"
@@ -73,12 +82,15 @@
         data:
             function() {
                 return {
+                    reloadKey: 0,
+                    colorPalettes: [],
                     formErrors: {
                         unselectedThemeError: false
                     },
                     formmodel: {
                         path: $perAdminApp.getNodeFromView('/state/tools/pages'),
                         name: '',
+                        title: '',
                         templatePath: ''
 
                     },
@@ -88,15 +100,31 @@
                         validateAfterChanged: true,
                         focusFirstField: true
                     },
+                    nameChanged: false,
                     nameSchema: {
                       fields: [
+                          {
+                              type: "input",
+                              inputType: "text",
+                              label: "Site Title",
+                              model: "title",
+                              required: true,
+                              onChanged: (model, newVal, oldVal, field) => {
+                                  if(!this.nameChanged) {
+                                      this.formmodel.name = $perAdminApp.normalizeString(newVal, '_');
+                                  }
+                              }
+                          },
                         {
                             type: "input",
                             inputType: "text",
                             label: "Site Name",
                             model: "name",
                             required: true,
-                            validator: this.nameAvailable
+                            onChanged: (model, newVal, oldVal, field) => {
+                                this.nameChanged = true;
+                            },
+                            validator: [this.nameAvailable, this.validSiteName]
                         }
                       ]
                     }
@@ -111,22 +139,41 @@
             pageSchema: function() {
             },
             themes: function() {
-                const themes = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, '/content/sites').children
+                const themes = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, '/content').children
                 const siteRootParts = this.formmodel.path.split('/').slice(0,4)
-                return themes.filter( (item) => item.name.startsWith('theme'))
+                return themes.filter( (item) => {
+                    return item.name.startsWith('theme');
+                })
             }
         },
         methods: {
             selectTheme: function(me, target){
                 if(me === null) me = this;
                 me.formmodel.templatePath = target;
+                me.formmodel.colorPalette = null
+                me.colorPalettes = []
                 this.validateTabOne(me);
+                $perAdminApp.getApi().getPalettes(me.formmodel.templatePath).then((data) =>{
+                    if (data && data.children && data.children.length > 0) {
+                        me.colorPalettes = data.children.reverse()
+                    }
+                    me.reloadKey++
+                })
             },
             isSelected: function(target) {
                 return this.formmodel.templatePath === target
             },
             onComplete: function() {
-                $perAdminApp.stateAction('createSite', { fromName: this.formmodel.templatePath, toName: this.formmodel.name })
+                const payload = {
+                    fromName: this.formmodel.templatePath,
+                    toName: this.formmodel.name,
+                    title: this.formmodel.title
+                }
+
+                if (this.formmodel.colorPalette && this.formmodel.colorPalette.length > 0) {
+                    payload.colorPalette = this.formmodel.colorPalette
+                }
+                $perAdminApp.stateAction('createSite', payload)
             },
             validateTabOne: function(me) {
                 me.formErrors.unselectedThemeError = ('' === '' + me.formmodel.templatePath);
@@ -144,19 +191,43 @@
                 if(!value || value.length === 0) {
                     return ['name is required']
                 } else {
-                    const folder = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, this.formmodel.path)
-                    for(let i = 0; i < folder.children.length; i++) {
-                        if(folder.children[i].name === value) {
-                            return ['name aready in use']
+                    const folder = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, '/content')
+                    if(folder && folder.children) {
+                        for(let i = 0; i < folder.children.length; i++) {
+                            if(folder.children[i].name === value) {
+                                return ['name aready in use']
+                            }
                         }
                     }
                     return []
                 }
             },
+            validSiteName(value) {
+                if(!value || value.length === 0) {
+                    return ['name is required']
+                }
+                if(value.match(/[^0-9a-z_]/)) {
+                    return ['site names may only contain lowercase letters, numbers, and underscores']
+                }
+                return [];
+            },
             leaveTabTwo: function() {
                 return this.$refs.nameTab.validate()
+            },
+            onColorPaletteSelect(colorPalette) {
+                this.formmodel.colorPalette = colorPalette
             }
-
         }
     }
 </script>
+
+<style scoped>
+    .feature-unavailable {
+        display: flex;
+        justify-content: center;
+    }
+
+    .feature-unavailable .card{
+        max-width: 700px;
+    }
+</style>

@@ -22,7 +22,8 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from './logger'
+import {LoggerFactory} from './logger'
+
 let log = LoggerFactory.logger('api').setLevelDebug()
 
 let impl = null
@@ -62,6 +63,10 @@ class PerApi {
         return impl.populateObjects()
     }
 
+    populateSkeletonPages(path, target, includeParents = false) {
+        return impl.populateSkeletonPages(path, target, includeParents)
+    }
+
     populateNodesForBrowser(path, target, includeParents = false) {
         return impl.populateNodesForBrowser(path, target, includeParents)
     }
@@ -79,7 +84,7 @@ class PerApi {
     }
 
 
-        populateObject(path, target, name) {
+    populateObject(path, target, name) {
         return impl.populateObject(path, target, name)
     }
 
@@ -91,27 +96,35 @@ class PerApi {
         return impl.populateReferencedBy(path)
     }
 
+    populateTenants() {
+        return impl.populateTenants()
+    }
+
     setInitialPageEditorState() {
         return impl.setInitialPageEditorState()
     }
 
     populateByName(name) {
-        if(name === '/admin/tools') return this.populateTools()
-        if(name === '/admin/toolsConfig') return this.populateToolsConfig()
-        if(name === '/admin/components') return this.populateComponents()
-        return Promise.reject('populateByName for '+name+' is not defined')
+        if (name === '/admin/tools') return this.populateTools()
+        if (name === '/admin/toolsConfig') return this.populateToolsConfig()
+        if (name === '/admin/components') return this.populateComponents()
+        return Promise.reject('populateByName for ' + name + ' is not defined')
     }
 
     populateI18N(language) {
         return impl.populateI18N(language)
     }
 
-    createSite(fromName, toName) {
-        return impl.createSite(fromName, toName)
+    createSite(fromName, toName, title, colorPalette) {
+        return impl.createSite(fromName, toName, title, colorPalette)
     }
 
-    createPage(parentPath, name, templatePath) {
-        return impl.createPage(parentPath, name, templatePath)
+    createPage(parentPath, name, templatePath, title) {
+        return impl.createPage(parentPath, name, templatePath, title)
+    }
+
+    createPageFromSkeletonPage(parentPath, name, skeletonPagePath) {
+        return impl.createPageFromSkeletonPage(parentPath, name, skeletonPagePath)
     }
 
     deletePage(path) {
@@ -134,8 +147,16 @@ class PerApi {
         return impl.deletePageNode(path, nodePath)
     }
 
-    createTemplate(parentPath, name, component) {
-        return impl.createTemplate(parentPath, name, component)
+    createTemplate(parentPath, name, component, title) {
+        return impl.createTemplate(parentPath, name, component, title)
+    }
+
+    moveTemplate(path, to, type) {
+        return impl.moveTemplate(path, to, type)
+    }
+
+    deleteTemplate(path) {
+        return impl.deleteTemplate(path)
     }
 
     createObject(parentPath, name, templatePath) {
@@ -178,6 +199,10 @@ class PerApi {
         return impl.uploadFiles(path, files, cb)
     }
 
+    nameAvailable(value, path) {
+        return impl.nameAvailable(value, path)
+    }
+
     fetchExternalImage(path, url, name, config) {
         return impl.fetchExternalImage(path, url, name, config)
     }
@@ -208,6 +233,14 @@ class PerApi {
 
     replicate(path) {
         return impl.replicate(path)
+    }
+
+    getPalettes(templateName) {
+        return impl.getPalettes(templateName)
+    }
+
+    siteSetupReplication(path) {
+        return impl.siteSetupReplication(path)
     }
 }
 

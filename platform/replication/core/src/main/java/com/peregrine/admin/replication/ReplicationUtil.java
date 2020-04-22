@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.nodetype.NodeTypeIterator;
 import javax.jcr.nodetype.NodeTypeManager;
@@ -30,8 +31,20 @@ public class ReplicationUtil {
     private static List<String> replicationPrimaryNodeTypes;
 
     /**
+     * Overrides the Replication Primary Node Types which are by default taken from
+     * the Sub Types of the Replication Mixin
+     *
+     * @param replicationPrimaryNodeTypes Replication Node Types to set which must not be null or empty
+     */
+    public static void setReplicationPrimaryNodeTypes(List<String> replicationPrimaryNodeTypes) {
+        if(replicationPrimaryNodeTypes == null) { throw new IllegalArgumentException("Replication Primary Node Types must be provided"); }
+        if(replicationPrimaryNodeTypes.isEmpty()) { throw new IllegalArgumentException("Replication Primary Node Types cannot be empty"); }
+        ReplicationUtil.replicationPrimaryNodeTypes = replicationPrimaryNodeTypes;
+    }
+
+    /**
      * @param resource Resource to be checked
-     * @return True if the given Resource support Replication Mixins
+     * @return True if the given Resource supports Replication Mixin
      */
     public static boolean supportsReplicationProperties(Resource resource) {
         boolean answer = false;
@@ -40,25 +53,6 @@ public class ReplicationUtil {
         try {
             if(replicationPrimaries != null) {
                 answer = replicationPrimaries.contains(sourceNode.getPrimaryNodeType().getName());
-            }
-            if(!answer) {
-                NodeType[] mixins = sourceNode.getMixinNodeTypes();
-                for(NodeType mixin : mixins) {
-                    if(mixin.getName().equals(PER_REPLICATION)) {
-                        answer = true;
-                        break;
-                    }
-                }
-                if(!answer) {
-                    NodeType nodeType = sourceNode.getPrimaryNodeType();
-                    NodeType[] superTypes = nodeType.getSupertypes();
-                    for(NodeType mixin : superTypes) {
-                        if(mixin.getName().equals(PER_REPLICATION)) {
-                            answer = true;
-                            break;
-                        }
-                    }
-                }
             }
         } catch(RepositoryException e) {
             LOGGER.warn("Failed to check Primary Node Type for Replication support -> ignore that", e);
@@ -76,17 +70,15 @@ public class ReplicationUtil {
             try {
                 answer = replicationPrimaryNodeTypes = new ArrayList<>();
                 NodeTypeManager nodeTypeManager = node.getSession().getWorkspace().getNodeTypeManager();
-                NodeTypeIterator i = nodeTypeManager.getPrimaryNodeTypes();
-                while(i.hasNext()) {
+                NodeType replicationMixin = nodeTypeManager.getNodeType(PER_REPLICATION);
+                NodeTypeIterator i = replicationMixin.getSubtypes();
+                while (i.hasNext()) {
                     NodeType primary = i.nextNodeType();
-                    NodeType[] superTypes = primary.getSupertypes();
-                    for(NodeType mixin : superTypes) {
-                        if(mixin.getName().equals(PER_REPLICATION)) {
-                            replicationPrimaryNodeTypes.add(primary.getName());
-                        }
-                    }
+                    replicationPrimaryNodeTypes.add(primary.getName());
                 }
                 LOGGER.debug("List of Replication Supporting Primary Types: '{}'", replicationPrimaryNodeTypes);
+            } catch(NoSuchNodeTypeException e) {
+                LOGGER.trace("Replication Node type not found", e);
             } catch(RepositoryException e) {
                 LOGGER.trace("Failed to handle Node Type Manager", e);
                 // Failed to obtain Replication Node Type -> handle them manually
@@ -106,27 +98,23 @@ public class ReplicationUtil {
     public static void updateReplicationProperties(Resource source, String targetPath, Resource target) {
         if(source != null) {
             boolean replicationMixin = ReplicationUtil.supportsReplicationProperties(source);
-            if(!replicationMixin) {
-                replicationMixin = ensureMixin(source);
-                if(replicationMixin && target != null) {
-                    ensureMixin(target);
-                }
-            }
             LOGGER.trace("Is Replication Mixin: : {}, Source: '{}'", replicationMixin, source.getPath());
             if(replicationMixin) {
+                ensureMixin(source);
                 ModifiableValueMap sourceProperties = getModifiableProperties(source, false);
                 Calendar replicated = Calendar.getInstance();
                 sourceProperties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());
                 sourceProperties.put(PER_REPLICATED, replicated);
                 LOGGER.trace("Updated Source Replication Properties");
                 if(target == null) {
-                    // Target Path can be empty to remove the replication ref property
                     if(isEmpty(targetPath)) {
+                        // If Target Path is empty remove the replication ref property
                         sourceProperties.remove(PER_REPLICATION_REF);
                     } else {
                         sourceProperties.put(PER_REPLICATION_REF, targetPath);
                     }
                 } else {
+                    ensureMixin(target);
                     try {
                         ModifiableValueMap targetProperties = getModifiableProperties(target, false);
                         String userId = source.getResourceResolver().getUserID();
@@ -134,6 +122,7 @@ public class ReplicationUtil {
                         targetProperties.put(PER_REPLICATED_BY, userId);
                         targetProperties.put(PER_REPLICATED, replicated);
                         if(JCR_CONTENT.equals(source.getName())) {
+                            // For jcr:content nodes set the replication ref to its parent
                             sourceProperties.put(PER_REPLICATION_REF, target.getParent().getPath());
                             targetProperties.put(PER_REPLICATION_REF, source.getParent().getPath());
                         } else {
@@ -150,6 +139,14 @@ public class ReplicationUtil {
         }
     }
 
+    /**
+     * Adds the Replication Mixin to a given resource if not already
+     * there and if not part of it as super type
+     *
+     * @param resource Resource that should have the mixin
+     * @return True if the mixin was added, false if node could not be adapted, mixin could not
+     *         be added or if adding failed
+     */
     private static boolean ensureMixin(Resource resource) {
         boolean answer = false;
         Node node = resource.adaptTo(Node.class);
@@ -158,6 +155,8 @@ public class ReplicationUtil {
                 if(node.canAddMixin(PER_REPLICATION)) {
                     node.addMixin(PER_REPLICATION);
                     answer = true;
+                } else {
+                    LOGGER.warn("Could not set Replication Mixin on resource: '{}'", resource);
                 }
             } catch(RepositoryException e) {
                 LOGGER.warn("Could not add Replication Mixin to node: '{}'", node);

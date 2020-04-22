@@ -19,12 +19,12 @@
     "buttonsize": "default",
     "buttons": [
       {
-        "buttonlink": "/content/sites/themeclean",
+        "buttonlink": "/content/themeclean/pages",
         "buttontext": "See More",
         "buttoncolor": "primary",
         "iconclass": ""
       },{
-        "buttonlink": "/content/sites/themeclean",
+        "buttonlink": "/content/themeclean/pages",
         "buttontext": "About Us",
         "buttoncolor": "primary",
         "iconclass": ""

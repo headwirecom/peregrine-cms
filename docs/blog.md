@@ -46,9 +46,9 @@ we also add a text component to allow for blocks of content in the post
 we will use the following content structure to begin: 
 
 ```
-/content/sites/blog/index
-/content/sites/blog/{other pages}
-/content/sites/blog/archive
+/content/blog/pages/index
+/content/blog/pages/{other pages}
+/content/blog/pages/archive
 ```
 ## install an instance of peregrine-cms
 
@@ -184,7 +184,7 @@ this by creating a new felib with our own order.
 Create a file styles.html in `ui.apps/src/main/content/jcr_root/apps/blog/components/page` with
 the following text:
 ```html
-<sly data-sly-include="/apps/pagerender/vue/structure/page/styles.html"></sly>
+<sly data-sly-include="/apps/pagerendervue/structure/page/styles.html"></sly>
 <link rel="stylesheet" href="/etc/felibs/blog.css" type="text/css">
 ```
 
@@ -196,10 +196,10 @@ We also need to add some additional js file includes to `renderer.html` of the p
 <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
 <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-<sly data-sly-include="/apps/pagerender/vue/structure/page/renderer.html"/>
+<sly data-sly-include="/apps/pagerendervue/structure/page/renderer.html"/>
 <script src="/etc/felibs/blog.js"></script>
 <script>
-    $peregrineApp.loadComponent('pagerender-vue-components-placeholder')
+    $peregrineApp.loadComponent('pagerendervue-components-placeholder')
 </script>
 ```
 
@@ -718,7 +718,7 @@ to
     "type": "listselection",
     "label": "Author",
     "model": "author",
-    "valuesFrom": "/content/objects/blog/authors.infinity.json"
+    "valuesFrom": "/content/<tenant>/objects/blog/authors.infinity.json"
   },
 ```
 

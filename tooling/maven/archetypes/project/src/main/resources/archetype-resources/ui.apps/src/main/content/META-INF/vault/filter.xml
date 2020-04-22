@@ -19,10 +19,10 @@
         Also any sub pckage of this module needs to exclude /apps/${appsFolderName}/install
         folder otherwise they wipe all installed bundles.
     -->
-    <filter root="/content/sites/${contentFolderName}"/>
-    <filter root="/content/assets/${contentFolderName}"/>
-    <filter root="/content/objects/${contentFolderName}"/>
-    <filter root="/content/templates/${contentFolderName}"/>
+    <filter root="/content/${contentFolderName}"/>
+    <filter root="/content/${contentFolderName}">
+        <exclude pattern="/content/${contentFolderName}/objects/tags/.*"/>
+    </filter>
     <filter root="/etc/felibs/${appsFolderName}"/>
     <!--
         Need to exclude the Install folder otherwise the Bundle will be undeployed

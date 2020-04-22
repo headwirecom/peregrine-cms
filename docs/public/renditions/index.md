@@ -120,8 +120,8 @@ image transformation setup. The API call to obtain (and create a rendition if no
 
     &Lt;URL to the Asset without extension>.rendition.json/&lt;image transformation name>
 
-So to create an thumbnail on the asset **/content/assets/test.png** you use the following URL:
+So to create an thumbnail on the asset **/content/test/assets/test.png** you use the following URL:
 
-    /content/assets/test.png.rendition.json/thumbnail.png
+    /content/test/assets/test.png.rendition.json/thumbnail.png
 
 **GET** and **POST** HTTP Methods are supported for this call and work the same way.

@@ -29,7 +29,7 @@ import $peregrineApp from './peregrineApp.js'
 
 var $perView = {};
 $peregrineApp.registerView($perView)
-$peregrineApp.loadContent('/content/sites/example.html')
+$peregrineApp.loadContent('/content/example/pages/index.html')
 
 log.debug('peregrine rendered loaded')
 $perView.loaded = true

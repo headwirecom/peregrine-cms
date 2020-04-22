@@ -25,35 +25,32 @@ package com.peregrine.nodetypes.merge;
  * #L%
  */
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.request.RequestDispatcherOptions;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.scripting.SlingScriptHelper;
-import org.apache.sling.models.factory.ExportException;
-import org.apache.sling.models.factory.MissingExporterException;
-import org.apache.sling.models.factory.ModelFactory;
-import org.apache.sling.scripting.sightly.pojo.Use;
-import org.osgi.framework.Constants;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.script.Bindings;
-import javax.servlet.Servlet;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.*;
-
 import static com.peregrine.commons.util.PerConstants.COMPONENT;
 import static com.peregrine.commons.util.PerConstants.JACKSON;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.PATH;
+import static java.util.regex.Pattern.compile;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
+import javax.script.Bindings;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.scripting.SlingScriptHelper;
+import org.apache.sling.models.factory.ExportException;
+import org.apache.sling.models.factory.MissingExporterException;
+import org.apache.sling.models.factory.ModelFactory;
+import org.apache.sling.scripting.sightly.pojo.Use;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by rr on 5/8/2017.
@@ -61,17 +58,17 @@ import static com.peregrine.commons.util.PerConstants.PATH;
 @SuppressWarnings("serial")
 public class PageMerge implements Use {
 
+    private final Logger log = LoggerFactory.getLogger(PageMerge.class);
+
+    private static ThreadLocal<RenderContext> renderContext = new ThreadLocal<>();
+
     public static final String FROM_TEMPLATE = "fromTemplate";
     public static final String REQUEST = "request";
     public static final String SLING = "sling";
     public static final String TEMPLATE = "template";
-    public static final String CONTENT_TEMPLATES = "/content/templates/";
-    private final Logger log = LoggerFactory.getLogger(PageMerge.class);
+    public static final String REGEX_TEMPLATES = "(?<=\\/content\\/)([a-zA-Z0-9\\\\s\\\\_-])*(?=\\/templates)";
 
-    private static ThreadLocal<RenderContext> renderContext = new ThreadLocal<RenderContext>();
-
-//    @Reference
-    ModelFactory modelFactory;
+    private ModelFactory modelFactory;
 
     private SlingHttpServletRequest request;
 
@@ -103,13 +100,11 @@ public class PageMerge implements Use {
         try {
             Resource content = resource.getChild(JCR_CONTENT);
             if(content == null) return Collections.<String, String> emptyMap();
-            Map page = modelFactory.exportModelForResource(content,
-                    JACKSON, Map.class,
-                    Collections.<String, String> emptyMap());
+            Map page = modelFactory
+                .exportModelForResource(content, JACKSON, Map.class, Collections.emptyMap());
             String templatePath = (String) page.get(TEMPLATE);
             if(templatePath == null) {
-                if(resource.getParent().getPath().startsWith(CONTENT_TEMPLATES)) {
-                    // only use the parent as a template of a template if it is in fact a page
+                if(compile(REGEX_TEMPLATES).matcher(resource.getParent().getPath()).find()) {
                     if(resource.getParent().getResourceType().equals(PAGE_PRIMARY_TYPE)) {
                         templatePath = resource.getParent().getPath();
                     }
@@ -206,7 +201,7 @@ public class PageMerge implements Use {
     }
 
     @Override
-    public void init(Bindings bindings) {
+    public void init(final Bindings bindings) {
         request = (SlingHttpServletRequest) bindings.get(REQUEST);
         SlingScriptHelper sling = (SlingScriptHelper) bindings.get(SLING);
         modelFactory = sling.getService(ModelFactory.class);

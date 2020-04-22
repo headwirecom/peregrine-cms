@@ -218,6 +218,7 @@ public class DistributionReplicationService
                     if(!response.isSuccessful() || !(response.getState() == ACCEPTED || response.getState() != DISTRIBUTED)) {
                         throw new ReplicationException(String.format(DISTRIBUTION_FAILED, response));
                     }
+                    answer.addAll(resourceList);
                 } else {
                     throw new ReplicationException(NO_DISTRIBUTOR_AVAILABLE);
                 }

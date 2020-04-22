@@ -25,31 +25,35 @@ package com.peregrine.pagerender.vue.models;
  * #L%
  */
 
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JSON;
+import static com.peregrine.pagerender.vue.models.PageRenderVueConstants.PR_VUE_COMPONENT_BASE_TYPE;
+
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
-
+import java.util.List;
+import javax.inject.Inject;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
 
-import javax.inject.Inject;
-import java.util.List;
-
-import static com.peregrine.commons.util.PerConstants.JACKSON;
-import static com.peregrine.commons.util.PerConstants.JSON;
-import static com.peregrine.pagerender.vue.models.PageRenderVueConstants.PR_VUE_COMPONENT_BASE_TYPE;
-
 /**
  * Created by rr on 4/18/2017.
  */
-@Model(adaptables = Resource.class, resourceType = PR_VUE_COMPONENT_BASE_TYPE, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL, adapters = IComponent.class)
-@Exporter(name = JACKSON,
-          extensions = JSON)
+@Model(
+    adaptables = Resource.class,
+    resourceType = PR_VUE_COMPONENT_BASE_TYPE,
+    defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
+    adapters = IComponent.class)
+@Exporter(
+    name = JACKSON,
+    extensions = JSON)
 public class BaseModel extends AbstractComponent {
 
-    @Inject @Default(values = "")
+    @Inject
+    @Default(values = "")
     private String text;
 
     @Inject
@@ -58,7 +62,6 @@ public class BaseModel extends AbstractComponent {
     public BaseModel(Resource resource) {
         super(resource);
     }
-
 
     public String getText() {
         return text == null ? "" : text;

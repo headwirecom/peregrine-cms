@@ -25,19 +25,9 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.admin.resource.AdminResourceHandler;
-import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
-import com.peregrine.commons.servlets.AbstractBaseServlet;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.factory.ModelFactory;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
-import javax.servlet.Servlet;
-import java.io.IOException;
-
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_CREATION_FOLDER;
 import static com.peregrine.commons.util.PerConstants.CREATED;
+import static com.peregrine.commons.util.PerConstants.FOLDER;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.STATUS;
@@ -52,11 +42,21 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+import com.peregrine.admin.resource.AdminResourceHandler;
+import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
+import com.peregrine.commons.servlets.AbstractBaseServlet;
+import java.io.IOException;
+import javax.servlet.Servlet;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.factory.ModelFactory;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
 /**
  * Creates a Sling Order Folder
  *
  * The API Definition can be found in the Swagger Editor configuration:
- *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
+ *    ui.apps/src/main/content/jcr_root/perapi/definitions/admin.yaml
  */
 @Component(
     service = Servlet.class,
@@ -70,8 +70,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @SuppressWarnings("serial")
 public class CreateFolderServlet extends AbstractBaseServlet {
 
-    public static final String FAILED_TO_CREATE_FOLDER = "Failed to create folder";
-    public static final String FOLDER = "folder";
+    private static final String FAILED_TO_CREATE_FOLDER = "Failed to create folder";
 
     @Reference
     ModelFactory modelFactory;
@@ -84,15 +83,21 @@ public class CreateFolderServlet extends AbstractBaseServlet {
         String parentPath = request.getParameter(PATH);
         String name = request.getParameter(NAME);
         try {
-            Resource newFolder = resourceManagement.createFolder(request.getResourceResolver(), parentPath, name);
+            Resource newFolder = resourceManagement
+                .createFolder(request.getResourceResolver(), parentPath, name);
             request.getResourceResolver().commit();
             return new JsonResponse()
-                .writeAttribute(TYPE, FOLDER).writeAttribute(STATUS, CREATED)
-                .writeAttribute(NAME, name).writeAttribute(PATH, newFolder.getPath());
+                .writeAttribute(TYPE, FOLDER)
+                .writeAttribute(STATUS, CREATED)
+                .writeAttribute(NAME, name)
+                .writeAttribute(PATH, newFolder.getPath());
         } catch (ManagementException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_CREATE_FOLDER).setRequestPath(parentPath).setException(e);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(FAILED_TO_CREATE_FOLDER)
+                .setRequestPath(parentPath)
+                .setException(e);
         }
     }
-
 }
 

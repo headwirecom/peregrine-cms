@@ -26,11 +26,11 @@
       </ul>
     </aside>
     <div class="usa-width-three-fourths usa-layout-docs-main_content">
-      <pagerender-vue-components-placeholder v-bind:model="{ path: model.path, component: model.component, location: 'before' }"></pagerender-vue-components-placeholder>
+      <pagerendervue-components-placeholder v-bind:model="{ path: model.path, component: model.component, location: 'before' }"></pagerendervue-components-placeholder>
       <template v-for="child in model.children">
         <component v-bind:is="child.component" v-bind:model="child"></component>
       </template>
-      <pagerender-vue-components-placeholder v-bind:model="{ path: model.path, component: model.component, location: 'after' }"></pagerender-vue-components-placeholder>
+      <pagerendervue-components-placeholder v-bind:model="{ path: model.path, component: model.component, location: 'after' }"></pagerendervue-components-placeholder>
     </div>
   </main>
 </template>

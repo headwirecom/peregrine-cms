@@ -36,19 +36,18 @@ console.error= function() {
     consoleERROR.apply(this, arguments)
 }
 
-import { LoggerFactory } from './logger'
+import {LoggerFactory} from './logger'
 import i18n from './i18n'
 import experiences from './experiences'
-let logger = LoggerFactory.logger('perAdminApp').setLevelDebug()
-
 import PeregrineApi from './api'
 import PerAdminImpl from './apiImpl'
-import {makePathInfo, pagePathToDataPath, set, get} from './utils'
+import {get, makePathInfo, pagePathToDataPath, set} from './utils'
 
 import StateActions from './stateActions'
 
-import { SUFFIX_PARAM_SEPARATOR } from "./constants"
+import {SUFFIX_PARAM_SEPARATOR} from './constants'
 
+let logger = LoggerFactory.logger('perAdminApp').setLevelDebug()
 
 /**
  * registers a pop state listener for the adminui to track back/forward button and loads
@@ -198,6 +197,7 @@ function initPeregrineApp() {
     logger.fine('initPeregrineApp')
     logger.fine(JSON.stringify(view, true, 2))
 
+    Vue.config.productionTip = false
     Vue.use(i18n)
     Vue.use(experiences)
     const lang = view.state.language
@@ -290,7 +290,7 @@ function processLoaders(loaders) {
 /**
  * Implementation of the loadContent function of the $perAdminApp interface.
  *
- * checks if user is logged in then laods the data for the given page and processes the tree
+ * checks if user is logged in then loads the data for the given page and processes the tree
  * for all loaders and component registration. Finally updates the history and applies the
  * changes to the view
  *
@@ -316,7 +316,7 @@ function loadContentImpl(initialPath, firstTime, fromPopState) {
     api.populateUser()
         .then(function() {
             api.populateContent(dataUrl)
-                .then( function (data) {
+                .then( function () {
                     logger.fine('got data for', path)
                     walkTreeAndLoad(view.adminPageStaged).then( function() {
                         suffixParamsToModel(pathInfo.suffixParams, view.adminPageStaged.suffixToParameter)
@@ -415,7 +415,7 @@ function actionImpl(component, command, target) {
  *
  * @type {Array}
  */
-let beforeStateActions = new Array()
+let beforeStateActions = []
 
 function beforeStateActionImpl(fun) {
     beforeStateActions.push(fun)
@@ -423,16 +423,41 @@ function beforeStateActionImpl(fun) {
 
 function runBeforeStateActions(name) {
     // execute all before state actions
+    const actions = []
     if(beforeStateActions.length > 0) {
         for(let i = 0; i < beforeStateActions.length; i++) {
-            let ret = beforeStateActions[i](name)
-            if(!ret) return false
+            actions.push(beforeStateActions[i](name))
         }
     }
 
-    // clear the actions
-    beforeStateActions = new Array()
-    return true
+    return new Promise( (resolve) => {
+        Promise.all(actions).then( () => {
+            beforeStateActions = []
+            resolve()
+        })
+    });
+    // console.log(ret);
+
+    // // clear the actions
+    // return true
+}
+
+const waitStack = []
+
+function enterWaitState() {
+    waitStack.push('wait')
+    setTimeout( function() {
+        if(waitStack.length > 0) {
+            document.getElementById('waitMask').style.display = 'inherit'
+        }
+    }, 100)
+}
+
+function exitWaitState() {
+    waitStack.pop()
+    if(waitStack.length === 0) {
+        document.getElementById('waitMask').style.display = 'none'
+    }
 }
 
 /**
@@ -443,21 +468,31 @@ function runBeforeStateActions(name) {
  * @param target
  */
 function stateActionImpl(name, target) {
-
-    if(!runBeforeStateActions(name)) return
-
-    try {
-        const stateAction = StateActions(name)
-        Promise.resolve(stateAction($perAdminApp, target)).then(result => {
-            if(result && result.startsWith('Uncaught (in promise')) {
-                notifyUserImpl('error', result)
+    enterWaitState()
+    return new Promise( (resolve, reject) => {
+        runBeforeStateActions(name).then( () => {
+            try {
+                const stateAction = StateActions(name)
+                const action = stateAction($perAdminApp, target)
+                Promise.resolve(action).then(result => {
+                    exitWaitState()
+                    if(result && result.startsWith('Uncaught (in promise')) {
+                        notifyUserImpl('error', result)
+                        reject()
+                    } else {
+                        resolve()
+                    }
+                }).catch(error => {
+                    exitWaitState()
+                    notifyUserImpl('error', error)
+                    reject()
+                })
+            } catch(error) {
+                exitWaitState()
+                reject(error)
             }
-        }).catch(error => {
-            notifyUserImpl('error', error)
         })
-    } catch(error) {
-        console.log('error', error)
-    }
+    })
 
 }
 
@@ -555,6 +590,10 @@ function notifyUserImpl(title, message, options) {
 function askUserImpl(title, message, options) {
     set(view, '/state/notification/title', title)
     set(view, '/state/notification/message', message)
+    let yesText = options.yesText ? options.yesText : 'Yes'
+    let noText = options.noText ? options.noText : 'No'
+    set(view, '/state/notification/yesText', yesText)
+    set(view, '/state/notification/noText', noText)
     options.dismissible = false
     options.takeAction = false
     options.complete = function() {
@@ -567,6 +606,37 @@ function askUserImpl(title, message, options) {
     }
     $('#askUserModal').modal(options)
     $('#askUserModal').modal('open')
+}
+
+/**
+ * implementation of $perAdminApp.promptUser()
+ *
+ * @private
+ * @param title
+ * @param message
+ * @param options
+ */
+function promptUserImpl(title, message, options) {
+    set(view, '/state/notification/title', title)
+    set(view, '/state/notification/message', message)
+    let yesText = options.yesText ? options.yesText : 'Ok'
+    let noText = options.noText ? options.noText : 'Cancel'
+    set(view, '/state/notification/yesText', yesText)
+    set(view, '/state/notification/noText', noText)
+
+    options.dismissible = false
+    options.takeAction = false
+    options.complete = function() {
+        const answer = $('#promptUserModal').modal('getInstance').options.takeAction;
+        const value = $('#promptUserModal').modal('getInstance').options.value;
+        if(answer && options.yes) {
+            options.yes(value)
+        } else if(options.no) {
+            options.no()
+        }
+    }
+    $('#promptUserModal').modal(options)
+    $('#promptUserModal').modal('open')
 }
 
 /**
@@ -655,6 +725,8 @@ function sessionKeepAlive() {
  *
  */
 var PerAdminApp = {
+
+    eventBus: new Vue(),
 
     /**
      *
@@ -791,7 +863,7 @@ var PerAdminApp = {
      * @param target
      */
     stateAction(name, target) {
-        stateActionImpl(name, target)
+        return stateActionImpl(name, target)
     },
 
     /**
@@ -895,6 +967,21 @@ var PerAdminApp = {
         askUserImpl(title, message, options)
     },
 
+    /**
+     * modal with the given title and message to ask the user and a field for user input,
+     * calls the callback on close if provided
+     *
+     *
+     * @memberOf PerAdminApp
+     * @method
+     * @param title
+     * @param message
+     * @param options
+     */
+    promptUser(title, message, options) {
+        promptUserImpl(title, message, options)
+    },
+
 
     /**
      * returns true if the editor is currently in preview mode
@@ -959,6 +1046,13 @@ var PerAdminApp = {
 
     beforeStateAction(fun) {
         beforeStateActionImpl(fun)
+    },
+
+    normalizeString(val, separator='-') {
+        return val.normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/\W/g, separator)
+            .toLowerCase();
     }
 
 }

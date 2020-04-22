@@ -24,21 +24,25 @@
   -->
 <template>
     <div class="editor-panel" ref="editorPanel">
-        <div class="editor-panel-content" v-if="schema !== undefined && dataModel !== undefined">
-            <span class="panel-title">Editor</span>
-            <span v-if="title"> - {{title}}</span>
-            <div v-if="!hasSchema">this component does not have a dialog defined</div>
+        <div class="editor-panel-content">
+            <template v-if="schema !== undefined && dataModel !== undefined">
+                <span v-if="title" class="panel-title">{{title}}</span>
+                <div v-if="!hasSchema">this component does not have a dialog defined</div>
             <vue-form-generator :key="dataModel.path" v-bind:schema="schema" v-bind:model="dataModel" v-bind:options="formOptions">
-            </vue-form-generator>
+                </vue-form-generator>
+            </template>
         </div>
         <div class="editor-panel-buttons">
-            <button v-if="!isRootComponent" class="waves-effect waves-light btn btn-raised" title="delete" v-on:click.stop.prevent="onDelete">
+            <button v-if="!isRootComponent" class="waves-effect waves-light btn btn-raised"
+                    v-bind:title="$i18n('deleteComponent')" v-on:click.stop.prevent="onDelete">
                 <i class="material-icons">delete</i>
             </button>
-            <button class="waves-effect waves-light btn btn-raised" title="cancel" v-on:click.stop.prevent="onCancel">
+            <button class="waves-effect waves-light btn btn-raised" v-bind:title="$i18n('cancel')"
+                    v-on:click.stop.prevent="onCancel">
                 <i class="material-icons">close</i>
             </button>
-            <button v-if="hasSchema" class="waves-effect waves-light btn btn-raised" title="save" v-on:click.stop.prevent="onOk">
+            <button v-if="hasSchema" class="waves-effect waves-light btn btn-raised"
+                    v-bind:title="$i18n('save')" v-on:click.stop.prevent="onOk">
                 <i class="material-icons">check</i>
             </button>
         </div>
@@ -49,8 +53,8 @@
     export default {
       props: ['model'],
         updated: function() {
-            let stateTools = $perAdminApp.getNodeFromView("/state/tools");
-            stateTools._deleted = {};
+            let stateTools = $perAdminApp.getNodeFromViewWithDefault("/state/tools", {});
+            stateTools._deleted = {}; // reset to empty?
             if(this.schema.hasOwnProperty('groups')) this.hideGroups();
         },
       mounted(){
@@ -71,7 +75,7 @@
         schema: function() {
             var view = $perAdminApp.getView()
             var component = view.state.editor.component
-            var schema = view.admin.componentDefinitions[component]
+            var schema = view.admin.componentDefinitions[component].model
             return schema
         },
         dataModel: function() {
@@ -102,23 +106,25 @@
       methods: {
         onOk(e) {
             let data = JSON.parse(JSON.stringify(this.dataModel));
-            let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted");
+            let _deleted = $perAdminApp.getNodeFromViewWithDefault("/state/tools/_deleted", {});
 
             //Merge _deleted child items back into the object that we need to save.
             //Loop through the model for this object/page/asset and find objects that have children
             for ( const key in data) {
                 //If data[key] or deleted[key] is an array of objects
-                if (( Array.isArray(data[key]) && data[key].length && typeof data[key][0] === 'object') || 
-                    ( Array.isArray(_deleted[key]) && _deleted[key].length && typeof _deleted[key][0] === 'object') ) {
+                if (( data && Array.isArray(data[key]) && data[key].length && typeof data[key][0] === 'object') ||
+                    ( _deleted && Array.isArray(_deleted[key]) && _deleted[key].length && typeof _deleted[key][0] === 'object') ) {
 
                     let node = data[key];
 
                     //Use an object to easily merge back in deleted nodes
                     let targetNode = {}
                     //Insert deleted children
-                    for ( const j in _deleted[key]) {
-                        const deleted = _deleted[key][j]
-                        targetNode[deleted.name] = deleted;
+                    if(_deleted) {
+                        for ( const j in _deleted[key]) {
+                            const deleted = _deleted[key][j]
+                            targetNode[deleted.name] = deleted;
+                        }
                     }
                     //Insert children
                     for ( const i in node ) {
@@ -131,18 +137,33 @@
 
             var view = $perAdminApp.getView()
             $perAdminApp.action(this, 'onEditorExitFullscreen')
-            $perAdminApp.stateAction('savePageEdit', { data: data, path: view.state.editor.path } )
+            $perAdminApp.stateAction('savePageEdit', { data: data, path: view.state.editor.path } ).then( () => {
+                $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
+            })
         },
         onCancel(e) {
             var view = $perAdminApp.getView()
             $perAdminApp.action(this, 'onEditorExitFullscreen')
-            $perAdminApp.stateAction('cancelPageEdit', { pagePath: view.pageView.path, path: view.state.editor.path } )
+            $perAdminApp.stateAction('cancelPageEdit', { pagePath: view.pageView.path, path: view.state.editor.path } ).then( () => {
+                $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
+            })
         },
-        onDelete(e) {
-            var view = $perAdminApp.getView()
-            $perAdminApp.action(this, 'onEditorExitFullscreen')
-            $perAdminApp.stateAction('deletePageNode', { pagePath: view.pageView.path, path: view.state.editor.path } )
-        },
+          onDelete(e) {
+              const vm = this;
+              var view = $perAdminApp.getView()
+              $perAdminApp.askUser('Delete Component?', 'Are you sure you want to delete the component?', {
+                  yesText: 'Yes',
+                  noText: 'No',
+                  yes() {
+                      $perAdminApp.action(vm, 'onEditorExitFullscreen')
+                      $perAdminApp.stateAction('deletePageNode', { pagePath: view.pageView.path, path: view.state.editor.path } ).then( () => {
+                          $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
+                      })
+                  },
+                  no() {
+                  }
+              })
+          },
         hideGroups() {
             const $groups = $('.vue-form-generator fieldset');
             $groups.each( function(i) {
