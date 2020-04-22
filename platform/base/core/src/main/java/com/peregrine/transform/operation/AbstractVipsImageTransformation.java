@@ -202,7 +202,11 @@ public abstract class AbstractVipsImageTransformation
                         }
                         imageContext.resetImageStream(inputStream);
                     } catch (ExternalProcessException e) {
-                        log.debug("Failed to execute VIPS command: " + operationName, e);
+                        if(!log.isDebugEnabled()) {
+                            log.warn("Failed to execute VIPS command: " + operationName);
+                        } else {
+                            log.debug("Failed to execute VIPS command: " + operationName, e);
+                        }
                         throw new TransformationException(FAILED_TO_EXECUTE_VIPS_OPERATION + operationName, e);
                     }
                 } else {
