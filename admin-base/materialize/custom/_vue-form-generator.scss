@@ -50,9 +50,9 @@
 
     fieldset {
         border: 0;
-        padding: 0;
         margin: 0;
         min-width: auto;
+        padding: 0 .75rem;
 
         > legend{
             width: calc(100% + 1.5rem);
@@ -75,7 +75,7 @@
         }
 
         &.active {
-            border-bottom: 3px solid var(--pcms-gray);
+            border-bottom: 2px solid var(--pcms-blue-grey-darken-3);
 
             > legend {
                 color: var(--pcms-very-dark-green);
@@ -85,6 +85,10 @@
                     content: '▼';
                 }
             }
+        }
+
+        &:last-child {
+            border-bottom: none !important;
         }
 
         > div {
