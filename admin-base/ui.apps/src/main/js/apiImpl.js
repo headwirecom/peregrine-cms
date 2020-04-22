@@ -295,7 +295,6 @@ class PerAdminImpl {
 
             let promises = []
             if (data && data.model) {
-              console.log(data.model)
               if (data.model.groups) {
                 for (let j = 0; j < data.model.groups.lenght; j++) {
                   for (let i = 0; i < data.model.groups[j].fields.length; i++) {
