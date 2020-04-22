@@ -189,31 +189,3 @@
     }
 </script>
 
-<style>
-    .vue-form-generator fieldset > legend{
-        width: calc(100% + 1.5rem);
-        margin: 0 -0.75rem;
-        padding: 0.75rem;
-    }
-
-    .vue-form-generator fieldset > legend:before{
-        content: "+";
-        margin-right: 10px;
-        width: 10px;
-        display: inline-block;
-    }
-
-    .vue-form-generator fieldset.active > legend:before {
-        content: "-";
-    }
-
-    .vue-form-generator fieldset > legend:hover{
-        cursor: pointer;
-        text-decoration: underline;
-    }
-
-    .vue-form-generator > fieldset.vfg-group > .form-group{
-        background: white;
-        padding: 0.75rem;
-    }
-</style>
