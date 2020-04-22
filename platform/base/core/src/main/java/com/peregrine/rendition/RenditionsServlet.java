@@ -144,6 +144,7 @@ public class RenditionsServlet extends AbstractBaseServlet {
                 imageContext = renditionHandler.createRendition(resource, renditionName, sourceMimeType);
                 request.getResourceResolver().commit();
             } catch(HandlerException e) {
+                logger.debug("Create Rendition failed !!", e);
                 return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setException(e);
             }
             if(imageContext != null) {

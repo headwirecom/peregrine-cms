@@ -24,13 +24,26 @@
   -->
 <template>
 <div>
-    <admin-components-action 
-        v-bind:model="{
-        command: 'editRootTemplate',
-        title: 'configure website root template',
-        target: '/content/admin/pages/templates/edit',
-        classes: 'btn'
-    }"></admin-components-action>
+    <div>
+        <admin-components-action
+            v-bind:model="{
+                command: 'editRootTemplate',
+                title: 'configure website root template',
+                target: '/content/admin/pages/templates/edit',
+                classes: 'btn'
+            }">
+        </admin-components-action>
+    </div>
+    <div>
+        <admin-components-action
+            v-bind:model="{
+                command: 'siteSetupReplication',
+                title: 'site setup replication',
+                target: '/content/admin/pages/templates/edit',
+                classes: 'btn'
+            }">
+        </admin-components-action>
+    </div>
 </div>
 </template>
 
@@ -40,7 +53,11 @@
         methods: {
             editRootTemplate(me, target) {
                 const tenant = $perAdminApp.getView().state.tenant.name;
-                $perAdminApp.stateAction('editTemplate', `/content/${tenant}/templates` )
+                $perAdminApp.stateAction('editTemplate', `/content/${tenant}/templates` );
+            },
+            siteSetupReplication(me, target) {
+                const tenant = $perAdminApp.getView().state.tenant.name;
+                $perAdminApp.stateAction('siteSetupReplication', `/content/${tenant}`, 'true');
             }
         }
     }

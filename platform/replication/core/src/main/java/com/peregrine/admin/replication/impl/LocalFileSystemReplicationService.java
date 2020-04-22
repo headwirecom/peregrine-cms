@@ -129,12 +129,6 @@ public class LocalFileSystemReplicationService
             required = true
         )
         String[] exportExtensions();
-//        @AttributeDefinition(
-//            name = "Extensions Parameters",
-//            description = "List of Extension Parameters in the format of <extension>=[<parameter name>:<parameter value>|]*. For now 'exportFolder' takes a boolean (false is default)",
-//            required = false
-//        )
-//        String[] extensionParameters();
         @AttributeDefinition(
             name = "Mandatory Renditions",
             description = "List of all the required renditions that are replicated (if missing they are created)",
@@ -163,7 +157,6 @@ public class LocalFileSystemReplicationService
         exportExtensions.clear();
         Map<String, List<String>> extensions = splitIntoMap(configuration.exportExtensions(), "=", "\\|");
         Map<String, List<String>> extensionParameters = new HashMap<>();
-//        Map<String, List<String>> extensionParameters = splitIntoMap(configuration.extensionParameters(), "=", "\\|");
         for(Entry<String, List<String>> extension: extensions.entrySet()) {
             String name = extension.getKey();
             if(isNotEmpty(name)) {
@@ -246,7 +239,7 @@ public class LocalFileSystemReplicationService
     }
 
     @Override
-    void createTargetFolder(String path) throws ReplicationException {
+    File createTargetFolder(String path) throws ReplicationException {
         File directory = targetFolder;
         String[] folders = path.split("/");
         for(String folder: folders) {
@@ -256,10 +249,20 @@ public class LocalFileSystemReplicationService
                     if(!newDirectory.mkdir()) {
                         throw new ReplicationException(String.format(FAILED_TO_CREATED_FOLDER, newDirectory.getAbsolutePath()));
                     }
+                } else if(!newDirectory.isDirectory()) {
+                    // File exists but is not a folder (like an image or so) -> create a folder with '_' at the end
+                    String addendum = folder + "_";
+                    newDirectory = new File(directory, addendum);
+                    if(!newDirectory.exists()) {
+                        if (!newDirectory.mkdir()) {
+                            throw new ReplicationException(String.format(FAILED_TO_CREATED_FOLDER, newDirectory.getAbsolutePath()));
+                        }
+                    }
                 }
                 directory = newDirectory;
             }
         }
+        return directory;
     }
 
     @Override
@@ -351,7 +354,7 @@ public class LocalFileSystemReplicationService
     }
 
     private File createRenderingFile(Resource resource, String extension) throws ReplicationException {
-        File directory = new File(targetFolder, resource.getParent().getPath());
+        File directory = createTargetFolder(resource.getParent().getPath());
         if(!directory.exists() || !directory.isDirectory()) {
             throw new ReplicationException(String.format(FAILED_STORE_RENDERING_MISSING_PARENT_FOLDER, directory.getAbsolutePath()));
         }
