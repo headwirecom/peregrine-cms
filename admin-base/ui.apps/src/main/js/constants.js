@@ -88,3 +88,9 @@ export const Admin = {
     PAGES: '/content/admin/pages/pages.html'
   }
 }
+
+export const NodeTree ={
+  SUPPORTED_RESOURCE_TYPES: [
+      'per:Page'
+  ]
+}

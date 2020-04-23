@@ -33,12 +33,14 @@
                     {{ currentNodeName }}<span class="caret-down"></span>
                 </template>
                 <template slot="content" v-if="nodeTreeRootNode && nodeTreeRootNode.children">
-                    <admin-components-nodetreeitem
-                        v-for="(node, index) in nodeTreeRootNode.children"
-                        :key="`page-tree-item-${node.path}`"
-                        :item="node"
-                        @click.native.stop="() => {}"
-                        @edit-node="onTreeItemEditNode"/>
+                    <template v-for="(node, index) in nodeTreeRootNode.children">
+                        <admin-components-nodetreeitem
+                            v-if="isSupportedNodeTreeResourceType(node.resourceType)"
+                            :key="`page-tree-item-${node.path}`"
+                            :item="node"
+                            @click.native.stop="() => {}"
+                            @edit-node="onTreeItemEditNode"/>
+                    </template>
                 </template>
             </admin-components-materializedropdown>
         </div>
@@ -50,7 +52,9 @@
 </template>
 
 <script>
-export default {
+    import {NodeTree} from '../../../../../../js/constants'
+
+    export default {
     props: ['model'],
     computed: {
         classes() {
@@ -112,6 +116,10 @@ export default {
         },
         onTreeItemEditNode() {
             this.$refs.dropdown.close()
+        },
+        isSupportedNodeTreeResourceType(resourceType) {
+            console.log('isSupportedNodeTreeResourceType', resourceType)
+            return resourceType && NodeTree.SUPPORTED_RESOURCE_TYPES.indexOf(resourceType) >= 0
         }
     }
 }
