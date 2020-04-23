@@ -72,6 +72,7 @@
             ref          = "editview"
             id           = "editview"
             v-bind:src   = "pagePath"
+            v-bind:data-per-mode= "previewMode"
             frameborder  = "0"></iframe>
     </div>
 </template>
@@ -127,6 +128,11 @@ export default {
     computed: {
         pagePath: function() {
             return $perAdminApp.getNodeFromView('/pageView/path') + '.html'
+        },
+        previewMode: function() {
+            const ws = $perAdminApp.getNodeFromViewOrNull('/state/tools/workspace')
+            return ws ? ws.preview : ''
+
         },
         viewMode: function() {
             const viewMode = $perAdminApp.getNodeFromViewOrNull('/state/tools/workspace/view')
