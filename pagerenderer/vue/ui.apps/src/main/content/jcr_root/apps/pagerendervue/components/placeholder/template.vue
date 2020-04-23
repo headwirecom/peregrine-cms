@@ -39,7 +39,7 @@ export default {
     props: ['model'],
     data: function() {
       return {
-          show: true
+          show: false
       }
     },
     computed: {
@@ -56,16 +56,17 @@ export default {
     created() {
         const vm = this;
 
-        if(window.frameElement && window.frameElement.attributes['data-per-mode']) {
-            if(window.frameElement.attributes['data-per-mode'].value) {
-                return;
-            }
-        }
-
         if (window.parent && window.parent.$perAdminApp  && window.parent.$perAdminApp.eventBus) {
             window.parent.$perAdminApp.eventBus.$on('edit-preview', (data) => {
                 vm.show = data !== 'preview'
             })
+        }
+
+        if(window.frameElement && window.frameElement.attributes['data-per-mode']) {
+            if(window.frameElement.attributes['data-per-mode'].value) {
+                vm.show = false
+                return;
+            }
         }
     },
     mounted() {
