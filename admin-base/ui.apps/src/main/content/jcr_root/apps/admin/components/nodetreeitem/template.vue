@@ -11,17 +11,20 @@
       {{ item.name }}
     </div>
     <ul v-if="item.hasChildren" v-show="isOpen" class="content">
-      <admin-components-nodetreeitem
-          v-for="(child, index) in item.children"
-          :key="`page-tree-item-${child.path}`"
-          :item="child"
-          @edit-node="$emit('edit-node')"/>
+      <template v-for="(child, index) in item.children">
+        <admin-components-nodetreeitem
+            v-if="isSupportedResourceType(child.resourceType)"
+            :key="`page-tree-item-${child.path}`"
+            :item="child"
+            @edit-node="$emit('edit-node')"/>
+      </template>
     </ul>
   </li>
 </template>
 
 <script>
   import {capitalizeFirstLetter} from '../../../../../../js/utils'
+  import {NodeTree} from '../../../../../../js/constants'
 
   export default {
     name: 'TreeItem',
@@ -30,7 +33,8 @@
     },
     data() {
       return {
-        isOpen: false
+        isOpen: false,
+        supportedNodeTypes: ['per:Page']
       }
     },
     computed: {
@@ -93,6 +97,9 @@
           selected: this.item.path,
           path: '/state/tools/pages'
         })
+      },
+      isSupportedResourceType(resourceType) {
+        return resourceType && NodeTree.SUPPORTED_RESOURCE_TYPES.indexOf(resourceType) >= 0
       }
     }
   }
