@@ -11,30 +11,28 @@
       {{ item.name }}
     </div>
     <ul v-if="item.hasChildren" v-show="isOpen" class="content">
-      <template v-for="(child, index) in item.children">
-        <admin-components-nodetreeitem
-            v-if="isSupportedResourceType(child.resourceType)"
-            :key="`page-tree-item-${child.path}`"
-            :item="child"
-            @edit-node="$emit('edit-node')"/>
-      </template>
+      <admin-components-nodetreeitem
+          v-for="(child, index) in filteredChildren"
+          :key="`page-tree-item-${child.path}`"
+          :item="child"
+          :supported-resource-types="supportedResourceTypes"
+          @edit-node="$emit('edit-node')"/>
     </ul>
   </li>
 </template>
 
 <script>
   import {capitalizeFirstLetter} from '../../../../../../js/utils'
-  import {NodeTree} from '../../../../../../js/constants'
 
   export default {
     name: 'TreeItem',
     props: {
-      item: Object
+      item: Object,
+      supportedResourceTypes: Array
     },
     data() {
       return {
-        isOpen: false,
-        supportedNodeTypes: ['per:Page']
+        isOpen: false
       }
     },
     computed: {
@@ -52,6 +50,15 @@
       },
       sectionSingular() {
         return capitalizeFirstLetter(this.section.slice(0, -1)) || null
+      },
+      filteredChildren() {
+        if (this.item.children) {
+          return this.item.children.filter((ch) => {
+            return this.supportedResourceTypes.indexOf(ch.resourceType) >= 0
+          })
+        } else {
+          return []
+        }
       }
     },
     watch: {
@@ -97,9 +104,6 @@
           selected: this.item.path,
           path: '/state/tools/pages'
         })
-      },
-      isSupportedResourceType(resourceType) {
-        return resourceType && NodeTree.SUPPORTED_RESOURCE_TYPES.indexOf(resourceType) >= 0
       }
     }
   }

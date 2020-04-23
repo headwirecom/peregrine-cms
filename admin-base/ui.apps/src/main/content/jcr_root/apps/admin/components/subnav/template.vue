@@ -32,15 +32,14 @@
                 <template>
                     {{ currentNodeName }}<span class="caret-down"></span>
                 </template>
-                <template slot="content" v-if="nodeTreeRootNode && nodeTreeRootNode.children">
-                    <template v-for="(node, index) in nodeTreeRootNode.children">
-                        <admin-components-nodetreeitem
-                            v-if="isSupportedNodeTreeResourceType(node.resourceType)"
-                            :key="`page-tree-item-${node.path}`"
-                            :item="node"
-                            @click.native.stop="() => {}"
-                            @edit-node="onTreeItemEditNode"/>
-                    </template>
+                <template slot="content" v-if="filteredChildren.length > 0">
+                    <admin-components-nodetreeitem
+                        v-for="(node, index) in filteredChildren"
+                        :key="`page-tree-item-${node.path}`"
+                        :item="node"
+                        :supported-resource-types="NodeTree.SUPPORTED_RESOURCE_TYPES"
+                        @click.native.stop="() => {}"
+                        @edit-node="onTreeItemEditNode"/>
                 </template>
             </admin-components-materializedropdown>
         </div>
@@ -56,6 +55,11 @@
 
     export default {
     props: ['model'],
+    data() {
+        return {
+            NodeTree: NodeTree
+        }
+    },
     computed: {
         classes() {
             if(this.model.classes) {
@@ -92,6 +96,15 @@
                 return {}
             }
         },
+        filteredChildren() {
+            if (this.nodeTreeRootNode && this.nodeTreeRootNode.children) {
+                return this.nodeTreeRootNode.children.filter((ch) => {
+                    return this.isSupportedNodeTreeResourceType(ch.resourceType)
+                })
+            } else {
+                return []
+            }
+        },
         currentNodeName() {
             return this.getPath().split('/').pop() || 'loading...'
         }
@@ -118,7 +131,6 @@
             this.$refs.dropdown.close()
         },
         isSupportedNodeTreeResourceType(resourceType) {
-            console.log('isSupportedNodeTreeResourceType', resourceType)
             return resourceType && NodeTree.SUPPORTED_RESOURCE_TYPES.indexOf(resourceType) >= 0
         }
     }
