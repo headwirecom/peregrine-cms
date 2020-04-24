@@ -485,12 +485,13 @@ class PerAdminImpl {
     })
   }
 
-  createSite(fromName, toName, title, colorPalette) {
+  createSite(fromName, toName, title, tenantUserPwd, colorPalette) {
     return new Promise((resolve, reject) => {
       let data = new FormData()
       data.append('fromSite', fromName)
       data.append('toSite', toName)
       data.append('title', title)
+      data.append('tenantUserPwd', tenantUserPwd)
       if (colorPalette) {
         data.append('colorPalette', colorPalette)
       }

@@ -34,12 +34,21 @@
 
     create service user distribution-agent-user
     create service user nodejs-service-user
+    create service user peregrine-service-user
+
+# Create Users / Groups for Peregrine
+
+    create group all_tenants with path /home/groups/tenants
+#    create group all_tenants
 
 # Create the necessary folders to apply permissions below otherwise the Launchpad will fail during startup
 
     create path (sling:OrderedFolder) /content
+    create path (sling:Folder) /apps
     create path (sling:Folder) /etc
     create path (sling:Folder) /etc/distribution
+    create path (sling:Folder) /etc/felibs
+    create path (sling:Folder) /etc/packages
     create path (sling:Folder) /libs
     create path (sling:Folder) /libs/sling
     create path (sling:Folder) /libs/sling/distribution
@@ -62,3 +71,44 @@
     set repository ACL for distribution-agent-user
         allow jcr:all
     end
+
+# Set Permission for Peregrine Services
+
+    set ACL for peregrine-service-user
+        allow jcr:all on /apps
+        allow jcr:all on /content
+        allow jcr:all on /etc/felibs
+        allow jcr:all on /etc/packages
+        allow jcr:all on /home
+    end
+
+[configurations]
+    org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended-sitemaps
+        user.mapping=[
+            "com.peregrine-cms.base.core:sitemaps\=sitemaps-cache"
+        ]
+
+    org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended-distributionEventHandler
+        user.mapping=[
+            "com.peregrine-cms.admin.core:peregrine-distribution-sub-service\=distribution-agent-user",
+            "com.peregrine-cms.replication.core:peregrine-distribution-sub-service\=distribution-agent-user"
+        ]
+
+    org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended-distributionAgentService
+        user.mapping=[
+            "org.apache.sling.distribution.core:defaultAgentService\=distribution-agent-user",
+            "org.apache.sling.distribution.core\=distribution-agent-user",
+            "com.peregrine-cms.distribution:test-distribution\=distribution-agent-user"
+        ]
+
+    org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended-nodejs
+        user.mapping=[
+            "com.peregrine-cms.nodejs:nodejs-service\=nodejs-service-user",
+            "com.peregrine-cms.nodejs.scripts:nodejs-service\=nodejs-service-user",
+            "com.peregrine-cms.nodejs.j2v8:nodejs-service\=nodejs-service-user"
+        ]
+
+    org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended-peregrine
+        user.mapping=[
+            "com.peregrine-cms.admin.core:peregrine-services\=peregrine-service-user"
+        ]
