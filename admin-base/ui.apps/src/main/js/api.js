@@ -115,8 +115,8 @@ class PerApi {
         return impl.populateI18N(language)
     }
 
-    createSite(fromName, toName, title, colorPalette) {
-        return impl.createSite(fromName, toName, title, colorPalette)
+    createSite(fromName, toName, title, tenantUserPwd, colorPalette) {
+        return impl.createSite(fromName, toName, title, tenantUserPwd, colorPalette)
     }
 
     createPage(parentPath, name, templatePath, title) {
@@ -241,6 +241,10 @@ class PerApi {
 
     getPalettes(templateName) {
         return impl.getPalettes(templateName)
+    }
+
+    siteSetupReplication(path) {
+        return impl.siteSetupReplication(path)
     }
 }
 

@@ -235,11 +235,6 @@
         },
         formGenerator: {
           changes: []
-        },
-        error: {
-          buffer: [],
-          timeout: null,
-          delay: 5000
         }
       }
     },
@@ -308,14 +303,6 @@
     watch: {
       edit(newVal) {
         $perAdminApp.getNodeFromView('/state/tools').edit = newVal;
-      },
-      'error.buffer'(val) {
-        clearTimeout(this.error.timeout)
-        this.error.timeout = setTimeout(() => {
-          console.warn('explorerpreviewcontent error buffer:\n', {
-            errors: this.error.buffer
-          })
-        }, this.error.delay)
       }
     },
     created() {
@@ -338,7 +325,15 @@
         if (this.nodeType === NodeType.OBJECT) {
           component = this.getObjectComponent();
         }
-        let schema = view.admin.componentDefinitions[component][schemaKey];
+        const componentDefinitions = view.admin.componentDefinitions
+        if (!componentDefinitions) {
+          return {}
+        }
+        const cmpDefinition = view.admin.componentDefinitions[component]
+        if (!cmpDefinition) {
+          return {}
+        }
+        let schema = cmpDefinition[schemaKey];
         if (this.edit) {
           return schema;
         }
@@ -358,16 +353,12 @@
         return schema;
       },
       getSchemaByActiveTab() {
-        try {
-          if (this.activeTab === Tab.INFO) {
-            return this.getSchema(SchemaKey.MODEL);
-          } else if (this.activeTab === Tab.OG_TAGS) {
-            return this.getSchema(SchemaKey.OG_TAGS);
-          } else {
-            return {};
-          }
-        } catch (err) {
-          this.error.buffer.push(err)
+        if (this.activeTab === Tab.INFO) {
+          return this.getSchema(SchemaKey.MODEL);
+        } else if (this.activeTab === Tab.OG_TAGS) {
+          return this.getSchema(SchemaKey.OG_TAGS);
+        } else {
+          return {};
         }
       },
       getObjectComponent() {

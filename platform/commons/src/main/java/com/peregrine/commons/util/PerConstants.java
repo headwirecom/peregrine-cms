@@ -135,11 +135,16 @@ public class PerConstants {
     public static final String JACKSON = "jackson";
     public static final String FROM_SITE_NAME = "fromSite";
     public static final String TO_SITE_NAME = "toSite";
+    public static final String TENANT_USER_PWD = "tenantUserPwd";
     public static final String DEPENDENCIES = "dependencies";
     public static final String INTERNAL = "internal";
 
     public static final String EXCLUDE_FROM_SITEMAP = "excludeFromSitemap";
     public static final String CHANGE_FREQUENCY = "changefreq";
     public static final String PRIORITY = "priority";
+
+    public static final String TENANT_GROUP_HOME = "/home/groups/tenants";
+    public static final String TENANT_USER_HOME = "/home/users/tenants";
+    public static final String ALL_TENANTS_GROUP_NAME = "all_tenants";
 }
 

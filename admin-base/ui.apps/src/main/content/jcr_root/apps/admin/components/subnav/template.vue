@@ -24,34 +24,42 @@
   -->
 <template>
     <div class="nav-content sub-nav" :class="classes">
-        <div v-if="isEditPage" class="page-tree">
+        <div v-if="showNodeTree" class="page-tree">
             <admin-components-materializedropdown
                 ref="dropdown"
                 :on-focus-out="() => {}"
                 :below-origin="true">
                 <template>
-                    {{ currentPage }}<span class="caret-down"></span>
+                    {{ currentNodeName }}<span class="caret-down"></span>
                 </template>
-                <template slot="content">
-                    <admin-components-nodeTreeItem
-                        v-for="(node, index) in pageNode.children"
+                <template slot="content" v-if="filteredChildren.length > 0">
+                    <admin-components-nodetreeitem
+                        v-for="(node, index) in filteredChildren"
                         :key="`page-tree-item-${node.path}`"
                         :item="node"
+                        :supported-resource-types="NodeTree.SUPPORTED_RESOURCE_TYPES"
                         @click.native.stop="() => {}"
-                        @edit-page="onTreeItemEditPage"/>
+                        @edit-node="onTreeItemEditNode"/>
                 </template>
             </admin-components-materializedropdown>
         </div>
         <template v-for="child in model.children">
             <div v-bind:is="child.component" v-bind:model="child" v-bind:key="child.path"></div>
         </template>
-        <span v-if="isEditPage" class="center-keeper"></span>
+        <span v-if="showNodeTree" class="center-keeper"></span>
     </div>
 </template>
 
 <script>
-export default {
+    import {NodeTree} from '../../../../../../js/constants'
+
+    export default {
     props: ['model'],
+    data() {
+        return {
+            NodeTree: NodeTree
+        }
+    },
     computed: {
         classes() {
             if(this.model.classes) {
@@ -62,12 +70,25 @@ export default {
         isEditPage() {
             return this.model.classes && this.model.classes.indexOf('navcenter') >= 0
         },
-        pageNode() {
+        tenant() {
+            return $perAdminApp.getView().state.tenant
+        },
+        section() {
+          return this.getPath().split('/')[3]
+        },
+        sectionRoot() {
+            return this.tenant.roots[this.section]
+        },
+        showNodeTree() {
+            return this.isEditPage && ['pages', 'templates'].indexOf(this.section) >= 0
+        },
+        nodes() {
+            return $perAdminApp.getView().admin.nodes
+        },
+        nodeTreeRootNode() {
             try {
-                if (this.isEditPage) {
-                    const nodes = $perAdminApp.getView().admin.nodes
-                    const tenant = $perAdminApp.getView().state.tenant
-                    return $perAdminApp.findNodeFromPath(nodes, tenant.roots.pages)
+                if (this.showNodeTree) {
+                    return $perAdminApp.findNodeFromPath(this.nodes, this.sectionRoot)
                 } else {
                     return {}
                 }
@@ -75,15 +96,24 @@ export default {
                 return {}
             }
         },
-        currentPage() {
+        filteredChildren() {
+            if (this.nodeTreeRootNode && this.nodeTreeRootNode.children) {
+                return this.nodeTreeRootNode.children.filter((ch) => {
+                    return this.isSupportedNodeTreeResourceType(ch.resourceType)
+                })
+            } else {
+                return []
+            }
+        },
+        currentNodeName() {
             return this.getPath().split('/').pop() || 'loading...'
         }
     },
     methods: {
-        isEditor: function() {
+        isEditor() {
             return this.$root.$data.adminPage.title === 'editor'
         },
-        getPath: function(){
+        getPath(){
             if( this.$root.$data.pageView){
                 if( this.$root.$data.pageView.path ){
                     return this.$root.$data.pageView.path;
@@ -97,8 +127,11 @@ export default {
         getDownloadPath(){
             return this.getPath().split('/').reverse()[0];
         },
-        onTreeItemEditPage() {
+        onTreeItemEditNode() {
             this.$refs.dropdown.close()
+        },
+        isSupportedNodeTreeResourceType(resourceType) {
+            return resourceType && NodeTree.SUPPORTED_RESOURCE_TYPES.indexOf(resourceType) >= 0
         }
     }
 }

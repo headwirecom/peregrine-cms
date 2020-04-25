@@ -1,6 +1,6 @@
 <template>
   <li class="page-tree-item" :class="{'expandable': item.hasChildren, 'is-open': isOpen}">
-    <div class="title" :class="{'is-selected': this.isSelected}" @click.stop="editPage">
+    <div class="title" :class="{'is-selected': this.isSelected}" @click.stop="editNode">
       <template>
         <i v-if="item.hasChildren" class="material-icons hover" @click.stop.prevent="toggle">
           {{ expandIcon }}
@@ -12,19 +12,23 @@
     </div>
     <ul v-if="item.hasChildren" v-show="isOpen" class="content">
       <admin-components-nodetreeitem
-          v-for="(child, index) in item.children"
+          v-for="(child, index) in filteredChildren"
           :key="`page-tree-item-${child.path}`"
           :item="child"
-          @edit-page="$emit('edit-page')"/>
+          :supported-resource-types="supportedResourceTypes"
+          @edit-node="$emit('edit-node')"/>
     </ul>
   </li>
 </template>
 
 <script>
+  import {capitalizeFirstLetter} from '../../../../../../js/utils'
+
   export default {
     name: 'TreeItem',
     props: {
-      item: Object
+      item: Object,
+      supportedResourceTypes: Array
     },
     data() {
       return {
@@ -40,6 +44,21 @@
       },
       isSelected() {
         return this.item.path === this.currentPath
+      },
+      section() {
+        return this.currentPath.split('/')[3] || null
+      },
+      sectionSingular() {
+        return capitalizeFirstLetter(this.section.slice(0, -1)) || null
+      },
+      filteredChildren() {
+        if (this.item.children) {
+          return this.item.children.filter((ch) => {
+            return this.supportedResourceTypes.indexOf(ch.resourceType) >= 0
+          })
+        } else {
+          return []
+        }
       }
     },
     watch: {
@@ -61,11 +80,7 @@
         const pathArr = this.item.path.split('/')
         const partCurrPathArr = currPathArr.splice(0, pathArr.length)
 
-        if (!this.isSelected && partCurrPathArr.join('/') === this.item.path) {
-          this.isOpen = true
-        } else {
-          this.isOpen = false
-        }
+        this.isOpen = !this.isSelected && partCurrPathArr.join('/') === this.item.path
       },
       toggle() {
         if (this.item.hasChildren) {
@@ -78,11 +93,11 @@
           }
         }
       },
-      editPage() {
-        if (!this.isSelected) {
-          $perAdminApp.stateAction('editPage', this.item.path)
+      editNode() {
+        if (!this.isSelected && this.section) {
+          $perAdminApp.stateAction(`edit${this.sectionSingular}`, this.item.path)
         }
-        this.$emit('edit-page')
+        this.$emit('edit-node')
       },
       loadChildren() {
         return $perAdminApp.stateAction('loadToolsNodesPath', {
