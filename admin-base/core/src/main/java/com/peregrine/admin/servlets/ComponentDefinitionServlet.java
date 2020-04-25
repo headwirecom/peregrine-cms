@@ -28,6 +28,7 @@ package com.peregrine.admin.servlets;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_COMPONENT_DEFINITION;
 import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
 import static com.peregrine.commons.util.PerConstants.CONF_ROOT;
+import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
 import static com.peregrine.commons.util.PerConstants.MODEL;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.OG_TAGS;
@@ -44,16 +45,11 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.commons.servlets.ServletHelper;
 import com.peregrine.commons.util.PerConstants;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 
 import javax.servlet.Servlet;
 import org.apache.sling.api.resource.Resource;
@@ -86,13 +82,21 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
             page = true;
             resource = resource.getChild(PerConstants.JCR_CONTENT);
         }
+        String resourceType = resource.getValueMap().get(SLING_RESOURCE_TYPE, String.class);
         String componentPath = "";
         if (path.startsWith(APPS_ROOT + SLASH)|| path.startsWith(CONF_ROOT + SLASH)) {
             componentPath = path;
         } else {
-            componentPath = CONF_ROOT + SLASH + resource.getValueMap().get(SLING_RESOURCE_TYPE, String.class);
-            if(request.getResourceByPath(componentPath) == null) {
-                componentPath = APPS_ROOT + SLASH + resource.getValueMap().get(SLING_RESOURCE_TYPE, String.class);
+            if(resourceType == null) {
+                componentPath = resource.getPath();
+            } else {
+                componentPath = CONF_ROOT + SLASH + resourceType;
+                if (request.getResourceByPath(componentPath) == null) {
+                    componentPath = APPS_ROOT + SLASH + resourceType;
+                    if (request.getResourceByPath(componentPath) == null) {
+                        componentPath = CONTENT_ROOT + SLASH + resourceType;
+                    }
+                }
             }
         }
         Resource component = request.getResourceByPath(componentPath);
