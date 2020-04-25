@@ -323,7 +323,7 @@ public class AdminResourceHandlerService
             }
             Node newObject = parent.addNode(name, OBJECT_PRIMARY_TYPE);
             newObject.setProperty(JCR_TITLE, name);
-            if (!isEmpty(resourceType)) {
+            if (!isEmpty(resourceType) && resourceType.indexOf("/object-definitions/") < 0) {
                 newObject.setProperty(SLING_RESOURCE_TYPE, resourceType);
             }
             baseResourceHandler.updateModification(resourceResolver, newObject);
