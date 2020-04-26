@@ -54,6 +54,7 @@ import java.io.InputStream;
 import javax.servlet.Servlet;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -72,6 +73,7 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
     private static final String EXPLORER_DIALOG_JSON = "explorer_dialog.json";
     private static final String DIALOG_JSON = "dialog.json";
     private static final String OG_TAG_DIALOG_JSON = "og_tag_dialog.json";
+    private static final String OBJECT_PATH = "objectPath";
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
@@ -82,39 +84,39 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
             page = true;
             resource = resource.getChild(PerConstants.JCR_CONTENT);
         }
-        String resourceType = resource.getValueMap().get(SLING_RESOURCE_TYPE, String.class);
+        ValueMap properties = resource.getValueMap();
+        String resourceType = properties.get(SLING_RESOURCE_TYPE, String.class);
         String componentPath = "";
+        Resource componentResource = null;
         if (path.startsWith(APPS_ROOT + SLASH)|| path.startsWith(CONF_ROOT + SLASH)) {
-            componentPath = path;
+            componentResource = request.getResourceByPath(path);
         } else {
-            if(resourceType == null) {
-                componentPath = resource.getPath();
-            } else {
-                componentPath = CONF_ROOT + SLASH + resourceType;
-                if (request.getResourceByPath(componentPath) == null) {
-                    componentPath = APPS_ROOT + SLASH + resourceType;
-                    if (request.getResourceByPath(componentPath) == null) {
-                        componentPath = CONTENT_ROOT + SLASH + resourceType;
-                    }
+            componentPath = CONF_ROOT + SLASH + resourceType;
+            componentResource = request.getResourceByPath(componentPath);
+            if (componentResource == null) {
+                componentPath = APPS_ROOT + SLASH + resourceType;
+                componentResource = request.getResourceByPath(componentPath);
+                if (componentResource == null) {
+                    String objectPath = properties.get(OBJECT_PATH, String.class);
+                    componentResource = request.getResourceByPath(objectPath);
                 }
             }
         }
-        Resource component = request.getResourceByPath(componentPath);
-        logger.debug("Component Path: '{}', Component: '{}'", componentPath, component);
+        logger.debug("Component Resource: '{}'", componentResource);
         if ("/apps/admin/components/assetview".equals(path)) {
             page = true;
         }
-        Resource dialog = component.getChild(page ? EXPLORER_DIALOG_JSON : DIALOG_JSON);
+        Resource dialog = componentResource.getChild(page ? EXPLORER_DIALOG_JSON : DIALOG_JSON);
         if (dialog == null) {
-            dialog = getDialogFromSuperType(component, page, false);
+            dialog = getDialogFromSuperType(componentResource, page, false);
         }
-        Resource ogTags = component.getChild(OG_TAG_DIALOG_JSON);
+        Resource ogTags = componentResource.getChild(OG_TAG_DIALOG_JSON);
         if (ogTags == null) {
-            ogTags = getDialogFromSuperType(component, page, true);
+            ogTags = getDialogFromSuperType(componentResource, page, true);
         }
         JsonResponse answer = new JsonResponse();
-        answer.writeAttribute(PATH, componentPath);
-        answer.writeAttribute(NAME, ServletHelper.componentPathToName(componentPath));
+        answer.writeAttribute(PATH, componentResource.getPath());
+        answer.writeAttribute(NAME, ServletHelper.componentPathToName(componentResource.getPath()));
         if (dialog != null) {
             answer.writeAttributeRaw(MODEL, rewriteDialogToTenant(path, dialog));
         }
