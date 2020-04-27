@@ -55,10 +55,15 @@ public class ObjectModel extends AbstractComponent {
     public ObjectModel(Resource r) { super(r); }
 
     @Inject
+    private String objectPath;
+
+    @Inject
     private String text;
 
     @Inject
     private String name;
+
+
 
     public String getText() {
         return text;
@@ -67,4 +72,20 @@ public class ObjectModel extends AbstractComponent {
     public String getName() {
         return name;
     }
+
+    @Override
+    public String getComponent() {
+        String cmpName = super.getComponent();
+        if(cmpName.startsWith("per:-")) {
+            String ret = "";
+            String[] segments = objectPath.split("/");
+            for(int i = 2; i < segments.length; i++) {
+                if(i > 2) { ret += "-"; }
+                ret += segments[i];
+            }
+            return ret;
+        }
+        return cmpName;
+    }
+
 }
