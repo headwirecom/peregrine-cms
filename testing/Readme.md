@@ -3,7 +3,7 @@
 ## Introduction
 
 The ITs for Peregrine are designed to make sure that Peregrine components work
-and keep on working. The will be executed aside from the regular build as
+and keep on working. They will be executed aside from the regular build as
 they require code to be deployed into Sling.
 
 ## Requirements
