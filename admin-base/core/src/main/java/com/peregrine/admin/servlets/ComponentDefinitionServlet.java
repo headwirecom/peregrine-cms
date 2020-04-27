@@ -29,8 +29,10 @@ import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_COMPONENT_DE
 import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
 import static com.peregrine.commons.util.PerConstants.CONF_ROOT;
 import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
+import static com.peregrine.commons.util.PerConstants.DIALOG_JSON;
 import static com.peregrine.commons.util.PerConstants.MODEL;
 import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.OBJECT_PATH;
 import static com.peregrine.commons.util.PerConstants.OG_TAGS;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.SLASH;
@@ -71,9 +73,7 @@ import org.osgi.service.component.annotations.Component;
 public class ComponentDefinitionServlet extends AbstractBaseServlet {
 
     private static final String EXPLORER_DIALOG_JSON = "explorer_dialog.json";
-    private static final String DIALOG_JSON = "dialog.json";
     private static final String OG_TAG_DIALOG_JSON = "og_tag_dialog.json";
-    private static final String OBJECT_PATH = "objectPath";
 
     @Override
     protected Response handleRequest(Request request) throws IOException {

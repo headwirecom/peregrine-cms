@@ -146,5 +146,8 @@ public class PerConstants {
     public static final String TENANT_GROUP_HOME = "/home/groups/tenants";
     public static final String TENANT_USER_HOME = "/home/users/tenants";
     public static final String ALL_TENANTS_GROUP_NAME = "all_tenants";
+
+    public static final String DIALOG_JSON = "dialog.json";
+    public static final String OBJECT_PATH = "objectPath";
 }
 
