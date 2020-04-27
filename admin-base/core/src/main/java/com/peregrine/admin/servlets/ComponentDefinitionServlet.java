@@ -88,7 +88,7 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
         String resourceType = properties.get(SLING_RESOURCE_TYPE, String.class);
         String componentPath = "";
         Resource componentResource = null;
-        if (path.startsWith(APPS_ROOT + SLASH)|| path.startsWith(CONF_ROOT + SLASH)) {
+        if (path.startsWith(APPS_ROOT + SLASH)|| path.indexOf("object-definitions") > 0) {
             componentResource = request.getResourceByPath(path);
         } else {
             componentPath = CONF_ROOT + SLASH + resourceType;
