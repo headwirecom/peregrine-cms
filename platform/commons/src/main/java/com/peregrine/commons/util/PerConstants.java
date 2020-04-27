@@ -10,6 +10,8 @@ import java.util.Locale;
  * Created by Andreas Schaefer on 6/19/17.
  */
 public class PerConstants {
+    public static final String ADMIN_USER = "admin";
+
     public static final String JCR_CONTENT = "jcr:content";
     public static final String JCR_DATA = "jcr:data";
     public static final String NT_FOLDER = "nt:folder";
