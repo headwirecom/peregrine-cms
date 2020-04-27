@@ -40,9 +40,14 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
 import javax.servlet.Servlet;
 import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.factory.ExportException;
+import org.apache.sling.models.factory.MissingExporterException;
+import org.apache.sling.models.factory.ModelClassException;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -81,24 +86,27 @@ public class GetObjectServlet extends AbstractBaseServlet {
                 .setRequestPath(path);
         }
 
-        // changed the approach to forward through the export servlet as exportModelForResource does not
-        // yeld consistent resulrs (takes the first match for the model)
-//        try {
-//            Map object = modelFactory.exportModelForResource(resource,
-//                    "jackson", Map.class,
-//                    Collections.<String, String>emptyMap());
-//            try {
-//                JsonResponse response = new JsonResponse();
-//                response.writeMap(object);
-//                return response;
-//            } catch (IOException e) {
-//            }
-//
-//        } catch (ExportException e) {
-//        } catch (MissingExporterException e) {
-//        } catch (ModelClassException e) {
-//            // doesnt exist, continue
-//        }
+        String objectPath = resource.getValueMap().get("objectPath", String.class);
+        if(objectPath != null && objectPath.startsWith("/content/")) {
+            // changed the approach to forward through the export servlet as exportModelForResource does not
+            // yield consistent results (takes the first match for the model)
+            try {
+                Map object = modelFactory.exportModelForResource(resource,
+                    "jackson", Map.class,
+                    Collections.<String, String>emptyMap());
+                try {
+                    JsonResponse response = new JsonResponse();
+                    response.writeMap(object);
+                    return response;
+                } catch (IOException e) {
+                }
+
+            } catch (ExportException e) {
+            } catch (MissingExporterException e) {
+            } catch (ModelClassException e) {
+                // doesnt exist, continue
+            }
+        }
 
         RequestDispatcherOptions rdOptions = new RequestDispatcherOptions();
         rdOptions.setReplaceSelectors(MODEL);
