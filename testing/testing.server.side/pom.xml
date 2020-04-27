@@ -224,8 +224,9 @@
                     <systemPropertyVariables>
                         <launchpad.http.port>${http.port}</launchpad.http.port>
                         <IT.expected.bundles.count>${IT.expected.bundles.count}</IT.expected.bundles.count>
-
                         <launchpad.http.server.url>http://${sling.host}:${http.port}</launchpad.http.server.url>
+                        <ClientSideTeleporter.baseUrl>http://${sling.host}:${http.port}/</ClientSideTeleporter.baseUrl>
+                        <ClientSideTeleporter.testReadyTimeoutSeconds>20</ClientSideTeleporter.testReadyTimeoutSeconds>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>

@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -45,14 +44,11 @@ import static org.junit.Assert.fail;
  *
  * Created by Andreas Schaefer on 7/5/17.
  */
-public class PageTraversingIT
-//    extends AbstractTest
-{
+
+public class PageTraversingIT {
 
     private static final Logger logger = LoggerFactory.getLogger(PageTraversingIT.class.getName());
-
     public static final String ROOT_PATH = "/content/tests/server-side/page-traversing";
-
     @Rule
     public final TeleporterRule teleporter = TeleporterRule.forClass(getClass(), "PeregrineTeleporter");
 
@@ -298,7 +294,7 @@ public class PageTraversingIT
         }
     }
 
-    private ResourceResolver getResourceResolver() throws LoginException {
+    ResourceResolver getResourceResolver() throws LoginException {
         final ResourceResolverFactory resourceResolverFactory = teleporter.getService(ResourceResolverFactory.class);
         logger.info("Got Resource Resolver Factory: '{}'", resourceResolverFactory);
         assertNotNull("Teleporter should provide a Resource Resolver Factory", resourceResolverFactory);
@@ -310,8 +306,7 @@ public class PageTraversingIT
 
     private Resource createChildPage(AdminResourceHandler resourceManagement, Resource parent, String childPageName) throws ManagementException, IOException {
         Resource newPage = resourceManagement.createPage(
-            parent.getResourceResolver(), parent.getPath(), childPageName, EXAMPLE_TEMPLATE_PATH
-        );
+            parent.getResourceResolver(), parent.getPath(), childPageName, EXAMPLE_TEMPLATE_PATH, childPageName);
         logger.info("New Page: '{}'", newPage == null ? "null" : newPage.getPath());
         assertNotNull("No Page was created", newPage);
         testPage(newPage, childPageName);
