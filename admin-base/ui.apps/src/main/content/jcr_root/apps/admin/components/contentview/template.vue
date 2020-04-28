@@ -26,6 +26,7 @@
   <div :class="`peregrine-content-view ${viewModeClass}`" @mouseout="leftOverlayArea">
     <div id="editviewoverlay"
          @click="onClickOverlay"
+         @dblclick="onOverlayDblClick"
          @scroll="onScrollOverlay"
          @mousemove="mouseMove"
          @dragover="onDragOver"
@@ -124,7 +125,7 @@
       },
       enableEditableFeatures() {
         const targetEl = this.selectedComponent
-        if (!!targetEl) {
+        if (!targetEl) {
           return false
         }
         const path = targetEl.getAttribute('data-per-path')
@@ -363,6 +364,12 @@
             $perAdminApp.action(this, 'showComponentEdit', path)
           }
         }
+      },
+
+      onOverlayDblClick(event) {
+        if (!event) return
+
+        const targetEl = this.getTargetEl(event)
       },
 
       leftOverlayArea(e) {
