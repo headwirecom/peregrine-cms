@@ -110,6 +110,11 @@ import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
+import javax.jcr.version.Version;
+import javax.jcr.version.VersionHistory;
+import javax.jcr.version.VersionManager;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
@@ -430,6 +435,35 @@ public class AdminResourceHandlerService
         } catch (PersistenceException e) {
             throw new ManagementException(String.format(FAILED_TO_DELETE, path), e);
         }
+    }
+
+
+    @Override
+    public Version createVersion(ResourceResolver resourceResolver, String path) throws ManagementException {
+        final Resource resource = getResource(resourceResolver, path);
+        if (resource == null) {
+            throw new ManagementException(String.format(RESOURCE_FOR_DELETION_NOT_FOUND, path));
+        }
+        final Node versionableNode = resource.adaptTo(Node.class);
+
+        try {
+            // jcr 2.0 15 Versioning 15.2
+            // https://docs.adobe.com/content/docs/en/spec/jcr/2.0/15_Versioning.html#15.2.1%20Version%20Object
+            VersionManager vm = versionableNode.getSession().getWorkspace().getVersionManager();
+            versionableNode.addMixin("mix:versionable");
+            vm.checkin(path);
+            vm.checkout(path);
+            return null;
+
+        } catch (RepositoryException e) {
+            logger.error("RepositoryException while creating version  {}", path, e);
+            throw new ManagementException("Create Version FAILED", e);
+        }
+//        catch (PersistenceException e) {
+//            logger.error("PersistenceException while creating version {}", path, e);
+//            e.printStackTrace();
+//        }
+//        return null;
     }
 
     @Override

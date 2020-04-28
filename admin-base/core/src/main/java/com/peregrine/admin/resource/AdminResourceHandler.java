@@ -3,6 +3,8 @@ package com.peregrine.admin.resource;
 import java.io.InputStream;
 import java.util.Map;
 import javax.jcr.Node;
+import javax.jcr.version.Version;
+
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
@@ -84,6 +86,15 @@ public interface AdminResourceHandler {
      * @throws ManagementException If the deletion failed
      */
     DeletionResponse deleteResource(ResourceResolver resourceResolver, String path, String primaryType) throws ManagementException;
+
+    /**
+     * Creates a resource version
+     * @param resourceResolver Resource Resolver to manage resources and cannot be null
+     * @param path Absolute Path of the resource to be versioned and this resource must exist
+     * @return The Resource with a new Version
+     * @throws ManagementException If creating the version failed
+     */
+    Version createVersion(ResourceResolver resourceResolver, String path) throws ManagementException;
 
     /**
      * Updates a given resource based on the given JSon Content
