@@ -123,7 +123,8 @@ public class CreateSiteServlet extends AbstractBaseServlet {
         String toSite = request.getParameter(TO_SITE_NAME);
         try {
             logger.trace("Copy Site form: '{}' to: '{}'", fromSite, toSite);
-            ResourceResolver resourceResolver = loginService(resourceResolverFactory, PEREGRINE_SERVICE_NAME);
+            Resource resource = request.getResource();
+            ResourceResolver resourceResolver = loginService(resource, resourceResolverFactory, PEREGRINE_SERVICE_NAME);
             Session adminSession = resourceResolver.adaptTo(Session.class);
             UserManager userManager = AccessControlUtil.getUserManager(adminSession);
             Resource site = resourceManagement
