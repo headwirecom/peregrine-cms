@@ -32,9 +32,9 @@
          @dragover="onDragOver"
          @drop.prevent="onDrop">
       <div class="editview-container" ref="editviewContainer">
-        <div :class="editableClass"
+        <div id="editable"
              ref="editable"
-             id="editable"
+             :class="editableClass"
              :draggable="enableEditableFeatures"
              @dragstart="onDragStart"
              @touchstart="onEditableTouchStart"
