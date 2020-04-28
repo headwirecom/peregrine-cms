@@ -319,9 +319,8 @@
       },
 
       findIn(el, pos) {
-        if (!el) {
-          return null
-        }
+        if (!el) return
+
         const rect = this.getBoundingClientRect(el)
         let ret = null
         if (pos.x > rect.left && pos.x < rect.right && pos.y > rect.top && pos.y < rect.bottom) {
@@ -341,9 +340,9 @@
         const pos = this.getPosFromMouse(e)
         const editview = this.$refs.editview
         let targetEl = this.findIn(editview.contentWindow.document.body, pos)
-        if (!targetEl) {
-          return
-        }
+
+        if (!targetEl) return
+
         while (!targetEl.getAttribute('data-per-path')) {
           targetEl = targetEl.parentElement
           if (!targetEl) {
@@ -354,9 +353,8 @@
       },
 
       onClickOverlay(e) {
-        if (!e) {
-          return
-        }
+        if (!e) return
+
         const targetEl = this.getTargetEl(e)
         if (targetEl) {
           const path = targetEl.getAttribute('data-per-path')
@@ -381,15 +379,11 @@
       },
 
       leftOverlayArea(e) {
-        if ($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) {
-          return
-        }
+        if ($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
 
         // check if we only left the area into the overlay for the actions
         const targetEl = this.getTargetEl(e)
-        if (targetEl) {
-          return
-        }
+        if (targetEl) return
         this.removeEditOverlay()
       },
 
@@ -402,12 +396,9 @@
       },
 
       mouseMove(e) {
-        if (!e || this.isTouch) {
-          return
-        }
-        if ($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) {
-          return
-        }
+        if (!e || this.isTouch) return
+        if ($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
+
         let targetEl = this.getTargetEl(e)
         if (targetEl) {
           if (this.isContainer(targetEl)) {
@@ -427,9 +418,8 @@
       /* Drag and Drop ===========================
       ============================================ */
       onDragStart(ev) {
-        if (this.selectedComponent === null) {
-          return
-        }
+        if (this.selectedComponent === null) return
+
         this.editableClass = 'dragging'
         ev.dataTransfer.setData('text', this.selectedComponent.getAttribute('data-per-path'))
       },
@@ -530,9 +520,8 @@
         clearTimeout(this.editableTimer)
       },
       onLongTouchOverlay() {
-        if (this.selectedComponent === null) {
-          return
-        }
+        if (this.selectedComponent === null) return
+
         this.selectedComponentDragable = true
         this.editableClass = 'draggable'
       },
