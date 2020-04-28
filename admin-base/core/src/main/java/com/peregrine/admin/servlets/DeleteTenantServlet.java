@@ -25,16 +25,21 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_UPDATE_SITE;
+import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_DELETE_TENANT;
+import static com.peregrine.admin.util.AdminConstants.PEREGRINE_SERVICE_NAME;
+import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
+import static com.peregrine.commons.util.PerConstants.DELETED;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.SITE;
+import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.commons.util.PerConstants.SOURCE_PATH;
 import static com.peregrine.commons.util.PerConstants.STATUS;
 import static com.peregrine.commons.util.PerConstants.TYPE;
-import static com.peregrine.commons.util.PerConstants.UPDATED;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.commons.util.PerUtil.POST;
+import static com.peregrine.commons.util.PerUtil.loginService;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -46,52 +51,61 @@ import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import java.io.IOException;
 import javax.servlet.Servlet;
-import org.apache.commons.lang3.StringUtils;
+
+import org.apache.sling.api.resource.LoginException;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Update a site's components and felibs from its source
+ * Deletes a Peregrine Site
  *
  * The API Definition can be found in the Swagger Editor configuration:
- *    ui.apps/src/main/content/jcr_root/perapi/definitions/admin.yaml
+ *    ui.apps/src/main/content/jcr_root/api/definitions/admin.yaml
  */
 @Component(
     service = Servlet.class,
     property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Update Site Servlet",
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Delete Site servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
         SLING_SERVLET_METHODS + EQUALS + POST,
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_UPDATE_SITE
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_DELETE_TENANT
     }
 )
 @SuppressWarnings("serial")
-public class UpdateSiteServlet extends AbstractBaseServlet {
+public class DeleteTenantServlet extends AbstractBaseServlet {
 
-    private static final String FAILED_TO_UPDATE_SITE = "Failed to update site";
+    private static final String FAILED_TO_DELETE_SITE = "Failed to delete site";
+
+    @Reference
+    ModelFactory modelFactory;
 
     @Reference
     AdminResourceHandler resourceManagement;
 
+    @Reference
+    ResourceResolverFactory resourceResolverFactory;
+
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        String name = request.getParameter(NAME);
-        if(StringUtils.isBlank(name)) {
-            return new ErrorResponse()
-                .setHttpErrorCode(SC_BAD_REQUEST)
-                .setErrorMessage("No site name provided");
-        }
+        String fromTenant = request.getParameter(NAME);
         try {
-            resourceManagement.updateSite(request.getResourceResolver(), name);
+            logger.debug("Delete Site form: '{}'", fromTenant);
+            Resource resource = request.getResource();
+            ResourceResolver resourceResolver = loginService(resource, resourceResolverFactory, PEREGRINE_SERVICE_NAME);
+            resourceManagement.deleteTenant(request.getResourceResolver(), CONTENT_ROOT, fromTenant);
             request.getResourceResolver().commit();
             return new JsonResponse()
-                    .writeAttribute(TYPE, SITE)
-                    .writeAttribute(STATUS, UPDATED)
-                    .writeAttribute(NAME, name);
-        } catch (ManagementException e) {
+                .writeAttribute(TYPE, SITE)
+                .writeAttribute(STATUS, DELETED)
+                .writeAttribute(SOURCE_PATH, CONTENT_ROOT + SLASH + fromTenant);
+        } catch(ManagementException | LoginException e) {
             return new ErrorResponse()
                 .setHttpErrorCode(SC_BAD_REQUEST)
-                .setErrorMessage(FAILED_TO_UPDATE_SITE)
+                .setErrorMessage(FAILED_TO_DELETE_SITE)
                 .setException(e);
         }
     }

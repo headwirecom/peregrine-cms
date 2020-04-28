@@ -115,8 +115,8 @@ class PerApi {
         return impl.populateI18N(language)
     }
 
-    createSite(fromName, toName, title, tenantUserPwd, colorPalette) {
-        return impl.createSite(fromName, toName, title, tenantUserPwd, colorPalette)
+    createTenant(fromName, toName, title, tenantUserPwd, colorPalette) {
+        return impl.createTenant(fromName, toName, title, tenantUserPwd, colorPalette)
     }
 
     createPage(parentPath, name, templatePath, title) {
@@ -131,8 +131,8 @@ class PerApi {
         return impl.deletePage(path)
     }
 
-    deleteSite(name, path) {
-        return impl.deleteSite(name, path)
+    deleteTenant(name, path) {
+        return impl.deleteTenant(name, path)
     }
 
     renamePage(path, newName) {
@@ -239,8 +239,8 @@ class PerApi {
         return impl.getPalettes(templateName)
     }
 
-    siteSetupReplication(path) {
-        return impl.siteSetupReplication(path)
+    tenantSetupReplication(path) {
+        return impl.tenatSetupReplication(path)
     }
 }
 

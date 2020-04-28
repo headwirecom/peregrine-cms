@@ -37,7 +37,7 @@
     <div>
         <admin-components-action
             v-bind:model="{
-                command: 'siteSetupReplication',
+                command: 'tenantSetupReplication',
                 title: 'site setup replication',
                 target: '/content/admin/pages/templates/edit',
                 classes: 'btn'
@@ -55,9 +55,9 @@
                 const tenant = $perAdminApp.getView().state.tenant.name;
                 $perAdminApp.stateAction('editTemplate', `/content/${tenant}/templates` );
             },
-            siteSetupReplication(me, target) {
+            tenantSetupReplication(me, target) {
                 const tenant = $perAdminApp.getView().state.tenant.name;
-                $perAdminApp.stateAction('siteSetupReplication', `/content/${tenant}`, 'true');
+                $perAdminApp.stateAction('tenantSetupReplication', `/content/${tenant}`, 'true');
             }
         }
     }

@@ -25,15 +25,12 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_DELETE_SITE;
-import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
-import static com.peregrine.commons.util.PerConstants.DELETED;
+import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_UPDATE_TENANT;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.SITE;
-import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerConstants.SOURCE_PATH;
 import static com.peregrine.commons.util.PerConstants.STATUS;
 import static com.peregrine.commons.util.PerConstants.TYPE;
+import static com.peregrine.commons.util.PerConstants.UPDATED;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -49,51 +46,52 @@ import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import java.io.IOException;
 import javax.servlet.Servlet;
-import org.apache.sling.models.factory.ModelFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Deletes a Peregrine Site
+ * Update a site's components and felibs from its source
  *
  * The API Definition can be found in the Swagger Editor configuration:
- *    ui.apps/src/main/content/jcr_root/api/definitions/admin.yaml
+ *    ui.apps/src/main/content/jcr_root/perapi/definitions/admin.yaml
  */
 @Component(
     service = Servlet.class,
     property = {
-        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Delete Site servlet",
+        SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Update Site Servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
         SLING_SERVLET_METHODS + EQUALS + POST,
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_DELETE_SITE
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_UPDATE_TENANT
     }
 )
 @SuppressWarnings("serial")
-public class DeleteSiteServlet extends AbstractBaseServlet {
+public class UpdateTenantServlet extends AbstractBaseServlet {
 
-    private static final String FAILED_TO_DELETE_SITE = "Failed to delete site";
-
-    @Reference
-    ModelFactory modelFactory;
+    private static final String FAILED_TO_UPDATE_SITE = "Failed to update site";
 
     @Reference
     AdminResourceHandler resourceManagement;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        String fromSite = request.getParameter(NAME);
-        try {
-            logger.debug("Delete Site form: '{}'", fromSite);
-            resourceManagement.deleteSite(request.getResourceResolver(), CONTENT_ROOT, fromSite);
-            request.getResourceResolver().commit();
-            return new JsonResponse()
-                .writeAttribute(TYPE, SITE)
-                .writeAttribute(STATUS, DELETED)
-                .writeAttribute(SOURCE_PATH, CONTENT_ROOT + SLASH + fromSite);
-        } catch(ManagementException e) {
+        String name = request.getParameter(NAME);
+        if(StringUtils.isBlank(name)) {
             return new ErrorResponse()
                 .setHttpErrorCode(SC_BAD_REQUEST)
-                .setErrorMessage(FAILED_TO_DELETE_SITE)
+                .setErrorMessage("No site name provided");
+        }
+        try {
+            resourceManagement.updateTenant(request.getResourceResolver(), name);
+            request.getResourceResolver().commit();
+            return new JsonResponse()
+                    .writeAttribute(TYPE, SITE)
+                    .writeAttribute(STATUS, UPDATED)
+                    .writeAttribute(NAME, name);
+        } catch (ManagementException e) {
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(FAILED_TO_UPDATE_SITE)
                 .setException(e);
         }
     }

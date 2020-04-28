@@ -44,6 +44,7 @@
 
 # Create the necessary folders to apply permissions below otherwise the Launchpad will fail during startup
 
+    create path (sling:OrderedFolder) /content
     create path (sling:Folder) /etc
     create path (sling:Folder) /etc/distribution
     create path (sling:Folder) /libs

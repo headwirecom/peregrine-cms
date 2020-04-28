@@ -133,8 +133,9 @@ public class PerConstants {
     public static final String COLOR_PALETTE = "colorPalette";
     public static final String DROP = "drop";
     public static final String JACKSON = "jackson";
-    public static final String FROM_SITE_NAME = "fromSite";
-    public static final String TO_SITE_NAME = "toSite";
+    public static final String FROM_TENANT_NAME = "fromTenant";
+    public static final String TO_TENANT_NAME = "toTenant";
+    public static final String TO_TENANT_TITLE = "tenantTitle";
     public static final String TENANT_USER_PWD = "tenantUserPwd";
     public static final String DEPENDENCIES = "dependencies";
     public static final String INTERNAL = "internal";

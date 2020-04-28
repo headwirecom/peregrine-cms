@@ -948,13 +948,13 @@ public class AdminResourceHandlerService
     }
 
     @Override
-    public Resource copySite(ResourceResolver resourceResolver, String sitesPath, String fromName, String toName) throws ManagementException {
+    public Resource copyTenant(ResourceResolver resourceResolver, String tenantsParentPath, String fromName, String toName) throws ManagementException {
         if(!nodeNameValidation.isValidSiteName(toName)) {
             throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, toName));
         }
-        checkCopySiteParameters(resourceResolver, sitesPath, fromName, toName);
+        checkCopyTenantParameters(resourceResolver, tenantsParentPath, fromName, toName);
 
-        final Resource sitesRoot = getResource(resourceResolver, sitesPath);
+        final Resource sitesRoot = getResource(resourceResolver, tenantsParentPath);
         if (sitesRoot == null) {
             throw new ManagementException(MISSING_PARENT_RESOURCE_FOR_COPY_SITES);
         }
@@ -988,25 +988,25 @@ public class AdminResourceHandlerService
 
         final StructureCopier copier = new StructureCopier(resourceResolver, fromName, toName, answer);
         resourcesToPackage.add(copier.copyApps(superTypes));
-        // copy /content/<fromSite>/assets to /content/<fromSite>/assets
+        // copy /content/<fromTenant>/assets to /content/<toTenant>/assets
         resourcesToPackage.add(copier.copyFromRoot(ASSETS_ROOT));
-        // copy /content/<fromSite>/objects to /content/<fromSite>/objects and fix all references
+        // copy /content/<fromTenant>/objects to /content/<toTenant>/objects and fix all references
         resourcesToPackage.add(copier.copyFromRoot(OBJECTS_ROOT));
-        // copy /content/<fromSite>/templates to /content/<fromSite>/templates and fix all references
+        // copy /content/<fromTenant>/templates to /content/<toTenant>/templates and fix all references
         Resource templatesCopy = copier.copyFromRoot(TEMPLATES_ROOT);
         resourcesToPackage.add(templatesCopy);
-        // Update css paths stored in /content/<fromSite>/pages in the template
+        // Update css paths stored in /content/<toTenant>/pages in the template
         if (templatesCopy != null) {
             updateTemplateCssPaths(templatesCopy, fromName, toName);
         }
-        // copy /content/<fromSite>/pages to /content/<fromSite>/pages and fix all references
+        // copy /content/<fromTenant>/pages to /content/<toTenant>/pages and fix all references
         Resource pagesCopy = copier.copyFromRoot(PAGES_ROOT);
         resourcesToPackage.add(pagesCopy);
         if (pagesCopy != null) {
             updateStringsInFiles(pagesCopy, toName);
         }
 
-        // create an /etc/felibs/<toSite> felib, extend felib to include a dependency on the /etc/felibs/<fromSite>
+        // create an /etc/felibs/<toTenant> felib, extend felib to include a dependency on the /etc/felibs/<fromTenant>
         final Resource sourceResource = getResource(resourceResolver, FELIBS_ROOT + SLASH + fromName);
         if (sourceResource != null) {
             final Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), toName, toName);
@@ -1039,7 +1039,7 @@ public class AdminResourceHandlerService
                 .collect(Collectors.toList());
 
                 packagePaths.add(CONTENT_ROOT + SLASH + toName);         
-            createSitePackage(resourceResolver, toName, packagePaths);
+            createTenantPackage(resourceResolver, toName, packagePaths);
         } catch (PersistenceException e) {
             logger.error("Failed to create package for site " + toName, e);
         }
@@ -1047,12 +1047,12 @@ public class AdminResourceHandlerService
         return answer;
     }
 
-    private void checkCopySiteParameters(ResourceResolver resourceResolver, String sitesParentPath, String fromName, String targetName) throws ManagementException {
+    private void checkCopyTenantParameters(ResourceResolver resourceResolver, String tenantsParentPath, String fromName, String targetName) throws ManagementException {
         // Check the given parameters and make sure everything is correct
         if (resourceResolver == null) {
             throw new ManagementException(MISSING_RESOURCE_RESOLVER_FOR_SITE_COPY);
         }
-        if (isBlank(sitesParentPath)) {
+        if (isBlank(tenantsParentPath)) {
             throw new ManagementException(MISSING_PARENT_RESOURCE_FOR_COPY_SITES);
         }
         if (isEmpty(fromName)) {
@@ -1096,7 +1096,7 @@ public class AdminResourceHandlerService
         return mappings.toString();
     }
 
-    private void createSitePackage(ResourceResolver resourceResolver, String siteName, List<String> packagePaths) throws PersistenceException {
+    private void createTenantPackage(ResourceResolver resourceResolver, String tenantName, List<String> packagePaths) throws PersistenceException {
         Resource packagesRoot = resourceResolver.getResource(PACKAGES_PATH);
         if (packagesRoot == null) {
             logger.error("Package root path '{}' could not be resolved.", PACKAGES_PATH);
@@ -1105,14 +1105,14 @@ public class AdminResourceHandlerService
 
         Map<String, Object> propertiesMap;
 
-        Resource groupResource = packagesRoot.getChild(siteName);
+        Resource groupResource = packagesRoot.getChild(tenantName);
         if (groupResource == null) {
             propertiesMap = new HashMap<>();
             propertiesMap.put(JCR_PRIMARY_TYPE, SLING_FOLDER);
-            groupResource = resourceResolver.create(packagesRoot, siteName, propertiesMap);
+            groupResource = resourceResolver.create(packagesRoot, tenantName, propertiesMap);
         }
 
-        String packageName = siteName + PACKAGE_SUFFIX;
+        String packageName = tenantName + PACKAGE_SUFFIX;
         double version = DEFAULT_PACKAGE_VERSION;
         String filename = packageName + DASH + version + ZIP_EXTENSION;
 
@@ -1143,7 +1143,7 @@ public class AdminResourceHandlerService
         Resource contentResource = resourceResolver.create(packageResource, JCR_CONTENT, propertiesMap);
 
         propertiesMap = new HashMap<>();
-        propertiesMap.put(GROUP_PROPERTY, siteName);
+        propertiesMap.put(GROUP_PROPERTY, tenantName);
         propertiesMap.put(JCR_PRIMARY_TYPE, VLT_PACKAGE_DEFINITION);
         propertiesMap.put(NAME_PROPERTY, packageName);
         propertiesMap.put(VERSION_PROPERTY, "" + version);
@@ -1216,7 +1216,7 @@ public class AdminResourceHandlerService
         }
 
         for (Resource replacement : replacements.getChildren()) {
-            content = replaceSiteName(content, replacement.getValueMap(), siteName);
+            content = replaceTenantName(content, replacement.getValueMap(), siteName);
         }
 
         try {
@@ -1237,7 +1237,7 @@ public class AdminResourceHandlerService
         }
     }
 
-    private String replaceSiteName(String text, ValueMap regexMap, String siteName) {
+    private String replaceTenantName(String text, ValueMap regexMap, String tenantName) {
         final String regex = regexMap.get("regex", EMPTY);
         String replaceWith = regexMap.get("replaceWith", EMPTY);
         if (isAnyBlank(regex, replaceWith)) {
@@ -1245,7 +1245,7 @@ public class AdminResourceHandlerService
         }
 
         //"_SITENAME_" is a placeholder for the actual new site name
-        replaceWith = replaceWith.replace("_SITENAME_", siteName);
+        replaceWith = replaceWith.replace("_SITENAME_", tenantName);
         return text.replaceAll(regex, replaceWith);
     }
 
@@ -1305,12 +1305,12 @@ public class AdminResourceHandlerService
     }
 
     @Override
-    public void deleteSite(ResourceResolver resourceResolver, String sitesParentPath, String name) throws ManagementException {
+    public void deleteTenant(ResourceResolver resourceResolver, String tenantsParentPath, String name) throws ManagementException {
         // Check the given parameters and make sure everything is correct
         if (resourceResolver == null) {
             throw new ManagementException(MISSING_RESOURCE_RESOLVER_FOR_SITE_COPY);
         }
-        Resource parentResource = getResource(resourceResolver, sitesParentPath);
+        Resource parentResource = getResource(resourceResolver, tenantsParentPath);
         if (parentResource == null) {
             throw new ManagementException(MISSING_PARENT_RESOURCE_FOR_COPY_SITES);
         }
@@ -1338,26 +1338,26 @@ public class AdminResourceHandlerService
     }
 
     @Override
-    public void updateSite(ResourceResolver resourceResolver, String siteName) throws ManagementException {
+    public void updateTenant(ResourceResolver resourceResolver, String tenantName) throws ManagementException {
         if (resourceResolver == null) {
             throw new ManagementException(MISSING_RESOURCE_RESOLVER_FOR_UPDATE);
         }
-        Resource siteResource = getResource(resourceResolver, CONTENT_ROOT + SLASH + siteName);
+        Resource siteResource = getResource(resourceResolver, CONTENT_ROOT + SLASH + tenantName);
         if (siteResource == null) {
-            throw new ManagementException(String.format(MISSING_SITE_RESOURCE, siteName));
+            throw new ManagementException(String.format(MISSING_SITE_RESOURCE, tenantName));
         }
         ValueMap contentProperties = siteResource.getValueMap();
         String sourceSiteName = contentProperties.get(SOURCE_SITE, String.class);
         if (isBlank(sourceSiteName)) {
-            throw new ManagementException(String.format(MISSING_SOURCE_NAME, siteName));
+            throw new ManagementException(String.format(MISSING_SOURCE_NAME, tenantName));
         }
 
-        Resource siteFelibsRoot = getResource(resourceResolver, FELIBS_ROOT + SLASH + siteName);
-        Resource siteAppsRoot = getResource(resourceResolver, APPS_ROOT + SLASH + siteName);
+        Resource siteFelibsRoot = getResource(resourceResolver, FELIBS_ROOT + SLASH + tenantName);
+        Resource siteAppsRoot = getResource(resourceResolver, APPS_ROOT + SLASH + tenantName);
         Resource sourceAppsRoot = getResource(resourceResolver, APPS_ROOT + SLASH + sourceSiteName);
 
         if (siteAppsRoot == null || siteFelibsRoot == null) {
-            throw new ManagementException(String.format(MISSING_SITE_LOCATIONS, siteName));
+            throw new ManagementException(String.format(MISSING_SITE_LOCATIONS, tenantName));
         }
         if (sourceAppsRoot == null) {
             throw new ManagementException(String.format(MISSING_SOURCE_LOCATIONS, sourceSiteName));
@@ -1366,7 +1366,7 @@ public class AdminResourceHandlerService
         ArrayList<String> superTypes = new ArrayList<>();
         copyStubs(sourceAppsRoot, siteAppsRoot, COMPONENTS, superTypes);
 
-        String mappingFileContent = getMappingFileContent(sourceSiteName, siteName, superTypes);
+        String mappingFileContent = getMappingFileContent(sourceSiteName, tenantName, superTypes);
         Resource mappingFileResource = siteFelibsRoot.getChild("mapping.js");
         if (mappingFileResource == null) {
             //TODO: We shouldn't ever end up here - not sure if we want to do this creation or just error out
@@ -1465,11 +1465,11 @@ public class AdminResourceHandlerService
                     answer = target;
                 }
                 if (target != null) {
-                    // for each component in /apps/<fromSite>/components create a stub component in /apps/<toSite>/components
-                    // with the sling:resourceSuperType set to the <fromSite> component
+                    // for each component in /apps/<fromTenant>/components create a stub component in /apps/<toTenant>/components
+                    // with the sling:resourceSuperType set to the <fromTenant> component
                     superTypes.addAll(copyStubs(source, target, COMPONENTS));
-                    // for each object in /apps/<fromSite>/objects create a stub component in /apps/<toSite>/objects
-                    // with the sling:resourceSuperType set to the <fromSite> object
+                    // for each object in /apps/<fromTenant>/objects create a stub component in /apps/<toTenant>/objects
+                    // with the sling:resourceSuperType set to the <fromTenant> object
                     copyStubs(source, target, OBJECTS);
                 }
                 return answer;

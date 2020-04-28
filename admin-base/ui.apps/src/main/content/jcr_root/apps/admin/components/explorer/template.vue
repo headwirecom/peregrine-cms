@@ -139,7 +139,7 @@
                         <admin-components-action
                             v-bind:model="{
                                 target: child,
-                                command: 'deleteSiteOrPage',
+                                command: 'deleteTenantOrPage',
                                 tooltipTitle: `${$i18n('delete')} '${child.title || child.name}'`
                             }">
                             <i class="material-icons">delete</i>
@@ -535,7 +535,7 @@
             },
 
             addSite: function(me, target) {
-                $perAdminApp.stateAction('createSiteWizard', '/content')
+                $perAdminApp.stateAction('createTenantWizard', '/content')
             },
 
             addPage: function(me, target) {
@@ -576,9 +576,9 @@
                 $perAdminApp.stateAction('sourceImageWizard', me.pt.path)
             },
 
-            deleteSiteOrPage: function(me, target) {
+            deleteTenantOrPage: function(me, target) {
                 if(me.path === '/content') {
-                    me.deleteSite(me, target)
+                    me.deleteTenant(me, target)
                 } else {
                     me.deletePage(me, target)
                 }
@@ -605,10 +605,10 @@
                 })
             },
 
-            deleteSite: function(me, target) {
+            deleteTenant: function(me, target) {
                 $perAdminApp.askUser('Delete Site', me.$i18n('Are you sure you want to delete this site, its children, and generated content and components?'), {
                     yes() {
-                        $perAdminApp.stateAction('deleteSite', target)
+                        $perAdminApp.stateAction('deleteTenant', target)
                     }
                 })
             },

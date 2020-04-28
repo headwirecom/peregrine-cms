@@ -23,14 +23,14 @@
  * #L%
  */
 import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('siteSetupReplication').setLevelDebug()
+let log = LoggerFactory.logger('tenantSetupReplication').setLevelDebug()
 
 export default function(me, target) {
 
     log.fine(target)
 
     return new Promise( (resolve, reject) => {
-        me.getApi().siteSetupReplication(target).then( () => {
+        me.getApi().tenantSetupReplication(target).then( () => {
             resolve()
         })
     })
