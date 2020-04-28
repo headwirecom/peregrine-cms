@@ -51,7 +51,7 @@
                   <i class="material-icons">content_paste</i>
                 </a>
               </li>
-              <li v-if="isComponentSelected" class="waves-effect waves-light">
+              <li v-if="isSelected" class="waves-effect waves-light">
                 <a href="#" :title="$i18n('deleteComponent')" @click.stop.prevent="onDelete">
                   <i class="material-icons">delete</i>
                 </a>
@@ -89,6 +89,7 @@
         },
         selected:{
           el: null,
+          path: null,
           draggable: true
         },
         clipboard: null,
@@ -102,8 +103,8 @@
       }
     },
     computed: {
-      isComponentSelected() {
-        return this.selected && this.selected.path && this.selected.path !== '/jcr:content'
+      isSelected() {
+        return this.selected.el && this.selected.path && this.selected.path !== '/jcr:content'
       },
       pagePath() {
         return $perAdminApp.getNodeFromView('/pageView/path') + '.html'
@@ -170,6 +171,15 @@
       })
     },
     methods: {
+      setSelectedEl(el) {
+        if (el) {
+          this.selected.el = el
+          this.selected.path = el.getAttribute('data-per-path') || null
+        } else {
+          this.selected.el = null
+          this.selected.path = null
+        }
+      },
       /* Window/Document methods =================
       ============================================ */
       onKeyDown(ev) {
@@ -362,7 +372,7 @@
                   complete: this.removeEditOverlay
                 })
           } else {
-            this.selected.el = targetEl
+            this.setSelectedEl(targetEl)
             const targetBox = this.getBoundingClientRect(targetEl)
             this.setEditableStyle(targetBox, 'selected')
             $perAdminApp.action(this, 'showComponentEdit', path)
@@ -374,6 +384,7 @@
         if (!event) return
 
         const targetEl = this.getTargetEl(event)
+        targetEl.setAttribute('contenteditable', 'true')
       },
 
       leftOverlayArea(e) {
@@ -386,7 +397,7 @@
       },
 
       removeEditOverlay() {
-        this.selected.el = null
+        this.setSelectedEl(null)
         this.editable.class = null
         if (this.isTouch) {
           this.selected.draggable = false
@@ -402,7 +413,7 @@
           if (targetEl.getAttribute('data-per-droptarget')) {
             targetEl = targetEl.parentElement
           }
-          this.selected.el = targetEl
+          this.setSelectedEl(targetEl)
           const targetBox = this.getBoundingClientRect(targetEl)
           this.setEditableStyle(targetBox, 'selected')
         }
@@ -414,7 +425,7 @@
         if (this.selected.el === null) return
 
         this.editable.class = 'dragging'
-        ev.dataTransfer.setData('text', this.selected.el.getAttribute('data-per-path'))
+        ev.dataTransfer.setData('text', this.selected.path)
       },
 
       onDragOver(ev) {
@@ -529,7 +540,7 @@
           editable.style.width = targetBox.width + 'px'
           editable.style.height = targetBox.height + 'px'
           if (this.selected.el) {
-            const path = this.selected.el.getAttribute('data-per-path')
+            const path = this.selected.path
             const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
             if (node && node.fromTemplate) {
               editable.style['border-color'] = 'orange'
@@ -559,7 +570,7 @@
           $perAdminApp.stateAction('deletePageNode', payload)
         }
         this.editable.class = null
-        this.selected.el = null
+        this.setSelectedEl(null)
       },
 
       onCopy(e) {
