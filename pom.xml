@@ -73,7 +73,7 @@
         <mockito-all.version>1.9.5</mockito-all.version>
         <jmock-junit4.version>2.8.2</jmock-junit4.version>
         <org.apache.sling.commons.testing.version>2.1.0</org.apache.sling.commons.testing.version>
-        <org.apache.sling.junit.core.version>1.0.14</org.apache.sling.junit.core.version>
+        <org.apache.sling.junit.core.version>1.0.26</org.apache.sling.junit.core.version>
         <org.apache.sling.testing.clients.version>1.0.0</org.apache.sling.testing.clients.version>
         <org.apache.sling.junit.teleporter.version>1.0.16</org.apache.sling.junit.teleporter.version>
 
@@ -631,7 +631,7 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
-                <scope>test</scope>
+<!--                <scope>test</scope>-->
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
