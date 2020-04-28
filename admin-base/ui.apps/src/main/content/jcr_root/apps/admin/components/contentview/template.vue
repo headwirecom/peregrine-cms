@@ -85,7 +85,7 @@
         editableVisible: false,
         editableClass: null,
         selectedComponent: null,
-        selectedComponentDragable: true,
+        selectedComponentDraggable: true,
         clipboard: null,
         ctrlDown: false,
         scrollTop: 0,
@@ -151,7 +151,7 @@
         this.isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
         if (this.isTouch) {
           /* selected components are not immediatly draggable on touch devices */
-          this.selectedComponentDragable = false
+          this.selectedComponentDraggable = false
         }
         document.addEventListener('keydown', this.onKeyDown)
         document.addEventListener('keyup', this.onKeyUp)
@@ -385,7 +385,7 @@
         this.selectedComponent = null
         this.editableClass = null
         if (this.isTouch) {
-          this.selectedComponentDragable = false
+          this.selectedComponentDraggable = false
         }
       },
 
@@ -462,7 +462,7 @@
       onDrop(ev) {
         this.editableClass = null
         if (this.isTouch) {
-          this.selectedComponentDragable = false
+          this.selectedComponentDraggable = false
         }
         const targetEl = this.getTargetEl(ev)
         if (typeof targetEl === 'undefined' || targetEl === null) {
@@ -511,7 +511,7 @@
       onLongTouchOverlay() {
         if (this.selectedComponent === null) return
 
-        this.selectedComponentDragable = true
+        this.selectedComponentDraggable = true
         this.editableClass = 'draggable'
       },
       setEditableStyle(targetBox, editableClass) {
