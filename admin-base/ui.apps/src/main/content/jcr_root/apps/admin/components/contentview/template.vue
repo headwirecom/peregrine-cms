@@ -34,7 +34,7 @@
       <div class="editview-container" ref="editviewContainer">
         <div id="editable"
              ref="editable"
-             :class="editableClass"
+             :class="editable.class"
              :draggable="enableEditableFeatures"
              @dragstart="onDragStart"
              @touchstart="onEditableTouchStart"
@@ -82,16 +82,20 @@
 
     data() {
       return {
-        editableVisible: false,
-        editableClass: null,
-        selectedComponent: null,
-        selectedComponentDraggable: true,
+        editable: {
+          visible: false,
+          class: null,
+          timer: null
+        },
+        selected:{
+          el: null,
+          draggable: true
+        },
         clipboard: null,
         ctrlDown: false,
         scrollTop: 0,
         isTouch: false,
         isIOS: false,
-        editableTimer: null,
         iframe: {
           loaded: false
         }
@@ -124,7 +128,7 @@
         return this.viewMode
       },
       enableEditableFeatures() {
-        const targetEl = this.selectedComponent
+        const targetEl = this.selected.el
         if (!targetEl) {
           return false
         }
@@ -151,7 +155,7 @@
         this.isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
         if (this.isTouch) {
           /* selected components are not immediatly draggable on touch devices */
-          this.selectedComponentDraggable = false
+          this.selected.draggable = false
         }
         document.addEventListener('keydown', this.onKeyDown)
         document.addEventListener('keyup', this.onKeyUp)
@@ -180,7 +184,7 @@
           if (ev.keyCode === ctrlKey || ev.keyCode === cmdKey) {
             this.ctrlDown = true
           }
-          if (this.selectedComponent !== null) {
+          if (this.selected.el !== null) {
             const cKey = 67
             const vKey = 86
             if (this.ctrlDown && (ev.keyCode === cKey)) {
@@ -236,8 +240,8 @@
           /* ensure edit container height === iframe body height */
           this.setEditContainerHeight()
           /* update editable position if selected */
-          if (this.selectedComponent !== null) {
-            const targetBox = this.getBoundingClientRect(this.selectedComponent)
+          if (this.selected.el !== null) {
+            const targetBox = this.getBoundingClientRect(this.selected.el)
             this.setEditableStyle(targetBox, 'selected')
           }
         })
@@ -358,7 +362,7 @@
                   complete: this.removeEditOverlay
                 })
           } else {
-            this.selectedComponent = targetEl
+            this.selected.el = targetEl
             const targetBox = this.getBoundingClientRect(targetEl)
             this.setEditableStyle(targetBox, 'selected')
             $perAdminApp.action(this, 'showComponentEdit', path)
@@ -382,10 +386,10 @@
       },
 
       removeEditOverlay() {
-        this.selectedComponent = null
-        this.editableClass = null
+        this.selected.el = null
+        this.editable.class = null
         if (this.isTouch) {
-          this.selectedComponentDraggable = false
+          this.selected.draggable = false
         }
       },
 
@@ -398,7 +402,7 @@
           if (targetEl.getAttribute('data-per-droptarget')) {
             targetEl = targetEl.parentElement
           }
-          this.selectedComponent = targetEl
+          this.selected.el = targetEl
           const targetBox = this.getBoundingClientRect(targetEl)
           this.setEditableStyle(targetBox, 'selected')
         }
@@ -407,10 +411,10 @@
       /* Drag and Drop ===========================
       ============================================ */
       onDragStart(ev) {
-        if (this.selectedComponent === null) return
+        if (this.selected.el === null) return
 
-        this.editableClass = 'dragging'
-        ev.dataTransfer.setData('text', this.selectedComponent.getAttribute('data-per-path'))
+        this.editable.class = 'dragging'
+        ev.dataTransfer.setData('text', this.selected.el.getAttribute('data-per-path'))
       },
 
       onDragOver(ev) {
@@ -460,9 +464,9 @@
       },
 
       onDrop(ev) {
-        this.editableClass = null
+        this.editable.class = null
         if (this.isTouch) {
-          this.selectedComponentDraggable = false
+          this.selected.draggable = false
         }
         const targetEl = this.getTargetEl(ev)
         if (typeof targetEl === 'undefined' || targetEl === null) {
@@ -503,18 +507,18 @@
       /* Editable methods ========================
       ============================================ */
       onEditableTouchStart(ev) {
-        this.editableTimer = setTimeout(this.onLongTouchOverlay, 800)
+        this.editable.timer = setTimeout(this.onLongTouchOverlay, 800)
       },
       onEditableTouchEnd(ev) {
-        clearTimeout(this.editableTimer)
+        clearTimeout(this.editable.timer)
       },
       onLongTouchOverlay() {
-        if (this.selectedComponent === null) return
+        if (this.selected.el === null) return
 
-        this.selectedComponentDraggable = true
-        this.editableClass = 'draggable'
+        this.selected.draggable = true
+        this.editable.class = 'draggable'
       },
-      setEditableStyle(targetBox, editableClass) {
+      setEditableStyle(targetBox, cls) {
         const editable = this.$refs.editable
         const editview = this.$refs.editview
         const scrollY = editview ? editview.contentWindow.scrollY : 0
@@ -524,8 +528,8 @@
           editable.style.left = (targetBox.left + scrollX) + 'px'
           editable.style.width = targetBox.width + 'px'
           editable.style.height = targetBox.height + 'px'
-          if (this.selectedComponent) {
-            const path = this.selectedComponent.getAttribute('data-per-path')
+          if (this.selected.el) {
+            const path = this.selected.el.getAttribute('data-per-path')
             const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
             if (node && node.fromTemplate) {
               editable.style['border-color'] = 'orange'
@@ -536,7 +540,7 @@
             editable.style['border-color'] = ''
           }
         }
-        this.editableClass = editableClass
+        this.editable.class = cls
       },
 
       updateEditablePos(top) {
@@ -544,7 +548,7 @@
       },
 
       onDelete(e) {
-        const targetEl = this.selectedComponent
+        const targetEl = this.selected.el
         const view = $perAdminApp.getView()
         const pagePath = view.pageView.path
         const payload = {
@@ -554,12 +558,12 @@
         if (payload.path !== '/jcr:content') {
           $perAdminApp.stateAction('deletePageNode', payload)
         }
-        this.editableClass = null
-        this.selectedComponent = null
+        this.editable.class = null
+        this.selected.el = null
       },
 
       onCopy(e) {
-        const targetEl = this.selectedComponent
+        const targetEl = this.selected.el
         this.clipboard = $perAdminApp.findNodeFromPath(
             $perAdminApp.getView().pageView.page,
             targetEl.getAttribute('data-per-path')
@@ -567,7 +571,7 @@
       },
 
       onPaste(e) {
-        const targetEl = this.selectedComponent
+        const targetEl = this.selected.el
         const nodeFromClipboard = this.clipboard
         const view = $perAdminApp.getView()
         const isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
