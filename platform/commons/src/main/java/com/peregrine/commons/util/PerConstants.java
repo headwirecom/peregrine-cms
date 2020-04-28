@@ -82,6 +82,7 @@ public class PerConstants {
     public static final String FELIBS = "felibs";
     public static final String ASSETS = "assets";
     public static final String OBJECTS = "objects";
+    public static final String OBJECT_DEFINITIONS = "object-definitions";
     public static final String PAGES = "pages";
     public static final String TEMPLATES = "templates";
     public static final String COMPONENTS = "components";
@@ -97,6 +98,7 @@ public class PerConstants {
     public static final String FELIBS_ROOT = ETC_ROOT + SLASH + FELIBS;
     public static final String ASSETS_ROOT = CONTENT_ROOT + SLASH + TENANT + SLASH + ASSETS;
     public static final String OBJECTS_ROOT = CONTENT_ROOT + SLASH + TENANT + SLASH + OBJECTS;
+    public static final String OBJECT_DEFINITIONS_ROOT = CONTENT_ROOT + SLASH + TENANT + SLASH + OBJECT_DEFINITIONS;
     public static final String PAGES_ROOT = CONTENT_ROOT + SLASH + TENANT + SLASH + PAGES;
     public static final String TEMPLATES_ROOT = CONTENT_ROOT + SLASH + TENANT + SLASH + TEMPLATES;
 

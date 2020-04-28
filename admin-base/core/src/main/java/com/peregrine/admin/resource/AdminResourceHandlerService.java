@@ -29,6 +29,7 @@ import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
 import static com.peregrine.commons.util.PerConstants.OBJECT;
 import static com.peregrine.commons.util.PerConstants.OBJECTS;
 import static com.peregrine.commons.util.PerConstants.OBJECTS_ROOT;
+import static com.peregrine.commons.util.PerConstants.OBJECT_DEFINITIONS_ROOT;
 import static com.peregrine.commons.util.PerConstants.OBJECT_DEFINITION_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.OBJECT_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.PACKAGES_PATH;
@@ -1024,6 +1025,8 @@ public class AdminResourceHandlerService
         resourcesToPackage.add(copier.copyFromRoot(ASSETS_ROOT));
         // copy /content/<fromSite>/objects to /content/<fromSite>/objects and fix all references
         resourcesToPackage.add(copier.copyFromRoot(OBJECTS_ROOT));
+        // copy /content/<fromSite>/object-definitions to /content/<fromSite>/object-definitions and fix all references
+        resourcesToPackage.add(copier.copyFromRoot(OBJECT_DEFINITIONS_ROOT));
         // copy /content/<fromSite>/templates to /content/<fromSite>/templates and fix all references
         Resource templatesCopy = copier.copyFromRoot(TEMPLATES_ROOT);
         resourcesToPackage.add(templatesCopy);
