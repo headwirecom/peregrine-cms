@@ -76,8 +76,6 @@
 </template>
 
 <script>
-  import {IgnoreContainers} from '../../../../../../js/constants.js';
-
   export default {
     props: ['model'],
 
@@ -139,12 +137,6 @@
         }
         return !node.fromTemplate
       },
-      isIgnoreContainersEnabled() {
-        let view = $perAdminApp.getView();
-        return view.state.tools
-            && view.state.tools.workspace
-            && view.state.tools.workspace.ignoreContainers === IgnoreContainers.ENABLED;
-      }
     },
     watch: {
       viewMode(newViewMode) {
@@ -359,11 +351,6 @@
         if (targetEl) {
           const path = targetEl.getAttribute('data-per-path')
           const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
-          if (this.isContainer(targetEl)) {
-            if (this.isIgnoreContainersEnabled) {
-              return;
-            }
-          }
           if (node.fromTemplate) {
             $perAdminApp.notifyUser(this.$i18n('templateComponent'),
                 this.$i18n('fromTemplateNotifyMsg'), {
@@ -401,11 +388,6 @@
 
         let targetEl = this.getTargetEl(e)
         if (targetEl) {
-          if (this.isContainer(targetEl)) {
-            if (this.isIgnoreContainersEnabled) {
-              return;
-            }
-          }
           if (targetEl.getAttribute('data-per-droptarget')) {
             targetEl = targetEl.parentElement
           }
