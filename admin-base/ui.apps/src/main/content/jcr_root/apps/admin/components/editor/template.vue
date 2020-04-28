@@ -55,7 +55,9 @@
         updated: function() {
             let stateTools = $perAdminApp.getNodeFromViewWithDefault("/state/tools", {});
             stateTools._deleted = {}; // reset to empty?
-            if(this.schema.hasOwnProperty('groups')) this.hideGroups();
+            if(this.schema && this.schema.hasOwnProperty('groups')) {
+                this.hideGroups()
+            }
         },
       mounted(){
         this.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints
