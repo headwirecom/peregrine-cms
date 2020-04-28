@@ -61,8 +61,8 @@
       </div>
     </div>
     <template>
-      <div class="spinner-wrapper">
-        <admin-components-materializespinner v-if="!iframe.loaded"/>
+      <div v-if="!iframe.loaded" class="spinner-wrapper">
+        <admin-components-materializespinner/>
       </div>
       <iframe
           v-show="iframe.loaded"
