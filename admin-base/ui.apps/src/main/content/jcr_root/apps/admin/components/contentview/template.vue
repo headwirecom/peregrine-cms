@@ -128,7 +128,7 @@
 
     computed: {
       isComponentSelected() {
-        return this.selected.path && this.selected.path !== '/jcr:content'
+        return this.selected && this.selected.path && this.selected.path !== '/jcr:content'
       },
       pagePath: function () {
         return $perAdminApp.getNodeFromView('/pageView/path') + '.html'
