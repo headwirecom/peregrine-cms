@@ -253,6 +253,9 @@
 
       onIframeScroll() {
         this.iframe.scrollTop = this.iframe.html.scrollTop
+        if (this.selected.el) {
+          this.wrapEditableAround(this.selected.el)
+        }
       },
 
       updateSelectedComponent() {
@@ -445,8 +448,8 @@
         const view = $perAdminApp.getView()
         const payload = {
           pagePath: view.pageView.path,
-          path: targetEl.getAttribute('data-per-path'),
-          component: componentPath,
+          path: targetPath,
+          component: targetPath,
           drop: this.dropPosition
         }
         let addOrMove
