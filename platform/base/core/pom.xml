@@ -69,7 +69,6 @@
                             Private-Package,
                             Include-Resource
                         </_removeheaders>
-                        <Sling-Test-Regexp>.*JTest</Sling-Test-Regexp>
                         <Sling-Namespaces>
                             per=http://www.peregrine-cms.com/jcr/cms/1.0
                         </Sling-Namespaces>
