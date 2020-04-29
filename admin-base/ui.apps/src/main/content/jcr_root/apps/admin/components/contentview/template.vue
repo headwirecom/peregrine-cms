@@ -103,6 +103,7 @@
           doc: null,
           html: null,
           body: null,
+          app: null,
           scrollTop: 0,
           clicked: {
             targetEl: null,
@@ -234,6 +235,7 @@
         this.iframe.doc = this.$refs.editview.contentWindow.document
         this.iframe.html = this.iframe.doc.querySelector('html')
         this.iframe.body = this.iframe.doc.querySelector('body')
+        this.iframe.doc.querySelector('#peregrine-app').setAttribute('contenteditable', 'false')
         this.iframeEditMode()
       },
 
@@ -243,6 +245,7 @@
         this.iframe.doc.addEventListener('dragover', this.onDragOver)
         this.iframe.doc.addEventListener('drop', this.onDrop)
         this.iframe.body.setAttribute('style', 'cursor: default !important')
+        this.iframe.body.setAttribute('contenteditable', 'true')
         const elements = this.iframe.body.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el) => {
           const style = el.getAttribute('style')
@@ -258,6 +261,7 @@
         this.iframe.doc.removeEventListener('dragover', this.onDragOver)
         this.iframe.doc.removeEventListener('drop', this.onDrop)
         this.iframe.body.style.cursor = ''
+        this.iframe.body.setAttribute('contenteditable', 'false')
         const elements = this.iframe.body.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el) => {
           el.setAttribute('contenteditable', 'false')
