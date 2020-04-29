@@ -25,16 +25,13 @@
 <template>
   <div :class="`peregrine-content-view ${viewModeClass}`" @mouseout="leftOverlayArea">
     <div id="editviewoverlay"
-         @click="onClickOverlay"
-         @dblclick="onOverlayDblClick"
-         @scroll="onScrollOverlay"
-         @mousemove="mouseMove"
          @dragover="onDragOver"
          @drop.prevent="onDrop">
       <div class="editview-container" ref="editviewContainer">
         <div id="editable"
              ref="editable"
              :class="editable.class"
+             :style="editableStyles"
              :draggable="enableEditableFeatures"
              @dragstart="onDragStart"
              @touchstart="onEditableTouchStart"
@@ -79,7 +76,6 @@
 <script>
   export default {
     props: ['model'],
-
     data() {
       return {
         editable: {
@@ -87,7 +83,7 @@
           class: null,
           timer: null
         },
-        selected:{
+        selected: {
           el: null,
           path: null,
           draggable: true
@@ -98,7 +94,16 @@
         isTouch: false,
         isIOS: false,
         iframe: {
-          loaded: false
+          loaded: false,
+          doc: null,
+          html: null,
+          body: null,
+          scrollTop: 0,
+          clicked: {
+            targetEl: null,
+            el: null,
+            path: null
+          }
         }
       }
     },
@@ -112,7 +117,6 @@
       previewMode() {
         const ws = $perAdminApp.getNodeFromViewOrNull('/state/tools/workspace')
         return ws ? ws.preview : ''
-
       },
       viewMode() {
         const viewMode = $perAdminApp.getNodeFromViewOrNull('/state/tools/workspace/view')
@@ -128,25 +132,47 @@
       viewModeClass() {
         return this.viewMode
       },
+      pageView() {
+        return $perAdminApp.getView().pageView
+      },
       enableEditableFeatures() {
-        const targetEl = this.selected.el
-        if (!targetEl) {
-          return false
-        }
-        const path = targetEl.getAttribute('data-per-path')
+        const path = this.selected.path
         if (path === undefined || path === null) {
           return false
         }
-        const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
+        const node = $perAdminApp.findNodeFromPath(this.pageView.page, path)
         if (!node) {
           return false
         }
         return !node.fromTemplate
       },
+      editableStyles() {
+        if (!this.selected.el) return {}
+
+        const box = this.getBoundingClientRect(this.selected.el)
+        return {
+          scrollTop: this.iframe.scrollTop, //this forces it to update on scroll!
+          top: `${box.top}px`,
+          left: `${box.left}px`,
+          width: `${box.width}px`,
+          height: `${box.height}px`
+        }
+      }
     },
     watch: {
       viewMode(newViewMode) {
         this.setIframeScrollState(newViewMode)
+      },
+      previewMode(val) {
+        if (val === 'preview') {
+          this.iframe.doc.removeEventListener('click', this.onIframeClick)
+        } else {
+          this.iframe.doc.addEventListener('click', this.onIframeClick)
+        }
+      },
+      'iframe.clicked.el'(val) {
+        if (!val) return
+        this.updateSelectedComponent()
       }
     },
     mounted() {
@@ -175,11 +201,77 @@
         if (el) {
           this.selected.el = el
           this.selected.path = el.getAttribute('data-per-path') || null
+          $perAdminApp.action(this, 'showComponentEdit', this.selected.path)
+          this.editable.class = 'selected'
         } else {
           this.selected.el = null
           this.selected.path = null
         }
       },
+
+      setIframeClicked(targetEl) {
+        if (targetEl) {
+          const componentEl = this.findComponentEl(targetEl)
+          this.iframe.clicked.targetEl = targetEl
+          this.iframe.clicked.el = componentEl
+          this.iframe.clicked.path = componentEl ? componentEl.getAttribute('data-per-path') : null
+        } else {
+          this.iframe.clicked.targetEl = null
+          this.iframe.clicked.el = null
+          this.iframe.clicked.path = null
+        }
+      },
+
+      findComponentEl(targetEl) {
+        let componentEl = targetEl
+        while (!componentEl.getAttribute('data-per-path')) {
+          componentEl = componentEl.parentElement
+          if (!componentEl) {
+            break
+          }
+        }
+        return componentEl
+      },
+
+      onIframeLoaded(ev) {
+        this.iframe.loaded = true
+        this.iframe.doc = this.$refs.editview.contentWindow.document
+        this.iframe.html = this.iframe.doc.querySelector('html')
+        this.iframe.body = this.iframe.doc.querySelector('body')
+        this.iframe.doc.addEventListener('click', this.onIframeClick)
+        this.iframe.doc.addEventListener('scroll', this.onIframeScroll)
+        this.iframe.body.setAttribute('style', 'cursor: default !important')
+        //this.setIframeScrollState(this.viewMode)
+        //iframeDoc.body.style.position = 'relative'
+        //const heightChangeObserver = new ResizeObserver(this.updateOverlay);
+        //heightChangeObserver.observe(iframeDoc.body);
+      },
+
+      onIframeClick(ev) {
+        this.setIframeClicked(ev.target)
+      },
+
+      onIframeScroll() {
+        this.iframe.scrollTop = this.iframe.html.scrollTop
+      },
+
+      updateSelectedComponent() {
+        const node = $perAdminApp.findNodeFromPath(this.pageView.page, this.iframe.clicked.path)
+        if (node.fromTemplate) {
+          $perAdminApp.notifyUser(this.$i18n('templateComponent'),
+              this.$i18n('fromTemplateNotifyMsg'), {
+                complete: this.removeEditOverlay
+              })
+        } else {
+          this.setSelectedEl(this.iframe.clicked.el)
+        }
+      },
+
+      updateEditRect() {
+        const targetBox = this.getBoundingClientRect(this.selected.el)
+        this.setEditableStyle(targetBox, 'selected')
+      },
+
       /* Window/Document methods =================
       ============================================ */
       onKeyDown(ev) {
@@ -220,18 +312,6 @@
             this.ctrlDown = false
           }
         }
-      },
-
-      /* Iframe (editview) methods ===============
-      ============================================ */
-      onIframeLoaded(ev) {
-        this.iframe.loaded = true
-        const iframeDoc = ev.target.contentWindow.document
-        this.setIframeScrollState(this.viewMode)
-        iframeDoc.body.style.position = 'relative'
-        const heightChangeObserver = new ResizeObserver(this.updateOverlay);
-        heightChangeObserver.observe(iframeDoc.body);
-
       },
 
       setIframeScrollState(viewMode) {
@@ -309,12 +389,12 @@
       },
 
       getBoundingClientRect(e) {
-        let rect = e.getBoundingClientRect()
-        let marginTop = parseFloat(this.getElementStyle(e, 'margin-top'))
-        let marginLeft = parseFloat(this.getElementStyle(e, 'margin-left'))
-        let marginRight = parseFloat(this.getElementStyle(e, 'margin-right'))
-        let marginBottom = parseFloat(this.getElementStyle(e, 'margin-bottom'))
-        let newRect = {
+        const rect = e.getBoundingClientRect()
+        const marginTop = parseFloat(this.getElementStyle(e, 'margin-top'))
+        const marginLeft = parseFloat(this.getElementStyle(e, 'margin-left'))
+        const marginRight = parseFloat(this.getElementStyle(e, 'margin-right'))
+        const marginBottom = parseFloat(this.getElementStyle(e, 'margin-bottom'))
+        const newRect = {
           left: rect.left - marginLeft,
           right: rect.right + marginRight,
           top: rect.top - marginTop,
@@ -357,34 +437,6 @@
           }
         }
         return targetEl
-      },
-
-      onClickOverlay(e) {
-        if (!e) return
-
-        const targetEl = this.getTargetEl(e)
-        if (targetEl) {
-          const path = targetEl.getAttribute('data-per-path')
-          const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
-          if (node.fromTemplate) {
-            $perAdminApp.notifyUser(this.$i18n('templateComponent'),
-                this.$i18n('fromTemplateNotifyMsg'), {
-                  complete: this.removeEditOverlay
-                })
-          } else {
-            this.setSelectedEl(targetEl)
-            const targetBox = this.getBoundingClientRect(targetEl)
-            this.setEditableStyle(targetBox, 'selected')
-            $perAdminApp.action(this, 'showComponentEdit', path)
-          }
-        }
-      },
-
-      onOverlayDblClick(event) {
-        if (!event) return
-
-        const targetEl = this.getTargetEl(event)
-        targetEl.setAttribute('contenteditable', 'true')
       },
 
       leftOverlayArea(e) {
@@ -520,19 +572,22 @@
       onEditableTouchStart(ev) {
         this.editable.timer = setTimeout(this.onLongTouchOverlay, 800)
       },
+
       onEditableTouchEnd(ev) {
         clearTimeout(this.editable.timer)
       },
+
       onLongTouchOverlay() {
         if (this.selected.el === null) return
 
         this.selected.draggable = true
         this.editable.class = 'draggable'
       },
+
       setEditableStyle(targetBox, cls) {
         const editable = this.$refs.editable
         const editview = this.$refs.editview
-        const scrollY = editview ? editview.contentWindow.scrollY : 0
+        const scrollY = editview ? this.iframe.scrollTop : 0
         const scrollX = editview ? editview.contentWindow.scrollX : 0
         if (editable) {
           editable.style.top = (targetBox.top + scrollY + (this.isIOS ? this.scrollTop : 0)) + 'px'
@@ -596,27 +651,16 @@
         }
         $perAdminApp.stateAction('addComponentToPath', payload)
       },
+
       refreshEditor(me, target) {
         me.$refs['editview'].contentWindow.location.reload();
-      },
-      isContainer(el) {
-        if (el && el.getAttribute('data-per-droptarget')) {
-          return true;
-        }
-        let subEl = el.firstElementChild;
-        if (!subEl) {
-          return false;
-        }
-        while (!subEl.getAttribute('data-per-path')) {
-          subEl = subEl.firstElementChild;
-          if (!subEl) {
-            return false;
-          }
-        }
-        return !!subEl.getAttribute('data-per-droptarget');
-
       }
     }
   }
 </script>
 
+<style>
+  #editviewoverlay {
+    pointer-events: none;
+  }
+</style>
