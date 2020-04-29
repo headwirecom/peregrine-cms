@@ -270,11 +270,7 @@
         const dataInline = event.target.getAttribute(Attribute.INLINE).split('.')
         dataInline.reverse()
         dataInline.pop() //remove obsolete "model" at the beginning
-        let parentProp = this.model
-        while (dataInline.length < 1) {
-          parentProp = prop[key]
-        }
-        prop[dataInline.pop()] = event.target.innerHTML
+        this.model[dataInline.pop()] = event.target.innerHTML
       },
 
       onIframeClick(ev) {
@@ -306,48 +302,6 @@
         this.editable.styles.left = `${left}px`
         this.editable.styles.width = `${width}px`
         this.editable.styles.height = `${height}px`
-      },
-
-      /* Window/Document methods =================
-      ============================================ */
-      onKeyDown(ev) {
-        const nodeName = document.activeElement.nodeName
-        const className = '' + document.activeElement.className
-        /* check no field is currently in focus */
-        if (nodeName === 'INPUT' || nodeName === 'TEXTAREA' || className.startsWith('trumbowyg')) {
-          return false
-        } else {
-          const ctrlKey = 17
-          const cmdKey = 91
-          if (ev.keyCode === ctrlKey || ev.keyCode === cmdKey) {
-            this.ctrlDown = true
-          }
-          if (this.selected.el !== null) {
-            const cKey = 67
-            const vKey = 86
-            if (this.ctrlDown && (ev.keyCode === cKey)) {
-              this.onCopy()
-            }
-            if (this.ctrlDown && (ev.keyCode === vKey)) {
-              this.onPaste()
-            }
-          }
-        }
-      },
-
-      onKeyUp(ev) {
-        const nodeName = document.activeElement.nodeName
-        const className = document.activeElement.className
-        /* check no field is currently in focus */
-        if (nodeName === 'INPUT' || nodeName === 'TEXTAREA' || className === 'ql-editor') {
-          return false
-        } else {
-          const ctrlKey = 17
-          const cmdKey = 91
-          if (ev.keyCode === ctrlKey || ev.keyCode === cmdKey) {
-            this.ctrlDown = false
-          }
-        }
       },
 
       getElementStyle(e, styleName) {
