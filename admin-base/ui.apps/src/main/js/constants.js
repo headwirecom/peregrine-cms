@@ -94,3 +94,8 @@ export const NodeTree ={
       'per:Page'
   ]
 }
+
+export const Attribute = {
+  INLINE: 'data-per-inline',
+  PATH: 'data-per-path'
+}

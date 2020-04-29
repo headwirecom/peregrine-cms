@@ -70,6 +70,8 @@
 </template>
 
 <script>
+  import {Attribute} from '../../../../../../js/constants'
+
   export default {
     props: ['model'],
     data() {
@@ -158,10 +160,10 @@
     watch: {
       previewMode(val) {
         if (val === 'preview') {
-          this.iframe.doc.removeEventListener('click', this.onIframeClick)
+          this.iframePreviewMode()
           this.editable.class = null
         } else {
-          this.iframe.doc.addEventListener('click', this.onIframeClick)
+          this.iframeEditMode()
           if (this.selected.el) {
             clearTimeout(this.editable.timer)
             this.editable.timer = setTimeout(() => {
@@ -191,28 +193,11 @@
       setSelectedEl(el) {
         if (el) {
           this.selected.el = el
-          this.selected.path = el.getAttribute('data-per-path') || null
+          this.selected.path = el.getAttribute(Attribute.PATH) || null
           this.editable.class = 'selected'
           this.wrapEditableAround(el)
           $perAdminApp.action(this, 'showComponentEdit', this.selected.path).then(() => {
-            const view = $perAdminApp.getView()
-            const path = view.state.editor.path
-            const model = $perAdminApp.findNodeFromPath(view.pageView.page, path)
-            const elements = []
-            const queried = this.selected.el.querySelectorAll('[data-per-model-key]')
-            elements.push.apply(elements, queried)
-            if (this.selected.el.getAttribute('data-per-model-key')) {
-              elements.push.apply(elements, [this.selected.el])
-            }
-            elements.forEach((element) => {
-              const modelKey = element.getAttribute('data-per-model-key')
-              const style = element.getAttribute('style')
-              element.setAttribute('contenteditable', true)
-              element.setAttribute('style', `cursor: text !important;${style}`)
-              element.addEventListener('input', (event) => {
-                model[modelKey] = event.target.innerHTML
-              })
-            })
+            //TODO: scroll relevant text-area into view!
           })
         } else {
           this.selected.el = null
@@ -225,7 +210,7 @@
           const componentEl = this.findComponentEl(targetEl)
           this.iframe.clicked.targetEl = targetEl
           this.iframe.clicked.el = componentEl
-          this.iframe.clicked.path = componentEl ? componentEl.getAttribute('data-per-path') : null
+          this.iframe.clicked.path = componentEl ? componentEl.getAttribute(Attribute.PATH) : null
         } else {
           this.iframe.clicked.targetEl = null
           this.iframe.clicked.el = null
@@ -235,7 +220,7 @@
 
       findComponentEl(targetEl) {
         let componentEl = targetEl
-        while (!componentEl.getAttribute('data-per-path')) {
+        while (!componentEl.getAttribute(Attribute.PATH)) {
           componentEl = componentEl.parentElement
           if (!componentEl) {
             break
@@ -249,11 +234,47 @@
         this.iframe.doc = this.$refs.editview.contentWindow.document
         this.iframe.html = this.iframe.doc.querySelector('html')
         this.iframe.body = this.iframe.doc.querySelector('body')
+        this.iframeEditMode()
+      },
+
+      iframeEditMode() {
         this.iframe.doc.addEventListener('click', this.onIframeClick)
         this.iframe.doc.addEventListener('scroll', this.onIframeScroll)
         this.iframe.doc.addEventListener('dragover', this.onDragOver)
         this.iframe.doc.addEventListener('drop', this.onDrop)
         this.iframe.body.setAttribute('style', 'cursor: default !important')
+        const elements = this.iframe.body.querySelectorAll(`[${Attribute.INLINE}]`)
+        elements.forEach((el) => {
+          const style = el.getAttribute('style')
+          el.setAttribute('contenteditable', 'true')
+          el.setAttribute('style', `cursor: text !important;${style}`)
+          el.addEventListener('input', this.onInlineEdit)
+        })
+      },
+
+      IframePreviewMode() {
+        this.iframe.doc.removeEventListener('click', this.onIframeClick)
+        this.iframe.doc.removeEventListener('scroll', this.onIframeScroll)
+        this.iframe.doc.removeEventListener('dragover', this.onDragOver)
+        this.iframe.doc.removeEventListener('drop', this.onDrop)
+        this.iframe.body.style.cursor = ''
+        const elements = this.iframe.body.querySelectorAll(`[${Attribute.INLINE}]`)
+        elements.forEach((el) => {
+          el.setAttribute('contenteditable', 'false')
+          el.style.cursor = ''
+          el.removeEventListener('input', this.onInlineEdit)
+        })
+      },
+
+      onInlineEdit(event) {
+        const dataInline = event.target.getAttribute(Attribute.INLINE).split('.')
+        dataInline.reverse()
+        dataInline.pop() //remove obsolete "model" at the beginning
+        let parentProp = this.model
+        while (dataInline.length < 1) {
+          parentProp = prop[key]
+        }
+        prop[dataInline.pop()] = event.target.innerHTML
       },
 
       onIframeClick(ev) {
@@ -404,7 +425,7 @@
           this.wrapEditableAround(targetEl)
           const isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
           const isRoot = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page,
-              targetEl.getAttribute('data-per-path')).fromTemplate === true
+              targetEl.getAttribute(Attribute.PATH)).fromTemplate === true
           if (isDropTarget) {
             const dropLocation = targetEl.getAttribute('data-per-location')
             if (dropLocation === 'after' && !isRoot) {
@@ -448,7 +469,7 @@
         if (typeof targetEl === 'undefined' || targetEl === null) {
           return false
         }
-        const targetPath = targetEl.getAttribute('data-per-path')
+        const targetPath = targetEl.getAttribute(Attribute.PATH)
         const componentPath = event.dataTransfer.getData('text')
         if (targetPath === componentPath) {
           event.dataTransfer.clearData('text')
@@ -458,7 +479,7 @@
         const payload = {
           pagePath: view.pageView.path,
           path: targetPath,
-          component: targetPath,
+          component: componentPath,
           drop: this.dropPosition
         }
         let addOrMove
@@ -506,7 +527,7 @@
         const pagePath = view.pageView.path
         const payload = {
           pagePath: view.pageView.path,
-          path: targetEl.getAttribute('data-per-path')
+          path: targetEl.getAttribute(Attribute.PATH)
         }
         if (payload.path !== '/jcr:content') {
           $perAdminApp.stateAction('deletePageNode', payload)
@@ -519,7 +540,7 @@
         const targetEl = this.selected.el
         this.clipboard = $perAdminApp.findNodeFromPath(
             $perAdminApp.getView().pageView.page,
-            targetEl.getAttribute('data-per-path')
+            targetEl.getAttribute(Attribute.PATH)
         )
       },
 
@@ -533,7 +554,7 @@
         const payload = {
           pagePath: view.pageView.path,
           data: nodeFromClipboard,
-          path: targetEl.getAttribute('data-per-path'),
+          path: targetEl.getAttribute(Attribute.PATH),
           drop: dropPosition
         }
         $perAdminApp.stateAction('addComponentToPath', payload)
