@@ -325,7 +325,15 @@
         if (this.nodeType === NodeType.OBJECT) {
           component = this.getObjectComponent();
         }
-        let schema = view.admin.componentDefinitions[component][schemaKey];
+        const componentDefinitions = view.admin.componentDefinitions
+        if (!componentDefinitions) {
+          return {}
+        }
+        const cmpDefinition = view.admin.componentDefinitions[component]
+        if (!cmpDefinition) {
+          return {}
+        }
+        let schema = cmpDefinition[schemaKey];
         if (this.edit) {
           return schema;
         }
@@ -501,8 +509,8 @@
             data[key] = targetNode;
           }
         }
-        $perAdminApp.stateAction('saveObjectEdit', {data: data, path: show}).then( () => {
-          $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
+        $perAdminApp.stateAction('saveObjectEdit', {data: data, path: show}).then(() => {
+          $perAdminApp.getNodeFromView('/state/tools')._deleted = {}
         });
         $perAdminApp.stateAction('selectObject', {selected: show})
         this.edit = false;

@@ -10,6 +10,8 @@ import java.util.Locale;
  * Created by Andreas Schaefer on 6/19/17.
  */
 public class PerConstants {
+    public static final String ADMIN_USER = "admin";
+
     public static final String JCR_CONTENT = "jcr:content";
     public static final String JCR_DATA = "jcr:data";
     public static final String NT_FOLDER = "nt:folder";
@@ -131,13 +133,19 @@ public class PerConstants {
     public static final String COLOR_PALETTE = "colorPalette";
     public static final String DROP = "drop";
     public static final String JACKSON = "jackson";
-    public static final String FROM_SITE_NAME = "fromSite";
-    public static final String TO_SITE_NAME = "toSite";
+    public static final String FROM_TENANT_NAME = "fromTenant";
+    public static final String TO_TENANT_NAME = "toTenant";
+    public static final String TO_TENANT_TITLE = "tenantTitle";
+    public static final String TENANT_USER_PWD = "tenantUserPwd";
     public static final String DEPENDENCIES = "dependencies";
     public static final String INTERNAL = "internal";
 
     public static final String EXCLUDE_FROM_SITEMAP = "excludeFromSitemap";
     public static final String CHANGE_FREQUENCY = "changefreq";
     public static final String PRIORITY = "priority";
+
+    public static final String TENANT_GROUP_HOME = "/home/groups/tenants";
+    public static final String TENANT_USER_HOME = "/home/users/tenants";
+    public static final String ALL_TENANTS_GROUP_NAME = "all_tenants";
 }
 

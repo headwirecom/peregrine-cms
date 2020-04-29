@@ -24,10 +24,10 @@
  */
 import { LoggerFactory } from '../logger'
 import {SUFFIX_PARAM_SEPARATOR} from "../constants";
-let log = LoggerFactory.logger('configureSite').setLevelDebug()
+let log = LoggerFactory.logger('configureTenant').setLevelDebug()
 
 /**
- * StateAction:configureSite
+ * StateAction:configureTenant
  * 
  * @module stateActions
  * 
@@ -35,7 +35,7 @@ let log = LoggerFactory.logger('configureSite').setLevelDebug()
  * @param {*} target root path of site to configure (path to the per:Site node)
  */
 export default function(me, target) {
-    log.fine('configureSite',target)
+    log.fine('configureTenant',target)
     var api = me.getApi()
     return new Promise( (resolve, reject) => {
         me.loadContent('/content/admin/pages/tenants/configure.html/path' + SUFFIX_PARAM_SEPARATOR +target)

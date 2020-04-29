@@ -33,6 +33,7 @@ import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.pagerender.vue.models.PageRenderVueConstants.PR_VUE_COMPONENT_PAGE_TYPE;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.peregrine.commons.util.PerConstants;
 import com.peregrine.nodetypes.models.IComponent;
 import java.util.ArrayList;
@@ -129,6 +130,10 @@ public class PageModel extends Container {
     @Inject
     private String description;
 
+    @Inject
+    @Optional
+    private String brand;
+
     public String getSiteRoot() {
         String path = getPagePath();
         String[] segments = path.split(SLASH);
@@ -217,7 +222,7 @@ public class PageModel extends Container {
         if(template == null) {
             String value = (String) getInheritedProperty(TEMPLATE);
             if(value != null) {
-                this.template = template;
+                this.template = value;
                 return value;
             }
         }
@@ -292,6 +297,18 @@ public class PageModel extends Container {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getBrand() {
+        if(brand == null) {
+            String value = (String) getInheritedProperty("brand");
+            if(value != null && value.trim().length() > 0) return value;
+            PageModel templatePageModel = getTemplatePageModel();
+            if(templatePageModel != null) {
+                return templatePageModel.getBrand();
+            }
+        }
+        return brand;
     }
 
     class Tag {

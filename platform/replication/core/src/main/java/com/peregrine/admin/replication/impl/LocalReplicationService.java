@@ -416,6 +416,10 @@ public class LocalReplicationService
             ValueMap sourceProperties = getProperties(source, false);
             Map<String, Object> targetProperties = new HashMap<>();
             for(String key: sourceProperties.keySet()) {
+                if(JCR_UUID.equals(key)) {
+                    // UUIDs cannot be copied over -> ignore them
+                    continue;
+                }
                 try {
                     targetProperties.put(key, newProperties.get(key));
                 } catch(Exception e) {

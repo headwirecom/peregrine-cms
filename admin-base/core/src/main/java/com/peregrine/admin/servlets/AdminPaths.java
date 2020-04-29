@@ -6,8 +6,8 @@ public interface AdminPaths {
     public static final String RESOURCE_TYPE_COMPONENT_DEFINITION = API_PREFIX + "componentDefinition";
     public static final String RESOURCE_TYPE_CONTENT = API_PREFIX + "content";
     public static final String RESOURCE_TYPE_CREATION_FOLDER = API_PREFIX + "createFolder";
-    public static final String RESOURCE_TYPE_CREATION_SITE = API_PREFIX + "createSite";
-    public static final String RESOURCE_TYPE_DELETE_SITE = API_PREFIX + "deleteSite";
+    public static final String RESOURCE_TYPE_CREATION_TENANT = API_PREFIX + "createTenant";
+    public static final String RESOURCE_TYPE_DELETE_TENANT = API_PREFIX + "deleteTenant";
     public static final String RESOURCE_TYPE_CREATION_OBJECT = API_PREFIX + "createObject";
     public static final String RESOURCE_TYPE_CREATION_PAGE = API_PREFIX + "createPage";
     public static final String RESOURCE_TYPE_CREATION_TEMPLATE = API_PREFIX + "createTemplate";
@@ -27,6 +27,6 @@ public interface AdminPaths {
     public static final String RESOURCE_TYPE_SEARCH = API_PREFIX + "search";
     public static final String RESOURCE_TYPE_UPDATE_RESOURCE = API_PREFIX + "updateResource";
     public static final String RESOURCE_TYPE_UPLOAD_FILES = API_PREFIX + "uploadFiles";
-    public static final String RESOURCE_TYPE_UPDATE_SITE = API_PREFIX + "updateSite";
+    public static final String RESOURCE_TYPE_UPDATE_TENANT = API_PREFIX + "updateTenant";
     public static final String RESOURCE_TYPE_LIST_TENANTS = API_PREFIX + "listTenants";
 }

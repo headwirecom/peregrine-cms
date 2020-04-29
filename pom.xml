@@ -44,6 +44,7 @@
         <!-- Sling Dependencies Versions -->
         <org.apache.sling.api.version>2.16.4</org.apache.sling.api.version>
         <org.apache.sling.jcr.api.version>2.4.0</org.apache.sling.jcr.api.version>
+        <org.apache.sling.jcr.base.version>3.0.2</org.apache.sling.jcr.base.version>
         <org.apache.sling.commons.mime.version>2.1.10</org.apache.sling.commons.mime.version>
         <org.apache.sling.settings.version>1.3.8</org.apache.sling.settings.version>
         <org.apache.sling.commons.osgi.version>2.4.0</org.apache.sling.commons.osgi.version>
@@ -469,6 +470,12 @@
                 <groupId>org.apache.sling</groupId>
                 <artifactId>org.apache.sling.jcr.api</artifactId>
                 <version>${org.apache.sling.jcr.api.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.jcr.base</artifactId>
+                <version>${org.apache.sling.jcr.base.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>

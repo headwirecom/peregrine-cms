@@ -30,12 +30,17 @@
 
 [:repoinit]
 
+#
+# ATTENTION: add new Repoinit script into the Repoinit Config file inside base/core
+#            so that the necessary users / groups / permissions are updated when a client
+#            upgrades
+# Also: keep Service User Mappings both here and in the run mode configurations to avoid
+#       sporadic errors in the logs
+#
+
 # Create the two System User Peregrine uses for Service Resource Resolvers
 
     create service user distribution-agent-user
-    create service user nodejs-service
-    create service user nodejs-service-user
-    create service user sitemaps-cache
 
 # Create the necessary folders to apply permissions below otherwise the Launchpad will fail during startup
 
@@ -66,14 +71,10 @@
         allow jcr:all
     end
 
-# Set Permissions for Sitemaps Cache
-
-    set ACL for sitemaps-cache
-        allow jcr:read on /content
-        allow jcr:all on /var/sitemaps
-    end
-
 [configurations]
+
+# We keep the Service User Mappings here to make startup of Peregrine as Error free as possible when using Peregrine Sling
+
     org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended-sitemaps
         user.mapping=[
             "com.peregrine-cms.base.core:sitemaps\=sitemaps-cache"
@@ -97,4 +98,9 @@
             "com.peregrine-cms.nodejs:nodejs-service\=nodejs-service-user",
             "com.peregrine-cms.nodejs.scripts:nodejs-service\=nodejs-service-user",
             "com.peregrine-cms.nodejs.j2v8:nodejs-service\=nodejs-service-user"
+        ]
+
+    org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended-peregrine
+        user.mapping=[
+            "com.peregrine-cms.admin.core:peregrine-services\=peregrine-service-user"
         ]

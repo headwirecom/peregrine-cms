@@ -24,8 +24,16 @@
   #L%
   -->
 
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
-          jcr:primaryType="sling:Folder"
-          sling:resourceType="perapi/admin/createSite"
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+          jcr:primaryType="sling:OsgiConfig"
+          name="defaultRepl"
+          description="Replication Service that is replicating resources based on its path by one or more predefined Replication Services"
+          defaultMapping="local"
+          pathMapping=""
 >
+    <!--
+        The Mappings are in this format:
+            <replication service name>:path=<path to the root>[|<parameter name>=<parameter value>]*
+        The Default Mapping is disregarding the path as it is the fallback mapping if there is none defined for a given path
+    -->
 </jcr:root>

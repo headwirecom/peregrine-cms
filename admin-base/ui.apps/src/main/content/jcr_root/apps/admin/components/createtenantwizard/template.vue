@@ -91,8 +91,8 @@
                         path: $perAdminApp.getNodeFromView('/state/tools/pages'),
                         name: '',
                         title: '',
+                        tenantUserPwd: '',
                         templatePath: ''
-
                     },
                     formOptions: {
                         validationErrorClass: "has-error",
@@ -102,31 +102,40 @@
                     },
                     nameChanged: false,
                     nameSchema: {
-                      fields: [
-                          {
-                              type: "input",
-                              inputType: "text",
-                              label: "Site Title",
-                              model: "title",
-                              required: true,
-                              onChanged: (model, newVal, oldVal, field) => {
+                        fields: [
+                            {
+                                type: "input",
+                                inputType: "text",
+                                label: "Site Title",
+                                model: "title",
+                                required: true,
+                                onChanged: (model, newVal, oldVal, field) => {
                                   if(!this.nameChanged) {
                                       this.formmodel.name = $perAdminApp.normalizeString(newVal, '_');
                                   }
-                              }
-                          },
-                        {
-                            type: "input",
-                            inputType: "text",
-                            label: "Site Name",
-                            model: "name",
-                            required: true,
-                            onChanged: (model, newVal, oldVal, field) => {
-                                this.nameChanged = true;
+                                }
                             },
-                            validator: [this.nameAvailable, this.validSiteName]
-                        }
-                      ]
+                            {
+                                type: "input",
+                                inputType: "text",
+                                label: "Site Name",
+                                model: "name",
+                                required: true,
+                                onChanged: (model, newVal, oldVal, field) => {
+                                    this.nameChanged = true;
+                                },
+                                validator: [this.nameAvailable, this.validSiteName]
+                            },
+                            {
+                                type: "input",
+                                inputType: "text",
+                                label: "Tenant User Password",
+                                model: "tenantUserPwd",
+                                required: false,
+                                onChanged: (model, newVal, oldVal, field) => {
+                                }
+                            }
+                        ]
                     }
                 }
 
@@ -167,13 +176,14 @@
                 const payload = {
                     fromName: this.formmodel.templatePath,
                     toName: this.formmodel.name,
-                    title: this.formmodel.title
+                    title: this.formmodel.title,
+                    tenantUserPwd: this.formmodel.tenantUserPwd
                 }
 
                 if (this.formmodel.colorPalette && this.formmodel.colorPalette.length > 0) {
                     payload.colorPalette = this.formmodel.colorPalette
                 }
-                $perAdminApp.stateAction('createSite', payload)
+                $perAdminApp.stateAction('createTenant', payload)
             },
             validateTabOne: function(me) {
                 me.formErrors.unselectedThemeError = ('' === '' + me.formmodel.templatePath);

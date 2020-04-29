@@ -22,23 +22,24 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from '../logger'
-import {SUFFIX_PARAM_SEPARATOR} from "../constants";
-import setTenant from "./setTenant";
+import {LoggerFactory} from '../logger'
 
-let log = LoggerFactory.logger('createSite').setLevelDebug()
+let log = LoggerFactory.logger('selectToolsNodesPath').setLevelDebug()
 
 export default function(me, target) {
 
     log.fine(target)
-    var api = me.getApi()
-    return api.createSite(target.fromName, target.toName, target.title, target.colorPalette).then( () => {
-        return api.populateTenants().then( () => {
-            return setTenant(me, { name : target.toName }).then( () => {
-                me.loadContent('/content/admin/pages/welcome.html');
-                // path' + SUFFIX_PARAM_SEPARATOR + '/content/'+target.toName)
-            })
-        })        
-    })
 
+    let view = me.getView()
+    const tenant = view.state.tenant
+
+    return new Promise( (resolve, reject) => {
+        me.getApi().populateNodesForBrowser(target.selected).then( () => {
+            let path = document.location.pathname
+            let html = path.indexOf('.html')
+            let newPath = path.slice(0,html) + '.html/path:'+target.selected
+            history.pushState({peregrinevue:true, path: newPath}, newPath, newPath)
+            resolve()
+        })
+    })
 }

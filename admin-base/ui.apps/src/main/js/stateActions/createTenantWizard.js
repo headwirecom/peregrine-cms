@@ -24,14 +24,14 @@
  */
 import { LoggerFactory } from '../logger'
 import {SUFFIX_PARAM_SEPARATOR} from "../constants";
-let log = LoggerFactory.logger('createSiteWizard').setLevelDebug()
+let log = LoggerFactory.logger('createTenantWizard').setLevelDebug()
 
 export default function(me, target) {
 
     log.fine(target)
 
     return new Promise( (resolve, reject) => {
-        me.loadContent('/content/admin/pages/pages/createsite.html/path' + SUFFIX_PARAM_SEPARATOR +target)
+        me.loadContent('/content/admin/pages/pages/createtenant.html/path' + SUFFIX_PARAM_SEPARATOR +target)
         resolve()
     })
 

@@ -230,7 +230,7 @@
         $('#aboutPeregrine').modal('open');
       },
       onSettingsClick() {
-        $perAdminApp.action(this, 'configureSite', {
+        $perAdminApp.action(this, 'configureTenant', {
           path: '/content', name: this.state.tenant.name
         })
       },
