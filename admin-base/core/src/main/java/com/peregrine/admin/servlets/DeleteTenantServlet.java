@@ -26,7 +26,9 @@ package com.peregrine.admin.servlets;
  */
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_DELETE_TENANT;
+import static com.peregrine.admin.util.AdminConstants.GROUP_NAME_SUFFIX;
 import static com.peregrine.admin.util.AdminConstants.PEREGRINE_SERVICE_NAME;
+import static com.peregrine.admin.util.AdminConstants.USER_NAME_SUFFIX;
 import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
 import static com.peregrine.commons.util.PerConstants.DELETED;
 import static com.peregrine.commons.util.PerConstants.NAME;
@@ -50,12 +52,20 @@ import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import java.io.IOException;
+import java.util.Iterator;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.servlet.Servlet;
 
+import org.apache.jackrabbit.api.security.user.Authorizable;
+import org.apache.jackrabbit.api.security.user.Group;
+import org.apache.jackrabbit.api.security.user.User;
+import org.apache.jackrabbit.api.security.user.UserManager;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.jcr.base.util.AccessControlUtil;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -79,6 +89,7 @@ import org.osgi.service.component.annotations.Reference;
 public class DeleteTenantServlet extends AbstractBaseServlet {
 
     private static final String FAILED_TO_DELETE_SITE = "Failed to delete site";
+    private static final String FAILED_TO_REMOVE_TENANT_SECURITY = "Unable to remove Tenant Permissions";
 
     @Reference
     ModelFactory modelFactory;
@@ -92,12 +103,40 @@ public class DeleteTenantServlet extends AbstractBaseServlet {
     @Override
     protected Response handleRequest(Request request) throws IOException {
         String fromTenant = request.getParameter(NAME);
+        boolean isAdmin = request.isAdmin();
+        ResourceResolver resourceResolver = null;
         try {
             logger.debug("Delete Site form: '{}'", fromTenant);
-            Resource resource = request.getResource();
-            ResourceResolver resourceResolver = loginService(resource, resourceResolverFactory, PEREGRINE_SERVICE_NAME);
-            resourceManagement.deleteTenant(request.getResourceResolver(), CONTENT_ROOT, fromTenant);
-            request.getResourceResolver().commit();
+            resourceResolver = isAdmin ?
+                request.getResourceResolver() :
+                loginService(resourceResolverFactory, PEREGRINE_SERVICE_NAME);
+            resourceManagement.deleteTenant(resourceResolver, CONTENT_ROOT, fromTenant);
+            // Remove the Tenant Group with is assigned to that tenant
+            String tenantGroupId = fromTenant + GROUP_NAME_SUFFIX;
+            String tenantUserId = fromTenant + USER_NAME_SUFFIX;
+            Session adminSession = resourceResolver.adaptTo(Session.class);
+            UserManager userManager = AccessControlUtil.getUserManager(adminSession);
+            Group tenantGroup = (Group) userManager.getAuthorizable(tenantGroupId);
+            if(tenantGroup != null) {
+                Iterator<Authorizable> i = tenantGroup.getDeclaredMembers();
+                boolean removeGroup = true;
+                while(i.hasNext()) {
+                    Authorizable member = i.next();
+                    // Tenant User could still be around if it is part of another group that it's tenant (see above)
+                    if(!member.getID().equals(tenantUserId)) {
+                        removeGroup = false;
+                        break;
+                    }
+                }
+                if(removeGroup) {
+                    try {
+                        tenantGroup.remove();
+                    } catch (RepositoryException e) {
+                        // Ignore for now
+                    }
+                }
+            }
+            resourceResolver.commit();
             return new JsonResponse()
                 .writeAttribute(TYPE, SITE)
                 .writeAttribute(STATUS, DELETED)
@@ -107,6 +146,15 @@ public class DeleteTenantServlet extends AbstractBaseServlet {
                 .setHttpErrorCode(SC_BAD_REQUEST)
                 .setErrorMessage(FAILED_TO_DELETE_SITE)
                 .setException(e);
+        } catch (RepositoryException e) {
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(FAILED_TO_REMOVE_TENANT_SECURITY)
+                .setException(e);
+        } finally {
+            if(!isAdmin && resourceResolver != null) {
+                resourceResolver.close();
+            }
         }
     }
 }

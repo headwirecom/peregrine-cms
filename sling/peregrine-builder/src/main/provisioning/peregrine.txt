@@ -31,16 +31,26 @@
 [:repoinit]
 
 #
-# ATTENTION: add new Repoinit script into the Repoinit Config file inside base/core
-#            so that the necessary users / groups / permissions are updated when a client
-#            upgrades
-# Also: keep Service User Mappings both here and in the run mode configurations to avoid
-#       sporadic errors in the logs
+# ATTENTION: In order to allow existing customers to upgrade to new versions of Peregrine
+#            new users and permissions must be added here as well as base/ui.apps
+#            org.apache.sling.jcr.repoinit.RepositoryInitializer-peregrine.config file.
+#            They are added here to make sure that a new installation of Peregrine comes up
+#            without errors
+#
+# Also: keep Service User Mappings both here together with the creation of the users
+#       and in the run mode configurations to avoid sporadic errors in the logs
 #
 
 # Create the two System User Peregrine uses for Service Resource Resolvers
 
+    create service user sitemaps-cache
     create service user distribution-agent-user
+    create service user nodejs-service-user
+    create service user peregrine-service-user
+
+# Create Users / Groups for Peregrine
+
+    create group all_tenants with path /home/groups/tenants
 
 # Create the necessary folders to apply permissions below otherwise the Launchpad will fail during startup
 

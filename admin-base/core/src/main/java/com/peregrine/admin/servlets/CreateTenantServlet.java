@@ -26,7 +26,9 @@ package com.peregrine.admin.servlets;
  */
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_CREATION_TENANT;
+import static com.peregrine.admin.util.AdminConstants.GROUP_NAME_SUFFIX;
 import static com.peregrine.admin.util.AdminConstants.PEREGRINE_SERVICE_NAME;
+import static com.peregrine.admin.util.AdminConstants.USER_NAME_SUFFIX;
 import static com.peregrine.commons.util.PerConstants.ADMIN_USER;
 import static com.peregrine.commons.util.PerConstants.ALL_TENANTS_GROUP_NAME;
 import static com.peregrine.commons.util.PerConstants.COLOR_PALETTE;
@@ -113,8 +115,6 @@ public class CreateTenantServlet extends AbstractBaseServlet {
     private static final String FAILED_TO_CREATE_SITE = "Failed to create site";
     private static final String FAILED_TO_GET_SERVICE_RESOLVER = "Unable to get Peregrine Service Resolver";
     private static final String FAILED_TO_CREATE_TENANT_SECURITY = "Unable to create Tenant Permissions";
-    private static final String GROUP_NAME_SUFFIX = "_group";
-    private static final String USER_NAME_SUFFIX = "_user";
     private static final String DISABLE_USER_REASON = "Need to set a password first";
 
     @Reference
@@ -128,10 +128,13 @@ public class CreateTenantServlet extends AbstractBaseServlet {
         String fromTenant = request.getParameter(FROM_TENANT_NAME);
         String toTenant = request.getParameter(TO_TENANT_NAME);
         String title = request.getParameter(TO_TENANT_TITLE);
+        boolean isAdmin = request.isAdmin();
+        ResourceResolver resourceResolver = null;
         try {
             logger.trace("Copy Site form: '{}' to: '{}'", fromTenant, toTenant);
-            Resource resource = request.getResource();
-            ResourceResolver resourceResolver = loginService(resource, resourceResolverFactory, PEREGRINE_SERVICE_NAME);
+            resourceResolver = isAdmin ?
+                request.getResourceResolver() :
+                loginService(resourceResolverFactory, PEREGRINE_SERVICE_NAME);
             Session adminSession = resourceResolver.adaptTo(Session.class);
             UserManager userManager = AccessControlUtil.getUserManager(adminSession);
             Resource site = resourceManagement
@@ -142,7 +145,6 @@ public class CreateTenantServlet extends AbstractBaseServlet {
             }
             // Check if Admin user and if not get password
             String userName = request.getRequest().getUserPrincipal().getName();
-            boolean isAdmin = ADMIN_USER.equals(userName);
             // Get User Password
             String userPwd = request.getParameter(TENANT_USER_PWD);
             boolean isPwdProvided = isNotEmpty(userPwd);
@@ -243,6 +245,10 @@ public class CreateTenantServlet extends AbstractBaseServlet {
                 .setHttpErrorCode(SC_BAD_REQUEST)
                 .setErrorMessage(FAILED_TO_CREATE_TENANT_SECURITY)
                 .setException(e);
+        } finally {
+            if(!isAdmin && resourceResolver != null) {
+                resourceResolver.close();
+            }
         }
     }
 
