@@ -155,9 +155,6 @@
       }
     },
     watch: {
-      viewMode(newViewMode) {
-        this.setIframeScrollState(newViewMode)
-      },
       previewMode(val) {
         if (val === 'preview') {
           this.iframe.doc.removeEventListener('click', this.onIframeClick)
@@ -179,8 +176,6 @@
           /* selected components are not immediatly draggable on touch devices */
           this.selected.draggable = false
         }
-        document.addEventListener('keydown', this.onKeyDown)
-        document.addEventListener('keyup', this.onKeyUp)
       })
     },
     methods: {
@@ -197,7 +192,9 @@
             const elements = []
             const queried = this.selected.el.querySelectorAll('[data-per-model-key]')
             elements.push.apply(elements, queried)
-            elements.push.apply(elements, [this.selected.el])
+            if (this.selected.el.getAttribute('data-per-model-key')) {
+              elements.push.apply(elements, [this.selected.el])
+            }
             elements.forEach((element) => {
               const modelKey = element.getAttribute('data-per-model-key')
               const style = element.getAttribute('style')
@@ -320,17 +317,6 @@
         }
       },
 
-      setIframeScrollState(viewMode) {
-        const iframeDoc = this.$refs.editview.contentWindow.document
-        if (viewMode.endsWith('preview')) {
-          iframeDoc.body.style.overflowX = 'hidden'
-          iframeDoc.body.style.overflowY = 'auto'
-        } else {
-          iframeDoc.body.style.overflowX = 'hidden'
-          iframeDoc.body.style.overflowY = 'auto'
-        }
-      },
-
       getElementStyle(e, styleName) {
         let styleValue = '';
         if (document.defaultView && document.defaultView.getComputedStyle) {
@@ -359,24 +345,6 @@
         newRect.width = newRect.right - newRect.left
         newRect.height = newRect.bottom - newRect.top
         return newRect;
-      },
-
-      findIn(el, pos) {
-        if (!el) return
-
-        const rect = this.getBoundingClientRect(el)
-        let ret = null
-        if (pos.x > rect.left && pos.x < rect.right && pos.y > rect.top && pos.y < rect.bottom) {
-          ret = el
-          for (let i = 0; i < el.children.length; i++) {
-            const child = this.findIn(el.children[i], pos)
-            if (child != null) {
-              ret = child
-              break
-            }
-          }
-        }
-        return ret
       },
 
       leftOverlayArea(e) {
@@ -459,20 +427,19 @@
         }
       },
 
-      onDrop(ev) {
-        console.log('onDrop')
+      onDrop(event) {
         this.editable.class = null
         if (this.isTouch) {
           this.selected.draggable = false
         }
-        const targetEl = this.getTargetEl(ev)
+        const targetEl = this.findComponentEl(event.target)
         if (typeof targetEl === 'undefined' || targetEl === null) {
           return false
         }
-        const targetPath = targetEl.getAttribute('data-per-path');
-        const componentPath = ev.dataTransfer.getData('text')
+        const targetPath = targetEl.getAttribute('data-per-path')
+        const componentPath = event.dataTransfer.getData('text')
         if (targetPath === componentPath) {
-          ev.dataTransfer.clearData('text')
+          event.dataTransfer.clearData('text')
           return false
         }
         const view = $perAdminApp.getView()
@@ -487,9 +454,8 @@
           addOrMove = 'addComponentToPath';
         } else {
           addOrMove = 'moveComponentToPath';
-          const targetNode = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page,
-              targetPath)
-          if ((!targetNode) || (targetNode.fromTemplate)) {
+          const targetNode = $perAdminApp.findNodeFromPath(this.pageView.page, targetPath)
+          if (!targetNode || targetNode.fromTemplate) {
             $perAdminApp.notifyUser('template component',
                 'You cannot drag a component into a template section', {
                   complete: this.removeEditOverlay
@@ -498,7 +464,7 @@
           }
         }
         $perAdminApp.stateAction(addOrMove, payload)
-        ev.dataTransfer.clearData('text')
+        event.dataTransfer.clearData('text')
       },
 
       /* Editable methods ========================
