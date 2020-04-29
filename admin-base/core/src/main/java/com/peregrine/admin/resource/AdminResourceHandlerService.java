@@ -490,6 +490,22 @@ public class AdminResourceHandlerService
     }
 
     @Override
+    public Resource restoreDeleted(ResourceResolver resourceResolver, String path, String frozenNodepath, boolean force)
+            throws ManagementException {
+        resourceResolver.refresh();
+        Session jcrSession = resourceResolver.adaptTo(Session.class);
+        try {
+            Version restoreVersion = (Version) jcrSession.getNode(frozenNodepath);
+            VersionManager vm = jcrSession.getWorkspace().getVersionManager();
+            vm.restore(path, restoreVersion, force);
+            vm.checkout(path);
+            return getResource(resourceResolver,path);
+        } catch (RepositoryException e) {
+            throw new ManagementException("Failed to restore Version", e);
+        }
+    }
+
+    @Override
     public Resource insertNode(Resource resource, Map<String, Object> properties, boolean addAsChild, boolean orderBefore, String variation) throws ManagementException {
         final Node node = getNode(resource);
         if (node == null) {

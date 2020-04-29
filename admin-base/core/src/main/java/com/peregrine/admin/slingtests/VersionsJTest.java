@@ -189,26 +189,36 @@ public class VersionsJTest {
     @Test
     public void restoreDeletedPage() {
         try {
-//      Create a Version
+            // Create a Version
             Version version = resourceManagement.createVersion(this.resourceResolver, deletedNode.getPath());
             VersionHistory vhPage = vmPage.getVersionHistory(deletedNode.getPath());
             assertEquals(2, Iterators.size(vhPage.getAllLinearVersions()));
             assertNotNull(version);
-
+            // Record paths to restore
             String versionPath = version.getPath();
             String resourcePath = deletedNode.getPath();
-//      Delete the page
+            // Delete the page
             resourceResolver.delete(deletedRes);
             deletedRes = resourceResolver.getResource(resourcePath);
             assertNull(deletedRes);
             resourceResolver.commit();
-//      Restore at the recorded version
-            Resource restoredResource = resourceManagement.restoreVersion(resourceResolver, resourcePath, versionPath, true);
+            // Restore at the recorded version
+            Resource restoredResource = resourceManagement.restoreDeleted(resourceResolver, resourcePath, versionPath, true);
             assertNotNull(restoredResource);
             assertNotNull(resourceResolver.getResource(resourcePath));
             assertEquals("1.0" , vmPage.getBaseVersion(restoredResource.getPath()).getName());
-//            // check that the test page is not left in a "checked out" or locked state
-            assertTrue(vmPage.isCheckedOut(testPage.getPath()));
+            // check that the test page is not left in a "checked out" or locked state
+            assertTrue(vmPage.isCheckedOut(restoredResource.getPath()));
+            // Clean up
+            deletedRes = restoredResource;
+            deletedNode = restoredResource.adaptTo(Node.class);
+            for (NodeType nt : deletedNode.getMixinNodeTypes()){
+                if (nt.isNodeType("mix:versionable")) {
+                    vmPage.checkout(deletedNode.getPath());
+                    deletedNode.removeMixin("mix:versionable");
+                    resourceResolver.commit();
+                }
+            }
         } catch (Exception e) {
             fail("could not create version");
         }
@@ -226,13 +236,7 @@ public class VersionsJTest {
                     resourceResolver.commit();
                 }
             }
-//            for (NodeType nt : deletedNode.getMixinNodeTypes()){
-//                if (nt.isNodeType("mix:versionable")) {
-//                    vmPage.checkout(testPage.getPath());
-//                    pageNode.removeMixin("mix:versionable");
-//                    resourceResolver.commit();
-//                }
-//            }
+
         } catch (RepositoryException e) {
             logger.error("test resources were not versionable", e);
         } catch (PersistenceException e) {
