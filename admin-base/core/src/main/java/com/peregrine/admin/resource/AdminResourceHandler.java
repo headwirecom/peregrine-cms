@@ -91,10 +91,21 @@ public interface AdminResourceHandler {
      * Creates a resource version
      * @param resourceResolver Resource Resolver to manage resources and cannot be null
      * @param path Absolute Path of the resource to be versioned and this resource must exist
-     * @return The Resource with a new Version
+     * @return The Version which was created from the Resource
      * @throws ManagementException If creating the version failed
      */
     Version createVersion(ResourceResolver resourceResolver, String path) throws ManagementException;
+
+    /**
+     * Restore a version
+     * @param resourceResolver Resource Resolver to manage resources and cannot be null
+     * @param path Absolute path of the resource having the version
+     * @param versionPath Absolute frozen node path of version to be restored
+     * @param force if there is a resource already in the location of the path, it will be replaced if force is true
+     * @return The Resource at the supplied Version
+     * @throws ManagementException If creating the version failed
+     */
+    Resource restoreVersion(ResourceResolver resourceResolver, String path, String versionPath, boolean force) throws ManagementException;
 
     /**
      * Updates a given resource based on the given JSon Content

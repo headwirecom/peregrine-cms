@@ -102,19 +102,10 @@ import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import javax.jcr.Binary;
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.nodetype.NodeType;
+import javax.jcr.*;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionManager;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
@@ -446,10 +437,9 @@ public class AdminResourceHandlerService
     public Version createVersion(ResourceResolver resourceResolver, String path) throws ManagementException {
         Resource resource = getResource(resourceResolver, path);
         if (resource == null) {
-            throw new ManagementException(String.format(RESOURCE_FOR_DELETION_NOT_FOUND, path));
+            throw new ManagementException("Could not find resource for versioning "+ path);
         }
         Node versionableNode = resource.adaptTo(Node.class);
-
         try {
             VersionManager vm = versionableNode.getSession().getWorkspace().getVersionManager();
             VersionHistory vh = null;
@@ -471,6 +461,7 @@ public class AdminResourceHandlerService
                 if (vm.isCheckedOut(path)){
                     Version v = vm.checkin(path);
                     vm.checkout(path);
+                    logger.warn("Version created for {} at {}", path, v.getFrozenNode().getPath());
                     return v;
                 }
             }
@@ -479,6 +470,21 @@ public class AdminResourceHandlerService
         } catch (RepositoryException e) {
             logger.error("RepositoryException while creating version  {}", path, e);
             throw new ManagementException("Create Version FAILED", e);
+        }
+    }
+
+    @Override
+    public Resource restoreVersion(ResourceResolver resourceResolver, String path, String frozenNodepath, boolean force)
+            throws ManagementException {
+        Session jcrSession = resourceResolver.adaptTo(Session.class);
+        try {
+            Version restoreVersion = (Version) jcrSession.getNode(frozenNodepath);
+            VersionManager vm = jcrSession.getWorkspace().getVersionManager();
+            vm.restore(restoreVersion, force);
+            vm.checkout(path);
+            return getResource(resourceResolver,path);
+        } catch (RepositoryException e) {
+            throw new ManagementException("Failed to restore Version", e);
         }
     }
 

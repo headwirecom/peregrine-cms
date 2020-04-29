@@ -17,10 +17,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
-import javax.jcr.version.VersionIterator;
 import javax.jcr.version.VersionManager;
 import static org.junit.Assert.*;
 
@@ -35,6 +35,7 @@ public class VersionsJTest {
     AdminResourceHandler resourceManagement;
 
     private ResourceResolver resourceResolver;
+    private Session jcrSession;
     public static final String EXAMPLE_SITE_ROOT = "/content/example/";
     public static final String EXAMPLE_PAGE = "pages/index";
     public static final String EXAMPLE_ASSET = "assets/images/peregrine-logo.png";
@@ -51,6 +52,7 @@ public class VersionsJTest {
     @Before
     public void setUp() throws Exception {
         resourceResolver = resolverFactory.getAdministrativeResourceResolver(null);
+        jcrSession = resourceResolver.adaptTo(Session.class);
         // get a per:Page
         testPageRes = resourceResolver.getResource(EXAMPLE_SITE_ROOT+EXAMPLE_PAGE);
         testPage = testPageRes.adaptTo(PageModel.class);
@@ -67,6 +69,7 @@ public class VersionsJTest {
     public void resourcesNotNull() {
         assertNotNull(resolverFactory);
         assertNotNull(resourceResolver);
+        assertNotNull(jcrSession);
         assertNotNull(resourceManagement);
         assertNotNull(testPageRes);
         assertNotNull(testAssetRes);
@@ -110,7 +113,7 @@ public class VersionsJTest {
     }
 
     @Test
-    public void makeNewPageVersion() {
+    public void makeFirstPageVersion() {
         try {
             Version version = resourceManagement.createVersion(this.resourceResolver, testPageRes.getPath());
             assertNotNull(version);
@@ -122,8 +125,79 @@ public class VersionsJTest {
             assertEquals("1.0", firstVersion.getName());
             assertEquals(firstVersion.getName(), version.getName());
             assertTrue(vmPage.isCheckedOut(testPage.getPath()));
-            String versionPath = version.getFrozenNode().getPath();
-            logger.info("Created version {}", versionPath);
+        } catch (Exception e) {
+            fail("could not create version");
+        }
+    }
+
+    @Test
+    public void make2ndPageVersion() {
+        try {
+//            First Version
+            Version version = resourceManagement.createVersion(this.resourceResolver, testPageRes.getPath());
+            assertNotNull(version);
+            VersionHistory vhPage = vmPage.getVersionHistory(pageNode.getPath());
+            int size2 = Iterators.size(vhPage.getAllLinearVersions());
+            assertEquals(2, size2);
+            Version rootVersion = vhPage.getRootVersion();
+            Version firstVersion = rootVersion.getLinearSuccessor();
+            assertEquals("1.0", firstVersion.getName());
+            assertEquals(firstVersion.getName(), version.getName());
+            assertTrue(vmPage.isCheckedOut(testPage.getPath()));
+//            Second Version
+            Version version2 = resourceManagement.createVersion(this.resourceResolver, testPageRes.getPath());
+            assertNotNull(version2);
+            VersionHistory vhPage2 = vmPage.getVersionHistory(pageNode.getPath());
+            int size3 = Iterators.size(vhPage.getAllLinearVersions());
+            assertEquals(3, size3);
+            rootVersion = vhPage.getRootVersion();
+            firstVersion = rootVersion.getLinearSuccessor();
+            assertEquals("1.0", firstVersion.getName());
+            assertEquals(firstVersion.getName(), version.getName());
+            assertTrue(vmPage.isCheckedOut(testPage.getPath()));
+        } catch (Exception e) {
+            fail("could not create version");
+        }
+    }
+
+    @Test
+    public void restoreFirstPageVersion() {
+        try {
+//      First Version
+            Version version = resourceManagement.createVersion(this.resourceResolver, testPageRes.getPath());
+            assertNotNull(version);
+            VersionHistory vhPage = vmPage.getVersionHistory(pageNode.getPath());
+            int size2 = Iterators.size(vhPage.getAllLinearVersions());
+            assertEquals(2, size2);
+            Version rootVersion = vhPage.getRootVersion();
+            Version firstVersion = rootVersion.getLinearSuccessor();
+            assertEquals("1.0", firstVersion.getName());
+            assertEquals(firstVersion.getName(), version.getName());
+//      Second Version
+            Version version2 = resourceManagement.createVersion(this.resourceResolver, testPageRes.getPath());
+            assertNotNull(version2);
+            // check that the number of versions is 3 (root and two others)
+            int size3 = Iterators.size(vhPage.getAllLinearVersions());
+            assertEquals(3, size3);
+            rootVersion = vhPage.getRootVersion();
+            firstVersion = rootVersion.getLinearSuccessor();
+            // check that the first version has a name = 1.0
+            assertEquals("1.0", firstVersion.getName());
+            assertEquals(firstVersion.getName(), version.getName());
+            // check that the current version has a name = 1.1
+            assertEquals("1.1" , vmPage.getBaseVersion(testPage.getPath()).getName());
+            assertTrue(vmPage.isCheckedOut(testPage.getPath()));
+
+//      Restore the first version
+            String frozenNodepath = firstVersion.getPath();
+            Node frozenNode = jcrSession.getNode(frozenNodepath);
+            Version versionToRestore = (Version) frozenNode;
+            assertNotNull(versionToRestore);
+            Resource restoredResource = resourceManagement.restoreVersion(resourceResolver, testPage.getPath(), frozenNodepath, true);
+            assertNotNull(restoredResource);
+            assertEquals("1.0" , vmPage.getBaseVersion(restoredResource.getPath()).getName());
+            // check that the test page is not left in a "checked out" or locked state
+            assertTrue(vmPage.isCheckedOut(testPage.getPath()));
         } catch (Exception e) {
             fail("could not create version");
         }
@@ -133,9 +207,13 @@ public class VersionsJTest {
     public void cleanUp() {
         try {
 //            Clean Up Test Page Versions
-            pageNode.removeMixin("mix:versionable");
-            resourceResolver.commit();
-
+            for (NodeType nt : pageNode.getMixinNodeTypes()){
+                if (nt.isNodeType("mix:versionable")) {
+                    vmPage.checkout(testPage.getPath());
+                    pageNode.removeMixin("mix:versionable");
+                    resourceResolver.commit();
+                }
+            }
         } catch (RepositoryException e) {
             logger.error("test resources were not versionable", e);
         } catch (PersistenceException e) {
