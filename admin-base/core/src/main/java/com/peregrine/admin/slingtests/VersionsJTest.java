@@ -118,6 +118,7 @@ public class VersionsJTest {
             Version version = resourceManagement.createVersion(this.resourceResolver, testPageRes.getPath());
             assertNotNull(version);
             VersionHistory vhPage = vmPage.getVersionHistory(pageNode.getPath());
+            // check that the number of versions is 2 (root and one version)
             int size = Iterators.size(vhPage.getAllLinearVersions());
             assertEquals(2, size);
             Version rootVersion = vhPage.getRootVersion();
@@ -137,23 +138,14 @@ public class VersionsJTest {
             Version version = resourceManagement.createVersion(this.resourceResolver, testPageRes.getPath());
             assertNotNull(version);
             VersionHistory vhPage = vmPage.getVersionHistory(pageNode.getPath());
-            int size2 = Iterators.size(vhPage.getAllLinearVersions());
-            assertEquals(2, size2);
-            Version rootVersion = vhPage.getRootVersion();
-            Version firstVersion = rootVersion.getLinearSuccessor();
-            assertEquals("1.0", firstVersion.getName());
-            assertEquals(firstVersion.getName(), version.getName());
             assertTrue(vmPage.isCheckedOut(testPage.getPath()));
 //            Second Version
             Version version2 = resourceManagement.createVersion(this.resourceResolver, testPageRes.getPath());
             assertNotNull(version2);
+            // check that the number of versions is 2 (root and two versions)
             VersionHistory vhPage2 = vmPage.getVersionHistory(pageNode.getPath());
-            int size3 = Iterators.size(vhPage.getAllLinearVersions());
+            int size3 = Iterators.size(vhPage2.getAllLinearVersions());
             assertEquals(3, size3);
-            rootVersion = vhPage.getRootVersion();
-            firstVersion = rootVersion.getLinearSuccessor();
-            assertEquals("1.0", firstVersion.getName());
-            assertEquals(firstVersion.getName(), version.getName());
             assertTrue(vmPage.isCheckedOut(testPage.getPath()));
         } catch (Exception e) {
             fail("could not create version");
@@ -165,31 +157,14 @@ public class VersionsJTest {
         try {
 //      First Version
             Version version = resourceManagement.createVersion(this.resourceResolver, testPageRes.getPath());
-            assertNotNull(version);
-            VersionHistory vhPage = vmPage.getVersionHistory(pageNode.getPath());
-            int size2 = Iterators.size(vhPage.getAllLinearVersions());
-            assertEquals(2, size2);
-            Version rootVersion = vhPage.getRootVersion();
-            Version firstVersion = rootVersion.getLinearSuccessor();
-            assertEquals("1.0", firstVersion.getName());
-            assertEquals(firstVersion.getName(), version.getName());
 //      Second Version
             Version version2 = resourceManagement.createVersion(this.resourceResolver, testPageRes.getPath());
             assertNotNull(version2);
-            // check that the number of versions is 3 (root and two others)
-            int size3 = Iterators.size(vhPage.getAllLinearVersions());
-            assertEquals(3, size3);
-            rootVersion = vhPage.getRootVersion();
-            firstVersion = rootVersion.getLinearSuccessor();
-            // check that the first version has a name = 1.0
-            assertEquals("1.0", firstVersion.getName());
-            assertEquals(firstVersion.getName(), version.getName());
             // check that the current version has a name = 1.1
             assertEquals("1.1" , vmPage.getBaseVersion(testPage.getPath()).getName());
             assertTrue(vmPage.isCheckedOut(testPage.getPath()));
-
 //      Restore the first version
-            String frozenNodepath = firstVersion.getPath();
+            String frozenNodepath = version.getPath();
             Node frozenNode = jcrSession.getNode(frozenNodepath);
             Version versionToRestore = (Version) frozenNode;
             assertNotNull(versionToRestore);
@@ -202,6 +177,31 @@ public class VersionsJTest {
             fail("could not create version");
         }
     }
+
+//    @Test
+//    public void restoreDeletedPage() {
+//        try {
+////      Create a Version
+//            Version version = resourceManagement.createVersion(this.resourceResolver, testPageRes.getPath());
+//            assertNotNull(version);
+//            // record the resource path and the frozenNode path of it's version
+//            String resourcePath = testPageRes.getPath();
+//            String versionPath = version.getPath();
+////      Delete the page
+//            resourceResolver.delete(testPageRes);
+//            testPageRes = null;
+//            assertNull(resourceResolver.getResource(resourcePath));
+////      Restore at the recorded version
+//            Resource restoredResource = resourceManagement.restoreVersion(resourceResolver, resourcePath, versionPath, true);
+//            assertNotNull(restoredResource);
+//            assertNotNull(resourceResolver.getResource(resourcePath));
+//            assertEquals("1.0" , vmPage.getBaseVersion(restoredResource.getPath()).getName());
+//            // check that the test page is not left in a "checked out" or locked state
+//            assertTrue(vmPage.isCheckedOut(testPage.getPath()));
+//        } catch (Exception e) {
+//            fail("could not create version");
+//        }
+//    }
 
     @After
     public void cleanUp() {
