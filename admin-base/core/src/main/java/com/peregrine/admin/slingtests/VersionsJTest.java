@@ -1,5 +1,4 @@
-package com.peregrine.slingtests;
-
+package com.peregrine.admin.slingtests;
 
 import com.peregrine.admin.models.PageModel;
 import org.apache.sling.api.resource.Resource;
@@ -14,13 +13,14 @@ import org.junit.runner.RunWith;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.jcr.nodetype.NodeType;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
 import javax.jcr.version.VersionManager;
+
 
 import static org.junit.Assert.*;
 
@@ -61,22 +61,30 @@ public class VersionsJTest {
         VersionManager vmPage;
         VersionManager vmAsset;
         try {
-            resourceResolver.refresh();
+//            Clean Up Test Page Versions
             vmPage = pageNode.getSession().getWorkspace().getVersionManager();
-            vmPage.checkout(pageNode.getPath());
             VersionHistory vhPage = vmPage.getVersionHistory(testPage.getPath());
-//            VersionIterator vi = vhPage.getAllVersions();
-//            while (vi.hasNext()) {
-//                Version v = vi.nextVersion();
-//                v.remove();
-//            }
-
-            vhPage.remove();
-//            vmAsset = assetNode.getSession().getWorkspace().getVersionManager();
-//            VersionHistory vhAsset = vmAsset.getVersionHistory(testPage.getPath());
-//            vhAsset.remove();
+            Version rootVersion = vhPage.getRootVersion();
+            VersionIterator vi = vhPage.getAllVersions();
+            // remove all versions except for root version which is protected and cannot be removed
+            while (vi.hasNext()) {
+                Version v = vi.nextVersion();
+                if (!rootVersion.getPath().equals(v.getPath())) {
+                    v.remove();
+                }
+            }
+//            Clean Up Test Asset Versions
+            vmAsset = assetNode.getSession().getWorkspace().getVersionManager();
+            VersionHistory vhAsset = vmAsset.getVersionHistory(testAssetRes.getPath());
+            Version rootVersionAsset = vhAsset.getRootVersion();
+            while (vi.hasNext()) {
+                Version v = vi.nextVersion();
+                if (!rootVersionAsset.getPath().equals(v.getPath())) {
+                    v.remove();
+                }
+            }
         } catch (RepositoryException e) {
-            fail("Could not cleanup versions");
+            logger.warn("test resources were not versionable");
         } finally {
             resourceResolver.close();
         }
@@ -96,10 +104,23 @@ public class VersionsJTest {
     public void pageCanBeVersionable() {
         Node pageNode = testPageRes.adaptTo(Node.class);
         try {
-            assertTrue(pageNode.canAddMixin("mix:versionable"));
+            VersionManager vm = pageNode.getSession().getWorkspace().getVersionManager();
+            if (vm.getVersionHistory(testPageRes.getPath()) == null) {
+                assertTrue(pageNode.canAddMixin("mix:versionable"));
+                return;
+            } else {
+                NodeType[] nodeTypes = pageNode.getMixinNodeTypes();
+                for (NodeType nt : nodeTypes) {
+                    if (nt.isNodeType("mix:versionable")){
+                        return;
+                    }
+                }
+                fail("no type mix:versionable");
+            }
         } catch (RepositoryException e) {
-            fail("no type mix:versionable");
+            logger.error("RepositoryException", e);
         }
+        fail("page could not be versioned");
     }
 
     @Test
@@ -112,16 +133,16 @@ public class VersionsJTest {
         }
     }
 
-//    @Test
-//    public void makeNewPageVersion() {
-//        try {
-//            Version version = resourceManagement.createVersion(this.resourceResolver,EXAMPLE_SITE_ROOT+EXAMPLE_PAGE);
-//            assertNotNull( version);
-//            String versionPath = version.getFrozenNode().getPath();
-//            logger.info("Created version {}", versionPath);
-//            resourceResolver.commit();
-//        } catch (Exception e) {
-//            fail("could not create version");
-//        }
-//    }
+    @Test
+    public void makeNewPageVersion() {
+        try {
+            Version version = resourceManagement.createVersion(this.resourceResolver,EXAMPLE_SITE_ROOT+EXAMPLE_PAGE);
+            assertNotNull( version);
+            String versionPath = version.getFrozenNode().getPath();
+            logger.info("Created version {}", versionPath);
+            resourceResolver.commit();
+        } catch (Exception e) {
+            fail("could not create version");
+        }
+    }
 }

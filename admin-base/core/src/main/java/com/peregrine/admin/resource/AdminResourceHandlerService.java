@@ -450,20 +450,24 @@ public class AdminResourceHandlerService
             // jcr 2.0 15 Versioning 15.2
             // https://docs.adobe.com/content/docs/en/spec/jcr/2.0/15_Versioning.html#15.2.1%20Version%20Object
             VersionManager vm = versionableNode.getSession().getWorkspace().getVersionManager();
-            versionableNode.addMixin("mix:versionable");
-            vm.checkin(path);
-            vm.checkout(path);
+            VersionHistory vh = null;
+            try {
+                vh = vm.getVersionHistory(versionableNode.getPath());
+            } catch (RepositoryException e) {
+                logger.warn("not versionable, adding mix:versionable and returning the root version");
+                versionableNode.addMixin("mix:versionable");
+                vh = vm.getVersionHistory(versionableNode.getPath());
+                return vh.getRootVersion();
+            }
+            if (vh != null) {
+                return vm.checkin(path);
+            }
             return null;
 
         } catch (RepositoryException e) {
             logger.error("RepositoryException while creating version  {}", path, e);
             throw new ManagementException("Create Version FAILED", e);
         }
-//        catch (PersistenceException e) {
-//            logger.error("PersistenceException while creating version {}", path, e);
-//            e.printStackTrace();
-//        }
-//        return null;
     }
 
     @Override
