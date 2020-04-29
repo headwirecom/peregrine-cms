@@ -270,7 +270,11 @@
         const dataInline = event.target.getAttribute(Attribute.INLINE).split('.')
         dataInline.reverse()
         dataInline.pop() //remove obsolete "model" at the beginning
-        this.selectedModel[dataInline.pop()] = event.target.innerHTML
+        let parentProp = this.selectedModel
+        while (dataInline.length > 1) {
+          parentProp = parentProp[dataInline.pop()]
+        }
+        parentProp[dataInline.pop()] = event.target.innerHTML
       },
 
       onIframeClick(ev) {
