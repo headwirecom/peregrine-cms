@@ -438,29 +438,41 @@ public class AdminResourceHandlerService
     }
 
 
+    // jcr 2.0 Chapter 3
+    // https://docs.adobe.com/docs/en/spec/jcr/2.0/3_Repository_Model.html
+    // jcr 2.0 Chapter 15
+    // https://docs.adobe.com/content/docs/en/spec/jcr/2.0/15_Versioning.html#15.2.1%20Version%20Object
     @Override
     public Version createVersion(ResourceResolver resourceResolver, String path) throws ManagementException {
-        final Resource resource = getResource(resourceResolver, path);
+        Resource resource = getResource(resourceResolver, path);
         if (resource == null) {
             throw new ManagementException(String.format(RESOURCE_FOR_DELETION_NOT_FOUND, path));
         }
-        final Node versionableNode = resource.adaptTo(Node.class);
+        Node versionableNode = resource.adaptTo(Node.class);
 
         try {
-            // jcr 2.0 15 Versioning 15.2
-            // https://docs.adobe.com/content/docs/en/spec/jcr/2.0/15_Versioning.html#15.2.1%20Version%20Object
             VersionManager vm = versionableNode.getSession().getWorkspace().getVersionManager();
             VersionHistory vh = null;
             try {
                 vh = vm.getVersionHistory(versionableNode.getPath());
             } catch (RepositoryException e) {
-                logger.warn("not versionable, adding mix:versionable and returning the root version");
+                logger.warn("not mix:versionable, adding mix:versionable and returning the root version");
                 versionableNode.addMixin("mix:versionable");
                 vh = vm.getVersionHistory(versionableNode.getPath());
-                return vh.getRootVersion();
+                try {
+                    resourceResolver.commit();
+                } catch (PersistenceException ex) {
+                    logger.error("could not make node versionable", e);
+                    return null;
+                }
+                vm = versionableNode.getSession().getWorkspace().getVersionManager();
             }
             if (vh != null) {
-                return vm.checkin(path);
+                if (vm.isCheckedOut(path)){
+                    Version v = vm.checkin(path);
+                    vm.checkout(path);
+                    return v;
+                }
             }
             return null;
 
