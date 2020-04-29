@@ -78,6 +78,7 @@
           visible: false,
           class: null,
           timer: null,
+          delay: 200,
           styles: {
             top: 0,
             left: 0,
@@ -158,8 +159,16 @@
       previewMode(val) {
         if (val === 'preview') {
           this.iframe.doc.removeEventListener('click', this.onIframeClick)
+          this.editable.class = null
         } else {
           this.iframe.doc.addEventListener('click', this.onIframeClick)
+          if (this.selected.el) {
+            clearTimeout(this.editable.timer)
+            this.editable.timer = setTimeout(() => {
+              this.editable.class = 'selected'
+              this.wrapEditableAround(this.selected.el)
+            }, this.editable.delay)
+          }
         }
       },
       'iframe.clicked.el'(val) {
