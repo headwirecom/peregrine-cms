@@ -252,7 +252,7 @@
         })
       },
 
-      IframePreviewMode() {
+      iframePreviewMode() {
         this.iframe.doc.removeEventListener('click', this.onIframeClick)
         this.iframe.doc.removeEventListener('scroll', this.onIframeScroll)
         this.iframe.doc.removeEventListener('dragover', this.onDragOver)
