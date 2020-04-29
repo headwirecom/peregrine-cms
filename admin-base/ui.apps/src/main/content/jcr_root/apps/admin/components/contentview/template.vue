@@ -248,9 +248,8 @@
         this.iframe.body.setAttribute('contenteditable', 'true')
         const elements = this.iframe.body.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el) => {
-          const style = el.getAttribute('style')
           el.setAttribute('contenteditable', 'true')
-          el.setAttribute('style', `cursor: text !important;${style}`)
+          el.setAttribute('style', `cursor: text !important;${el.getAttribute('style')}`)
           el.addEventListener('input', this.onInlineEdit)
         })
       },
