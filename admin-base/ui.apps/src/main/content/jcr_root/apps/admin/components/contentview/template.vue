@@ -24,38 +24,32 @@
   -->
 <template>
   <div :class="`peregrine-content-view ${viewModeClass}`" @mouseout="leftOverlayArea">
-    <div id="editviewoverlay"
-         @dragover="onDragOver"
-         @drop.prevent="onDrop">
-      <div class="editview-container" ref="editviewContainer">
-        <div id="editable"
-             ref="editable"
-             :class="editable.class"
-             :style="editableStyles"
-             :draggable="enableEditableFeatures"
-             @dragstart="onDragStart"
-             @touchstart="onEditableTouchStart"
-             @touchend="onEditableTouchEnd">
-          <div v-if="enableEditableFeatures" class="editable-actions">
-            <ul>
-              <li class="waves-effect waves-light">
-                <a href="#" :title="$i18n('copy')" @click.stop.prevent="onCopy">
-                  <i class="material-icons">content_copy</i>
-                </a>
-              </li>
-              <li v-if="clipboard" class="waves-effect waves-light">
-                <a :title="$i18n('paste')" href="#" @click.stop.prevent="onPaste">
-                  <i class="material-icons">content_paste</i>
-                </a>
-              </li>
-              <li v-if="isSelected" class="waves-effect waves-light">
-                <a href="#" :title="$i18n('deleteComponent')" @click.stop.prevent="onDelete">
-                  <i class="material-icons">delete</i>
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
+    <div id="editable"
+         ref="editable"
+         :class="editable.class"
+         :style="editable.styles"
+         :draggable="enableEditableFeatures"
+         @dragstart="onDragStart"
+         @touchstart="onEditableTouchStart"
+         @touchend="onEditableTouchEnd">
+      <div v-if="enableEditableFeatures" class="editable-actions">
+        <ul>
+          <li class="waves-effect waves-light">
+            <a href="#" :title="$i18n('copy')" @click.stop.prevent="onCopy">
+              <i class="material-icons">content_copy</i>
+            </a>
+          </li>
+          <li v-if="clipboard" class="waves-effect waves-light">
+            <a :title="$i18n('paste')" href="#" @click.stop.prevent="onPaste">
+              <i class="material-icons">content_paste</i>
+            </a>
+          </li>
+          <li v-if="isSelected" class="waves-effect waves-light">
+            <a href="#" :title="$i18n('deleteComponent')" @click.stop.prevent="onDelete">
+              <i class="material-icons">delete</i>
+            </a>
+          </li>
+        </ul>
       </div>
     </div>
     <template>
@@ -68,7 +62,9 @@
           ref="editview"
           :src="pagePath"
           :data-per-mode="previewMode"
-          @load="onIframeLoaded"/>
+          @load="onIframeLoaded"
+          @dragover="onDragOver"
+          @drop.prevent="onDrop"/>
     </template>
   </div>
 </template>
@@ -81,7 +77,13 @@
         editable: {
           visible: false,
           class: null,
-          timer: null
+          timer: null,
+          styles: {
+            top: 0,
+            left: 0,
+            width: 0,
+            height: 0
+          }
         },
         selected: {
           el: null,
@@ -146,18 +148,6 @@
         }
         return !node.fromTemplate
       },
-      editableStyles() {
-        if (!this.selected.el) return {}
-
-        const box = this.getBoundingClientRect(this.selected.el)
-        return {
-          scrollTop: this.iframe.scrollTop, //this forces it to update on iframe scroll!
-          top: `${box.top}px`,
-          left: `${box.left}px`,
-          width: `${box.width}px`,
-          height: `${box.height}px`
-        }
-      },
       selectedModel() {
         const view = $perAdminApp.getView()
         const path = view.state.editor.path
@@ -191,14 +181,6 @@
         }
         document.addEventListener('keydown', this.onKeyDown)
         document.addEventListener('keyup', this.onKeyUp)
-
-        /* check if page has loaded */
-        const unwatch = $perAdminApp.getApp().$watch('pageView', pageView => {
-          if (pageView.status === 'loaded') {
-            this.updateOverlay()
-            unwatch() // we dont need to watch the pageView prop anymore
-          }
-        }, {deep: true})
       })
     },
     methods: {
@@ -207,6 +189,7 @@
           this.selected.el = el
           this.selected.path = el.getAttribute('data-per-path') || null
           this.editable.class = 'selected'
+          this.wrapEditableAround(el)
           $perAdminApp.action(this, 'showComponentEdit', this.selected.path).then(() => {
             const view = $perAdminApp.getView()
             const path = view.state.editor.path
@@ -262,6 +245,8 @@
         this.iframe.body = this.iframe.doc.querySelector('body')
         this.iframe.doc.addEventListener('click', this.onIframeClick)
         this.iframe.doc.addEventListener('scroll', this.onIframeScroll)
+        this.iframe.doc.addEventListener('dragover', this.onDragOver)
+        this.iframe.doc.addEventListener('drop', this.onDrop)
         this.iframe.body.setAttribute('style', 'cursor: default !important')
       },
 
@@ -285,9 +270,12 @@
         }
       },
 
-      updateEditRect() {
-        const targetBox = this.getBoundingClientRect(this.selected.el)
-        this.setEditableStyle(targetBox, 'selected')
+      wrapEditableAround(el) {
+        const {top, left, width, height} = this.getBoundingClientRect(el)
+        this.editable.styles.top = `${top}px`
+        this.editable.styles.left = `${left}px`
+        this.editable.styles.width = `${width}px`
+        this.editable.styles.height = `${height}px`
       },
 
       /* Window/Document methods =================
@@ -343,56 +331,6 @@
         }
       },
 
-      updateOverlay() {
-        this.$nextTick(() => {
-          /* ensure edit container height === iframe body height */
-          this.setEditContainerHeight()
-          /* update editable position if selected */
-          if (this.selected.el !== null) {
-            const targetBox = this.getBoundingClientRect(this.selected.el)
-            this.setEditableStyle(targetBox, 'selected')
-          }
-        })
-      },
-
-      /*  Overlay (editviewoverlay) methods ======
-      ============================================ */
-      onScrollOverlay(ev) {
-        this.scrollTop = ev.target.scrollTop
-        const editview = this.$refs.editview
-        if (this.isIOS) {
-          /* ios device, use scroll alternative */
-          this.$nextTick(() => {
-            editview.contentWindow.document.body.style.transform = `translateY(-${this.scrollTop}px)`
-          })
-        } else {
-          /* is not IOS device, scroll normally */
-          this.$nextTick(() => {
-            editview.contentWindow.scrollTo(0, this.scrollTop)
-          })
-        }
-      },
-
-      setEditContainerHeight() {
-        // make sure the iframe exists before we actually try to read it
-        if (this.$refs.editview) {
-          const iframeHeight = this.$refs.editview.contentWindow.document.body.offsetHeight
-          this.$refs.editviewContainer.style.height = iframeHeight + 'px'
-        }
-      },
-
-      getPosFromMouse(e) {
-        const elRect = this.getBoundingClientRect(this.$refs.editview)
-        if (e) {
-          const posX = e.clientX - elRect.left
-          const posY = e.clientY - elRect.top
-          return {x: posX, y: posY}
-        } else {
-          // fix for case where mouse event is not defined
-          return {x: -elRect.left, y: -elRect.top}
-        }
-      },
-
       getElementStyle(e, styleName) {
         let styleValue = '';
         if (document.defaultView && document.defaultView.getComputedStyle) {
@@ -441,28 +379,10 @@
         return ret
       },
 
-      getTargetEl(e) {
-        const pos = this.getPosFromMouse(e)
-        const editview = this.$refs.editview
-        let targetEl = this.findIn(editview.contentWindow.document.body, pos)
-
-        if (!targetEl) return
-
-        while (!targetEl.getAttribute('data-per-path')) {
-          targetEl = targetEl.parentElement
-          if (!targetEl) {
-            break
-          }
-        }
-        return targetEl
-      },
-
       leftOverlayArea(e) {
         if ($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
 
         // check if we only left the area into the overlay for the actions
-        const targetEl = this.getTargetEl(e)
-        if (targetEl) return
         this.removeEditOverlay()
       },
 
@@ -474,18 +394,17 @@
         }
       },
 
-      mouseMove(e) {
-        if (!e || this.isTouch) return
-        if ($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
-
-        let targetEl = this.getTargetEl(e)
-        if (targetEl) {
-          if (targetEl.getAttribute('data-per-droptarget')) {
-            targetEl = targetEl.parentElement
-          }
-          this.setSelectedEl(targetEl)
-          const targetBox = this.getBoundingClientRect(targetEl)
-          this.setEditableStyle(targetBox, 'selected')
+      getRelativeMousePosition(event) {
+        if (!event) return {x: -1, y: -1}
+        const componentEl = this.findComponentEl(event.target)
+        const offset = this.getBoundingClientRect(componentEl)
+        return {
+          width: offset.width,
+          x: event.pageX - offset.left,
+          xPercentage: (event.pageX - offset.left) / offset.width * 100,
+          height: offset.height,
+          y: event.pageY - offset.top - this.iframe.scrollTop,
+          yPercentage: (event.pageY - offset.top - this.iframe.scrollTop) / offset.height * 100
         }
       },
 
@@ -498,41 +417,37 @@
         ev.dataTransfer.setData('text', this.selected.path)
       },
 
-      onDragOver(ev) {
-        ev.preventDefault()
-        const targetEl = this.getTargetEl(ev)
-
+      onDragOver(event) {
+        event.preventDefault()
+        const targetEl = this.findComponentEl(event.target)
         if (targetEl) {
-          const pos = this.getPosFromMouse(ev)
-          const targetBox = this.getBoundingClientRect(targetEl)
+          this.wrapEditableAround(targetEl)
           const isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
-
           const isRoot = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page,
               targetEl.getAttribute('data-per-path')).fromTemplate === true
-
           if (isDropTarget) {
             const dropLocation = targetEl.getAttribute('data-per-location')
-            if (targetBox.bottom - pos.y < 10 && dropLocation === 'after' && !isRoot) {
+            if (dropLocation === 'after' && !isRoot) {
               this.dropPosition = 'after'
-              this.setEditableStyle(targetBox, 'drop-bottom')
-            } else if (pos.y - targetBox.top < 10 && dropLocation === 'before' && !isRoot) {
+              this.editable.class = 'drop-bottom'
+            } else if (dropLocation === 'before' && !isRoot) {
               this.dropPosition = 'before'
-              this.setEditableStyle(targetBox, 'drop-top')
+              this.editable.class = 'drop-top'
             } else if (dropLocation) {
               this.dropPosition = 'into-' + dropLocation
-              this.setEditableStyle(targetBox, 'selected')
+              this.editable.class = 'selected'
             } else {
               this.dropPosition = 'none'
               this.leftOverlayArea()
             }
           } else if (!isRoot) {
-            const y = pos.y - targetBox.top
-            if (y < targetBox.height / 2) {
+            const relativeMousePosition = this.getRelativeMousePosition(event)
+            if (relativeMousePosition.yPercentage <= 43.5) {
               this.dropPosition = 'before'
-              this.setEditableStyle(targetBox, 'drop-top')
+              this.editable.class = 'drop-top'
             } else {
               this.dropPosition = 'after'
-              this.setEditableStyle(targetBox, 'drop-bottom')
+              this.editable.class = 'drop-bottom'
             }
           } else {
             this.dropPosition = 'none'
@@ -545,6 +460,7 @@
       },
 
       onDrop(ev) {
+        console.log('onDrop')
         this.editable.class = null
         if (this.isTouch) {
           this.selected.draggable = false
@@ -602,31 +518,6 @@
         this.editable.class = 'draggable'
       },
 
-      setEditableStyle(targetBox, cls) {
-        const editable = this.$refs.editable
-        const editview = this.$refs.editview
-        const scrollY = editview ? this.iframe.scrollTop : 0
-        const scrollX = editview ? editview.contentWindow.scrollX : 0
-        if (editable) {
-          editable.style.top = (targetBox.top + scrollY + (this.isIOS ? this.scrollTop : 0)) + 'px'
-          editable.style.left = (targetBox.left + scrollX) + 'px'
-          editable.style.width = targetBox.width + 'px'
-          editable.style.height = targetBox.height + 'px'
-          if (this.selected.el) {
-            const path = this.selected.path
-            const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page, path)
-            if (node && node.fromTemplate) {
-              editable.style['border-color'] = 'orange'
-            } else {
-              editable.style['border-color'] = ''
-            }
-          } else {
-            editable.style['border-color'] = ''
-          }
-        }
-        this.editable.class = cls
-      },
-
       updateEditablePos(top) {
         this.$refs.editable.style.top = top + 'px'
       },
@@ -676,13 +567,3 @@
     }
   }
 </script>
-
-<style>
-  #editviewoverlay {
-    pointer-events: none;
-  }
-
-  #editviewoverlay #editable .editable-actions {
-    pointer-events: all;
-  }
-</style>
