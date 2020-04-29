@@ -151,12 +151,17 @@
 
         const box = this.getBoundingClientRect(this.selected.el)
         return {
-          scrollTop: this.iframe.scrollTop, //this forces it to update on scroll!
+          scrollTop: this.iframe.scrollTop, //this forces it to update on iframe scroll!
           top: `${box.top}px`,
           left: `${box.left}px`,
           width: `${box.width}px`,
           height: `${box.height}px`
         }
+      },
+      selectedModel() {
+        const view = $perAdminApp.getView()
+        const path = view.state.editor.path
+        return $perAdminApp.findNodeFromPath(view.pageView.page, path)
       }
     },
     watch: {
@@ -201,8 +206,25 @@
         if (el) {
           this.selected.el = el
           this.selected.path = el.getAttribute('data-per-path') || null
-          $perAdminApp.action(this, 'showComponentEdit', this.selected.path)
           this.editable.class = 'selected'
+          $perAdminApp.action(this, 'showComponentEdit', this.selected.path).then(() => {
+            const view = $perAdminApp.getView()
+            const path = view.state.editor.path
+            const model = $perAdminApp.findNodeFromPath(view.pageView.page, path)
+            const elements = []
+            const queried = this.selected.el.querySelectorAll('[data-per-model-key]')
+            elements.push.apply(elements, queried)
+            elements.push.apply(elements, [this.selected.el])
+            elements.forEach((element) => {
+              const modelKey = element.getAttribute('data-per-model-key')
+              const style = element.getAttribute('style')
+              element.setAttribute('contenteditable', true)
+              element.setAttribute('style', `cursor: text !important;${style}`)
+              element.addEventListener('input', (event) => {
+                model[modelKey] = event.target.innerHTML
+              })
+            })
+          })
         } else {
           this.selected.el = null
           this.selected.path = null
@@ -241,10 +263,6 @@
         this.iframe.doc.addEventListener('click', this.onIframeClick)
         this.iframe.doc.addEventListener('scroll', this.onIframeScroll)
         this.iframe.body.setAttribute('style', 'cursor: default !important')
-        //this.setIframeScrollState(this.viewMode)
-        //iframeDoc.body.style.position = 'relative'
-        //const heightChangeObserver = new ResizeObserver(this.updateOverlay);
-        //heightChangeObserver.observe(iframeDoc.body);
       },
 
       onIframeClick(ev) {
@@ -662,5 +680,9 @@
 <style>
   #editviewoverlay {
     pointer-events: none;
+  }
+
+  #editviewoverlay #editable .editable-actions {
+    pointer-events: all;
   }
 </style>

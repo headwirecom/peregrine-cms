@@ -128,7 +128,9 @@
             showComponentEdit(me, target) {
               // only trigger state action if another component is selected
               if($perAdminApp.getNodeFromView('/state/editor/path') !== target) {
-                $perAdminApp.stateAction('editComponent', target)
+                return $perAdminApp.stateAction('editComponent', target)
+              } else {
+                  return new Promise((resolve) => resolve)
               }
             },
 
