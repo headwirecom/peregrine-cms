@@ -2,6 +2,7 @@ package com.peregrine.admin.slingtests;
 
 import com.google.common.collect.Iterators;
 import com.peregrine.admin.models.PageModel;
+import com.peregrine.admin.resource.ReferenceListerService;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -21,6 +22,7 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
+import javax.jcr.version.VersionIterator;
 import javax.jcr.version.VersionManager;
 import static org.junit.Assert.*;
 
@@ -38,17 +40,21 @@ public class VersionsJTest {
     private Session jcrSession;
     public static final String EXAMPLE_SITE_ROOT = "/content/example/";
     public static final String EXAMPLE_PAGE = "pages/index";
+    public static final String EXAMPLE_DELETE = "pages/about";
     public static final String EXAMPLE_ASSET = "assets/images/peregrine-logo.png";
     // page objects
     private Resource testPageRes;
     private PageModel testPage;
     private Node pageNode;
+    private Resource deletedRes;
+    private Node deletedNode;
     // asset objects
     private Resource testAssetRes;
     private Node assetNode;
     // version managers
     private VersionManager vmPage;
     private VersionManager vmAsset;
+
     @Before
     public void setUp() throws Exception {
         resourceResolver = resolverFactory.getAdministrativeResourceResolver(null);
@@ -63,6 +69,9 @@ public class VersionsJTest {
         // version managers
         vmPage = pageNode.getSession().getWorkspace().getVersionManager();
         vmAsset = assetNode.getSession().getWorkspace().getVersionManager();
+
+        deletedRes = resourceResolver.resolve(EXAMPLE_SITE_ROOT+EXAMPLE_DELETE);
+        deletedNode = deletedRes.adaptTo(Node.class);
     }
 
     @Test
@@ -137,7 +146,6 @@ public class VersionsJTest {
 //            First Version
             Version version = resourceManagement.createVersion(this.resourceResolver, testPageRes.getPath());
             assertNotNull(version);
-            VersionHistory vhPage = vmPage.getVersionHistory(pageNode.getPath());
             assertTrue(vmPage.isCheckedOut(testPage.getPath()));
 //            Second Version
             Version version2 = resourceManagement.createVersion(this.resourceResolver, testPageRes.getPath());
@@ -178,33 +186,37 @@ public class VersionsJTest {
         }
     }
 
-//    @Test
-//    public void restoreDeletedPage() {
-//        try {
-////      Create a Version
-//            Version version = resourceManagement.createVersion(this.resourceResolver, testPageRes.getPath());
-//            assertNotNull(version);
-//            // record the resource path and the frozenNode path of it's version
-//            String resourcePath = testPageRes.getPath();
-//            String versionPath = version.getPath();
-////      Delete the page
-//            resourceResolver.delete(testPageRes);
-//            testPageRes = null;
-//            assertNull(resourceResolver.getResource(resourcePath));
-////      Restore at the recorded version
-//            Resource restoredResource = resourceManagement.restoreVersion(resourceResolver, resourcePath, versionPath, true);
-//            assertNotNull(restoredResource);
-//            assertNotNull(resourceResolver.getResource(resourcePath));
-//            assertEquals("1.0" , vmPage.getBaseVersion(restoredResource.getPath()).getName());
+    @Test
+    public void restoreDeletedPage() {
+        try {
+//      Create a Version
+            Version version = resourceManagement.createVersion(this.resourceResolver, deletedNode.getPath());
+            VersionHistory vhPage = vmPage.getVersionHistory(deletedNode.getPath());
+            assertEquals(2, Iterators.size(vhPage.getAllLinearVersions()));
+            assertNotNull(version);
+
+            String versionPath = version.getPath();
+            String resourcePath = deletedNode.getPath();
+//      Delete the page
+            resourceResolver.delete(deletedRes);
+            deletedRes = resourceResolver.getResource(resourcePath);
+            assertNull(deletedRes);
+            resourceResolver.commit();
+//      Restore at the recorded version
+            Resource restoredResource = resourceManagement.restoreVersion(resourceResolver, resourcePath, versionPath, true);
+            assertNotNull(restoredResource);
+            assertNotNull(resourceResolver.getResource(resourcePath));
+            assertEquals("1.0" , vmPage.getBaseVersion(restoredResource.getPath()).getName());
 //            // check that the test page is not left in a "checked out" or locked state
-//            assertTrue(vmPage.isCheckedOut(testPage.getPath()));
-//        } catch (Exception e) {
-//            fail("could not create version");
-//        }
-//    }
+            assertTrue(vmPage.isCheckedOut(testPage.getPath()));
+        } catch (Exception e) {
+            fail("could not create version");
+        }
+    }
 
     @After
     public void cleanUp() {
+        resourceResolver.refresh();
         try {
 //            Clean Up Test Page Versions
             for (NodeType nt : pageNode.getMixinNodeTypes()){
@@ -214,6 +226,13 @@ public class VersionsJTest {
                     resourceResolver.commit();
                 }
             }
+//            for (NodeType nt : deletedNode.getMixinNodeTypes()){
+//                if (nt.isNodeType("mix:versionable")) {
+//                    vmPage.checkout(testPage.getPath());
+//                    pageNode.removeMixin("mix:versionable");
+//                    resourceResolver.commit();
+//                }
+//            }
         } catch (RepositoryException e) {
             logger.error("test resources were not versionable", e);
         } catch (PersistenceException e) {

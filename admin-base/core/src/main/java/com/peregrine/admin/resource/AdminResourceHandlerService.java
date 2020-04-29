@@ -476,6 +476,7 @@ public class AdminResourceHandlerService
     @Override
     public Resource restoreVersion(ResourceResolver resourceResolver, String path, String frozenNodepath, boolean force)
             throws ManagementException {
+        resourceResolver.refresh();
         Session jcrSession = resourceResolver.adaptTo(Session.class);
         try {
             Version restoreVersion = (Version) jcrSession.getNode(frozenNodepath);
