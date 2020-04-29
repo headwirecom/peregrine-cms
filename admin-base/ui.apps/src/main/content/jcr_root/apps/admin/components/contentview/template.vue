@@ -251,6 +251,7 @@
           el.setAttribute('contenteditable', 'true')
           el.setAttribute('style', `cursor: text !important;${el.getAttribute('style')}`)
           el.addEventListener('input', this.onInlineEdit)
+          el.addEventListener('focus', this.onInlineFocus)
         })
       },
 
@@ -278,6 +279,10 @@
           parentProp = parentProp[dataInline.pop()]
         }
         parentProp[dataInline.pop()] = event.target.innerHTML
+      },
+
+      onInlineFocus(event) {
+        this.setSelectedEl(this.findComponentEl(event.target))
       },
 
       onIframeClick(ev) {
