@@ -71,6 +71,7 @@
 
 <script>
   import {Attribute} from '../../../../../../js/constants'
+  import {set} from '../../../../../../js/utils'
 
   export default {
     props: ['model'],
@@ -114,6 +115,9 @@
       }
     },
     computed: {
+      view() {
+        return $perAdminApp.getView()
+      },
       isSelected() {
         return this.selected.el && this.selected.path && this.selected.path !== '/jcr:content'
       },
@@ -138,24 +142,19 @@
       viewModeClass() {
         return this.viewMode
       },
-      pageView() {
-        return $perAdminApp.getView().pageView
-      },
       enableEditableFeatures() {
         const path = this.selected.path
         if (path === undefined || path === null) {
           return false
         }
-        const node = $perAdminApp.findNodeFromPath(this.pageView.page, path)
+        const node = $perAdminApp.findNodeFromPath(this.view.pageView.page, path)
         if (!node) {
           return false
         }
         return !node.fromTemplate
       },
       selectedModel() {
-        const view = $perAdminApp.getView()
-        const path = view.state.editor.path
-        return $perAdminApp.findNodeFromPath(view.pageView.page, path)
+        return $perAdminApp.findNodeFromPath(this.view.pageView.page, this.view.state.editor.path)
       }
     },
     watch: {
@@ -191,14 +190,16 @@
       })
     },
     methods: {
-      setSelectedEl(el) {
+      setSelectedEl(el, inline = null) {
         if (el) {
           this.selected.el = el
           this.selected.path = el.getAttribute(Attribute.PATH) || null
           this.editable.class = 'selected'
           this.wrapEditableAround(el)
           $perAdminApp.action(this, 'showComponentEdit', this.selected.path).then(() => {
-            //TODO: scroll relevant text-area into view!
+            if (inline) {
+              set(this.view, '/state/editor/inline', inline)
+            }
           })
         } else {
           this.selected.el = null
@@ -251,6 +252,7 @@
           el.setAttribute('contenteditable', 'true')
           el.setAttribute('style', `cursor: text !important;${el.getAttribute('style')}`)
           el.addEventListener('input', this.onInlineEdit)
+          el.addEventListener('blur', this.onInlineBlur)
           el.addEventListener('focus', this.onInlineFocus)
         })
       },
@@ -271,18 +273,23 @@
       },
 
       onInlineEdit(event) {
-        const dataInline = event.target.getAttribute(Attribute.INLINE).split('.')
+        //TODO: do we still need this? can we still make use of this?
+      },
+
+      onInlineBlur(event) {
+        const dataInline = event.target.getAttribute(Attribute.INLINE).split('.').slice(1)
         dataInline.reverse()
-        dataInline.pop() //remove obsolete "model" at the beginning
         let parentProp = this.selectedModel
         while (dataInline.length > 1) {
           parentProp = parentProp[dataInline.pop()]
         }
         parentProp[dataInline.pop()] = event.target.innerHTML
+        set(this.view, '/state/editor/inline', null)
       },
 
       onInlineFocus(event) {
-        this.setSelectedEl(this.findComponentEl(event.target))
+        const dataInline = event.target.getAttribute(Attribute.INLINE).split('.').slice(1)
+        this.setSelectedEl(this.findComponentEl(event.target), dataInline.join('.'))
       },
 
       onIframeClick(ev) {
@@ -297,7 +304,8 @@
       },
 
       updateSelectedComponent() {
-        const node = $perAdminApp.findNodeFromPath(this.pageView.page, this.iframe.clicked.path)
+        const node = $perAdminApp.findNodeFromPath(this.view.pageView.page,
+            this.iframe.clicked.path)
         if (node.fromTemplate) {
           $perAdminApp.notifyUser(this.$i18n('templateComponent'),
               this.$i18n('fromTemplateNotifyMsg'), {
@@ -390,7 +398,7 @@
         if (targetEl) {
           this.wrapEditableAround(targetEl)
           const isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
-          const isRoot = $perAdminApp.findNodeFromPath($perAdminApp.getView().pageView.page,
+          const isRoot = $perAdminApp.findNodeFromPath(this.view.pageView.page,
               targetEl.getAttribute(Attribute.PATH)).fromTemplate === true
           if (isDropTarget) {
             const dropLocation = targetEl.getAttribute('data-per-location')
@@ -441,7 +449,7 @@
           event.dataTransfer.clearData('text')
           return false
         }
-        const view = $perAdminApp.getView()
+        const view = this.view
         const payload = {
           pagePath: view.pageView.path,
           path: targetPath,
@@ -453,7 +461,7 @@
           addOrMove = 'addComponentToPath';
         } else {
           addOrMove = 'moveComponentToPath';
-          const targetNode = $perAdminApp.findNodeFromPath(this.pageView.page, targetPath)
+          const targetNode = $perAdminApp.findNodeFromPath(this.view.pageView.page, targetPath)
           if (!targetNode || targetNode.fromTemplate) {
             $perAdminApp.notifyUser('template component',
                 'You cannot drag a component into a template section', {
@@ -489,7 +497,7 @@
 
       onDelete(e) {
         const targetEl = this.selected.el
-        const view = $perAdminApp.getView()
+        const view = this.view
         const pagePath = view.pageView.path
         const payload = {
           pagePath: view.pageView.path,
@@ -505,7 +513,7 @@
       onCopy(e) {
         const targetEl = this.selected.el
         this.clipboard = $perAdminApp.findNodeFromPath(
-            $perAdminApp.getView().pageView.page,
+            this.view.pageView.page,
             targetEl.getAttribute(Attribute.PATH)
         )
       },
@@ -513,7 +521,7 @@
       onPaste(e) {
         const targetEl = this.selected.el
         const nodeFromClipboard = this.clipboard
-        const view = $perAdminApp.getView()
+        const view = this.view
         const isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
         let dropPosition
         isDropTarget ? dropPosition = 'into' : dropPosition = 'after'

@@ -130,7 +130,9 @@
               if($perAdminApp.getNodeFromView('/state/editor/path') !== target) {
                 return $perAdminApp.stateAction('editComponent', target)
               } else {
-                  return new Promise((resolve) => resolve)
+                  return new Promise((resolve) => {
+                      resolve()
+                  })
               }
             },
 

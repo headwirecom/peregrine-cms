@@ -28,9 +28,14 @@
             <template v-if="schema !== undefined && dataModel !== undefined">
                 <span v-if="title" class="panel-title">{{title}}</span>
                 <div v-if="!hasSchema">this component does not have a dialog defined</div>
-            <vue-form-generator :key="dataModel.path" v-bind:schema="schema" v-bind:model="dataModel" v-bind:options="formOptions">
-                </vue-form-generator>
+            <vue-form-generator
+                :key="dataModel.path"
+                ref="formGenerator"
+                v-bind:schema="schema"
+                v-bind:model="dataModel"
+                v-bind:options="formOptions"/>
             </template>
+            <div style="display: flex; width: 100%; height: 1000000000px;"></div>
         </div>
         <div class="editor-panel-buttons">
             <button v-if="!isRootComponent" class="waves-effect waves-light btn btn-raised"
@@ -50,7 +55,9 @@
 </template>
 
 <script>
-    export default {
+  import {set} from '../../../../../../js/utils'
+
+  export default {
       props: ['model'],
         updated: function() {
             let stateTools = $perAdminApp.getNodeFromViewWithDefault("/state/tools", {});
@@ -59,12 +66,6 @@
                 this.hideGroups()
             }
         },
-      mounted(){
-        this.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints
-        if(this.schema && this.schema.hasOwnProperty('groups')) {
-            this.hideGroups()
-        }
-      },
       data() {
         return {
           isTouch: false,
@@ -76,6 +77,9 @@
         }
       },
       computed: {
+          view() {
+              return $perAdminApp.getView()
+          },
         schema: function() {
             var view = $perAdminApp.getView()
             var component = view.state.editor.component
@@ -107,6 +111,18 @@
               }
           }
       },
+        watch: {
+          'view.state.editor.inline'(val) {
+              if (!val) return
+              this.focusFieldByModel(val)
+          }
+        },
+        mounted(){
+            this.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints
+            if(this.schema && this.schema.hasOwnProperty('groups')) {
+                this.hideGroups()
+            }
+        },
       methods: {
         onOk(e) {
             let data = JSON.parse(JSON.stringify(this.dataModel));
@@ -184,6 +200,42 @@
                 if(i === 0) $group.addClass('active');
                 $group.addClass('vfg-group');
             })
+        },
+        getFieldAndIndexByModel(schema, model) {
+          let field
+          let index = -1
+          schema.fields.some((f, i) => {
+            if (f.model === model) {
+              field = f
+              index = i
+            }
+          })
+          return {field, index}
+        },
+        focusFieldByModel(model) {
+          if (!model) return
+
+          model = model.split('.')
+          model.reverse()
+          const {field, index} = this.getFieldAndIndexByModel(this.schema, model.pop())
+
+          if (['input', 'texteditor', 'material-textarea'].indexOf(field.type) >= 0) {
+            this.$refs.formGenerator.$children[index].$el.scrollIntoView()
+          } else if (field.type === 'collection') {
+            this.focusCollectionField(model, index)
+          } else {
+            console.warn('Unsupported field type: ', field.type)
+          }
+          set(this.view, '/state/editor/inline', null)
+        },
+        focusCollectionField(model, index) {
+          const fieldCollection = this.$refs.formGenerator.$children[index].$children[0]
+          fieldCollection.activeItem = parseInt(model.pop())
+          this.$nextTick(() => {
+            const formGen = fieldCollection.$children[0]
+            const {field, index} = this.getFieldAndIndexByModel(formGen.schema, model.pop())
+            formGen.$children[index].$el.scrollIntoView()
+          })
         }
       }
 //      ,
