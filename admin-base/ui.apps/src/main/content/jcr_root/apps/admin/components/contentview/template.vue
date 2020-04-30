@@ -237,6 +237,16 @@
         this.iframe.html = this.iframe.doc.querySelector('html')
         this.iframe.body = this.iframe.doc.querySelector('body')
         this.iframe.doc.querySelector('#peregrine-app').setAttribute('contenteditable', 'false')
+        const elements = this.iframe.body.querySelectorAll(`[${Attribute.INLINE}]`)
+        elements.forEach((el) => {
+          const clone = el.cloneNode(true)
+          clone.setAttribute('contenteditable', 'true')
+          clone.style.cursor = 'text'
+          clone.classList.add('inline-edit-clone')
+          clone.addEventListener('input', this.onInlineEdit)
+          clone.addEventListener('focus', this.onInlineFocus)
+          el.parentNode.insertBefore(clone, el)
+        })
         this.iframeEditMode()
       },
 
@@ -249,11 +259,7 @@
         this.iframe.body.setAttribute('contenteditable', 'true')
         const elements = this.iframe.body.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el) => {
-          el.setAttribute('contenteditable', 'true')
-          el.setAttribute('style', `cursor: text !important;${el.getAttribute('style')}`)
-          el.addEventListener('input', this.onInlineEdit)
-          el.addEventListener('blur', this.onInlineBlur)
-          el.addEventListener('focus', this.onInlineFocus)
+          el.style.display = el.classList.contains('inline-edit-clone') ? '' : 'none'
         })
       },
 
@@ -266,25 +272,19 @@
         this.iframe.body.setAttribute('contenteditable', 'false')
         const elements = this.iframe.body.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el) => {
-          el.setAttribute('contenteditable', 'false')
-          el.style.cursor = ''
-          el.removeEventListener('input', this.onInlineEdit)
+          el.style.display = el.classList.contains('inline-edit-clone') ? 'none' : ''
         })
       },
 
       onInlineEdit(event) {
-        //TODO: do we still need this? can we still make use of this?
-      },
-
-      onInlineBlur(event) {
-        const dataInline = event.target.getAttribute(Attribute.INLINE).split('.').slice(1)
+        const el = event.target
+        const dataInline = el.getAttribute(Attribute.INLINE).split('.').slice(1)
         dataInline.reverse()
         let parentProp = this.selectedModel
         while (dataInline.length > 1) {
           parentProp = parentProp[dataInline.pop()]
         }
-        parentProp[dataInline.pop()] = event.target.innerHTML
-        set(this.view, '/state/editor/inline', null)
+        parentProp[dataInline.pop()] = el.innerHTML
       },
 
       onInlineFocus(event) {
