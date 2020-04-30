@@ -155,7 +155,11 @@
         return !node.fromTemplate
       },
       selectedModel() {
-        return $perAdminApp.findNodeFromPath(this.view.pageView.page, this.view.state.editor.path)
+        if (this.view.state.editor && this.view.state.editor.path) {
+          return $perAdminApp.findNodeFromPath(this.view.pageView.page, this.view.state.editor.path)
+        } else {
+          return null
+        }
       }
     },
     watch: {
