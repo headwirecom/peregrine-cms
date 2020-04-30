@@ -1,6 +1,6 @@
 /*-
  * #%L
- * peregrine default node types - Core
+ * admin base - UI Apps
  * %%
  * Copyright (C) 2017 headwire inc.
  * %%
@@ -22,14 +22,17 @@
  * under the License.
  * #L%
  */
-<'per'='http://www.peregrine-cms.com/jcr/cms/1.0'>
-<'sling'='http://sling.apache.org/jcr/sling/1.0'>
+import { LoggerFactory } from '../logger'
+let log = LoggerFactory.logger('tenantSetupReplication').setLevelDebug()
 
-[per:Asset] > nt:hierarchyNode, mix:created, mix:lastModified, sling:Resource
-  primaryitem jcr:content
-  + jcr:content (per:AssetContent) = per:AssetContent
-  + * (nt:base) = nt:base version
+export default function(me, target) {
 
-[per:AssetContent] > nt:unstructured, per:Replication
-  orderable
-  + renditions (nt:folder)
+    log.fine(target)
+
+    return new Promise( (resolve, reject) => {
+        me.getApi().tenantSetupReplication(target).then( () => {
+            resolve()
+        })
+    })
+
+}

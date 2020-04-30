@@ -183,7 +183,7 @@
                 if (this.formmodel.colorPalette && this.formmodel.colorPalette.length > 0) {
                     payload.colorPalette = this.formmodel.colorPalette
                 }
-                $perAdminApp.stateAction('createSite', payload)
+                $perAdminApp.stateAction('createTenant', payload)
             },
             validateTabOne: function(me) {
                 me.formErrors.unselectedThemeError = ('' === '' + me.formmodel.templatePath);

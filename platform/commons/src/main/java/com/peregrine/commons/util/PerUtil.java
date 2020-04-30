@@ -516,26 +516,6 @@ public class PerUtil {
             }
 
     /**
-     * Tries to obtain the Service Resource Resolver if the user of the given
-     * resource is not admin
-     * @param resource Resource to check for the user
-     * @param resolverFactory Resource Resolver Factory which cannot be null
-     * @param serviceName Name of the service to find its resource resolver
-     * @return Resource Resolver either for Admin or for the given Service
-     * @throws LoginException If the resolver factory could not obtain the Service Resource Resolver
-     * @throws IllegalArgumentException If the resource resolver is null or the service name is empty
-     */
-    public static ResourceResolver loginService(final Resource resource, final ResourceResolverFactory resolverFactory, final String serviceName) throws LoginException {
-        ResourceResolver answer;
-        if(ADMIN_USER.equals(resource.getResourceResolver().getUserID())) {
-            answer = resource.getResourceResolver();
-        } else {
-            answer = loginService(resolverFactory, serviceName);
-        }
-        return answer;
-    }
-
-    /**
      * Tries to obtain the Service Resource Resolver
      * @param resolverFactory Resource Resolver Factory which cannot be null
      * @param serviceName Name of the service to find its resource resolver

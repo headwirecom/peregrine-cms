@@ -25,14 +25,18 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_CREATION_SITE;
+import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_CREATION_TENANT;
+import static com.peregrine.admin.util.AdminConstants.GROUP_NAME_SUFFIX;
 import static com.peregrine.admin.util.AdminConstants.PEREGRINE_SERVICE_NAME;
+import static com.peregrine.admin.util.AdminConstants.USER_NAME_SUFFIX;
+import static com.peregrine.commons.util.PerConstants.ADMIN_USER;
 import static com.peregrine.commons.util.PerConstants.ALL_TENANTS_GROUP_NAME;
 import static com.peregrine.commons.util.PerConstants.COLOR_PALETTE;
 import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
 import static com.peregrine.commons.util.PerConstants.CREATED;
-import static com.peregrine.commons.util.PerConstants.FROM_SITE_NAME;
+import static com.peregrine.commons.util.PerConstants.FROM_TENANT_NAME;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.SITE;
@@ -44,7 +48,8 @@ import static com.peregrine.commons.util.PerConstants.TENANT;
 import static com.peregrine.commons.util.PerConstants.TENANT_GROUP_HOME;
 import static com.peregrine.commons.util.PerConstants.TENANT_USER_HOME;
 import static com.peregrine.commons.util.PerConstants.TENANT_USER_PWD;
-import static com.peregrine.commons.util.PerConstants.TO_SITE_NAME;
+import static com.peregrine.commons.util.PerConstants.TO_TENANT_NAME;
+import static com.peregrine.commons.util.PerConstants.TO_TENANT_TITLE;
 import static com.peregrine.commons.util.PerConstants.TYPE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -101,15 +106,16 @@ import org.osgi.service.component.annotations.Reference;
         SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Create Site servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
         SLING_SERVLET_METHODS + EQUALS + POST,
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_CREATION_SITE
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_CREATION_TENANT
     }
 )
 @SuppressWarnings("serial")
-public class CreateSiteServlet extends AbstractBaseServlet {
+public class CreateTenantServlet extends AbstractBaseServlet {
 
     private static final String FAILED_TO_CREATE_SITE = "Failed to create site";
     private static final String FAILED_TO_GET_SERVICE_RESOLVER = "Unable to get Peregrine Service Resolver";
     private static final String FAILED_TO_CREATE_TENANT_SECURITY = "Unable to create Tenant Permissions";
+    private static final String DISABLE_USER_REASON = "Need to set a password first";
 
     @Reference
     AdminResourceHandler resourceManagement;
@@ -119,25 +125,32 @@ public class CreateSiteServlet extends AbstractBaseServlet {
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        String fromSite = request.getParameter(FROM_SITE_NAME);
-        String toSite = request.getParameter(TO_SITE_NAME);
+        String fromTenant = request.getParameter(FROM_TENANT_NAME);
+        String toTenant = request.getParameter(TO_TENANT_NAME);
+        String title = request.getParameter(TO_TENANT_TITLE);
+        boolean isAdmin = request.isAdmin();
+        ResourceResolver resourceResolver = null;
         try {
-            logger.trace("Copy Site form: '{}' to: '{}'", fromSite, toSite);
-            Resource resource = request.getResource();
-            ResourceResolver resourceResolver = loginService(resource, resourceResolverFactory, PEREGRINE_SERVICE_NAME);
+            logger.trace("Copy Site form: '{}' to: '{}'", fromTenant, toTenant);
+            resourceResolver = isAdmin ?
+                request.getResourceResolver() :
+                loginService(resourceResolverFactory, PEREGRINE_SERVICE_NAME);
             Session adminSession = resourceResolver.adaptTo(Session.class);
             UserManager userManager = AccessControlUtil.getUserManager(adminSession);
             Resource site = resourceManagement
-                .copySite(resourceResolver, CONTENT_ROOT, fromSite, toSite);
+                .copyTenant(resourceResolver, CONTENT_ROOT, fromTenant, toTenant);
+            if(isNotEmpty(title)) {
+                ModifiableValueMap properties = site.adaptTo(ModifiableValueMap.class);
+                properties.put(JCR_TITLE, title);
+            }
             // Check if Admin user and if not get password
             String userName = request.getRequest().getUserPrincipal().getName();
-            boolean isAdmin = "admin".equals(userName);
             // Get User Password
-            String userPwd = isAdmin ? "" : request.getParameter(TENANT_USER_PWD);
+            String userPwd = request.getParameter(TENANT_USER_PWD);
             boolean isPwdProvided = isNotEmpty(userPwd);
             // Create Tenant Group
-            String tenantGroupId = toSite + "_group";
-            String tenantUserId = toSite + "_user";
+            String tenantGroupId = toTenant + GROUP_NAME_SUFFIX;
+            String tenantUserId = toTenant + USER_NAME_SUFFIX;
             Group tenantGroup;
             try {
                 tenantGroup = userManager.createGroup(
@@ -163,13 +176,8 @@ public class CreateSiteServlet extends AbstractBaseServlet {
             }
             // Make Tenant Group member of the All Tenants Group
             allTenantsGroup.addMember(tenantGroup);
-            if(!isAdmin) {
-                // We also need to add the current non-admin user to the group so that new site is visible for them
-                Authorizable authorizable = userManager.getAuthorizable(userName);
-                if(authorizable != null) {
-                    tenantGroup.addMember(authorizable);
-                }
-                // Create Tenant User as this the creator is not Admin
+            if(isAdmin) {
+                // Create Tenant User as this the creator is Admin
                 User tenantUser;
                 try {
                     tenantUser = userManager.createUser(
@@ -179,7 +187,7 @@ public class CreateSiteServlet extends AbstractBaseServlet {
                         TENANT_USER_HOME
                     );
                     if(tenantUser != null && !isPwdProvided) {
-                        tenantUser.disable("Need a password first");
+                        tenantUser.disable(DISABLE_USER_REASON);
                     }
                 } catch (AuthorizableExistsException e) {
                     tenantUser = (User) userManager.getAuthorizable(tenantUserId);
@@ -191,6 +199,12 @@ public class CreateSiteServlet extends AbstractBaseServlet {
                         .setErrorMessage(FAILED_TO_CREATE_TENANT_SECURITY);
                 }
                 tenantGroup.addMember(tenantUser);
+            } else {
+                // We also need to add the current non-admin user to the group so that new site is visible for them
+                Authorizable authorizable = userManager.getAuthorizable(userName);
+                if(authorizable != null) {
+                    tenantGroup.addMember(authorizable);
+                }
             }
             // Finally set permissions on site
             try {
@@ -204,16 +218,18 @@ public class CreateSiteServlet extends AbstractBaseServlet {
             } catch(RuntimeException e) {
                 logger.warn("Setting Site Permissions failed", e);
             }
-            request.getResourceResolver().commit();
-            if (fromSite.equals("themecleanflex")) {
-                setColorPalette(resourceResolver, request.getParameter(COLOR_PALETTE), fromSite, toSite);
+            resourceResolver.commit();
+            String colorPalette = request.getParameter(COLOR_PALETTE);
+            if (isNotEmpty(colorPalette)) {
+                setColorPalette(resourceResolver, request.getParameter(COLOR_PALETTE), fromTenant, toTenant);
+                resourceResolver.commit();
             }
             return new JsonResponse()
                 .writeAttribute(TYPE, SITE)
                 .writeAttribute(STATUS, CREATED)
-                .writeAttribute(NAME, toSite)
+                .writeAttribute(NAME, toTenant)
                 .writeAttribute(PATH, site.getPath())
-                .writeAttribute(SOURCE_PATH, CONTENT_ROOT + SLASH + fromSite);
+                .writeAttribute(SOURCE_PATH, CONTENT_ROOT + SLASH + fromTenant);
         } catch(ManagementException e) {
             return new ErrorResponse()
                 .setHttpErrorCode(SC_BAD_REQUEST)
@@ -229,13 +245,17 @@ public class CreateSiteServlet extends AbstractBaseServlet {
                 .setHttpErrorCode(SC_BAD_REQUEST)
                 .setErrorMessage(FAILED_TO_CREATE_TENANT_SECURITY)
                 .setException(e);
+        } finally {
+            if(!isAdmin && resourceResolver != null) {
+                resourceResolver.close();
+            }
         }
     }
 
-    private void setColorPalette(ResourceResolver resourceResolver, String colorPalette, String fromSite, String toSite) throws PersistenceException {
+    private void setColorPalette(ResourceResolver resourceResolver, String colorPalette, String fromTenant, String toTenant) throws PersistenceException {
         final Resource templateContent = getResource(
             resourceResolver,
-            TEMPLATES_ROOT.replace(TENANT, toSite)
+            TEMPLATES_ROOT.replace(TENANT, toTenant)
         ).getChild(JCR_CONTENT);
 
         if(templateContent == null) {
@@ -250,14 +270,13 @@ public class CreateSiteServlet extends AbstractBaseServlet {
             String[] cssReplacements = Arrays.stream(siteCssProperty)
                 .map(css -> {
                     if (css.contains("/palettes/")) {
-                        return colorPalette.replace(fromSite, toSite);
+                        return colorPalette.replace(fromTenant, toTenant);
                     } else {
                         return css;
                     }
                 }).toArray(String[]::new);
             ModifiableValueMap modifiableProperties = getModifiableProperties(templateContent);
             modifiableProperties.put("siteCSS", cssReplacements);
-            resourceResolver.commit();
         } else {
             logger.error("No siteCSS property found for copied template");
         }

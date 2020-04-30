@@ -1,0 +1,5 @@
+{
+    "jcr:primaryType": "sling:OsgiConfig",
+    "user.default": "",
+    "user.mapping": ["com.peregrine-cms.base.core:sitemaps=sitemaps-cache"]
+}

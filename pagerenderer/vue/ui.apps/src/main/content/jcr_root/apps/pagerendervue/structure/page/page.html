@@ -16,7 +16,7 @@
     <meta data-sly-test="${resource.ogImageAlt}" property="og:image:alt" content="${resource.ogImageAlt}"/>
     <meta data-sly-test="${resource.ogUrl}" property="og:url" content="${resource.ogUrl}"/>
 
-    <title>${resource.jcr:title}</title>
+    <title>${resource.jcr:title} | ${helper.model.brand}</title>
     <sly data-sly-list="${helper.model.prefetchDNS}"><link rel="dns-prefetch" href="${item}"></sly>
 
     <link rel="manifest" href="${helper.siteRootPath}/manifest.json">

@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
 
+import static com.peregrine.commons.util.PerConstants.ADMIN_USER;
 import static com.peregrine.commons.util.PerConstants.JSON;
 import static com.peregrine.commons.util.PerConstants.JSON_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.PATH;
@@ -132,6 +133,9 @@ public abstract class AbstractBaseServlet
             this.parameters = ServletHelper.obtainParameters(request);
         }
 
+        public boolean isAdmin() {
+            return request.getUserPrincipal().getName().equals(ADMIN_USER);
+        }
         public SlingHttpServletRequest getRequest() {
             return request;
         }

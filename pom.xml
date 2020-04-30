@@ -87,6 +87,8 @@
         <gpg.useagent>true</gpg.useagent>
 
         <noContent>true</noContent>
+        <org.apache.sling.serviceusermapper.version>1.3.2</org.apache.sling.serviceusermapper.version>
+        <org.apache.sling.event.version>4.2.12</org.apache.sling.event.version>
     </properties>
 
     <build>
@@ -539,9 +541,16 @@
             <dependency>
                 <groupId>org.apache.sling</groupId>
                 <artifactId>org.apache.sling.event</artifactId>
-                <version>4.2.12</version>
+                <version>${org.apache.sling.event.version}</version>
                 <scope>provided</scope>
             </dependency>
+            <dependency>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.serviceusermapper</artifactId>
+                <version>${org.apache.sling.serviceusermapper.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
 
 
             <!-- Support -->

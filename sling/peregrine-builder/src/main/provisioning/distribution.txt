@@ -28,5 +28,4 @@
     org.apache.jackrabbit.vault/org.apache.jackrabbit.vault/3.2.0
     org.apache.sling/org.apache.sling.distribution.api/0.3.0
     org.apache.sling/org.apache.sling.distribution.core/0.3.4
-    com.peregrine-cms/base.core/1.0-SNAPSHOT
     com.peregrine-cms/distribution/1.0-SNAPSHOT

@@ -23,12 +23,12 @@
  * #L%
  */
 import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('deleteSite').setLevelDebug()
+let log = LoggerFactory.logger('deleteTenant').setLevelDebug()
 
 export default function(me, target) {
-    log.fine('deleteSite',target)
+    log.fine('deleteTenant',target)
     var api = me.getApi()
     me.getNodeFromView('/state/tools').page = undefined
-    return api.deleteSite(target).then( () => api.populateTenants() )
+    return api.deleteTenant(target).then( () => api.populateTenants() )
 
 }

@@ -38,7 +38,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.peregrine.admin.replication.ReplicationConstants.RESOURCE_TYPE_SITE_SETUP_REPLICATION;
+import static com.peregrine.admin.replication.ReplicationConstants.RESOURCE_TYPE_TENANT_SETUP_REPLICATION;
 import static com.peregrine.admin.replication.ReplicationConstants.SOURCE_NAME;
 import static com.peregrine.admin.replication.ReplicationConstants.SOURCE_PATH;
 import static com.peregrine.admin.replication.servlet.ReplicationServlet.REPLICATES;
@@ -67,7 +67,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  *    ui.apps/src/main/content/jcr_root/api/definitions/admin.yaml
  *
  * It is invoked like this:
- *      curl -X POST "http://localhost:8080/perapi/admin/siteSetupReplication.json/content/themeclean" -H  "accept: application/json" -H  "content-type: application/x-www-form-urlencoded" -d "name=defaultRepl&deep=false"
+ *      curl -X POST "http://localhost:8080/perapi/admin/tenantSetupReplication.json/content/themeclean" -H  "accept: application/json" -H  "content-type: application/x-www-form-urlencoded" -d "name=defaultRepl&deep=false"
  */
 @Component(
     service = Servlet.class,
@@ -75,11 +75,11 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
         SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Site Setup Replication Servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
         SLING_SERVLET_METHODS + EQUALS + POST,
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_SITE_SETUP_REPLICATION
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_TENANT_SETUP_REPLICATION
     }
 )
 @SuppressWarnings("serial")
-public class SiteSetupReplicationServlet extends AbstractBaseServlet {
+public class TenantSetupReplicationServlet extends AbstractBaseServlet {
 
     public static final String SUFFIX_IS_NOT_SITE = "Suffix: '%s' is not a Peregrine Site";
     public static final String WITH_SITE = "withSite";
