@@ -301,8 +301,6 @@
       iframePreviewMode(editable = false) {
         this.iframe.doc.removeEventListener('click', this.onIframeClick)
         this.iframe.doc.removeEventListener('scroll', this.onIframeScroll)
-        this.iframe.doc.removeEventListener('dragover', this.onDragOver)
-        this.iframe.doc.removeEventListener('drop', this.onDrop)
         this.iframe.body.style.cursor = ''
         this.iframe.body.setAttribute('contenteditable', 'false')
         const elements = this.iframe.body.querySelectorAll(`[${Attribute.INLINE}]`)
@@ -513,7 +511,9 @@
             return false;
           }
         }
-        $perAdminApp.stateAction(addOrMove, payload)
+        $perAdminApp.stateAction(addOrMove, payload).then((data) => {
+          console.log(data)
+        })
         event.dataTransfer.clearData('text')
       },
 
