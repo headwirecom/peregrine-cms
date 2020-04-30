@@ -35,7 +35,6 @@
                 v-bind:model="dataModel"
                 v-bind:options="formOptions"/>
             </template>
-            <div style="display: flex; width: 100%; height: 1000000000px;"></div>
         </div>
         <div class="editor-panel-buttons">
             <button v-if="!isRootComponent" class="waves-effect waves-light btn btn-raised"
