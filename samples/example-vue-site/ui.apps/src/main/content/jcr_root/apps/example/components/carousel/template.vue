@@ -45,12 +45,12 @@
       <div v-for="(slide, index) in model.children" :class="`carousel-item ${index === 0 ? 'active' : ''}`">
         <img v-if="slide.imagePath" :src="slide.imagePath" :alt="slide.alt" />
         <div v-if="slide.heading || slide.text" class="carousel-caption">
-          <h3 v-if="slide.heading" :data-per-inline="`model.children.${index}.heading`">
+          <h3 v-if="slide.heading" :data-per-inline="`model.${index}.heading`">
             {{slide.heading}}
           </h3>
           <p v-if="slide.text"
              v-html="slide.text"
-             :data-per-inline="`model.children.${index}.text`"></p>
+             :data-per-inline="`model.${index}.text`"></p>
         </div>
       </div>
     </div>
