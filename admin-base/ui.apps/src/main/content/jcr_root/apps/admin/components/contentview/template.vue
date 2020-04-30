@@ -63,8 +63,8 @@
           :src="pagePath"
           :data-per-mode="previewMode"
           @load="onIframeLoaded"
-          @dragover="onDragOver"
-          @drop.prevent="onDrop"/>
+          @mouseleave="onIframeMouseLeave"
+          @mouseenter="onIframeMouseEnter"/>
     </template>
   </div>
 </template>
@@ -100,6 +100,7 @@
         isTouch: false,
         isIOS: false,
         iframe: {
+          mouse: false,
           loaded: false,
           doc: null,
           html: null,
@@ -176,6 +177,20 @@
       'iframe.clicked.el'(val) {
         if (!val) return
         this.updateSelectedComponent()
+      },
+      'iframe.mouse'(val) {
+        if (val && this.previewMode !== 'preview') {
+          this.iframeEditMode()
+        } else {
+          this.iframePreviewMode(this.preview !== 'preview')
+        }
+      },
+      selectedModel: {
+        deep: true,
+        handler(val) {
+          if (!this.selected.el) return
+          this.wrapEditableAround(this.selected.el)
+        }
       }
     },
     mounted() {
@@ -231,6 +246,14 @@
         return componentEl
       },
 
+      onIframeMouseLeave(event) {
+        this.iframe.mouse = false
+      },
+
+      onIframeMouseEnter(event) {
+        this.iframe.mouse = true
+      },
+
       onIframeLoaded(ev) {
         this.iframe.loaded = true
         this.iframe.doc = this.$refs.editview.contentWindow.document
@@ -240,7 +263,6 @@
         const elements = this.iframe.body.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el) => {
           const clone = el.cloneNode(true)
-          clone.setAttribute('contenteditable', 'true')
           clone.style.cursor = 'text'
           clone.classList.add('inline-edit-clone')
           clone.addEventListener('input', this.onInlineEdit)
@@ -258,12 +280,21 @@
         this.iframe.body.setAttribute('style', 'cursor: default !important')
         this.iframe.body.setAttribute('contenteditable', 'true')
         const elements = this.iframe.body.querySelectorAll(`[${Attribute.INLINE}]`)
-        elements.forEach((el) => {
-          el.style.display = el.classList.contains('inline-edit-clone') ? '' : 'none'
+        elements.forEach((el, index) => {
+          el.setAttribute('contenteditable', 'true')
+          if (el.classList.contains('inline-edit-clone')) {
+            el.style.display = ''
+            el.innerHTML = elements[index + 1].innerHTML
+          } else {
+            el.style.display = 'none'
+            if (this.selected.el === el) {
+              this.selected.el = elements[index - 1]
+            }
+          }
         })
       },
 
-      iframePreviewMode() {
+      iframePreviewMode(editable = false) {
         this.iframe.doc.removeEventListener('click', this.onIframeClick)
         this.iframe.doc.removeEventListener('scroll', this.onIframeScroll)
         this.iframe.doc.removeEventListener('dragover', this.onDragOver)
@@ -271,8 +302,16 @@
         this.iframe.body.style.cursor = ''
         this.iframe.body.setAttribute('contenteditable', 'false')
         const elements = this.iframe.body.querySelectorAll(`[${Attribute.INLINE}]`)
-        elements.forEach((el) => {
-          el.style.display = el.classList.contains('inline-edit-clone') ? 'none' : ''
+        elements.forEach((el, index) => {
+          el.setAttribute('contenteditable', editable)
+          if (el.classList.contains('inline-edit-clone')) {
+            el.style.display = 'none'
+            if (this.selected.el === el) {
+              this.selected.el = elements[index + 1]
+            }
+          } else {
+            el.style.display = ''
+          }
         })
       },
 
