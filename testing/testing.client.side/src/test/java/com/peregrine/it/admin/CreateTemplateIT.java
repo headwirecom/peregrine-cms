@@ -26,7 +26,7 @@ import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
-import static com.peregrine.commons.util.PerUtil.TEMPLATE;
+import static com.peregrine.commons.util.PerConstants.TEMPLATE;
 
 /**
  * Created by Andreas Schaefer on 6/30/17.
