@@ -99,7 +99,7 @@ export default {
 
 <style>
     .per-drop-target {
-        border: 1px solid #c0c0c0;
+        border: 1px dashed #c0c0c0;
         clear: both;
         padding: 4px;
         margin: 4px;
