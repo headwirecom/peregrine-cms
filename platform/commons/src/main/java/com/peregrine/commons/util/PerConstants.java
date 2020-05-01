@@ -61,6 +61,7 @@ public class PerConstants {
 
     public static final String SLASH = Strings.SLASH;
     public static final String DASH = Strings.DASH;
+    public static final String REGEX_SLASH = "\\/";
 
     public static final String HTML = "html";
     public static final String JSON = "json";
@@ -85,6 +86,7 @@ public class PerConstants {
     public static final String COMPONENTS = "components";
 
     public static final String APPS_ROOT = "/apps";
+    public static final String VAR_ROOT = "/var";
     public static final String ETC_ROOT = "/etc";
     public static final String CONTENT_ROOT = "/content";
 
@@ -144,5 +146,11 @@ public class PerConstants {
     public static final String TENANT_GROUP_HOME = "/home/groups/tenants";
     public static final String TENANT_USER_HOME = "/home/users/tenants";
     public static final String ALL_TENANTS_GROUP_NAME = "all_tenants";
+
+    public static final String RECYCLE_BIN = VAR_ROOT + SLASH + "recyclebin";
+    public static final String SITE_HOME_PATTERN = REGEX_SLASH + CONTENT +
+            REGEX_SLASH + "[^" + REGEX_SLASH + "]+" + REGEX_SLASH;
+    public static final String SITE_PAGES_PATTERN = SITE_HOME_PATTERN + PAGES + REGEX_SLASH + ".*";
+    public static final String SITE_ASSETS_PATTERN = SITE_HOME_PATTERN + ASSETS + REGEX_SLASH + ".*";
 }
 

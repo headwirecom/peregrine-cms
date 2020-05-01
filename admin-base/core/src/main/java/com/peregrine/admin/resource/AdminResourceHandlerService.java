@@ -1,69 +1,7 @@
 package com.peregrine.admin.resource;
 
-import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
-import static com.peregrine.commons.util.PerConstants.ASSET;
-import static com.peregrine.commons.util.PerConstants.ASSETS_ROOT;
-import static com.peregrine.commons.util.PerConstants.ASSET_CONTENT_TYPE;
-import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.COMPONENT;
-import static com.peregrine.commons.util.PerConstants.COMPONENTS;
-import static com.peregrine.commons.util.PerConstants.COMPONENT_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
-import static com.peregrine.commons.util.PerConstants.DEPENDENCIES;
-import static com.peregrine.commons.util.PerConstants.FELIBS_ROOT;
-import static com.peregrine.commons.util.PerConstants.FOLDER;
-import static com.peregrine.commons.util.PerConstants.INTERNAL;
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.JCR_CREATED;
-import static com.peregrine.commons.util.PerConstants.JCR_CREATED_BY;
-import static com.peregrine.commons.util.PerConstants.JCR_DATA;
-import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
-import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
-import static com.peregrine.commons.util.PerConstants.JCR_UUID;
-import static com.peregrine.commons.util.PerConstants.NAME;
-import static com.peregrine.commons.util.PerConstants.NODE;
-import static com.peregrine.commons.util.PerConstants.NT_FILE;
-import static com.peregrine.commons.util.PerConstants.NT_RESOURCE;
-import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
-import static com.peregrine.commons.util.PerConstants.OBJECT;
-import static com.peregrine.commons.util.PerConstants.OBJECTS;
-import static com.peregrine.commons.util.PerConstants.OBJECTS_ROOT;
-import static com.peregrine.commons.util.PerConstants.OBJECT_DEFINITION_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.OBJECT_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.PACKAGES_PATH;
-import static com.peregrine.commons.util.PerConstants.PAGE;
-import static com.peregrine.commons.util.PerConstants.PAGES_ROOT;
-import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
-import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.PATH;
-import static com.peregrine.commons.util.PerConstants.RENDITION;
-import static com.peregrine.commons.util.PerConstants.SITE_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
-import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
-import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_SUPER_TYPE;
-import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
-import static com.peregrine.commons.util.PerConstants.TEMPLATE;
-import static com.peregrine.commons.util.PerConstants.TEMPLATES_ROOT;
-import static com.peregrine.commons.util.PerConstants.TENANT;
-import static com.peregrine.commons.util.PerConstants.TEXT_MIME_TYPE;
-import static com.peregrine.commons.util.PerConstants.VARIATIONS;
-import static com.peregrine.commons.util.PerUtil.convertToMap;
-import static com.peregrine.commons.util.PerUtil.getBoolean;
-import static com.peregrine.commons.util.PerUtil.getChildIndex;
-import static com.peregrine.commons.util.PerUtil.getClassOrNull;
-import static com.peregrine.commons.util.PerUtil.getComponentVariableNameFromString;
-import static com.peregrine.commons.util.PerUtil.getFirstChild;
-import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
-import static com.peregrine.commons.util.PerUtil.getNode;
-import static com.peregrine.commons.util.PerUtil.getNodeAtPosition;
-import static com.peregrine.commons.util.PerUtil.getPath;
-import static com.peregrine.commons.util.PerUtil.getResource;
-import static com.peregrine.commons.util.PerUtil.getString;
-import static com.peregrine.commons.util.PerUtil.isPrimaryType;
-import static com.peregrine.commons.util.PerUtil.isPropertyPresentAndEqualsTrue;
-import static com.peregrine.commons.util.PerUtil.toStringOrNull;
+import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerUtil.*;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isAnyBlank;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -80,6 +18,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.peregrine.adaption.PerAsset;
+import com.peregrine.admin.models.Recyclable;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.rendition.BaseResourceHandler;
 import com.peregrine.replication.ImageMetadataSelector;
@@ -110,11 +49,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
-import org.apache.sling.api.resource.ModifiableValueMap;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.api.resource.*;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -428,6 +363,44 @@ public class AdminResourceHandlerService
         }
     }
 
+    @Override
+    public Recyclable createRecyclable(ResourceResolver resourceResolver, Resource resource) throws ManagementException {
+        if (isRecyclable(resource)) {
+            Version version = createVersion(resourceResolver, resource.getPath());
+            final String itemPath = RECYCLE_BIN + resource.getPath();
+            try {
+                Resource item = ResourceUtil.getOrCreateResource(
+                        resourceResolver,
+                        itemPath,
+                        "admin/components/recyclable",
+                        NT_UNSTRUCTURED, false);
+                Node itemNode = item.adaptTo(Node.class);
+                itemNode.setProperty("frozenNodePath", version.getPath());
+                itemNode.setProperty("resourcePath", resource.getPath());
+                resourceResolver.refresh();
+                resourceResolver.commit();
+                return item.adaptTo(Recyclable.class);
+            } catch (RepositoryException e) {
+                throw new ManagementException("Failed to create recyclable", e);
+            } catch (PersistenceException e) {
+                throw new ManagementException("Failed to create recyclable", e);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Recyclable getRecyclable(ResourceResolver resourceResolver, String path) {
+        final Resource resource = getResource(resourceResolver,path);
+        return resource == null ? null : resource.adaptTo(Recyclable.class);
+    }
+
+    private boolean isRecyclable(Resource resource) {
+        if (checkResource(resource) == null) {
+            return false;
+        }
+        return resource.getPath().matches(SITE_PAGES_PATTERN) || resource.getPath().matches(SITE_ASSETS_PATTERN);
+    }
 
     // jcr 2.0 Chapter 3
     // https://docs.adobe.com/docs/en/spec/jcr/2.0/3_Repository_Model.html
@@ -490,12 +463,18 @@ public class AdminResourceHandlerService
     }
 
     @Override
-    public Resource restoreDeleted(ResourceResolver resourceResolver, String path, String frozenNodepath, boolean force)
+    public Resource recycleDeleted(ResourceResolver resourceResolver, Recyclable recyclable, boolean force)
+            throws ManagementException {
+        return restoreDeleted(resourceResolver, recyclable.getResourcePath(), recyclable.getFrozenNodePath(), force);
+    }
+
+    @Override
+    public Resource restoreDeleted(ResourceResolver resourceResolver, String path, String version, boolean force)
             throws ManagementException {
         resourceResolver.refresh();
-        Session jcrSession = resourceResolver.adaptTo(Session.class);
+        final Session jcrSession = resourceResolver.adaptTo(Session.class);
         try {
-            Version restoreVersion = (Version) jcrSession.getNode(frozenNodepath);
+            Version restoreVersion = (Version) jcrSession.getNode(version);
             VersionManager vm = jcrSession.getWorkspace().getVersionManager();
             vm.restore(path, restoreVersion, force);
             vm.checkout(path);
@@ -504,6 +483,7 @@ public class AdminResourceHandlerService
             throw new ManagementException("Failed to restore Version", e);
         }
     }
+
 
     @Override
     public Resource insertNode(Resource resource, Map<String, Object> properties, boolean addAsChild, boolean orderBefore, String variation) throws ManagementException {

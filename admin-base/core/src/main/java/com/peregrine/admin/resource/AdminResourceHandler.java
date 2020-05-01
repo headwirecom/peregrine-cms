@@ -1,10 +1,12 @@
 package com.peregrine.admin.resource;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 import javax.jcr.Node;
 import javax.jcr.version.Version;
 
+import com.peregrine.admin.models.Recyclable;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
@@ -108,15 +110,43 @@ public interface AdminResourceHandler {
     Resource restoreVersion(ResourceResolver resourceResolver, String path, String versionPath, boolean force) throws ManagementException;
 
     /**
-     * Restore a version
+     * Restore a delete item based on a path where it was and the path of a version
      * @param resourceResolver Resource Resolver to manage resources and cannot be null
      * @param path Absolute path of the resource having the version
      * @param versionPath Absolute frozen node path of version to be restored
      * @param force if there is a resource already in the location of the path, it will be replaced if force is true
      * @return The Resource at the supplied Version
-     * @throws ManagementException If creating the version failed
+     * @throws ManagementException If restoring the version failed
      */
     Resource restoreDeleted(ResourceResolver resourceResolver, String path, String versionPath, boolean force) throws ManagementException;
+
+    /**
+     * Pull an item from the recyclebin
+     * @param resourceResolver Resource Resolver to manage resources and cannot be null
+     * @param recyclable resource from /var/recyclebin
+     * @param force if there is a resource already in the location of the path, it will be replaced if force is true
+     * @return The Resource at the supplied Version
+     * @throws ManagementException If restoring the version failed
+     */
+    Resource recycleDeleted(ResourceResolver resourceResolver, Recyclable recyclable, boolean force) throws ManagementException;
+
+    /**
+     * Creates a recyclable item
+     * @param resourceResolver Resource Resolver
+     * @param resource like pages, assets and folders under pages or assets can be recycled
+     * @return Null or a recyclable item
+     * @throws ManagementException if there's an error
+     */
+    Recyclable createRecyclable(ResourceResolver resourceResolver, Resource resource) throws ManagementException;
+
+    /**
+     * Get a recyclable item
+     * @param resourceResolver Resource Resolver
+     * @param path of the name item to get
+     * @return Null or a recyclable item
+     * @throws ManagementException if there's an error
+     */
+    Recyclable getRecyclable(ResourceResolver resourceResolver, String path) throws ManagementException;
 
     /**
      * Updates a given resource based on the given JSon Content

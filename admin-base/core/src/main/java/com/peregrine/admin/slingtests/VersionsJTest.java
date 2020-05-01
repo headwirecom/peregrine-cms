@@ -2,7 +2,8 @@ package com.peregrine.admin.slingtests;
 
 import com.google.common.collect.Iterators;
 import com.peregrine.admin.models.PageModel;
-import com.peregrine.admin.resource.ReferenceListerService;
+import com.peregrine.admin.models.Recyclable;
+import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -22,9 +23,10 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
-import javax.jcr.version.VersionIterator;
 import javax.jcr.version.VersionManager;
+import static com.peregrine.commons.util.PerConstants.RECYCLE_BIN;
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SlingAnnotationsTestRunner.class)
 public class VersionsJTest {
@@ -38,10 +40,12 @@ public class VersionsJTest {
 
     private ResourceResolver resourceResolver;
     private Session jcrSession;
-    public static final String EXAMPLE_SITE_ROOT = "/content/example/";
-    public static final String EXAMPLE_PAGE = "pages/index";
-    public static final String EXAMPLE_DELETE = "pages/about";
-    public static final String EXAMPLE_ASSET = "assets/images/peregrine-logo.png";
+
+    static final String EXAMPLE_SITE_ROOT = "/content/example/";
+    static final String EXAMPLE_PAGE = "pages/index";
+    static final String EXAMPLE_DELETE = "pages/about";
+    static final String EXAMPLE_ASSET = "assets/images/peregrine-logo.png";
+
     // page objects
     private Resource testPageRes;
     private PageModel testPage;
@@ -163,15 +167,15 @@ public class VersionsJTest {
     @Test
     public void restoreFirstPageVersion() {
         try {
-//      First Version
+            // First Version
             Version version = resourceManagement.createVersion(this.resourceResolver, testPageRes.getPath());
-//      Second Version
+            // Second Version
             Version version2 = resourceManagement.createVersion(this.resourceResolver, testPageRes.getPath());
             assertNotNull(version2);
             // check that the current version has a name = 1.1
             assertEquals("1.1" , vmPage.getBaseVersion(testPage.getPath()).getName());
             assertTrue(vmPage.isCheckedOut(testPage.getPath()));
-//      Restore the first version
+            // Restore the first version
             String frozenNodepath = version.getPath();
             Node frozenNode = jcrSession.getNode(frozenNodepath);
             Version versionToRestore = (Version) frozenNode;
@@ -183,6 +187,37 @@ public class VersionsJTest {
             assertTrue(vmPage.isCheckedOut(testPage.getPath()));
         } catch (Exception e) {
             fail("could not create version");
+        }
+    }
+
+    @Test
+    public void createRecyclable(){
+        try {
+            Recyclable recyclable = resourceManagement.createRecyclable(resourceResolver, testPageRes);
+            assertNotNull(recyclable);
+            assertEquals(testPageRes.getPath(), recyclable.getResourcePath());
+            assertTrue(recyclable.getFrozenNodePath().startsWith("/jcr:system/jcr:versionStorage/"));
+            assertEquals(RECYCLE_BIN+testPageRes.getPath(), recyclable.getResource().getPath());
+        } catch (AdminResourceHandler.ManagementException e) {
+            fail("execption while creating recyclable");
+        }
+    }
+
+    @Test
+    public void findAndRestoreRecyclable (){
+        try {
+            Recyclable recyclable = resourceManagement.createRecyclable(resourceResolver, deletedRes);
+            assertNotNull(recyclable);
+            // Delete the page
+            resourceResolver.delete(deletedRes);
+            resourceResolver.commit();
+            deletedRes = resourceResolver.getResource(recyclable.getResourcePath());
+            assertNull(deletedRes);
+            resourceManagement.recycleDeleted(resourceResolver, recyclable, true );
+            resourceResolver.refresh();
+            resourceResolver.commit();
+        } catch (Exception e) {
+            fail("could not find and restore recyclable");
         }
     }
 
@@ -202,6 +237,8 @@ public class VersionsJTest {
             deletedRes = resourceResolver.getResource(resourcePath);
             assertNull(deletedRes);
             resourceResolver.commit();
+            Recyclable recyclable = new Recyclable();
+
             // Restore at the recorded version
             Resource restoredResource = resourceManagement.restoreDeleted(resourceResolver, resourcePath, versionPath, true);
             assertNotNull(restoredResource);
@@ -220,7 +257,7 @@ public class VersionsJTest {
                 }
             }
         } catch (Exception e) {
-            fail("could not create version");
+            fail("could not restore deleted");
         }
     }
 
@@ -236,7 +273,11 @@ public class VersionsJTest {
                     resourceResolver.commit();
                 }
             }
-
+//            Node exampleRecycling = JcrUtils.getNodeIfExists(RECYCLE_BIN+"/content/example", jcrSession);
+//            if (exampleRecycling != null) {
+//                exampleRecycling.remove();
+//                jcrSession.save();
+//            }
         } catch (RepositoryException e) {
             logger.error("test resources were not versionable", e);
         } catch (PersistenceException e) {
