@@ -249,13 +249,7 @@ public class VersionsJTest {
             // Clean up
             deletedRes = restoredResource;
             deletedNode = restoredResource.adaptTo(Node.class);
-            for (NodeType nt : deletedNode.getMixinNodeTypes()){
-                if (nt.isNodeType("mix:versionable")) {
-                    vmPage.checkout(deletedNode.getPath());
-                    deletedNode.removeMixin("mix:versionable");
-                    resourceResolver.commit();
-                }
-            }
+
         } catch (Exception e) {
             fail("could not restore deleted");
         }
@@ -273,11 +267,19 @@ public class VersionsJTest {
                     resourceResolver.commit();
                 }
             }
-//            Node exampleRecycling = JcrUtils.getNodeIfExists(RECYCLE_BIN+"/content/example", jcrSession);
-//            if (exampleRecycling != null) {
-//                exampleRecycling.remove();
-//                jcrSession.save();
-//            }
+
+            for (NodeType nt : deletedNode.getMixinNodeTypes()){
+                if (nt.isNodeType("mix:versionable")) {
+                    vmPage.checkout(deletedNode.getPath());
+                    deletedNode.removeMixin("mix:versionable");
+                    resourceResolver.commit();
+                }
+            }
+            Node exampleRecycling = JcrUtils.getNodeIfExists(RECYCLE_BIN+"/content/example", jcrSession);
+            if (exampleRecycling != null) {
+                exampleRecycling.remove();
+                jcrSession.save();
+            }
         } catch (RepositoryException e) {
             logger.error("test resources were not versionable", e);
         } catch (PersistenceException e) {
