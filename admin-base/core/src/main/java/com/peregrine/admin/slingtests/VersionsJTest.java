@@ -42,18 +42,24 @@ public class VersionsJTest {
     private Session jcrSession;
 
     static final String EXAMPLE_SITE_ROOT = "/content/example/";
-    static final String EXAMPLE_PAGE = "pages/index";
-    static final String EXAMPLE_DELETE = "pages/about";
+    static final String SITE_RECYCLINGBIN = EXAMPLE_SITE_ROOT + "recyclebin";
+    static final String EXAMPLE_PAGES = EXAMPLE_SITE_ROOT +"pages";
+    static final String EXAMPLE_INDEX = "pages/index";
+    static final String EXAMPLE_ABOUT = "pages/about";
     static final String EXAMPLE_ASSET = "assets/images/peregrine-logo.png";
+    static final String [] EXAMPLE_PAGE_PATHS = { "/index", "/about", "/services",
+            "/contact", "/services/jcr:content/content/row/col1/text2" };
 
     // page objects
-    private Resource testPageRes;
-    private PageModel testPage;
-    private Node pageNode;
-    private Resource deletedRes;
-    private Node deletedNode;
+    private Resource indexRes;
+    private PageModel indexPage;
+    private Node indexNode;
+    private Resource aboutRes;
+    private Node aboutNode;
+    private Resource pagesRes;
+    private Node pagesNode;
     // asset objects
-    private Resource testAssetRes;
+    private Resource assetRes;
     private Node assetNode;
     // version managers
     private VersionManager vmPage;
@@ -64,18 +70,21 @@ public class VersionsJTest {
         resourceResolver = resolverFactory.getAdministrativeResourceResolver(null);
         jcrSession = resourceResolver.adaptTo(Session.class);
         // get a per:Page
-        testPageRes = resourceResolver.getResource(EXAMPLE_SITE_ROOT+EXAMPLE_PAGE);
-        testPage = testPageRes.adaptTo(PageModel.class);
-        pageNode = testPageRes.adaptTo(Node.class);
+        indexRes = resourceResolver.getResource(EXAMPLE_SITE_ROOT+ EXAMPLE_INDEX);
+        indexPage = indexRes.adaptTo(PageModel.class);
+        indexNode = indexRes.adaptTo(Node.class);
         // get a per:Asset (just a resource?)
-        testAssetRes = resourceResolver.getResource(EXAMPLE_SITE_ROOT+EXAMPLE_ASSET);
-        assetNode = testAssetRes.adaptTo(Node.class);
+        assetRes = resourceResolver.getResource(EXAMPLE_SITE_ROOT+EXAMPLE_ASSET);
+        assetNode = assetRes.adaptTo(Node.class);
         // version managers
-        vmPage = pageNode.getSession().getWorkspace().getVersionManager();
+        vmPage = indexNode.getSession().getWorkspace().getVersionManager();
         vmAsset = assetNode.getSession().getWorkspace().getVersionManager();
 
-        deletedRes = resourceResolver.resolve(EXAMPLE_SITE_ROOT+EXAMPLE_DELETE);
-        deletedNode = deletedRes.adaptTo(Node.class);
+        aboutRes = resourceResolver.getResource(EXAMPLE_SITE_ROOT+ EXAMPLE_ABOUT);
+        aboutNode = aboutRes.adaptTo(Node.class);
+
+        pagesRes = resourceResolver.getResource(EXAMPLE_PAGES);
+        pagesNode = pagesRes.adaptTo(Node.class);
     }
 
     @Test
@@ -84,24 +93,26 @@ public class VersionsJTest {
         assertNotNull(resourceResolver);
         assertNotNull(jcrSession);
         assertNotNull(resourceManagement);
-        assertNotNull(testPageRes);
-        assertNotNull(testAssetRes);
-        assertNotNull(testPage);
+        assertNotNull(indexRes);
+        assertNotNull(assetRes);
+        assertNotNull(indexPage);
+        assertNotNull(pagesRes);
+        assertNotNull(pagesNode);
     }
 
     @Test
     public void pageCanBeVersionable() {
         try {
-            if (pageNode.canAddMixin("mix:versionable")) {
-                assertTrue(pageNode.canAddMixin("mix:versionable"));
+            if (indexNode.canAddMixin("mix:versionable")) {
+                assertTrue(indexNode.canAddMixin("mix:versionable"));
                 logger.info("page can become versionable but currently is not");
                 return;
             }
-            if (vmPage.getVersionHistory(testPageRes.getPath()) == null) {
+            if (vmPage.getVersionHistory(indexRes.getPath()) == null) {
                 logger.info("page is versionable and has a version history");
                 return;
             } else {
-                NodeType[] nodeTypes = pageNode.getMixinNodeTypes();
+                NodeType[] nodeTypes = indexNode.getMixinNodeTypes();
                 for (NodeType nt : nodeTypes) {
                     if (nt.isNodeType("mix:versionable")){
                         logger.info("page is versionable but has no history");
@@ -128,9 +139,9 @@ public class VersionsJTest {
     @Test
     public void makeFirstPageVersion() {
         try {
-            Version version = resourceManagement.createVersion(this.resourceResolver, testPageRes.getPath());
+            Version version = resourceManagement.createVersion(this.resourceResolver, indexRes.getPath());
             assertNotNull(version);
-            VersionHistory vhPage = vmPage.getVersionHistory(pageNode.getPath());
+            VersionHistory vhPage = vmPage.getVersionHistory(indexNode.getPath());
             // check that the number of versions is 2 (root and one version)
             int size = Iterators.size(vhPage.getAllLinearVersions());
             assertEquals(2, size);
@@ -138,7 +149,7 @@ public class VersionsJTest {
             Version firstVersion = rootVersion.getLinearSuccessor();
             assertEquals("1.0", firstVersion.getName());
             assertEquals(firstVersion.getName(), version.getName());
-            assertTrue(vmPage.isCheckedOut(testPage.getPath()));
+            assertTrue(vmPage.isCheckedOut(indexPage.getPath()));
         } catch (Exception e) {
             fail("could not create version");
         }
@@ -148,17 +159,17 @@ public class VersionsJTest {
     public void make2ndPageVersion() {
         try {
 //            First Version
-            Version version = resourceManagement.createVersion(this.resourceResolver, testPageRes.getPath());
+            Version version = resourceManagement.createVersion(this.resourceResolver, indexRes.getPath());
             assertNotNull(version);
-            assertTrue(vmPage.isCheckedOut(testPage.getPath()));
+            assertTrue(vmPage.isCheckedOut(indexPage.getPath()));
 //            Second Version
-            Version version2 = resourceManagement.createVersion(this.resourceResolver, testPageRes.getPath());
+            Version version2 = resourceManagement.createVersion(this.resourceResolver, indexRes.getPath());
             assertNotNull(version2);
             // check that the number of versions is 2 (root and two versions)
-            VersionHistory vhPage2 = vmPage.getVersionHistory(pageNode.getPath());
+            VersionHistory vhPage2 = vmPage.getVersionHistory(indexNode.getPath());
             int size3 = Iterators.size(vhPage2.getAllLinearVersions());
             assertEquals(3, size3);
-            assertTrue(vmPage.isCheckedOut(testPage.getPath()));
+            assertTrue(vmPage.isCheckedOut(indexPage.getPath()));
         } catch (Exception e) {
             fail("could not create version");
         }
@@ -168,23 +179,23 @@ public class VersionsJTest {
     public void restoreFirstPageVersion() {
         try {
             // First Version
-            Version version = resourceManagement.createVersion(this.resourceResolver, testPageRes.getPath());
+            Version version = resourceManagement.createVersion(this.resourceResolver, indexRes.getPath());
             // Second Version
-            Version version2 = resourceManagement.createVersion(this.resourceResolver, testPageRes.getPath());
+            Version version2 = resourceManagement.createVersion(this.resourceResolver, indexRes.getPath());
             assertNotNull(version2);
             // check that the current version has a name = 1.1
-            assertEquals("1.1" , vmPage.getBaseVersion(testPage.getPath()).getName());
-            assertTrue(vmPage.isCheckedOut(testPage.getPath()));
+            assertEquals("1.1" , vmPage.getBaseVersion(indexPage.getPath()).getName());
+            assertTrue(vmPage.isCheckedOut(indexPage.getPath()));
             // Restore the first version
             String frozenNodepath = version.getPath();
             Node frozenNode = jcrSession.getNode(frozenNodepath);
             Version versionToRestore = (Version) frozenNode;
             assertNotNull(versionToRestore);
-            Resource restoredResource = resourceManagement.restoreVersion(resourceResolver, testPage.getPath(), frozenNodepath, true);
+            Resource restoredResource = resourceManagement.restoreVersion(resourceResolver, indexPage.getPath(), frozenNodepath, true);
             assertNotNull(restoredResource);
             assertEquals("1.0" , vmPage.getBaseVersion(restoredResource.getPath()).getName());
             // check that the test page is not left in a "checked out" or locked state
-            assertTrue(vmPage.isCheckedOut(testPage.getPath()));
+            assertTrue(vmPage.isCheckedOut(indexPage.getPath()));
         } catch (Exception e) {
             fail("could not create version");
         }
@@ -193,11 +204,11 @@ public class VersionsJTest {
     @Test
     public void resolveSiteHome() {
         // get home from a page
-        String home = resourceManagement.getSiteHomePath(resourceResolver, testPageRes);
+        String home = resourceManagement.getSiteHomePath(resourceResolver, indexRes);
         assertNotNull(home);
         assertEquals("/content/example", home);
         // get home from an asset
-        home = resourceManagement.getSiteHomePath(resourceResolver, testAssetRes);
+        home = resourceManagement.getSiteHomePath(resourceResolver, assetRes);
         assertNotNull(home);
         assertEquals("/content/example", home);
     }
@@ -205,9 +216,9 @@ public class VersionsJTest {
     @Test
     public void createRecyclable(){
         try {
-            Recyclable recyclable = resourceManagement.createRecyclable(resourceResolver, testPageRes);
+            Recyclable recyclable = resourceManagement.createRecyclable(resourceResolver, indexRes);
             assertNotNull(recyclable);
-            assertEquals(testPageRes.getPath(), recyclable.getResourcePath());
+            assertEquals(indexRes.getPath(), recyclable.getResourcePath());
             assertTrue(recyclable.getFrozenNodePath().startsWith("/jcr:system/jcr:versionStorage/"));
             assertEquals("/content/example/recyclebin/content/example/pages/index", recyclable.getResource().getPath());
         } catch (AdminResourceHandler.ManagementException e) {
@@ -218,13 +229,13 @@ public class VersionsJTest {
     @Test
     public void findAndRestoreRecyclable (){
         try {
-            Recyclable recyclable = resourceManagement.createRecyclable(resourceResolver, deletedRes);
+            Recyclable recyclable = resourceManagement.createRecyclable(resourceResolver, aboutRes);
             assertNotNull(recyclable);
             // Delete the page
-            resourceResolver.delete(deletedRes);
+            resourceResolver.delete(aboutRes);
             resourceResolver.commit();
-            deletedRes = resourceResolver.getResource(recyclable.getResourcePath());
-            assertNull(deletedRes);
+            aboutRes = resourceResolver.getResource(recyclable.getResourcePath());
+            assertNull(aboutRes);
             resourceManagement.recycleDeleted(resourceResolver, recyclable, true );
             resourceResolver.refresh();
             resourceResolver.commit();
@@ -234,20 +245,50 @@ public class VersionsJTest {
     }
 
     @Test
+    public void deleteAllPagesAndRestore () {
+        assertNotNull(pagesRes);
+        assertEquals(EXAMPLE_PAGES, pagesRes.getPath());
+        try {
+            Recyclable createdRecyclable = resourceManagement.createRecyclable(resourceResolver, pagesRes);
+            assertNotNull(createdRecyclable);
+            resourceResolver.delete(pagesRes);
+            resourceResolver.refresh();
+            resourceResolver.commit();
+            // all gone
+            for (String path : EXAMPLE_PAGE_PATHS) {
+                assertNull(resourceResolver.getResource(EXAMPLE_PAGES + path));
+            }
+
+            Recyclable foundRecyclable = resourceManagement.getRecyclable(resourceResolver,
+                    SITE_RECYCLINGBIN + EXAMPLE_PAGES);
+            assertNotNull(foundRecyclable);
+            resourceManagement.recycleDeleted(resourceResolver,foundRecyclable, false);
+            // all back
+            for (String path : EXAMPLE_PAGE_PATHS) {
+                assertNotNull(resourceResolver.getResource(EXAMPLE_PAGES + path));
+            }
+        } catch (AdminResourceHandler.ManagementException e) {
+            fail("Could create recyclable for pages: " + EXAMPLE_PAGES);
+        } catch (PersistenceException e) {
+            fail("Could delete resource: " + EXAMPLE_PAGES);
+        }
+    }
+
+    @Test
     public void restoreDeletedPage() {
         try {
             // Create a Version
-            Version version = resourceManagement.createVersion(this.resourceResolver, deletedNode.getPath());
-            VersionHistory vhPage = vmPage.getVersionHistory(deletedNode.getPath());
+            Version version = resourceManagement.createVersion(this.resourceResolver, aboutNode.getPath());
+            VersionHistory vhPage = vmPage.getVersionHistory(aboutNode.getPath());
             assertEquals(2, Iterators.size(vhPage.getAllLinearVersions()));
             assertNotNull(version);
             // Record paths to restore
             String versionPath = version.getPath();
-            String resourcePath = deletedNode.getPath();
+            String resourcePath = aboutNode.getPath();
             // Delete the page
-            resourceResolver.delete(deletedRes);
-            deletedRes = resourceResolver.getResource(resourcePath);
-            assertNull(deletedRes);
+            resourceResolver.delete(aboutRes);
+            aboutRes = resourceResolver.getResource(resourcePath);
+            assertNull(aboutRes);
             resourceResolver.commit();
             Recyclable recyclable = new Recyclable();
 
@@ -259,8 +300,8 @@ public class VersionsJTest {
             // check that the test page is not left in a "checked out" or locked state
             assertTrue(vmPage.isCheckedOut(restoredResource.getPath()));
             // Clean up
-            deletedRes = restoredResource;
-            deletedNode = restoredResource.adaptTo(Node.class);
+            aboutRes = restoredResource;
+            aboutNode = restoredResource.adaptTo(Node.class);
 
         } catch (Exception e) {
             fail("could not restore deleted");
@@ -271,23 +312,19 @@ public class VersionsJTest {
     public void cleanUp() {
         resourceResolver.refresh();
         try {
-//            Clean Up Test Page Versions
-            for (NodeType nt : pageNode.getMixinNodeTypes()){
-                if (nt.isNodeType("mix:versionable")) {
-                    vmPage.checkout(testPage.getPath());
-                    pageNode.removeMixin("mix:versionable");
-                    resourceResolver.commit();
+//            Clean Up Test Nodes
+            Node[] nodesToCleanUp = {indexNode, aboutNode, pagesNode};
+            for (Node node : nodesToCleanUp) {
+                for (NodeType nt : node.getMixinNodeTypes()){
+                    if (nt.isNodeType("mix:versionable")) {
+                        vmPage.checkout(node.getPath());
+                        node.removeMixin("mix:versionable");
+                    }
                 }
             }
+            resourceResolver.commit();
 
-            for (NodeType nt : deletedNode.getMixinNodeTypes()){
-                if (nt.isNodeType("mix:versionable")) {
-                    vmPage.checkout(deletedNode.getPath());
-                    deletedNode.removeMixin("mix:versionable");
-                    resourceResolver.commit();
-                }
-            }
-            Node exampleRecycling = JcrUtils.getNodeIfExists(RECYCLE_BIN+"/content/example", jcrSession);
+            Node exampleRecycling = JcrUtils.getNodeIfExists("/content/example/"+RECYCLE_BIN, jcrSession);
             if (exampleRecycling != null) {
                 exampleRecycling.remove();
                 jcrSession.save();
@@ -299,6 +336,7 @@ public class VersionsJTest {
         } finally {
             resourceResolver.close();
             resourceResolver = null;
+            jcrSession = null;
         }
     }
 }

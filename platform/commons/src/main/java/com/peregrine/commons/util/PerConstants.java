@@ -149,9 +149,9 @@ public class PerConstants {
 
     public static final String RECYCLE_BIN =  "recyclebin";
     public static final String SITE_HOME_PATTERN = REGEX_SLASH + CONTENT +
-            REGEX_SLASH + "[^" + REGEX_SLASH + "]+" + REGEX_SLASH;
-    public static final String SITE_PAGES_PATTERN = SITE_HOME_PATTERN + PAGES + REGEX_SLASH + ".*";
-    public static final String SITE_ASSETS_PATTERN = SITE_HOME_PATTERN + ASSETS + REGEX_SLASH + ".*";
-    public static final String SITE_RECYCLEBIN_PATTERN = SITE_HOME_PATTERN + RECYCLE_BIN + REGEX_SLASH + ".*";
+            REGEX_SLASH + "[^" + REGEX_SLASH + "]+" + REGEX_SLASH ;
+    public static final String SITE_PAGES_PATTERN = SITE_HOME_PATTERN + PAGES + REGEX_SLASH + "?.*";
+    public static final String SITE_ASSETS_PATTERN = SITE_HOME_PATTERN + ASSETS + REGEX_SLASH + "?.*";
+    public static final String SITE_RECYCLEBIN_PATTERN = SITE_HOME_PATTERN + RECYCLE_BIN + REGEX_SLASH + "?.*";
 }
 
