@@ -191,13 +191,25 @@ public class VersionsJTest {
     }
 
     @Test
+    public void resolveSiteHome() {
+        // get home from a page
+        String home = resourceManagement.getSiteHomePath(resourceResolver, testPageRes);
+        assertNotNull(home);
+        assertEquals("/content/example", home);
+        // get home from an asset
+        home = resourceManagement.getSiteHomePath(resourceResolver, testAssetRes);
+        assertNotNull(home);
+        assertEquals("/content/example", home);
+    }
+
+    @Test
     public void createRecyclable(){
         try {
             Recyclable recyclable = resourceManagement.createRecyclable(resourceResolver, testPageRes);
             assertNotNull(recyclable);
             assertEquals(testPageRes.getPath(), recyclable.getResourcePath());
             assertTrue(recyclable.getFrozenNodePath().startsWith("/jcr:system/jcr:versionStorage/"));
-            assertEquals(RECYCLE_BIN+testPageRes.getPath(), recyclable.getResource().getPath());
+            assertEquals("/content/example/recyclebin/content/example/pages/index", recyclable.getResource().getPath());
         } catch (AdminResourceHandler.ManagementException e) {
             fail("execption while creating recyclable");
         }

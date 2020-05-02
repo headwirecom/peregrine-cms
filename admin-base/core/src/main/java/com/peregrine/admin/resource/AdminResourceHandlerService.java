@@ -367,11 +367,12 @@ public class AdminResourceHandlerService
     public Recyclable createRecyclable(ResourceResolver resourceResolver, Resource resource) throws ManagementException {
         if (isRecyclable(resource)) {
             Version version = createVersion(resourceResolver, resource.getPath());
-            final String itemPath = RECYCLE_BIN + resource.getPath();
+            final String home = getSiteHomePath(resourceResolver, resource);
+            final String recyclablePath = home + SLASH + RECYCLE_BIN + SLASH + resource.getPath();
             try {
                 Resource item = ResourceUtil.getOrCreateResource(
                         resourceResolver,
-                        itemPath,
+                        recyclablePath,
                         "admin/components/recyclable",
                         NT_UNSTRUCTURED, false);
                 Node itemNode = item.adaptTo(Node.class);
@@ -388,6 +389,8 @@ public class AdminResourceHandlerService
         }
         return null;
     }
+
+
 
     @Override
     public Recyclable getRecyclable(ResourceResolver resourceResolver, String path) {
@@ -564,6 +567,11 @@ public class AdminResourceHandlerService
         }
     }
 
+    @Override
+    public String getSiteHomePath(ResourceResolver resourceResolver, Resource resource) {
+        return resource == null ? null : resource.getPath().substring(0,
+            resource.getPath().indexOf(resource.getPath().replaceFirst(SITE_HOME_PATTERN, ""))-1);
+    }
 
     @Override
     public Resource rename(Resource fromResource, String newName) throws ManagementException {

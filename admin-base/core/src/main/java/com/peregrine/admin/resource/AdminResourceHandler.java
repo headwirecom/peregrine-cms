@@ -140,6 +140,14 @@ public interface AdminResourceHandler {
     Recyclable createRecyclable(ResourceResolver resourceResolver, Resource resource) throws ManagementException;
 
     /**
+     * Given a resource, return the path of the Site Home
+     * @param resourceResolver Resource Resolver
+     * @param resource any resource (pages, assets) under the site home
+     * @return Null or a String
+     */
+    String getSiteHomePath(ResourceResolver resourceResolver, Resource resource);
+
+    /**
      * Get a recyclable item
      * @param resourceResolver Resource Resolver
      * @param path of the name item to get
