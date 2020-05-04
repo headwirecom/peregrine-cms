@@ -580,20 +580,10 @@
         }
         if (payload.path !== '/jcr:content') {
           $perAdminApp.stateAction('deletePageNode', payload).then((data) => {
-            this.cleanLeftOvers(payload.path)
+            this.addInlineEditClones()
           })
         }
         this.unselect(this)
-      },
-
-      cleanLeftOvers(path) {
-        const leftOvers = this.iframe.app.querySelectorAll(`[${Attribute.PATH}="${path}"]`)
-
-        if (leftOvers && leftOvers.length > 0) {
-          leftOvers.forEach((el) => {
-            el.remove()
-          })
-        }
       },
 
       onCopy(e) {
