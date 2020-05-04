@@ -264,14 +264,22 @@
         this.iframe.html = this.iframe.doc.querySelector('html')
         this.iframe.body = this.iframe.doc.querySelector('body')
         this.iframe.doc.querySelector('#peregrine-app').setAttribute('contenteditable', 'false')
+        this.addInlineEditClones()
+      },
+
+      addInlineEditClones() {
         const elements = this.iframe.body.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el) => {
-          const clone = el.cloneNode(true)
-          clone.style.cursor = 'text'
-          clone.classList.add('inline-edit-clone')
-          clone.addEventListener('input', this.onInlineEdit)
-          clone.addEventListener('focus', this.onInlineFocus)
-          el.parentNode.insertBefore(clone, el)
+          const clsList = el.classList
+          if (!clsList.contains('inline-edit-clone') && !clsList.contains('inline-edit-original')) {
+            el.classList.add('inline-edit-original')
+            const clone = el.cloneNode(true)
+            clone.style.cursor = 'text'
+            clone.classList.add('inline-edit-clone')
+            clone.addEventListener('input', this.onInlineEdit)
+            clone.addEventListener('focus', this.onInlineFocus)
+            el.parentNode.insertBefore(clone, el)
+          }
         })
         this.iframeEditMode()
       },
@@ -512,7 +520,15 @@
           }
         }
         $perAdminApp.stateAction(addOrMove, payload).then((data) => {
-          console.log(data)
+          this.addInlineEditClones()
+          /*
+          const clone = el.cloneNode(true)
+          clone.style.cursor = 'text'
+          clone.classList.add('inline-edit-clone')
+          clone.addEventListener('input', this.onInlineEdit)
+          clone.addEventListener('focus', this.onInlineFocus)
+          el.parentNode.insertBefore(clone, el)
+           */
         })
         event.dataTransfer.clearData('text')
       },
