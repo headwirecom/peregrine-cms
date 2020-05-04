@@ -579,7 +579,16 @@ function notifyUserImpl(title, message, options) {
     $('#notifyUserModal').modal('open', options)
 }
 
-function toastImpl(message, displayLength, className, callback) {
+/**
+ * implementation of $perAdminApp.toast()
+ *
+ * @private
+ * @param message
+ * @param className
+ * @param displayLength
+ * @param callback
+ */
+function toastImpl(message, className, displayLength, callback) {
     const toast = Materialize.toast(message, displayLength, className, callback)
     toast.el.addEventListener('click', () => {
         console.log(toast, 'click')
@@ -968,12 +977,12 @@ var PerAdminApp = {
      * @memberOf PerAdminApp
      * @method
      * @param message
-     * @param displayLength
      * @param className
+     * @param displayLength
      * @param callback
      */
-    toast(message, displayLength, className, callback) {
-        toastImpl(message, displayLength, className, callback)
+    toast(message, className, displayLength=3000, callback=null) {
+        toastImpl(message, className, displayLength, callback)
     },
 
     /**
