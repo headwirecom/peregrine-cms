@@ -97,5 +97,7 @@ export const NodeTree ={
 
 export const Attribute = {
   INLINE: 'data-per-inline',
-  PATH: 'data-per-path'
+  PATH: 'data-per-path',
+  DROPTARGET: 'data-per-droptarget',
+  LOCATION: 'data-per-location'
 }
