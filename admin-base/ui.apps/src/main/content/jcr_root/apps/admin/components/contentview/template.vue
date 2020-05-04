@@ -373,6 +373,8 @@
       },
 
       wrapEditableAroundSelected() {
+        if (!this.selected.component) return
+
         const {top, left, width, height} = this.getBoundingClientRect(this.selected.component)
         this.editable.styles.top = `${top}px`
         this.editable.styles.left = `${left}px`
