@@ -220,13 +220,18 @@
       selectComponent(vm, componentEl) {
         vm.selected.component = componentEl
         vm.selected.path = componentEl.getAttribute(Attribute.PATH) || null
-        vm.editable.class = 'selected'
-        $perAdminApp.action(vm, 'showComponentEdit', vm.selected.path).then(() => {
-          if (this.inline) {
-            set(this.view, '/state/editor/inline', this.inline)
-            this.inline = null
-          }
-        })
+
+        if ($perAdminApp.findNodeFromPath(vm.view.pageView.page, vm.selected.path).fromTemplate) {
+          vm.notifyComponentFromTemplate()
+        } else {
+          vm.editable.class = 'selected'
+          $perAdminApp.action(vm, 'showComponentEdit', vm.selected.path).then(() => {
+            if (this.inline) {
+              set(this.view, '/state/editor/inline', this.inline)
+              this.inline = null
+            }
+          })
+        }
       },
       unselect(vm) {
         vm.selected.component = null
@@ -359,17 +364,6 @@
 
       onIframeScroll() {
         this.scrollTop = this.iframe.html.scrollTop
-      },
-
-      updateSelectedComponent() {
-        const node = $perAdminApp.findNodeFromPath(this.view.pageView.page,)
-        if (node.fromTemplate) {
-          $perAdminApp.notifyUser(this.$i18n('templateComponent'),
-              this.$i18n('fromTemplateNotifyMsg'), {
-                complete: this.removeEditable
-              })
-        } else {
-        }
       },
 
       wrapEditableAroundSelected() {
@@ -604,6 +598,14 @@
 
       refreshEditor(me, target) {
         me.$refs['editview'].contentWindow.location.reload();
+      },
+
+      notifyComponentFromTemplate() {
+        const title = this.$i18n('templateComponent')
+        const message = this.$i18n('fromTemplateNotifyMsg')
+        $perAdminApp.notifyUser(title, message, {
+          complete: this.unselect
+        })
       }
     }
   }
