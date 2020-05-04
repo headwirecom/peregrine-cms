@@ -288,19 +288,28 @@
         this.addInlineEditClones()
       },
 
+      removeInlineEditClones() {
+        const clones = this.iframe.app.querySelectorAll('.inline-edit-clone')
+
+        if (!clones || clones.length <= 0) return
+
+        clones.forEach((clone) => {
+          clone.remove()
+        })
+      },
+
       addInlineEditClones() {
+        this.removeInlineEditClones()
         const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el) => {
           const clsList = el.classList
-          if (!clsList.contains('inline-edit-clone') && !clsList.contains('inline-edit-original')) {
-            el.classList.add('inline-edit-original')
-            const clone = el.cloneNode(true)
-            clone.style.cursor = 'text'
-            clone.classList.add('inline-edit-clone')
-            clone.addEventListener('input', this.onInlineEdit)
-            clone.addEventListener('focus', this.onInlineFocus)
-            el.parentNode.insertBefore(clone, el)
-          }
+          el.classList.add('inline-edit-original')
+          const clone = el.cloneNode(true)
+          clone.style.cursor = 'text'
+          clone.classList.add('inline-edit-clone')
+          clone.addEventListener('input', this.onInlineEdit)
+          clone.addEventListener('focus', this.onInlineFocus)
+          el.parentNode.insertBefore(clone, el)
         })
         this.iframeEditMode()
       },
