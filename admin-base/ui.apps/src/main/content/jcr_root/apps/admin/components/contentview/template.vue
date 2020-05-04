@@ -161,7 +161,7 @@
         return this.viewMode
       },
       enableEditableFeatures() {
-        if (this.path === undefined || this.path === null) return false
+        if (this.path === undefined || this.path === null || this.dragging) return false
 
         const node = $perAdminApp.findNodeFromPath(this.view.pageView.page, this.path)
         if (!node) {
@@ -428,17 +428,16 @@
         }
       },
 
-      getRelativeMousePosition() {
+      getRelativeMousePosition(event) {
         if (!this.mouseover) return {x: -1, y: -1}
-        const componentEl = this.findComponentEl(event.target)
-        const offset = this.getBoundingClientRect(componentEl)
+        const offset = this.getBoundingClientRect(this.component)
         return {
           width: offset.width,
           x: event.pageX - offset.left,
           xPercentage: (event.pageX - offset.left) / offset.width * 100,
           height: offset.height,
-          y: event.pageY - offset.top - this.iframe.scrollTop,
-          yPercentage: (event.pageY - offset.top - this.iframe.scrollTop) / offset.height * 100
+          y: event.pageY - offset.top - this.scrollTop,
+          yPercentage: (event.pageY - offset.top - this.scrollTop) / offset.height * 100
         }
       },
 
@@ -460,13 +459,14 @@
           const isDropTarget = this.dropTarget === 'true'
           const isRoot = $perAdminApp.findNodeFromPath(
               this.view.pageView.page, this.path).fromTemplate === true
+          const relMousePos = this.getRelativeMousePosition(event)
 
           if (isDropTarget) {
             const dropLocation = this.dropLocation
-            if (dropLocation === 'after' && !isRoot) {
+            if (relMousePos.yPercentage > 43.5 && dropLocation === 'after' && !isRoot) {
               this.dropPosition = 'after'
               this.editable.class = 'drop-bottom'
-            } else if (dropLocation === 'before' && !isRoot) {
+            } else if (relMousePos.yPercentage <= 43.5 && dropLocation === 'before' && !isRoot) {
               this.dropPosition = 'before'
               this.editable.class = 'drop-top'
             } else if (dropLocation) {
@@ -476,8 +476,7 @@
               this.dropPosition = 'none'
             }
           } else if (!isRoot) {
-            const relativeMousePosition = this.getRelativeMousePosition(event)
-            if (relativeMousePosition.yPercentage <= 43.5) {
+            if (relMousePos.yPercentage <= 43.5) {
               this.dropPosition = 'before'
               this.editable.class = 'drop-top'
             } else {
