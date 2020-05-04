@@ -45,10 +45,15 @@
                     v-on:click.stop.prevent="onCancel">
                 <i class="material-icons">close</i>
             </button>
-            <button v-if="hasSchema" class="waves-effect waves-light btn btn-raised"
-                    v-bind:title="$i18n('save')" v-on:click.stop.prevent="onOk">
+            <template>
+              <button v-if="hasSchema" class="waves-effect waves-light btn btn-raised"
+                      v-bind:title="$i18n('save')" v-on:click.stop.prevent="onOk">
                 <i class="material-icons">check</i>
-            </button>
+              </button>
+              <button v-else class="btn btn-raised disabled" style="opacity: 0">
+                <i class="material-icons">check</i>
+              </button>
+            </template>
         </div>
     </div>
 </template>
