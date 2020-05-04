@@ -25,9 +25,9 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
+import com.peregrine.commons.ResourceUtils;
 import com.peregrine.sitemap.ResourceResolverFactoryProxy;
 import com.peregrine.sitemap.SiteMapStructureCache;
-import com.peregrine.commons.ResourceUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
