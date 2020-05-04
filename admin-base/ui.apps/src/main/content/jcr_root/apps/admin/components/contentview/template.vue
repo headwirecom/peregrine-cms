@@ -512,9 +512,8 @@
           const targetNode = $perAdminApp.findNodeFromPath(this.view.pageView.page, targetPath)
           if (!targetNode || targetNode.fromTemplate) {
             $perAdminApp.notifyUser('template component',
-                'You cannot drag a component into a template section', {
-                  complete: this.removeEditable
-                })
+                'You cannot drag a component into a template section')
+            this.unselect(this)
             return false;
           }
         }
@@ -558,7 +557,7 @@
             this.cleanLeftOvers(payload.path)
           })
         }
-        this.editable.class = null
+        this.unselect(this)
       },
 
       cleanLeftOvers(path) {
