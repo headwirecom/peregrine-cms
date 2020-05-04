@@ -33,6 +33,12 @@
 
     <sly data-sly-use.page="com.peregrine.nodetypes.merge.PageMerge" /><script id="perPage" data-per-path="${resource.parent.path @ context='unsafe'}.html" type="application/json">${page.mergedForScript @ context = 'unsafe'}</script>
 
+    <style>
+        #peregrine-app [contenteditable="true"]:focus,
+        #peregrine-app [contenteditable="true"]:hover {
+            outline: 1px solid #fe9701 !important;
+        }
+    </style>
 </head>
 
 
