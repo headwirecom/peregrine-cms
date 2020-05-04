@@ -260,14 +260,14 @@
       },
 
       findComponentEl(targetEl) {
-        let componentEl = targetEl
-        while (!componentEl.getAttribute(Attribute.PATH)) {
-          componentEl = componentEl.parentElement
-          if (!componentEl) {
+        let el = targetEl
+        while (!el.getAttribute(Attribute.PATH) || el.getAttribute(Attribute.DROPTARGET)) {
+          el = el.parentElement
+          if (!el) {
             break
           }
         }
-        return componentEl
+        return el
       },
 
       onIframeMouseLeave(event) {
