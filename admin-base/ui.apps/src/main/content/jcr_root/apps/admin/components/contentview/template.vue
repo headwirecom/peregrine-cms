@@ -549,10 +549,6 @@
         this.editable.class = 'draggable'
       },
 
-      updateEditablePos(top) {
-        this.$refs.editable.style.top = top + 'px'
-      },
-
       onDelete(e) {
         const view = this.view
         const pagePath = view.pageView.path
