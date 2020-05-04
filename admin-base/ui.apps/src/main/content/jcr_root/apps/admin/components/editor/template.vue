@@ -163,6 +163,7 @@
         onCancel(e) {
             var view = $perAdminApp.getView()
             $perAdminApp.action(this, 'onEditorExitFullscreen')
+            $perAdminApp.action(this, 'unselect')
             $perAdminApp.stateAction('cancelPageEdit', { pagePath: view.pageView.path, path: view.state.editor.path } ).then( () => {
                 $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
             })

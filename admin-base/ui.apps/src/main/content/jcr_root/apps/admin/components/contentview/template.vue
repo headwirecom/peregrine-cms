@@ -77,6 +77,9 @@
     props: ['model'],
     data() {
       return {
+        target: null,
+        inline: null,
+        scrollTop: 0,
         editable: {
           visible: false,
           class: null,
@@ -90,29 +93,20 @@
           }
         },
         selected: {
-          el: null,
-          path: null,
+          component: null, path: null,
           draggable: true
+        },
+        mouseover: {},
+        iframe: {
+          loaded: false,
+          mouse: false,
+          doc: null, html: null, body: null, app: null,
+          scrollTop: 0
         },
         clipboard: null,
         ctrlDown: false,
-        scrollTop: 0,
         isTouch: false,
-        isIOS: false,
-        iframe: {
-          mouse: false,
-          loaded: false,
-          doc: null,
-          html: null,
-          body: null,
-          app: null,
-          scrollTop: 0,
-          clicked: {
-            targetEl: null,
-            el: null,
-            path: null
-          }
-        }
+        isIOS: false
       }
     },
     computed: {
@@ -120,7 +114,8 @@
         return $perAdminApp.getView()
       },
       isSelected() {
-        return this.selected.el && this.selected.path && this.selected.path !== '/jcr:content'
+        return this.selected.component && this.selected.path && this.selected.path
+            !== '/jcr:content'
       },
       pagePath() {
         return $perAdminApp.getNodeFromView('/pageView/path') + '.html'
@@ -163,24 +158,22 @@
       }
     },
     watch: {
-      previewMode(val) {
-        if (val === 'preview') {
-          this.iframePreviewMode()
-          this.editable.class = null
+      target(val) {
+        if (val) {
+          this.selectComponent(this, this.findComponentEl(val))
         } else {
-          this.iframeEditMode()
-          if (this.selected.el) {
-            clearTimeout(this.editable.timer)
-            this.editable.timer = setTimeout(() => {
-              this.editable.class = 'selected'
-              this.wrapEditableAround(this.selected.el)
-            }, this.editable.delay)
-          }
+          this.unselect(this)
         }
       },
-      'iframe.clicked.el'(val) {
-        if (!val) return
-        this.updateSelectedComponent()
+      'selected.component'(val) {
+        if (!val) {
+          this.removeEditable()
+        } else {
+          this.wrapEditableAroundSelected()
+        }
+      },
+      scrollTop() {
+        this.wrapEditableAroundSelected()
       },
       'iframe.mouse'(val) {
         if (val && this.previewMode !== 'preview') {
@@ -192,8 +185,23 @@
       selectedModel: {
         deep: true,
         handler(val) {
-          if (!this.selected.el) return
-          this.wrapEditableAround(this.selected.el)
+          if (!this.selected.component) return
+          this.wrapEditableAroundSelected()
+        }
+      },
+      previewMode(val) {
+        if (val === 'preview') {
+          this.iframePreviewMode()
+          this.editable.class = null
+        } else {
+          this.iframeEditMode()
+          if (this.selected.component) {
+            clearTimeout(this.editable.timer)
+            this.editable.timer = setTimeout(() => {
+              this.editable.class = 'selected'
+              this.wrapEditableAround(this.selected.component)
+            }, this.editable.delay)
+          }
         }
       }
     },
@@ -209,9 +217,25 @@
       })
     },
     methods: {
+      selectComponent(vm, componentEl) {
+        vm.selected.component = componentEl
+        vm.selected.path = componentEl.getAttribute(Attribute.PATH) || null
+        vm.editable.class = 'selected'
+        $perAdminApp.action(vm, 'showComponentEdit', vm.selected.path).then(() => {
+          if (this.inline) {
+            set(this.view, '/state/editor/inline', this.inline)
+            this.inline = null
+          }
+        })
+      },
+      unselect(vm) {
+        vm.selected.component = null
+        vm.selected.path = null
+        vm.editable.class = null
+      },
       setSelectedEl(el, inline = null) {
         if (el) {
-          this.selected.el = el
+          this.selected.component = el
           this.selected.path = el.getAttribute(Attribute.PATH) || null
           this.editable.class = 'selected'
           this.wrapEditableAround(el)
@@ -221,21 +245,8 @@
             }
           })
         } else {
-          this.selected.el = null
+          this.selected.component = null
           this.selected.path = null
-        }
-      },
-
-      setIframeClicked(targetEl) {
-        if (targetEl) {
-          const componentEl = this.findComponentEl(targetEl)
-          this.iframe.clicked.targetEl = targetEl
-          this.iframe.clicked.el = componentEl
-          this.iframe.clicked.path = componentEl ? componentEl.getAttribute(Attribute.PATH) : null
-        } else {
-          this.iframe.clicked.targetEl = null
-          this.iframe.clicked.el = null
-          this.iframe.clicked.path = null
         }
       },
 
@@ -299,8 +310,8 @@
             el.innerHTML = elements[index + 1].innerHTML
           } else {
             el.style.display = 'none'
-            if (this.selected.el === el) {
-              this.selected.el = elements[index - 1]
+            if (this.selected.component === el) {
+              this.selected.component = elements[index - 1]
             }
           }
         })
@@ -316,8 +327,8 @@
           el.setAttribute('contenteditable', editable)
           if (el.classList.contains('inline-edit-clone')) {
             el.style.display = 'none'
-            if (this.selected.el === el) {
-              this.selected.el = elements[index + 1]
+            if (this.selected.component === el) {
+              this.selected.component = elements[index + 1]
             }
           } else {
             el.style.display = ''
@@ -338,35 +349,31 @@
 
       onInlineFocus(event) {
         const dataInline = event.target.getAttribute(Attribute.INLINE).split('.').slice(1)
-        this.setSelectedEl(this.findComponentEl(event.target), dataInline.join('.'))
+        this.inline = dataInline.join('.')
+        this.target = event.target
       },
 
       onIframeClick(ev) {
-        this.setIframeClicked(ev.target)
+        this.target = ev.target
       },
 
       onIframeScroll() {
-        this.iframe.scrollTop = this.iframe.html.scrollTop
-        if (this.selected.el) {
-          this.wrapEditableAround(this.selected.el)
-        }
+        this.scrollTop = this.iframe.html.scrollTop
       },
 
       updateSelectedComponent() {
-        const node = $perAdminApp.findNodeFromPath(this.view.pageView.page,
-            this.iframe.clicked.path)
+        const node = $perAdminApp.findNodeFromPath(this.view.pageView.page,)
         if (node.fromTemplate) {
           $perAdminApp.notifyUser(this.$i18n('templateComponent'),
               this.$i18n('fromTemplateNotifyMsg'), {
-                complete: this.removeEditOverlay
+                complete: this.removeEditable
               })
         } else {
-          this.setSelectedEl(this.iframe.clicked.el)
         }
       },
 
-      wrapEditableAround(el) {
-        const {top, left, width, height} = this.getBoundingClientRect(el)
+      wrapEditableAroundSelected() {
+        const {top, left, width, height} = this.getBoundingClientRect(this.selected.component)
         this.editable.styles.top = `${top}px`
         this.editable.styles.left = `${left}px`
         this.editable.styles.width = `${width}px`
@@ -407,19 +414,19 @@
         if ($perAdminApp.getNodeFromViewOrNull('/state/editorVisible')) return
 
         // check if we only left the area into the overlay for the actions
-        this.removeEditOverlay()
+        this.removeEditable()
       },
 
-      removeEditOverlay() {
-        this.setSelectedEl(null)
+      removeEditable() {
+        this.target = null
         this.editable.class = null
         if (this.isTouch) {
           this.selected.draggable = false
         }
       },
 
-      getRelativeMousePosition(event) {
-        if (!event) return {x: -1, y: -1}
+      getRelativeMousePosition() {
+        if (!this.mouseover) return {x: -1, y: -1}
         const componentEl = this.findComponentEl(event.target)
         const offset = this.getBoundingClientRect(componentEl)
         return {
@@ -435,7 +442,7 @@
       /* Drag and Drop ===========================
       ============================================ */
       onDragStart(ev) {
-        if (this.selected.el === null) return
+        if (this.selected.component === null) return
 
         this.editable.class = 'dragging'
         ev.dataTransfer.setData('text', this.selected.path)
@@ -514,7 +521,7 @@
           if (!targetNode || targetNode.fromTemplate) {
             $perAdminApp.notifyUser('template component',
                 'You cannot drag a component into a template section', {
-                  complete: this.removeEditOverlay
+                  complete: this.removeEditable
                 })
             return false;
           }
@@ -544,7 +551,7 @@
       },
 
       onLongTouchOverlay() {
-        if (this.selected.el === null) return
+        if (this.selected.component === null) return
 
         this.selected.draggable = true
         this.editable.class = 'draggable'
@@ -555,7 +562,7 @@
       },
 
       onDelete(e) {
-        const targetEl = this.selected.el
+        const targetEl = this.selected.component
         const view = this.view
         const pagePath = view.pageView.path
         const payload = {
@@ -570,7 +577,7 @@
       },
 
       onCopy(e) {
-        const targetEl = this.selected.el
+        const targetEl = this.selected.component
         this.clipboard = $perAdminApp.findNodeFromPath(
             this.view.pageView.page,
             targetEl.getAttribute(Attribute.PATH)
@@ -578,7 +585,7 @@
       },
 
       onPaste(e) {
-        const targetEl = this.selected.el
+        const targetEl = this.selected.component
         const nodeFromClipboard = this.clipboard
         const view = this.view
         const isDropTarget = targetEl.getAttribute('data-per-droptarget') === 'true'
