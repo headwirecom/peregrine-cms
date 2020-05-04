@@ -1,29 +1,35 @@
-.toast {
+#toast-container {
   position: fixed;
   top: 55px !important;
   right: 10px;
   max-width: 35rem;
-  padding-left: 0;
-  word-break: break-word;
-  opacity: 0;
-  transition: opacity .1s ease-out;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
 
-  &:before {
-    font-family: "Material Icons", sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 7rem;
-    font-size: 2.8rem;
-    content: 'notifications'
-  }
-
-  &.warn {
-    background-color: var(--warn-bg);
-    color: var(--warn-color);
+  .toast {
+    padding-left: 0;
+    word-break: break-word;
+    opacity: 0;
+    transition: opacity .1s ease-out;
 
     &:before {
-      content: 'warning';
+      font-family: "Material Icons", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 7rem;
+      font-size: 2.8rem;
+      content: 'notifications'
+    }
+
+    &.warn {
+      background-color: var(--warn-bg);
+      color: var(--warn-color);
+
+      &:before {
+        content: 'warning';
+      }
     }
   }
 }

@@ -590,10 +590,7 @@ function notifyUserImpl(title, message, options) {
  */
 function toastImpl(message, className, displayLength, callback) {
     const toast = Materialize.toast(message, displayLength, className, callback)
-    toast.el.addEventListener('click', () => {
-        console.log(toast, 'click')
-        toast.remove()
-    })
+    toast.el.addEventListener('click', () => toast.remove())
 }
 
 /**
