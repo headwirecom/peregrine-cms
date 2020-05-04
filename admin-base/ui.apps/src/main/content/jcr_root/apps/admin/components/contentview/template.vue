@@ -188,6 +188,11 @@
       scrollTop() {
         this.wrapEditableAroundSelected()
       },
+      'view.state.tools.workspace.view'(val) {
+        this.$nextTick(() => {
+          this.wrapEditableAroundSelected()
+        })
+      },
       'iframe.mouse'(val) {
         if (val && this.previewMode !== 'preview') {
           this.iframeEditMode()
