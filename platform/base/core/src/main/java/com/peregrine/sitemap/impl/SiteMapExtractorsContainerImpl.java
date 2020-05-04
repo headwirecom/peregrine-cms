@@ -28,6 +28,7 @@ package com.peregrine.sitemap.impl;
 import com.peregrine.sitemap.SiteMapConfiguration;
 import com.peregrine.sitemap.SiteMapExtractor;
 import com.peregrine.sitemap.SiteMapExtractorsContainer;
+import com.peregrine.sitemap.SiteMapUrlBuilder;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -44,14 +45,33 @@ public final class SiteMapExtractorsContainerImpl implements SiteMapExtractorsCo
     private final Map<SiteMapConfiguration, SiteMapExtractorImpl> items = new HashMap<>();
 
     @Reference
-    private SiteMapExtractorDefaults siteMapExtractorDefaults;
+    private SiteMapUrlBuilder urlBuilder;
+
+    @Reference
+    private EtcMapUrlExternalizer etcMapUrlExternalizer;
+
+    @Reference
+    private LastModPropertyProvider lastModPropertyProvider;
+
+    @Reference
+    private ChangeFreqPropertyProvider changeFreqPropertyProvider;
+
+    @Reference
+    private PriorityPropertyProvider priorityPropertyProvider;
 
     public boolean add(final SiteMapConfiguration config) {
         if (isNull(config.getPagePathPattern())) {
             return false;
         }
 
-        items.put(config, new SiteMapExtractorImpl(config, siteMapExtractorDefaults));
+        items.put(config, new SiteMapExtractorImpl(
+                config,
+                urlBuilder,
+                etcMapUrlExternalizer,
+                lastModPropertyProvider,
+                changeFreqPropertyProvider,
+                priorityPropertyProvider)
+        );
         return true;
     }
 

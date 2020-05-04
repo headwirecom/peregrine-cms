@@ -28,7 +28,7 @@ package com.peregrine.sitemap.impl;
 import com.peregrine.sitemap.*;
 import org.apache.sling.api.resource.Resource;
 
-import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -36,24 +36,18 @@ import static java.util.Objects.isNull;
 
 public final class SiteMapExtractorImpl extends SiteMapExtractorBase {
 
-    private final SiteMapExtractorDefaults siteMapExtractorDefaults;
+    private final SiteMapUrlBuilder urlBuilder;
+    private final UrlExternalizer urlExternalizer;
+    private final List<PropertyProvider> propertyProviders;
 
-    public SiteMapExtractorImpl(final SiteMapConfiguration config, final SiteMapExtractorDefaults siteMapExtractorDefaults) {
+    public SiteMapExtractorImpl(final SiteMapConfiguration config,
+                                final SiteMapUrlBuilder urlBuilder,
+                                final UrlExternalizer urlExternalizer,
+                                final PropertyProvider... propertyProviders) {
         super(config);
-        this.siteMapExtractorDefaults = siteMapExtractorDefaults;
-    }
-
-    protected SiteMapUrlBuilder getUrlBuilder() {
-        return siteMapExtractorDefaults.getUrlBuilder();
-    }
-
-    protected UrlExternalizer getExternalizer() {
-        final UrlExternalizer externalizer = super.getExternalizer();
-        if (isNull(externalizer)) {
-            return siteMapExtractorDefaults.getUrlExternalizer();
-        }
-
-        return externalizer;
+        this.urlBuilder = urlBuilder;
+        this.urlExternalizer = urlExternalizer;
+        this.propertyProviders = Arrays.asList(propertyProviders);
     }
 
     @Override
@@ -66,12 +60,24 @@ public final class SiteMapExtractorImpl extends SiteMapExtractorBase {
         return pattern.matcher(root.getPath()).matches();
     }
 
+    @Override
+    protected SiteMapUrlBuilder getUrlBuilder() {
+        return urlBuilder;
+    }
+
+    @Override
+    protected UrlExternalizer getExternalizer() {
+        final UrlExternalizer externalizer = super.getExternalizer();
+        if (isNull(externalizer)) {
+            return urlExternalizer;
+        }
+
+        return externalizer;
+    }
+
+    @Override
     protected Iterable<? extends PropertyProvider> getDefaultPropertyProviders() {
-        final List<PropertyProvider> result = new LinkedList<>();
-        result.add(siteMapExtractorDefaults.getLastModPropertyProvider());
-        result.add(siteMapExtractorDefaults.getChangeFreqPropertyProvider());
-        result.add(siteMapExtractorDefaults.getPriorityPropertyProvider());
-        return result;
+        return propertyProviders;
     }
 
 }
