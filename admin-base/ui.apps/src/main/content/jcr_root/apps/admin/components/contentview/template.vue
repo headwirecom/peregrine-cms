@@ -384,8 +384,10 @@
         if (!this.component) return
 
         const {top, left, width, height} = this.getBoundingClientRect(this.component)
+        const offset = this.getBoundingClientRect(this.$refs.editview)
+
         this.editable.styles.top = `${top}px`
-        this.editable.styles.left = `${left}px`
+        this.editable.styles.left = `${left + offset.left}px`
         this.editable.styles.width = `${width}px`
         this.editable.styles.height = `${height}px`
       },
