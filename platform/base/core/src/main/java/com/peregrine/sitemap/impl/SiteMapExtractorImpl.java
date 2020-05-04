@@ -36,18 +36,24 @@ import static java.util.Objects.isNull;
 
 public final class SiteMapExtractorImpl extends SiteMapExtractorBase {
 
+    private final SiteMapConfiguration configuration;
     private final SiteMapUrlBuilder urlBuilder;
     private final UrlExternalizer urlExternalizer;
     private final List<PropertyProvider> propertyProviders;
 
-    public SiteMapExtractorImpl(final SiteMapConfiguration config,
+    public SiteMapExtractorImpl(final SiteMapConfiguration configuration,
                                 final SiteMapUrlBuilder urlBuilder,
                                 final UrlExternalizer urlExternalizer,
                                 final PropertyProvider... propertyProviders) {
-        super(config);
+        this.configuration = configuration;
         this.urlBuilder = urlBuilder;
         this.urlExternalizer = urlExternalizer;
         this.propertyProviders = Arrays.asList(propertyProviders);
+    }
+
+    @Override
+    public SiteMapConfiguration getConfiguration() {
+        return configuration;
     }
 
     @Override
@@ -66,8 +72,8 @@ public final class SiteMapExtractorImpl extends SiteMapExtractorBase {
     }
 
     @Override
-    protected UrlExternalizer getExternalizer() {
-        final UrlExternalizer externalizer = super.getExternalizer();
+    protected UrlExternalizer getUrlExternalizer() {
+        final UrlExternalizer externalizer = super.getUrlExternalizer();
         if (isNull(externalizer)) {
             return urlExternalizer;
         }

@@ -59,6 +59,9 @@ public final class SiteMapExtractorsContainerImpl implements SiteMapExtractorsCo
     @Reference
     private PriorityPropertyProvider priorityPropertyProvider;
 
+    @Reference
+    private DefaultSiteMapExtractor defaultSiteMapExtractor;
+
     public boolean add(final SiteMapConfiguration config) {
         if (isNull(config.getPagePathPattern())) {
             return false;
@@ -87,6 +90,6 @@ public final class SiteMapExtractorsContainerImpl implements SiteMapExtractorsCo
             }
         }
 
-        return null;
+        return defaultSiteMapExtractor;
     }
 }

@@ -49,9 +49,9 @@ public final class SiteMapExtractorImplTest extends SlingResourcesTest {
 
     @Test
     public void getExternalizer() {
-        assertEquals(externalizer, model.getExternalizer());
+        assertEquals(externalizer, model.getUrlExternalizer());
         when(config.getUrlExternalizer()).thenReturn(mock(UrlExternalizer.class));
-        assertNotEquals(externalizer, model.getExternalizer());
+        assertNotEquals(externalizer, model.getUrlExternalizer());
     }
 
     @Test

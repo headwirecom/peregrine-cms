@@ -72,7 +72,17 @@ public final class SiteMapExtractorBaseTest extends SlingResourcesTest
         pages.add(page);
     }
 
-    private final SiteMapExtractorBase model = new SiteMapExtractorBase(configuration) {
+    private final SiteMapExtractorBase model = new SiteMapExtractorBase() {
+
+        @Override
+        public SiteMapConfiguration getConfiguration() {
+            return configuration;
+        }
+
+        @Override
+        public boolean appliesTo(final Resource root) {
+            return pages.contains(root);
+        }
 
         @Override
         protected Iterable<? extends PropertyProvider> getDefaultPropertyProviders() {
@@ -84,10 +94,6 @@ public final class SiteMapExtractorBaseTest extends SlingResourcesTest
             return SiteMapExtractorBaseTest.this;
         }
 
-        @Override
-        public boolean appliesTo(final Resource root) {
-            return pages.contains(root);
-        }
     };
 
     @Override
