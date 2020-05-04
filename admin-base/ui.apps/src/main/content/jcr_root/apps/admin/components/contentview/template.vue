@@ -178,6 +178,9 @@
         } else {
           return null
         }
+      },
+      isTemplateNode() {
+        return $perAdminApp.findNodeFromPath(this.pageView.page, this.path).fromTemplate === true
       }
     },
     watch: {
@@ -245,16 +248,14 @@
         vm.target = el
         if (!vm.target || !vm.component || !vm.path) return
 
-        if ($perAdminApp.findNodeFromPath(vm.view.pageView.page, vm.path).fromTemplate) {
-          this.unselect(vm)
-
-          if (!this.dragging) {
-            $perAdminApp.toast(vm.$i18n('fromTemplateNotifyMsg'), 'warn')
-          }
+        if (!vm.dragging && vm.isTemplateNode) {
+          vm.unselect(vm)
+          $perAdminApp.toast(vm.$i18n('fromTemplateNotifyMsg'), 'warn')
         } else {
-          this.wrapEditableAroundSelected()
-          if (!this.dragging) {
+          if (vm.path !== '/jcr:content') {
+            this.wrapEditableAroundSelected()
             vm.editable.class = 'selected'
+          } else if (!vm.dragging) {
             $perAdminApp.action(vm, 'showComponentEdit', vm.path).then(() => {
               if (vm.inline) {
                 set(vm.view, '/state/editor/inline', vm.inline)
@@ -470,8 +471,7 @@
 
         if (this.component) {
           const isDropTarget = this.dropTarget === 'true'
-          const isRoot = $perAdminApp.findNodeFromPath(
-              this.view.pageView.page, this.path).fromTemplate === true
+          const isRoot = this.isTemplateNode
           const relMousePos = this.getRelativeMousePosition(event)
 
           if (isDropTarget) {
