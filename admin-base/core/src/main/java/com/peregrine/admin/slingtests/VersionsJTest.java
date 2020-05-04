@@ -3,6 +3,7 @@ package com.peregrine.admin.slingtests;
 import com.google.common.collect.Iterators;
 import com.peregrine.admin.models.PageModel;
 import com.peregrine.admin.models.Recyclable;
+import com.peregrine.replication.ReferenceLister;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
@@ -24,6 +25,9 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionManager;
+
+import java.util.List;
+
 import static com.peregrine.commons.util.PerConstants.RECYCLE_BIN;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
@@ -36,13 +40,17 @@ public class VersionsJTest {
     private ResourceResolverFactory resolverFactory;
 
     @TestReference
+    private ReferenceLister referenceLister;
+
+    @TestReference
     AdminResourceHandler resourceManagement;
 
     private ResourceResolver resourceResolver;
     private Session jcrSession;
 
     static final String EXAMPLE_SITE_ROOT = "/content/example/";
-    static final String SITE_RECYCLINGBIN = EXAMPLE_SITE_ROOT + "recyclebin";
+//    static final String SITE_RECYCLINGBIN = "/var/recyclebin" + EXAMPLE_SITE_ROOT ;
+    static final String SITE_RECYCLINGBIN = EXAMPLE_SITE_ROOT + "recyclebin" ;
     static final String EXAMPLE_PAGES = EXAMPLE_SITE_ROOT +"pages";
     static final String EXAMPLE_INDEX = "pages/index";
     static final String EXAMPLE_ABOUT = "pages/about";
@@ -93,6 +101,7 @@ public class VersionsJTest {
         assertNotNull(resourceResolver);
         assertNotNull(jcrSession);
         assertNotNull(resourceManagement);
+        assertNotNull(referenceLister);
         assertNotNull(indexRes);
         assertNotNull(assetRes);
         assertNotNull(indexPage);
@@ -282,6 +291,10 @@ public class VersionsJTest {
             VersionHistory vhPage = vmPage.getVersionHistory(aboutNode.getPath());
             assertEquals(2, Iterators.size(vhPage.getAllLinearVersions()));
             assertNotNull(version);
+            String idBefore = aboutNode.getIdentifier();
+            List<Resource> beforeRefs = referenceLister.getReferenceList(true, aboutRes, true);
+
+
             // Record paths to restore
             String versionPath = version.getPath();
             String resourcePath = aboutNode.getPath();
@@ -290,13 +303,31 @@ public class VersionsJTest {
             aboutRes = resourceResolver.getResource(resourcePath);
             assertNull(aboutRes);
             resourceResolver.commit();
-            Recyclable recyclable = new Recyclable();
 
             // Restore at the recorded version
             Resource restoredResource = resourceManagement.restoreDeleted(resourceResolver, resourcePath, versionPath, true);
             assertNotNull(restoredResource);
             assertNotNull(resourceResolver.getResource(resourcePath));
             assertEquals("1.0" , vmPage.getBaseVersion(restoredResource.getPath()).getName());
+            String idAfter = restoredResource.adaptTo(Node.class).getIdentifier();
+            List<Resource> afterRefs = referenceLister.getReferenceList(true, restoredResource, true);
+
+            // jcr:uuid not guaranteed the same after restoring deleted
+            assertEquals(idAfter, idBefore);
+
+            // All references are the same
+            assertEquals(afterRefs.size(), beforeRefs.size());
+            for (int i=0; i < beforeRefs.size(); i++) {
+                boolean contained = false;
+                for (int j=0; j < afterRefs.size(); j++) {
+                    if (beforeRefs.get(i).getPath().equals(afterRefs.get(j).getPath())) {
+                        contained = true;
+                        break;
+                    }
+                }
+                assertTrue(contained);
+            }
+
             // check that the test page is not left in a "checked out" or locked state
             assertTrue(vmPage.isCheckedOut(restoredResource.getPath()));
             // Clean up
