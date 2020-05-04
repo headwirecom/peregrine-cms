@@ -136,6 +136,9 @@
       view() {
         return $perAdminApp.getView()
       },
+      pageView() {
+        return this.view.pageView
+      },
       isSelected() {
         return this.component && this.path && this.path !== '/jcr:content'
       },
@@ -188,10 +191,13 @@
       scrollTop() {
         this.wrapEditableAroundSelected()
       },
-      'view.state.tools.workspace.view'(val) {
+      'view.state.tools.workspace.view'() {
         this.$nextTick(() => {
           this.wrapEditableAroundSelected()
         })
+      },
+      'pageView.path'() {
+        this.unselect(this)
       },
       'iframe.mouse'(val) {
         if (val && this.previewMode !== 'preview') {
