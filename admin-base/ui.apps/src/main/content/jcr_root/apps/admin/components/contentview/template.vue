@@ -181,6 +181,9 @@
       },
       isTemplateNode() {
         return $perAdminApp.findNodeFromPath(this.pageView.page, this.path).fromTemplate === true
+      },
+      isRich() {
+        return this.view.state.editor.inline.rich
       }
     },
     watch: {
@@ -241,6 +244,7 @@
           /* selected components are not immediatly draggable on touch devices */
           this.selected.draggable = false
         }
+        set(this.view, '/state/editorVisible', false)
       })
     },
     methods: {
@@ -259,7 +263,7 @@
           if (!vm.dragging) {
             $perAdminApp.action(vm, 'showComponentEdit', vm.path).then(() => {
               if (vm.inline) {
-                set(vm.view, '/state/editor/inline', vm.inline)
+                set(vm.view, '/state/editor/inline/model', vm.inline)
                 vm.inline = null
               }
             })
@@ -376,7 +380,7 @@
         while (dataInline.length > 1) {
           parentProp = parentProp[dataInline.pop()]
         }
-        parentProp[dataInline.pop()] = this.target.innerHTML
+        parentProp[dataInline.pop()] = this.isRich ? this.target.innerHTML : this.target.innerText
       },
 
       onInlineFocus(event) {

@@ -116,7 +116,7 @@
           }
       },
         watch: {
-          'view.state.editor.inline'(val) {
+          'view.state.editor.inline.model'(val) {
               if (!val) return
               this.focusFieldByModel(val)
           }
@@ -231,7 +231,9 @@
           } else {
             console.warn('Unsupported field type: ', field.type)
           }
-          set(this.view, '/state/editor/inline', null)
+
+          set(this.view, '/state/editor/inline/model', null)
+          set(this.view, '/state/editor/inline/rich', this.isRichEditor(field))
         },
         focusCollectionField(model, index) {
           const fieldCollection = this.$refs.formGenerator.$children[index].$children[0]
@@ -241,6 +243,9 @@
             const {field, index} = this.getFieldAndIndexByModel(formGen.schema, model.pop())
             formGen.$children[index].$el.scrollIntoView()
           })
+        },
+        isRichEditor(field) {
+          return ['texteditor'].indexOf(field.type) >= 0;
         }
       }
 //      ,
