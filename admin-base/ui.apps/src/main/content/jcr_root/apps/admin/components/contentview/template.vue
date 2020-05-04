@@ -222,7 +222,7 @@
         vm.selected.path = componentEl.getAttribute(Attribute.PATH) || null
 
         if ($perAdminApp.findNodeFromPath(vm.view.pageView.page, vm.selected.path).fromTemplate) {
-          vm.notifyComponentFromTemplate()
+          $perAdminApp.toast(this.$i18n('fromTemplateNotifyMsg'), 'warn')
           this.unselect(vm)
         } else {
           vm.editable.class = 'selected'
@@ -599,14 +599,6 @@
 
       refreshEditor(me, target) {
         me.$refs['editview'].contentWindow.location.reload();
-      },
-
-      notifyComponentFromTemplate() {
-        const title = this.$i18n('templateComponent')
-        const message = this.$i18n('fromTemplateNotifyMsg')
-        $perAdminApp.notifyUser(title, message, {
-          complete: this.unselect
-        })
       }
     }
   }
