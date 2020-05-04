@@ -223,6 +223,7 @@
 
         if ($perAdminApp.findNodeFromPath(vm.view.pageView.page, vm.selected.path).fromTemplate) {
           vm.notifyComponentFromTemplate()
+          this.unselect(vm)
         } else {
           vm.editable.class = 'selected'
           $perAdminApp.action(vm, 'showComponentEdit', vm.selected.path).then(() => {
