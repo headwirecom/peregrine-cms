@@ -319,6 +319,8 @@
         this.removeInlineEditClones()
         const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el) => {
+          if (this.findComponentEl(el).classList.contains('from-template')) return
+
           const clsList = el.classList
           el.classList.add('inline-edit-original')
           const clone = el.cloneNode(true)
@@ -340,6 +342,7 @@
         this.iframe.body.setAttribute('contenteditable', 'true')
         const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el, index) => {
+          if (this.findComponentEl(el).classList.contains('from-template')) return
           el.setAttribute('contenteditable', 'true')
           if (el.classList.contains('inline-edit-clone')) {
             el.style.display = ''
@@ -360,6 +363,7 @@
         this.iframe.body.setAttribute('contenteditable', 'false')
         const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el, index) => {
+          if (this.findComponentEl(el).classList.contains('from-template')) return
           el.setAttribute('contenteditable', editable)
           if (el.classList.contains('inline-edit-clone')) {
             el.style.display = 'none'
