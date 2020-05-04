@@ -88,7 +88,6 @@ export default {
             e.preventDefault()
         },
         drop: function(e) {
-            alert('component drop')
         },
         edit: function(e) {
             alert('edit')
