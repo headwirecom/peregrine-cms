@@ -125,10 +125,10 @@
         }
       },
       dropTarget() {
-        return this.component.getAttribute(Attribute.DROPTARGET)
+        return this.target.getAttribute(Attribute.DROPTARGET)
       },
       dropLocation() {
-        return this.component.getAttribute(Attribute.LOCATION)
+        return this.target.getAttribute(Attribute.LOCATION)
       },
       targetInline() {
         return this.target.getAttribute(Attribute.INLINE)
@@ -485,12 +485,12 @@
 
           if (isDropTarget) {
             const dropLocation = this.dropLocation
-            if (relMousePos.yPercentage > 43.5 && dropLocation === 'after' && !isRoot) {
-              this.dropPosition = 'after'
-              this.editable.class = 'drop-bottom'
-            } else if (relMousePos.yPercentage <= 43.5 && dropLocation === 'before' && !isRoot) {
+            if (relMousePos.yPercentage <= 30 && dropLocation === 'before' && !isRoot) {
               this.dropPosition = 'before'
               this.editable.class = 'drop-top'
+            } else if (relMousePos.yPercentage >= 70 && dropLocation === 'after' && !isRoot) {
+              this.dropPosition = 'after'
+              this.editable.class = 'drop-bottom'
             } else if (dropLocation) {
               this.dropPosition = 'into-' + dropLocation
               this.editable.class = 'selected'
