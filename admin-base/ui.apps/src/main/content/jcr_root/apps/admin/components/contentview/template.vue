@@ -255,7 +255,8 @@
           if (vm.path !== '/jcr:content') {
             this.wrapEditableAroundSelected()
             vm.editable.class = 'selected'
-          } else if (!vm.dragging) {
+          }
+          if (!vm.dragging) {
             $perAdminApp.action(vm, 'showComponentEdit', vm.path).then(() => {
               if (vm.inline) {
                 set(vm.view, '/state/editor/inline', vm.inline)
@@ -424,8 +425,8 @@
         const marginRight = parseFloat(this.getElementStyle(e, 'margin-right'))
         const marginBottom = parseFloat(this.getElementStyle(e, 'margin-bottom'))
         const newRect = {
-          left: rect.left - (marginLeft > 0? marginLeft : 0) ,
-          right: rect.right + (marginRight > 0? marginRight : 0),
+          left: rect.left - (marginLeft > 0 ? marginLeft : 0),
+          right: rect.right + (marginRight > 0 ? marginRight : 0),
           top: rect.top - marginTop,
           bottom: rect.bottom + marginBottom,
         }
