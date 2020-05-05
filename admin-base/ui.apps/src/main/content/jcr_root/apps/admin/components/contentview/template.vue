@@ -81,6 +81,7 @@
         inline: null,
         scrollTop: 0,
         dragging: false,
+        autoSave: false,
         editable: {
           visible: false,
           class: null,
@@ -139,6 +140,13 @@
       pageView() {
         return this.view.pageView
       },
+      node() {
+        if (this.view.state.editor && this.view.state.editor.path) {
+          return $perAdminApp.findNodeFromPath(this.view.pageView.page, this.view.state.editor.path)
+        } else {
+          return null
+        }
+      },
       isSelected() {
         return this.component && this.path && this.path !== '/jcr:content'
       },
@@ -172,13 +180,6 @@
         }
         return !node.fromTemplate
       },
-      node() {
-        if (this.view.state.editor && this.view.state.editor.path) {
-          return $perAdminApp.findNodeFromPath(this.view.pageView.page, this.view.state.editor.path)
-        } else {
-          return null
-        }
-      },
       isTemplateNode() {
         return $perAdminApp.findNodeFromPath(this.pageView.page, this.path).fromTemplate === true
       },
@@ -187,8 +188,9 @@
       }
     },
     watch: {
-      target(val) {
+      component(val, oldVal) {
         if (val) {
+          if (val === oldVal) return
           this.selectComponent(this)
         } else {
           this.unselect(this)
@@ -261,12 +263,27 @@
             vm.editable.class = 'selected'
           }
           if (!vm.dragging) {
-            $perAdminApp.action(vm, 'showComponentEdit', vm.path).then(() => {
-              if (vm.inline) {
-                set(vm.view, '/state/editor/inline/model', vm.inline)
-                vm.inline = null
-              }
-            })
+            if (vm.autoSave) {
+              vm.autoSave = false
+              $perAdminApp.stateAction('savePageEdit', {
+                data: vm.node,
+                path: vm.view.state.editor.path
+              }).then( () => {
+                $perAdminApp.action(this, 'showComponentEdit', this.path).then(() => {
+                  if (this.inline) {
+                    set(this.view, '/state/editor/inline/model', this.inline)
+                    this.inline = null
+                  }
+                })
+              })
+            } else {
+              $perAdminApp.action(this, 'showComponentEdit', this.path).then(() => {
+                if (this.inline) {
+                  set(this.view, '/state/editor/inline/model', this.inline)
+                  this.inline = null
+                }
+              })
+            }
           }
         }
       },
@@ -328,6 +345,7 @@
           clone.classList.add('inline-edit-clone')
           clone.addEventListener('input', this.onInlineEdit)
           clone.addEventListener('focus', this.onInlineFocus)
+          clone.addEventListener('focusout', this.onInlineFocusOut)
           el.parentNode.insertBefore(clone, el)
         })
         this.iframeEditMode()
@@ -385,6 +403,7 @@
           parentProp = parentProp[dataInline.pop()]
         }
         parentProp[dataInline.pop()] = this.isRich ? this.target.innerHTML : this.target.innerText
+        this.autoSave = true
       },
 
       onInlineFocus(event) {
