@@ -82,7 +82,7 @@
             loop: null,
             timeout: null,
             interval: 100,
-            delay: 1000,
+            delay: 700,
             inView: 0
           }
         }
@@ -251,12 +251,6 @@
             this.clearFocusStuff()
             this.focus.loop = setInterval(() => {
               formGen.$children[index].$el.scrollIntoView()
-              if (this.isElementInViewport(formGen.$children[index].$el)) {
-                this.focus.inView++
-                if (this.focus.inView > 2) {
-                  this.clearFocusStuff()
-                }
-              }
             }, this.focus.interval)
             this.focus.timeout = setTimeout(() => {
               this.clearFocusStuff()
@@ -270,15 +264,6 @@
         },
         isRichEditor(field) {
           return ['texteditor'].indexOf(field.type) >= 0
-        },
-        isElementInViewport(el) {
-          const rect = el.getBoundingClientRect()
-          return (
-              rect.top >= 0 &&
-              rect.left >= 0 &&
-              rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-              rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-          )
         }
       }
 //      ,
