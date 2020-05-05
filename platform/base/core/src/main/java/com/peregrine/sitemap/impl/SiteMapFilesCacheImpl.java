@@ -25,6 +25,7 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
+import com.peregrine.commons.ResourceUtils;
 import com.peregrine.sitemap.*;
 import org.apache.sling.api.resource.*;
 import org.osgi.service.component.annotations.Activate;
@@ -88,6 +89,7 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase
         final String key = Integer.toString(index);
         try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
             return Optional.ofNullable(rootPage)
+                    .filter(ResourceUtils::exists)
                     .map(r -> getCache(resourceResolver, r))
                     .map(Resource::getValueMap)
                     .map(props -> props.get(key, String.class))

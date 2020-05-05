@@ -26,28 +26,26 @@ package com.peregrine.sitemap.impl;
  */
 
 import com.peregrine.sitemap.*;
-import org.apache.sling.api.resource.Resource;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import java.util.*;
 import java.util.regex.Pattern;
 
-import static java.util.Objects.isNull;
-
 @Component(service = { DefaultSiteMapExtractor.class })
 public final class DefaultSiteMapExtractor extends SiteMapExtractorBase implements SiteMapConfiguration {
 
     private final Pattern pattern = Pattern.compile("/content/[^/]+/pages(/[^/]+)*");
+    private final Map<String, String> xmlNamespaces = Collections.emptyMap();
+    private final List<PropertyProvider> propertyProviders = new LinkedList<>();
+    private final List<PropertyProvider> defaultPropertyProviders = new LinkedList<>();
 
     @Reference
     private PerPageRecognizer pageRecognizer;
 
     @Reference
     private DefaultUrlExternalizer urlExternalizer;
-
-    @Reference
-    private SiteMapUrlBuilder urlBuilder;
 
     @Reference
     private LastModPropertyProvider lastModPropertyProvider;
@@ -58,34 +56,19 @@ public final class DefaultSiteMapExtractor extends SiteMapExtractorBase implemen
     @Reference
     private PriorityPropertyProvider priorityPropertyProvider;
 
+    @Reference
+    private SiteMapUrlBuilder urlBuilder;
+
+    @Activate
+    public void activate() {
+        propertyProviders.add(lastModPropertyProvider);
+        propertyProviders.add(changeFreqPropertyProvider);
+        propertyProviders.add(priorityPropertyProvider);
+    }
+
     @Override
     public SiteMapConfiguration getConfiguration() {
         return this;
-    }
-
-    @Override
-    public boolean appliesTo(final Resource root) {
-        final Pattern pattern = getPagePathPattern();
-        if (isNull(pattern)) {
-            return true;
-        }
-
-        return pattern.matcher(root.getPath()).matches();
-    }
-
-    @Override
-    public UrlExternalizer getUrlExternalizer() {
-        return urlExternalizer;
-    }
-
-    @Override
-    protected SiteMapUrlBuilder getUrlBuilder() {
-        return urlBuilder;
-    }
-
-    @Override
-    protected Collection<PropertyProvider> getDefaultPropertyProviders() {
-        return Arrays.asList(lastModPropertyProvider, changeFreqPropertyProvider, priorityPropertyProvider);
     }
 
     @Override
@@ -99,18 +82,33 @@ public final class DefaultSiteMapExtractor extends SiteMapExtractorBase implemen
     }
 
     @Override
+    public UrlExternalizer getUrlExternalizer() {
+        return urlExternalizer;
+    }
+
+    @Override
     public Map<String, String> getXmlNamespaces() {
-        return Collections.emptyMap();
+        return xmlNamespaces;
     }
 
     @Override
     public Collection<PropertyProvider> getPropertyProviders() {
-        return getDefaultPropertyProviders();
+        return propertyProviders;
+    }
+
+    @Override
+    protected Collection<PropertyProvider> getDefaultPropertyProviders() {
+        return defaultPropertyProviders;
     }
 
     @Override
     public Set<String> getMandatoryCachedPaths() {
         return Collections.emptySet();
+    }
+
+    @Override
+    protected SiteMapUrlBuilder getUrlBuilder() {
+        return urlBuilder;
     }
 
 }

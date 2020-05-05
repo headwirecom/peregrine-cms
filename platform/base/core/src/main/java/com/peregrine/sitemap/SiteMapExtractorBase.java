@@ -30,14 +30,21 @@ import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Matcher;
 
 import static java.util.Objects.isNull;
 
 public abstract class SiteMapExtractorBase implements SiteMapExtractor {
+
+    @Override
+    public boolean appliesTo(final Resource root) {
+        return Optional.ofNullable(getConfiguration())
+                .map(SiteMapConfiguration::getPagePathPattern)
+                .map(p -> p.matcher(root.getPath()))
+                .map(Matcher::matches)
+                .orElse(true);
+    }
 
     @Override
     public List<SiteMapEntry> extract(final Resource root) {

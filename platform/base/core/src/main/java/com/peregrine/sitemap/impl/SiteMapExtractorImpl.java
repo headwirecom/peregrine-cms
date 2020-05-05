@@ -26,13 +26,10 @@ package com.peregrine.sitemap.impl;
  */
 
 import com.peregrine.sitemap.*;
-import org.apache.sling.api.resource.Resource;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
-
-import static java.util.Objects.isNull;
+import java.util.Optional;
 
 public final class SiteMapExtractorImpl extends SiteMapExtractorBase {
 
@@ -57,28 +54,14 @@ public final class SiteMapExtractorImpl extends SiteMapExtractorBase {
     }
 
     @Override
-    public boolean appliesTo(final Resource root) {
-        final Pattern pattern = configuration.getPagePathPattern();
-        if (isNull(pattern)) {
-            return true;
-        }
-
-        return pattern.matcher(root.getPath()).matches();
-    }
-
-    @Override
     protected SiteMapUrlBuilder getUrlBuilder() {
         return urlBuilder;
     }
 
     @Override
     protected UrlExternalizer getUrlExternalizer() {
-        final UrlExternalizer externalizer = super.getUrlExternalizer();
-        if (isNull(externalizer)) {
-            return urlExternalizer;
-        }
-
-        return externalizer;
+        return Optional.ofNullable(super.getUrlExternalizer())
+                .orElse(urlExternalizer);
     }
 
     @Override
