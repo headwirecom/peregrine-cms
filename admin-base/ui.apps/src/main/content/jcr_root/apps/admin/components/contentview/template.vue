@@ -78,6 +78,7 @@
     data() {
       return {
         target: null,
+        previousTarget: null,
         inline: null,
         scrollTop: 0,
         dragging: false,
@@ -101,7 +102,7 @@
         iframe: {
           loaded: false,
           mouse: false,
-          doc: null, html: null, body: null, app: null,
+          doc: null, html: null, body: null, head: null, app: null,
           scrollTop: 0
         },
         clipboard: null,
@@ -114,6 +115,13 @@
       component() {
         if (this.target) {
           return this.findComponentEl(this.target)
+        } else {
+          return null
+        }
+      },
+      previousComponent() {
+        if (this.previousTarget) {
+          return this.findComponentEl(this.previousTarget)
         } else {
           return null
         }
@@ -188,9 +196,9 @@
       }
     },
     watch: {
-      component(val, oldVal) {
+      target(val, oldVal) {
+        this.previousTarget = oldVal
         if (val) {
-          if (val === oldVal) return
           this.selectComponent(this)
         } else {
           this.unselect(this)
@@ -260,30 +268,28 @@
           $perAdminApp.toast(vm.$i18n('fromTemplateNotifyMsg'), 'warn')
         } else {
           if (vm.path !== '/jcr:content') {
-            this.wrapEditableAroundSelected()
+            vm.wrapEditableAroundSelected()
             vm.editable.class = 'selected'
           }
           if (!vm.dragging) {
-            if (vm.autoSave) {
-              vm.autoSave = false
-              $perAdminApp.stateAction('savePageEdit', {
-                data: vm.node,
-                path: vm.view.state.editor.path
-              }).then( () => {
-                $perAdminApp.action(this, 'showComponentEdit', this.path).then(() => {
-                  if (this.inline) {
-                    set(this.view, '/state/editor/inline/model', this.inline)
-                    this.inline = null
-                  }
+            if (vm.component !== vm.previousComponent) {
+              if (vm.autoSave) {
+                vm.autoSave = false
+                $perAdminApp.stateAction('savePageEdit', {
+                  data: vm.node,
+                  path: vm.view.state.editor.path
+                }).then(() => {
+                  $perAdminApp.action(vm, 'showComponentEdit', vm.path).then(() => {
+                    vm.flushInlineState()
+                  })
                 })
-              })
+              } else {
+                $perAdminApp.action(vm, 'showComponentEdit', vm.path).then(() => {
+                  vm.flushInlineState()
+                })
+              }
             } else {
-              $perAdminApp.action(this, 'showComponentEdit', this.path).then(() => {
-                if (this.inline) {
-                  set(this.view, '/state/editor/inline/model', this.inline)
-                  this.inline = null
-                }
-              })
+              vm.flushInlineState()
             }
           }
         }
@@ -292,6 +298,13 @@
       unselect(vm) {
         vm.target = null
         vm.editable.class = null
+      },
+
+      flushInlineState() {
+        if (this.inline) {
+          set(this.view, '/state/editor/inline/model', this.inline)
+          this.inline = null
+        }
       },
 
       findComponentEl(targetEl) {
@@ -318,8 +331,10 @@
         this.iframe.doc = this.$refs.editview.contentWindow.document
         this.iframe.html = this.iframe.doc.querySelector('html')
         this.iframe.body = this.iframe.doc.querySelector('body')
+        this.iframe.head = this.iframe.doc.querySelector('head')
         this.iframe.app = this.iframe.doc.querySelector('#peregrine-app')
         this.iframe.doc.querySelector('#peregrine-app').setAttribute('contenteditable', 'false')
+        this.removeLinkTargets()
         this.addInlineEditClones()
       },
 
@@ -333,6 +348,13 @@
         })
       },
 
+      removeLinkTargets() {
+        const anchors = this.iframe.app.querySelectorAll('a')
+        anchors.forEach((a) => {
+          a.setAttribute('href', 'javascript:void(0);')
+        })
+      },
+
       addInlineEditClones() {
         this.removeInlineEditClones()
         const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
@@ -340,8 +362,8 @@
           if (this.findComponentEl(el).classList.contains('from-template')) return
 
           const clsList = el.classList
-          el.classList.add('inline-edit-original')
           const clone = el.cloneNode(true)
+          el.classList.add('inline-edit-original')
           clone.style.cursor = 'text'
           clone.classList.add('inline-edit-clone')
           clone.addEventListener('input', this.onInlineEdit)
@@ -357,8 +379,9 @@
         this.iframe.doc.addEventListener('scroll', this.onIframeScroll)
         this.iframe.doc.addEventListener('dragover', this.onIframeDragOver)
         this.iframe.doc.addEventListener('drop', this.onIframeDrop)
-        this.iframe.body.setAttribute('style', 'cursor: default !important')
+        this.addIframeExtraStyles()
         this.iframe.body.setAttribute('contenteditable', 'true')
+        this.iframe.app.classList.remove('preview-mode')
         const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el, index) => {
           if (this.findComponentEl(el).classList.contains('from-template')) return
@@ -378,8 +401,9 @@
       iframePreviewMode(editable = false) {
         this.iframe.doc.removeEventListener('click', this.onIframeClick)
         this.iframe.doc.removeEventListener('scroll', this.onIframeScroll)
-        this.iframe.body.style.cursor = ''
+        this.removeIframeExtraStyles()
         this.iframe.body.setAttribute('contenteditable', 'false')
+        this.iframe.app.classList.add('preview-mode')
         const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el, index) => {
           if (this.findComponentEl(el).classList.contains('from-template')) return
@@ -419,6 +443,37 @@
 
       onIframeScroll() {
         this.scrollTop = this.iframe.html.scrollTop
+      },
+
+      addIframeExtraStyles() {
+        if (this.iframe.head.querySelector('#editing-extra-styles')) return
+        const css = `
+          body {
+            cursor: default !important
+          }
+          #peregrine-app [contenteditable="true"]:focus,
+          #peregrine-app [contenteditable="true"]:hover {
+            outline: 1px solid #fe9701 !important;
+          }
+
+          #peregrine-app .from-template {
+            cursor: not-allowed !important;
+          }
+
+          #peregrine-app .from-template * {
+            cursor: not-allowed !important;
+          }`
+        const style = this.iframe.doc.createElement('style')
+        this.iframe.head.appendChild(style)
+        style.type = 'text/css'
+        style.appendChild(this.iframe.doc.createTextNode(css))
+        style.setAttribute('id', 'editing-extra-styles')
+      },
+
+      removeIframeExtraStyles() {
+        this.iframe.head.querySelectorAll('#editing-extra-styles').forEach((style) => {
+          style.remove()
+        })
       },
 
       wrapEditableAroundSelected() {
