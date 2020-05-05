@@ -247,6 +247,7 @@
           this.selected.draggable = false
         }
         set(this.view, '/state/editorVisible', false)
+        set(this.view, '/state/editor/path', null)
       })
     },
     methods: {
