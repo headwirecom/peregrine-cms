@@ -70,7 +70,7 @@
 </template>
 
 <script>
-  import {Attribute} from '../../../../../../js/constants'
+  import {Attribute, Key} from '../../../../../../js/constants'
   import {set} from '../../../../../../js/utils'
 
   export default {
@@ -370,6 +370,7 @@
           clone.addEventListener('input', this.onInlineEdit)
           clone.addEventListener('focus', this.onInlineFocus)
           clone.addEventListener('focusout', this.onInlineFocusOut)
+          clone.addEventListener('keydown', this.onInlineKeyPress)
           el.parentNode.insertBefore(clone, el)
         })
         this.iframeEditMode()
@@ -441,6 +442,17 @@
 
       onInlineFocusOut(event) {
         this.editing = false
+      },
+
+      onInlineKeyPress(event) {
+        event.preventDefault()
+        event.stopPropagation()
+        const key = event.which
+        const ctrlOrCmd = event.ctrlKey || event.metaKey
+
+        if (key === Key.A && ctrlOrCmd ) {
+          console.log('TODO: select all here (but only inside element)')
+        }
       },
 
       onIframeClick(ev) {

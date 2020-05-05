@@ -101,3 +101,7 @@ export const Attribute = {
   DROPTARGET: 'data-per-droptarget',
   LOCATION: 'data-per-location'
 }
+
+export const Key = {
+  A: 65
+}
