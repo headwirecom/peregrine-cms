@@ -83,6 +83,7 @@
         scrollTop: 0,
         dragging: false,
         autoSave: false,
+        editing: false,
         editable: {
           visible: false,
           class: null,
@@ -432,9 +433,14 @@
       },
 
       onInlineFocus(event) {
+        this.editing = true
         this.target = event.target
         const dataInline = this.targetInline.split('.').slice(1)
         this.inline = dataInline.join('.')
+      },
+
+      onInlineFocusOut(event) {
+        this.editing = false
       },
 
       onIframeClick(ev) {
