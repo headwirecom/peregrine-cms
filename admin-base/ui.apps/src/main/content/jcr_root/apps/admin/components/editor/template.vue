@@ -77,6 +77,13 @@
             validateAfterLoad: true,
             validateAfterChanged: true,
             focusFirstField: true
+          },
+          focus: {
+            loop: null,
+            timeout: null,
+            interval: 100,
+            delay: 1000,
+            inView: 0
           }
         }
       },
@@ -241,11 +248,37 @@
           this.$nextTick(() => {
             const formGen = fieldCollection.$children[0]
             const {field, index} = this.getFieldAndIndexByModel(formGen.schema, model.pop())
-            formGen.$children[index].$el.scrollIntoView()
+            this.clearFocusStuff()
+            this.focus.loop = setInterval(() => {
+              formGen.$children[index].$el.scrollIntoView()
+              if (this.isElementInViewport(formGen.$children[index].$el)) {
+                this.focus.inView++
+                if (this.focus.inView > 2) {
+                  this.clearFocusStuff()
+                }
+              }
+            }, this.focus.interval)
+            this.focus.timeout = setTimeout(() => {
+              this.clearFocusStuff()
+            }, this.focus.delay)
           })
         },
+        clearFocusStuff() {
+          this.focus.inView = 0
+          clearInterval(this.focus.loop)
+          clearTimeout(this.focus.timeout)
+        },
         isRichEditor(field) {
-          return ['texteditor'].indexOf(field.type) >= 0;
+          return ['texteditor'].indexOf(field.type) >= 0
+        },
+        isElementInViewport(el) {
+          const rect = el.getBoundingClientRect()
+          return (
+              rect.top >= 0 &&
+              rect.left >= 0 &&
+              rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+              rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+          )
         }
       }
 //      ,
