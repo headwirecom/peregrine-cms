@@ -444,7 +444,9 @@
       },
 
       onIframeClick(ev) {
-        this.target = ev.target
+        if (!this.isContentEditableOrNested(ev.target)) {
+          this.target = ev.target
+        }
       },
 
       onIframeScroll() {
@@ -480,6 +482,19 @@
         this.iframe.head.querySelectorAll('#editing-extra-styles').forEach((style) => {
           style.remove()
         })
+      },
+
+      isContentEditableOrNested(el) {
+        const component = this.findComponentEl(el)
+        let found = el
+
+        while (el.getAttribute('contenteditable') !== 'true') {
+          el = el.parentElement
+          if (!el || el === component) {
+            return false
+          }
+        }
+        return el.getAttribute('contenteditable') === 'true'
       },
 
       wrapEditableAroundSelected() {
