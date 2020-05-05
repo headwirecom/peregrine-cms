@@ -90,7 +90,11 @@ public abstract class CacheBuilderBase implements CacheBuilder {
     }
 
     protected String getCachePath(final String rootPagePath) {
-        return location + rootPagePath;
+        return isRepositoryRoot(rootPagePath) ? location : location + rootPagePath;
+    }
+
+    protected static boolean isRepositoryRoot(final String path) {
+        return StringUtils.equals(SLASH, StringUtils.trim(path));
     }
 
     protected final String getOriginalPath(final Resource cache) {

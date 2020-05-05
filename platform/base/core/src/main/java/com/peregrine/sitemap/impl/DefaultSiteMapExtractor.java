@@ -26,12 +26,20 @@ package com.peregrine.sitemap.impl;
  */
 
 import com.peregrine.sitemap.*;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.resource.LoginException;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import static java.util.Objects.isNull;
 
 @Component(service = { DefaultSiteMapExtractor.class })
 public final class DefaultSiteMapExtractor extends SiteMapExtractorBase implements SiteMapConfiguration {
@@ -58,6 +66,9 @@ public final class DefaultSiteMapExtractor extends SiteMapExtractorBase implemen
 
     @Reference
     private SiteMapUrlBuilder urlBuilder;
+
+    @Reference
+    private ResourceResolverFactoryProxy resolverFactory;
 
     @Activate
     public void activate() {
@@ -103,7 +114,22 @@ public final class DefaultSiteMapExtractor extends SiteMapExtractorBase implemen
 
     @Override
     public Set<String> getMandatoryCachedPaths() {
-        return Collections.emptySet();
+        try (final ResourceResolver resourceResolver = resolverFactory.getServiceResourceResolver()) {
+            final Resource content = resourceResolver.getResource("/content");
+            if (isNull(content)) {
+                return Collections.emptySet();
+            }
+
+            return StreamSupport.stream(content.getChildren().spliterator(), false)
+                    .filter(r -> "per:Site".equals(r.getValueMap().get("jcr:primaryType")))
+                    .map(r -> r.getChild("pages"))
+                    .filter(Objects::nonNull)
+                    .map(Resource::getPath)
+                    .filter(p -> StringUtils.isNotBlank(urlExternalizer.getPrefix(resourceResolver, p)))
+                    .collect(Collectors.toSet());
+        } catch (final LoginException e) {
+            return Collections.emptySet();
+        }
     }
 
     @Override
