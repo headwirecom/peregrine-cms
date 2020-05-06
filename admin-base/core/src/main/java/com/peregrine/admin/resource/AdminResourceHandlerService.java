@@ -344,6 +344,7 @@ public class AdminResourceHandlerService
         if (resource == null) {
             throw new ManagementException(String.format(RESOURCE_FOR_DELETION_NOT_FOUND, path));
         }
+        createRecyclable(resourceResolver, resource);
         try {
             final String primaryTypeValue = resource.getValueMap().get(JCR_PRIMARY_TYPE, EMPTY);
             if (isNotEmpty(primaryType) && !primaryTypeValue.equals(primaryType)) {
@@ -390,10 +391,17 @@ public class AdminResourceHandlerService
     }
 
 
-
+    /**
+     * Given a path it will attempt to return an instance of Recycleable,
+     * which may be passed to recycleDeleted to restore a previously deleted resource.
+     * @param resourceResolver Resource Resolver
+     * @param path of the name item to recycle
+     * @return Recyclable or null
+     */
     @Override
     public Recyclable getRecyclable(ResourceResolver resourceResolver, String path) {
-        final Resource resource = getResource(resourceResolver,path);
+        final Resource resource = path.startsWith(RECYCLE_BIN_PATH) ?
+                getResource(resourceResolver,path) : getResource(resourceResolver, RECYCLE_BIN_PATH + path);
         return resource == null ? null : resource.adaptTo(Recyclable.class);
     }
 

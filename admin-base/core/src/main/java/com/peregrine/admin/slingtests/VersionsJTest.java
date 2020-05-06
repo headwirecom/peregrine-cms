@@ -3,6 +3,7 @@ package com.peregrine.admin.slingtests;
 import com.google.common.collect.Iterators;
 import com.peregrine.admin.models.PageModel;
 import com.peregrine.admin.models.Recyclable;
+import com.peregrine.commons.Page;
 import com.peregrine.replication.ReferenceLister;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.sling.api.resource.PersistenceException;
@@ -28,7 +29,7 @@ import javax.jcr.version.VersionManager;
 
 import java.util.List;
 
-import static com.peregrine.commons.util.PerConstants.RECYCLE_BIN_PATH;
+import static com.peregrine.commons.util.PerConstants.*;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
@@ -236,13 +237,15 @@ public class VersionsJTest {
     @Test
     public void findAndRestoreRecyclable (){
         try {
-            Recyclable recyclable = resourceManagement.createRecyclable(resourceResolver, aboutRes);
-            assertNotNull(recyclable);
+            String aboutPagePath = aboutRes.getPath();
             // Delete the page
-            resourceResolver.delete(aboutRes);
+            resourceManagement.deleteResource(resourceResolver, aboutPagePath, PAGE_PRIMARY_TYPE);
+//            resourceResolver.delete(aboutRes);
             resourceResolver.commit();
-            aboutRes = resourceResolver.getResource(recyclable.getResourcePath());
+            aboutRes = resourceResolver.getResource(aboutPagePath);
             assertNull(aboutRes);
+            Recyclable recyclable = resourceManagement.getRecyclable(resourceResolver, aboutPagePath);
+            assertNotNull(recyclable);
             resourceManagement.recycleDeleted(resourceResolver, recyclable, true );
             resourceResolver.refresh();
             resourceResolver.commit();
