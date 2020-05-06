@@ -11,6 +11,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Collection;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -30,13 +31,13 @@ public final class SiteMapConfigurationsContainerImplTest extends SlingResources
     @Test
     public void testEverything() {
         Collection<SiteMapConfiguration> all = model.getAll();
-        assertTrue(all.isEmpty());
+        assertEquals(1, all.size());
         assertTrue(model.add(configuration));
         all = model.getAll();
         assertTrue(all.contains(configuration));
         assertTrue(model.remove(configuration));
         all = model.getAll();
-        assertTrue(all.isEmpty());
+        assertEquals(1, all.size());
     }
 
 }

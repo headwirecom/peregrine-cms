@@ -39,12 +39,14 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerUtil.isPrimaryType;
 import static java.util.Objects.isNull;
 
 @Component(service = { DefaultSiteMapExtractor.class })
 public final class DefaultSiteMapExtractor extends SiteMapExtractorBase implements SiteMapConfiguration {
 
-    private final Pattern pattern = Pattern.compile("/content/[^/]+/pages(/[^/]+)*");
+    private final Pattern pattern = Pattern.compile(CONTENT_ROOT + "/[^/]+/" + PAGES + "(/[^/]+)*");
     private final Map<String, String> xmlNamespaces = Collections.emptyMap();
     private final List<PropertyProvider> propertyProviders = new LinkedList<>();
     private final List<PropertyProvider> defaultPropertyProviders = new LinkedList<>();
@@ -115,14 +117,14 @@ public final class DefaultSiteMapExtractor extends SiteMapExtractorBase implemen
     @Override
     public Set<String> getMandatoryCachedPaths() {
         try (final ResourceResolver resourceResolver = resolverFactory.getServiceResourceResolver()) {
-            final Resource content = resourceResolver.getResource("/content");
+            final Resource content = resourceResolver.getResource(CONTENT_ROOT);
             if (isNull(content)) {
                 return Collections.emptySet();
             }
 
             return StreamSupport.stream(content.getChildren().spliterator(), false)
-                    .filter(r -> "per:Site".equals(r.getValueMap().get("jcr:primaryType")))
-                    .map(r -> r.getChild("pages"))
+                    .filter(r -> isPrimaryType(r, SITE_PRIMARY_TYPE))
+                    .map(r -> r.getChild(PAGES))
                     .filter(Objects::nonNull)
                     .map(Resource::getPath)
                     .filter(p -> StringUtils.isNotBlank(urlExternalizer.getPrefix(resourceResolver, p)))

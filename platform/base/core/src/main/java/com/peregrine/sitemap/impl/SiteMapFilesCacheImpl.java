@@ -36,6 +36,7 @@ import org.osgi.service.metatype.annotations.Designate;
 
 import java.util.*;
 
+import static com.peregrine.commons.util.PerConstants.SLASH;
 import static java.util.Objects.isNull;
 
 @Component(service = SiteMapFilesCache.class)
@@ -186,6 +187,12 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase
         }
 
         return result;
+    }
+
+    @Override
+    public void rebuildAll() {
+        structureCache.rebuildAll();
+        super.rebuildAll();
     }
 
     @Override

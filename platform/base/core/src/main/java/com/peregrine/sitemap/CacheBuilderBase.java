@@ -196,7 +196,7 @@ public abstract class CacheBuilderBase implements CacheBuilder {
     }
 
     @Override
-    public final void rebuildAll() {
+    public void rebuildAll() {
         try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
             cleanRemovedChildren(resourceResolver, SLASH);
             rebuildMandatoryContent();

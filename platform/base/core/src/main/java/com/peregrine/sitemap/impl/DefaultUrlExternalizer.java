@@ -35,18 +35,19 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static com.peregrine.commons.Strings.SLASH;
+import static com.peregrine.commons.util.PerConstants.*;
 
 @Component(service = { DefaultUrlExternalizer.class })
 public final class DefaultUrlExternalizer extends PrefixAndCutUrlExternalizerBase {
 
-    protected static final String _CONTENT_ = "/content/";
+    protected static final String _CONTENT_ = CONTENT_ROOT + SLASH;
 
     {
         setCutCount(3);
     }
 
     @Override
-    protected String getPrefix(final ResourceResolver resourceResolver, final String url) {
+    public String getPrefix(final ResourceResolver resourceResolver, final String url) {
         if (!StringUtils.startsWith(url, _CONTENT_)) {
             return null;
         }
@@ -56,12 +57,14 @@ public final class DefaultUrlExternalizer extends PrefixAndCutUrlExternalizerBas
         name = StringUtils.substringBefore(name, SLASH);
         path.append(name);
         path.append(SLASH);
-        path.append("templates/jcr:content");
+        path.append(TEMPLATES);
+        path.append(SLASH);
+        path.append(JCR_CONTENT);
         return Optional.ofNullable(resourceResolver)
                 .map(rr -> rr.getResource(path.toString()))
                 .filter(Objects::nonNull)
                 .map(Resource::getValueMap)
-                .map(m -> m.get("domains", String[].class))
+                .map(m -> m.get(DOMAINS, String[].class))
                 .filter(Objects::nonNull)
                 .filter(s -> s.length > 0)
                 .map(s -> s[0])
