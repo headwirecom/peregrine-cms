@@ -405,12 +405,14 @@ public class AdminResourceHandlerService
         return resource == null ? null : resource.adaptTo(Recyclable.class);
     }
 
+//    Assets, Pages, Folders are recyclable. Individual component nodes under jcr:content are not recyclable.
     private boolean isRecyclable(Resource resource) {
         if (checkResource(resource) == null) {
             return false;
         }
-        return resource.getPath().matches(SITE_PAGES_PATTERN) ||
-                resource.getPath().matches(SITE_ASSETS_PATTERN);
+        return (resource.getPath().matches(SITE_PAGES_PATTERN) ||
+                resource.getPath().matches(SITE_ASSETS_PATTERN))
+                && !resource.getPath().contains(JCR_CONTENT);
     }
 
     // jcr 2.0 Chapter 3
