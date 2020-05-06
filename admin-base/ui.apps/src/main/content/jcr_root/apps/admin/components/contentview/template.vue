@@ -319,6 +319,39 @@
         return el
       },
 
+      onInlineEdit(event) {
+        this.target = event.target
+        const dataInline = this.targetInline.split('.').slice(1)
+        dataInline.reverse()
+        let parentProp = this.node
+        while (dataInline.length > 1) {
+          parentProp = parentProp[dataInline.pop()]
+        }
+        parentProp[dataInline.pop()] = this.isRich ? this.target.innerHTML : this.target.innerText
+        this.autoSave = true
+      },
+
+      onInlineFocus(event) {
+        this.editing = true
+        this.target = event.target
+        const dataInline = this.targetInline.split('.').slice(1)
+        this.inline = dataInline.join('.')
+      },
+
+      onInlineFocusOut(event) {
+        this.editing = false
+      },
+
+      onInlineKeyPress(event) {
+        const key = event.which
+        const ctrlOrCmd = event.ctrlKey || event.metaKey
+
+        if (key === Key.A && ctrlOrCmd) {
+          event.preventDefault()
+          this.selectAllInElement(event.target)
+        }
+      },
+
       onIframeMouseLeave(event) {
         this.iframe.mouse = false
       },
@@ -338,6 +371,97 @@
         this.iframe.doc.querySelector('#peregrine-app').setAttribute('contenteditable', 'false')
         this.removeLinkTargets()
         this.addInlineEditClones()
+      },
+
+      onIframeClick(ev) {
+        if (!this.isContentEditableOrNested(ev.target)) {
+          this.target = ev.target
+        }
+      },
+
+      onIframeScroll() {
+        this.scrollTop = this.iframe.html.scrollTop
+      },
+
+      onIframeDragOver(event) {
+        event.preventDefault()
+        this.dragging = true
+        this.target = event.target
+
+        if (this.component) {
+          const isDropTarget = this.dropTarget === 'true'
+          const isRoot = this.isTemplateNode
+          const relMousePos = this.getRelativeMousePosition(event)
+
+          if (isDropTarget) {
+            const dropLocation = this.dropLocation
+            if (relMousePos.yPercentage <= 30 && dropLocation === 'before' && !isRoot) {
+              this.dropPosition = 'before'
+              this.editable.class = 'drop-top'
+            } else if (relMousePos.yPercentage >= 70 && dropLocation === 'after' && !isRoot) {
+              this.dropPosition = 'after'
+              this.editable.class = 'drop-bottom'
+            } else if (dropLocation) {
+              this.dropPosition = 'into-' + dropLocation
+              this.editable.class = 'selected'
+            } else {
+              this.dropPosition = 'none'
+            }
+          } else if (!isRoot) {
+            if (relMousePos.yPercentage <= 43.5) {
+              this.dropPosition = 'before'
+              this.editable.class = 'drop-top'
+            } else {
+              this.dropPosition = 'after'
+              this.editable.class = 'drop-bottom'
+            }
+          } else {
+            this.dropPosition = 'none'
+          }
+        } else {
+          this.dropPosition = 'none'
+        }
+      },
+
+      onIframeDrop(event) {
+        event.preventDefault()
+        this.dragging = false
+        this.target = event.target
+        if (this.isTouch) {
+          this.selected.draggable = false
+        }
+        if (typeof this.component === 'undefined' || this.component === null) return false
+
+        const componentPath = event.dataTransfer.getData('text')
+        if (this.path === componentPath) {
+          event.dataTransfer.clearData('text')
+          return false
+        }
+        const view = this.view
+        const payload = {
+          pagePath: view.pageView.path,
+          path: this.path,
+          component: componentPath,
+          drop: this.dropPosition
+        }
+        let addOrMove
+        if (componentPath.includes('/components/')) {
+          addOrMove = 'addComponentToPath';
+        } else {
+          addOrMove = 'moveComponentToPath';
+          const targetNode = $perAdminApp.findNodeFromPath(this.view.pageView.page, targetPath)
+          if (!targetNode || targetNode.fromTemplate) {
+            $perAdminApp.notifyUser('template component',
+                'You cannot drag a component into a template section')
+            this.unselect(this)
+            return false;
+          }
+        }
+        $perAdminApp.stateAction(addOrMove, payload).then((data) => {
+          this.addInlineEditClones()
+        })
+        this.unselect(this)
+        event.dataTransfer.clearData('text')
       },
 
       removeInlineEditClones() {
@@ -420,60 +544,6 @@
             el.style.display = ''
           }
         })
-      },
-
-      onInlineEdit(event) {
-        this.target = event.target
-        const dataInline = this.targetInline.split('.').slice(1)
-        dataInline.reverse()
-        let parentProp = this.node
-        while (dataInline.length > 1) {
-          parentProp = parentProp[dataInline.pop()]
-        }
-        parentProp[dataInline.pop()] = this.isRich ? this.target.innerHTML : this.target.innerText
-        this.autoSave = true
-      },
-
-      onInlineFocus(event) {
-        this.editing = true
-        this.target = event.target
-        const dataInline = this.targetInline.split('.').slice(1)
-        this.inline = dataInline.join('.')
-      },
-
-      onInlineFocusOut(event) {
-        this.editing = false
-      },
-
-      onInlineKeyPress(event) {
-        const key = event.which
-        const ctrlOrCmd = event.ctrlKey || event.metaKey
-
-        if (key === Key.A && ctrlOrCmd ) {
-          event.preventDefault()
-          let range, selection
-          if (this.iframe.body.createTextRange) {
-            range = this.iframe.body.createTextRange()
-            range.moveToElementText(event.target)
-            range.select()
-          } else if (this.iframe.win.getSelection) {
-            selection = this.iframe.win.getSelection()
-            range = this.iframe.doc.createRange()
-            range.selectNodeContents(event.target)
-            selection.removeAllRanges()
-            selection.addRange(range)
-          }
-        }
-      },
-
-      onIframeClick(ev) {
-        if (!this.isContentEditableOrNested(ev.target)) {
-          this.target = ev.target
-        }
-      },
-
-      onIframeScroll() {
-        this.scrollTop = this.iframe.html.scrollTop
       },
 
       addIframeExtraStyles() {
@@ -592,87 +662,6 @@
         ev.dataTransfer.setData('text', this.selected.path)
       },
 
-      onIframeDragOver(event) {
-        event.preventDefault()
-        this.dragging = true
-        this.target = event.target
-
-        if (this.component) {
-          const isDropTarget = this.dropTarget === 'true'
-          const isRoot = this.isTemplateNode
-          const relMousePos = this.getRelativeMousePosition(event)
-
-          if (isDropTarget) {
-            const dropLocation = this.dropLocation
-            if (relMousePos.yPercentage <= 30 && dropLocation === 'before' && !isRoot) {
-              this.dropPosition = 'before'
-              this.editable.class = 'drop-top'
-            } else if (relMousePos.yPercentage >= 70 && dropLocation === 'after' && !isRoot) {
-              this.dropPosition = 'after'
-              this.editable.class = 'drop-bottom'
-            } else if (dropLocation) {
-              this.dropPosition = 'into-' + dropLocation
-              this.editable.class = 'selected'
-            } else {
-              this.dropPosition = 'none'
-            }
-          } else if (!isRoot) {
-            if (relMousePos.yPercentage <= 43.5) {
-              this.dropPosition = 'before'
-              this.editable.class = 'drop-top'
-            } else {
-              this.dropPosition = 'after'
-              this.editable.class = 'drop-bottom'
-            }
-          } else {
-            this.dropPosition = 'none'
-          }
-        } else {
-          this.dropPosition = 'none'
-        }
-      },
-
-      onIframeDrop(event) {
-        event.preventDefault()
-        this.dragging = false
-        this.target = event.target
-        if (this.isTouch) {
-          this.selected.draggable = false
-        }
-        if (typeof this.component === 'undefined' || this.component === null) return false
-
-        const componentPath = event.dataTransfer.getData('text')
-        if (this.path === componentPath) {
-          event.dataTransfer.clearData('text')
-          return false
-        }
-        const view = this.view
-        const payload = {
-          pagePath: view.pageView.path,
-          path: this.path,
-          component: componentPath,
-          drop: this.dropPosition
-        }
-        let addOrMove
-        if (componentPath.includes('/components/')) {
-          addOrMove = 'addComponentToPath';
-        } else {
-          addOrMove = 'moveComponentToPath';
-          const targetNode = $perAdminApp.findNodeFromPath(this.view.pageView.page, targetPath)
-          if (!targetNode || targetNode.fromTemplate) {
-            $perAdminApp.notifyUser('template component',
-                'You cannot drag a component into a template section')
-            this.unselect(this)
-            return false;
-          }
-        }
-        $perAdminApp.stateAction(addOrMove, payload).then((data) => {
-          this.addInlineEditClones()
-        })
-        this.unselect(this)
-        event.dataTransfer.clearData('text')
-      },
-
       /* Editable methods ========================
       ============================================ */
       onEditableTouchStart(ev) {
@@ -703,6 +692,21 @@
           })
         }
         this.unselect(this)
+      },
+
+      selectAllInElement(el) {
+        let range, selection
+        if (this.iframe.body.createTextRange) {
+          range = this.iframe.body.createTextRange()
+          range.moveToElementText(el)
+          range.select()
+        } else if (this.iframe.win.getSelection) {
+          selection = this.iframe.win.getSelection()
+          range = this.iframe.doc.createRange()
+          range.selectNodeContents(el)
+          selection.removeAllRanges()
+          selection.addRange(range)
+        }
       },
 
       onCopy(e) {
