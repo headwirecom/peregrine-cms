@@ -150,8 +150,9 @@
         return this.view.pageView
       },
       node() {
-        if (this.view.state.editor && this.view.state.editor.path) {
-          return $perAdminApp.findNodeFromPath(this.view.pageView.page, this.view.state.editor.path)
+        const path = get(this.view, '/state/editor/path', null)
+        if (path) {
+          return $perAdminApp.findNodeFromPath(this.view.pageView.page, path)
         } else {
           return null
         }
