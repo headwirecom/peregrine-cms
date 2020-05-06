@@ -342,13 +342,33 @@
         this.editing = false
       },
 
-      onInlineKeyDown(event) {
+      onInlineKeyDown(event, isDefault=false) {
         const key = event.which
         const ctrlOrCmd = event.ctrlKey || event.metaKey
+        const backspaceOrDelete = key === Key.BACKSPACE || key === Key.DELETE
 
         if (key === Key.A && ctrlOrCmd) {
-          event.preventDefault()
-          this.selectAllInElement(event.target)
+          this.onInlineSelectAll(event)
+        } else if (backspaceOrDelete) {
+          this.onInlineDelete(event)
+        }
+      },
+
+      onInlineSelectAll(event) {
+        event.preventDefault()
+        let range, selection
+        selection = this.iframe.win.getSelection()
+        range = this.iframe.doc.createRange()
+        range.selectNodeContents(event.target)
+        selection.removeAllRanges()
+        selection.addRange(range)
+      },
+
+      onInlineDelete(event) {
+        const selection = this.iframe.win.getSelection()
+        if (selection.anchorNode === event.target) {
+          event.preventDefault();
+          event.target.innerHTML = ''
         }
       },
 
@@ -694,22 +714,6 @@
         this.unselect(this)
       },
 
-      selectAllInElement(el) {
-        let range, selection
-        if (this.iframe.body.createTextRange) {
-          range = this.iframe.body.createTextRange()
-          range.moveToElementText(el)
-          range.select()
-        } else if (this.iframe.win.getSelection) {
-          selection = this.iframe.win.getSelection()
-          range = this.iframe.doc.createRange()
-          range.selectNodeContents(el)
-          selection.removeAllRanges()
-          selection.addRange(range)
-        }
-        console.log(selection, range)
-      },
-
       onCopy(e) {
         this.clipboard = $perAdminApp.findNodeFromPath(
             this.view.pageView.page,
@@ -732,10 +736,6 @@
         $perAdminApp.stateAction('addComponentToPath', payload).then((data) => {
           this.addInlineEditClones()
         })
-      },
-
-      refreshEditor(me, target) {
-        me.$refs['editview'].contentWindow.location.reload();
       }
     }
   }
