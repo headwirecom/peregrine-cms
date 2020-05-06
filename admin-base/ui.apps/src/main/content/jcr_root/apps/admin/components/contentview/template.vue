@@ -501,7 +501,13 @@
         if (!elements || elements.length <= 0) return
 
         elements.forEach((el) => {
-          if (this.findComponentEl(el).classList.contains('from-template')) return
+          if ($perAdminApp.findNodeFromPath(
+                this.view.pageView.page,
+                this.findComponentEl(el).getAttribute(Attribute.PATH)
+                )
+              .fromTemplate
+            ) return
+          // .classList.contains('from-template')) return
 
           const clsList = el.classList
           const clone = el.cloneNode(true)
@@ -526,7 +532,11 @@
         this.iframe.app.classList.remove('preview-mode')
         const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el, index) => {
-          if (this.findComponentEl(el).classList.contains('from-template')) return
+          if ($perAdminApp.findNodeFromPath(
+                this.view.pageView.page,
+                this.findComponentEl(el).getAttribute(Attribute.PATH)
+              ).fromTemplate
+          ) return
           el.setAttribute('contenteditable', 'true')
           if (el.classList.contains('inline-edit-clone')) {
             el.style.display = ''
