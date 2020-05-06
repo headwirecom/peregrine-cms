@@ -103,7 +103,7 @@
         iframe: {
           loaded: false,
           mouse: false,
-          doc: null, html: null, body: null, head: null, app: null,
+          win: null, doc: null, html: null, body: null, head: null, app: null,
           scrollTop: 0
         },
         clipboard: null,
@@ -329,7 +329,8 @@
 
       onIframeLoaded(ev) {
         this.iframe.loaded = true
-        this.iframe.doc = this.$refs.editview.contentWindow.document
+        this.iframe.win = this.$refs.editview.contentWindow
+        this.iframe.doc = this.iframe.win.document
         this.iframe.html = this.iframe.doc.querySelector('html')
         this.iframe.body = this.iframe.doc.querySelector('body')
         this.iframe.head = this.iframe.doc.querySelector('head')
@@ -445,13 +446,23 @@
       },
 
       onInlineKeyPress(event) {
-        event.preventDefault()
-        event.stopPropagation()
         const key = event.which
         const ctrlOrCmd = event.ctrlKey || event.metaKey
 
         if (key === Key.A && ctrlOrCmd ) {
-          console.log('TODO: select all here (but only inside element)')
+          event.preventDefault()
+          let range, selection
+          if (this.iframe.body.createTextRange) {
+            range = this.iframe.body.createTextRange()
+            range.moveToElementText(event.target)
+            range.select()
+          } else if (this.iframe.win.getSelection) {
+            selection = this.iframe.win.getSelection()
+            range = this.iframe.doc.createRange()
+            range.selectNodeContents(event.target)
+            selection.removeAllRanges()
+            selection.addRange(range)
+          }
         }
       },
 
