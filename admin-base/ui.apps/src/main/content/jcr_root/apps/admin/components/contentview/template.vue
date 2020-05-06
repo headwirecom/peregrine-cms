@@ -355,7 +355,25 @@
           this.onInlineSelectAll(event)
         } else if (backspaceOrDelete) {
           this.onInlineDelete(event)
+        } else if(key === Key.DOT && ctrlOrCmd) {
+          this.addComponent(true)
+        } else if(key === Key.COMMA && ctrlOrCmd) {
+          this.addComponent(false)
         }
+      },
+
+      addComponent(below = true) {
+        const view = this.view
+        const payload = {
+          pagePath: view.pageView.path,
+          path: this.path,
+          component: `/apps/${view.state.tenant.name}/components/richtext:sample`,
+          drop: below ? 'after' : 'before'
+        }
+        $perAdminApp.stateAction('addComponentToPath', payload).then((data) => {
+          this.refreshInlineEditClones()
+          this.iframeEditMode()
+        })
       },
 
       onInlineSelectAll(event) {
@@ -501,18 +519,13 @@
         if (!elements || elements.length <= 0) return
 
         elements.forEach((el) => {
-          if ($perAdminApp.findNodeFromPath(
-                this.view.pageView.page,
-                this.findComponentEl(el).getAttribute(Attribute.PATH)
-                )
-              .fromTemplate
-            ) return
-          // .classList.contains('from-template')) return
+          if(this.isElFromTemplate(el)) return
 
           const clsList = el.classList
           const clone = el.cloneNode(true)
           el.classList.add('inline-edit-original')
           clone.style.cursor = 'text'
+          clone.style.display = 'none'
           clone.classList.add('inline-edit-clone')
           clone.addEventListener('input', this.onInlineEdit)
           clone.addEventListener('focus', this.onInlineFocus)
@@ -532,11 +545,7 @@
         this.iframe.app.classList.remove('preview-mode')
         const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el, index) => {
-          if ($perAdminApp.findNodeFromPath(
-                this.view.pageView.page,
-                this.findComponentEl(el).getAttribute(Attribute.PATH)
-              ).fromTemplate
-          ) return
+          if (this.isElFromTemplate(el)) return
           el.setAttribute('contenteditable', 'true')
           if (el.classList.contains('inline-edit-clone')) {
             el.style.display = ''
@@ -550,6 +559,13 @@
         })
       },
 
+      isElFromTemplate(el) {
+        return $perAdminApp.findNodeFromPath(
+                this.view.pageView.page,
+                this.findComponentEl(el).getAttribute(Attribute.PATH)
+              ).fromTemplate ? true : false;
+      },
+
       iframePreviewMode(editable = false) {
         this.iframe.doc.removeEventListener('click', this.onIframeClick)
         this.iframe.doc.removeEventListener('scroll', this.onIframeScroll)
@@ -558,7 +574,7 @@
         this.iframe.app.classList.add('preview-mode')
         const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el, index) => {
-          if (this.findComponentEl(el).classList.contains('from-template')) return
+          if (this.isElFromTemplate(el)) return
           el.setAttribute('contenteditable', editable)
           if (el.classList.contains('inline-edit-clone')) {
             el.style.display = 'none'
