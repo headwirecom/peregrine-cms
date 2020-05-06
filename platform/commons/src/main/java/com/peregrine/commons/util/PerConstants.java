@@ -86,7 +86,6 @@ public class PerConstants {
     public static final String COMPONENTS = "components";
 
     public static final String APPS_ROOT = "/apps";
-    public static final String VAR_ROOT = "/var";
     public static final String ETC_ROOT = "/etc";
     public static final String CONTENT_ROOT = "/content";
 
@@ -147,11 +146,14 @@ public class PerConstants {
     public static final String TENANT_USER_HOME = "/home/users/tenants";
     public static final String ALL_TENANTS_GROUP_NAME = "all_tenants";
 
-    public static final String RECYCLE_BIN =  "recyclebin";
-    public static final String SITE_HOME_PATTERN = REGEX_SLASH + CONTENT +
-            REGEX_SLASH + "[^" + REGEX_SLASH + "]+" + REGEX_SLASH ;
+    public static final String VAR = "var";
+    public static final String RECYCLE_BIN = "recyclebin";
+    public static final String RECYCLE_BIN_PATH = SLASH + VAR + SLASH + RECYCLE_BIN;
+
+    public static final String SITE_HOME_PATTERN = REGEX_SLASH + CONTENT + REGEX_SLASH + "[^" + REGEX_SLASH + "]+" + REGEX_SLASH ;
     public static final String SITE_PAGES_PATTERN = SITE_HOME_PATTERN + PAGES + REGEX_SLASH + "?.*";
     public static final String SITE_ASSETS_PATTERN = SITE_HOME_PATTERN + ASSETS + REGEX_SLASH + "?.*";
-    public static final String SITE_RECYCLEBIN_PATTERN = SITE_HOME_PATTERN + RECYCLE_BIN + REGEX_SLASH + "?.*";
+    public static final String SITE_RECYCLEBIN_PATTERN
+            = REGEX_SLASH + VAR + REGEX_SLASH + RECYCLE_BIN + SITE_HOME_PATTERN + "?.*";
 }
 
