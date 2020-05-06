@@ -342,7 +342,7 @@
         this.editing = false
       },
 
-      onInlineKeyPress(event) {
+      onInlineKeyDown(event) {
         const key = event.which
         const ctrlOrCmd = event.ctrlKey || event.metaKey
 
@@ -495,7 +495,7 @@
           clone.addEventListener('input', this.onInlineEdit)
           clone.addEventListener('focus', this.onInlineFocus)
           clone.addEventListener('focusout', this.onInlineFocusOut)
-          clone.addEventListener('keydown', this.onInlineKeyPress)
+          clone.addEventListener('keydown', this.onInlineKeyDown)
           el.parentNode.insertBefore(clone, el)
         })
         this.iframeEditMode()
@@ -707,6 +707,7 @@
           selection.removeAllRanges()
           selection.addRange(range)
         }
+        console.log(selection, range)
       },
 
       onCopy(e) {
