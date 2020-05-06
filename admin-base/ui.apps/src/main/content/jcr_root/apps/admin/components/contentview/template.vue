@@ -71,7 +71,7 @@
 
 <script>
   import {Attribute, Key} from '../../../../../../js/constants'
-  import {set} from '../../../../../../js/utils'
+  import {get, set} from '../../../../../../js/utils'
 
   export default {
     props: ['model'],
@@ -193,7 +193,7 @@
         return $perAdminApp.findNodeFromPath(this.pageView.page, this.path).fromTemplate === true
       },
       isRich() {
-        return this.view.state.editor.inline.rich
+        return get(this.view, '/state/editor/inline/rich', false)
       }
     },
     watch: {
