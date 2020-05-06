@@ -213,13 +213,24 @@
                 $group.addClass('vfg-group');
             })
         },
-        getFieldAndIndexByModel(schema, model) {
+        getFieldAndIndexByModel(fields, model) {
+          const formGenerator = this.$refs.formGenerator
           let field
           let index = -1
-          schema.fields.some((f, i) => {
+          fields.some((f) => {
+            if (f.visible) {
+              if (typeof f.visible === 'string') {
+                if (exprEval.Parser.evaluate(f.visible, formGenerator) === true) {
+                  index++
+                }
+              } else if (formGenerator.fieldVisible(f) === true){
+                index++
+              }
+            } else {
+              index++
+            }
             if (f.model === model) {
-              field = f
-              index = i
+              return field = f
             }
           })
           return {field, index}
@@ -229,12 +240,12 @@
 
           model = model.split('.')
           model.reverse()
-          const {field, index} = this.getFieldAndIndexByModel(this.schema, model.pop())
+          const {field, index} = this.getFieldAndIndexByModel(this.schema.fields, model.pop())
 
           if (['input', 'texteditor', 'material-textarea'].indexOf(field.type) >= 0) {
             this.$refs.formGenerator.$children[index].$el.scrollIntoView()
           } else if (field.type === 'collection') {
-            this.focusCollectionField(model, index)
+            this.focusCollectionField(model, field, index)
           } else {
             console.warn('Unsupported field type: ', field.type)
           }
@@ -242,15 +253,15 @@
           set(this.view, '/state/editor/inline/model', null)
           set(this.view, '/state/editor/inline/rich', this.isRichEditor(field))
         },
-        focusCollectionField(model, index) {
+        focusCollectionField(model, field, index) {
           const fieldCollection = this.$refs.formGenerator.$children[index].$children[0]
           fieldCollection.activeItem = parseInt(model.pop())
           this.$nextTick(() => {
             const formGen = fieldCollection.$children[0]
-            const {field, index} = this.getFieldAndIndexByModel(formGen.schema, model.pop())
+            const fieldAndIndex = this.getFieldAndIndexByModel(field.fields, model.pop())
             this.clearFocusStuff()
             this.focus.loop = setInterval(() => {
-              formGen.$children[index].$el.scrollIntoView()
+              formGen.$children[fieldAndIndex.index].$el.scrollIntoView()
             }, this.focus.interval)
             this.focus.timeout = setTimeout(() => {
               this.clearFocusStuff()
