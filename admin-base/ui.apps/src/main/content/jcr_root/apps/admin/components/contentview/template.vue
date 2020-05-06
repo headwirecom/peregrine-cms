@@ -229,6 +229,9 @@
         handler(val) {
           if (!this.component) return
           this.wrapEditableAroundSelected()
+          this.$nextTick(() => {
+            this.refreshInlineEditClones()
+          })
         }
       },
       previewMode(val) {
@@ -391,7 +394,8 @@
         this.iframe.app = this.iframe.doc.querySelector('#peregrine-app')
         this.iframe.doc.querySelector('#peregrine-app').setAttribute('contenteditable', 'false')
         this.removeLinkTargets()
-        this.addInlineEditClones()
+        this.refreshInlineEditClones()
+        this.iframeEditMode()
       },
 
       onIframeClick(ev) {
@@ -479,20 +483,10 @@
           }
         }
         $perAdminApp.stateAction(addOrMove, payload).then((data) => {
-          this.addInlineEditClones()
+          this.refreshInlineEditClones()
         })
         this.unselect(this)
         event.dataTransfer.clearData('text')
-      },
-
-      removeInlineEditClones() {
-        const clones = this.iframe.app.querySelectorAll('.inline-edit-clone')
-
-        if (!clones || clones.length <= 0) return
-
-        clones.forEach((clone) => {
-          clone.remove()
-        })
       },
 
       removeLinkTargets() {
@@ -502,9 +496,10 @@
         })
       },
 
-      addInlineEditClones() {
-        this.removeInlineEditClones()
-        const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
+      refreshInlineEditClones() {
+        const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]:not(.inline-edit-original):not(.inline-edit-clone)`)
+        if (!elements || elements.length <= 0) return
+
         elements.forEach((el) => {
           if (this.findComponentEl(el).classList.contains('from-template')) return
 
@@ -519,7 +514,6 @@
           clone.addEventListener('keydown', this.onInlineKeyDown)
           el.parentNode.insertBefore(clone, el)
         })
-        this.iframeEditMode()
       },
 
       iframeEditMode() {
@@ -709,7 +703,7 @@
         }
         if (payload.path !== '/jcr:content') {
           $perAdminApp.stateAction('deletePageNode', payload).then((data) => {
-            this.addInlineEditClones()
+            this.refreshInlineEditClones()
           })
         }
         this.unselect(this)
@@ -735,7 +729,7 @@
           drop: dropPosition
         }
         $perAdminApp.stateAction('addComponentToPath', payload).then((data) => {
-          this.addInlineEditClones()
+          this.refreshInlineEditClones()
         })
       }
     }
