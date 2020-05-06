@@ -13,7 +13,7 @@ public class PathPatternTests {
         final String siteHome = "/content/example/";
         final String sitePages = siteHome + "pages/index";
         final String siteAssets = siteHome  + "assets/asset";
-        final String siteRecycing = siteHome  + "recyclebin/" + sitePages;
+        final String siteRecycing = "/var/recyclebin" + sitePages;
 
         assertTrue(siteHome.matches(SITE_HOME_PATTERN));
         assertTrue(sitePages.matches(SITE_PAGES_PATTERN));

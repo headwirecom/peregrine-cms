@@ -367,8 +367,7 @@ public class AdminResourceHandlerService
     public Recyclable createRecyclable(ResourceResolver resourceResolver, Resource resource) throws ManagementException {
         if (isRecyclable(resource)) {
             Version version = createVersion(resourceResolver, resource.getPath());
-            final String home = getSiteHomePath(resourceResolver, resource);
-            final String recyclablePath = home + SLASH + RECYCLE_BIN + SLASH + resource.getPath();
+            final String recyclablePath = RECYCLE_BIN_PATH + resource.getPath();
             try {
                 Resource item = ResourceUtil.getOrCreateResource(
                         resourceResolver,
@@ -402,7 +401,8 @@ public class AdminResourceHandlerService
         if (checkResource(resource) == null) {
             return false;
         }
-        return resource.getPath().matches(SITE_PAGES_PATTERN) || resource.getPath().matches(SITE_ASSETS_PATTERN);
+        return resource.getPath().matches(SITE_PAGES_PATTERN) ||
+                resource.getPath().matches(SITE_ASSETS_PATTERN);
     }
 
     // jcr 2.0 Chapter 3

@@ -28,7 +28,7 @@ import javax.jcr.version.VersionManager;
 
 import java.util.List;
 
-import static com.peregrine.commons.util.PerConstants.RECYCLE_BIN;
+import static com.peregrine.commons.util.PerConstants.RECYCLE_BIN_PATH;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
@@ -48,13 +48,11 @@ public class VersionsJTest {
     private ResourceResolver resourceResolver;
     private Session jcrSession;
 
-    static final String EXAMPLE_SITE_ROOT = "/content/example/";
-//    static final String SITE_RECYCLINGBIN = "/var/recyclebin" + EXAMPLE_SITE_ROOT ;
-    static final String SITE_RECYCLINGBIN = EXAMPLE_SITE_ROOT + "recyclebin" ;
-    static final String EXAMPLE_PAGES = EXAMPLE_SITE_ROOT +"pages";
-    static final String EXAMPLE_INDEX = "pages/index";
-    static final String EXAMPLE_ABOUT = "pages/about";
-    static final String EXAMPLE_ASSET = "assets/images/peregrine-logo.png";
+    static final String EXAMPLE_SITE_ROOT = "/content/example";
+    static final String EXAMPLE_PAGES = EXAMPLE_SITE_ROOT +"/pages";
+    static final String EXAMPLE_INDEX = "/pages/index";
+    static final String EXAMPLE_ABOUT = "/pages/about";
+    static final String EXAMPLE_ASSET = "/assets/images/peregrine-logo.png";
     static final String [] EXAMPLE_PAGE_PATHS = { "/index", "/about", "/services",
             "/contact", "/services/jcr:content/content/row/col1/text2" };
 
@@ -229,7 +227,7 @@ public class VersionsJTest {
             assertNotNull(recyclable);
             assertEquals(indexRes.getPath(), recyclable.getResourcePath());
             assertTrue(recyclable.getFrozenNodePath().startsWith("/jcr:system/jcr:versionStorage/"));
-            assertEquals("/content/example/recyclebin/content/example/pages/index", recyclable.getResource().getPath());
+            assertEquals("/var/recyclebin/content/example/pages/index", recyclable.getResource().getPath());
         } catch (AdminResourceHandler.ManagementException e) {
             fail("execption while creating recyclable");
         }
@@ -269,7 +267,7 @@ public class VersionsJTest {
             }
 
             Recyclable foundRecyclable = resourceManagement.getRecyclable(resourceResolver,
-                    SITE_RECYCLINGBIN + EXAMPLE_PAGES);
+                    RECYCLE_BIN_PATH + EXAMPLE_PAGES);
             assertNotNull(foundRecyclable);
             resourceManagement.recycleDeleted(resourceResolver,foundRecyclable, false);
             // all back
@@ -355,7 +353,7 @@ public class VersionsJTest {
             }
             resourceResolver.commit();
 
-            Node exampleRecycling = JcrUtils.getNodeIfExists("/content/example/"+RECYCLE_BIN, jcrSession);
+            Node exampleRecycling = JcrUtils.getNodeIfExists(RECYCLE_BIN_PATH + EXAMPLE_SITE_ROOT, jcrSession);
             if (exampleRecycling != null) {
                 exampleRecycling.remove();
                 jcrSession.save();
