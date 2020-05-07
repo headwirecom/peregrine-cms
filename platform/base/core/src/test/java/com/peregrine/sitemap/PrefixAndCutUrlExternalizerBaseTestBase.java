@@ -1,22 +1,13 @@
 package com.peregrine.sitemap;
 
-import com.peregrine.SlingResourcesTest;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import com.peregrine.sitemap.impl.SiteStructureTestBase;
 
-import static com.peregrine.commons.Strings.SLASH;
 import static junitx.framework.Assert.assertEquals;
 
-@RunWith(MockitoJUnitRunner.class)
 public class PrefixAndCutUrlExternalizerBaseTestBase<E extends PrefixAndCutUrlExternalizerBase>
-        extends SlingResourcesTest {
+        extends SiteStructureTestBase {
 
-    protected static final String EXAMPLE_COM = "http://www.example.com";
     protected static final int CUT_COUNT = 3;
-    protected static final String _CONTENT_EXAMPLE_ = "/content/example/";
-    protected static final String _CONTENT_EXAMPLE_PAGES = _CONTENT_EXAMPLE_ + "pages";
-    protected static final String _CONTENT_EXAMPLE_PAGES_ = _CONTENT_EXAMPLE_PAGES + SLASH;
-    protected static final String PAGE_PATH = _CONTENT_EXAMPLE_PAGES_ + "parent/page";
 
     protected final E model;
 
