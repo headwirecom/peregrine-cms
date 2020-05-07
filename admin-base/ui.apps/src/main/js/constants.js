@@ -105,5 +105,7 @@ export const Attribute = {
 export const Key = {
   A: 65,
   BACKSPACE: 8,
-  DELETE: 46
+  DELETE: 46,
+  ARROW_UP: 38,
+  ARROW_DOWN: 40
 }

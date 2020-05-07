@@ -358,6 +358,12 @@
           this.onInlineSelectAll(event)
         } else if (backspaceOrDelete) {
           this.onInlineDelete(event)
+        } else if (key === Key.ARROW_UP || key === Key.ARROW_DOWN) {
+          if (key === Key.ARROW_UP) {
+            console.log('UP')
+          } else if (key === Key.ARROW_DOWN){
+            console.log('DOWN')
+          }
         }
       },
 
