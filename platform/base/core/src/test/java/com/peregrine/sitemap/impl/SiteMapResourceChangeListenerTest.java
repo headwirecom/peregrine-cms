@@ -30,7 +30,7 @@ public final class SiteMapResourceChangeListenerTest extends SlingResourcesTest 
     public void setUp() throws NoSuchFieldException {
         PrivateAccessor.setField(model, "jobManager", jobManager);
         addChange(resource.getPath());
-        addChange(content.getPath());
+        addChange(jcrContent.getPath());
         addChange(page.getPath());
     }
 
@@ -53,7 +53,7 @@ public final class SiteMapResourceChangeListenerTest extends SlingResourcesTest 
         assertTrue(pathsObj instanceof Set);
         final Set<String> paths = (Set<String>) pathsObj;
         assertTrue(paths.contains(resource.getPath()));
-        assertTrue(paths.contains(content.getPath()));
+        assertTrue(paths.contains(jcrContent.getPath()));
         assertTrue(paths.contains(page.getPath()));
     }
 

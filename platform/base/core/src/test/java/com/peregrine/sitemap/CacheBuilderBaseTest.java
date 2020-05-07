@@ -152,10 +152,10 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
         model.rebuild(resource.getPath() + SLASH + "not-cached");
         verifyCommits(1);
         assertTrue(rebuildImplCalled.contains(resource.getPath()));
-        assertTrue(rebuildImplCalled.contains(content.getPath()));
+        assertTrue(rebuildImplCalled.contains(jcrContent.getPath()));
         assertTrue(rebuildImplCalled.contains(page.getPath()));
         assertTrue(rebuildImplCalled.contains(parent.getPath()));
-        assertTrue(rebuildImplCalled.contains(root.getPath()));
+        assertTrue(rebuildImplCalled.contains(contentRoot.getPath()));
     }
 
     @Test
@@ -164,28 +164,28 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
         model.rebuild(resource.getPath());
         verifyCommits(1);
         assertTrue(rebuildImplCalled.contains(resource.getPath()));
-        assertTrue(rebuildImplCalled.contains(content.getPath()));
+        assertTrue(rebuildImplCalled.contains(jcrContent.getPath()));
         assertTrue(rebuildImplCalled.contains(page.getPath()));
         assertTrue(rebuildImplCalled.contains(parent.getPath()));
-        assertTrue(rebuildImplCalled.contains(root.getPath()));
+        assertTrue(rebuildImplCalled.contains(contentRoot.getPath()));
     }
 
     @Test
     public void rebuild() {
-        model.rebuild(content.getPath());
+        model.rebuild(jcrContent.getPath());
         verifyCommits(1);
-        assertTrue(rebuildImplCalled.contains(content.getPath()));
+        assertTrue(rebuildImplCalled.contains(jcrContent.getPath()));
         assertTrue(rebuildImplCalled.contains(page.getPath()));
         assertTrue(rebuildImplCalled.contains(parent.getPath()));
-        assertTrue(rebuildImplCalled.contains(root.getPath()));
+        assertTrue(rebuildImplCalled.contains(contentRoot.getPath()));
     }
 
     @Test
     public void buildCache() {
-        final Resource cache = model.buildCache(content.getPath());
+        final Resource cache = model.buildCache(jcrContent.getPath());
         verifyCommits(1);
         assertEquals(contentCache, cache);
-        assertEquals(contentCache, buildCacheCalled.get(content));
+        assertEquals(contentCache, buildCacheCalled.get(jcrContent));
     }
 
     @Test
@@ -201,10 +201,10 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
         model.rebuildAll();
         verifyCommits(1);
         assertTrue(rebuildImplCalled.contains(resource.getPath()));
-        assertTrue(rebuildImplCalled.contains(content.getPath()));
+        assertTrue(rebuildImplCalled.contains(jcrContent.getPath()));
         assertTrue(rebuildImplCalled.contains(page.getPath()));
         assertTrue(rebuildImplCalled.contains(parent.getPath()));
-        assertTrue(rebuildImplCalled.contains(root.getPath()));
+        assertTrue(rebuildImplCalled.contains(contentRoot.getPath()));
     }
 
 }

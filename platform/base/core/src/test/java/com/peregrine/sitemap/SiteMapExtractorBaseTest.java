@@ -147,7 +147,7 @@ public final class SiteMapExtractorBaseTest extends SlingResourcesTest
 
     @Test
     public void extract_notAPage() {
-        final List<SiteMapEntry> entries = model.extract(root);
+        final List<SiteMapEntry> entries = model.extract(contentRoot);
         assertTrue(entries.isEmpty());
     }
 
