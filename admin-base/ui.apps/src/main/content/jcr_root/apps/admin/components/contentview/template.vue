@@ -303,6 +303,7 @@
       unselect(vm) {
         vm.target = null
         vm.editable.class = null
+        vm.autoSave = false
       },
 
       flushInlineState() {
