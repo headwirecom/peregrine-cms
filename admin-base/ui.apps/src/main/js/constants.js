@@ -107,5 +107,7 @@ export const Key = {
   BACKSPACE: 8,
   DELETE: 46,
   DOT: 190,
-  COMMA: 188
+  COMMA: 188,
+  ARROW_UP: 38,
+  ARROW_DOWN: 40
 }

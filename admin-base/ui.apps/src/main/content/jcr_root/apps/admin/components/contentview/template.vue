@@ -26,12 +26,26 @@
   <div :class="`peregrine-content-view ${viewModeClass}`">
     <div id="editable"
          ref="editable"
+         draggable="true"
          :class="editable.class"
          :style="editable.styles"
-         :draggable="enableEditableFeatures"
          @dragstart="onEditableDragStart"
          @touchstart="onEditableTouchStart"
          @touchend="onEditableTouchEnd">
+      <a v-if="enableEditableFeatures"
+         draggable="false"
+         href="#"
+         class="drag-handle top-right"
+         title="move component">
+        <i class="material-icons">drag_handle</i>
+      </a>
+      <a v-if="enableEditableFeatures"
+         draggable="false"
+         href="#"
+         class="drag-handle bottom-left"
+         title="move component">
+        <i class="material-icons">drag_handle</i>
+      </a>
       <div v-if="enableEditableFeatures" class="editable-actions">
         <ul>
           <li class="waves-effect waves-light">
@@ -137,7 +151,7 @@
       },
       path() {
         if (this.component) {
-          return this.component.getAttribute(Attribute.PATH)
+          return this.getPath(this.component)
         } else {
           return null
         }
@@ -210,6 +224,16 @@
                 if(el.group === '.hidden') return false
                 return el.path.startsWith('/apps/'+this.view.state.tenant.name+'/') 
               })
+      },      
+      componentTitle() {
+        const componentName = this.view.state.editor.component.split('-').join('/')
+        const components = this.view.admin.components.data
+        for (let i = 0; i < components.length; i++) {
+          const component = components[i]
+          if (component.path.endsWith(componentName)) {
+            return component.title
+          }
+        }
       }
     },
     watch: {
@@ -318,6 +342,7 @@
       unselect(vm) {
         vm.target = null
         vm.editable.class = null
+        vm.autoSave = false
       },
 
       flushInlineState() {
@@ -351,6 +376,7 @@
       },
 
       onInlineFocus(event) {
+        event.target.classList.add('inline-editing')
         this.editing = true
         this.target = event.target
         const dataInline = this.targetInline.split('.').slice(1)
@@ -358,10 +384,11 @@
       },
 
       onInlineFocusOut(event) {
+        event.target.classList.remove('inline-editing')
         this.editing = false
       },
 
-      onInlineKeyDown(event, isDefault=false) {
+      onInlineKeyDown(event, isDefault = false) {
         const key = event.which
         const ctrlOrCmd = event.ctrlKey || event.metaKey
         const backspaceOrDelete = key === Key.BACKSPACE || key === Key.DELETE
@@ -374,6 +401,12 @@
           this.addComponent(true)
         } else if(key === Key.COMMA && ctrlOrCmd) {
           this.addComponent(false)
+        } else if (key === Key.ARROW_UP || key === Key.ARROW_DOWN) {
+          if (key === Key.ARROW_UP) {
+            console.log('UP')
+          } else if (key === Key.ARROW_DOWN) {
+            console.log('DOWN')
+          }
         }
       },
 
@@ -427,6 +460,7 @@
         this.iframe.head = this.iframe.doc.querySelector('head')
         this.iframe.app = this.iframe.doc.querySelector('#peregrine-app')
         this.iframe.doc.querySelector('#peregrine-app').setAttribute('contenteditable', 'false')
+        this.addIframeExtraStyles()
         this.removeLinkTargets()
         this.refreshInlineEditClones()
         this.iframeEditMode()
@@ -508,7 +542,7 @@
           addOrMove = 'addComponentToPath';
         } else {
           addOrMove = 'moveComponentToPath';
-          const targetNode = $perAdminApp.findNodeFromPath(this.view.pageView.page, targetPath)
+          const targetNode = $perAdminApp.findNodeFromPath(this.view.pageView.page, this.path)
           if (!targetNode || targetNode.fromTemplate) {
             $perAdminApp.notifyUser('template component',
                 'You cannot drag a component into a template section')
@@ -531,23 +565,29 @@
       },
 
       refreshInlineEditClones() {
-        const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]:not(.inline-edit-original):not(.inline-edit-clone)`)
+        const selector = `[${Attribute.INLINE}]:not(.inline-edit-clone)`
+        const elements = this.iframe.app.querySelectorAll(selector)
         if (!elements || elements.length <= 0) return
 
         elements.forEach((el) => {
-          if(this.isElFromTemplate(el)) return
+          if (this.isFromTemplate(el)) return
 
+          const cmpPath = this.getPath(el)
           const clsList = el.classList
           const clone = el.cloneNode(true)
-          el.classList.add('inline-edit-original')
-          clone.style.cursor = 'text'
-          clone.style.display = 'none'
+          const dataInline = el.getAttribute(Attribute.INLINE).split('.').slice(1)
           clone.classList.add('inline-edit-clone')
           clone.addEventListener('input', this.onInlineEdit)
           clone.addEventListener('focus', this.onInlineFocus)
           clone.addEventListener('focusout', this.onInlineFocusOut)
           clone.addEventListener('keydown', this.onInlineKeyDown)
           el.parentNode.insertBefore(clone, el)
+          el.remove()
+          this.$watch(`node.${dataInline.join('.')}`, (val, oldVal) => {
+            if (cmpPath === this.path && clone && !clone.classList.contains('inline-editing')) {
+              clone.innerHTML = val
+            }
+          })
         })
       },
 
@@ -556,82 +596,57 @@
         this.iframe.doc.addEventListener('scroll', this.onIframeScroll)
         this.iframe.doc.addEventListener('dragover', this.onIframeDragOver)
         this.iframe.doc.addEventListener('drop', this.onIframeDrop)
-        this.addIframeExtraStyles()
         this.iframe.body.setAttribute('contenteditable', 'true')
-        this.iframe.app.classList.remove('preview-mode')
+        this.iframe.html.classList.add('edit-mode')
         const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el, index) => {
-          if (this.isElFromTemplate(el)) return
+          if (this.isFromTemplate(el)) return
           el.setAttribute('contenteditable', 'true')
-          if (el.classList.contains('inline-edit-clone')) {
-            el.style.display = ''
-            el.innerHTML = elements[index + 1].innerHTML
-          } else {
-            el.style.display = 'none'
-            if (this.component === el) {
-              this.target = elements[index - 1]
-            }
-          }
         })
-      },
-
-      isElFromTemplate(el) {
-        return $perAdminApp.findNodeFromPath(
-                this.view.pageView.page,
-                this.findComponentEl(el).getAttribute(Attribute.PATH)
-              ).fromTemplate ? true : false;
       },
 
       iframePreviewMode(editable = false) {
         this.iframe.doc.removeEventListener('click', this.onIframeClick)
         this.iframe.doc.removeEventListener('scroll', this.onIframeScroll)
-        this.removeIframeExtraStyles()
         this.iframe.body.setAttribute('contenteditable', 'false')
-        this.iframe.app.classList.add('preview-mode')
+        this.iframe.html.classList.remove('edit-mode')
         const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el, index) => {
-          if (this.isElFromTemplate(el)) return
+          if (this.isFromTemplate(el)) return
           el.setAttribute('contenteditable', editable)
-          if (el.classList.contains('inline-edit-clone')) {
-            el.style.display = 'none'
-            if (this.component === el) {
-              this.target = elements[index + 1]
-            }
-          } else {
-            el.style.display = ''
-          }
         })
       },
 
       addIframeExtraStyles() {
         if (this.iframe.head.querySelector('#editing-extra-styles')) return
         const css = `
-          body {
+          html.edit-mode body {
             cursor: default !important
           }
-          #peregrine-app [contenteditable="true"]:focus,
-          #peregrine-app [contenteditable="true"]:hover {
+          html.edit-mode #peregrine-app [contenteditable="true"]:focus {
             outline: 1px solid #fe9701 !important;
           }
 
-          #peregrine-app .from-template {
+          html.edit-mode #peregrine-app [contenteditable="true"]:hover:not(:focus) {
+            outline: 1px solid #ffc171 !important;
+          }
+
+          html.edit-mode #peregrine-app .from-template {
             cursor: not-allowed !important;
           }
 
-          #peregrine-app .from-template * {
+          html.edit-mode #peregrine-app .from-template * {
             cursor: not-allowed !important;
+          }
+
+          html.edit-mode #peregrine-app .inline-edit-clone {
+            cursor: text !important
           }`
         const style = this.iframe.doc.createElement('style')
         this.iframe.head.appendChild(style)
         style.type = 'text/css'
         style.appendChild(this.iframe.doc.createTextNode(css))
         style.setAttribute('id', 'editing-extra-styles')
-      },
-
-      removeIframeExtraStyles() {
-        this.iframe.head.querySelectorAll('#editing-extra-styles').forEach((style) => {
-          style.remove()
-        })
       },
 
       isContentEditableOrNested(el) {
@@ -710,13 +725,23 @@
         }
       },
 
+      getPath(el) {
+        const component = this.findComponentEl(el)
+        return component.getAttribute(Attribute.PATH)
+      },
+
+      isFromTemplate(el) {
+        return $perAdminApp.findNodeFromPath(this.pageView.page, this.getPath(el)).fromTemplate
+      },
+
       /* Drag and Drop ===========================
       ============================================ */
       onEditableDragStart(ev) {
-        if (this.selected.component === null) return
+        if (this.component === null) return
 
         this.editable.class = 'dragging'
-        ev.dataTransfer.setData('text', this.selected.path)
+        ev.dataTransfer.setData('text', this.path)
+        ev.dataTransfer.setDragImage(this.component, 400, 0)
       },
 
       /* Editable methods ========================

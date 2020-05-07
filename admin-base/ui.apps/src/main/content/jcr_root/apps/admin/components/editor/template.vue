@@ -169,7 +169,8 @@
             var view = $perAdminApp.getView()
             $perAdminApp.action(this, 'onEditorExitFullscreen')
             $perAdminApp.stateAction('savePageEdit', { data: data, path: view.state.editor.path } ).then( () => {
-                $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
+              $perAdminApp.action(this, 'unselect')
+              $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
             })
         },
         onCancel(e) {
@@ -244,6 +245,7 @@
 
           if (['input', 'texteditor', 'material-textarea'].indexOf(field.type) >= 0) {
             this.$refs.formGenerator.$children[index].$el.scrollIntoView()
+            set(this.view, '/state/editor/inline/rich', this.isRichEditor(field))
           } else if (field.type === 'collection') {
             this.focusCollectionField(model, field, index)
           } else {
@@ -251,7 +253,6 @@
           }
 
           set(this.view, '/state/editor/inline/model', null)
-          set(this.view, '/state/editor/inline/rich', this.isRichEditor(field))
         },
         focusCollectionField(model, field, index) {
           const fieldCollection = this.$refs.formGenerator.$children[index].$children[0]
@@ -259,6 +260,7 @@
           this.$nextTick(() => {
             const formGen = fieldCollection.$children[0]
             const fieldAndIndex = this.getFieldAndIndexByModel(field.fields, model.pop())
+            set(this.view, '/state/editor/inline/rich', this.isRichEditor(fieldAndIndex.field))
             this.clearFocusStuff()
             this.focus.loop = setInterval(() => {
               formGen.$children[fieldAndIndex.index].$el.scrollIntoView()
