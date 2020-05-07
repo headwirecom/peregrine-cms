@@ -393,6 +393,7 @@
         this.iframe.head = this.iframe.doc.querySelector('head')
         this.iframe.app = this.iframe.doc.querySelector('#peregrine-app')
         this.iframe.doc.querySelector('#peregrine-app').setAttribute('contenteditable', 'false')
+        this.addIframeExtraStyles()
         this.removeLinkTargets()
         this.refreshInlineEditClones()
         this.iframeEditMode()
@@ -521,18 +522,15 @@
         this.iframe.doc.addEventListener('scroll', this.onIframeScroll)
         this.iframe.doc.addEventListener('dragover', this.onIframeDragOver)
         this.iframe.doc.addEventListener('drop', this.onIframeDrop)
-        this.addIframeExtraStyles()
         this.iframe.body.setAttribute('contenteditable', 'true')
-        this.iframe.app.classList.remove('preview-mode')
+        this.iframe.html.classList.add('edit-mode')
         const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el, index) => {
           if (this.findComponentEl(el).classList.contains('from-template')) return
           el.setAttribute('contenteditable', 'true')
           if (el.classList.contains('inline-edit-clone')) {
-            el.style.display = ''
             el.innerHTML = elements[index + 1].innerHTML
           } else {
-            el.style.display = 'none'
             if (this.component === el) {
               this.target = elements[index - 1]
             }
@@ -543,20 +541,16 @@
       iframePreviewMode(editable = false) {
         this.iframe.doc.removeEventListener('click', this.onIframeClick)
         this.iframe.doc.removeEventListener('scroll', this.onIframeScroll)
-        this.removeIframeExtraStyles()
         this.iframe.body.setAttribute('contenteditable', 'false')
-        this.iframe.app.classList.add('preview-mode')
+        this.iframe.html.classList.remove('edit-mode')
         const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el, index) => {
           if (this.findComponentEl(el).classList.contains('from-template')) return
           el.setAttribute('contenteditable', editable)
           if (el.classList.contains('inline-edit-clone')) {
-            el.style.display = 'none'
             if (this.component === el) {
               this.target = elements[index + 1]
             }
-          } else {
-            el.style.display = ''
           }
         })
       },
@@ -564,32 +558,35 @@
       addIframeExtraStyles() {
         if (this.iframe.head.querySelector('#editing-extra-styles')) return
         const css = `
-          body {
+          html.edit-mode body {
             cursor: default !important
           }
-          #peregrine-app [contenteditable="true"]:focus,
-          #peregrine-app [contenteditable="true"]:hover {
+          html.edit-mode #peregrine-app [contenteditable="true"]:focus,
+          html.edit-mode #peregrine-app [contenteditable="true"]:hover {
             outline: 1px solid #fe9701 !important;
           }
 
-          #peregrine-app .from-template {
+          html.edit-mode #peregrine-app .from-template {
             cursor: not-allowed !important;
           }
 
-          #peregrine-app .from-template * {
+          html.edit-mode #peregrine-app .from-template * {
             cursor: not-allowed !important;
-          }`
+          }
+
+          html.edit-mode #peregrine-app .inline-edit-original {
+            display: none !important;
+          }
+
+          html:not(.edit-mode) #peregrine-app .inline-edit-clone {
+            display: none !important;
+          }
+          `
         const style = this.iframe.doc.createElement('style')
         this.iframe.head.appendChild(style)
         style.type = 'text/css'
         style.appendChild(this.iframe.doc.createTextNode(css))
         style.setAttribute('id', 'editing-extra-styles')
-      },
-
-      removeIframeExtraStyles() {
-        this.iframe.head.querySelectorAll('#editing-extra-styles').forEach((style) => {
-          style.remove()
-        })
       },
 
       isContentEditableOrNested(el) {
