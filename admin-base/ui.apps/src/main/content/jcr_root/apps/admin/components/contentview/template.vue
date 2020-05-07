@@ -129,7 +129,7 @@
       },
       path() {
         if (this.component) {
-          return this.component.getAttribute(Attribute.PATH)
+          return this.getPath(this.component)
         } else {
           return null
         }
@@ -361,7 +361,7 @@
         } else if (key === Key.ARROW_UP || key === Key.ARROW_DOWN) {
           if (key === Key.ARROW_UP) {
             console.log('UP')
-          } else if (key === Key.ARROW_DOWN){
+          } else if (key === Key.ARROW_DOWN) {
             console.log('DOWN')
           }
         }
@@ -514,6 +514,7 @@
         elements.forEach((el) => {
           if (this.isFromTemplate(el)) return
 
+          const cmpPath = this.getPath(el)
           const clsList = el.classList
           const clone = el.cloneNode(true)
           const dataInline = el.getAttribute(Attribute.INLINE).split('.').slice(1)
@@ -525,7 +526,7 @@
           el.parentNode.insertBefore(clone, el)
           el.remove()
           this.$watch(`node.${dataInline.join('.')}`, (val, oldVal) => {
-            if (val !== undefined && clone && !clone.classList.contains('inline-editing')) {
+            if (cmpPath === this.path && clone && !clone.classList.contains('inline-editing')) {
               clone.innerHTML = val
             }
           })
@@ -666,10 +667,13 @@
         }
       },
 
-      isFromTemplate(el) {
+      getPath(el) {
         const component = this.findComponentEl(el)
-        const path = component.getAttribute(Attribute.PATH)
-        return $perAdminApp.findNodeFromPath(this.pageView.page, path).fromTemplate
+        return component.getAttribute(Attribute.PATH)
+      },
+
+      isFromTemplate(el) {
+        return $perAdminApp.findNodeFromPath(this.pageView.page, this.getPath(el)).fromTemplate
       },
 
       /* Drag and Drop ===========================
