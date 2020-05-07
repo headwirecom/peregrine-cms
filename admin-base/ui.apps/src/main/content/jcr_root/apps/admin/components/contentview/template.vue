@@ -81,7 +81,7 @@
           @mouseenter="onIframeMouseEnter"/>
     </template>
     <div ref="addComponentModal" v-show="addComponentModal.visible" style="background: silver; position: absolute; top: 10px; bottom: 10px; left: 10px; width: 300px; z-index: 2; overflow-y: scroll;">
-      <input type="text" v-model="addComponentModal.filter">
+      <input ref="addComponentModalFilter" type="text" v-model="addComponentModal.filter">
       <button v-on:click="addComponentFromModal(componentKey(component))" style="width: 100%;" v-for="component in allowedComponents" v-bind:key="component.path + '|' + component.variation">{{componentDisplayName(component)}}</button>
     </div>
   </div>
@@ -221,6 +221,7 @@
       allowedComponents() {
         return get(this.view, '/admin/components/data', [])
               .filter( el => { 
+                if(!this.view.state.tenant || !this.view.state.tenant.name) return false
                 if(el.group === '.hidden') return false
                 if(!this.componentDisplayName(el).toLowerCase().startsWith(this.addComponentModal.filter.toLowerCase())) return false
                 return el.path.startsWith('/apps/'+this.view.state.tenant.name+'/') 
@@ -428,17 +429,9 @@
 
       addComponent(below = true) {
         this.addComponentModal.visible = true
-        // const view = this.view
-        // const payload = {
-        //   pagePath: view.pageView.path,
-        //   path: this.path,
-        //   component: `/apps/${view.state.tenant.name}/components/richtext:sample`,
-        //   drop: below ? 'after' : 'before'
-        // }
-        // $perAdminApp.stateAction('addComponentToPath', payload).then((data) => {
-        //   this.refreshInlineEditClones()
-        //   this.iframeEditMode()
-        // })
+        this.$nextTick(() => {
+          this.$refs.addComponentModalFilter.focus()
+        })
       },
 
       addComponentFromModal(component) {
@@ -454,6 +447,8 @@
           this.refreshInlineEditClones()
           this.iframeEditMode()
           this.addComponentModal.visible = false
+          // TODO: would be nice to select the newly inserted component and focus
+          //       into the first contenteditable if there is indeed a contenteditable
         })
       },
 
