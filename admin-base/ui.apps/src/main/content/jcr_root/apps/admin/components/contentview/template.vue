@@ -518,7 +518,7 @@
           el.parentNode.insertBefore(clone, el)
           el.remove()
           this.$watch(`node.${dataInline.join('.')}`, (val, oldVal) => {
-            if (clone && !clone.classList.contains('inline-editing')) {
+            if (val !== undefined && clone && !clone.classList.contains('inline-editing')) {
               clone.innerHTML = val
             }
           })
