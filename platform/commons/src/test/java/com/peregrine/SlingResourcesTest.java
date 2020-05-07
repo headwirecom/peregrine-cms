@@ -31,22 +31,21 @@ public class SlingResourcesTest {
     public static final String RESOURCE_TYPE = "per/component";
     public static final String SLASH_APPS_SLASH = APPS_ROOT + SLASH;
 
-    protected static final String NN_ROOT = "content";
     protected static final String NN_PARENT = "parent";
     protected static final String NN_PAGE = "page";
     protected static final String NN_RESOURCE = "resource";
-    protected static final String PAGE_PATH = SLASH + NN_ROOT + SLASH + NN_PARENT + SLASH + NN_PAGE;
+    protected static final String PAGE_PATH = CONTENT_ROOT + SLASH + NN_PARENT + SLASH + NN_PAGE;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected final ResourceMock repoRoot = new ResourceMock("Repository Root");
-    protected final ResourceMock root = new ResourceMock("Root");
+    protected final ResourceMock contentRoot = new ResourceMock("Content Root");
     protected final ResourceMock parent = new ResourceMock("Parent");
     protected final PageMock page = new PageMock("Page");
-    protected final ResourceMock content = page.getContent();
+    protected final ResourceMock jcrContent = page.getContent();
     protected final ResourceMock resource = new ResourceMock("Resource");
 
-    protected final List<ResourceMock> resources = Arrays.asList(root, parent, page, content, resource);
+    protected final List<ResourceMock> resources = Arrays.asList(contentRoot, parent, page, jcrContent, resource);
 
     protected final ResourceResolverFactory resolverFactory = mock(ResourceResolverFactory.class, fullName("Resolver Factory"));
     protected final ResourceResolver resourceResolver = mock(ResourceResolver.class, fullName("Resource Resolver"));
@@ -74,8 +73,8 @@ public class SlingResourcesTest {
 
     private void setPaths() {
         repoRoot.setPath(SLASH);
-        setPaths(PAGE_PATH, root, parent, page);
-        resource.setPath(content.getPath() + SLASH + NN_RESOURCE);
+        setPaths(PAGE_PATH, contentRoot, parent, page);
+        resource.setPath(jcrContent.getPath() + SLASH + NN_RESOURCE);
     }
 
     protected static void setPaths(final String path, final ResourceMock... resources) {
@@ -87,8 +86,8 @@ public class SlingResourcesTest {
     }
 
     private void setParentChildRelationships() {
-        setParentChildRelationships(repoRoot, root, parent, page);
-        setParentChildRelationships(content, resource);
+        setParentChildRelationships(repoRoot, contentRoot, parent, page);
+        setParentChildRelationships(jcrContent, resource);
     }
 
     protected static void setParentChildRelationships(final ResourceMock... resources) {
