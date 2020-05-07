@@ -336,6 +336,7 @@
       },
 
       onInlineFocus(event) {
+        event.target.classList.add('inline-editing')
         this.editing = true
         this.target = event.target
         const dataInline = this.targetInline.split('.').slice(1)
@@ -343,10 +344,11 @@
       },
 
       onInlineFocusOut(event) {
+        event.target.classList.remove('inline-editing')
         this.editing = false
       },
 
-      onInlineKeyDown(event, isDefault=false) {
+      onInlineKeyDown(event, isDefault = false) {
         const key = event.which
         const ctrlOrCmd = event.ctrlKey || event.metaKey
         const backspaceOrDelete = key === Key.BACKSPACE || key === Key.DELETE
@@ -498,7 +500,7 @@
       },
 
       refreshInlineEditClones() {
-        const selector = `[${Attribute.INLINE}]:not(.inline-edit-original):not(.inline-edit-clone)`
+        const selector = `[${Attribute.INLINE}]:not(.inline-edit-clone)`
         const elements = this.iframe.app.querySelectorAll(selector)
         if (!elements || elements.length <= 0) return
 
@@ -507,14 +509,19 @@
 
           const clsList = el.classList
           const clone = el.cloneNode(true)
-          el.classList.add('inline-edit-original')
-          clone.style.cursor = 'text'
+          const dataInline = el.getAttribute(Attribute.INLINE).split('.').slice(1)
           clone.classList.add('inline-edit-clone')
           clone.addEventListener('input', this.onInlineEdit)
           clone.addEventListener('focus', this.onInlineFocus)
           clone.addEventListener('focusout', this.onInlineFocusOut)
           clone.addEventListener('keydown', this.onInlineKeyDown)
           el.parentNode.insertBefore(clone, el)
+          el.remove()
+          this.$watch(`node.${dataInline.join('.')}`, (val, oldVal) => {
+            if (clone && !clone.classList.contains('inline-editing')) {
+              clone.innerHTML = val
+            }
+          })
         })
       },
 
@@ -529,13 +536,6 @@
         elements.forEach((el, index) => {
           if (this.isFromTemplate(el)) return
           el.setAttribute('contenteditable', 'true')
-          if (el.classList.contains('inline-edit-clone')) {
-            el.innerHTML = elements[index + 1].innerHTML
-          } else {
-            if (this.component === el) {
-              this.target = elements[index - 1]
-            }
-          }
         })
       },
 
@@ -546,13 +546,8 @@
         this.iframe.html.classList.remove('edit-mode')
         const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el, index) => {
-          if (this.findComponentEl(el).classList.contains('from-template')) return
+          if (this.isFromTemplate(el)) return
           el.setAttribute('contenteditable', editable)
-          if (el.classList.contains('inline-edit-clone')) {
-            if (this.component === el) {
-              this.target = elements[index + 1]
-            }
-          }
         })
       },
 
@@ -575,14 +570,9 @@
             cursor: not-allowed !important;
           }
 
-          html.edit-mode #peregrine-app .inline-edit-original {
-            display: none !important;
-          }
-
-          html:not(.edit-mode) #peregrine-app .inline-edit-clone {
-            display: none !important;
-          }
-          `
+          html.edit-mode #peregrine-app .inline-edit-clone {
+            cursor = text !important
+          }`
         const style = this.iframe.doc.createElement('style')
         this.iframe.head.appendChild(style)
         style.type = 'text/css'
