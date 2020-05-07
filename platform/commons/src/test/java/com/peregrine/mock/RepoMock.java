@@ -1,6 +1,5 @@
 package com.peregrine.mock;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -14,6 +13,8 @@ import java.util.Map;
 
 import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
 import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.mock.MockTools.fullName;
+import static com.peregrine.mock.MockTools.setParentChildRelationships;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -26,39 +27,21 @@ public final class RepoMock {
     protected final ResourceMock repoRoot = new ResourceMock("Repository Root");
     protected final ResourceMock contentRoot = new ResourceMock("Content Root");
 
-    protected final ResourceResolverFactory resolverFactory = mock(ResourceResolverFactory.class, fullName("Resolver Factory"));
-    protected final ResourceResolver resourceResolver = mock(ResourceResolver.class, fullName("Resource Resolver"));
+    protected final ResourceResolverFactory resolverFactory = mock(ResourceResolverFactory.class, fullName(this, "Resolver Factory"));
+    protected final ResourceResolver resourceResolver = mock(ResourceResolver.class, fullName(this, "Resource Resolver"));
     protected final Map<String, String> resourceResolverMap = new HashMap<>();
-    protected final Session session = mock(Session.class, fullName("Session"));
+    protected final Session session = mock(Session.class, fullName(this, "Session"));
 
     private final Map<String, ResourceMock> resolvableResources = new HashMap<>();
 
     public RepoMock() {
         repoRoot.setPath(SLASH);
-        setPaths(SLASH, contentRoot);
+        contentRoot.setPath(CONTENT_ROOT);
         setParentChildRelationships(repoRoot, contentRoot);
         init(repoRoot);
         init(contentRoot);
         bindResolverFactory();
         when(resourceResolver.map(any())).thenAnswer(invocation -> resourceResolverMap.get(invocation.getArguments()[0]));
-        mockResourceResolverCreate();
-    }
-
-    public static void setPaths(final String path, final ResourceMock... resources) {
-        String currentPath = path;
-        for (int i = resources.length - 1; i >= 0; i--) {
-            resources[i].setPath(currentPath);
-            currentPath = StringUtils.substringBeforeLast(currentPath, SLASH);
-        }
-    }
-
-    public static void setParentChildRelationships(final ResourceMock... resources) {
-        for (int i = 0; i < resources.length - 1; i++) {
-            final ResourceMock parent = resources[i];
-            final ResourceMock child = resources[i + 1];
-            child.setParent(parent);
-            parent.addChild(child);
-        }
     }
 
     private void bindResolverFactory() {
@@ -71,7 +54,7 @@ public final class RepoMock {
     }
 
     @SuppressWarnings("unchecked")
-	protected void mockResourceResolverCreate() {
+	public void mockResourceResolverCreate() {
         try {
             when(resourceResolver.create(any(ResourceMock.class), anyString(), any(Map.class))).thenAnswer(invocation -> {
                 final Object[] args = invocation.getArguments();
@@ -114,10 +97,6 @@ public final class RepoMock {
         return mock;
     }
 
-    protected String fullName(final String name) {
-        return getClass().getSimpleName() + " " + name;
-    }
-
     public ResourceMock getRepoRoot() {
         return repoRoot;
     }
@@ -137,4 +116,9 @@ public final class RepoMock {
     public Session getSession() {
         return session;
     }
+
+    public void map(final String url, final String mappedUrl) {
+        resourceResolverMap.put(url, mappedUrl);
+    }
+
 }

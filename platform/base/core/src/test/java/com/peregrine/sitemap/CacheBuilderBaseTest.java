@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.mock.MockTools.setParentChildRelationships;
+import static com.peregrine.mock.MockTools.setPaths;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.internal.verification.VerificationModeFactory.times;

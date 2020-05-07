@@ -2,6 +2,7 @@ package com.peregrine.mock;
 
 import static com.peregrine.commons.Strings.SLASH;
 import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.mock.MockTools.setPaths;
 
 public final class SiteStructureMock {
 
@@ -16,8 +17,8 @@ public final class SiteStructureMock {
 
     public SiteStructureMock(final RepoMock repo, final String name) {
         this.repo = repo;
-        RepoMock.setPaths(CONTENT_ROOT + SLASH + name + SLASH + PAGES, site, pages);
-        RepoMock.setPaths(CONTENT_ROOT + SLASH + name + SLASH + TEMPLATES, site, templates);
+        setPaths(CONTENT_ROOT + SLASH + name + SLASH + PAGES, site, pages);
+        setPaths(CONTENT_ROOT + SLASH + name + SLASH + TEMPLATES, site, templates);
         repo.init(site);
         repo.init(pages);
         repo.init(templates);

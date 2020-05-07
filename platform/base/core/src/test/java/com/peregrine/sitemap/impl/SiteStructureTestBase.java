@@ -2,11 +2,11 @@ package com.peregrine.sitemap.impl;
 
 import com.peregrine.SlingResourcesTest;
 import com.peregrine.mock.PageMock;
-import com.peregrine.mock.RepoMock;
 
 import static com.peregrine.commons.Strings.SLASH;
 import static com.peregrine.commons.util.PerConstants.DOMAINS;
 import static com.peregrine.commons.util.PerConstants.TEMPLATES;
+import static com.peregrine.mock.MockTools.setPaths;
 
 public class SiteStructureTestBase extends SlingResourcesTest {
 
@@ -21,7 +21,7 @@ public class SiteStructureTestBase extends SlingResourcesTest {
     protected final PageMock templates = new PageMock("Templates Root");
 
     public SiteStructureTestBase() {
-        RepoMock.setPaths(PAGE_PATH, contentRoot, example, pages, parent, page);
+        setPaths(PAGE_PATH, contentRoot, example, pages, parent, page);
         init(contentRoot);
         init(example);
         init(pages);
