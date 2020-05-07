@@ -39,6 +39,10 @@ public abstract class SiteMapExtractorBase implements SiteMapExtractor {
 
     @Override
     public boolean appliesTo(final Resource root) {
+        if (isNull(root)) {
+            return false;
+        }
+
         return Optional.ofNullable(getConfiguration())
                 .map(SiteMapConfiguration::getPagePathPattern)
                 .map(p -> p.matcher(root.getPath()))

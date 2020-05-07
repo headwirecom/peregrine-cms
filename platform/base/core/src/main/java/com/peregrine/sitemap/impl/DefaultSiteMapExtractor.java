@@ -85,6 +85,14 @@ public final class DefaultSiteMapExtractor extends SiteMapExtractorBase implemen
     }
 
     @Override
+    public boolean appliesTo(final Resource root) {
+        return super.appliesTo(root) && Optional.ofNullable(root)
+                .map(Resource::getPath)
+                .map(p -> StringUtils.isNotBlank(urlExternalizer.getPrefix(root.getResourceResolver(), p)))
+                .orElse(false);
+    }
+
+    @Override
     public Pattern getPagePathPattern() {
         return pattern;
     }
@@ -125,9 +133,8 @@ public final class DefaultSiteMapExtractor extends SiteMapExtractorBase implemen
             return StreamSupport.stream(content.getChildren().spliterator(), false)
                     .filter(r -> isPrimaryType(r, SITE_PRIMARY_TYPE))
                     .map(r -> r.getChild(PAGES))
-                    .filter(Objects::nonNull)
+                    .filter(this::appliesTo)
                     .map(Resource::getPath)
-                    .filter(p -> StringUtils.isNotBlank(urlExternalizer.getPrefix(resourceResolver, p)))
                     .collect(Collectors.toSet());
         } catch (final LoginException e) {
             return Collections.emptySet();

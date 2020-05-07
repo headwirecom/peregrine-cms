@@ -35,6 +35,7 @@ import org.osgi.service.component.annotations.Reference;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -90,6 +91,8 @@ public final class SiteMapExtractorsContainerImpl implements SiteMapExtractorsCo
             }
         }
 
-        return defaultSiteMapExtractor;
+        return Optional.ofNullable(defaultSiteMapExtractor)
+                .filter(e -> e.appliesTo(resource))
+                .orElse(null);
     }
 }
