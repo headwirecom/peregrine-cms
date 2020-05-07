@@ -7,10 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.request.RequestPathInfo;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.mockito.Mockito;
 
-import javax.jcr.Session;
 import java.util.Arrays;
 import java.util.List;
 
@@ -40,18 +38,17 @@ public class SlingResourcesTest {
     protected final SlingHttpServletRequest request = mock(SlingHttpServletRequest.class, fullName(this, "Request"));
     protected final RequestPathInfo requestPathInfo = Mockito.mock(RequestPathInfo.class);
 
-    protected final RepoMock repo = new RepoMock();
-    protected final ResourceMock repoRoot = repo.getRepoRoot();
-    protected final ResourceMock contentRoot = repo.getContentRoot();
+    protected final RepoMock repo;
+    protected final ResourceMock contentRoot;
+    protected final ResourceResolver resourceResolver;
 
-    protected final ResourceResolverFactory resolverFactory = repo.getResolverFactory();
-    protected final ResourceResolver resourceResolver = repo.getResourceResolver();
-    protected final Session session = repo.getSession();
+    protected final List<ResourceMock> resources;
 
-    protected final List<ResourceMock> resources = Arrays.asList(contentRoot, parent, page, jcrContent, resource);
-
-
-    public SlingResourcesTest() {
+    public SlingResourcesTest(final RepoMock repo) {
+        this.repo = repo;
+        contentRoot = repo.getContent();
+        resourceResolver = repo.getResourceResolver();
+        resources = Arrays.asList(contentRoot, parent, page, jcrContent, resource);
         setPaths(PAGE_PATH, contentRoot, parent, page);
         resource.setPath(jcrContent.getPath() + SLASH + NN_RESOURCE);
         setParentChildRelationships(contentRoot, parent, page);
@@ -64,6 +61,10 @@ public class SlingResourcesTest {
         resource.setResourceType(RESOURCE_TYPE);
         init(component);
         bindRequest();
+    }
+
+    public SlingResourcesTest() {
+        this(new RepoMock());
     }
 
     private void bindRequest() {

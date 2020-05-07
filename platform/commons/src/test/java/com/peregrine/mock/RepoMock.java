@@ -24,22 +24,26 @@ public final class RepoMock {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    protected final ResourceMock repoRoot = new ResourceMock("Repository Root");
-    protected final ResourceMock contentRoot = new ResourceMock("Content Root");
+    private final ResourceMock root = new ResourceMock("Repository Root");
+    private final ResourceMock content = new ResourceMock("Content Root");
+    private final ResourceMock var = new ResourceMock("Var Root");
 
-    protected final ResourceResolverFactory resolverFactory = mock(ResourceResolverFactory.class, fullName(this, "Resolver Factory"));
-    protected final ResourceResolver resourceResolver = mock(ResourceResolver.class, fullName(this, "Resource Resolver"));
-    protected final Map<String, String> resourceResolverMap = new HashMap<>();
-    protected final Session session = mock(Session.class, fullName(this, "Session"));
+    private final ResourceResolverFactory resolverFactory = mock(ResourceResolverFactory.class, fullName(this, "Resolver Factory"));
+    private final ResourceResolver resourceResolver = mock(ResourceResolver.class, fullName(this, "Resource Resolver"));
+    private final Map<String, String> resourceResolverMap = new HashMap<>();
+    private final Session session = mock(Session.class, fullName(this, "Session"));
 
     private final Map<String, ResourceMock> resolvableResources = new HashMap<>();
 
     public RepoMock() {
-        repoRoot.setPath(SLASH);
-        contentRoot.setPath(CONTENT_ROOT);
-        setParentChildRelationships(repoRoot, contentRoot);
-        init(repoRoot);
-        init(contentRoot);
+        root.setPath(SLASH);
+        content.setPath(CONTENT_ROOT);
+        var.setPath("/var");
+        setParentChildRelationships(root, content);
+        setParentChildRelationships(root, var);
+        init(root);
+        init(content);
+        init(var);
         bindResolverFactory();
         when(resourceResolver.map(any())).thenAnswer(invocation -> resourceResolverMap.get(invocation.getArguments()[0]));
     }
@@ -97,12 +101,16 @@ public final class RepoMock {
         return mock;
     }
 
-    public ResourceMock getRepoRoot() {
-        return repoRoot;
+    public ResourceMock getRoot() {
+        return root;
     }
 
-    public ResourceMock getContentRoot() {
-        return contentRoot;
+    public ResourceMock getContent() {
+        return content;
+    }
+
+    public ResourceMock getVar() {
+        return var;
     }
 
     public ResourceResolverFactory getResolverFactory() {

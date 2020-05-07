@@ -26,7 +26,7 @@ public final class ResourceUtilsTest extends SlingResourcesTest {
     @Test
     public void getFirstExistingAncestorOnPath_emptyPath() {
         final Resource resource = ResourceUtils.getFirstExistingAncestorOnPath(resourceResolver, null);
-        assertEquals(repoRoot, resource);
+        assertEquals(repo.getRoot(), resource);
     }
 
     @Test

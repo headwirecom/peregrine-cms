@@ -28,9 +28,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 @RunWith(MockitoJUnitRunner.class)
 public final class CacheBuilderBaseTest extends SlingResourcesTest {
 
-    private static final String CACHE_LOCATION = "/var";
-
-    private final ResourceMock var = new ResourceMock("Var Root");
+    private final ResourceMock var = repo.getVar();
     private final ResourceMock rootCache = new ResourceMock("Cache Root");
     private final ResourceMock parentCache = new ResourceMock("Cache Parent");
     private final PageMock pageCache = new PageMock("Cache Page");
@@ -38,11 +36,10 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
     private final ResourceMock resourceCache = new ResourceMock("Cache Resource");
 
     {
-        setPaths(CACHE_LOCATION + PAGE_PATH, var, rootCache, parentCache, pageCache);
+        setPaths(var.getPath() + PAGE_PATH, rootCache, parentCache, pageCache);
         resourceCache.setPath(contentCache.getPath() + SLASH + NN_RESOURCE);
-        setParentChildRelationships(var, repoRoot, rootCache, parentCache, pageCache);
+        setParentChildRelationships(var, rootCache, parentCache, pageCache);
         setParentChildRelationships(contentCache, resourceCache);
-        init(var);
         init(rootCache);
         init(parentCache);
         init(pageCache);
@@ -52,7 +49,7 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
     private final CacheBuilderBase model = Mockito.spy(new CacheBuilderBase() {
 
         {
-            setLocation(CACHE_LOCATION);
+            setLocation(var.getPath());
         }
 
         @Override
