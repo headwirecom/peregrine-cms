@@ -39,12 +39,6 @@ public final class PrefixAndCutUrlExternalizerTest {
     public void map() {
         mapAndCompare("http://www.example.com", "");
         mapAndCompare("http://www.example.com", "/content/example/pages.html");
-        mapAndCompare("http://www.example.com/page.html", "/content/example/pages/page.html");
-        mapAndCompare("http://www.example.com/page/sub.html", "/content/example/pages/page/sub.html");
-        mapAndCompare("http://www.example.com", "/content/example/pages.x.html");
-        mapAndCompare("http://www.example.com", "/content/example/pages.sitemap.html");
-        mapAndCompare("http://www.example.com/sitemap.xml", "/content/example/pages.sitemap.xml");
-        mapAndCompare("http://www.example.com/sitemap.1.xml", "/content/example/pages.sitemap.1.xml");
     }
 
 }
