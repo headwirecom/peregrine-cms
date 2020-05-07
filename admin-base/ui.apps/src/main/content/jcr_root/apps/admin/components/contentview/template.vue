@@ -26,12 +26,26 @@
   <div :class="`peregrine-content-view ${viewModeClass}`">
     <div id="editable"
          ref="editable"
+         draggable="true"
          :class="editable.class"
          :style="editable.styles"
-         :draggable="enableEditableFeatures"
          @dragstart="onEditableDragStart"
          @touchstart="onEditableTouchStart"
          @touchend="onEditableTouchEnd">
+      <a v-if="enableEditableFeatures"
+         draggable="false"
+         href="#"
+         class="drag-handle top-right"
+         title="move component">
+        <i class="material-icons">drag_handle</i>
+      </a>
+      <a v-if="enableEditableFeatures"
+         draggable="false"
+         href="#"
+         class="drag-handle bottom-left"
+         title="move component">
+        <i class="material-icons">drag_handle</i>
+      </a>
       <div v-if="enableEditableFeatures" class="editable-actions">
         <ul>
           <li class="waves-effect waves-light">
@@ -195,6 +209,16 @@
       },
       isRich() {
         return get(this.view, '/state/editor/inline/rich', false)
+      },
+      componentTitle() {
+        const componentName = this.view.state.editor.component.split('-').join('/')
+        const components = this.view.admin.components.data
+        for (let i = 0; i < components.length; i++) {
+          const component = components[i]
+          if (component.path.endsWith(componentName)) {
+            return component.title
+          }
+        }
       }
     },
     watch: {
@@ -484,7 +508,7 @@
           addOrMove = 'addComponentToPath';
         } else {
           addOrMove = 'moveComponentToPath';
-          const targetNode = $perAdminApp.findNodeFromPath(this.view.pageView.page, targetPath)
+          const targetNode = $perAdminApp.findNodeFromPath(this.view.pageView.page, this.path)
           if (!targetNode || targetNode.fromTemplate) {
             $perAdminApp.notifyUser('template component',
                 'You cannot drag a component into a template section')
@@ -679,10 +703,11 @@
       /* Drag and Drop ===========================
       ============================================ */
       onEditableDragStart(ev) {
-        if (this.selected.component === null) return
+        if (this.component === null) return
 
         this.editable.class = 'dragging'
-        ev.dataTransfer.setData('text', this.selected.path)
+        ev.dataTransfer.setData('text', this.path)
+        ev.dataTransfer.setDragImage(this.component, 400, 0)
       },
 
       /* Editable methods ========================

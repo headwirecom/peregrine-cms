@@ -26,6 +26,33 @@
 			-webkit-touch-callout: none;
 			$editable-actions-height: 25px;
 
+			.drag-handle {
+				pointer-events: all;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				color: #ffffff;
+				position: absolute;
+				width: 22px;
+				height: 16px;
+				background-color: #37474f;
+				cursor: move;
+
+				&.top-right {
+					top: 0;
+					right: -2px;
+				}
+
+				&.bottom-left {
+					bottom: 0;
+					left: -2px;
+				}
+
+				.material-icons {
+					font-size: 20px;
+				}
+			}
+
 			.editable-actions {
 				pointer-events: all;
 				display: none;
