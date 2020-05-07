@@ -66,6 +66,10 @@
           @mouseleave="onIframeMouseLeave"
           @mouseenter="onIframeMouseEnter"/>
     </template>
+    <div ref="addComponentModal" v-show="addComponentModal.visible" style="background: silver; position: absolute; top: 10px; bottom: 10px; left: 10px; width: 200px; z-index: 2;">
+      <input type="text" v-model="addComponentModal.filter">
+      <button v-for="component in allowedComponents" v-bind:key="component.path + '|' + component.variation">{{component.name}} - {{component.variation}}</button>
+    </div>
   </div>
 </template>
 
@@ -109,7 +113,11 @@
         clipboard: null,
         ctrlDown: false,
         isTouch: false,
-        isIOS: false
+        isIOS: false,
+        addComponentModal: {
+          visible: false,
+          filter: ''
+        }
       }
     },
     computed: {
@@ -195,6 +203,13 @@
       },
       isRich() {
         return get(this.view, '/state/editor/inline/rich', false)
+      },
+      allowedComponents() {
+        return get(this.view, '/admin/components/data', [])
+              .filter( el => { 
+                if(el.group === '.hidden') return false
+                return el.path.startsWith('/apps/'+this.view.state.tenant.name+'/') 
+              })
       }
     },
     watch: {
@@ -363,17 +378,18 @@
       },
 
       addComponent(below = true) {
-        const view = this.view
-        const payload = {
-          pagePath: view.pageView.path,
-          path: this.path,
-          component: `/apps/${view.state.tenant.name}/components/richtext:sample`,
-          drop: below ? 'after' : 'before'
-        }
-        $perAdminApp.stateAction('addComponentToPath', payload).then((data) => {
-          this.refreshInlineEditClones()
-          this.iframeEditMode()
-        })
+        this.addComponentModal.visible = true
+        // const view = this.view
+        // const payload = {
+        //   pagePath: view.pageView.path,
+        //   path: this.path,
+        //   component: `/apps/${view.state.tenant.name}/components/richtext:sample`,
+        //   drop: below ? 'after' : 'before'
+        // }
+        // $perAdminApp.stateAction('addComponentToPath', payload).then((data) => {
+        //   this.refreshInlineEditClones()
+        //   this.iframeEditMode()
+        // })
       },
 
       onInlineSelectAll(event) {
