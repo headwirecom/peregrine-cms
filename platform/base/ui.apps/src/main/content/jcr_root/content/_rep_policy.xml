@@ -1,0 +1,6 @@
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:rep="internal"
+          jcr:primaryType="rep:ACL">
+    <peregrine-service-user jcr:primaryType="rep:GrantACE"
+                rep:principalName="peregrine-service-user"
+                rep:privileges="[jcr:read]" />
+</jcr:root>
