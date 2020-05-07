@@ -571,7 +571,7 @@
           }
 
           html.edit-mode #peregrine-app .inline-edit-clone {
-            cursor = text !important
+            cursor: text !important
           }`
         const style = this.iframe.doc.createElement('style')
         this.iframe.head.appendChild(style)
