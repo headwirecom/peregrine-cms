@@ -498,17 +498,12 @@
       },
 
       refreshInlineEditClones() {
-        const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]:not(.inline-edit-original):not(.inline-edit-clone)`)
+        const selector = `[${Attribute.INLINE}]:not(.inline-edit-original):not(.inline-edit-clone)`
+        const elements = this.iframe.app.querySelectorAll(selector)
         if (!elements || elements.length <= 0) return
 
         elements.forEach((el) => {
-          if ($perAdminApp.findNodeFromPath(
-                this.view.pageView.page,
-                this.findComponentEl(el).getAttribute(Attribute.PATH)
-                )
-              .fromTemplate
-            ) return
-          // .classList.contains('from-template')) return
+          if (this.isFromTemplate(el)) return
 
           const clsList = el.classList
           const clone = el.cloneNode(true)
@@ -532,11 +527,7 @@
         this.iframe.html.classList.add('edit-mode')
         const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el, index) => {
-          if ($perAdminApp.findNodeFromPath(
-                this.view.pageView.page,
-                this.findComponentEl(el).getAttribute(Attribute.PATH)
-              ).fromTemplate
-          ) return
+          if (this.isFromTemplate(el)) return
           el.setAttribute('contenteditable', 'true')
           if (el.classList.contains('inline-edit-clone')) {
             el.innerHTML = elements[index + 1].innerHTML
@@ -673,6 +664,12 @@
           y: event.pageY - offset.top - this.scrollTop,
           yPercentage: (event.pageY - offset.top - this.scrollTop) / offset.height * 100
         }
+      },
+
+      isFromTemplate(el) {
+        const component = this.findComponentEl(el)
+        const path = component.getAttribute(Attribute.PATH)
+        return $perAdminApp.findNodeFromPath(this.pageView.page, path).fromTemplate
       },
 
       /* Drag and Drop ===========================
