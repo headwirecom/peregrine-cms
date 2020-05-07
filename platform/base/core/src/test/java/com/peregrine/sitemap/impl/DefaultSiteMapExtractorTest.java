@@ -1,17 +1,23 @@
 package com.peregrine.sitemap.impl;
 
-import com.peregrine.sitemap.*;
+import com.peregrine.mock.SiteMock;
+import com.peregrine.sitemap.PropertyProvider;
+import com.peregrine.sitemap.ResourceResolverFactoryProxy;
+import com.peregrine.sitemap.SiteMapUrlBuilder;
 import junitx.util.PrivateAccessor;
 import org.apache.sling.api.resource.LoginException;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import java.util.*;
 
-import static com.peregrine.commons.util.PerConstants.DOMAINS;
+import java.util.Collection;
+import java.util.Set;
+
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -63,8 +69,43 @@ public final class DefaultSiteMapExtractorTest extends SiteStructureTestBase {
     public void appliesTo() {
         assertFalse(model.appliesTo(null));
         assertTrue(model.appliesTo(page));
-        example.getTemplates().getContent().putProperty(DOMAINS, null);
+        example.setDomains((String)null);
         assertFalse(model.appliesTo(page));
+    }
+
+    @Test
+    public void getMandatoryCachedPaths() {
+        example.setDomains();
+        assertEquals(0, model.getMandatoryCachedPaths().size());
+
+        example.setDomains(EXAMPLE_COM);
+        Set<String> paths = model.getMandatoryCachedPaths();
+        assertEquals(1, paths.size());
+        assertTrue(paths.contains(example.getPages().getPath()));
+
+        final SiteMock other = repo.init(new SiteMock("other"));
+        paths = model.getMandatoryCachedPaths();
+        assertEquals(1, paths.size());
+        assertTrue(paths.contains(example.getPages().getPath()));
+
+        other.setDomains(EXAMPLE_COM);
+        paths = model.getMandatoryCachedPaths();
+        assertEquals(2, paths.size());
+        assertTrue(paths.contains(example.getPages().getPath()));
+        assertTrue(paths.contains(other.getPages().getPath()));
+    }
+
+    @SuppressWarnings("unchecked")
+	@Test
+    public void getMandatoryCachedPaths_edgeCases() throws LoginException {
+        final ResourceResolver resolver = repo.getResourceResolver();
+        when(resolver.getResource(anyString())).thenReturn(null);
+        Set<String> paths = model.getMandatoryCachedPaths();
+        assertEquals(0, paths.size());
+
+        when(resolverFactory.getServiceResourceResolver()).thenThrow(LoginException.class);
+        paths = model.getMandatoryCachedPaths();
+        assertEquals(0, paths.size());
     }
 
 }

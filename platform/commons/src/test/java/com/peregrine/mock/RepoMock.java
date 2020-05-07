@@ -102,6 +102,7 @@ public final class RepoMock {
     }
 
     public SiteMock init(final SiteMock mock) {
+        setParentChildRelationships(content, mock);
         init((PageMock)mock);
         init(mock.getPages());
         init(mock.getTemplates());

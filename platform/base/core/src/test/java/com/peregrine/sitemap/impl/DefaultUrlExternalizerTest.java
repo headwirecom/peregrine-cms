@@ -5,8 +5,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static com.peregrine.commons.util.PerConstants.DOMAINS;
-
 @RunWith(MockitoJUnitRunner.class)
 public final class DefaultUrlExternalizerTest extends PrefixAndCutUrlExternalizerBaseTestBase<DefaultUrlExternalizer> {
 
@@ -18,7 +16,7 @@ public final class DefaultUrlExternalizerTest extends PrefixAndCutUrlExternalize
     public void map() {
         mapAndCompare("", "");
         basicTest();
-        example.getTemplates().getContent().putProperty(DOMAINS, new String[] {});
+        example.setDomains();
         mapAndCompare(_CONTENT_EXAMPLE_PAGES + ".html", _CONTENT_EXAMPLE_PAGES + ".html");
     }
 
