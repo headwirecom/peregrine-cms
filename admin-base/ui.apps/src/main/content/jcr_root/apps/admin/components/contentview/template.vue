@@ -80,9 +80,9 @@
           @mouseleave="onIframeMouseLeave"
           @mouseenter="onIframeMouseEnter"/>
     </template>
-    <div ref="addComponentModal" v-show="addComponentModal.visible" style="background: silver; position: absolute; top: 10px; bottom: 10px; left: 10px; width: 200px; z-index: 2;">
+    <div ref="addComponentModal" v-show="addComponentModal.visible" style="background: silver; position: absolute; top: 10px; bottom: 10px; left: 10px; width: 300px; z-index: 2; overflow-y: scroll;">
       <input type="text" v-model="addComponentModal.filter">
-      <button v-for="component in allowedComponents" v-bind:key="component.path + '|' + component.variation">{{component.name}} - {{component.variation}}</button>
+      <button v-on:click="addComponentFromModal(componentKey(component))" style="width: 100%;" v-for="component in allowedComponents" v-bind:key="component.path + '|' + component.variation">{{componentDisplayName(component)}}</button>
     </div>
   </div>
 </template>
@@ -222,6 +222,7 @@
         return get(this.view, '/admin/components/data', [])
               .filter( el => { 
                 if(el.group === '.hidden') return false
+                if(!this.componentDisplayName(el).toLowerCase().startsWith(this.addComponentModal.filter.toLowerCase())) return false
                 return el.path.startsWith('/apps/'+this.view.state.tenant.name+'/') 
               })
       },      
@@ -303,6 +304,21 @@
       })
     },
     methods: {
+      componentKey( component ) {
+        if(component.variation) {
+            return component.path+":"+component.variation
+        } else {
+            return component.path
+        }
+      },
+      componentDisplayName(component) {
+        if(component.title) {
+            return component.title
+        } else {
+            return component.path.split('/')[2] + ' ' + component.name
+        }
+      },
+
       selectComponent(vm, el = vm.target) {
         vm.target = el
         if (!vm.target || !vm.component || !vm.path) return
@@ -423,6 +439,22 @@
         //   this.refreshInlineEditClones()
         //   this.iframeEditMode()
         // })
+      },
+
+      addComponentFromModal(component) {
+        this.addComponentModal.visible = true
+        const view = this.view
+        const payload = {
+          pagePath: view.pageView.path,
+          path: this.path,
+          component: component,
+          drop: 'after'
+        }
+        $perAdminApp.stateAction('addComponentToPath', payload).then((data) => {
+          this.refreshInlineEditClones()
+          this.iframeEditMode()
+          this.addComponentModal.visible = false
+        })
       },
 
       onInlineSelectAll(event) {
