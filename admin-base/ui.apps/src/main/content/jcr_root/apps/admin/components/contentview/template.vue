@@ -558,9 +558,12 @@
           html.edit-mode body {
             cursor: default !important
           }
-          html.edit-mode #peregrine-app [contenteditable="true"]:focus,
-          html.edit-mode #peregrine-app [contenteditable="true"]:hover {
+          html.edit-mode #peregrine-app [contenteditable="true"]:focus {
             outline: 1px solid #fe9701 !important;
+          }
+
+          html.edit-mode #peregrine-app [contenteditable="true"]:hover:not(:focus) {
+            outline: 1px solid #ffc171 !important;
           }
 
           html.edit-mode #peregrine-app .from-template {
