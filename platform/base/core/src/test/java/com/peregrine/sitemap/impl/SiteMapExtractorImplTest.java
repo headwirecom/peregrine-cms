@@ -13,7 +13,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -26,8 +25,6 @@ public final class SiteMapExtractorImplTest extends SlingResourcesTest {
     private final ChangeFreqPropertyProvider changeFreq = new ChangeFreqPropertyProvider();
     private final LastModPropertyProvider lastMod = new LastModPropertyProvider();
     private final PriorityPropertyProvider priority = new PriorityPropertyProvider();
-
-    private final Pattern pattern = Pattern.compile(resource.getPath());
 
     private SiteMapExtractorImpl model;
 
@@ -52,15 +49,6 @@ public final class SiteMapExtractorImplTest extends SlingResourcesTest {
         assertEquals(externalizer, model.getUrlExternalizer());
         when(config.getUrlExternalizer()).thenReturn(mock(UrlExternalizer.class));
         assertNotEquals(externalizer, model.getUrlExternalizer());
-    }
-
-    @Test
-    public void appliesTo() {
-        assertTrue(model.appliesTo(page));
-        assertTrue(model.appliesTo(resource));
-        when(config.getPagePathPattern()).thenReturn(pattern);
-        assertFalse(model.appliesTo(page));
-        assertTrue(model.appliesTo(resource));
     }
 
     @Test
