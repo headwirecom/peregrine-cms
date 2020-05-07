@@ -101,6 +101,13 @@ public final class RepoMock {
         return mock;
     }
 
+    public SiteMock init(final SiteMock mock) {
+        init((PageMock)mock);
+        init(mock.getPages());
+        init(mock.getTemplates());
+        return mock;
+    }
+
     public ResourceMock getRoot() {
         return root;
     }

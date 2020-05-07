@@ -18,7 +18,7 @@ public final class DefaultUrlExternalizerTest extends PrefixAndCutUrlExternalize
     public void map() {
         mapAndCompare("", "");
         basicTest();
-        templates.getContent().putProperty(DOMAINS, new String[] {});
+        example.getTemplates().getContent().putProperty(DOMAINS, new String[] {});
         mapAndCompare(_CONTENT_EXAMPLE_PAGES + ".html", _CONTENT_EXAMPLE_PAGES + ".html");
     }
 

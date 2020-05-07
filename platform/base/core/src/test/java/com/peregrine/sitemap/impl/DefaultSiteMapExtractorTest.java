@@ -63,7 +63,7 @@ public final class DefaultSiteMapExtractorTest extends SiteStructureTestBase {
     public void appliesTo() {
         assertFalse(model.appliesTo(null));
         assertTrue(model.appliesTo(page));
-        templates.getContent().putProperty(DOMAINS, null);
+        example.getTemplates().getContent().putProperty(DOMAINS, null);
         assertFalse(model.appliesTo(page));
     }
 
