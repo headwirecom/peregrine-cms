@@ -50,9 +50,4 @@
         <exclude pattern="/apps/per/install/.*"/>
     </filter>
     <filter root="/apps/runmodes"/>
-    <filter root="/content/rep:policy">
-        <include pattern="/content/rep:policy/peregrine-service-user"/>
-        <exclude pattern="/content/rep:policy/.*"/>
-    </filter>
-    <filter root="/var/sitemaps"/>
 </workspaceFilter>
