@@ -169,7 +169,8 @@
             var view = $perAdminApp.getView()
             $perAdminApp.action(this, 'onEditorExitFullscreen')
             $perAdminApp.stateAction('savePageEdit', { data: data, path: view.state.editor.path } ).then( () => {
-                $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
+              $perAdminApp.action(this, 'unselect')
+              $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
             })
         },
         onCancel(e) {
