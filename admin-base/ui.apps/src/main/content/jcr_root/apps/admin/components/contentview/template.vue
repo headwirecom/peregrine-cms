@@ -405,7 +405,7 @@
         this.editing = false
       },
 
-      onInlineKeyDown(event, isDefault = false) {
+      onInlineKeyDown(event) {
         const key = event.which
         const ctrlOrCmd = event.ctrlKey || event.metaKey
         const backspaceOrDelete = key === Key.BACKSPACE || key === Key.DELETE
