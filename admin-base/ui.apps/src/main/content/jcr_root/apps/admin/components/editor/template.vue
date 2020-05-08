@@ -190,6 +190,7 @@
                   yes() {
                       $perAdminApp.action(vm, 'onEditorExitFullscreen')
                       $perAdminApp.stateAction('deletePageNode', { pagePath: view.pageView.path, path: view.state.editor.path } ).then( () => {
+                          $perAdminApp.action(vm, 'unselect')
                           $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
                       })
                   },
