@@ -108,6 +108,8 @@ export const Key = {
   DELETE: 46,
   DOT: 190,
   COMMA: 188,
+  ARROW_LEFT: 37,
   ARROW_UP: 38,
+  ARROW_RIGHT: 39,
   ARROW_DOWN: 40
 }

@@ -80,16 +80,23 @@
           @mouseleave="onIframeMouseLeave"
           @mouseenter="onIframeMouseEnter"/>
     </template>
-    <div ref="addComponentModal" v-show="addComponentModal.visible" style="background: silver; position: absolute; top: 10px; bottom: 10px; left: 10px; width: 300px; z-index: 2; overflow-y: scroll;">
+    <div ref="addComponentModal"
+         v-show="addComponentModal.visible"
+         style="background: silver; position: absolute; top: 10px; bottom: 10px; left: 10px; width: 300px; z-index: 2; overflow-y: scroll;">
       <input ref="addComponentModalFilter" type="text" v-model="addComponentModal.filter">
-      <button v-on:click="addComponentFromModal(componentKey(component))" style="width: 100%;" v-for="component in allowedComponents" v-bind:key="component.path + '|' + component.variation">{{componentDisplayName(component)}}</button>
+      <button v-on:click="addComponentFromModal(componentKey(component))"
+              style="width: 100%;"
+              v-for="component in allowedComponents"
+              v-bind:key="component.path + '|' + component.variation">
+        {{componentDisplayName(component)}}
+      </button>
     </div>
   </div>
 </template>
 
 <script>
   import {Attribute, Key} from '../../../../../../js/constants'
-  import {get, set} from '../../../../../../js/utils'
+  import {get, getCaretCharacterOffsetWithin, set} from '../../../../../../js/utils'
 
   export default {
     props: ['model'],
@@ -131,7 +138,9 @@
         addComponentModal: {
           visible: false,
           filter: ''
-        }
+        },
+        caretPos: -1,
+        holdingDown: false
       }
     },
     computed: {
@@ -220,13 +229,16 @@
       },
       allowedComponents() {
         return get(this.view, '/admin/components/data', [])
-              .filter( el => { 
-                if(!this.view.state.tenant || !this.view.state.tenant.name) return false
-                if(el.group === '.hidden') return false
-                if(!this.componentDisplayName(el).toLowerCase().startsWith(this.addComponentModal.filter.toLowerCase())) return false
-                return el.path.startsWith('/apps/'+this.view.state.tenant.name+'/') 
-              })
-      },      
+            .filter(el => {
+              if (!this.view.state.tenant || !this.view.state.tenant.name) return false
+              if (el.group === '.hidden') return false
+              if (!this.componentDisplayName(el).toLowerCase().startsWith(
+                  this.addComponentModal.filter.toLowerCase())) {
+                return false
+              }
+              return el.path.startsWith('/apps/' + this.view.state.tenant.name + '/')
+            })
+      },
       componentTitle() {
         const componentName = this.view.state.editor.component.split('-').join('/')
         const components = this.view.admin.components.data
@@ -305,18 +317,18 @@
       })
     },
     methods: {
-      componentKey( component ) {
-        if(component.variation) {
-            return component.path+":"+component.variation
+      componentKey(component) {
+        if (component.variation) {
+          return component.path + ':' + component.variation
         } else {
-            return component.path
+          return component.path
         }
       },
       componentDisplayName(component) {
-        if(component.title) {
-            return component.title
+        if (component.title) {
+          return component.title
         } else {
-            return component.path.split('/')[2] + ' ' + component.name
+          return component.path.split('/')[2] + ' ' + component.name
         }
       },
 
@@ -395,6 +407,7 @@
       onInlineFocus(event) {
         event.target.classList.add('inline-editing')
         this.editing = true
+        this.caretPos = -1
         this.target = event.target
         const dataInline = this.targetInline.split('.').slice(1)
         this.inline = dataInline.join('.')
@@ -409,22 +422,30 @@
         const key = event.which
         const ctrlOrCmd = event.ctrlKey || event.metaKey
         const backspaceOrDelete = key === Key.BACKSPACE || key === Key.DELETE
+        const arrowKey = key >= Key.ARROW_LEFT && key <= Key.ARROW_DOWN
 
         if (key === Key.A && ctrlOrCmd) {
           this.onInlineSelectAll(event)
         } else if (backspaceOrDelete) {
           this.onInlineDelete(event)
-        } else if(key === Key.DOT && ctrlOrCmd) {
+        } else if (key === Key.DOT && ctrlOrCmd) {
           this.addComponent(true)
-        } else if(key === Key.COMMA && ctrlOrCmd) {
+        } else if (key === Key.COMMA && ctrlOrCmd) {
           this.addComponent(false)
-        } else if (key === Key.ARROW_UP || key === Key.ARROW_DOWN) {
-          if (key === Key.ARROW_UP) {
-            console.log('UP')
-          } else if (key === Key.ARROW_DOWN) {
-            console.log('DOWN')
-          }
+        } else if (arrowKey) {
+          this.onInlineArrowKey(event)
         }
+        this.holdingDown = true
+      },
+
+      onInlineKeyUp(event) {
+        const key = event.which
+        const arrowKey = key >= Key.ARROW_LEFT && key <= Key.ARROW_DOWN
+
+        if (arrowKey) {
+          this.onInlineArrowKey(event, true)
+        }
+        this.holdingDown = false
       },
 
       addComponent(below = true) {
@@ -468,6 +489,25 @@
           event.preventDefault();
           event.target.innerHTML = ''
         }
+      },
+
+      onInlineArrowKey(event, isKeyUp=false) {
+        const key = event.which
+        const newCaretPos = getCaretCharacterOffsetWithin(event.target)
+        if (this.caretPos === newCaretPos && (isKeyUp || this.holdingDown)) {
+          const inlineEditNodes = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
+          for (let i = 0; i < inlineEditNodes.length; i++) {
+            if (inlineEditNodes[i] === this.target) {
+              if (key === Key.ARROW_LEFT || key === Key.ARROW_UP) {
+                inlineEditNodes[i - 1].focus()
+              } else {
+                inlineEditNodes[i + 1].focus()
+              }
+              break;
+            }
+          }
+        }
+        this.caretPos = newCaretPos
       },
 
       onIframeMouseLeave(event) {
@@ -608,6 +648,7 @@
           clone.addEventListener('focus', this.onInlineFocus)
           clone.addEventListener('focusout', this.onInlineFocusOut)
           clone.addEventListener('keydown', this.onInlineKeyDown)
+          clone.addEventListener('keyup', this.onInlineKeyUp)
           el.parentNode.insertBefore(clone, el)
           el.remove()
           this.$watch(`node.${dataInline.join('.')}`, (val, oldVal) => {
