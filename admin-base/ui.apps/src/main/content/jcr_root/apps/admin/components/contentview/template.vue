@@ -76,9 +76,7 @@
           ref="editview"
           :src="pagePath"
           :data-per-mode="previewMode"
-          @load="onIframeLoaded"
-          @mouseleave="onIframeMouseLeave"
-          @mouseenter="onIframeMouseEnter"/>
+          @load="onIframeLoaded"/>
     </template>
     <div ref="addComponentModal"
          v-show="addComponentModal.visible"
@@ -124,10 +122,8 @@
         selected: {
           draggable: true
         },
-        mouseover: {},
         iframe: {
           loaded: false,
-          mouse: false,
           win: null, doc: null, html: null, body: null, head: null, app: null,
           scrollTop: 0
         },
@@ -269,13 +265,6 @@
       },
       'pageView.path'() {
         this.unselect(this)
-      },
-      'iframe.mouse'(val) {
-        if (val && this.previewMode !== 'preview') {
-          this.iframeEditMode()
-        } else {
-          this.iframePreviewMode(this.preview !== 'preview')
-        }
       },
       node: {
         deep: true,
@@ -491,7 +480,7 @@
         }
       },
 
-      onInlineArrowKey(event, isKeyUp=false) {
+      onInlineArrowKey(event, isKeyUp = false) {
         const key = event.which
         const newCaretPos = getCaretCharacterOffsetWithin(event.target)
         if (this.caretPos === newCaretPos && (isKeyUp || this.holdingDown)) {
@@ -508,14 +497,6 @@
           }
         }
         this.caretPos = newCaretPos
-      },
-
-      onIframeMouseLeave(event) {
-        this.iframe.mouse = false
-      },
-
-      onIframeMouseEnter(event) {
-        this.iframe.mouse = true
       },
 
       onIframeLoaded(ev) {
@@ -674,7 +655,7 @@
         })
       },
 
-      iframePreviewMode(editable = false) {
+      iframePreviewMode() {
         this.iframe.doc.removeEventListener('click', this.onIframeClick)
         this.iframe.doc.removeEventListener('scroll', this.onIframeScroll)
         this.iframe.body.setAttribute('contenteditable', 'false')
@@ -682,7 +663,7 @@
         const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el, index) => {
           if (this.isFromTemplate(el)) return
-          el.setAttribute('contenteditable', editable)
+          el.setAttribute('contenteditable', false)
         })
       },
 
@@ -782,7 +763,6 @@
       },
 
       getRelativeMousePosition(event) {
-        if (!this.mouseover) return {x: -1, y: -1}
         const offset = this.getBoundingClientRect(this.component)
         return {
           width: offset.width,
