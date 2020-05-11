@@ -25,18 +25,8 @@ import com.peregrine.replication.ImageMetadataSelector;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -376,6 +366,7 @@ public class AdminResourceHandlerService
                         "admin/components/recyclable",
                         NT_UNSTRUCTURED, false);
                 Node itemNode = item.adaptTo(Node.class);
+                itemNode.setProperty(JCR_CREATED, Calendar.getInstance());
                 itemNode.setProperty("frozenNodePath", version.getPath());
                 itemNode.setProperty("resourcePath", resource.getPath());
                 resourceResolver.refresh();
