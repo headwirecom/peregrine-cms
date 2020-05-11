@@ -359,14 +359,16 @@ public class AdminResourceHandlerService
         if (isRecyclable(resource)) {
             Version version = createVersion(resourceResolver, resource.getPath());
             final String recyclablePath = RECYCLE_BIN_PATH + resource.getPath();
+            final Calendar now = Calendar.getInstance();
             try {
                 Resource item = ResourceUtil.getOrCreateResource(
                         resourceResolver,
-                        recyclablePath,
+                        recyclablePath + now.getTimeInMillis(),
                         "admin/components/recyclable",
                         NT_UNSTRUCTURED, false);
                 Node itemNode = item.adaptTo(Node.class);
                 itemNode.setProperty(JCR_CREATED, Calendar.getInstance());
+                itemNode.setProperty(JCR_CREATED_BY, resourceResolver.getUserID());
                 itemNode.setProperty("frozenNodePath", version.getPath());
                 itemNode.setProperty("resourcePath", resource.getPath());
                 resourceResolver.refresh();
