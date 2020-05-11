@@ -649,6 +649,7 @@
           clone.addEventListener('focusout', this.onInlineFocusOut)
           clone.addEventListener('keydown', this.onInlineKeyDown)
           clone.addEventListener('keyup', this.onInlineKeyUp)
+          clone.setAttribute('contenteditable', this.previewMode !== 'preview' + '')
           el.parentNode.insertBefore(clone, el)
           el.remove()
           this.$watch(`node.${dataInline.join('.')}`, (val, oldVal) => {
