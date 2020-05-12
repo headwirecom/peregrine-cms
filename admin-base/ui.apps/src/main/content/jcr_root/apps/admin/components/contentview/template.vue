@@ -381,8 +381,7 @@
         return el
       },
 
-      onInlineEdit(event) {
-        this.target = event.target
+      writeInlineToModel() {
         const dataInline = this.targetInline.split('.').slice(1)
         dataInline.reverse()
         let parentProp = this.node
@@ -390,6 +389,11 @@
           parentProp = parentProp[dataInline.pop()]
         }
         parentProp[dataInline.pop()] = this.isRich ? this.target.innerHTML : this.target.innerText
+      },
+
+      onInlineEdit(event) {
+        this.target = event.target
+        this.writeInlineToModel()
         this.autoSave = true
         this.reWrapEditable()
       },
@@ -475,9 +479,10 @@
 
       onInlineDelete(event) {
         const selection = this.iframe.win.getSelection()
-        if (selection.anchorNode === event.target) {
+        if (selection.anchorNode === this.target) {
           event.preventDefault();
-          event.target.innerHTML = ''
+          this.target.innerHTML = ''
+          this.writeInlineToModel()
         }
       },
 
