@@ -242,6 +242,10 @@ class PerApi {
     siteSetupReplication(path) {
         return impl.siteSetupReplication(path)
     }
+
+    fetchRecyclables(siteName) {
+        return impl.fetchRecyclables(siteName)
+    }
 }
 
 export default PerApi

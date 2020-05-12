@@ -793,6 +793,14 @@ class PerAdminImpl {
         })
   }
 
+  fetchRecyclables(siteName) {
+    const siteRecyclePath = "/var/recyclebin/content/"+siteName+".-1.json"
+    return fetch(siteRecyclePath)
+        .then(function (data) {
+          resolve(data)
+        })
+  }
+
   setInitialPageEditorState() {
     return new Promise((resolve) => {
       populateView('/state', 'editorVisible', false)

@@ -358,19 +358,25 @@ public class AdminResourceHandlerService
     public Recyclable createRecyclable(ResourceResolver resourceResolver, Resource resource) throws ManagementException {
         if (isRecyclable(resource)) {
             Version version = createVersion(resourceResolver, resource.getPath());
+
+            Node resourceNode = resource.adaptTo(Node.class);
             final String recyclablePath = RECYCLE_BIN_PATH + resource.getPath();
             final Calendar now = Calendar.getInstance();
             try {
+                resourceNode.setProperty("recyclablePath", resource.getPath());
+                Node frozenNode = version.getFrozenNode();
                 Resource item = ResourceUtil.getOrCreateResource(
                         resourceResolver,
-                        recyclablePath + now.getTimeInMillis(),
+                        recyclablePath,
                         "admin/components/recyclable",
                         NT_UNSTRUCTURED, false);
                 Node itemNode = item.adaptTo(Node.class);
-                itemNode.setProperty(JCR_CREATED, Calendar.getInstance());
+                itemNode.setProperty(JCR_CREATED, now);
                 itemNode.setProperty(JCR_CREATED_BY, resourceResolver.getUserID());
+
                 itemNode.setProperty("frozenNodePath", version.getPath());
                 itemNode.setProperty("resourcePath", resource.getPath());
+
                 resourceResolver.refresh();
                 resourceResolver.commit();
                 return item.adaptTo(Recyclable.class);
@@ -440,6 +446,7 @@ public class AdminResourceHandlerService
                 if (vm.isCheckedOut(path)){
                     Version v = vm.checkin(path);
                     vm.checkout(path);
+                    vh.addVersionLabel(v.getName(), "recyclableItem", true);
                     logger.warn("Version created for {} at {}", path, v.getFrozenNode().getPath());
                     return v;
                 }
