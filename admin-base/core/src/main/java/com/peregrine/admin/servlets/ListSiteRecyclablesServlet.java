@@ -78,8 +78,10 @@ public class ListSiteRecyclablesServlet extends AbstractBaseServlet {
         JsonResponse answer = new JsonResponse();
         final String sitePath = request.getSuffix();
         //+sitePath+"%'"
-        final String queryStr = "SELECT * FROM [nt:frozenNode] as n WHERE ISDESCENDANTNODE ([/jcr:system/jcr:versionStorage]) AND n.[jcr:path] LIKE '/jcr:system/jcr:versionStorage/%'";
-        // ""
+        //SELECT * from "nt:versionHistory" where default  like "/content/example/%"
+        //final String queryStr = "SELECT * FROM [nt:frozenNode] as n WHERE ISDESCENDANTNODE ([/jcr:system/jcr:versionStorage]) AND n.[jcr:path] LIKE '/jcr:system/jcr:versionStorage/%'";
+        //  AND [jcr:primaryType] = 'per:Page'
+        final String queryStr = "SELECT * from [nt:versionHistory] where default like '"+sitePath+"%'";
         try {
             QueryManager qm = session.getWorkspace().getQueryManager();
             Query q = qm.createQuery(queryStr, Query.JCR_SQL2);
@@ -88,6 +90,7 @@ public class ListSiteRecyclablesServlet extends AbstractBaseServlet {
             answer.writeArray(DATA);
             while(nodes.hasNext()) {
                 Node node = nodes.nextNode();
+
                 answer.writeObject();
                 answer.writeAttribute(NAME, node.getName());
                 answer.writeAttribute(PATH, node.getPath());
