@@ -35,7 +35,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="result in results.data" v-bind:key="result.path">
+                  <tr v-for="result in results" v-bind:key="result.path">
                     <td>{{result.name}}</td>
                     <td>{{result.path}}</td>
                     <td><a v-bind:href="'/bin/browser.html'+result.path" target="composum">view</a></td>
