@@ -42,6 +42,7 @@ import java.io.IOException;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_DELETE_PAGE;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_LIST_RECYCLABLES;
+import static com.peregrine.admin.util.AdminConstants.*;
 import static com.peregrine.admin.util.AdminConstants.DATA;
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.*;
@@ -77,16 +78,19 @@ public class ListSiteRecyclablesServlet extends AbstractBaseServlet {
         final Session session = request.getResourceResolver().adaptTo(Session.class);
         JsonResponse answer = new JsonResponse();
         final String sitePath = request.getSuffix();
-        //+sitePath+"%'"
-        //SELECT * from "nt:versionHistory" where default  like "/content/example/%"
-        //final String queryStr = "SELECT * FROM [nt:frozenNode] as n WHERE ISDESCENDANTNODE ([/jcr:system/jcr:versionStorage]) AND n.[jcr:path] LIKE '/jcr:system/jcr:versionStorage/%'";
-        //  AND [jcr:primaryType] = 'per:Page'
-        final String queryStr = "SELECT * from [nt:versionHistory] where default like '"+sitePath+"%'";
+
+//        final String queryStr = "SELECT * from [nt:versionHistory] where default like '"+sitePath+"%'";
+        final String queryStr =  "SELECT * from [nt:unstructured] " +
+                "where [sling:resourceType] = 'admin/components/recyclable'"+
+                "and [jcr:path] like '" + RECYCLE_BIN_PATH + sitePath+"%'";
         try {
             QueryManager qm = session.getWorkspace().getQueryManager();
             Query q = qm.createQuery(queryStr, Query.JCR_SQL2);
             QueryResult res = q.execute();
             NodeIterator nodes = res.getNodes();
+//            TODO: pagination
+            answer.writeAttribute(CURRENT, 1);
+            answer.writeAttribute(MORE, false);
             answer.writeArray(DATA);
             while(nodes.hasNext()) {
                 Node node = nodes.nextNode();
@@ -101,20 +105,7 @@ public class ListSiteRecyclablesServlet extends AbstractBaseServlet {
         } catch (RepositoryException e) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_LIST_RECYCLABLES).setException(e);
         }
-//        try {
-            //resourceManagement
-//            return new JsonResponse()
-//                .writeAttribute(TYPE, PAGE)
-//                .writeAttribute(STATUS, DELETED)
-//                .writeAttribute(NAME, response.getName())
-//                .writeAttribute(NODE_TYPE, response.getType())
-//                .writeAttribute(PARENT_PATH, response.getParentPath());
-//        } catch (ManagementException e) {
-//            return new ErrorResponse()
-//                .setHttpErrorCode(SC_BAD_REQUEST)
-//                .setErrorMessage(FAILED_TO_DELETE_NODE + path)
-//                .setRequestPath(path).setException(e);
-//        }
+
     }
 }
 
