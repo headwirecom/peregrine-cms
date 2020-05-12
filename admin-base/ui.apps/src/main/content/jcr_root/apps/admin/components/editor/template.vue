@@ -116,7 +116,7 @@
               const components = view.admin.components.data
               for(let i = 0; i < components.length; i++) {
                   const component = components[i]
-                  if(component.path.endsWith(componentName)) {
+                  if(component.path.endsWith(componentName) && component.group !== '.hidden') {
                       return component.title
                   }
               }
