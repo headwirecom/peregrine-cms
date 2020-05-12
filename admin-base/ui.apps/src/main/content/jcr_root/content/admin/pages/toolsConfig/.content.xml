@@ -68,15 +68,4 @@
     </experiences>
   </querytool>
 
-  <recyclebin jcr:primaryType="nt:unstructured" jcr:title="Recycle Bin"
-             sling:resourceType="admin/components/iconaction"
-             jcr:description="Restore previously deleted pages, assets and folders. Or empty trash to delete forever."
-             action="/content/admin/pages/config/recycling_center">
-    <experiences jcr:primaryType="nt:unstructured">
-      <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Recycling-Zentrum"
-          description="Stellen Sie zuvor gelöschte Elemente wieder her. Oder leeren Sie den Papierkorb, um ihn dauerhaft zu löschen."/>
-
-    </experiences>
-  </recyclebin>
-
 </jcr:root>
