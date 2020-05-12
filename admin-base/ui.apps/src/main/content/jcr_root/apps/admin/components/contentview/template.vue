@@ -391,6 +391,7 @@
         }
         parentProp[dataInline.pop()] = this.isRich ? this.target.innerHTML : this.target.innerText
         this.autoSave = true
+        this.reWrapEditable()
       },
 
       onInlineFocus(event) {
@@ -722,6 +723,13 @@
         this.editable.styles.left = `${left + offset.left}px`
         this.editable.styles.width = `${width}px`
         this.editable.styles.height = `${height}px`
+      },
+
+      reWrapEditable() {
+        this.editable.timer = setTimeout(() => {
+          this.editable.class = 'selected'
+          this.wrapEditableAroundSelected()
+        }, this.editable.delay)
       },
 
       getElementStyle(e, styleName) {
