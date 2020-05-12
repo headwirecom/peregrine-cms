@@ -363,11 +363,11 @@ public class AdminResourceHandlerService
             try {
                 Resource item = ResourceUtil.getOrCreateResource(
                         resourceResolver,
-                        recyclablePath + now.getTimeInMillis(),
+                        recyclablePath + SLASH + now.getTimeInMillis(),
                         "admin/components/recyclable",
                         NT_UNSTRUCTURED, false);
                 Node itemNode = item.adaptTo(Node.class);
-                itemNode.setProperty(JCR_CREATED, Calendar.getInstance());
+                itemNode.setProperty(JCR_CREATED, now);
                 itemNode.setProperty(JCR_CREATED_BY, resourceResolver.getUserID());
                 itemNode.setProperty("frozenNodePath", version.getPath());
                 itemNode.setProperty("resourcePath", resource.getPath());
@@ -392,10 +392,20 @@ public class AdminResourceHandlerService
      * @return Recyclable or null
      */
     @Override
-    public Recyclable getRecyclable(ResourceResolver resourceResolver, String path) {
+    public List<Recyclable> getRecyclables(ResourceResolver resourceResolver, String path) {
         final Resource resource = path.startsWith(RECYCLE_BIN_PATH) ?
                 getResource(resourceResolver,path) : getResource(resourceResolver, RECYCLE_BIN_PATH + path);
-        return resource == null ? null : resource.adaptTo(Recyclable.class);
+        if (resource == null) {
+            return null;
+        }
+        ArrayList<Recyclable> recyclables = new ArrayList<>();
+        for (Resource res : resource.getChildren()){
+            final Recyclable recyclable = res.adaptTo(Recyclable.class);
+            if (recyclable != null) {
+                recyclables.add(recyclable);
+            }
+        }
+        return recyclables;
     }
 
 //    Assets, Pages, Folders are recyclable. Individual component nodes under jcr:content are not recyclable.
