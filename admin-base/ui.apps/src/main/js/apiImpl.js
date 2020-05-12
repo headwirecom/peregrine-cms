@@ -456,6 +456,17 @@ class PerAdminImpl {
     })
   }
 
+  populateRecyclebin(page = 0) {
+    const tenant = getOrCreate(callbacks.getView(), '/state/tenant').name
+    return new Promise((resolve, reject) => {
+      axios.get('/bin/search?q='+encodeURIComponent(
+      `SELECT * from nt:unstructured where sling:resourceType = 'admin/components/recyclable' and jcr:path like '/var/recyclebin/content/${tenant}/%'`
+      )+'&page='+page)
+      .then((result) => populateView('/admin', 'recyclebin', result.data)
+                          .then( () => resolve() ))
+      })
+  }
+
   populatePageView(path) {
     return fetch('/admin/readNode.json' + path)
         .then((data) => populateView('/pageView', 'page', data))

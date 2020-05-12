@@ -148,13 +148,13 @@ public interface AdminResourceHandler {
     String getSiteHomePath(ResourceResolver resourceResolver, Resource resource);
 
     /**
-     * Get a recyclable item
+     * Get a list of recyclable items
      * @param resourceResolver Resource Resolver
      * @param path of the name item to get
-     * @return Null or a recyclable item
+     * @return Null or a List recyclable items for the given path
      * @throws ManagementException if there's an error
      */
-    Recyclable getRecyclable(ResourceResolver resourceResolver, String path) throws ManagementException;
+    List<Recyclable> getRecyclables(ResourceResolver resourceResolver, String path) throws ManagementException;
 
     /**
      * Updates a given resource based on the given JSon Content

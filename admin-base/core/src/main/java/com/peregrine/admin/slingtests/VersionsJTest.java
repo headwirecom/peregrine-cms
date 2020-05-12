@@ -3,7 +3,6 @@ package com.peregrine.admin.slingtests;
 import com.google.common.collect.Iterators;
 import com.peregrine.admin.models.PageModel;
 import com.peregrine.admin.models.Recyclable;
-import com.peregrine.commons.Page;
 import com.peregrine.replication.ReferenceLister;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.sling.api.resource.PersistenceException;
@@ -228,7 +227,8 @@ public class VersionsJTest {
             assertNotNull(recyclable);
             assertEquals(indexRes.getPath(), recyclable.getResourcePath());
             assertTrue(recyclable.getFrozenNodePath().startsWith("/jcr:system/jcr:versionStorage/"));
-            assertEquals("/var/recyclebin/content/example/pages/index", recyclable.getResource().getPath());
+            assertTrue(recyclable.getResource().getPath().startsWith("/var/recyclebin/content/example/pages/index"));
+            assertTrue(recyclable.getResource().getName().matches("\\d+"));
         } catch (AdminResourceHandler.ManagementException e) {
             fail("execption while creating recyclable");
         }
@@ -256,13 +256,15 @@ public class VersionsJTest {
             String aboutPagePath = aboutRes.getPath();
             // Delete the page
             resourceManagement.deleteResource(resourceResolver, aboutPagePath, PAGE_PRIMARY_TYPE);
-//            resourceResolver.delete(aboutRes);
             resourceResolver.commit();
             aboutRes = resourceResolver.getResource(aboutPagePath);
             assertNull(aboutRes);
-            Recyclable recyclable = resourceManagement.getRecyclable(resourceResolver, aboutPagePath);
-            assertNotNull(recyclable);
-            resourceManagement.recycleDeleted(resourceResolver, recyclable, true );
+            List<Recyclable> recyclables = resourceManagement.getRecyclables(resourceResolver, aboutPagePath);
+            assertNotNull(recyclables);
+            resourceManagement.recycleDeleted(resourceResolver, recyclables.get(0), true );
+//            for (Recyclable r : recyclables) {
+//                resourceManagement.recycleDeleted(resourceResolver, r., true );
+//            }
             resourceResolver.refresh();
             resourceResolver.commit();
         } catch (Exception e) {
@@ -285,10 +287,10 @@ public class VersionsJTest {
                 assertNull(resourceResolver.getResource(EXAMPLE_PAGES + path));
             }
 
-            Recyclable foundRecyclable = resourceManagement.getRecyclable(resourceResolver,
+            List<Recyclable> foundRecyclable = resourceManagement.getRecyclables(resourceResolver,
                     RECYCLE_BIN_PATH + EXAMPLE_PAGES);
             assertNotNull(foundRecyclable);
-            resourceManagement.recycleDeleted(resourceResolver,foundRecyclable, false);
+            resourceManagement.recycleDeleted(resourceResolver,foundRecyclable.get(0), false);
             // all back
             for (String path : EXAMPLE_PAGE_PATHS) {
                 assertNotNull(resourceResolver.getResource(EXAMPLE_PAGES + path));
@@ -310,7 +312,6 @@ public class VersionsJTest {
             assertNotNull(version);
             String idBefore = aboutNode.getIdentifier();
             List<Resource> beforeRefs = referenceLister.getReferenceList(true, aboutRes, true);
-
 
             // Record paths to restore
             String versionPath = version.getPath();
