@@ -100,6 +100,10 @@ class PerApi {
         return impl.populateTenants()
     }
 
+    populateRecyclebin() {
+        return impl.populateRecyclebin()
+    }
+
     setInitialPageEditorState() {
         return impl.setInitialPageEditorState()
     }
