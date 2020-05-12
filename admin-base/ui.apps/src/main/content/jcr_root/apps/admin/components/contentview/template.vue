@@ -492,7 +492,9 @@
         const newCaretPos = getCaretCharacterOffsetWithin(event.target)
         if (this.caretPos === newCaretPos && (isKeyUp || this.holdingDown)) {
           const inlineEditNodes = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
-          for (let i = 0; i < inlineEditNodes.length; i++) {
+          if (inlineEditNodes.length <= 1) return
+
+          for (let i = 1; i < inlineEditNodes.length - 1; i++) {
             if (inlineEditNodes[i] === this.target) {
               if (key === Key.ARROW_LEFT || key === Key.ARROW_UP) {
                 inlineEditNodes[i - 1].focus()
