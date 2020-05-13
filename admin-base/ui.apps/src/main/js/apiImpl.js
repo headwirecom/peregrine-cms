@@ -501,6 +501,15 @@ class PerAdminImpl {
     })
   }
 
+  recycleItem(item) {
+      return new Promise((resolve, reject) => {
+        let data = new FormData()
+        updateWithForm('/admin/restoreRecyclable.json' + item.recyclebinItemPath, data)
+            .then((data) => this.populateNodesForBrowser(item.recyclebinItemPath))
+            .then(() => resolve())
+      })
+  }
+
   createSite(fromName, toName, title, tenantUserPwd, colorPalette) {
     return new Promise((resolve, reject) => {
       let data = new FormData()
@@ -806,14 +815,6 @@ class PerAdminImpl {
           return updateWithFormAndConfig('/admin/uploadFiles.json' + path, data,
               config)
               .then(() => this.populateNodesForBrowser(path))
-        })
-  }
-
-  fetchRecyclables(siteName) {
-    const siteRecyclePath = "/var/recyclebin/content/"+siteName+".-1.json"
-    return fetch(siteRecyclePath)
-        .then(function (data) {
-          resolve(data)
         })
   }
 

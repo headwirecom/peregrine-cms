@@ -203,6 +203,10 @@ class PerApi {
         return impl.uploadFiles(path, files, cb)
     }
 
+    recycleItem(recyclebinItemPath) {
+        return impl.recycleItem(recyclebinItemPath)
+    }
+
     nameAvailable(value, path) {
         return impl.nameAvailable(value, path)
     }

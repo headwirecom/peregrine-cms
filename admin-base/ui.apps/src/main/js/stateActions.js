@@ -82,6 +82,7 @@ import deleteTemplate from './stateActions/deleteTemplate'
 import renameTemplate from './stateActions/renameTemplate'
 import setTenant from './stateActions/setTenant'
 import siteSetupReplication from './stateActions/siteSetupReplication'
+import recycleItem from './stateActions/recycleItem'
 
 let log = LoggerFactory.logger('actions').setLevelDebug()
 
@@ -147,6 +148,7 @@ actions['moveTemplate'] = moveTemplate
 actions['deleteTemplate'] = deleteTemplate
 actions['setTenant'] = setTenant
 actions['siteSetupReplication'] = siteSetupReplication
+actions['recycleItem'] = recycleItem
 
 function noopAction(me, target) {
     log.error('state action noop with target:', target)

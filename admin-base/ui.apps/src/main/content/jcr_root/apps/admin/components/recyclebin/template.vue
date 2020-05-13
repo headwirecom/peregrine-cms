@@ -92,6 +92,9 @@
                $perAdminApp.askUser(heading, me.$i18n('Are you sure you want to restore this?'), {
                     yes() {
                         console.log(target.recyclebin)
+                        $perAdminApp.stateAction('recycleItem', {
+                           recyclebinItemPath: target.path
+                        })
                     }
                 })
             }
