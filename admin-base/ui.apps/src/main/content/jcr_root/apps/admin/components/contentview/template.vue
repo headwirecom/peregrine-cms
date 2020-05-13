@@ -493,12 +493,13 @@
         if (this.caretPos === newCaretPos && (isKeyUp || this.holdingDown)) {
           const inlineEditNodes = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
           if (inlineEditNodes.length <= 1) return
+          const len = inlineEditNodes.length
 
-          for (let i = 1; i < inlineEditNodes.length - 1; i++) {
+          for (let i = 0; i < len; i++) {
             if (inlineEditNodes[i] === this.target) {
-              if (key === Key.ARROW_LEFT || key === Key.ARROW_UP) {
+              if (i > 0 && (key === Key.ARROW_LEFT || key === Key.ARROW_UP)) {
                 inlineEditNodes[i - 1].focus()
-              } else {
+              } else if (i < len - 1 && (key === Key.ARROW_RIGHT || key === Key.ARROW_DOWN)) {
                 inlineEditNodes[i + 1].focus()
               }
               break;
