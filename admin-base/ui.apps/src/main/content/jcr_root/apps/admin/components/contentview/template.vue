@@ -629,10 +629,15 @@
         elements.forEach((el) => {
           if (this.isFromTemplate(el)) return
 
+          const component = this.findComponentEl(el)
+          const dataInline = el.getAttribute(Attribute.INLINE)
+          const existingSelector = `.inline-edit-clone[${Attribute.INLINE}="${dataInline}"]`
+          const existing = component.querySelectorAll(existingSelector)
+          if (existing.length > 0) return el.remove()
+
           const cmpPath = this.getPath(el)
           const clsList = el.classList
           const clone = el.cloneNode(true)
-          const dataInline = el.getAttribute(Attribute.INLINE).split('.').slice(1)
           clone.classList.add('inline-edit-clone')
           clone.addEventListener('input', this.onInlineEdit)
           clone.addEventListener('focus', this.onInlineFocus)
@@ -641,8 +646,7 @@
           clone.addEventListener('keyup', this.onInlineKeyUp)
           clone.setAttribute('contenteditable', this.previewMode !== 'preview' + '')
           el.parentNode.insertBefore(clone, el)
-          el.remove()
-          this.$watch(`node.${dataInline.join('.')}`, (val, oldVal) => {
+          this.$watch(`node.${dataInline.split('.').slice(1).join('.')}`, (val, oldVal) => {
             if (cmpPath === this.path && clone && !clone.classList.contains('inline-editing')) {
               clone.innerHTML = val
             }
