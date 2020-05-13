@@ -37,11 +37,23 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="result in results" v-bind:key="result.path">
+                  <tr v-for="result in results" v-bind:key="`${result.recyclebin}`">
                     <td>{{result.path}}</td>
                     <td>{{result.date_deleted}}</td>
                     <td>{{result.deleted_by}}</td>
-                    <td><a v-bind:href="'/bin/browser.html'+result.path" target="composum">view</a></td>
+                    <td>
+
+<!--                        <a v-bind:href="'/bin/browser.html'+result.path" target="composum">view</a>-->
+
+                        <admin-components-action
+                            v-bind:model="{
+                                target: result,
+                                command: 'restoreRecyclable',
+                                tooltipTitle: `${$i18n('restore')} ${result.name}`
+                            }">
+                            <i class="material-icons">restore_page</i>
+                        </admin-components-action>
+                    </td>
                   </tr>
               </tbody>
           </table>
@@ -60,7 +72,6 @@
         props: ['model'],
         data: function() {
                 return {
-                    querystring: ``,
                     page: 0
             }
         },
@@ -75,6 +86,14 @@
             },
             getTenant() {
               return $perAdminApp.getView().state.tenant || {name: 'No site selected'}
+            },
+            restoreRecyclable(me, target) {
+               const heading = `${me.$i18n('Restore')} ${target.name} ${me.$i18n('from')} ${target.date_deleted}`
+               $perAdminApp.askUser(heading, me.$i18n('Are you sure you want to restore this?'), {
+                    yes() {
+                        console.log(target.recyclebin)
+                    }
+                })
             }
         }
     }
@@ -83,5 +102,8 @@
 <style>
     h1 {
         font-size: 2.5em;
+    }
+    tbody tr {
+        border-bottom: 1px dashed lightgray;
     }
 </style>

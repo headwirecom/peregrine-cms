@@ -108,6 +108,7 @@ public class ListSiteRecyclablesServlet extends AbstractBaseServlet {
                     answer.writeAttribute(PATH, r.getResourcePath());
                     answer.writeAttribute(DELETED_BY, r.getDeletedBy());
                     answer.writeAttribute(DATE_DELETED, DELETED_DATE_FORMAT.format(r.getDeletedDate()));
+                    answer.writeAttribute(RECYCLE_BIN, r.getResource().getPath());
                     answer.writeClose();
                 }
             }
