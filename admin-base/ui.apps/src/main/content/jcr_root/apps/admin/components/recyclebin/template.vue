@@ -26,18 +26,21 @@
 <div>
     <div class="row">
         <div class="col s12">
+            <h1><b>{{getTenant().title}}</b>{{$i18n(' Recycle Bin')}}</h1>
             <table>
                <thead>
                   <tr>
-                      <th>Resource</th>
                       <th>Path</th>
+                      <th>Deleted on</th>
+                      <th>by</th>
                       <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="result in results" v-bind:key="result.path">
-                    <td>{{result.name}}</td>
                     <td>{{result.path}}</td>
+                    <td>{{result.date_deleted}}</td>
+                    <td>{{result.deleted_by}}</td>
                     <td><a v-bind:href="'/bin/browser.html'+result.path" target="composum">view</a></td>
                   </tr>
               </tbody>
@@ -56,7 +59,6 @@
     export default {
         props: ['model'],
         data: function() {
-
                 return {
                     querystring: ``,
                     page: 0
@@ -70,8 +72,16 @@
         methods: {
             loadPage: function(increment) {
                 this.page = this.page + increment
-                // this.query()
+            },
+            getTenant() {
+              return $perAdminApp.getView().state.tenant || {name: 'No site selected'}
             }
         }
     }
 </script>
+
+<style>
+    h1 {
+        font-size: 2.5em;
+    }
+</style>

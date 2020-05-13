@@ -22,10 +22,13 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
+import com.peregrine.admin.models.Recyclable;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.admin.resource.AdminResourceHandler.DeletionResponse;
 import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import org.apache.sling.api.adapter.AdapterManager;
+import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -39,6 +42,8 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.servlet.Servlet;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.List;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_DELETE_PAGE;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_LIST_RECYCLABLES;
@@ -68,6 +73,9 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 public class ListSiteRecyclablesServlet extends AbstractBaseServlet {
 
     public static final String FAILED_TO_LIST_RECYCLABLES = "Failed get recyclable list :-/ ";
+    public static final String DELETED_BY = "deleted_by";
+    public static final String DATE_DELETED = "date_deleted";
+    public static final SimpleDateFormat DELETED_DATE_FORMAT = new SimpleDateFormat("MMM dd, yyyy h:mm a");
 
     @Reference
     AdminResourceHandler resourceManagement;
@@ -81,7 +89,7 @@ public class ListSiteRecyclablesServlet extends AbstractBaseServlet {
 
 //        final String queryStr = "SELECT * from [nt:versionHistory] where default like '"+sitePath+"%'";
         final String queryStr =  "SELECT * from [nt:unstructured] " +
-                "where [sling:resourceType] = 'admin/components/recyclable'"+
+                "where [hasRecyclables] = true "+
                 "and [jcr:path] like '" + RECYCLE_BIN_PATH + sitePath+"%'";
         try {
             QueryManager qm = session.getWorkspace().getQueryManager();
@@ -94,11 +102,14 @@ public class ListSiteRecyclablesServlet extends AbstractBaseServlet {
             answer.writeArray(DATA);
             while(nodes.hasNext()) {
                 Node node = nodes.nextNode();
-
-                answer.writeObject();
-                answer.writeAttribute(NAME, node.getName());
-                answer.writeAttribute(PATH, node.getPath());
-                answer.writeClose();
+                for (Recyclable r : resourceManagement.getRecyclables(request.getResourceResolver(), node.getPath())) {
+                    answer.writeObject();
+                    answer.writeAttribute(NAME, node.getName());
+                    answer.writeAttribute(PATH, r.getResourcePath());
+                    answer.writeAttribute(DELETED_BY, r.getDeletedBy());
+                    answer.writeAttribute(DATE_DELETED, DELETED_DATE_FORMAT.format(r.getDeletedDate()));
+                    answer.writeClose();
+                }
             }
             answer.writeClose();
             return answer;

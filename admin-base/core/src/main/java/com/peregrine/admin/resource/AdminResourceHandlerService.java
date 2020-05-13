@@ -364,7 +364,6 @@ public class AdminResourceHandlerService
             final Calendar now = Calendar.getInstance();
             try {
                 resourceNode.setProperty("recyclablePath", resource.getPath());
-                Node frozenNode = version.getFrozenNode();
                 Resource item = ResourceUtil.getOrCreateResource(
                         resourceResolver,
                         recyclablePath + SLASH + now.getTimeInMillis(),
@@ -373,10 +372,10 @@ public class AdminResourceHandlerService
                 Node itemNode = item.adaptTo(Node.class);
                 itemNode.setProperty(JCR_CREATED, now);
                 itemNode.setProperty(JCR_CREATED_BY, resourceResolver.getUserID());
-
                 itemNode.setProperty("frozenNodePath", version.getPath());
                 itemNode.setProperty("resourcePath", resource.getPath());
-
+                Node parentNode = item.getParent().adaptTo(Node.class);
+                parentNode.setProperty("hasRecyclables", true);
                 resourceResolver.refresh();
                 resourceResolver.commit();
                 return item.adaptTo(Recyclable.class);
@@ -390,19 +389,12 @@ public class AdminResourceHandlerService
     }
 
 
-    /**
-     * Given a path it will attempt to return an instance of Recycleable,
-     * which may be passed to recycleDeleted to restore a previously deleted resource.
-     * @param resourceResolver Resource Resolver
-     * @param path of the name item to recycle
-     * @return Recyclable or null
-     */
     @Override
     public List<Recyclable> getRecyclables(ResourceResolver resourceResolver, String path) {
         final Resource resource = path.startsWith(RECYCLE_BIN_PATH) ?
                 getResource(resourceResolver,path) : getResource(resourceResolver, RECYCLE_BIN_PATH + path);
         if (resource == null) {
-            return null;
+            return new ArrayList<>();
         }
         ArrayList<Recyclable> recyclables = new ArrayList<>();
         for (Resource res : resource.getChildren()){
