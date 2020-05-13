@@ -646,6 +646,7 @@
           clone.addEventListener('keyup', this.onInlineKeyUp)
           clone.setAttribute('contenteditable', this.previewMode !== 'preview' + '')
           el.parentNode.insertBefore(clone, el)
+          el.remove()
           this.$watch(`node.${dataInline.split('.').slice(1).join('.')}`, (val, oldVal) => {
             if (cmpPath === this.path && clone && !clone.classList.contains('inline-editing')) {
               clone.innerHTML = val
@@ -839,10 +840,20 @@
         }
         if (payload.path !== '/jcr:content') {
           $perAdminApp.stateAction('deletePageNode', payload).then((data) => {
+            this.cleanUpAfterDelete(payload.path)
             this.refreshInlineEditClones()
           })
         }
         this.unselect(this)
+      },
+
+      cleanUpAfterDelete(path) {
+        const selector = `[${Attribute.PATH}="${path}"]`
+        const remains = this.iframe.app.querySelectorAll(selector)
+        if (remains.length <= 0) return
+        remains.forEach((remain) => {
+          remain.remove()
+        })
       },
 
       onCopy(e) {
