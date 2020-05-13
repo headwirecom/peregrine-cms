@@ -5,6 +5,7 @@ import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
@@ -38,7 +39,7 @@ import static com.peregrine.commons.util.PerUtil.splitIntoParameterMap;
  */
 @Component(
     configurationPolicy = ConfigurationPolicy.REQUIRE,
-    service = { DefaultReplicationMapper.class, Replication.class },
+    service = DefaultReplicationMapper.class,
     immediate = true
 )
 @Designate(ocd = DefaultReplicationMapperService.Configuration.class, factory = true)
@@ -130,10 +131,13 @@ public class DefaultReplicationMapperService
 
     private void setup(BundleContext context, final Configuration configuration) {
         init(configuration.name(), configuration.description());
+        // Register this service as Replication instance
         logger.trace("Default Mapping: '{}'", configuration.defaultMapping());
         Map<String, Map<String, String>> temp = splitIntoParameterMap(new String[] {configuration.defaultMapping()}, ":", "\\|", "=");
         logger.trace("Mapped Default Mapping: '{}'", temp);
-        if(temp.keySet().isEmpty()) { throw new IllegalArgumentException(NO_DEFAULT_MAPPING); }
+        if(temp.keySet().isEmpty()) {
+            throw new IllegalArgumentException(NO_DEFAULT_MAPPING);
+        }
         Entry<String, Map<String, String>> entry = temp.entrySet().iterator().next();
         defaultMapping = new DefaultReplicationConfig(entry.getKey(), entry.getValue());
         logger.trace("Final Default Mapping: '{}'", defaultMapping);
@@ -181,28 +185,34 @@ public class DefaultReplicationMapperService
         }
         // Now we loop over the all resources, separate them into pods of Replication Services
         for(Resource resource: resourceList) {
-            boolean found = false;
+            boolean handled = false;
             for(DefaultReplicationConfig config: pathMapping) {
                 if(config.isHandled(resource)) {
                     logger.trace("Replicate Resource: '{}' using DRC: '{}'", resource.getPath(), config);
                     resourceByReplication.get(config).add(resource);
-                    found = true;
-                    break;
+                    // Resource is handled if the service name here is the same as for the default
+                    if(!handled) {
+                        handled = !config.serviceName.equals(defaultMapping.serviceName);
+                    }
                 }
             }
-            if(!found) {
+            if(!handled) {
+                // Resource was not added to default mapping so add it here
                 logger.trace("Replicate Resource: '{}' using default DRC: '{}'", resource.getPath(), defaultMapping);
                 resourceByReplication.get(defaultMapping).add(resource);
             }
         }
         for(Entry<DefaultReplicationConfig, List<Resource>> pot: resourceByReplication.entrySet()) {
             Replication replication = replications.get(pot.getKey().getServiceName());
-            if(replication == null) { throw new ReplicationException("Could not find replication with name: " + pot.getKey().getServiceName()); }
+            if(replication == null) {
+                throw new ReplicationException("Could not find replication with name: " + pot.getKey().getServiceName());
+            }
             logger.trace("Replicate with Replication: '{}' these resources: '{}'", replication.getName(), pot.getValue());
-            for(Resource resource: pot.getValue()) {
-                logger.trace("DRH Replicate: '{}'", resource.getPath());
-                List<Resource> replicatedResources = replication.replicate(resource, false);
-                if(!replicatedResources.isEmpty()) { answer.addAll(replicatedResources); }
+            List<Resource> resources = new ArrayList<>(pot.getValue());
+            logger.trace("DRH Replication: '{}', Replicates: '{}'", replication.getName(), resources);
+            List<Resource> replicatedResources = replication.replicate(resources);
+            if(!replicatedResources.isEmpty()) {
+                answer.addAll(replicatedResources);
             }
         }
         return answer;
@@ -222,13 +232,17 @@ public class DefaultReplicationMapperService
         public DefaultReplicationConfig(String serviceName, Map<String, String> parameters) {
             if(isEmpty(serviceName)) { throw new IllegalArgumentException(REPLICATION_SERVICE_NAME_CANNOT_BE_NULL); }
             this.serviceName = serviceName;
-            if(parameters != null) { this.parameters.putAll(parameters); }
+            if(parameters != null) {
+                this.parameters.putAll(parameters);
+            }
         }
 
         /** Configuration for a single Path Mapping **/
         public DefaultReplicationConfig(String serviceName, String path, Map<String, String> parameters) {
             this(serviceName, parameters);
-            if(isEmpty(path)) { throw new IllegalArgumentException(REPLICATION_PATH_FOR_NON_DEFAULT_NAME_CANNOT_BE_NULL); }
+            if(isEmpty(path)) {
+                throw new IllegalArgumentException(REPLICATION_PATH_FOR_NON_DEFAULT_NAME_CANNOT_BE_NULL);
+            }
             this.path = path;
         }
 
@@ -244,18 +258,22 @@ public class DefaultReplicationMapperService
             boolean answer = false;
             String resourcePath = resource.getPath();
             if(path != null && !path.endsWith("/")) {
+                if (path.contains("_tenant_")) {
+                    String tenant = resourcePath.split("/")[2];
+                    path = path.replace("_tenant_", tenant);
+                }
                 if(resourcePath.startsWith(path)) {
                     if(resourcePath.equals(path)) {
                         answer = true;
                     } else {
                         char next = resourcePath.charAt(path.length());
-                        answer = next == '/';
+                        answer = (next == '/');
                     }
                 } else {
                     answer = false;
                 }
             } else {
-                answer = path == null || resource.getPath().startsWith(path);
+                answer = (path == null || resource.getPath().startsWith(path));
             }
             return answer;
         }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" jcr:primaryType="per:Component" jcr:title="Footer" group="Chrome">
-  <jcr:content jcr:primaryType="nt:unstructured" backgroundtype="color" bgcolor="#eeeeee" bottompadding="0" toppadding="30" colorscheme="light" showlogo="true" logo="/content/assets/themeclean/images/peregrine-logo.png" logourl="http://www.peregrine-cms.com" logosize="60" copyright="Copyright 2017 Peregrine - All Rights Reserved">
+  <jcr:content jcr:primaryType="nt:unstructured" backgroundtype="color" bgcolor="#eeeeee" bottompadding="0" toppadding="30" colorscheme="light" showlogo="true" logo="/content/themeclean/assets/images/peregrine-logo.png" logourl="http://www.peregrine-cms.com" logosize="60" copyright="Copyright 2017 Peregrine - All Rights Reserved">
     <columns jcr:primaryType="nt:unstructured">
       <columns0 jcr:primaryType="nt:unstructured" title="" text=""/>
       <columns1 jcr:primaryType="nt:unstructured" title="Contact" text="&lt;p>email@email.com&lt;br>1-800-888-8888&lt;/p>"/>

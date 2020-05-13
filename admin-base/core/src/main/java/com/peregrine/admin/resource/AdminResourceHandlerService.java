@@ -1,13 +1,18 @@
 package com.peregrine.admin.resource;
 
 import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
+import static com.peregrine.commons.util.PerConstants.ASSET;
 import static com.peregrine.commons.util.PerConstants.ASSETS_ROOT;
 import static com.peregrine.commons.util.PerConstants.ASSET_CONTENT_TYPE;
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.COMPONENT;
 import static com.peregrine.commons.util.PerConstants.COMPONENTS;
+import static com.peregrine.commons.util.PerConstants.COMPONENT_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
 import static com.peregrine.commons.util.PerConstants.DEPENDENCIES;
 import static com.peregrine.commons.util.PerConstants.FELIBS_ROOT;
+import static com.peregrine.commons.util.PerConstants.FOLDER;
+import static com.peregrine.commons.util.PerConstants.INTERNAL;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_CREATED;
 import static com.peregrine.commons.util.PerConstants.JCR_CREATED_BY;
@@ -17,23 +22,31 @@ import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.JCR_UUID;
 import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.NODE;
 import static com.peregrine.commons.util.PerConstants.NT_FILE;
 import static com.peregrine.commons.util.PerConstants.NT_RESOURCE;
 import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
+import static com.peregrine.commons.util.PerConstants.OBJECT;
 import static com.peregrine.commons.util.PerConstants.OBJECTS;
 import static com.peregrine.commons.util.PerConstants.OBJECTS_ROOT;
+import static com.peregrine.commons.util.PerConstants.OBJECT_DEFINITION_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.OBJECT_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.PACKAGES_PATH;
+import static com.peregrine.commons.util.PerConstants.PAGE;
+import static com.peregrine.commons.util.PerConstants.PAGES_ROOT;
 import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.PATH;
-import static com.peregrine.commons.util.PerConstants.SITES_ROOT;
+import static com.peregrine.commons.util.PerConstants.RENDITION;
+import static com.peregrine.commons.util.PerConstants.SITE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
 import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_SUPER_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
+import static com.peregrine.commons.util.PerConstants.TEMPLATE;
 import static com.peregrine.commons.util.PerConstants.TEMPLATES_ROOT;
+import static com.peregrine.commons.util.PerConstants.TENANT;
 import static com.peregrine.commons.util.PerConstants.TEXT_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.VARIATIONS;
 import static com.peregrine.commons.util.PerUtil.convertToMap;
@@ -168,14 +181,6 @@ public class AdminResourceHandlerService
 
     private static final String RAW_TAGS = "raw_tags";
 
-    private static final String FOLDER = "folder";
-    private static final String OBJECT = "object";
-    private static final String PAGE = "page";
-    private static final String TEMPLATE = "template";
-    private static final String NODE = "node";
-    private static final String ASSET = "asset";
-    private static final String RENDITION = "rendition";
-
     private static final List<String> IGNORED_PROPERTIES_FOR_COPY = new ArrayList<>();
     private static final List<String> IGNORED_RESOURCE_PROPERTIES_FOR_COPY = new ArrayList<>();
 
@@ -186,7 +191,7 @@ public class AdminResourceHandlerService
     public static final String MISSING_NEW_SITE_NAME = "Name of the Target Site must be provided to copy a Site";
     public static final String SOURCE_SITE_DOES_NOT_EXIST = "Source Site: '%s' was not provided or does not exist";
     public static final String TARGET_SITE_EXISTS = "Target Site: '%s' does exist and so copy failed";
-    public static final String SOURCE_SITE_IS_NOT_A_PAGE = "Source Site: '%s' is not a Page";
+    public static final String INVALID_SOURCE_SITE = "Source Site: '%s' is not a a valid site";
     public static final String COPY_FAILED = "Copy of %s: '%s' failed";
     private static final String IMAGE_METADATA_TAG_NAME = "Image Metadata Tag Name: '{}'";
     private static final String ADD_TAG_CATEGORY_TAG_NAME_VALUE = "Add Tag, Category: '{}', Tag Name: '{}', Value: '{}'";
@@ -245,7 +250,7 @@ public class AdminResourceHandlerService
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
-     * JSon Mapper for pretty print of JSon text
+     * Json Mapper for pretty print of Json text
      **/
     private ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 
@@ -254,6 +259,7 @@ public class AdminResourceHandlerService
 
     @Reference
     private BaseResourceHandler baseResourceHandler;
+
     @Reference
     private NodeNameValidation nodeNameValidation;
 
@@ -271,7 +277,7 @@ public class AdminResourceHandlerService
         imageMetadataSelectors.remove(selector);
     }
 
-
+    @Override
     public Resource createFolder(ResourceResolver resourceResolver, String parentPath, String name) throws ManagementException {
         if(!nodeNameValidation.isValidPageName(name)) {
             throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, name));
@@ -280,12 +286,10 @@ public class AdminResourceHandlerService
             if (isEmpty(name)) {
                 throw new ManagementException(String.format(NAME_UNDEFINED, FOLDER, parentPath));
             }
-
             final Node parent = getNode(resourceResolver, parentPath);
             if (parent == null) {
                 throw new ManagementException(String.format(PARENT_NOT_FOUND, FOLDER, parentPath, name));
             }
-
             Node newFolder = parent.addNode(name, SLING_ORDERED_FOLDER);
             newFolder.setProperty(JCR_TITLE, name);
             baseResourceHandler.updateModification(resourceResolver, newFolder);
@@ -296,11 +300,10 @@ public class AdminResourceHandlerService
         }
     }
 
-    private Resource adaptNodeToResource(final ResourceResolver resourceResolver, final Node node) throws RepositoryException {
+    private Resource adaptNodeToResource(ResourceResolver resourceResolver, Node node) throws RepositoryException {
         if (node == null) {
             return null;
         }
-
         return resourceResolver.getResource(node.getPath());
     }
 
@@ -313,20 +316,15 @@ public class AdminResourceHandlerService
             if (isEmpty(name)) {
                 throw new ManagementException(String.format(NAME_UNDEFINED, OBJECT, parentPath));
             }
-
-            if (isEmpty(resourceType)) {
-                throw new ManagementException(String.format(RESOURCE_TYPE_UNDEFINED, parentPath, name));
-            }
-
             final Node parent = getNode(resourceResolver, parentPath);
-
             if (parent == null) {
                 throw new ManagementException(String.format(PARENT_NOT_FOUND, OBJECT, parentPath, name));
             }
-
             Node newObject = parent.addNode(name, OBJECT_PRIMARY_TYPE);
-            newObject.setProperty(SLING_RESOURCE_TYPE, resourceType);
             newObject.setProperty(JCR_TITLE, name);
+            if (!isEmpty(resourceType)) {
+                newObject.setProperty(SLING_RESOURCE_TYPE, resourceType);
+            }
             baseResourceHandler.updateModification(resourceResolver, newObject);
             return adaptNodeToResource(resourceResolver, newObject);
         } catch (RepositoryException e) {
@@ -388,7 +386,7 @@ public class AdminResourceHandlerService
         }
     }
 
-    private void copyAppsComponentToNewTemplate(final String component, final Node template) throws RepositoryException, ManagementException {
+    private void copyAppsComponentToNewTemplate(String component, Node template) throws RepositoryException, ManagementException {
         try {
             if (component.startsWith(SLASH)) {
                 logger.warn("Component (for template): '{}' started with a slash which is not valid -> ignored", component);
@@ -407,11 +405,6 @@ public class AdminResourceHandlerService
         } catch (PathNotFoundException e) {
             logger.warn("Component (for template)t: '{}' not found -> ignored", component);
         }
-    }
-
-    @Override
-    public DeletionResponse deleteResource(ResourceResolver resourceResolver, String path) throws ManagementException {
-        return deleteResource(resourceResolver, path, null);
     }
 
     @Override
@@ -440,13 +433,7 @@ public class AdminResourceHandlerService
     }
 
     @Override
-    public Resource insertNode(
-        final Resource resource,
-        final Map<String, Object> properties,
-        final boolean addAsChild,
-        final boolean orderBefore,
-        final String variation
-    ) throws ManagementException {
+    public Resource insertNode(Resource resource, Map<String, Object> properties, boolean addAsChild, boolean orderBefore, String variation) throws ManagementException {
         final Node node = getNode(resource);
         if (node == null) {
             throw new ManagementException(INSERT_RESOURCE_MISSING);
@@ -599,7 +586,7 @@ public class AdminResourceHandlerService
         }
     }
 
-    private void processNewAsset(final PerAsset asset) throws IOException, RepositoryException {
+    private void processNewAsset(PerAsset asset) throws IOException, RepositoryException {
         if (asset == null) {
             return;
         }
@@ -665,6 +652,7 @@ public class AdminResourceHandlerService
         }
     }
 
+    @Override
     public Resource createNode(Resource parent, String name, String primaryType, String resourceType) throws ManagementException {
         if(!nodeNameValidation.isValidNodeName(name)) {
             throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, name));
@@ -716,19 +704,12 @@ public class AdminResourceHandlerService
         return parent.addNode("n" + UUID.randomUUID(), NT_UNSTRUCTURED);
     }
 
-    private void copyPropertiesFromComponentVariation(
-        final Node node,
-        final String variation
-    ) throws RepositoryException, ManagementException {
+    private void copyPropertiesFromComponentVariation(Node node, String variation) throws RepositoryException, ManagementException {
         final String componentPath = APPS_ROOT + SLASH + node.getProperty(SLING_RESOURCE_TYPE).getString();
         copyPropertiesFromComponentVariation(node, componentPath, variation);
     }
 
-    private void copyPropertiesFromComponentVariation(
-        final Node node,
-        final String componentPath,
-        final String variation
-    ) throws RepositoryException, ManagementException {
+    private void copyPropertiesFromComponentVariation(Node node, String componentPath, String variation) throws RepositoryException, ManagementException {
         final Session session = node.getSession();
         Node contentNode = getComponentContentNode(session, componentPath);
         if (contentNode == null) {
@@ -745,7 +726,7 @@ public class AdminResourceHandlerService
         }
     }
 
-    private Node getComponentContentNode(final Session session, final String path) throws RepositoryException {
+    private Node getComponentContentNode(Session session, String path) throws RepositoryException {
         if (!session.itemExists(path)) {
             return null;
         }
@@ -785,7 +766,7 @@ public class AdminResourceHandlerService
         }
     }
 
-    private Node getVariationContentOrDefault(final Node node, final String variation) throws RepositoryException {
+    private Node getVariationContentOrDefault(Node node, String variation) throws RepositoryException {
         // Look up the variation node
         final Node variationNode;
         if (isNotEmpty(variation) && node.hasNode(variation)) {
@@ -802,7 +783,7 @@ public class AdminResourceHandlerService
         return null;
     }
 
-    private void applyProperties(@NotNull final Node node, @NotNull final Map properties) throws RepositoryException, ManagementException {
+    private void applyProperties(@NotNull Node node, @NotNull Map properties) throws RepositoryException, ManagementException {
         String prettyJson = prettyPrintJson(properties);
         logger.trace("Apply Properties, Node: '{}', props: '{}'", node, prettyJson);
         Set<Entry> entrySet = properties.entrySet();
@@ -828,7 +809,7 @@ public class AdminResourceHandlerService
         }
     }
 
-    private void applyChildProperties(@NotNull final Node parent, @NotNull final List childProperties) throws RepositoryException, ManagementException {
+    private void applyChildProperties(@NotNull Node parent, @NotNull List childProperties) throws RepositoryException, ManagementException {
         // Loop over Array
         int counter = 0;
         for (final Object item : childProperties) {
@@ -841,7 +822,7 @@ public class AdminResourceHandlerService
         }
     }
 
-    private void applyChildProperties(@NotNull final Node parent, @NotNull final Map properties, final int position) throws RepositoryException, ManagementException {
+    private void applyChildProperties(@NotNull Node parent, @NotNull Map properties, int position) throws RepositoryException, ManagementException {
         // Find matching child by name
         final String name = extractName(properties);
         if (isBlank(name)) {
@@ -892,7 +873,7 @@ public class AdminResourceHandlerService
      * @return The node that matches the last segment if a matching node is found or null if not found
      * @throws RepositoryException A node operation failed but that should not happen
      */
-    private Node findSourceByPath(final Node start, final String[] segments) throws RepositoryException {
+    private Node findSourceByPath(Node start, String[] segments) throws RepositoryException {
         final String startName = start.getName();
         final int length = segments.length;
         int i = 0;
@@ -967,64 +948,70 @@ public class AdminResourceHandlerService
     }
 
     @Override
-    public Resource copySite(
-        final ResourceResolver resourceResolver,
-        final String sitesParentPath,
-        final String fromName,
-        final String targetName, String title) throws ManagementException {
-        if(!nodeNameValidation.isValidSiteName(targetName)) {
-            throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, targetName));
+    public Resource copyTenant(ResourceResolver resourceResolver, String tenantsParentPath, String fromName, String toName) throws ManagementException {
+        if(!nodeNameValidation.isValidSiteName(toName)) {
+            throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, toName));
         }
-        checkCopySiteParameters(resourceResolver, sitesParentPath, fromName, targetName);
+        checkCopyTenantParameters(resourceResolver, tenantsParentPath, fromName, toName);
 
-        final Resource parentResource = getResource(resourceResolver, sitesParentPath);
-        if (parentResource == null) {
+        final Resource sitesRoot = getResource(resourceResolver, tenantsParentPath);
+        if (sitesRoot == null) {
             throw new ManagementException(MISSING_PARENT_RESOURCE_FOR_COPY_SITES);
         }
-        final Resource source = getResource(parentResource, fromName);
+        final Resource source = getResource(sitesRoot, fromName);
         if (source == null) {
             throw new ManagementException(String.format(SOURCE_SITE_DOES_NOT_EXIST, fromName));
         }
-        // Ensure the Site Resource is a page
-        if (!isPrimaryType(source, PAGE_PRIMARY_TYPE)) {
-            throw new ManagementException(String.format(SOURCE_SITE_IS_NOT_A_PAGE, fromName));
+        if (!isPrimaryType(source, SITE_PRIMARY_TYPE)) {
+            throw new ManagementException(String.format(INVALID_SOURCE_SITE, fromName));
         }
-
-        Resource answer = getResource(parentResource, targetName);
+        Resource answer = getResource(sitesRoot, toName);
         if (answer != null) {
-            throw new ManagementException(String.format(TARGET_SITE_EXISTS, targetName));
+            throw new ManagementException(String.format(TARGET_SITE_EXISTS, toName));
+        } else {
+            final Node rootNode = getNode(sitesRoot);
+            Node newSite;
+            try {
+                newSite = rootNode.addNode(toName, SITE_PRIMARY_TYPE);
+                newSite.setProperty(JCR_TITLE, toName);
+                newSite.setProperty(TEMPLATE, false);
+                newSite.setProperty(INTERNAL, false);
+                newSite.setProperty(SOURCE_SITE, fromName);
+                answer = getResource(resourceResolver, newSite.getPath());
+            } catch (RepositoryException e) {
+                logger.error("Error creating per:Site JCR node", e);
+            }
         }
 
-        final ArrayList<Resource> resourcesToPackage = new ArrayList<>();
-        final ArrayList<String> superTypes = new ArrayList<>();
+        final List<Resource> resourcesToPackage = new ArrayList<>();
+        final List<String> superTypes = new ArrayList<>();
 
-        final StructureCopier copier = new StructureCopier(resourceResolver);
-        copier.setToName(targetName);
-        copier.setFromName(fromName);
+        final StructureCopier copier = new StructureCopier(resourceResolver, fromName, toName, answer);
         resourcesToPackage.add(copier.copyApps(superTypes));
-        // copy /content/assets/<fromSite> to /content/assets/<toSite>
-        copier.setFromName(fromName);
-        resourcesToPackage.add(copier.copyFromRoot(ASSETS_ROOT, title));
-        // copy /content/objects/<fromSite> to /content/objects/<toSite> and fix all references
-        resourcesToPackage.add(copier.copyFromRoot(OBJECTS_ROOT, title));
-        // copy /content/templates/<fromSite> to /content/templates/<toSite> and fix all references
-        Resource templatesCopy = copier.copyFromRoot(TEMPLATES_ROOT, title);
-        // Update css paths stored in /content/sites in the template
-        updateTemplateCssPaths(templatesCopy, fromName, targetName);
+        // copy /content/<fromTenant>/assets to /content/<toTenant>/assets
+        resourcesToPackage.add(copier.copyFromRoot(ASSETS_ROOT));
+        // copy /content/<fromTenant>/objects to /content/<toTenant>/objects and fix all references
+        resourcesToPackage.add(copier.copyFromRoot(OBJECTS_ROOT));
+        // copy /content/<fromTenant>/templates to /content/<toTenant>/templates and fix all references
+        Resource templatesCopy = copier.copyFromRoot(TEMPLATES_ROOT);
         resourcesToPackage.add(templatesCopy);
-        // copy /content/sites/<fromSite> to /content/sites/<toSite> and fix all references
-        answer = copier.copyFromRoot(SITES_ROOT, title);
-        resourcesToPackage.add(answer);
-        if (answer != null) {
-            updateStringsInFiles(answer, targetName);
+        // Update css paths stored in /content/<toTenant>/pages in the template
+        if (templatesCopy != null) {
+            updateTemplateCssPaths(templatesCopy, fromName, toName);
+        }
+        // copy /content/<fromTenant>/pages to /content/<toTenant>/pages and fix all references
+        Resource pagesCopy = copier.copyFromRoot(PAGES_ROOT);
+        resourcesToPackage.add(pagesCopy);
+        if (pagesCopy != null) {
+            updateStringsInFiles(pagesCopy, toName);
         }
 
-        // create an /etc/felibs/<toSite> felib, extend felib to include a dependency on the /etc/felibs/<fromSite>
+        // create an /etc/felibs/<toTenant> felib, extend felib to include a dependency on the /etc/felibs/<fromTenant>
         final Resource sourceResource = getResource(resourceResolver, FELIBS_ROOT + SLASH + fromName);
         if (sourceResource != null) {
-            final Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), targetName, title);
+            final Resource targetResource = copyResources(sourceResource, sourceResource.getParent(), toName, toName);
             resourcesToPackage.add(targetResource);
-            logger.trace("Copied Felibs for Target: '{}': '{}'", targetName, targetResource);
+            logger.trace("Copied Felibs for Target: '{}': '{}'", toName, targetResource);
             final ValueMap properties = getModifiableProperties(targetResource, false);
             logger.trace("Copied Felibs Properties: '{}'", properties);
             if (properties != null) {
@@ -1040,7 +1027,7 @@ public class AdminResourceHandlerService
                 properties.put(DEPENDENCIES, dependencies);
             }
 
-            createResourceFromString(targetResource, "mapping.js", assembleMappingsJs(superTypes, fromName, targetName));
+            createResourceFromString(targetResource, "mapping.js", assembleMappingsJs(superTypes, fromName, toName));
             createResourceFromString(targetResource, "js.txt", "mapping.js\n");
         }
 
@@ -1048,43 +1035,38 @@ public class AdminResourceHandlerService
             final List<String> packagePaths = resourcesToPackage.stream()
                 .filter(Objects::nonNull)
                 .map(Resource::getPath)
+                .filter(path -> !path.startsWith(CONTENT_ROOT + SLASH))
                 .collect(Collectors.toList());
-            createSitePackage(resourceResolver, targetName, packagePaths);
+
+                packagePaths.add(CONTENT_ROOT + SLASH + toName);         
+            createTenantPackage(resourceResolver, toName, packagePaths);
         } catch (PersistenceException e) {
-            logger.error("Failed to create package for site " + targetName, e);
+            logger.error("Failed to create package for site " + toName, e);
         }
 
         return answer;
     }
 
-    private void checkCopySiteParameters(
-        final ResourceResolver resourceResolver,
-        final String sitesParentPath,
-        final String fromName,
-        final String targetName) throws ManagementException {
+    private void checkCopyTenantParameters(ResourceResolver resourceResolver, String tenantsParentPath, String fromName, String targetName) throws ManagementException {
         // Check the given parameters and make sure everything is correct
         if (resourceResolver == null) {
             throw new ManagementException(MISSING_RESOURCE_RESOLVER_FOR_SITE_COPY);
         }
-
-        if (isBlank(sitesParentPath)) {
+        if (isBlank(tenantsParentPath)) {
             throw new ManagementException(MISSING_PARENT_RESOURCE_FOR_COPY_SITES);
         }
-
         if (isEmpty(fromName)) {
             throw new ManagementException(MISSING_SOURCE_SITE_NAME);
         }
-
         if (fromName.equals(targetName)) {
             throw new ManagementException(SOURCE_NAME_AND_TARGET_NAME_CANNOT_BE_THE_SAME_VALUE + fromName);
         }
-
         if (isEmpty(targetName)) {
             throw new ManagementException(MISSING_NEW_SITE_NAME);
         }
     }
 
-    private String assembleMappingsJs(final List<String> superTypes, final String fromName, final String targetName) {
+    private String assembleMappingsJs(List<String> superTypes, String fromName, String targetName) {
         final StringBuilder builder = new StringBuilder();
         for (final String superType : superTypes) {
             String sourceName = getComponentVariableNameFromString(superType);
@@ -1114,7 +1096,7 @@ public class AdminResourceHandlerService
         return mappings.toString();
     }
 
-    private void createSitePackage(ResourceResolver resourceResolver, String siteName, List<String> packagePaths) throws PersistenceException {
+    private void createTenantPackage(ResourceResolver resourceResolver, String tenantName, List<String> packagePaths) throws PersistenceException {
         Resource packagesRoot = resourceResolver.getResource(PACKAGES_PATH);
         if (packagesRoot == null) {
             logger.error("Package root path '{}' could not be resolved.", PACKAGES_PATH);
@@ -1123,14 +1105,14 @@ public class AdminResourceHandlerService
 
         Map<String, Object> propertiesMap;
 
-        Resource groupResource = packagesRoot.getChild(siteName);
+        Resource groupResource = packagesRoot.getChild(tenantName);
         if (groupResource == null) {
             propertiesMap = new HashMap<>();
             propertiesMap.put(JCR_PRIMARY_TYPE, SLING_FOLDER);
-            groupResource = resourceResolver.create(packagesRoot, siteName, propertiesMap);
+            groupResource = resourceResolver.create(packagesRoot, tenantName, propertiesMap);
         }
 
-        String packageName = siteName + PACKAGE_SUFFIX;
+        String packageName = tenantName + PACKAGE_SUFFIX;
         double version = DEFAULT_PACKAGE_VERSION;
         String filename = packageName + DASH + version + ZIP_EXTENSION;
 
@@ -1161,7 +1143,7 @@ public class AdminResourceHandlerService
         Resource contentResource = resourceResolver.create(packageResource, JCR_CONTENT, propertiesMap);
 
         propertiesMap = new HashMap<>();
-        propertiesMap.put(GROUP_PROPERTY, siteName);
+        propertiesMap.put(GROUP_PROPERTY, tenantName);
         propertiesMap.put(JCR_PRIMARY_TYPE, VLT_PACKAGE_DEFINITION);
         propertiesMap.put(NAME_PROPERTY, packageName);
         propertiesMap.put(VERSION_PROPERTY, "" + version);
@@ -1183,7 +1165,7 @@ public class AdminResourceHandlerService
 
     }
 
-    private void updateTemplateCssPaths(final Resource templateResource, String oldSiteName, String newSiteName) {
+    private void updateTemplateCssPaths(Resource templateResource, String oldSiteName, String newSiteName) {
         final Resource templateContent = templateResource.getChild(JCR_CONTENT);
         if(templateContent == null) {
             logger.error("No jcr:content resource for resource '{}'", templateResource.getPath());
@@ -1194,14 +1176,14 @@ public class AdminResourceHandlerService
         String[] siteCssProperty = templateContentProperties.get("siteCSS", String[].class);
         if(siteCssProperty != null && siteCssProperty.length > 0) {
             String[] cssReplacements = Arrays.stream(siteCssProperty)
-                    .map(css -> css.replace(SITES_ROOT + SLASH + oldSiteName, SITES_ROOT + SLASH + newSiteName))
+                    .map(css -> css.replace(PAGES_ROOT.replace(TENANT, oldSiteName), PAGES_ROOT.replace(TENANT, newSiteName)))
                     .toArray(String[]::new);
             ModifiableValueMap modifiableProperties = getModifiableProperties(templateContent);
             modifiableProperties.put("siteCSS", cssReplacements);
         }
     }
 
-    private void updateStringsInFiles(final Resource target, final String siteName) {
+    private void updateStringsInFiles(Resource target, String siteName) {
         final Resource content = target.getChild(JCR_CONTENT);
         if (content == null) {
             logger.error("No jcr:content resource for resource '{}'", target.getPath());
@@ -1214,7 +1196,7 @@ public class AdminResourceHandlerService
             return;
         }
 
-        for (final Resource replacement : replacements.getChildren()) {
+        for (Resource replacement : replacements.getChildren()) {
             //If the file resource doesn't have children, we don't need to do anything
             //since the children define the actual replacements
             if (replacement.hasChildren()) {
@@ -1227,27 +1209,27 @@ public class AdminResourceHandlerService
         }
     }
 
-    private void updateStringsInFile(final Resource file, final Resource replacements, final String siteName) {
+    private void updateStringsInFile(Resource file, Resource replacements, String siteName) {
         String content = getFileContentAsString(file);
         if (isBlank(content)) {
             return;
         }
 
-        for (final Resource replacement : replacements.getChildren()) {
-            content = replaceSiteName(content, replacement.getValueMap(), siteName);
+        for (Resource replacement : replacements.getChildren()) {
+            content = replaceTenantName(content, replacement.getValueMap(), siteName);
         }
 
         try {
             replaceFileContent(file, content);
-        } catch (final IOException e) {
+        } catch (IOException e) {
             logger.error("IOException replacing contents of file " + file.getPath(), e);
         } catch (RepositoryException e) {
             logger.error("RepositoryException replacing contents of file " + file.getPath(), e);
         }
     }
 
-    private String getFileContentAsString(final Resource file) {
-        try (final InputStream is = file.adaptTo(InputStream.class)) {
+    private String getFileContentAsString(Resource file) {
+        try (InputStream is = file.adaptTo(InputStream.class)) {
             return IOUtils.toString(is, StandardCharsets.UTF_8.name());
         } catch (final IOException e) {
             logger.error("Exception getting contents of file:" + file.getPath(), e);
@@ -1255,7 +1237,7 @@ public class AdminResourceHandlerService
         }
     }
 
-    private String replaceSiteName(final String text, final ValueMap regexMap, final String siteName) {
+    private String replaceTenantName(String text, ValueMap regexMap, String tenantName) {
         final String regex = regexMap.get("regex", EMPTY);
         String replaceWith = regexMap.get("replaceWith", EMPTY);
         if (isAnyBlank(regex, replaceWith)) {
@@ -1263,7 +1245,7 @@ public class AdminResourceHandlerService
         }
 
         //"_SITENAME_" is a placeholder for the actual new site name
-        replaceWith = replaceWith.replace("_SITENAME_", siteName);
+        replaceWith = replaceWith.replace("_SITENAME_", tenantName);
         return text.replaceAll(regex, replaceWith);
     }
 
@@ -1278,10 +1260,10 @@ public class AdminResourceHandlerService
             return;
         }
         String mimeType = "";
-        Resource fileContent = fileResource.getChild("jcr:content");
+        Resource fileContent = fileResource.getChild(JCR_CONTENT);
         if (fileContent != null) {
             ValueMap fileContentProperties = fileContent.getValueMap();
-            mimeType = fileContentProperties.get("jcr:mimeType", "");
+            mimeType = fileContentProperties.get(JCR_MIME_TYPE, "");
         }
         InputStream newContentStream = IOUtils.toInputStream(newContent, StandardCharsets.UTF_8.name());
         JcrUtils.putFile(fileNode.getParent(), fileNode.getName(), mimeType, newContentStream);
@@ -1323,12 +1305,12 @@ public class AdminResourceHandlerService
     }
 
     @Override
-    public void deleteSite(ResourceResolver resourceResolver, String sitesParentPath, String name) throws ManagementException {
+    public void deleteTenant(ResourceResolver resourceResolver, String tenantsParentPath, String name) throws ManagementException {
         // Check the given parameters and make sure everything is correct
         if (resourceResolver == null) {
             throw new ManagementException(MISSING_RESOURCE_RESOLVER_FOR_SITE_COPY);
         }
-        Resource parentResource = getResource(resourceResolver, sitesParentPath);
+        Resource parentResource = getResource(resourceResolver, tenantsParentPath);
         if (parentResource == null) {
             throw new ManagementException(MISSING_PARENT_RESOURCE_FOR_COPY_SITES);
         }
@@ -1341,55 +1323,41 @@ public class AdminResourceHandlerService
             throw new ManagementException(String.format(SOURCE_SITE_DOES_NOT_EXIST, name));
         }
 
-        if (!isPrimaryType(source, PAGE_PRIMARY_TYPE)) {
-            throw new ManagementException(String.format(SOURCE_SITE_IS_NOT_A_PAGE, name));
+        if (!isPrimaryType(source, SITE_PRIMARY_TYPE)) {
+            throw new ManagementException(String.format(INVALID_SOURCE_SITE, name));
         }
 
         Resource appsSource = getResource(resourceResolver, APPS_ROOT + SLASH + name);
         deleteResource(resourceResolver, appsSource);
 
-        Resource sourceResource = getResource(resourceResolver, ASSETS_ROOT + SLASH + name);
-        deleteResource(resourceResolver, sourceResource);
+        Resource contentSource = getResource(resourceResolver, CONTENT_ROOT + SLASH + name);
+        deleteResource(resourceResolver, contentSource);
 
-        sourceResource = getResource(resourceResolver, OBJECTS_ROOT + SLASH + name);
-        deleteResource(resourceResolver, sourceResource);
-
-        sourceResource = getResource(resourceResolver, TEMPLATES_ROOT + SLASH + name);
-        deleteResource(resourceResolver, sourceResource);
-
-        sourceResource = getResource(resourceResolver, SITES_ROOT + SLASH + name);
-        deleteResource(resourceResolver, sourceResource);
-
-        sourceResource = getResource(resourceResolver, FELIBS_ROOT + SLASH + name);
-        deleteResource(resourceResolver, sourceResource);
-
+        Resource felibsSource = getResource(resourceResolver, FELIBS_ROOT + SLASH + name);
+        deleteResource(resourceResolver, felibsSource);
     }
 
     @Override
-    public void updateSite(ResourceResolver resourceResolver, String siteName) throws ManagementException {
+    public void updateTenant(ResourceResolver resourceResolver, String tenantName) throws ManagementException {
         if (resourceResolver == null) {
             throw new ManagementException(MISSING_RESOURCE_RESOLVER_FOR_UPDATE);
         }
-        Resource siteResource = getResource(resourceResolver, SITES_ROOT + SLASH + siteName);
+        Resource siteResource = getResource(resourceResolver, CONTENT_ROOT + SLASH + tenantName);
         if (siteResource == null) {
-            throw new ManagementException(String.format(MISSING_SITE_RESOURCE, siteName));
+            throw new ManagementException(String.format(MISSING_SITE_RESOURCE, tenantName));
         }
-        Resource siteContentResource = siteResource.getChild(JCR_CONTENT);
-        if (siteContentResource == null) {
-            throw new ManagementException(String.format(MISSING_CONTENT_RESOURCE, siteName));
-        }
-        ValueMap contentProperties = siteContentResource.getValueMap();
+        ValueMap contentProperties = siteResource.getValueMap();
         String sourceSiteName = contentProperties.get(SOURCE_SITE, String.class);
         if (isBlank(sourceSiteName)) {
-            throw new ManagementException(String.format(MISSING_SOURCE_NAME, siteName));
+            throw new ManagementException(String.format(MISSING_SOURCE_NAME, tenantName));
         }
-        Resource siteAppsRoot = getResource(resourceResolver, APPS_ROOT + SLASH + siteName);
+
+        Resource siteFelibsRoot = getResource(resourceResolver, FELIBS_ROOT + SLASH + tenantName);
+        Resource siteAppsRoot = getResource(resourceResolver, APPS_ROOT + SLASH + tenantName);
         Resource sourceAppsRoot = getResource(resourceResolver, APPS_ROOT + SLASH + sourceSiteName);
 
-        Resource siteFelibsRoot = getResource(resourceResolver, FELIBS_ROOT + SLASH + siteName);
-
         if (siteAppsRoot == null || siteFelibsRoot == null) {
-            throw new ManagementException(String.format(MISSING_SITE_LOCATIONS, siteName));
+            throw new ManagementException(String.format(MISSING_SITE_LOCATIONS, tenantName));
         }
         if (sourceAppsRoot == null) {
             throw new ManagementException(String.format(MISSING_SOURCE_LOCATIONS, sourceSiteName));
@@ -1398,7 +1366,7 @@ public class AdminResourceHandlerService
         ArrayList<String> superTypes = new ArrayList<>();
         copyStubs(sourceAppsRoot, siteAppsRoot, COMPONENTS, superTypes);
 
-        String mappingFileContent = getMappingFileContent(sourceSiteName, siteName, superTypes);
+        String mappingFileContent = getMappingFileContent(sourceSiteName, tenantName, superTypes);
         Resource mappingFileResource = siteFelibsRoot.getChild("mapping.js");
         if (mappingFileResource == null) {
             //TODO: We shouldn't ever end up here - not sure if we want to do this creation or just error out
@@ -1462,19 +1430,16 @@ public class AdminResourceHandlerService
     private final class StructureCopier {
 
         private final ResourceResolver resourceResolver;
-
-        private String fromName;
-        private String toName;
+        private final String fromName;
+        private final String toName;
+        private final Resource sitesRoot;
 
         private String patternSlashName;
         private String patternNameSlash;
         private int patternLength;
 
-        public StructureCopier(final ResourceResolver resourceResolver) {
+        public StructureCopier(ResourceResolver resourceResolver, String fromName, String toName, Resource sitesRoot) {
             this.resourceResolver = resourceResolver;
-        }
-
-        public void setFromName(final String fromName) {
             this.fromName = fromName;
             if (isEmpty(fromName)) {
                 patternSlashName = null;
@@ -1485,13 +1450,11 @@ public class AdminResourceHandlerService
                 patternNameSlash = fromName + SLASH;
                 patternLength = patternSlashName.length();
             }
-        }
-
-        public void setToName(final String toName) {
             this.toName = toName;
+            this.sitesRoot = sitesRoot;
         }
 
-        public Resource copyApps(final List<String> superTypes) {
+        public Resource copyApps(List<String> superTypes) {
             final String pathPrefix = APPS_ROOT + SLASH;
             final Resource source = getResource(resourceResolver, pathPrefix + fromName);
             if (source != null) {
@@ -1501,43 +1464,45 @@ public class AdminResourceHandlerService
                     target = copyFolder(source, source.getParent(), toName);
                     answer = target;
                 }
-
                 if (target != null) {
-                    // for each component in /apps/<fromSite>/components create a stub component in /apps/<toSite>/components
-                    // with the sling:resourceSuperType set to the <fromSite> component
+                    // for each component in /apps/<fromTenant>/components create a stub component in /apps/<toTenant>/components
+                    // with the sling:resourceSuperType set to the <fromTenant> component
                     superTypes.addAll(copyStubs(source, target, COMPONENTS));
-                    // for each object in /apps/<fromSite>/objects create a stub component in /apps/<toSite>/objects
-                    // with the sling:resourceSuperType set to the <fromSite> object
+                    // for each object in /apps/<fromTenant>/objects create a stub component in /apps/<toTenant>/objects
+                    // with the sling:resourceSuperType set to the <fromTenant> object
                     copyStubs(source, target, OBJECTS);
                 }
-
                 return answer;
             }
-
             return null;
         }
 
-        public Resource copyFromRoot(final String rootPath, String title) {
-            final Resource source = getResource(resourceResolver, rootPath + SLASH + fromName);
+        public Resource copyFromRoot(String rootPath) {
+            final Resource source = getResource(resourceResolver, rootPath.replace(TENANT, fromName));
+            String targetName = rootPath.replace(TENANT, toName).split("/")[3];
             if (source != null) {
-                final Resource target = copyResources(source, source.getParent(), toName, title);
+                final Resource target = copyResources(source, sitesRoot, targetName, toName);
                 if (target != null) {
+                    ValueMap targetProps = getModifiableProperties(target, false);
+                    if (targetProps.containsKey(JCR_TITLE)) {
+                        String _title = ((String) targetProps.get(JCR_TITLE)).replace(fromName, toName);
+                        targetProps.put(JCR_TITLE, _title);
+                    }
                     // For deep copies, we need to know the depth of our copy, since the top-level assets will use the toName
                     // while child assets will use the name from the source; otherwise every asset has the same name
                     copyChildren(source, target, 0);
                     Resource contentResource = target.getChild(JCR_CONTENT);
                     if(contentResource != null) {
-                        updateTitle(contentResource, title);
+                        updateTitle(contentResource, targetName);
                     }
                 }
 
                 return target;
             }
-
             return null;
         }
 
-        private void copyChildren(final Resource source, final Resource target, final int depth) {
+        private void copyChildren(Resource source, Resource target, int depth) {
             logger.trace("Copy Child Resource from: '{}', to: '{}'", source.getPath(), target.getPath());
             for (Resource child : source.getChildren()) {
                 logger.trace("Child handling started: '{}'", child.getPath());
@@ -1551,7 +1516,7 @@ public class AdminResourceHandlerService
             }
         }
 
-        private void copyChild(final Resource sourceChild, final Resource targetParent, final int depth) throws PersistenceException {
+        private void copyChild(Resource sourceChild, Resource targetParent, int depth) throws PersistenceException {
             Map<String, Object> newProperties = copyProperties(sourceChild.getValueMap());
             if (patternLength > 0) {
                 updatePaths(newProperties);
@@ -1565,8 +1530,8 @@ public class AdminResourceHandlerService
             copyChildren(sourceChild, childTarget, depth + 1);
         }
 
-        private void updatePaths(final Map<String, Object> properties) {
-            for (final Entry<String, Object> entry : properties.entrySet()) {
+        private void updatePaths(Map<String, Object> properties) {
+            for (Entry<String, Object> entry : properties.entrySet()) {
                 final Object temp = entry.getValue();
                 if (temp instanceof String) {
                     String newValue = updatePath((String) temp);
@@ -1578,7 +1543,7 @@ public class AdminResourceHandlerService
             }
         }
 
-        private String updatePath(final String value) {
+        private String updatePath(String value) {
             int index = value.indexOf(patternSlashName);
             if (value.startsWith("/content/") && index > 0) {
                 // Check if the string ends or if the next character is a slash to avoid collisions
@@ -1591,29 +1556,26 @@ public class AdminResourceHandlerService
             } else if (value.startsWith(patternNameSlash)) {
                 return toName + SLASH + value.substring(patternLength);
             }
-
             return null;
         }
 
-        private Resource copyFolder(final Resource folder, final Resource targetParent, final String folderName) {
+        private Resource copyFolder(Resource folder, Resource targetParent, String folderName) {
             final Map<String, Object> newProperties = copyProperties(folder.getValueMap());
             logger.trace("Resource Properties: '{}'", newProperties);
             try {
                 return resourceResolver.create(targetParent, folderName, newProperties);
-            } catch (final PersistenceException e) {
+            } catch (PersistenceException e) {
                 logger.warn(String.format(COPY_FAILED, folder.getName(), folder.getPath()), e);
             }
-
             return null;
         }
 
-        private List<String> copyStubs(final Resource source, final Resource target, final String folderName) {
+        private List<String> copyStubs(Resource source, Resource target, String folderName) {
             final List<String> superTypes = new ArrayList<>();
             final Resource appsSource = getResource(source, folderName);
             if (appsSource == null) {
                 return superTypes;
             }
-
             Resource appsTarget = getResource(resourceResolver, target.getPath() + SLASH + folderName);
             if (appsTarget == null) {
                 appsTarget = copyFolder(appsSource, target, folderName);
@@ -1621,20 +1583,20 @@ public class AdminResourceHandlerService
                     return superTypes;
                 }
             }
-
-            for (final Resource child : appsSource.getChildren()) {
-                final ValueMap properties = child.getValueMap();
-                final Map<String, Object> newProperties = new HashMap<>(properties);
-                final String originalAppsPath = child.getPath().substring(APPS_ROOT.length() + 1);
-                superTypes.add(originalAppsPath);
-                newProperties.put(SLING_RESOURCE_SUPER_TYPE, originalAppsPath);
-                try {
-                    resourceResolver.create(appsTarget, child.getName(), newProperties);
-                } catch (PersistenceException e) {
-                    logger.warn(String.format(COPY_FAILED, folderName, child.getPath()), e);
+            for (Resource child : appsSource.getChildren()) {
+                if (isPrimaryType(child, COMPONENT_PRIMARY_TYPE) || isPrimaryType(child, OBJECT_DEFINITION_PRIMARY_TYPE)) {
+                    final ValueMap properties = child.getValueMap();
+                    final Map<String, Object> newProperties = new HashMap<>(properties);
+                    final String originalAppsPath = child.getPath().substring(APPS_ROOT.length() + 1);
+                    superTypes.add(originalAppsPath);
+                    newProperties.put(SLING_RESOURCE_SUPER_TYPE, originalAppsPath);
+                    try {
+                        resourceResolver.create(appsTarget, child.getName(), newProperties);
+                    } catch (PersistenceException e) {
+                        logger.warn(String.format(COPY_FAILED, folderName, child.getPath()), e);
+                    }
                 }
             }
-
             return superTypes;
         }
     }
@@ -1663,10 +1625,7 @@ public class AdminResourceHandlerService
         baseResourceHandler.updateModification(resource);
     }
 
-    private boolean deleteIfContainsMarkerProperty(
-        final Resource resource,
-        final Map<String, Object> properties
-    ) throws ManagementException {
+    private boolean deleteIfContainsMarkerProperty(Resource resource, Map<String, Object> properties) throws ManagementException {
         if (properties.containsKey(DELETION_PROPERTY_NAME)) {
             Object value = properties.get(DELETION_PROPERTY_NAME);
             if (value == null || Boolean.TRUE.toString().equalsIgnoreCase(value.toString())) {
@@ -1699,11 +1658,7 @@ public class AdminResourceHandlerService
         return false;
     }
 
-    private void applyChildProperties(
-        final Resource parent,
-        final String childName,
-        final Map childProperties
-    ) throws ManagementException {
+    private void applyChildProperties(Resource parent, String childName, Map childProperties) throws ManagementException {
         String childPath = (String) childProperties.get(PATH);
         Resource child = parent.getResourceResolver().getResource(childPath);
         if (child == null) {
@@ -1723,11 +1678,7 @@ public class AdminResourceHandlerService
         }
     }
 
-    private void applyListProperties(
-        final Resource resource,
-        final String childName,
-        final List list
-    ) throws ManagementException {
+    private void applyListProperties(Resource resource, String childName, List list) throws ManagementException {
         if (list.isEmpty()) {
             ModifiableValueMap properties = getModifiableProperties(resource, false);
             //If the node already has a property with the same name as the empty list,
@@ -1754,7 +1705,7 @@ public class AdminResourceHandlerService
         }
     }
 
-    private void writeProperties(final Map<Object, Object> properties, final Resource target) {
+    private void writeProperties(Map<Object, Object> properties, Resource target) {
         final ModifiableValueMap modifiableProperties = getModifiableProperties(target, false);
         for (Entry entry : properties.entrySet()) {
             final Object key = entry.getKey();
@@ -1894,21 +1845,23 @@ public class AdminResourceHandlerService
                 }
             }
             for (Resource child : appsSource.getChildren()) {
-                ValueMap properties = child.getValueMap();
-                Map<String, Object> newProperties = new HashMap<>(properties);
-                String originalAppsPath = child.getPath();
-                originalAppsPath = originalAppsPath.substring(APPS_ROOT.length() + 1);
-                if (superTypes != null) {
-                    superTypes.add(originalAppsPath);
-                }
-                newProperties.put(SLING_RESOURCE_SUPER_TYPE, originalAppsPath);
-                Resource existingResource = getResource(source.getResourceResolver(), appsTarget.getPath() + SLASH + child.getName());
-                //Check whether there's already a version of this resource for the new site
-                if (existingResource == null) {
-                    try {
-                        source.getResourceResolver().create(appsTarget, child.getName(), newProperties);
-                    } catch (PersistenceException e) {
-                        logger.warn("Copy of " + folderName + ": '" + child.getPath() + "' failed", e);
+                if (isPrimaryType(child, COMPONENT_PRIMARY_TYPE) || isPrimaryType(child, OBJECT_DEFINITION_PRIMARY_TYPE)) {
+                    ValueMap properties = child.getValueMap();
+                    Map<String, Object> newProperties = new HashMap<>(properties);
+                    String originalAppsPath = child.getPath();
+                    originalAppsPath = originalAppsPath.substring(APPS_ROOT.length() + 1);
+                    if (superTypes != null) {
+                        superTypes.add(originalAppsPath);
+                    }
+                    newProperties.put(SLING_RESOURCE_SUPER_TYPE, originalAppsPath);
+                    Resource existingResource = getResource(source.getResourceResolver(), appsTarget.getPath() + SLASH + child.getName());
+                    //Check whether there's already a version of this resource for the new site
+                    if (existingResource == null) {
+                        try {
+                            source.getResourceResolver().create(appsTarget, child.getName(), newProperties);
+                        } catch (PersistenceException e) {
+                            logger.warn("Copy of " + folderName + ": '" + child.getPath() + "' failed", e);
+                        }
                     }
                 }
             }

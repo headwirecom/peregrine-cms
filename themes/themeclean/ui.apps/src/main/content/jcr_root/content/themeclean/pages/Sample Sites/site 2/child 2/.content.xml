@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:per="http://www.peregrine-cms.com/jcr/cms/1.0"
+    jcr:lastModified="{Date}2017-11-26T20:33:19.640-08:00"
+    jcr:lastModifiedBy="admin"
+    jcr:primaryType="per:Page">
+    <jcr:content
+        jcr:lastModified="{Date}2017-11-26T20:33:19.663-08:00"
+        jcr:lastModifiedBy="admin"
+        jcr:primaryType="per:PageContent"
+        jcr:title="child 2"
+        sling:resourceType="themeclean/components/page"
+        name="child 2"
+        template="/content/themeclean/templates/base page"
+        templatePath="/content/themeclean/templates/base page"/>
+    <other_x0020_sub-child_x0020_1/>
+    <other_x0020_sub-child_x0020_2/>
+    <other_x0020_sub-child_x0020_3/>
+</jcr:root>

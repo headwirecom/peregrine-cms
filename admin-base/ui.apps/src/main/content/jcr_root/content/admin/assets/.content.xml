@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
-  admin base - UI Apps
+  example site - UI Apps
   %%
   Copyright (C) 2017 headwire inc.
   %%
@@ -12,9 +12,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,160 +23,18 @@
   under the License.
   #L%
   -->
+<jcr:root
+  xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+  xmlns:jcr="http://www.jcp.org/jcr/1.0"
+  jcr:primaryType="per:Page"
+  jcr:title="admin root asset"
+  jcr:description="Admin Assets Root">
 
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
-          jcr:primaryType="per:Page"
->
-    <jcr:content
-            jcr:primaryType="per:PageContent"
-            sling:resourceType="admin/components/toolingpage"
-            jcr:title="assets"
-            jcr:description="admin base Content Root"
-            suffixToParameter="[path,/state/tools/assets]"
-            dataFrom="/state/tools/assets" dataDefault="/content/assets"
-            loaders="[populateNodesForBrowser:/state/tools/assets]"
-    >
-        <nav jcr:primaryType="nt:unstructured"
-             sling:resourceType="admin/components/nav">
-            <subnav jcr:primaryType="nt:unstructured"
-                    sling:resourceType="admin/components/subnav">
+  <jcr:content
+    jcr:primaryType="per:PageContent"
+    sling:resourceType="admin/components/toolingpage"
+    jcr:title="admin root asset"
+    siteCSS="[/etc/felibs/admin/dependencies/material-design-icons/material-icons.css,/etc/felibs/materialize/materialize.css]"
+    siteJS="[/etc/felibs/admin/dependencies/jquery/jquery.js,/etc/felibs/admin/dependencies/materialize-css/js/materialize.min.js]"/>
 
-                <pathfield jcr:primaryType="nt:unstructured"
-                           sling:resourceType="admin/components/pathfield" dataFrom="/state/tools/assets"/>
-                <add jcr:primaryType="nt:unstructured"
-                     sling:resourceType="admin/components/action" target="" type="icon" title="add folder" command="addFolder" icon="create_new_folder">
-                    <experiences jcr:primaryType="nt:unstructured">
-                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Ordner hinzufügen"/>
-                    </experiences>
-                </add>
-                <fileupload jcr:primaryType="nt:unstructured"
-                     sling:resourceType="admin/components/fileupload" />
-                <sourceFile jcr:primaryType="nt:unstructured"
-                     sling:resourceType="admin/components/action" target="" type="icon" title="get asset from pixabay" command="sourceImage" icon="cloud_upload">
-                    <experiences jcr:primaryType="nt:unstructured">
-                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Asset von Pixabay laden"/>
-                    </experiences>
-                </sourceFile>
-            </subnav>
-        </nav>
-
-            <explorer jcr:primaryType="nt:unstructured"
-                       sling:resourceType="admin/components/explorer" dataFrom="/state/tools/assets" selectionFrom="/state/tools/asset/show">
-                <!--
-                <actions jcr:primaryType="nt:unstructured" sling:resourceType="pagerender/vue/structure/container">
-                    <add jcr:primaryType="nt:unstructured"
-                         sling:resourceType="admin/components/action" target="" type="icon" title="add folder" command="addFolder" icon="create_new_folder"/>
-                    <fileupload jcr:primaryType="nt:unstructured"
-                         sling:resourceType="admin/components/fileupload"/>
-                </actions>
-                -->
-                <edit jcr:primaryType="nt:unstructured" sling:resourceType="admin/components/assetview"/>
-
-            </explorer>
-
-            <jsonview jcr:primaryType="nt:unstructured"
-                      sling:resourceType="admin/components/debugger" dataFrom="/"/>
-        <tour jcr:primaryType="nt:unstructured"
-          sling:resourceType="admin/components/tour">
-            <item1
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="Welcome to the asset explorer, where you can manage assets within your site."
-              anchor="top right">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Wilkommen im Asset-Erkunder, wo du die Assets deiner Webseite verwalten kannst."/>
-                </experiences>
-            </item1>
-            <item2
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="Select a folder or asset here"
-              selector=".explorer-main">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Wähle einen Ordner oder ein Asset aus"/>
-                </experiences>
-            </item2>
-            <item3
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="Sort your items by dragging them"
-              selector=".draggable">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Sortiere deine Dateien, indem du sie an eine gewünschte Stelle ziehst"/>
-                </experiences>
-            </item3>
-            <item4
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="Here you can navigate to the subfolders of folders or get an preview of an asset"
-              selector="li.collection-item>span:nth-child(2)>a>i">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Hier kannst du bei Ordnern zu den Unterordnern navigieren oder bei einem Asset eine Vorschau erhalten"/>
-                </experiences>
-            </item4>
-            <item5
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="The preview and other useful information of the asset will be displayed here"
-              selector="div.col.s12.m4">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Die Vorschau und weitere nützliche Informationen des Assets werden dann hier angezeigt"/>
-                </experiences>
-            </item5>
-            <item6
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="Click here to replicate this item"
-              selector=".secondary-content>span:nth-child(1)">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Klicke hier, um die Datei zu replizieren"/>
-                </experiences>
-            </item6>
-            <item10
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="Click here if you want to delete an item"
-              selector=".secondary-content>span:nth-child(2)">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Klicke hier, wenn du eine Datei löschen möchtest"/>
-                </experiences>
-            </item10>
-            <item11
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/nav"
-              text="Create a new folder here"
-              selector="a.btn-floating>i">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Hier kannst du einen neuen Ordner erstellen"/>
-                </experiences>
-            </item11>
-            <item12
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/nav"
-              text="Here you can upload your own assets"
-              selector="input[type='file'] + i">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Hier kannst du eigene Assets hochladen"/>
-                </experiences>
-            </item12>
-            <item13
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/nav"
-              text="Here you can add assets via https://pixabay.com/"
-              selector=".pathfield ~ span:nth-of-type(3)>a">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Hier kannst du über https://pixabay.com/ assets hinzufügen"/>
-                </experiences>
-            </item13>
-            <item14
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="That's all, have fun!"
-              anchor="left">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Das ist alles, viel Spaß!"/>
-                </experiences>
-            </item14>
-        </tour>
-    </jcr:content>
 </jcr:root>

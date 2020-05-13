@@ -118,6 +118,7 @@ function set(node, path, value) {
 
 function initPeregrineApp() {
 
+    Vue.config.productionTip = false
     Vue.use(experiences)
     Vue.use(helper)
 
@@ -133,8 +134,13 @@ function registerViewImpl(v) {
 
 function getView() {
     if(window && window.parent && window.parent.$perAdminView && window.parent.$perAdminView.pageView) {
-        log.fine("getVIEW() - window.parent.perAdminView.pageView");
-        return window.parent.$perAdminView.pageView
+        var mode = window.frameElement.attributes['data-per-mode'] ? window.frameElement.attributes['data-per-mode'].value : null;
+        if(mode === 'tutorial') { 
+            return view;
+        } else {
+            log.fine("getVIEW() - window.parent.perAdminView.pageView");
+            return window.parent.$perAdminView.pageView
+        }
     }
     return view
 }
@@ -234,7 +240,7 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
 
         if(document.location !== path && !fromPopState) {
             log.fine("PUSHSTATE : " + path);
-            document.title = getPerView().page.title
+            document.title = getPerView().page.title + ' | ' + getPerView().page.brand  
             var url = document.location.href
             var domains = (getPerView().page.domains)
             var newLocation = path
@@ -305,7 +311,8 @@ function loadContentImpl(path, firstTime, fromPopState, onPage = false) {
 function isAuthorModeImpl() {
 
     if(window && window.parent && window.frameElement && window.frameElement.attributes['data-per-mode']) {
-        if(window.frameElement.attributes['data-per-mode'].value === 'preview') {
+        var mode = window.frameElement.attributes['data-per-mode'].value;
+        if(mode === 'preview' || mode === 'tutorial') {
             return false
         }
     }
@@ -320,6 +327,12 @@ function getAdminAppNodeImpl(path) {
     log.fine('getAdminAppState: ' + path)
 
     if(window && window.parent && window.parent.$perAdminApp) {
+        if(window.frameElement.attributes['data-per-mode']) {
+            var mode = window.frameElement.attributes['data-per-mode'].value;
+            if(mode === 'tutorial') {
+                return null;
+            }
+        }
         return window.parent.$perAdminApp.getNodeFromViewOrNull(path)
     }
     return null
@@ -375,7 +388,7 @@ var peregrineApp = {
  *
  * var $perView = {};
  * $peregrineApp.registerView($perView)
- * $peregrineApp.loadContent('/content/sites/example.html')
+ * $peregrineApp.loadContent('/content/example/pages/index.html')
  *
  */
 export default peregrineApp

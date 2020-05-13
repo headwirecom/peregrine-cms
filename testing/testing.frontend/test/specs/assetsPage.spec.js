@@ -4,7 +4,7 @@ let {Explorer, SubNav, AssetPreviewPanel, AssetEditorPanel} = assetsPage
 describe('Peregrine assets page', function () {
     it('should login', function() {
     	assetsPage.open()
-        expect( browser.getUrl() ).to.contain('content/admin/assets.html')
+        expect( browser.getUrl() ).to.contain('content/admin/pages/assets.html')
     })
 
     describe('Assets Explorer', function() {
@@ -170,7 +170,7 @@ describe('Peregrine assets page', function () {
             expect( exampleFolder.text ).to.contain(folderName)
     	})
     	
-    	let folderPath = '/content/assets/example'
+    	let folderPath = '/content/example/assets'
     	it('select folder: example', function(){
     		exampleFolder.label.click()
     		expect( AssetPreviewPanel.selectedPath ).to.contain(folderPath)

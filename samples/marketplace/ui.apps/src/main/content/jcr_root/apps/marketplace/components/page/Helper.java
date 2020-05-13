@@ -1,4 +1,4 @@
-package apps.pagerender.vue.structure.page;
+package apps.pagerendervue.structure.page;
 
 /*-
  * #%L
@@ -13,9 +13,9 @@ package apps.pagerender.vue.structure.page;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -61,14 +61,11 @@ public class Helper implements Use {
         SlingScriptHelper sling = (SlingScriptHelper) bindings.get("sling");
 
         String path = resource.getPath();
-        if(path.startsWith("/content/sites/")) {
-            path = path.substring("/content/sites/".length());
-        } else if(path.startsWith("/content/templates/")) {
-            path = path.substring("/content/templates/".length());
-        }
+        path = path.substring("/content/".length());
+
         int slash = path.indexOf("/");
-        String siteName = slash > 0 ? path.substring(0, path.indexOf("/")) : path;
-        siteRootPath = "/content/sites/"+siteName;
+        siteName = slash > 0 ? path.substring(0, path.indexOf("/")) : path;
+        siteRootPath = "/content/" + siteName + "/pages";
 
         try {
             model = sling.getService(ModelFactory.class).getModelFromResource(resource);

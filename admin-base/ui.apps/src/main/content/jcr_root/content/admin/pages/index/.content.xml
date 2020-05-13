@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  #%L
+  admin base - UI Apps
+  %%
+  Copyright (C) 2017 headwire inc.
+  %%
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+  #L%
+  -->
+<jcr:root
+  xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+  xmlns:jcr="http://www.jcp.org/jcr/1.0"
+  xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+  jcr:primaryType="per:Page">
+
+  <jcr:content
+    jcr:primaryType="per:PageContent"
+    sling:resourceType="admin/components/toolingpage"
+    jcr:title="Welcome"
+    jcr:description="admin base welcome page">
+
+    <nav jcr:primaryType="nt:unstructured"
+      sling:resourceType="admin/components/nav" hideTenants="true"/>
+
+    <content jcr:primaryType="nt:unstructured"
+      sling:resourceType="pagerendervue/structure/container">
+
+      <row jcr:primaryType="nt:unstructured"
+        sling:resourceType="admin/components/row">
+
+        <col2 jcr:primaryType="nt:unstructured"
+          sling:resourceType="admin/components/col" classes="col s12 m12 l12 xl7">
+
+          <text1 jcr:primaryType="nt:unstructured"
+            sling:resourceType="pagerendervue/components/base"
+            text="&lt;h2&gt;your websites&lt;/h2&gt;&lt;p&gt;&lt;/p&gt;">
+          </text1>
+
+          <!-- <addSite jcr:primaryType="nt:unstructured"
+            sling:resourceType="admin/components/action" target="" type="icon" title="add site"
+            command="addSite" icon="folder" classes="addSite">
+            <experiences jcr:primaryType="nt:unstructured">
+              <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Webseite hinzufügen"/>
+            </experiences>
+          </addSite> -->
+
+          <tenants jcr:primaryType="nt:unstructured"
+            sling:resourceType="admin/components/tenants">
+          </tenants>
+
+        </col2>
+
+        <col3 jcr:primaryType="nt:unstructured"
+          sling:resourceType="admin/components/col" classes="col s12 m12 l12 xl5">
+
+          <text1 jcr:primaryType="nt:unstructured"
+            sling:resourceType="pagerendervue/components/base"
+            text="&lt;h2&gt;about peregrine&lt;/h2&gt;&lt;p&gt;&lt;/p&gt;">
+          </text1>
+
+          <text2 jcr:primaryType="nt:unstructured"
+            sling:resourceType="pagerendervue/components/base"
+            text="&lt;p class=&quot;left-align&quot;&gt;
+                    &lt;img style=&quot;margin: 10px; width: 100px; max-width: 100px;&quot; src=&quot;/etc/felibs/admin/peregrine-logo.svg&quot; align=&quot;right&quot;/&gt;
+                    &lt;img style=&quot;width: 0px; height: 0px;&quot; src=&quot;https://www.headwire.com/t/peregrine.png&quot; align=&quot;right&quot;/&gt;
+                    Peregrine CMS - a head optional content management system based on Apache Sling
+                    and Vue.JS.
+                &lt;/p&gt;
+                &lt;p class=&quot;left-align browser-default&quot;&gt;
+                    For documentation about Peregrine CMS please visit our &lt;a target=&quot;_blank&quot; href=&quot;http://www.peregrine-cms.com&quot;&gt;website&lt;/a&gt;.
+                &lt;/p&gt;
+                &lt;p class=&quot;left-align browser-default&quot;&gt;
+                    Peregrine CMS is an open source project sponsored by
+                    &lt;a href=&quot;https://www.headwire.com&quot; target=&quot;_blank&quot;&gt;headwire.com, Inc&lt;/a&gt;.
+                    Commercial support is available upon request. We encourage contributions
+                    to the project. Please let us know what you think about this product.
+                &lt;/p&gt;
+                &lt;p class=&quot;left-align browser-default&quot;&gt;
+                    &lt;a href=&quot;https://github.com/headwirecom/peregrine-cms&quot; target=&quot;_blank&quot;&gt;github&lt;/a&gt;&lt;br&gt;
+                    &lt;a href=&quot;https://github.com/headwirecom/peregrine-cms/issues&quot; target=&quot;_blank&quot;&gt;issue tracker&lt;/a&gt;&lt;br&gt;
+                    &lt;a href=&quot;mailto:info@headwire.com?subject=invite me to peregrine-cms.slack.com&quot;&gt;peregrine-cms.slack.com&lt;/a&gt;
+                &lt;/p&gt;">
+          </text2>
+
+          <text3 jcr:primaryType="nt:unstructured"
+            sling:resourceType="pagerendervue/components/base"
+            text="
+            &lt;style&gt;
+            .browser-default a {
+                color: #b66f35;
+            }
+            &lt;/style&gt;
+             &lt;h3&gt;tools&lt;/h3&gt;
+                Use the tools to help you understand and manage Peregrine CMS
+                &lt;ul class=&quot;browser-default&quot;&gt;
+                    &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;/bin/browser.html&quot;&gt;composum&lt;/a&gt;&lt;br&gt;
+                    Direct access to the content repository and package manager of Apache Sling.&lt;/li&gt;
+                    &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;/perapi/swaggereditor/&quot;&gt;peregrine api&lt;/a&gt;&lt;br&gt;
+                    Explore the headless API used by Peregrine CMS for all client/server communication.&lt;/li&gt;
+                    &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;/content/apidocs/cms/index.html&quot;&gt;javadocs&lt;/a&gt;&lt;br&gt;
+                    See the java documentation for all server side code of Peregrine CMS&lt;/li&gt;
+                &lt;/ul&gt;
+            ">
+          </text3>
+
+        </col3>
+
+      </row>
+
+    </content>
+
+    <jsonview jcr:primaryType="nt:unstructured"
+      sling:resourceType="admin/components/debugger" dataFrom="/"/>
+
+    <!-- <tour jcr:primaryType="nt:unstructured"
+      sling:resourceType="admin/components/tour">
+
+      <item1 jcr:primaryType="nt:unstructured"
+        locator="/jcr:content"
+        text="Welcome to the Peregrine Administrator dashboard!">
+        <experiences jcr:primaryType="nt:unstructured">
+          <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+            text="Wilkommen im Peregrine Administrator Dashboard!"/>
+        </experiences>
+      </item1>
+
+    </tour> -->
+
+  </jcr:content>
+
+</jcr:root>

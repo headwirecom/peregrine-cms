@@ -36,6 +36,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -62,7 +63,7 @@ public abstract class BaseFileReplicationService
 {
     private static final List<Pattern> NAME_PATTERNS = new ArrayList<>();
     // List of all resources that are excluded from handling
-    private static final List<String> EXCLUDED_RESOURCES = new ArrayList<>();
+    static final List<String> EXCLUDED_RESOURCES = new ArrayList<>();
 
     private static final String EXTENSION_NAME_MUST_BE_PROVIDED = "Extension Name must be provided";
     private static final String EXTENSION_TYPES_MUST_BE_PROVIDED = "Extension Types must be provided";
@@ -181,8 +182,8 @@ public abstract class BaseFileReplicationService
     /** @return True of the folder is already created on the Target **/
     abstract boolean isFolderOnTarget(String path);
 
-    /** Create a folder on the target based on the given Path **/
-    abstract void createTargetFolder(String path) throws ReplicationException;
+    /** @return Create a folder on the target based on the given Path and return it if it exists **/
+    abstract File createTargetFolder(String path) throws ReplicationException;
 
     private void handleParents(Resource resource) throws ReplicationException {
         // Go through all its parents and make sure the folder does exist

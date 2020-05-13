@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  #%L
+  admin base - UI Apps
+  %%
+  Copyright (C) 2017 headwire inc.
+  %%
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+  #L%
+  -->
+<jcr:root
+  xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+  xmlns:jcr="http://www.jcp.org/jcr/1.0"
+  xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+  jcr:primaryType="per:Page">
+
+  <jcr:content
+    jcr:primaryType="per:PageContent"
+    sling:resourceType="admin/components/toolingpage"
+    jcr:title="Pages"
+    jcr:description="admin base Content Root"
+    suffixToParameter="[path,/state/tools/pages]"
+    dataFrom="/state/tools/pages"
+    dataDefault="/content/admin/pages"
+    loaders="[populateNodesForBrowser:/state/tools/pages]">
+
+    <nav jcr:primaryType="nt:unstructured"
+      sling:resourceType="admin/components/nav">
+
+      <subnav jcr:primaryType="nt:unstructured"
+        sling:resourceType="admin/components/subnav">
+
+        <pathfield jcr:primaryType="nt:unstructured"
+          sling:resourceType="admin/components/pathfield" dataFrom="/state/tools/pages"/>
+
+        <extensions jcr:primaryType="nt:unstructured"
+          sling:resourceType="admin/components/extensions"
+          id="admin.pages.subnav"/>
+
+        <addPage jcr:primaryType="nt:unstructured"
+          sling:resourceType="admin/components/action"
+          target=""
+          type="icon"
+          title="add page"
+          command="addPage"
+          icon="add"
+          classes="addPage">
+          <experiences jcr:primaryType="nt:unstructured">
+            <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Seite hinzufügen"/>
+          </experiences>
+        </addPage>
+
+      </subnav>
+
+    </nav>
+
+    <explorer jcr:primaryType="nt:unstructured"
+      sling:resourceType="admin/components/explorer"
+      dataFrom="/state/tools/pages">
+      <!--
+      <actions jcr:primaryType="nt:unstructured" sling:resourceType="pagerendervue/structure/container">
+          <add jcr:primaryType="nt:unstructured"
+               sling:resourceType="admin/components/action" target="" type="icon" title="add page" command="addPage" icon="add"/>
+      </actions>
+      -->
+      <edit jcr:primaryType="nt:unstructured" sling:resourceType="admin/components/pageview"/>
+
+    </explorer>
+
+    <jsonview jcr:primaryType="nt:unstructured"
+      sling:resourceType="admin/components/debugger" dataFrom="/"/>
+
+    <!-- <tour jcr:primaryType="nt:unstructured"
+      sling:resourceType="admin/components/tour">
+
+      <item1
+        jcr:primaryType="nt:unstructured"
+        locator="/jcr:content/explorer"
+        text="Welcome to the page explorer, where you can manage pages within your site."
+        anchor="top right">
+        <experiences jcr:primaryType="nt:unstructured">
+          <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+            text="Wilkommen im Page-Erkunder, wo du die Seiten deiner Webseite verwalten kannst."/>
+        </experiences>
+      </item1>
+
+      <item2
+        jcr:primaryType="nt:unstructured"
+        locator="/jcr:content/explorer"
+        text="Select a page here"
+        selector=".explorer-main">
+        <experiences jcr:primaryType="nt:unstructured">
+          <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+            text="Wähle hier eine Seite aus"/>
+        </experiences>
+      </item2>
+
+      <item3
+        jcr:primaryType="nt:unstructured"
+        locator="/jcr:content/explorer"
+        text="Sort your pages by dragging them"
+        selector=".draggable">
+        <experiences jcr:primaryType="nt:unstructured">
+          <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+            text="Sortiere deine Seiten, indem du sie an eine gewünschte Stelle ziehst"/>
+        </experiences>
+      </item3>
+
+      <item4
+        jcr:primaryType="nt:unstructured"
+        locator="/jcr:content/explorer"
+        text="Here you can navigate to the subfolders of the page"
+        selector="li.collection-item>span:nth-child(2)>a>i">
+        <experiences jcr:primaryType="nt:unstructured">
+          <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+            text="Hier kannst du zu den Unterordnern der Seite navigieren"/>
+        </experiences>
+      </item4>
+
+      <item5
+        jcr:primaryType="nt:unstructured"
+        locator="/jcr:content/explorer"
+        text="Click here to edit this page"
+        selector=".secondary-content>span:nth-child(1)">
+        <experiences jcr:primaryType="nt:unstructured">
+          <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+            text="Klicke hier, um die Seite zu bearbeiten"/>
+        </experiences>
+      </item5>
+      <item6
+        jcr:primaryType="nt:unstructured"
+        locator="/jcr:content/explorer"
+        text="Click here to replicate this page"
+        selector=".secondary-content>span:nth-child(2)">
+        <experiences jcr:primaryType="nt:unstructured">
+          <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+            text="Klicke hier, um die Seite zu replizieren"/>
+        </experiences>
+      </item6>
+
+      <item7
+        jcr:primaryType="nt:unstructured"
+        locator="/jcr:content/explorer"
+        text="Click here to get useful information for a page"
+        selector=".secondary-content>span:nth-child(3)">
+        <experiences jcr:primaryType="nt:unstructured">
+          <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+            text="Klicke hier, um nützliche Informationen zu einer Seite zu bekommen"/>
+        </experiences>
+      </item7>
+
+      <item8
+        jcr:primaryType="nt:unstructured"
+        locator="/jcr:content/explorer"
+        text="These information will be displayed here"
+        selector=".explorer-preview">
+        <experiences jcr:primaryType="nt:unstructured">
+          <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+            text="Diese Informationen werden dann hier angezeigt"/>
+        </experiences>
+      </item8>
+
+      <item9
+        jcr:primaryType="nt:unstructured"
+        locator="/jcr:content/explorer"
+        text="Here you can have a preview of the page displayed"
+        selector=".secondary-content>span:nth-child(4)">
+        <experiences jcr:primaryType="nt:unstructured">
+          <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+            text="Hier kannst du dir eine Vorschau der Seite anzeigen lassen"/>
+        </experiences>
+      </item9>
+      <item10
+        jcr:primaryType="nt:unstructured"
+        locator="/jcr:content/explorer"
+        text="Click here if you want to delete a page"
+        selector=".secondary-content>span:nth-child(5)">
+        <experiences jcr:primaryType="nt:unstructured">
+          <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+            text="Klicke hier, wenn du eine Seite löschen möchtest"/>
+        </experiences>
+      </item10>
+
+      <item11
+        jcr:primaryType="nt:unstructured"
+        locator="/jcr:content/nav"
+        text="Create a new page here"
+        selector="a.btn-floating>i">
+        <experiences jcr:primaryType="nt:unstructured">
+          <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+            text="Hier kannst du eine neue Seite erstellen"/>
+        </experiences>
+      </item11>
+
+      <item12
+        jcr:primaryType="nt:unstructured"
+        locator="/jcr:content/explorer"
+        text="That's all, have fun!"
+        anchor="left">
+        <experiences jcr:primaryType="nt:unstructured">
+          <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+            text="Das ist alles, viel Spaß!"/>
+        </experiences>
+      </item12>
+
+    </tour> -->
+
+  </jcr:content>
+
+</jcr:root>

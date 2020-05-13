@@ -1,9 +1,8 @@
 package com.peregrine.admin.resource;
 
+import javax.jcr.RepositoryException;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
-
-import javax.jcr.RepositoryException;
 
 /**
  * Interface for Resource Relocating Service

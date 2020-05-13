@@ -17,7 +17,7 @@
          sling:resourceType="admin/components/nav"/>
 
         <content jcr:primaryType="nt:unstructured"
-                 sling:resourceType="pagerender/vue/structure/container">
+                 sling:resourceType="pagerendervue/structure/container">
         <row jcr:primaryType="nt:unstructured"
              sling:resourceType="admin/components/row">
 

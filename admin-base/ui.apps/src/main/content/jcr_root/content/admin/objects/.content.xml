@@ -12,9 +12,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,151 +23,18 @@
   under the License.
   #L%
   -->
+<jcr:root
+  xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+  xmlns:jcr="http://www.jcp.org/jcr/1.0"
+  jcr:primaryType="per:Page"
+  jcr:title="admin root object"
+  jcr:description="Admin Objects Root">
 
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
-          jcr:primaryType="per:Page"
->
-    <jcr:content
-            jcr:primaryType="per:PageContent"
-            sling:resourceType="admin/components/toolingpage"
-            jcr:title="objects"
-            jcr:description="objects content root"
-            suffixToParameter="[path,/state/tools/objects]"
-            dataFrom="/state/tools/objects" dataDefault="/content/objects"
-            loaders="[populateNodesForBrowser:/state/tools/objects]"
-    >
-        <nav jcr:primaryType="nt:unstructured"
-             sling:resourceType="admin/components/nav">
-            <subnav jcr:primaryType="nt:unstructured"
-                    sling:resourceType="admin/components/subnav">
+  <jcr:content
+    jcr:primaryType="per:PageContent"
+    sling:resourceType="admin/components/toolingpage"
+    jcr:title="admin root object"
+    siteCSS="[/etc/felibs/admin/dependencies/material-design-icons/material-icons.css,/etc/felibs/materialize/materialize.css]"
+    siteJS="[/etc/felibs/admin/dependencies/jquery/jquery.js,/etc/felibs/admin/dependencies/materialize-css/js/materialize.min.js]"/>
 
-                <pathfield jcr:primaryType="nt:unstructured"
-                           sling:resourceType="admin/components/pathfield" dataFrom="/state/tools/objects"/>
-                <addFolder jcr:primaryType="nt:unstructured"
-                           sling:resourceType="admin/components/action" target="" type="icon" title="add folder" command="addFolder" icon="create_new_folder">
-                    <experiences jcr:primaryType="nt:unstructured">
-                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Ordner hinzufügen"/>
-                    </experiences>
-                </addFolder>
-                <addObject jcr:primaryType="nt:unstructured"
-                           sling:resourceType="admin/components/action" target="" type="icon" title="add object" command="addObject" icon="add">
-                    <experiences jcr:primaryType="nt:unstructured">
-                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Objekt hinzufügen"/>
-                    </experiences>
-                </addObject>
-            </subnav>
-        </nav>
-
-            <explorer jcr:primaryType="nt:unstructured"
-                       sling:resourceType="admin/components/explorer" dataFrom="/state/tools/objects" selectionFrom="/state/tools/object/show">
-                <!--
-                <actions jcr:primaryType="nt:unstructured" sling:resourceType="pagerender/vue/structure/container">
-                    <addFolder jcr:primaryType="nt:unstructured"
-                               sling:resourceType="admin/components/action" target="" type="icon" title="add folder" command="addFolder" icon="create_new_folder"/>
-                    <addObject jcr:primaryType="nt:unstructured"
-                               sling:resourceType="admin/components/action" target="" type="icon" title="add object" command="addObject" icon="add"/>
-                </actions>
-                -->
-                <edit jcr:primaryType="nt:unstructured" sling:resourceType="admin/components/objectview">
-
-                </edit>
-            </explorer>
-
-            <jsonview jcr:primaryType="nt:unstructured"
-                      sling:resourceType="admin/components/debugger" dataFrom="/"/>
-
-        <tour jcr:primaryType="nt:unstructured"
-          sling:resourceType="admin/components/tour">
-            <item1
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="Welcome to the object explorer, where you can manage objects within your site."
-              anchor="top right">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Wilkommen im Objekt-Erkunder, wo du die Objekte deiner Webseite verwalten kannst."/>
-                </experiences>
-            </item1>
-            <item2
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="Select a folder or object here"
-              selector=".explorer-main">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Wähle einen Ordner oder ein Objekt aus"/>
-                </experiences>
-            </item2>
-            <item3
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="Sort your items by dragging them"
-              selector=".draggable">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Sortiere deine Dateien, indem du sie an eine gewünschte Stelle ziehst"/>
-                </experiences>
-            </item3>
-            <item4
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="Here you can navigate to the subfolders of folders or get more information for a object"
-              selector="li.collection-item>span:nth-child(2)>a>i">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Hier kannst du bei Ordnern zu den Unterordnern navigieren oder für ein Objekt weitere Informationen erhalten"/>
-                </experiences>
-            </item4>
-            <item5
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="This further information of the object will be displayed here"
-              selector="div.col.s12.m4">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Diese weiteren Informationen des Objektes werden dann hier angezeigt"/>
-                </experiences>
-            </item5>
-            <item6
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="Click here to replicate this item"
-              selector=".secondary-content>span:nth-child(1)">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Klicke hier, um die Datei zu replizieren"/>
-                </experiences>
-            </item6>
-            <item10
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="Click here if you want to delete an item"
-              selector=".secondary-content>span:nth-child(2)">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Klicke hier, wenn du eine Datei löschen möchtest"/>
-                </experiences>
-            </item10>
-            <item11
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/nav"
-              text="Create a new folder here"
-              selector="a.btn-floating>i">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Hier kannst du einen neuen Ordner erstellen"/>
-                </experiences>
-            </item11>
-            <item12
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/nav"
-              text="Here you can create your own object"
-              selector=".pathfield ~ span:nth-of-type(2)>a">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Hier kannst du ein eigenes Objekt erstellen"/>
-                </experiences>
-            </item12>
-            <item13
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="That's all, have fun!"
-              anchor="left">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Das ist alles, viel Spaß!"/>
-                </experiences>
-            </item13>
-        </tour>
-    </jcr:content>
 </jcr:root>

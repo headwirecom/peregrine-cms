@@ -1,10 +1,10 @@
 <!-- js includes required for this renderer -->
 
-<sly data-sly-use.helper="apps.pagerender.vue.structure.page.Helper"/>
-<sly data-sly-include="/apps/pagerender/vue/structure/page/renderer.html"/>
+<sly data-sly-use.helper="apps.pagerendervue.structure.page.Helper"/>
+<sly data-sly-include="/apps/pagerendervue/structure/page/renderer.html"/>
 <script src="/etc/felibs/${helper.siteName}.js"></script>
 <script>
-    $peregrineApp.loadComponent('pagerender-vue-components-placeholder')
+    $peregrineApp.loadComponent('pagerendervue-components-placeholder')
     $peregrineApp.loadComponent('themeclean-components-block')
     $peregrineApp.loadComponent('themeclean-components-media')
     $peregrineApp.loadComponent('themeclean-components-mediavisible')

@@ -22,18 +22,26 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from '../logger'
-import {SUFFIX_PARAM_SEPARATOR} from "../constants";
+import {LoggerFactory} from '../logger'
+import {Admin, SUFFIX_PARAM_SEPARATOR} from '../constants';
+
 let log = LoggerFactory.logger('renamePage').setLevelDebug()
 
 export default function(me, target) {
 
     log.fine(target)
-    var api = me.getApi()
+
+    const api = me.getApi()
+    let destination = Admin.Page.PAGES
+
+    if (target.edit) {
+        destination = Admin.Page.EDIT
+    }
+
     return new Promise( (resolve, reject) => {
         api.renamePage(target.path, target.name).then( () => {
             let path = me.getNodeFromView('/state/tools/pages')
-            me.loadContent('/content/admin/pages.html/path'+SUFFIX_PARAM_SEPARATOR+ path)
+            me.loadContent(`${destination}/path${SUFFIX_PARAM_SEPARATOR + path}`)
             resolve()
         })
     })

@@ -47,7 +47,7 @@
             pathSegments: function() {
                 var segments = this.path.toString().split('/')
                 var ret = []
-                for(var i = 2; i < segments.length; i++) {
+                for(var i = 3; i < segments.length; i++) {
                     ret.push( { name: segments[i], path: segments.slice(0, i+1).join('/') } )
                 }
                 return ret;

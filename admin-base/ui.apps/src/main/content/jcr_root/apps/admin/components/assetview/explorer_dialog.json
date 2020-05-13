@@ -59,7 +59,7 @@
           "closeOnSelect": false,
           "taggable": true
       },
-      "valuesFrom": "/content/objects/tags.infinity.json",
+      "valuesFrom": "/content/admin/objects/tags.infinity.json",
       "values": [ { "name": "dog", "value": "dog" } ]
   },
   {

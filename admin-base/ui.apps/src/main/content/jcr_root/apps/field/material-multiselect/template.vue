@@ -13,7 +13,7 @@
 	</div>
 
 	<ul v-else class="collection">
-		<div v-for="item in value" class="collection-item">{{item.name || item}}</div>
+		<div v-for="item in value" class="collection-item" v-bind:key="item.path">{{item.name || item}}</div>
 	</ul>
 </template>
 
@@ -23,7 +23,7 @@
 		methods: {
 			removeOption: function(removedOption, id) {
 				if( removedOption.hasOwnProperty('path') ) {
-					let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted");
+					let _deleted = $perAdminApp.getNodeFromViewWithDefault("/state/tools/_deleted", {});
 					let copy = JSON.parse(JSON.stringify(removedOption));
 					copy._opDelete = true;
 					if(!_deleted[this.schema.model]) _deleted[this.schema.model] = [];

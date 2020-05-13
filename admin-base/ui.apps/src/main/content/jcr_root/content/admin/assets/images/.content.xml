@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:lastModified="{Date}2020-03-13T02:07:41.517+01:00"
+    jcr:lastModifiedBy="admin"
+    jcr:primaryType="sling:OrderedFolder"
+    jcr:title="images">
+    <tesla.jpg/>
+    <tesla3.jpg/>
+    <tesla4.jpg/>
+    <tesla1.jpg/>
+    <tesla2.jpg/>
+    <tesla5.jpg/>
+    <broken-image.svg/>
+    <empty.png/>
+    <trumbowyg-icons.svg/>
+</jcr:root>

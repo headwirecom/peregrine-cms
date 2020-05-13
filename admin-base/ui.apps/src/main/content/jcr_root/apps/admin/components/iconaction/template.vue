@@ -25,20 +25,15 @@
 <template>
 <div class="col s12 m6 l4 icon-action">
     <div class="card blue-grey darken-3">
-        <div class="card-content white-text">
+        <div class="card-content white-text action" @click="onCardContentClick">
             <span class="card-title">{{$exp(model, 'title')}}</span>
             <p>{{$exp(model,'description')}}</p>
         </div>
         <div class="card-action">
             <admin-components-action v-if="internal(model.action, model.target)"
-                v-bind:model="{ 
-                    target: model.action, 
-                    command: 'selectPath', 
-                    title: this.$i18n('explore')
-                }">
+                v-bind:model="actionModel">
             </admin-components-action>
             <a v-else v-bind:href="model.action" v-bind:target="model.target">{{$i18n('explore')}}</a>
-
         </div>
     </div>
 </div>
@@ -47,9 +42,25 @@
 <script>
     export default {
         props: ['model'],
+        data() {
+          return {
+              actionModel: {
+                  target: this.model.action,
+                  command: 'selectPath',
+                  title: this.$i18n('explore')
+              }
+          }
+        },
         methods: {
             internal(action, target) {
                 return !action.startsWith('http') && (target === undefined || target === null)
+            },
+            onCardContentClick() {
+                if (this.internal(this.model.action, this.model.target)) {
+                    $perAdminApp.action(this, 'selectPath', this.model.action)
+                } else {
+                    window.open(this.model.action, this.model.target).focus()
+                }
             }
         }
     }
@@ -59,5 +70,9 @@
 .card .card-content p {
     height: 100px;
 }
+    .card-content.action:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+        cursor: pointer;
+    }
 </style>
 

@@ -46,7 +46,6 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.*;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
-@SuppressWarnings("serial")
 @Component(
     service = Servlet.class,
     property = {
@@ -58,6 +57,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
         SLING_SERVLET_EXTENSIONS + EQUALS + SiteMapConstants.XML
     }
 )
+@SuppressWarnings("serial")
 public final class SiteMapServlet extends SlingAllMethodsServlet {
 
     @Reference
@@ -67,7 +67,7 @@ public final class SiteMapServlet extends SlingAllMethodsServlet {
     private SiteMapFilesCache cache;
 
     @Override
-    protected void doGet(final SlingHttpServletRequest request, final SlingHttpServletResponse response) throws IOException {
+    protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
         final Resource resource = request.getResource();
         final int index = urlBuilder.getIndex(request);
         final String string = index >= 0 ? cache.get(resource, index) : null;
@@ -76,9 +76,8 @@ public final class SiteMapServlet extends SlingAllMethodsServlet {
             return;
         }
 
-        response.setContentType(PerConstants.APPLICATION_XML_MIME_TYPE);
+        response.setContentType(PerConstants.XML_MIME_TYPE);
         response.setCharacterEncoding(PerConstants.UTF_8);
         response.getWriter().write(string);
     }
-
 }

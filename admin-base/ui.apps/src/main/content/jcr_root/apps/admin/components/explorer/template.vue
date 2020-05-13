@@ -23,7 +23,6 @@
   #L%
   -->
 <template>
-
 <div class="explorer"
     v-on:dragover.prevent  ="onDragOverExplorer"
     v-on:dragenter.prevent ="onDragEnterExplorer"
@@ -46,8 +45,8 @@
                     </admin-components-action>
                 </li>
                 <li
-                    v-for ="(child,i) in children"
-                    v-bind:key="i"
+                    v-for ="child in children"
+                    v-bind:key="child.path"
                     v-bind:class="`collection-item ${isSelected(child) ? 'explorer-item-selected' : ''}`"
                     draggable ="true"
                     v-on:dragstart ="onDragRowStart(child,$event)"
@@ -108,7 +107,7 @@
                             <admin-components-iconeditpage></admin-components-iconeditpage>
                         </admin-components-action>
 
-                        <admin-components-action v-if="replicatable(child)"
+                        <admin-components-action v-if="replicable(child)"
                             v-bind:model="{
                                 target: child.path,
                                 command: 'replicate',
@@ -140,23 +139,57 @@
                         <admin-components-action
                             v-bind:model="{
                                 target: child,
-                                command: 'deleteSiteOrPage',
+                                command: 'deleteTenantOrPage',
                                 tooltipTitle: `${$i18n('delete')} '${child.title || child.name}'`
                             }">
                             <i class="material-icons">delete</i>
                         </admin-components-action>
                     </div>
                 </li>
+                <li class="collection-item" v-if="isPages(path)">
+                    <admin-components-action
+                        v-bind:model="{
+                            target: '',
+                            command: 'addPage',
+                            tooltipTitle: `${$i18n('add page')}`
+                        }">
+                            <i class="material-icons">add_circle</i> {{$i18n('add page')}}
+                    </admin-components-action>
+                </li>
+                <li class="collection-item" v-if="isObjects(path)">
+                    <admin-components-action
+                        v-bind:model="{
+                            target: '',
+                            command: 'addObject',
+                            tooltipTitle: `${$i18n('add object')}`
+                        }">
+                            <i class="material-icons">add_circle</i> {{$i18n('add object')}}
+                    </admin-components-action>
+                </li>
+                <li class="collection-item" v-if="isTemplates(path)">
+                    <admin-components-action
+                        v-bind:model="{
+                            target: '',
+                            command: 'addTemplate',
+                            tooltipTitle: `${$i18n('add template')}`
+                        }">
+                            <i class="material-icons">add_circle</i> {{$i18n('add template')}}
+                    </admin-components-action>
+                </li>
             </ul>
             <div v-if="children && children.length == 0" class="empty-explorer">
-                <div v-if="path.startsWith('/content/assets')">
+                <div v-if="path.includes('assets')">
                     {{ $i18n('emptyExplorerHintAssets') }}.
                 </div>
                 <div v-else>
                     {{ $i18n('emptyExplorerHint') }}...
                 </div>
             </div>
-
+        </div>
+        <div v-else class="col s12 m8 explorer-main explorer-empty">
+            <div>
+                <span>{{ $i18n(`nothing to show`) }}</span>
+            </div>
         </div>
         <admin-components-explorerpreview v-if="hasEdit">
             <component v-bind:is="model.children[0].component" v-bind:model="model.children[0]"></component>
@@ -190,9 +223,13 @@
 </template>
 
 <script>
+
+    import {set} from '../../../../../../js/utils';
+
     export default {
         props: ['model'],
-        data(){
+
+        data() {
             return {
                 isDraggingFile: false,
                 isDraggingUiEl: false,
@@ -200,9 +237,10 @@
                 uploadProgress: 0
             }
         },
+
         computed: {
             showNavigateToParent() {
-                return this.path.split('/').length > 3
+                return this.path.split('/').length > 4
             },
             path: function() {
                 var dataFrom = this.model.dataFrom
@@ -220,7 +258,7 @@
             },
             parentPath: function() {
                 var segments = this.$data.path.value.toString().split('/')
-                var joined = segments.slice(0, segments.length -1).join('/')
+                var joined = segments.slice(0, segments.length - 1).join('/')
                 return joined
             },
             pathSegments: function() {
@@ -236,18 +274,27 @@
             }
         },
         methods: {
-            isAssets(path){
-                return path.startsWith('/content/assets')
+            getTenant() {
+              return $perAdminApp.getView().state.tenant || {name: 'example'}
             },
-            isSites(path){
-                return path.startsWith('/content/sites')
+
+            isAssets(path) {
+                return path.startsWith(`/content/${this.getTenant().name}/assets`)
             },
-            isObjects(path){
-                return path.startsWith('/content/objects')
+
+            isPages(path) {
+                return path.startsWith(`/content/${this.getTenant().name}/pages`)
             },
-            isTemplates(path){
-                return path.startsWith('/content/templates')
+
+            isObjects(path) {
+                return path.startsWith(`/content/${this.getTenant().name}/objects`)
             },
+
+            isTemplates(path) {
+
+                return path.startsWith(`/content/${this.getTenant().name}/templates`)
+            },
+
             selectParent(me, target) {
                 var dataFrom = !me ? this.model.dataFrom : me.model.dataFrom
                 var path = $perAdminApp.getNodeFrom($perAdminApp.getView(), dataFrom)
@@ -256,6 +303,7 @@
                 path = pathSegments.join('/')
                 $perAdminApp.action(!me ? this: me, 'selectPath', { path: path, resourceType: 'sling:OrderedFolder'})
             },
+
             selectItem(item) {
                 $perAdminApp.action(this, 'selectPath', item)
             },
@@ -273,31 +321,32 @@
                 }
                 return 'item-replication-unknown'
             },
+
             replicate(me, path) {
                 $perAdminApp.stateAction('replicate', path)
             },
-            replicatable(item) {
+
+            replicable(item) {
                 return true
             },
-            /* row drag events */
-            onDragRowStart(item, ev){
+
+            onDragRowStart(item, ev) {
                 ev.srcElement.classList.add("dragging");
                 ev.dataTransfer.setData('text', item.path)
-                if(this.isDraggingFile){ this.isDraggingFile = false }
+                if(this.isDraggingFile) { this.isDraggingFile = false }
                 this.isDraggingUiEl = true
             },
 
-            onDragRow(ev){
+            onDragRow(ev) {
                 ev.srcElement.classList.remove("dragging");
             },
 
-            onDragRowEnd(item, ev){
+            onDragRowEnd(item, ev) {
                 this.isDraggingUiEl = false
             },
 
-            /* row drop zone events */
-            onDragOverRow(ev){
-                if(this.isDraggingUiEl){
+            onDragOverRow(ev) {
+                if(this.isDraggingUiEl) {
                     const center = ev.target.offsetHeight / 2 ;
                     this.dropType = ev.offsetY > center ? 'after' : 'before';
                     ev.target.classList.toggle('drop-after', ev.offsetY > center );
@@ -305,24 +354,23 @@
                 }
             },
 
-            onDragEnterRow(ev){
+            onDragEnterRow(ev) {
             },
 
-            onDragLeaveRow(ev){
-                if(this.isDraggingUiEl){
+            onDragLeaveRow(ev) {
+                if(this.isDraggingUiEl) {
                     ev.target.classList.remove('drop-after','drop-before')
                 }
             },
 
             onDropRow(item, ev, type) {
-                if(this.isDraggingUiEl){
+                if(this.isDraggingUiEl) {
                     ev.target.classList.remove('drop-after','drop-before')
-                    /* reorder row logic */
                     const dataFrom = this.model.dataFrom
                     const path = $perAdminApp.getNodeFrom($perAdminApp.getView(), dataFrom)
                     let action
                     switch(true) {
-                        case (this.isSites(path)):
+                        case (this.isPages(path)):
                             action = 'movePage'
                             break
                         case (this.isTemplates(path)):
@@ -337,7 +385,6 @@
                         default:
                             console.warn('path is not a site, asset, template or object.')
                     }
-
                     $perAdminApp.stateAction(action, {
                         path: ev.dataTransfer.getData("text"),
                         to: item.path,
@@ -346,38 +393,34 @@
                 }
             },
 
-            /* file drop zone events */
-            onDragOverExplorer(ev){
-
+            onDragOverExplorer(ev) {
             },
 
-            onDragEnterExplorer(ev){
+            onDragEnterExplorer(ev) {
                 if(!this.isAssets(this.path)) return
                 if(this.isDraggingUiEl) return
                 this.isDraggingFile = true
                 this.isFileUploadVisible = true
             },
 
-            onDragLeaveExplorer(ev){
+            onDragLeaveExplorer(ev) {
                 /* hide upload overlay */
                 /* TODO: fix upload unexpectedly closing
-                if(this.isDraggingFile){
+                if(this.isDraggingFile) {
                     this.isDraggingFile = false
                 }
                 */
             },
 
-            onDropExplorer(ev){
+            onDropExplorer(ev) {
                 if(!this.isAssets(this.path)) return
                 if(this.isDraggingUiEl) return
-                if(this.isDraggingFile){
-                    /* file uploade logic */
+                if(this.isDraggingFile) {
                     this.uploadFile(ev.dataTransfer.files)
                     this.isDraggingFile = false
                 }
             },
 
-            /* file upload */
             uploadFile(files) {
               $perAdminApp.stateAction('uploadFiles', {
                 path: $perAdminApp.getView().state.tools.assets,
@@ -386,15 +429,14 @@
               })
             },
 
-            setUploadProgress(percentCompleted){
+            setUploadProgress(percentCompleted) {
               this.uploadProgress = percentCompleted
             },
 
-            onDoneFileUpload(){
+            onDoneFileUpload() {
                 this.isFileUploadVisible = false
                 this.uploadProgress = 0
             },
-
 
             isSelected: function(child) {
                 if(this.model.selectionFrom && child) {
@@ -405,18 +447,23 @@
                 return false
 
             },
+
             hasChildren: function(child) {
                 return child && child.childCount && child.childCount > 0;
             },
+
             editable: function(child) {
                 return ['per:Page', 'per:Object'].indexOf(child.resourceType) >= 0
             },
+
             composumEditable: function(child) {
                 return ['nt:file'].indexOf(child.resourceType) >= 0
             },
+
             viewable: function(child) {
                 return ['per:Page', 'per:Object', 'nt:file'].indexOf(child.resourceType) >= 0
             },
+
             viewUrl: function(child) {
                 var path = child.path
                 var segments = path.split('/')
@@ -429,27 +476,33 @@
                 }
                 return path + '.json'
             },
-            nodeTypeToIcon: function(nodeType) {
 
-                if(nodeType === 'per:Page')     return 'description'
-                if(nodeType === 'per:Object')   return 'layers'
-                if(nodeType === 'nt:file')      return 'insert_drive_file'
-                if(nodeType === 'per:Asset')      return 'image'
-                if(nodeType === 'sling:Folder') return 'folder'
-                if(nodeType === 'sling:OrderedFolder') return 'folder'
+            nodeTypeToIcon: function(nodeType) {
+                if(nodeType === 'per:Page')             return 'description'
+                if(nodeType === 'per:Object')           return 'layers'
+                if(nodeType === 'nt:file')              return 'insert_drive_file'
+                if(nodeType === 'per:Asset')            return 'image'
+                if(nodeType === 'sling:Folder')         return 'folder'
+                if(nodeType === 'sling:OrderedFolder')  return 'folder'
                 return 'unknown'
             },
+
             checkIfAllowed: function(resourceType) {
                 return ['per:Asset', 'nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page', 'sling:OrderedFolder', 'per:Object'].indexOf(resourceType) >= 0
             },
+
             showInfo: function(me, target) {
-                if(target.startsWith('/content/objects')) {
+                const tenant = $perAdminApp.getView().state.tenant
+                if(target.startsWith(`/content/${tenant.name}/objects`)) {
                     const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
                     $perAdminApp.stateAction('selectObject', { selected: node.path, path: me.model.dataFrom })
+                } else if (target.startsWith(`/content/${tenant.name}/templates`)) {
+                    $perAdminApp.stateAction('showTemplateInfo', { selected: target })
                 } else {
                     $perAdminApp.stateAction('showPageInfo', { selected: target })
                 }
             },
+
             selectPath: function(me, target) {
                 let resourceType = target.resourceType
                 if(resourceType) {
@@ -471,53 +524,66 @@
                 if($perAdminApp.getNodeFromView('/state/tools/asset/show')) {
                     $perAdminApp.stateAction('unselectAsset', { })
                 }
-                $perAdminApp.stateAction('selectToolsNodesPath', { selected: target.path, path: me.model.dataFrom })
+                const payload = { selected: target.path, path: me.model.dataFrom }
+                $perAdminApp.stateAction('selectToolsNodesPath', payload).then( () => {
+                    $('div.brand-logo span').last().click() //TODO: quick and dirty solution!!!!
+                })
             },
+
             selectPathInNav: function(me, target) {
                 this.selectPath(me, target)
             },
-            viewPage: function(me, target) {
-                alert(target)
-            },
+
             addSite: function(me, target) {
-                $perAdminApp.stateAction('createSiteWizard', '/content/sites')
+                $perAdminApp.stateAction('createTenantWizard', '/content')
             },
+
             addPage: function(me, target) {
-                if(me.pt.path === '/content/sites') {
-                    $perAdminApp.stateAction('createSiteWizard', me.pt.path)
-//                    $perAdminApp.notifyUser('create new site', 'to create a new site root, please visit the documentation on how to start a new site', null)
-                } else {
-                    $perAdminApp.stateAction('createPageWizard', me.pt.path)
+                const tenant = $perAdminApp.getView().state.tenant
+                const path = me.pt.path
+                if(path.startsWith(`/content/${tenant.name}/pages`)) {
+                    $perAdminApp.stateAction('createPageWizard', path)
                 }
             },
-            addFolder: function(me, target) {
-                if(me.pt.path.startsWith('/content/assets')) {
-                    $perAdminApp.stateAction('createAssetFolderWizard', me.pt.path)
-                } else if(me.pt.path.startsWith('/content/objects')) {
-                    $perAdminApp.stateAction('createObjectFolderWizard', me.pt.path)
-                }
-            },
-            sourceImage: function(me, target) {
-                $perAdminApp.stateAction('sourceImageWizard', me.pt.path )
-            },
+
             addTemplate: function(me, target) {
-                if(me.pt.path === '/content/templates') {
-                    $perAdminApp.notifyUser('create new site', 'to create a new site root, please visit the documentation on how to start a new site', null)
-                } else {
-                    $perAdminApp.stateAction('createTemplateWizard', me.pt.path)
+                const tenant = $perAdminApp.getView().state.tenant
+                const path = me.pt.path
+                if(path.startsWith(`/content/${tenant.name}/templates`)) {
+                    $perAdminApp.stateAction('createTemplateWizard', path)
                 }
             },
+
             addObject: function(me, target) {
-                $perAdminApp.stateAction('createObjectWizard', { path: me.pt.path, target: target })
-            },
-            deleteSiteOrPage: function(me, target) {
-                if(me.path == '/content/sites') {
-                    me.deleteSite(me, target)
+                const tenant = $perAdminApp.getView().state.tenant
+                const path = me.pt.path
+                if(path.startsWith(`/content/${tenant.name}/objects`)) {
+                    $perAdminApp.stateAction('createObjectWizard', { path: path, target: target })
                 }
-                else {
+            },
+
+            addFolder: function(me, target) {
+                const tenant = $perAdminApp.getView().state.tenant
+                const path = me.pt.path
+                if(path.startsWith(`/content/${tenant.name}/assets`)) {
+                    $perAdminApp.stateAction('createAssetFolderWizard', path)
+                } else if(path.startsWith(`/content/${tenant.name}/objects`)) {
+                    $perAdminApp.stateAction('createObjectFolderWizard', path)
+                }
+            },
+
+            sourceImage: function(me, target) {
+                $perAdminApp.stateAction('sourceImageWizard', me.pt.path)
+            },
+
+            deleteTenantOrPage: function(me, target) {
+                if(me.path === '/content') {
+                    me.deleteTenant(me, target)
+                } else {
                     me.deletePage(me, target)
                 }
             },
+
             deletePage: function(me, target) {
                 $perAdminApp.askUser('Delete Page', me.$i18n('Are you sure you want to delete this node and all its children?'), {
                     yes() {
@@ -525,7 +591,7 @@
                         if(resourceType === 'per:Object') {
                             $perAdminApp.stateAction('deleteObject', target.path)
                         } else if(resourceType === 'per:Asset') {
-                                $perAdminApp.stateAction('deleteAsset', target.path)
+                            $perAdminApp.stateAction('deleteAsset', target.path)
                         } else if(resourceType === 'sling:OrderedFolder') {
                             $perAdminApp.stateAction('deleteFolder', target.path)
                         } else if(resourceType === 'per:Page') {
@@ -538,31 +604,41 @@
                     }
                 })
             },
-            deleteSite: function(me, target) {
+
+            deleteTenant: function(me, target) {
                 $perAdminApp.askUser('Delete Site', me.$i18n('Are you sure you want to delete this site, its children, and generated content and components?'), {
                     yes() {
-                        $perAdminApp.stateAction('deleteSite', target)
+                        $perAdminApp.stateAction('deleteTenant', target)
                     }
                 })
             },
+
             editPage: function(me, target) {
+                const view = $perAdminApp.getView()
+                const tenant = view.state.tenant
                 const path = me.pt.path
-                if(path.startsWith('/content/templates')) {
-                    $perAdminApp.stateAction('editTemplate', target )
-                } else if(path.startsWith('/content/objects')) {
+
+                if(target.startsWith(`/content/${tenant.name}/pages`)) {
+                    set(view, '/state/tools/page', target)
+                } else if(target.startsWith(`/content/${tenant.name}/templates`)) {
+                    set(view, '/state/tools/template', target)
+                }
+
+                if(path.startsWith(`/content/${tenant.name}/objects`)) {
                     const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
                     me.selectedObject = path
                     $perAdminApp.stateAction('editObject', { selected: node.path, path: me.model.dataFrom })
+                } else if (path.startsWith(`/content/${tenant.name}/templates`)) {
+                    $perAdminApp.stateAction('editTemplate', target )
                 } else {
                     $perAdminApp.stateAction('editPage', target )
                 }
             },
+
             editFile: function(me, target) {
                 window.open(`/bin/cpm/edit/code.html${target}`, 'composum')
             }
-
         }
-
     }
 </script>
 
@@ -582,4 +658,9 @@
         color: purple;
     }
 
+    .explorer-empty {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 </style>

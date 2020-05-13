@@ -25,7 +25,7 @@ package com.peregrine.admin.replication.servlet;
  * #L%
  */
 
-import com.peregrine.replication.ReferenceLister;
+import com.peregrine.admin.replication.DefaultReplicationMapper;
 import com.peregrine.replication.Replication;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.osgi.service.component.annotations.Component;
@@ -50,6 +50,15 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+/**
+ * This servlet lists all available replication services
+ *
+ * The API Definition can be found in the Swagger Editor configuration:
+ *    ui.apps/src/main/content/jcr_root/api/definitions/admin.yaml
+ *
+ * It is invoked like this:
+ *      curl -X GET "http://localhost:8080/perapi/admin/listRepl.json" -H  "accept: application/json"
+ */
 @Component(
     service = Servlet.class,
     property = {
@@ -60,22 +69,10 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
     }
 )
 @SuppressWarnings("serial")
-/**
- * This servlet replicates the given resource with its JCR Content
- * ane any references
- *
- * The API Definition can be found in the Swagger Editor configuration:
- *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
- *
- * It is invoked like this: curl -u admin:admin -X POST http://localhost:8080/perapi/admin/repl.json/path///content/sites/example//name//local
- */
 public class ReplicationListServlet extends AbstractBaseServlet {
 
     public static final String REPLICATION_SERVICES = "replicationServices";
     public static final String DESCRIPTION = "description";
-
-    @Reference
-    private ReferenceLister referenceLister;
 
     private Map<String, Replication> replications = new HashMap<>();
 
@@ -87,7 +84,7 @@ public class ReplicationListServlet extends AbstractBaseServlet {
     @SuppressWarnings("unused")
     public void bindReplication(Replication replication) {
         String replicationName = replication.getName();
-        logger.error("Register replication with name: '{}': {}", replicationName, replication);
+        logger.trace("Register replication with name: '{}': {}", replicationName, replication);
         if(replicationName != null && !replicationName.isEmpty()) {
             replications.put(replicationName, replication);
         } else {
@@ -103,6 +100,23 @@ public class ReplicationListServlet extends AbstractBaseServlet {
         } else {
             logger.error("Replication: '{}' is not register with operation name: '{}' -> unbinding is ignored", replication, replicationName);
         }
+    }
+
+    @Reference(
+        cardinality = ReferenceCardinality.MULTIPLE,
+        policy = ReferencePolicy.DYNAMIC,
+        policyOption = ReferencePolicyOption.GREEDY
+    )
+    @SuppressWarnings("unused")
+    public void bindDefaultReplicationMapper(DefaultReplicationMapper defaultReplicationMapper) {
+        logger.trace("Register Default Replication Mapper: '{}'", defaultReplicationMapper.getName());
+        bindReplication(defaultReplicationMapper);
+    }
+
+    @SuppressWarnings("unused")
+    public void unbindDefaultReplicationMapper(DefaultReplicationMapper defaultReplicationMapper) {
+        logger.trace("UnRegister Default Replication Mapper: '{}'", defaultReplicationMapper.getName());
+        unbindReplication(defaultReplicationMapper);
     }
 
     @Override

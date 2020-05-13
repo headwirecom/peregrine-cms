@@ -25,7 +25,7 @@ package com.peregrine.admin.replication.servlet;
  * #L%
  */
 
-import com.peregrine.replication.ReferenceLister;
+import com.peregrine.admin.replication.DefaultReplicationMapper;
 import com.peregrine.replication.Replication;
 import com.peregrine.replication.Replication.ReplicationException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
@@ -58,6 +58,16 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+/**
+ * This servlet replicates the given resource with its JCR Content
+ * and any references
+ *
+ * The API Definition can be found in the Swagger Editor configuration:
+ *    ui.apps/src/main/content/jcr_root/api/definitions/admin.yaml
+ *
+ * It is invoked like this:
+ *      curl -X POST "http://localhost:8080/perapi/admin/repl.json/content/themeclean" -H  "accept: application/json" -H  "content-type: application/x-www-form-urlencoded" -d "name=defaultRepl&deep=false"
+ */
 @Component(
     service = Servlet.class,
     property = {
@@ -68,15 +78,6 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
     }
 )
 @SuppressWarnings("serial")
-/**
- * This servlet replicates the given resource with its JCR Content
- * and any references
- *
- * The API Definition can be found in the Swagger Editor configuration:
- *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
- *
- * It is invoked like this: curl -u admin:admin -X POST http://localhost:8080/perapi/admin/repl.json/path///content/sites/example//name//local
- */
 public class ReplicationServlet extends AbstractBaseServlet {
 
     public static final String PARAMETER_NAME_FOR_THE_REPLICATION_NAME_IS_NOT_PROVIDED = "Parameter 'name' for the replication name is not provided";
@@ -85,9 +86,6 @@ public class ReplicationServlet extends AbstractBaseServlet {
     public static final String REPLICATION_FAILED = "Replication Failed";
     public static final String REPLICATES = "replicates";
     public static final String SUFFIX_IS_NOT_RESOURCE = "Suffix: '%s' is not a resource";
-
-    @Reference
-    private ReferenceLister referenceLister;
 
     private Map<String, Replication> replications = new HashMap<>();
 
@@ -99,7 +97,7 @@ public class ReplicationServlet extends AbstractBaseServlet {
     @SuppressWarnings("unused")
     public void bindReplication(Replication replication) {
         String replicationName = replication.getName();
-        logger.error("Register replication with name: '{}': {}", replicationName, replication);
+        logger.trace("Register replication with name: '{}': {}", replicationName, replication);
         if(replicationName != null && !replicationName.isEmpty()) {
             replications.put(replicationName, replication);
         } else {
@@ -117,6 +115,23 @@ public class ReplicationServlet extends AbstractBaseServlet {
         }
     }
 
+    @Reference(
+        cardinality = ReferenceCardinality.MULTIPLE,
+        policy = ReferencePolicy.DYNAMIC,
+        policyOption = ReferencePolicyOption.GREEDY
+    )
+    @SuppressWarnings("unused")
+    public void bindDefaultReplicationMapper(DefaultReplicationMapper defaultReplicationMapper) {
+        logger.trace("Register Default Replication Mapper: '{}'", defaultReplicationMapper.getName());
+        bindReplication(defaultReplicationMapper);
+    }
+
+    @SuppressWarnings("unused")
+    public void unbindDefaultReplicationMapper(DefaultReplicationMapper defaultReplicationMapper) {
+        logger.trace("UnRegister Default Replication Mapper: '{}'", defaultReplicationMapper.getName());
+        unbindReplication(defaultReplicationMapper);
+    }
+
     @Override
     protected Response handleRequest(Request request) throws IOException {
         JsonResponse answer;
@@ -126,7 +141,9 @@ public class ReplicationServlet extends AbstractBaseServlet {
         String sourcePath = request.getParameter(PATH);
         String replicationName = request.getParameter(NAME);
         if(replicationName == null || replicationName.isEmpty()) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(PARAMETER_NAME_FOR_THE_REPLICATION_NAME_IS_NOT_PROVIDED);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(PARAMETER_NAME_FOR_THE_REPLICATION_NAME_IS_NOT_PROVIDED);
         }
         String deepParameter = request.getParameter(DEEP);
         boolean deep = deepParameter != null && Boolean.TRUE.toString().equals(deepParameter.toLowerCase());
@@ -134,7 +151,9 @@ public class ReplicationServlet extends AbstractBaseServlet {
         boolean deactivate = deactivateParameter != null && Boolean.TRUE.toString().equals(deactivateParameter.toLowerCase());
         Replication replication = replications.get(replicationName);
         if(replication == null) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(REPLICATION_NOT_FOUND_FOR_NAME + replicationName);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(REPLICATION_NOT_FOUND_FOR_NAME + replicationName);
         }
         Resource source = request.getResourceResolver().getResource(sourcePath);
         if(source != null) {
@@ -147,7 +166,10 @@ public class ReplicationServlet extends AbstractBaseServlet {
                     replicates = replication.deactivate(source);
                 }
             } catch(ReplicationException e) {
-                return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(REPLICATION_FAILED).setException(e);
+                return new ErrorResponse()
+                    .setHttpErrorCode(SC_BAD_REQUEST)
+                    .setErrorMessage(REPLICATION_FAILED)
+                    .setException(e);
             }
             answer = new JsonResponse();
             answer.writeAttribute(SOURCE_NAME, source.getName());
@@ -163,7 +185,9 @@ public class ReplicationServlet extends AbstractBaseServlet {
             }
             answer.writeClose();
         } else {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(String.format(SUFFIX_IS_NOT_RESOURCE, sourcePath));
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(String.format(SUFFIX_IS_NOT_RESOURCE, sourcePath));
         }
         return answer;
     }

@@ -27,7 +27,7 @@
 //-----------------------------------------------------------------------------
 // Mixin node type for replication
 [per:Replication]
-    mixin
+  mixin
   - per:Replicated (date)
   - per:ReplicatedBy (string)
   - per:ReplicationRef (string)

@@ -28,11 +28,11 @@
             <trumbowyg :config="config" v-model="value" ref="editor"></trumbowyg>
         </div>
         <p v-else v-html="value"></p>
-        <admin-components-pathbrowser 
+        <admin-components-pathbrowser
             v-if="isOpen"
-            :isOpen="isOpen && browserType === 'asset'" 
-            :browserRoot="browserRoot" 
-            :browserType="browserType" 
+            :isOpen="isOpen && browserType === 'asset'"
+            :browserRoot="browserRoot"
+            :browserType="browserType"
             :withLinkTab="withLinkTab"
             :altText="altText" :setAltText="setAltText"
             :currentPath="currentPath" :setCurrentPath="setCurrentPath"
@@ -40,11 +40,11 @@
             :onCancel="onCancel"
             :onSelect="onSelect">
         </admin-components-pathbrowser>
-        <admin-components-pathbrowser 
+        <admin-components-pathbrowser
             v-if="isOpen && browserType === 'page'"
-            :isOpen="isOpen" 
-            :browserRoot="browserRoot" 
-            :browserType="browserType" 
+            :isOpen="isOpen"
+            :browserRoot="browserRoot"
+            :browserType="browserType"
             :withLinkTab="withLinkTab"
             :newWindow="newWindow" :toggleNewWindow="toggleNewWindow"
             :linkTitle="linkTitle" :setLinkTitle="setLinkTitle"
@@ -60,10 +60,12 @@
     export default {
         mixins: [ VueFormGenerator.abstractField ],
         data () {
+            const basePath = '/content/'+$perAdminApp.getView().state.tenant.name; 
+
             return {
-                browserRoot: '/content/assets',
+                browserRoot: `${basePath}/assets`,
                 browserType: 'asset',
-                currentPath: '/content/assets',
+                currentPath: `${basePath}/assets`,
                 selectedPath: null,
                 altText: null,
                 linkTitle: '',
@@ -72,7 +74,7 @@
                 isOpen: false,
                 default: {
                     config: {
-                        svgPath: '/etc/felibs/admin/images/trumbowyg-icons.svg',
+                        svgPath: '/content/admin/assets/images/trumbowyg-icons.svg',
                         resetCss: true,
                         btnsDef: {
                             formattingWithCode: {
@@ -116,7 +118,7 @@
                                 let url = fields.url.value;
 
                                 self.browserType = isImage ? 'asset' : 'page';
-                                self.browserRoot = isImage ? '/content/assets' : '/content/sites';
+                                self.browserRoot = isImage ? `${self.getBasePath()}/assets` : `${self.getBasePath()}/pages`;
                                 //Internal Link
                                 if( url && url.match(/^(https?:)?\/\//)) {
                                     self.currentPath = self.browserRoot;
@@ -196,6 +198,9 @@
             }
         },
         methods: {
+            getBasePath() {
+                return `/content/${$perAdminApp.getView().state.tenant.name}`
+            },
             isArrayAndNotEmpty(p) {
                 return Array.isArray(p) && p.length > 0
             },

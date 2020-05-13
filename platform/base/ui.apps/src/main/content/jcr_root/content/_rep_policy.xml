@@ -1,6 +1,0 @@
-<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:rep="internal"
-          jcr:primaryType="rep:ACL">
-    <sitemaps-cache jcr:primaryType="rep:GrantACE"
-                rep:principalName="sitemaps-cache"
-                rep:privileges="[jcr:read]" />
-</jcr:root>

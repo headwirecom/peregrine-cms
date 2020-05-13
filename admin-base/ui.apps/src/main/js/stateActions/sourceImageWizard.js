@@ -31,7 +31,7 @@ export default function(me, target) {
     log.fine(target)
 
     return new Promise( (resolve, reject) => {
-        me.loadContent('/content/admin/assets/source.html/path'+SUFFIX_PARAM_SEPARATOR+target)
+        me.loadContent('/content/admin/pages/assets/source.html/path'+SUFFIX_PARAM_SEPARATOR+target)
         resolve()
     })
 

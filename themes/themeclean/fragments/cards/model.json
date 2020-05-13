@@ -69,7 +69,7 @@
               "x-source": "inject",
               "x-form-label": "Card Image",
               "x-form-type": "pathbrowser",
-              "x-form-browserRoot": "/content/assets"
+              "x-form-browserRoot": "/content/themeclean/assets"
             },
             "imagealttext": {
 	          "type": "string",
@@ -90,7 +90,7 @@
               "x-form-label": "Button Link",
               "x-form-visible": "model.showbutton == 'true'",
               "x-form-type": "pathbrowser",
-              "x-form-browserRoot": "/content/sites"
+              "x-form-browserRoot": "/content/themeclean/pages"
             },
             "buttoncolor": {
               "type": "string",

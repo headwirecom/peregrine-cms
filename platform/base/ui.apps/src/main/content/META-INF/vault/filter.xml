@@ -28,7 +28,7 @@
 <workspaceFilter version="1.0">
     <!--
         Any node that will contain customer data needs to be excluded
-        otherwise a Pacakge Installation will wipe them.
+        otherwise a Package Installation will wipe them.
 
         If there is a mix then all provided nodes must be included and
         all custom nodes excluded.
@@ -50,24 +50,4 @@
         <exclude pattern="/apps/per/install/.*"/>
     </filter>
     <filter root="/apps/runmodes"/>
-
-    <filter root="/content/templates">
-        <exclude pattern="/content/templates/.*"/>
-    </filter>
-    <filter root="/content/sites">
-        <exclude pattern="/content/sites/.*"/>
-    </filter>
-    <filter root="/content/assets">
-        <exclude pattern="/content/assets/.*"/>
-    </filter>
-    <filter root="/content/objects">
-        <exclude pattern="/content/objects/.*"/>
-    </filter>
-
-    <filter root="/home/users/system/sitemaps-cache" />
-    <filter root="/content/rep:policy">
-        <include pattern="/content/rep:policy/sitemaps-cache"/>
-        <exclude pattern="/content/rep:policy/.*"/>
-    </filter>
-    <filter root="/var/sitemaps" />
 </workspaceFilter>

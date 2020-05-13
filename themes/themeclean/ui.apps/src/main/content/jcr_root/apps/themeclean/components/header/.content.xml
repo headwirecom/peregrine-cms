@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" jcr:primaryType="per:Component" jcr:title="Header" group="Chrome">
-  <jcr:content jcr:primaryType="nt:unstructured" backgroundtype="color" bgcolor="#eeeeee" bottompadding="0" colorscheme="light" elevation="1" toppadding="0" bgvideo="https://www.youtube.com/embed/Ju86mknumYM" collapsed="false" logo="/content/assets/themeclean/images/peregrine-logo.png" logourl="http://www.peregrine-cms.com" logosize="60" buttonsize="default">
+  <jcr:content jcr:primaryType="nt:unstructured" backgroundtype="color" bgcolor="#eeeeee" bottompadding="0" colorscheme="light" elevation="1" toppadding="0" bgvideo="https://www.youtube.com/embed/Ju86mknumYM" collapsed="false" logo="/content/themeclean/assets/images/peregrine-logo.png" logourl="http://www.peregrine-cms.com" logosize="60" buttonsize="default">
     <links jcr:primaryType="nt:unstructured">
-      <links0 jcr:primaryType="nt:unstructured" link="/content/sites/themeclean" text="Services"/>
-      <links1 jcr:primaryType="nt:unstructured" link="/content/sites/themeclean" text="About Us"/>
-      <links2 jcr:primaryType="nt:unstructured" link="/content/sites/themeclean" text="Contact Us"/>
+      <links0 jcr:primaryType="nt:unstructured" link="/content/themeclean/pages" text="Services"/>
+      <links1 jcr:primaryType="nt:unstructured" link="/content/themeclean/pages" text="About Us"/>
+      <links2 jcr:primaryType="nt:unstructured" link="/content/themeclean/pages" text="Contact Us"/>
     </links>
     <buttons jcr:primaryType="nt:unstructured">
-      <buttons0 jcr:primaryType="nt:unstructured" buttonlink="/content/sites/themeclean" buttontext="Try It Now" buttoncolor="primary"/>
+      <buttons0 jcr:primaryType="nt:unstructured" buttonlink="/content/themeclean/pages" buttontext="Try It Now" buttoncolor="primary"/>
     </buttons>
   </jcr:content>
 </jcr:root>

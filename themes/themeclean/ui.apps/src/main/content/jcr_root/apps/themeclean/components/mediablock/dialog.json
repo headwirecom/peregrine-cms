@@ -52,7 +52,7 @@
     },
     {
       "type": "pathbrowser",
-      "browserRoot": "/content/assets",
+      "browserRoot": "/content/themeclean/assets",
       "browserType": "image",
       "placeholder": "imagesrc",
       "label": "Image Source",
@@ -69,7 +69,7 @@
     },
     {
       "type": "pathbrowser",
-      "browserRoot": "/content/assets",
+      "browserRoot": "/content/themeclean/assets",
       "placeholder": "videosrc",
       "label": "Video Source",
       "model": "videosrc",
@@ -147,7 +147,7 @@
     },
     {
       "type": "pathbrowser",
-      "browserRoot": "/content/assets",
+      "browserRoot": "/content/themeclean/assets",
       "placeholder": "bgvideo",
       "label": "Background Video",
       "model": "bgvideo",
@@ -155,7 +155,7 @@
     },
     {
       "type": "pathbrowser",
-      "browserRoot": "/content/assets",
+      "browserRoot": "/content/themeclean/assets",
       "placeholder": "bgimage",
       "label": "Background Image",
       "model": "bgimage",

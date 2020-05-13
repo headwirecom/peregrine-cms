@@ -17,7 +17,7 @@
 #  under the License.
 [feature name=composum-console]
 [variables]
-    composum.version=1.7.0 
+    composum.version=1.10.0
 
 #AS Adjust Vault Version to 3.1.40 for the Distribution
 [artifacts startLevel=20]

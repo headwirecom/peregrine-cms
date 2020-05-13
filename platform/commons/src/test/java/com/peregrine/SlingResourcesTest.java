@@ -1,6 +1,5 @@
 package com.peregrine;
 
-import com.peregrine.commons.util.PerConstants;
 import com.peregrine.mock.PageMock;
 import com.peregrine.mock.ResourceMock;
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +31,7 @@ public class SlingResourcesTest {
     public static final String RESOURCE_TYPE = "per/component";
     public static final String SLASH_APPS_SLASH = APPS_ROOT + SLASH;
 
-    protected static final String NN_ROOT = PerConstants.NN_CONTENT;
+    protected static final String NN_ROOT = "content";
     protected static final String NN_PARENT = "parent";
     protected static final String NN_PAGE = "page";
     protected static final String NN_RESOURCE = "resource";

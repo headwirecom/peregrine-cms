@@ -37,7 +37,7 @@ export default function(me, target) {
                     if(target.returnTo) {
                         me.loadContent(target.returnTo+'.html/path' +SUFFIX_PARAM_SEPARATOR + target.parent)
                     } else {
-                        me.loadContent('/content/admin/objects.html/path' + SUFFIX_PARAM_SEPARATOR + target.parent)
+                        me.loadContent('/content/admin/pages/objects.html/path' + SUFFIX_PARAM_SEPARATOR + target.parent)
                     }
                     resolve()
                 })

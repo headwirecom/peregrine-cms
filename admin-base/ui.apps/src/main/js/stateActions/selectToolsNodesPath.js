@@ -22,30 +22,27 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('selectToolsNodesPath').setLevelDebug()
-
+import {LoggerFactory} from '../logger'
 import {set} from '../utils'
+
+let log = LoggerFactory.logger('selectToolsNodesPath').setLevelDebug()
 
 export default function(me, target) {
 
     log.fine(target)
 
     let view = me.getView()
+    const tenant = view.state.tenant
 
     return new Promise( (resolve, reject) => { 
-        if(target.selected.startsWith('/content/sites')) {
+        if(target.selected.startsWith(`/content/${tenant.name}/pages`)) {
             set(view, '/state/tools/page', null)
         } else {
             set(view, '/state/tools/template', null)
         }
     
-        me.getApi().populateNodesForBrowser(target.selected).then( () => {
+        me.stateAction('loadToolsNodesPath', target).then(() => {
             set(me.getView(), target.path, target.selected)
-            let path = document.location.pathname
-            let html = path.indexOf('.html')
-            let newPath = path.slice(0,html) + '.html/path:'+target.selected
-            history.pushState({peregrinevue:true, path: newPath}, newPath, newPath)
             resolve()
         })
     })

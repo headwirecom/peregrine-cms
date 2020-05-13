@@ -162,7 +162,7 @@
         },
         {
           "type": "pathbrowser",
-          "browserRoot": "/content/sites",
+          "browserRoot": "/content/themeclean/pages",
           "placeholder": "buttonlink",
           "label": "Button Link",
           "model": "buttonlink"
@@ -277,7 +277,7 @@
     },
     {
       "type": "pathbrowser",
-      "browserRoot": "/content/assets",
+      "browserRoot": "/content/themeclean/assets",
       "placeholder": "bgvideo",
       "label": "Background Video",
       "model": "bgvideo",
@@ -285,7 +285,7 @@
     },
     {
       "type": "pathbrowser",
-      "browserRoot": "/content/assets",
+      "browserRoot": "/content/themeclean/assets",
       "placeholder": "bgimage",
       "label": "Background Image",
       "model": "bgimage",

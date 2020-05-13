@@ -2,7 +2,7 @@
   "title": "Page List",
   "group": "Features",
   "model": {
-    "rootpage": "/content/sites/themeclean",
+    "rootpage": "/content/themeclean/pages",
     "levels": 2
   }
 }

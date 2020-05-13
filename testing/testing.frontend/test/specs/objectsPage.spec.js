@@ -44,7 +44,7 @@ describe('Peregrine objects page', function () {
         it('clicking add object should navigate to add object wizard', function() {
             SubNav.addObjectButton.click()
             AddObjectWizard.container.waitForVisible()
-            expect( browser.getUrl() ).to.contain('content/admin/objects/create.html/path:/content/objects')
+            expect( browser.getUrl() ).to.contain('content/admin/pages/objects/create.html/path:/content/example/objects')
         })
         
         let exampleTemplate
@@ -171,7 +171,7 @@ describe('Peregrine objects page', function () {
     	it('select page named example', function(){
     		
     		exampleSite.label.click()
-    		expect( ObjectEditorPanel.selectedPath ).to.contain('/content/sites/example')
+    		expect( ObjectEditorPanel.selectedPath ).to.contain('/content/example/pages')
     		ObjectEditorPanel.selectPathButton.click()
     		// wait for 1 second till the animation ends
     		browser.pause(1000)
@@ -200,7 +200,7 @@ describe('Peregrine objects page', function () {
         it('select asset named peregrine-logo.png', function(){
     		
     		exampleAsset.label.click()
-    		expect( ObjectEditorPanel.selectedPath ).to.contain('/content/assets/example/images/peregrine-logo.png')
+    		expect( ObjectEditorPanel.selectedPath ).to.contain('/content/example/assets/images/peregrine-logo.png')
     		ObjectEditorPanel.selectPathButton.click()
     		// wait for 1 second till the animation ends
     		browser.pause(1000)
@@ -435,7 +435,7 @@ describe('Peregrine objects page', function () {
             const i = sites.findIndex( site => site.text.indexOf('peregrine-logo.png') > -1 ) 
             asset = sites[i]
     		asset.label.click()
-    		expect( ObjectEditorPanel.selectedPath ).to.contain('/content/assets/peregrine-logo.png')
+    		expect( ObjectEditorPanel.selectedPath ).to.contain('/content/example/assets/peregrine-logo.png')
     		ObjectEditorPanel.selectPathButton.click()
     		// wait for 1 second till the animation ends
     		browser.pause(1000)
@@ -514,11 +514,11 @@ describe('Peregrine objects page', function () {
     	})
     	
     	it('site path browser field saved', function(){
-    		expect( previewContainer.$('.form-group:nth-child(7) > .field-wrap > .wrap > p').getText() ).to.equal('/content/sites/example')
+    		expect( previewContainer.$('.form-group:nth-child(7) > .field-wrap > .wrap > p').getText() ).to.equal('/content/example/pages')
     	})
     	
     	it('asset path browser field saved', function(){
-    		expect( previewContainer.$('.form-group:nth-child(8) > .field-wrap > .wrap > p').getText() ).to.equal('/content/assets/example/images/peregrine-logo.png')
+    		expect( previewContainer.$('.form-group:nth-child(8) > .field-wrap > .wrap > p').getText() ).to.equal('/content/example/assets/images/peregrine-logo.png')
     	})
     	
     	it('checkbox field saved', function(){
@@ -552,7 +552,7 @@ describe('Peregrine objects page', function () {
     	it('collection field saved', function(){
     		expect( previewContainer.$('.form-group:nth-child(17) > .field-wrap > .wrap .field-input p').getText() ).to.equal('collection title')
     		expect( previewContainer.$('.form-group:nth-child(17) > .field-wrap > .wrap .field-texteditor p').getText() ).to.equal('collection text')
-    		expect( previewContainer.$('.form-group:nth-child(17) > .field-wrap > .wrap .field-pathbrowser p').getText() ).to.equal('/content/assets/peregrine-logo.png')
+    		expect( previewContainer.$('.form-group:nth-child(17) > .field-wrap > .wrap .field-pathbrowser p').getText() ).to.equal('/content/example/assets/peregrine-logo.png')
     	})
     	it('icon browser field saved', function(){   
     		expect( previewContainer.$('.form-group:nth-child(19) > .field-wrap > .wrap p').getText() ).to.equal('add_shopping_cartmaterial:material-icons:add_shopping_cart')

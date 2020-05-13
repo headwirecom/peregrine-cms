@@ -25,7 +25,7 @@
 <template>
 <div>
     <template v-for="child in model.children">
-        <component v-bind:is="child.component" v-bind:model="child"></component>
+        <component v-bind:is="child.component" v-bind:model="child" v-bind:key="child.path"></component>
     </template>
 </div>
 </template>

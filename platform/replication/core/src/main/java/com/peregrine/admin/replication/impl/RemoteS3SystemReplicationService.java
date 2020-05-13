@@ -53,6 +53,7 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -299,8 +300,9 @@ public class RemoteS3SystemReplicationService
     }
 
     @Override
-    void createTargetFolder(String path) throws ReplicationException {
+    File createTargetFolder(String path) throws ReplicationException {
         // Paths do not to be created so we do nothing here
+        return null;
     }
 
     @Override

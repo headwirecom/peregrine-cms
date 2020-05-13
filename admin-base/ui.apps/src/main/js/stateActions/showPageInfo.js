@@ -22,22 +22,23 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('showPageInfo').setLevelDebug()
+import {LoggerFactory} from '../logger'
+import {set} from '../utils'
 
-import { set } from '../utils'
+let log = LoggerFactory.logger('showPageInfo').setLevelDebug()
 
 export default function(me, target) {
 
     log.fine(target)
 
     let view = me.getView()
+    const tenant = view.state.tenant
 
     return new Promise( (resolve, reject) => {
         me.getApi().populateExplorerDialog(target.selected).then( () => {
-            if(target.selected.startsWith('/content/sites')) {
+            if(target.selected.startsWith(`/content/${tenant.name}/pages`)) {
                 set(view, '/state/tools/page', target.selected)
-            } else if(target.selected.startsWith('/content/templates')) {
+            } else if(target.selected.startsWith(`/content/${tenant.name}/templates`)) {
                 set(view, '/state/tools/template', target.selected)
             }
             resolve()

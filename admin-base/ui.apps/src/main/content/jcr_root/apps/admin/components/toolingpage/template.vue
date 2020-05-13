@@ -35,7 +35,9 @@
 </template>
 
 <script>
-export default {
+    import {set} from '../../../../../../js/utils'
+
+    export default {
     props: ['model'],
     mounted(){
         // init materialize plugins
@@ -43,7 +45,20 @@ export default {
     },
     methods: {
         selectPath: function(me, target) {
-            $perAdminApp.loadContent(target+'.html')
+            // const view = $perAdminApp.getView()
+            // const tenant = view.state.tenant
+            // const action = target.action || target
+            // const section = action.split('/').slice(-1).pop()
+            // set(view, '/state/current/section/name', section)
+            // const payload = {
+            //     path: `/state/tools/${section}`
+            //     // ,
+            //     // selected: `/content/${tenant.name}/${section}`
+            // }
+            // $perAdminApp.stateAction('selectToolsNodesPath', payload).then(() => {
+            //     $perAdminApp.loadContent(action + '.html')
+            // })
+            $perAdminApp.loadContent(target + '.html')
         },
         editPreview: function(me, target) {
             $perAdminApp.stateAction('editPreview', target)
@@ -51,8 +66,11 @@ export default {
         editPage: function(me, target) {
         },
         addSite: function(me, target) {
-            $perAdminApp.stateAction('createSiteWizard', '/content/sites')
+            $perAdminApp.stateAction('createTenantWizard', '/content')
         },
+        configureTenant: function(me, target) {
+            $perAdminApp.stateAction('configureTenant', target)
+        }
     }
 }
 </script>

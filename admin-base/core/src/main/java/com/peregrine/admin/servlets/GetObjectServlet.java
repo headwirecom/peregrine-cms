@@ -25,23 +25,6 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.peregrine.commons.servlets.AbstractBaseServlet;
-import org.apache.sling.api.request.RequestDispatcherOptions;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.factory.ExportException;
-import org.apache.sling.models.factory.MissingExporterException;
-import org.apache.sling.models.factory.ModelClassException;
-import org.apache.sling.models.factory.ModelFactory;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
-import javax.servlet.Servlet;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Collections;
-import java.util.Map;
-
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_GET_OBJECT;
 import static com.peregrine.commons.util.PerConstants.MODEL;
 import static com.peregrine.commons.util.PerConstants.PATH;
@@ -55,11 +38,20 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+import com.peregrine.commons.servlets.AbstractBaseServlet;
+import java.io.IOException;
+import javax.servlet.Servlet;
+import org.apache.sling.api.request.RequestDispatcherOptions;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.factory.ModelFactory;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
 /**
- * Provides the Object in a JSon representation
+ * Provides the Object in a JSON representation
  *
  * The API Definition can be found in the Swagger Editor configuration:
- *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
+ *    ui.apps/src/main/content/jcr_root/perapi/definitions/admin.yaml
  */
 @Component(
     service = Servlet.class,
@@ -73,7 +65,8 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @SuppressWarnings("serial")
 public class GetObjectServlet extends AbstractBaseServlet {
 
-    public static final String RESOURCE_NOT_FOUND = "Resource not found";
+    private static final String RESOURCE_NOT_FOUND = "Resource not found";
+
     @Reference
     ModelFactory modelFactory;
 
@@ -82,7 +75,10 @@ public class GetObjectServlet extends AbstractBaseServlet {
         String path = request.getParameter(PATH);
         Resource resource = request.getResourceByPath(path);
         if(resource == null) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(RESOURCE_NOT_FOUND).setRequestPath(path);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(RESOURCE_NOT_FOUND)
+                .setRequestPath(path);
         }
 
         // changed the approach to forward through the export servlet as exportModelForResource does not
@@ -103,7 +99,6 @@ public class GetObjectServlet extends AbstractBaseServlet {
 //        } catch (ModelClassException e) {
 //            // doesnt exist, continue
 //        }
-
 
         RequestDispatcherOptions rdOptions = new RequestDispatcherOptions();
         rdOptions.setReplaceSelectors(MODEL);

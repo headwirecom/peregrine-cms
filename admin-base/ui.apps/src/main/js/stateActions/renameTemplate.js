@@ -12,6 +12,6 @@ export default function (me, target) {
   api.renamePage(target.path, target.name).then(() => {
     let path = me.getNodeFromView('/state/tools/templates');
     me.loadContent(
-        `/content/admin/templates.html/path${SUFFIX_PARAM_SEPARATOR + path}`);
+        `/content/admin/pages/templates.html/path${SUFFIX_PARAM_SEPARATOR + path}`);
   });
 };

@@ -65,13 +65,11 @@ public final class SiteMapConfigurationImplTest extends SlingResourcesTest {
 
     @Test
     public void getPagePathPattern() {
-        when(config.pathRegex()).thenReturn("(");
-        assertNull(model.getPagePathPattern());
-        when(config.pathRegex()).thenReturn("/content/sites/.+");
+        when(config.pathRegex()).thenReturn("/content/example/pages/.+");
         final Pattern pattern = model.getPagePathPattern();
         assertNotNull(pattern);
-        assertFalse(pattern.matcher("/content/sites/").matches());
-        assertTrue(pattern.matcher("/content/sites/page").matches());
+        assertFalse(pattern.matcher("/content/example/pages/").matches());
+        assertTrue(pattern.matcher("/content/example/pages/page").matches());
     }
 
     @Test

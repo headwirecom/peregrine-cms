@@ -2,7 +2,7 @@ package com.peregrine.pagerender.server.models;
 
 /*-
  * #%L
- * peregrine vuejs page renderer - Core
+ * peregrine server page renderer - Core
  * %%
  * Copyright (C) 2017 headwire inc.
  * %%
@@ -25,45 +25,43 @@ package com.peregrine.pagerender.server.models;
  * #L%
  */
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.annotations.Exporter;
-import org.apache.sling.models.annotations.Model;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import java.util.List;
-
-import com.peregrine.nodetypes.models.IComponent;
-import com.peregrine.nodetypes.models.AbstractComponent;
-
 import static com.peregrine.commons.util.PerConstants.JACKSON;
 import static com.peregrine.commons.util.PerConstants.JSON;
 import static com.peregrine.pagerender.server.models.PageRenderServerConstants.PR_SERVER_COMPONENT_CONTAINER_TYPE;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.peregrine.nodetypes.models.AbstractComponent;
+import com.peregrine.nodetypes.models.IComponent;
+import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Named;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.annotations.Exporter;
+import org.apache.sling.models.annotations.Model;
+
 /**
  * Created by rr on 12/2/2016.
  */
-@Model(adaptables = Resource.class,
-       resourceType = {PR_SERVER_COMPONENT_CONTAINER_TYPE},
-       adapters = IComponent.class)
-@Exporter(name = JACKSON,
-          extensions = JSON)
-public class Container
-    extends AbstractComponent {
-
-    public Container(Resource r) {
-        super(r);
-    }
+@Model(
+    adaptables = Resource.class,
+    resourceType = {PR_SERVER_COMPONENT_CONTAINER_TYPE},
+    adapters = IComponent.class)
+@Exporter(
+    name = JACKSON,
+    extensions = JSON)
+public class Container extends AbstractComponent {
 
     @Inject
     @Named(".")
     private List<IComponent> children;
+
+    public Container(Resource r) {
+        super(r);
+    }
 
     @Override
     @JsonIgnore(value = false)
     public List<IComponent> getChildren() {
         return children;
     }
-
 }

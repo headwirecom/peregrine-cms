@@ -49,6 +49,8 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.resource.Resource;
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -70,8 +72,8 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
  * This servlet provides renditions of Peregrine Assets (per:Asset)
  * and creates them if they are not available yet
  *
- * Drag an image to the asset page: http://localhost:8080/content/admin/assets.html/path///content/assets
- * Create a thumbnail image with: curl -u admin:admin http://localhost:8080/content/assets/test.png.rendition.json/thumbnail.png
+ * Drag an image to the asset page: http://localhost:8080/content/admin/pages/assets.html/path:/content/test/assets
+ * Create a thumbnail image with: curl -u admin:admin http://localhost:8080/content/test/assets/test.png.rendition.json/thumbnail.png
  */
 public class RenditionsServlet extends AbstractBaseServlet {
 
@@ -81,11 +83,13 @@ public class RenditionsServlet extends AbstractBaseServlet {
     private Servlet redirectServlet;
 
     @Reference(
+        target = "(component.name=org.apache.sling.servlets.get.impl.RedirectServlet)",
         cardinality = ReferenceCardinality.MULTIPLE,
         policy = ReferencePolicy.DYNAMIC,
         policyOption = ReferencePolicyOption.GREEDY
     )
     void bindServlet(Servlet servlet) {
+        logger.info("Bind Servlet: '{}', Name: '{}'", servlet, servlet.getClass().getName());
         logger.trace("Bind Servlet: '{}', Name: '{}'", servlet, servlet.getClass().getName());
         if(servlet.getClass().getName().equals("org.apache.sling.servlets.get.impl.RedirectServlet")) {
             redirectServlet = servlet;
@@ -93,6 +97,7 @@ public class RenditionsServlet extends AbstractBaseServlet {
         }
     }
     void unbindServlet(Servlet servlet) {
+        logger.info("Unbind Servlet: '{}'", servlet);
         logger.trace("Unbind Servlet: '{}'", servlet);
         if(servlet.getClass().getName().equals("org.apache.sling.servlets.get.impl.RedirectServlet")) { redirectServlet = null; }
     }
@@ -144,6 +149,7 @@ public class RenditionsServlet extends AbstractBaseServlet {
                 imageContext = renditionHandler.createRendition(resource, renditionName, sourceMimeType);
                 request.getResourceResolver().commit();
             } catch(HandlerException e) {
+                logger.debug("Create Rendition failed !!", e);
                 return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setException(e);
             }
             if(imageContext != null) {

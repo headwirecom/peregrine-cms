@@ -25,20 +25,10 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.commons.servlets.AbstractBaseServlet;
-import com.peregrine.replication.ReferenceLister;
-import org.apache.sling.api.resource.Resource;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
-import javax.servlet.Servlet;
-import java.io.IOException;
-import java.util.List;
-
-import static com.peregrine.admin.servlets.AdminPaths.JSON_EXTENSION;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_REF_BY;
 import static com.peregrine.admin.util.AdminConstants.SOURCE_NAME;
 import static com.peregrine.admin.util.AdminConstants.SOURCE_PATH;
+import static com.peregrine.commons.util.PerConstants.JSON;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
@@ -52,8 +42,21 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.replication.ReferenceLister;
+import java.io.IOException;
+import java.util.List;
+import javax.servlet.Servlet;
+import org.apache.sling.api.resource.Resource;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
 /**
- * List all Resources that are referenced by
+ * Provides a list of references that have a reference to the
+ * given resource (which resources point to the given resources)
+ *
+ * The API Definition can be found in the Swagger Editor configuration:
+ *    ui.apps/src/main/content/jcr_root/perapi/definitions/admin.yaml
  */
 @Component(
     service = Servlet.class,
@@ -62,17 +65,10 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
         SLING_SERVLET_METHODS + EQUALS + GET,
         SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_REF_BY,
-        SLING_SERVLET_SELECTORS + EQUALS + JSON_EXTENSION
+        SLING_SERVLET_SELECTORS + EQUALS + JSON
     }
 )
 @SuppressWarnings("serial")
-/**
- * This servlet provides a list of references that have a reference to the
- * given resource (which resources point to the given resources)
- *
- * The API Definition can be found in the Swagger Editor configuration:
- *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
- */
 public class ReferencedByListerServlet extends AbstractBaseServlet {
 
     public static final String REFERENCED_BY = "referencedBy";
@@ -103,7 +99,10 @@ public class ReferencedByListerServlet extends AbstractBaseServlet {
             }
             return answer;
         } else {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(GIVEN_PATH_DOES_NOT_YIELD_A_RESOURCE).setRequestPath(sourcePath);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(GIVEN_PATH_DOES_NOT_YIELD_A_RESOURCE)
+                .setRequestPath(sourcePath);
         }
     }
 }

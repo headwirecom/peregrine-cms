@@ -80,7 +80,7 @@ public final class Page extends ResourceWrapper {
     }
 
     @SuppressWarnings("unchecked")
-	public <Type> Type getProperty(final String name, final Type defaultValue) {
+	  public <Type> Type getProperty(final String name, final Type defaultValue) {
         if (!containsProperty(name)) {
             return defaultValue;
         }

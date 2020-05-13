@@ -2,9 +2,12 @@ package com.peregrine.commons.servlets;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
@@ -27,9 +30,11 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
 
+import static com.peregrine.commons.util.PerConstants.ADMIN_USER;
 import static com.peregrine.commons.util.PerConstants.JSON;
 import static com.peregrine.commons.util.PerConstants.JSON_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.PATH;
@@ -128,6 +133,9 @@ public abstract class AbstractBaseServlet
             this.parameters = ServletHelper.obtainParameters(request);
         }
 
+        public boolean isAdmin() {
+            return request.getUserPrincipal().getName().equals(ADMIN_USER);
+        }
         public SlingHttpServletRequest getRequest() {
             return request;
         }
@@ -269,13 +277,82 @@ public abstract class AbstractBaseServlet
         }
 
         private void init() throws IOException {
-            JsonFactory jf = new JsonFactory();
+            ObjectMapper mapper = new ObjectMapper();
+            JsonFactory jf = mapper.getFactory();
             writer = new StringWriter();
             json = jf.createGenerator(writer);
             // Use Pretty Printer that indents Arrays as well
             json.setPrettyPrinter(new PrettyPrinter());
             json.writeStartObject();
             states.push(STATE.object);
+        }
+
+        /**
+         * Merges the Content of the given Source into this
+         * Response by adding it at the current location
+         * @param source Source to be added
+         *
+         * @throws IOException If access to Json fails or we cannot write
+         */
+        public void writeResponse(JsonResponse source) throws IOException {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode tree = mapper.readTree(source.getContent());
+            merge(tree);
+        }
+
+        private void merge(JsonNode source) throws IOException {
+            if (source.isArray()) {
+                Iterator<JsonNode> entries = source.elements();
+                while (entries.hasNext()) {
+                    JsonNode child = entries.next();
+                    switch (child.getNodeType()) {
+                        case STRING:
+                            json.writeString(child.textValue());
+                            break;
+                        case NUMBER:
+                            json.writeNumber(child.intValue());
+                            break;
+                        case BOOLEAN:
+                            json.writeBoolean(child.booleanValue());
+                            break;
+                        case OBJECT:
+                            json.writeStartObject();
+                            merge(child);
+                            json.writeEndObject();
+                            break;
+                        case ARRAY:
+                            json.writeStartArray();
+                            merge(child);
+                            json.writeEndArray();
+                    }
+                }
+            } else {
+                Iterator<String> fieldNames = source.fieldNames();
+                while (fieldNames.hasNext()) {
+                    String fieldName = fieldNames.next();
+                    JsonNode value = source.get(fieldName);
+                    switch (value.getNodeType()) {
+                        case STRING:
+                            json.writeStringField(fieldName, value.textValue());
+                            break;
+                        case NUMBER:
+                            json.writeNumberField(fieldName, value.intValue());
+                            break;
+                        case BOOLEAN:
+                            json.writeBooleanField(fieldName, value.booleanValue());
+                            break;
+                        case OBJECT:
+                            json.writeObjectFieldStart(fieldName);
+                            merge(value);
+                            json.writeEndObject();
+                            break;
+                        case ARRAY:
+                            json.writeArrayFieldStart(fieldName);
+                            merge(value);
+                            json.writeEndArray();
+                    }
+                }
+            }
         }
 
         /**

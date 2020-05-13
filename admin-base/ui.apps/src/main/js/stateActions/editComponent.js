@@ -22,18 +22,18 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('editComponent').setLevelDebug()
+import {LoggerFactory} from '../logger'
+import {set, jsonEqualizer} from '../utils'
 
-import { set } from '../utils'
+let log = LoggerFactory.logger('editComponent').setLevelDebug()
 
 function bringUpEditor(me, view, target) {
     log.fine('Bring Up Editor, ')
 
     me.beforeStateAction( function(name) {
         return new Promise( (resolve, reject) => {
-            const current = JSON.stringify(view.pageView.page, true, 2)
-            if(name !== 'savePageEdit') {
+            const current = JSON.stringify(view.pageView.page, jsonEqualizer, 2)
+            if(name !== 'savePageEdit' && name !== 'deletePageNode') {
                 if(current === view.state.editor.checksum) {
                     resolve(true)
                 } else {
@@ -66,7 +66,7 @@ function bringUpEditor(me, view, target) {
                 set(view, '/state/editor/path', target)
                 set(view, '/state/editorVisible', true)
                 set(view, '/state/rightPanelVisible', true)
-                set(view, '/state/editor/checksum', JSON.stringify(view.pageView.page, true, 2))
+                set(view, '/state/editor/checksum', JSON.stringify(view.pageView.page, jsonEqualizer, 2))
                 resolve()
             }
         ).catch( error => {

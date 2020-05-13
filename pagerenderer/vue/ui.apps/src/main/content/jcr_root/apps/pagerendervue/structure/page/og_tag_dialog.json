@@ -1,0 +1,67 @@
+{
+  "fields": [
+    {
+      "type": "material-checkbox",
+      "label": "Use site-title as og:title?",
+      "default": true,
+      "model": "useTitle"
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "model": "ogTitle",
+      "label": "og:title",
+      "placeholder": "og:title",
+      "visible": "model.useTitle != true"
+    },
+    {
+      "type": "material-checkbox",
+      "label": "Use site-description for og:description",
+      "default": true,
+      "model": "useDescription"
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "model": "ogDescription",
+      "label": "og:description",
+      "placeholder": "og:description",
+      "visible": "model.useDescription != true"
+    },
+    {
+      "type": "material-select",
+      "label": "og:type",
+      "model": "ogType",
+      "placeholder": "og:type",
+      "default": "website",
+      "values": [
+        {
+          "name": "website",
+          "value": "website"
+        }
+      ]
+    },
+    {
+      "type": "pathbrowser",
+      "browserRoot": "/content/example/assets",
+      "browserType": "image",
+      "label": "og:image",
+      "placeholder": "og:image",
+      "model": "ogImage"
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "model": "ogImageAlt",
+      "placeholder": "og:image:alt",
+      "label": "og:image:alt"
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "model": "ogUrl",
+      "label": "og:url",
+      "placeholder": "og:url"
+    }
+  ]
+}

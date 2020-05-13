@@ -100,7 +100,7 @@
                 if (!this.$root.$data.admin.components) return {}
                 // if(!this.$root.$data.admin.currentPageConfig) return {}
                 var componentPath = this.$root.$data.pageView.path.split('/')
-                var allowedComponents = ['/apps/' + componentPath[3 ]+ '/'] // this.$root.$data.admin.currentPageConfig.allowedComponents
+                var allowedComponents = ['/apps/' + componentPath[2]+ '/'] // this.$root.$data.admin.currentPageConfig.allowedComponents
                 var list = this.$root.$data.admin.components.data
                 if (!list || !allowedComponents) return {}
 
@@ -125,7 +125,7 @@
                 if (!this.$root.$data.admin.components) return {}
                 // if(!this.$root.$data.admin.currentPageConfig) return {}
                 var componentPath = this.$root.$data.pageView.path.split('/')
-                var allowedComponents = ['/apps/' + componentPath[3]] // this.$root.$data.admin.currentPageConfig.allowedComponents
+                var allowedComponents = ['/apps/' + componentPath[2]] // this.$root.$data.admin.currentPageConfig.allowedComponents
                 var list = this.$root.$data.admin.components.data
                 if (!list || !allowedComponents) return {}
 

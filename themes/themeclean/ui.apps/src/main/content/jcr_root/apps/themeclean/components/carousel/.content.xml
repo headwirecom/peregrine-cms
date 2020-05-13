@@ -2,9 +2,9 @@
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" jcr:primaryType="per:Component" jcr:title="Carousel" group="Features">
   <jcr:content jcr:primaryType="nt:unstructured" carouselheight="50" toppadding="0" bottompadding="0">
     <slides jcr:primaryType="nt:unstructured">
-      <slides0 jcr:primaryType="nt:unstructured" imagepath="/content/assets/themeclean/images/background1.jpg" text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. " heading="Slide One"/>
-      <slides1 jcr:primaryType="nt:unstructured" imagepath="/content/assets/themeclean/images/background2.jpg" text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. " heading="Slide Two"/>
-      <slides2 jcr:primaryType="nt:unstructured" imagepath="/content/assets/themeclean/images/background3.jpg" text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. " heading="Slide Three"/>
+      <slides0 jcr:primaryType="nt:unstructured" imagepath="/content/themeclean/assets/images/background1.jpg" text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. " heading="Slide One"/>
+      <slides1 jcr:primaryType="nt:unstructured" imagepath="/content/themeclean/assets/images/background2.jpg" text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. " heading="Slide Two"/>
+      <slides2 jcr:primaryType="nt:unstructured" imagepath="/content/themeclean/assets/images/background3.jpg" text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. " heading="Slide Three"/>
     </slides>
   </jcr:content>
 </jcr:root>

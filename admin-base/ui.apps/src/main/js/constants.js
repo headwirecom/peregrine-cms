@@ -61,7 +61,9 @@ export const Icon = {
   INFO: 'info',
   EDIT: 'edit',
   LIST: 'list',
-  CHECK: 'check'
+  CHECK: 'check',
+  CANCEL: 'close',
+  MORE_VERT: 'more_vert'
 }
 export const NodeType = {
   PAGE: 'page',
@@ -78,4 +80,17 @@ export const MimeType = {
     TIFF: 'image/tiff',
     SVG: 'image/svg+xml'
   }
+}
+
+export const Admin = {
+  Page: {
+    EDIT: '/content/admin/pages/pages/edit.html',
+    PAGES: '/content/admin/pages/pages.html'
+  }
+}
+
+export const NodeTree ={
+  SUPPORTED_RESOURCE_TYPES: [
+      'per:Page'
+  ]
 }

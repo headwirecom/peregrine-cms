@@ -26,8 +26,8 @@
 <jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
     jcr:primaryType="sling:OsgiConfig"
     enabled="{Boolean}false"
-    pathRegex="/content/sites/example(()|(/.+))"
-    pageRecognizers="[com.peregrine.sitemap.impl.PerPageRecognizer,description]"
+    pathRegex="/content/example/pages(()|(/.+))"
+    pageRecognizers="[com.peregrine.sitemap.impl.PerPageRecognizer,jcr:title]"
     urlExternalizer="example.com"
-    mandatoryCachedRootPaths="/content/sites/example"
+    mandatoryCachedRootPaths="/content/example/pages"
 />
