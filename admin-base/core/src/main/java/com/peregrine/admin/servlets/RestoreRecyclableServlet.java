@@ -23,16 +23,22 @@ package com.peregrine.admin.servlets;
  */
 
 
+import com.peregrine.admin.models.Recyclable;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+
+import javax.jcr.RepositoryException;
 import javax.servlet.Servlet;
 import java.io.IOException;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_LIST_RECYCLABLES;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_RESTORE_RECYCLABLE;
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.*;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -53,7 +59,10 @@ import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 public class RestoreRecyclableServlet extends AbstractBaseServlet {
 
     public static final String FAILED_TO_RESTORE_RECYCLABLE = "Failed restore recyclable item :-/ ";
-
+    public static final String FAILED_TO_RESTORE_RECYCLABLE_2 = "Cannot restore an item that already exists.";
+    public static final String FAILED_TO_RESTORE_RECYCLABLE_3 = "Could write an update to the recyclebin. ACL error.";
+    public static final int SC_CONFLICT = 409;
+    public static final int SC_FORBIDDEN = 403;
 
     @Reference
     AdminResourceHandler resourceManagement;
@@ -61,6 +70,27 @@ public class RestoreRecyclableServlet extends AbstractBaseServlet {
     @Override
     protected Response handleRequest(Request request) throws IOException {
         final String path = request.getParameter(PATH);
+        try {
+            final Recyclable recyclable = request.getResourceResolver().getResource(path).adaptTo(Recyclable.class);
+            resourceManagement.recycleDeleted(request.getResourceResolver(), recyclable, true);
+        } catch (RepositoryException e) {
+            return new ErrorResponse().setHttpErrorCode(SC_CONFLICT)
+                    .setErrorMessage(FAILED_TO_RESTORE_RECYCLABLE_2)
+                    .setRequestPath(path)
+                    .setException(e);
+        } catch (PersistenceException e) {
+            return new ErrorResponse().setHttpErrorCode(SC_FORBIDDEN)
+                .setErrorMessage(FAILED_TO_RESTORE_RECYCLABLE_3 )
+                .setRequestPath(path)
+                .setException(e);
+        } catch (AdminResourceHandler.ManagementException e) {
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(FAILED_TO_RESTORE_RECYCLABLE )
+                .setRequestPath(path)
+                .setException(e);
+        }
+
         JsonResponse answer = new JsonResponse();
 
         return answer;

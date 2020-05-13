@@ -4,9 +4,11 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import javax.jcr.Node;
+import javax.jcr.RepositoryException;
 import javax.jcr.version.Version;
 
 import com.peregrine.admin.models.Recyclable;
+import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
@@ -118,7 +120,7 @@ public interface AdminResourceHandler {
      * @return The Resource at the supplied Version
      * @throws ManagementException If restoring the version failed
      */
-    Resource restoreDeleted(ResourceResolver resourceResolver, String path, String versionPath, boolean force) throws ManagementException;
+    Resource restoreDeleted(ResourceResolver resourceResolver, String path, String versionPath, boolean force) throws ManagementException, PersistenceException, RepositoryException;
 
     /**
      * Pull an item from the recyclebin
@@ -128,7 +130,7 @@ public interface AdminResourceHandler {
      * @return The Resource at the supplied Version
      * @throws ManagementException If restoring the version failed
      */
-    Resource recycleDeleted(ResourceResolver resourceResolver, Recyclable recyclable, boolean force) throws ManagementException;
+    Resource recycleDeleted(ResourceResolver resourceResolver, Recyclable recyclable, boolean force) throws ManagementException, PersistenceException, RepositoryException;
 
     /**
      * Creates a recyclable item

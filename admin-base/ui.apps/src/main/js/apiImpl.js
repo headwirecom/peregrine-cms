@@ -505,8 +505,14 @@ class PerAdminImpl {
       return new Promise((resolve, reject) => {
         let data = new FormData()
         updateWithForm('/admin/restoreRecyclable.json' + item.recyclebinItemPath, data)
-            .then((data) => this.populateNodesForBrowser(item.recyclebinItemPath))
+            .then( (data) => callbacks.getApi().populateRecyclebin(0) )
             .then(() => resolve())
+            .catch(error => {
+                if (error.response && error.response.data && error.response.data.message) {
+                    reject(error.response.data.message)
+                }
+                reject(error)
+              })
       })
   }
 

@@ -479,13 +479,18 @@ public class AdminResourceHandlerService
 
     @Override
     public Resource recycleDeleted(ResourceResolver resourceResolver, Recyclable recyclable, boolean force)
-            throws ManagementException {
-        return restoreDeleted(resourceResolver, recyclable.getResourcePath(), recyclable.getFrozenNodePath(), force);
+            throws ManagementException, PersistenceException, RepositoryException {
+        Resource resource = restoreDeleted(resourceResolver, recyclable.getResourcePath(), recyclable.getFrozenNodePath(), force);
+        if (resource != null) {
+            resourceResolver.delete(recyclable.getResource());
+            resourceResolver.commit();
+        }
+        return resource;
     }
 
     @Override
     public Resource restoreDeleted(ResourceResolver resourceResolver, String path, String version, boolean force)
-            throws ManagementException {
+            throws ManagementException, RepositoryException {
         resourceResolver.refresh();
         final Session jcrSession = resourceResolver.adaptTo(Session.class);
         try {
@@ -495,6 +500,8 @@ public class AdminResourceHandlerService
             vm.checkout(path);
             return getResource(resourceResolver,path);
         } catch (RepositoryException e) {
+          throw e;
+        } catch (Exception e) {
             throw new ManagementException("Failed to restore Version", e);
         }
     }

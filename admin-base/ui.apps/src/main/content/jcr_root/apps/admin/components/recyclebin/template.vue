@@ -93,7 +93,7 @@
                     yes() {
                         console.log(target.recyclebin)
                         $perAdminApp.stateAction('recycleItem', {
-                           recyclebinItemPath: target.path
+                           recyclebinItemPath: target.recyclebin
                         })
                     }
                 })

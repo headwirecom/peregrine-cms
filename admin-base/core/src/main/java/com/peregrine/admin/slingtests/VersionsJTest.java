@@ -297,8 +297,8 @@ public class VersionsJTest {
             }
         } catch (AdminResourceHandler.ManagementException e) {
             fail("Could create recyclable for pages: " + EXAMPLE_PAGES);
-        } catch (PersistenceException e) {
-            fail("Could delete resource: " + EXAMPLE_PAGES);
+        } catch (Exception e) {
+            fail("Could not delete resource: " + EXAMPLE_PAGES);
         }
     }
 
