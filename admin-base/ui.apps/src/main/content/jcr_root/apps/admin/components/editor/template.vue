@@ -116,7 +116,7 @@
               const components = view.admin.components.data
               for(let i = 0; i < components.length; i++) {
                   const component = components[i]
-                  if(component.path.endsWith(componentName)) {
+                  if(component.path.endsWith(componentName) && component.group !== '.hidden') {
                       return component.title
                   }
               }
@@ -243,7 +243,8 @@
           model = model.split('.')
           model.reverse()
           const {field, index} = this.getFieldAndIndexByModel(this.schema.fields, model.pop())
-
+          if (!field) return
+          
           if (['input', 'texteditor', 'material-textarea'].indexOf(field.type) >= 0) {
             this.$refs.formGenerator.$children[index].$el.scrollIntoView()
             set(this.view, '/state/editor/inline/rich', this.isRichEditor(field))
