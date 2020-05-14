@@ -55,7 +55,6 @@
 # Create Users / Groups for Peregrine
 
     create group all_tenants with path /home/groups/tenants
-    create group sso
 
 # Create the necessary folders to apply permissions below otherwise the Launchpad will fail during startup
 
@@ -129,7 +128,7 @@
 
     org.apache.jackrabbit.oak.spi.security.authentication.external.impl.DefaultSyncHandler-HeaderLoginModule
         handler.name="default"
-        user.autoMembership=["sso"]
+        user.autoMembership=["all_tenants"]
         user.disableMissing=B"false"
         user.dynamicMembership=B"false"
         user.expirationTime="1h"

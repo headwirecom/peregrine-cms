@@ -1,4 +1,6 @@
 #!/bin/bash
+. env.sh
+
 if [ "$1" != "skipMaven" ]; then
   cd ..
   mvn clean install --show-version
@@ -15,5 +17,5 @@ echo "Removing old build artifacts..."
 rm files/*.zip files/*.xz files/*.jar
 
 ./fetchfiles.sh
-docker build --tag=peregrinecms/peregrine-cms:sso-20200513r1 .
+docker build --tag=${DOCKER_IMAGE} .
 
