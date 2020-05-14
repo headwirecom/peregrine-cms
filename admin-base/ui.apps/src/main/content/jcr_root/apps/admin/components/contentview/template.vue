@@ -607,6 +607,7 @@
             this.unselect(this)
             return false;
           }
+          this.cleanUpAfterDelete(componentPath)
         }
         $perAdminApp.stateAction(addOrMove, payload).then((data) => {
           this.refreshInlineEditClones()
