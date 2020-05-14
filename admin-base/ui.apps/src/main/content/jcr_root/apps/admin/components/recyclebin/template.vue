@@ -37,14 +37,11 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="result in results" v-bind:key="`${result.recyclebin}`">
+                  <tr v-for="result in results.data" v-bind:key="`${result.recyclebin}`">
                     <td>{{result.path}}</td>
                     <td>{{result.date_deleted}}</td>
                     <td>{{result.deleted_by}}</td>
                     <td>
-
-<!--                        <a v-bind:href="'/bin/browser.html'+result.path" target="composum">view</a>-->
-
                         <admin-components-action
                             v-bind:model="{
                                 target: result,
@@ -58,9 +55,9 @@
               </tbody>
           </table>
           <ul class="pagination">
-              <li class="waves-effect"><a href="" v-on:click.stop.prevent="loadPage(-1)"><i class="material-icons">chevron_left</i></a></li>
+              <li class="waves-effect" v-bind:class="{'disabled': !hasPrevious }"><a href="" v-bind:disabled="!hasPrevious" v-on:click.stop.prevent="loadPage(-1)"><i class="material-icons">chevron_left</i></a></li>
               <li>Page {{page + 1 }}
-              <li class="waves-effect"><a href="" v-on:click.stop.prevent="loadPage(1)"><i class="material-icons">chevron_right</i></a></li>
+              <li class="waves-effect" v-bind:class="{'disabled': !hasNext }"><a href="" v-bind:disabled="!hasNext" v-on:click.stop.prevent="loadPage(1)"><i class="material-icons">chevron_right</i></a></li>
           </ul>
        </div>
     </div>
@@ -72,17 +69,25 @@
         props: ['model'],
         data: function() {
                 return {
-                    page: 0
+                    page: 0,
             }
         },
         computed: {
             results() {
                 return $perAdminApp.getNodeFromViewOrNull('/admin/recyclebin')
+            },
+            hasPrevious(){
+                return this.page > 0
+            },
+            hasNext(){
+                return this.results.more
             }
         },
         methods: {
             loadPage: function(increment) {
-                this.page = this.page + increment
+                if( (this.hasNext && increment > 0) || (this.hasPrevious && increment < 0) ) {
+                    this.page = this.page + increment
+                }
             },
             getTenant() {
               return $perAdminApp.getView().state.tenant || {name: 'No site selected'}
@@ -91,12 +96,17 @@
                const heading = `${me.$i18n('Restore')} ${target.name} ${me.$i18n('from')} ${target.date_deleted}`
                $perAdminApp.askUser(heading, me.$i18n('Are you sure you want to restore this?'), {
                     yes() {
-                        console.log(target.recyclebin)
                         $perAdminApp.stateAction('recycleItem', {
                            recyclebinItemPath: target.recyclebin
                         })
                     }
                 })
+            }
+        },
+        watch: {
+            page: function(val){
+                console.log(`page changed to ${val}`)
+                $perAdminApp.getApi().populateRecyclebin(val)
             }
         }
     }

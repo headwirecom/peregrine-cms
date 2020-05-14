@@ -76,40 +76,53 @@ public class ListSiteRecyclablesServlet extends AbstractBaseServlet {
     public static final String DELETED_BY = "deleted_by";
     public static final String DATE_DELETED = "date_deleted";
     public static final SimpleDateFormat DELETED_DATE_FORMAT = new SimpleDateFormat("MMM dd, yyyy h:mm a");
+    private static final long ROWS_PER_PAGE = 100;
 
     @Reference
     AdminResourceHandler resourceManagement;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        final String path = request.getParameter(PATH);
         final Session session = request.getResourceResolver().adaptTo(Session.class);
         JsonResponse answer = new JsonResponse();
         final String sitePath = request.getSuffix();
 
-//        final String queryStr = "SELECT * from [nt:versionHistory] where default like '"+sitePath+"%'";
-        final String queryStr =  "SELECT * from [nt:unstructured] " +
-                "where [hasRecyclables] = true "+
-                "and [jcr:path] like '" + RECYCLE_BIN_PATH + sitePath+"%'";
+        // Set up pagination
+        String pageParam = request.getParameter(PAGE, "0");
+        int page = 0;
+        try {
+            page = Integer.parseInt(pageParam);
+        } catch(NumberFormatException e) {
+            logger.warn("Given Page: {} could not be converted to an integer -> ignored", pageParam, e);
+        }
+
+        final String queryStr =  "SELECT * from [nt:unstructured] as r " +
+            "WHERE r.[hasRecyclables] = true "+
+            "AND ISDESCENDANTNODE(r, '" + RECYCLE_BIN_PATH + sitePath + "') ";
+
         try {
             QueryManager qm = session.getWorkspace().getQueryManager();
             Query q = qm.createQuery(queryStr, Query.JCR_SQL2);
+            q.setLimit(ROWS_PER_PAGE + 1);
+            q.setOffset(page * ROWS_PER_PAGE);
             QueryResult res = q.execute();
             NodeIterator nodes = res.getNodes();
-//            TODO: pagination
             answer.writeAttribute(CURRENT, 1);
-            answer.writeAttribute(MORE, false);
+            answer.writeAttribute(MORE, nodes.getSize() > ROWS_PER_PAGE );
             answer.writeArray(DATA);
+            long size = nodes.getSize();
             while(nodes.hasNext()) {
                 Node node = nodes.nextNode();
-                for (Recyclable r : resourceManagement.getRecyclables(request.getResourceResolver(), node.getPath())) {
-                    answer.writeObject();
-                    answer.writeAttribute(NAME, node.getName());
-                    answer.writeAttribute(PATH, r.getResourcePath());
-                    answer.writeAttribute(DELETED_BY, r.getDeletedBy());
-                    answer.writeAttribute(DATE_DELETED, DELETED_DATE_FORMAT.format(r.getDeletedDate()));
-                    answer.writeAttribute(RECYCLE_BIN, r.getResource().getPath());
-                    answer.writeClose();
+                if (nodes.getPosition() < ROWS_PER_PAGE+ 1) {
+                    for (Recyclable r : resourceManagement.getRecyclables(request.getResourceResolver(), node.getPath())) {
+                        answer.writeObject();
+                        answer.writeAttribute(NAME, node.getName());
+                        answer.writeAttribute(PATH, r.getResourcePath());
+                        answer.writeAttribute(DELETED_BY, r.getDeletedBy());
+                        answer.writeAttribute(DATE_DELETED, DELETED_DATE_FORMAT.format(r.getDeletedDate()));
+                        answer.writeAttribute(RECYCLE_BIN, r.getResource().getPath());
+                        answer.writeClose();
+                    }
                 }
             }
             answer.writeClose();
@@ -117,7 +130,6 @@ public class ListSiteRecyclablesServlet extends AbstractBaseServlet {
         } catch (RepositoryException e) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_LIST_RECYCLABLES).setException(e);
         }
-
     }
 }
 

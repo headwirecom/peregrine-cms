@@ -25,6 +25,7 @@ import com.peregrine.replication.ImageMetadataSelector;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -117,6 +118,7 @@ public class AdminResourceHandlerService
     public static final String COPY_FAILED = "Copy of %s: '%s' failed";
     private static final String IMAGE_METADATA_TAG_NAME = "Image Metadata Tag Name: '{}'";
     private static final String ADD_TAG_CATEGORY_TAG_NAME_VALUE = "Add Tag, Category: '{}', Tag Name: '{}', Value: '{}'";
+    public static final SimpleDateFormat RECYCLABLE_PATH_DATE_FORMAT = new SimpleDateFormat("yyyy/MM");
 
     public static final String MISSING_RESOURCE_RESOLVER_FOR_UPDATE = "Resource Resolver must be provided to update a site from its source";
     public static final String MISSING_SITE_RESOURCE = "Site: '%s' does not exist";
@@ -367,8 +369,10 @@ public class AdminResourceHandlerService
     public Recyclable createRecyclable(ResourceResolver resourceResolver, Resource resource) throws ManagementException {
         if (isRecyclable(resource)) {
             Version version = createVersion(resourceResolver, resource.getPath());
-            final String recyclablePath = RECYCLE_BIN_PATH + resource.getPath();
             final Calendar now = Calendar.getInstance();
+            final String siteHomePath = getSiteHomePath(resourceResolver, resource);
+            final String recyclablePath = RECYCLE_BIN_PATH + siteHomePath + SLASH + RECYCLABLE_PATH_DATE_FORMAT.format(now.getTime());
+
             try {
                 Resource item = ResourceUtil.getOrCreateResource(
                         resourceResolver,
@@ -404,9 +408,11 @@ public class AdminResourceHandlerService
         }
         ArrayList<Recyclable> recyclables = new ArrayList<>();
         for (Resource res : resource.getChildren()){
-            final Recyclable recyclable = res.adaptTo(Recyclable.class);
-            if (recyclable != null) {
-                recyclables.add(recyclable);
+            if (res.getResourceType().equals(RECYCLEBIN_RESOURCE_TYPE)){
+                final Recyclable recyclable = res.adaptTo(Recyclable.class);
+                if (recyclable != null) {
+                    recyclables.add(recyclable);
+                }
             }
         }
         return recyclables;
@@ -488,7 +494,18 @@ public class AdminResourceHandlerService
             throws ManagementException, PersistenceException, RepositoryException {
         Resource resource = restoreDeleted(resourceResolver, recyclable.getResourcePath(), recyclable.getFrozenNodePath(), force);
         if (resource != null) {
-            resourceResolver.delete(recyclable.getResource());
+            boolean deleteParentRecyclingNode = true;
+            for (Resource sibling : recyclable.getResource().getParent().getChildren()){
+                if( !sibling.getPath().equals(recyclable.getResource().getPath()) && sibling.getResourceType().equals(RECYCLEBIN_RESOURCE_TYPE)) {
+                    deleteParentRecyclingNode = false;
+                    break;
+                }
+            }
+            if( deleteParentRecyclingNode) {
+                resourceResolver.delete(recyclable.getResource().getParent());
+            } else {
+                resourceResolver.delete(recyclable.getResource());
+            }
             resourceResolver.commit();
         }
         return resource;
@@ -506,8 +523,10 @@ public class AdminResourceHandlerService
             vm.checkin(path);
             vm.checkout(path);
             return getResource(resourceResolver,path);
+        } catch (PathNotFoundException pe) {
+            throw pe;
         } catch (RepositoryException e) {
-          throw e;
+            throw e;
         } catch (Exception e) {
             throw new ManagementException("Failed to restore Version", e);
         }

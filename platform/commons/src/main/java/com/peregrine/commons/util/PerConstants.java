@@ -149,7 +149,7 @@ public class PerConstants {
     public static final String VAR = "var";
     public static final String RECYCLE_BIN = "recyclebin";
     public static final String RECYCLE_BIN_PATH = SLASH + VAR + SLASH + RECYCLE_BIN;
-
+    public static final String RECYCLEBIN_RESOURCE_TYPE = "admin/components/recyclable";
     public static final String SITE_HOME_PATTERN = REGEX_SLASH + CONTENT + REGEX_SLASH + "[^" + REGEX_SLASH + "]+" + REGEX_SLASH ;
     public static final String SITE_PAGES_PATTERN = SITE_HOME_PATTERN + PAGES + REGEX_SLASH + "?.*";
     public static final String SITE_ASSETS_PATTERN = SITE_HOME_PATTERN + ASSETS + REGEX_SLASH + "?.*";

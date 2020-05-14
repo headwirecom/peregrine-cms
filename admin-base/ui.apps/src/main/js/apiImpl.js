@@ -492,10 +492,13 @@ class PerAdminImpl {
     if (tenant == undefined) {
         tenant = callbacks.getView().state.tenant.name
     }
+    if (page instanceof Object) {
+        page = 0;
+    }
     return new Promise((resolve, reject) => {
-        fetch(`/admin/listRecyclables.json/content/${tenant}`)
+        fetch(`/admin/listRecyclables.json/content/${tenant}?page=${page}`)
             .then(function(result) {
-                 populateView('/admin', 'recyclebin', result.data)
+                 populateView('/admin', 'recyclebin', result)
                     .then(() => resolve())
             })
     })

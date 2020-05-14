@@ -31,6 +31,7 @@ import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.servlet.Servlet;
 import java.io.IOException;
@@ -61,6 +62,7 @@ public class RestoreRecyclableServlet extends AbstractBaseServlet {
     public static final String FAILED_TO_RESTORE_RECYCLABLE = "Failed restore recyclable item :-/ ";
     public static final String FAILED_TO_RESTORE_RECYCLABLE_2 = "Cannot restore an item that already exists.";
     public static final String FAILED_TO_RESTORE_RECYCLABLE_3 = "Could write an update to the recyclebin. ACL error.";
+    public static final String FAILED_TO_RESTORE_RECYCLABLE_4 = "Path above this item does not exist. Restore or create the parent folders or pages first.";
     public static final int SC_CONFLICT = 409;
     public static final int SC_FORBIDDEN = 403;
 
@@ -73,6 +75,11 @@ public class RestoreRecyclableServlet extends AbstractBaseServlet {
         try {
             final Recyclable recyclable = request.getResourceResolver().getResource(path).adaptTo(Recyclable.class);
             resourceManagement.recycleDeleted(request.getResourceResolver(), recyclable, true);
+        } catch (PathNotFoundException pe) {
+            return new ErrorResponse().setHttpErrorCode(SC_CONFLICT)
+                    .setErrorMessage(FAILED_TO_RESTORE_RECYCLABLE_4)
+                    .setRequestPath(path)
+                    .setException(pe);
         } catch (RepositoryException e) {
             return new ErrorResponse().setHttpErrorCode(SC_CONFLICT)
                     .setErrorMessage(FAILED_TO_RESTORE_RECYCLABLE_2)
