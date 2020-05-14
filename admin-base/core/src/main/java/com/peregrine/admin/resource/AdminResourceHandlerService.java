@@ -93,6 +93,7 @@ public class AdminResourceHandlerService
     private static final String RESOURCE_NOT_FOUND = "Resource not found, Path: '%s'";
     private static final String NO_CONTENT_PROVIDED = "No Content provided, Path: '%s'";
     private static final String FAILED_TO_PARSE_JSON = "Failed to parse Json Content: '%s'";
+    private static final String FAILED_CREATE_RECYCLEABLE = "Failed to create recyclable: deleted item {} not recoverable.";
 
     private static final String FAILED_TO_DELETE_CHILD = "Failed to delete child resource: '%s'";
     private static final String OBJECT_FIRST_ITEM_WITH_UNSUPPORTED_TYPE = "Object List had an unsupported first entry: '%s' (type: '%s')";
@@ -334,7 +335,15 @@ public class AdminResourceHandlerService
         if (resource == null) {
             throw new ManagementException(String.format(RESOURCE_FOR_DELETION_NOT_FOUND, path));
         }
-        createRecyclable(resourceResolver, resource);
+        try {
+            createRecyclable(resourceResolver, resource);
+        } catch (Exception e) {
+            // Creating a recyclable when deleting a resource may fail
+            // * if the user does not write permission to /var/recyclebin/{site}
+            // * if the user does not ACL jcr:versionManagement permissions
+            // Under these circumstances, the deletion will continue and a warning will be printed to the logs.
+            logger.warn(FAILED_CREATE_RECYCLEABLE, path, e);
+        }
         try {
             final String primaryTypeValue = resource.getValueMap().get(JCR_PRIMARY_TYPE, EMPTY);
             if (isNotEmpty(primaryType) && !primaryTypeValue.equals(primaryType)) {
@@ -358,12 +367,9 @@ public class AdminResourceHandlerService
     public Recyclable createRecyclable(ResourceResolver resourceResolver, Resource resource) throws ManagementException {
         if (isRecyclable(resource)) {
             Version version = createVersion(resourceResolver, resource.getPath());
-
-            Node resourceNode = resource.adaptTo(Node.class);
             final String recyclablePath = RECYCLE_BIN_PATH + resource.getPath();
             final Calendar now = Calendar.getInstance();
             try {
-                resourceNode.setProperty("recyclablePath", resource.getPath());
                 Resource item = ResourceUtil.getOrCreateResource(
                         resourceResolver,
                         recyclablePath + SLASH + now.getTimeInMillis(),
@@ -497,6 +503,7 @@ public class AdminResourceHandlerService
             Version restoreVersion = (Version) jcrSession.getNode(version);
             VersionManager vm = jcrSession.getWorkspace().getVersionManager();
             vm.restore(path, restoreVersion, force);
+            vm.checkin(path);
             vm.checkout(path);
             return getResource(resourceResolver,path);
         } catch (RepositoryException e) {

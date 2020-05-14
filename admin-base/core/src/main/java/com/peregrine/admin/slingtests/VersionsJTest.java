@@ -234,22 +234,6 @@ public class VersionsJTest {
         }
     }
 
-//    @Test
-//    public void writeToFrozenNode(){
-//        try {
-//            Version version = resourceManagement.createVersion(this.resourceResolver, indexRes.getPath());
-//            Node frozenNode =  version.getFrozenNode();
-//            frozenNode.setProperty("anyKey", "hdhs");
-//            resourceResolver.commit();
-//        } catch (AdminResourceHandler.ManagementException e) {
-//            fail("execption while creating recyclable");
-//        }  catch (RepositoryException e) {
-//            logger.error("Cannot write to frozen node");
-//        } catch (PersistenceException e) {
-//            logger.error("Cannot save to frozen node with properties");
-//        }
-//    }
-
     @Test
     public void findAndRestoreRecyclable (){
         try {
@@ -262,9 +246,8 @@ public class VersionsJTest {
             List<Recyclable> recyclables = resourceManagement.getRecyclables(resourceResolver, aboutPagePath);
             assertNotNull(recyclables);
             resourceManagement.recycleDeleted(resourceResolver, recyclables.get(0), true );
-//            for (Recyclable r : recyclables) {
-//                resourceManagement.recycleDeleted(resourceResolver, r., true );
-//            }
+
+            assertTrue(vmPage.isCheckedOut(aboutPagePath));
             resourceResolver.refresh();
             resourceResolver.commit();
         } catch (Exception e) {
