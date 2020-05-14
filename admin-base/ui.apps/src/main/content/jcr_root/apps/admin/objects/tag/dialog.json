@@ -9,7 +9,7 @@
     "type": "input",
     "inputType": "text",
     "label": "Display Value",
-    "model": "value",
+    "model": "display",
     "placeholder": "value"
   }
 ]}

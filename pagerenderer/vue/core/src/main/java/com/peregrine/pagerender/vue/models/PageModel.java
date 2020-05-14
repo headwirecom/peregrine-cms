@@ -315,16 +315,19 @@ public class PageModel extends Container {
         private String path;
         private String name;
         private String value;
+        private String display;
 
         public Tag(Resource r) {
             this.path = r.getPath();
             this.path = path.substring(path.indexOf("/jcr:content"));
             this.name = r.getName();
             this.value = r.getValueMap().get("value", String.class);
+            this.display = r.getValueMap().get("display", String.class);
         }
 
         public String getName() { return name; }
         public String getValue() { return value; }
+        public String getDisplay() { return display; }
         public String getPath() { return path; }
         @Override
         public String toString() { return name; }
