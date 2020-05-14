@@ -320,12 +320,12 @@ public class PageModel extends Container {
             this.path = r.getPath();
             this.path = path.substring(path.indexOf("/jcr:content"));
             this.name = r.getName();
-            String tag = r.getValueMap().get("value", String.class);)
+            String tag = r.getValueMap().get("value", String.class);
             Resource tagResource = r.getResourceResolver().getResource(tag);
             this.value = tagResource.getValueMap().get("value", String.class);
 
             if (this.value == null) {
-                this.value = "Please Configure"
+                this.value = "Please Configure";
             }
         }
 
