@@ -719,6 +719,8 @@
         const component = this.findComponentEl(el)
         let found = el
 
+        if (el === component) return el.getAttribute('contenteditable') === 'true'
+
         while (el.getAttribute('contenteditable') !== 'true') {
           el = el.parentElement
           if (!el || el === component) {
