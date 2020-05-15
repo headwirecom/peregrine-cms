@@ -134,8 +134,8 @@
         user.expirationTime="1h"
         user.membershipExpTime="1h"
         user.membershipNestingDepth=I"0"
-        user.pathPrefix=""
-        user.propertyMapping=["rep:fullname\=cn"]
+        user.pathPrefix="tenants"
+        user.propertyMapping=["rep:fullname\=cn", "firstTime\=true"]
         group.autoMembership=[""]
         group.expirationTime="1d"
         group.pathPrefix=""

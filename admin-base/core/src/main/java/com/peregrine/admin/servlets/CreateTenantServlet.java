@@ -201,7 +201,7 @@ public class CreateTenantServlet extends AbstractBaseServlet {
                 tenantGroup.addMember(tenantUser);
             } else {
                 // We also need to add the current non-admin user to the group so that new site is visible for them
-                Authorizable authorizable = userManager.getAuthorizable(userName);
+                Authorizable authorizable = userManager.getAuthorizable(request.getRequest().getUserPrincipal());
                 if(authorizable != null) {
                     tenantGroup.addMember(authorizable);
                 }
