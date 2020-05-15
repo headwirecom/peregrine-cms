@@ -322,10 +322,14 @@ public class PageModel extends Container {
             this.name = r.getName();
             String tag = r.getValueMap().get("value", String.class);
             Resource tagResource = r.getResourceResolver().getResource(tag);
-            this.value = tagResource.getValueMap().get("value", String.class);
+            if (tagResource != null) {
+                this.value = tagResource.getValueMap().get("value", String.class);
 
-            if (this.value == null) {
-                this.value = "Please Configure";
+                if (this.value == null) {
+                    this.value = this.name;
+                }
+            } else {
+                this.value = "";
             }
         }
 
