@@ -3,6 +3,7 @@ package com.peregrine.admin.slingtests;
 import com.google.common.collect.Iterators;
 import com.peregrine.admin.models.PageModel;
 import com.peregrine.admin.models.Recyclable;
+import com.peregrine.admin.resource.AdminResourceHandlerService;
 import com.peregrine.replication.ReferenceLister;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.sling.api.resource.PersistenceException;
@@ -26,6 +27,7 @@ import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionManager;
 
+import java.util.Calendar;
 import java.util.List;
 
 import static com.peregrine.commons.util.PerConstants.*;
@@ -71,6 +73,10 @@ public class VersionsJTest {
     private VersionManager vmPage;
     private VersionManager vmAsset;
 
+    // path to check
+    String yearMonthFolders;
+    String pathPrefix;
+
     @Before
     public void setUp() throws Exception {
         resourceResolver = resolverFactory.getAdministrativeResourceResolver(null);
@@ -91,6 +97,9 @@ public class VersionsJTest {
 
         pagesRes = resourceResolver.getResource(EXAMPLE_PAGES);
         pagesNode = pagesRes.adaptTo(Node.class);
+
+        yearMonthFolders = AdminResourceHandlerService.RECYCLABLE_PATH_DATE_FORMAT.format(Calendar.getInstance().getTime());
+        pathPrefix = RECYCLE_BIN_PATH + EXAMPLE_SITE_ROOT + SLASH + yearMonthFolders;
     }
 
     @Test
@@ -225,9 +234,8 @@ public class VersionsJTest {
         try {
             Recyclable recyclable = resourceManagement.createRecyclable(resourceResolver, indexRes);
             assertNotNull(recyclable);
-            assertEquals(indexRes.getPath(), recyclable.getResourcePath());
+            assertTrue(recyclable.getResource().getPath().startsWith(pathPrefix));
             assertTrue(recyclable.getFrozenNodePath().startsWith("/jcr:system/jcr:versionStorage/"));
-            assertTrue(recyclable.getResource().getPath().startsWith("/var/recyclebin/content/example/pages/index"));
             assertTrue(recyclable.getResource().getName().matches("\\d+"));
         } catch (AdminResourceHandler.ManagementException e) {
             fail("execption while creating recyclable");
@@ -243,10 +251,9 @@ public class VersionsJTest {
             resourceResolver.commit();
             aboutRes = resourceResolver.getResource(aboutPagePath);
             assertNull(aboutRes);
-            List<Recyclable> recyclables = resourceManagement.getRecyclables(resourceResolver, aboutPagePath);
+            List<Recyclable> recyclables = resourceManagement.getRecyclables(resourceResolver, pathPrefix);
             assertNotNull(recyclables);
             resourceManagement.recycleDeleted(resourceResolver, recyclables.get(0), true );
-
             assertTrue(vmPage.isCheckedOut(aboutPagePath));
             resourceResolver.refresh();
             resourceResolver.commit();
@@ -270,8 +277,7 @@ public class VersionsJTest {
                 assertNull(resourceResolver.getResource(EXAMPLE_PAGES + path));
             }
 
-            List<Recyclable> foundRecyclable = resourceManagement.getRecyclables(resourceResolver,
-                    RECYCLE_BIN_PATH + EXAMPLE_PAGES);
+            List<Recyclable> foundRecyclable = resourceManagement.getRecyclables(resourceResolver, pathPrefix);
             assertNotNull(foundRecyclable);
             resourceManagement.recycleDeleted(resourceResolver,foundRecyclable.get(0), false);
             // all back
