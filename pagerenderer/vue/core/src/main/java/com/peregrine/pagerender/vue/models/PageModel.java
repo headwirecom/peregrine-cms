@@ -270,8 +270,7 @@ public class PageModel extends Container {
         List<String> answer = new ArrayList<String>();
         if(tags != null) {
             for(Resource tag: tags.getChildren()) {
-                // if (tag != null) {
-                    String tagString = tag.getValueMap().get("value", String.class);
+                String tagString = tag.getValueMap().get("value", String.class);
                 Resource tagResource = tag.getResourceResolver().getResource(tagString);
                 if (tagResource != null) { 
                     answer.add(new Tag(tag).getName());
