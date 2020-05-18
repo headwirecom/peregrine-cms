@@ -116,7 +116,6 @@ public class ListSiteRecyclablesServlet extends AbstractBaseServlet {
                 if (nodes.getPosition() < ROWS_PER_PAGE+ 1) {
                     for (Recyclable r : resourceManagement.getRecyclables(request.getResourceResolver(), node.getPath())) {
                         answer.writeObject();
-                        answer.writeAttribute(NAME, node.getName());
                         answer.writeAttribute(PATH, r.getResourcePath());
                         answer.writeAttribute(DELETED_BY, r.getDeletedBy());
                         answer.writeAttribute(DATE_DELETED, DELETED_DATE_FORMAT.format(r.getDeletedDate()));

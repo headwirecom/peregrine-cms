@@ -93,7 +93,7 @@
               return $perAdminApp.getView().state.tenant || {name: 'No site selected'}
             },
             restoreRecyclable(me, target) {
-               const heading = `${me.$i18n('Restore')} ${target.name} ${me.$i18n('from')} ${target.date_deleted}`
+               const heading = `${me.$i18n('Restore')} "${target.path}" ${me.$i18n('from')} ${target.date_deleted}`
                $perAdminApp.askUser(heading, me.$i18n('Are you sure you want to restore this?'), {
                     yes() {
                         $perAdminApp.stateAction('recycleItem', {
