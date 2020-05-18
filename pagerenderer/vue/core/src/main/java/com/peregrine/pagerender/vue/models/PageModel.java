@@ -336,7 +336,7 @@ public class PageModel extends Container {
             }
 
             if (this.value == null) {
-                this.value = this.name;
+                this.value = null;
             }
         }
 
