@@ -17,6 +17,7 @@
 		-moz-transition: width .2s ease-in-out;
 		-ms-transition: width .2s ease-in-out;
 		transition: width .2s ease-in-out;
+		overflow: hidden;
 
 		#editable {
 			pointer-events: none;
