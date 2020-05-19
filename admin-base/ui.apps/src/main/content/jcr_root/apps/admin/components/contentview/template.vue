@@ -526,7 +526,6 @@
         const newCaretPos = getCaretCharacterOffsetWithin(event.target)
         if (this.caretPos === newCaretPos && (isKeyUp || this.holdingDown)) {
           const inlineEditNodes = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
-          console.log(inlinEditNodes)
           if (inlineEditNodes.length <= 1) return
           const len = inlineEditNodes.length
 
