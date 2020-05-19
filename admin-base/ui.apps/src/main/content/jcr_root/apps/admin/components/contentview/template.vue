@@ -135,7 +135,10 @@
           visible: false,
           filter: ''
         },
-        caretPos: -1,
+        caret: {
+          pos: -1,
+          counter: 0
+        },
         holdingDown: false
       }
     },
@@ -431,7 +434,8 @@
       onInlineFocus(event) {
         event.target.classList.add('inline-editing')
         this.editing = true
-        this.caretPos = -1
+        this.caret.pos = -1
+        this.caret.counter = 0
         this.target = event.target
         const dataInline = this.targetInline.split('.').slice(1)
         this.inline = dataInline.join('.')
@@ -458,7 +462,6 @@
         } else if (key === Key.COMMA && ctrlOrCmd) {
           this.addComponent(false)
         } else if (arrowKey && !shift) {
-          event.preventDefault()
           this.onInlineArrowKey(event)
         }
         this.holdingDown = true
@@ -525,7 +528,9 @@
       onInlineArrowKey(event, isKeyUp = false) {
         const key = event.which
         const newCaretPos = getCaretCharacterOffsetWithin(event.target)
-        if (this.caretPos === newCaretPos && (isKeyUp || this.holdingDown)) {
+        if (this.caret.pos === newCaretPos && (isKeyUp || this.holdingDown)) {
+          this.caret.counter++
+          if (this.caret.counter < 2) return
           const inlineEditNodes = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
           if (inlineEditNodes.length <= 1) return
           const len = inlineEditNodes.length
@@ -533,7 +538,8 @@
           for (let i = 0; i < len; i++) {
             if (inlineEditNodes[i] === this.target) {
               if (i > 0 && (key === Key.ARROW_LEFT || key === Key.ARROW_UP)) {
-                inlineEditNodes[i - 1].focus()
+                //inlineEditNodes[i - 1].focus()
+                this.placeCaretAtEnd(inlineEditNodes[i - 1])
               } else if (i < len - 1 && (key === Key.ARROW_RIGHT || key === Key.ARROW_DOWN)) {
                 inlineEditNodes[i + 1].focus()
               }
@@ -541,7 +547,7 @@
             }
           }
         }
-        this.caretPos = newCaretPos
+        this.caret.pos = newCaretPos
       },
 
       onIframeLoaded(ev) {
@@ -552,7 +558,7 @@
         this.iframe.body = this.iframe.doc.querySelector('body')
         this.iframe.head = this.iframe.doc.querySelector('head')
         this.iframe.app = this.iframe.doc.querySelector('#peregrine-app')
-        this.iframe.doc.querySelector('#peregrine-app').setAttribute('contenteditable', 'false')
+        //this.iframe.doc.querySelector('#peregrine-app').setAttribute('contenteditable', 'false')
         this.addIframeExtraStyles()
         this.removeLinkTargets()
         this.refreshInlineEditElems()
@@ -693,7 +699,6 @@
         this.iframe.doc.addEventListener('scroll', this.onIframeScroll)
         this.iframe.doc.addEventListener('dragover', this.onIframeDragOver)
         this.iframe.doc.addEventListener('drop', this.onIframeDrop)
-        this.iframe.body.setAttribute('contenteditable', 'true')
         this.iframe.html.classList.add('edit-mode')
         const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el, index) => {
@@ -913,6 +918,25 @@
         $perAdminApp.stateAction('addComponentToPath', payload).then((data) => {
           this.refreshInlineEditElems()
         })
+      },
+
+      placeCaretAtEnd(el) {
+        const doc = el.ownerDocument
+        const win = doc.defaultView || doc.parentWindow
+        el.focus()
+        if (typeof win.getSelection != 'undefined' && typeof doc.createRange != 'undefined') {
+          const range = doc.createRange()
+          range.selectNodeContents(el)
+          range.collapse(false)
+          const sel = win.getSelection()
+          sel.removeAllRanges()
+          sel.addRange(range)
+        } else if (typeof doc.body.createTextRange != 'undefined') {
+          const textRange = doc.body.createTextRange()
+          textRange.moveToElementText(el)
+          textRange.collapse(false)
+          textRange.select()
+        }
       }
     }
   }
