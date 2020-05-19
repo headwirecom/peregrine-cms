@@ -458,7 +458,6 @@
         } else if (key === Key.COMMA && ctrlOrCmd) {
           this.addComponent(false)
         } else if (arrowKey && !shift) {
-          console.log(event, event.shiftKey)
           this.onInlineArrowKey(event)
         }
         this.holdingDown = true
@@ -466,9 +465,12 @@
 
       onInlineKeyUp(event) {
         const key = event.which
+        const shift = event.shiftKey
+        const ctrlOrCmd = event.ctrlKey || event.metaKey
+        const backspaceOrDelete = key === Key.BACKSPACE || key === Key.DELETE
         const arrowKey = key >= Key.ARROW_LEFT && key <= Key.ARROW_DOWN
 
-        if (arrowKey) {
+        if (arrowKey && !shift) {
           this.onInlineArrowKey(event, true)
         }
         this.holdingDown = false
@@ -524,6 +526,7 @@
         const newCaretPos = getCaretCharacterOffsetWithin(event.target)
         if (this.caretPos === newCaretPos && (isKeyUp || this.holdingDown)) {
           const inlineEditNodes = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
+          console.log(inlinEditNodes)
           if (inlineEditNodes.length <= 1) return
           const len = inlineEditNodes.length
 
