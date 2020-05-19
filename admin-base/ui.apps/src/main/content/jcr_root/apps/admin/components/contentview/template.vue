@@ -653,7 +653,6 @@
       removeLinkTargets(vm=this) {
         const anchors = vm.iframe.app.querySelectorAll('a')
         anchors.forEach((a) => {
-          console.log(a, a.getAttribute('href'))
           a.setAttribute('data-original-href', a.getAttribute('href'))
           a.setAttribute('href', 'javascript:void(0);')
         })
