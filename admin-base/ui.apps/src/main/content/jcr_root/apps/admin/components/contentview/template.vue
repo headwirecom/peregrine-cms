@@ -272,7 +272,7 @@
           if (!this.component) return
           this.wrapEditableAroundSelected()
           this.$nextTick(() => {
-            this.refreshInlineEditClones()
+            this.refreshInlineEditElems()
           })
         }
       },
@@ -491,7 +491,7 @@
           drop: 'after'
         }
         $perAdminApp.stateAction('addComponentToPath', payload).then((data) => {
-          this.refreshInlineEditClones()
+          this.refreshInlineEditElems()
           this.iframeEditMode()
           this.addComponentModal.visible = false
           // TODO: would be nice to select the newly inserted component and focus
@@ -552,7 +552,7 @@
         this.iframe.doc.querySelector('#peregrine-app').setAttribute('contenteditable', 'false')
         this.addIframeExtraStyles()
         this.removeLinkTargets()
-        this.refreshInlineEditClones()
+        this.refreshInlineEditElems()
         this.iframeEditMode()
       },
 
@@ -642,7 +642,7 @@
           this.cleanUpAfterDelete(componentPath)
         }
         $perAdminApp.stateAction(addOrMove, payload).then((data) => {
-          this.refreshInlineEditClones()
+          this.refreshInlineEditElems()
         })
         this.unselect(this)
         event.dataTransfer.clearData('text')
@@ -668,7 +668,7 @@
         })
       },
 
-      refreshInlineEditClones() {
+      refreshInlineEditElems() {
         const selector = `[${Attribute.INLINE}]:not(.inline-edit)`
         const elements = this.iframe.app.querySelectorAll(selector)
         if (!elements || elements.length <= 0) return
@@ -874,7 +874,7 @@
         if (payload.path !== '/jcr:content') {
           $perAdminApp.stateAction('deletePageNode', payload).then((data) => {
             this.cleanUpAfterDelete(payload.path)
-            this.refreshInlineEditClones()
+            this.refreshInlineEditElems()
           })
         }
         this.unselect(this)
@@ -909,7 +909,7 @@
           drop: dropPosition
         }
         $perAdminApp.stateAction('addComponentToPath', payload).then((data) => {
-          this.refreshInlineEditClones()
+          this.refreshInlineEditElems()
         })
       }
     }
