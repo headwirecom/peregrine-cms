@@ -619,7 +619,16 @@
       removeLinkTargets() {
         const anchors = this.iframe.app.querySelectorAll('a')
         anchors.forEach((a) => {
+          a.setAttribute('data-original-href', a.getAttribute('href'))
           a.setAttribute('href', 'javascript:void(0);')
+        })
+      },
+
+      restoreLinkTargets() {
+        const anchors = this.iframe.app.querySelectorAll('a')
+        anchors.forEach((a) => {
+          a.setAttribute('href', a.getAttribute('data-original-href'))
+          a.removeAttribute('data-original-href')
         })
       },
 
