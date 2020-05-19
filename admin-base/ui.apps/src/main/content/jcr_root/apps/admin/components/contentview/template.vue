@@ -458,6 +458,7 @@
         } else if (key === Key.COMMA && ctrlOrCmd) {
           this.addComponent(false)
         } else if (arrowKey && !shift) {
+          event.preventDefault()
           this.onInlineArrowKey(event)
         }
         this.holdingDown = true
@@ -536,7 +537,7 @@
               } else if (i < len - 1 && (key === Key.ARROW_RIGHT || key === Key.ARROW_DOWN)) {
                 inlineEditNodes[i + 1].focus()
               }
-              break;
+              break
             }
           }
         }
