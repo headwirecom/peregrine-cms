@@ -257,7 +257,6 @@ public class PageModel extends Container {
                 String tagString = tag.getValueMap().get("value", String.class);
                 Resource tagResource = tag.getResourceResolver().getResource(tagString);
                 if (tagResource != null) { 
-                // if (tag != null) {
                     answer.add(new Tag(tag));
                 }
             }
