@@ -135,7 +135,7 @@
         user.membershipExpTime="1h"
         user.membershipNestingDepth=I"0"
         user.pathPrefix="tenants"
-        user.propertyMapping=["preferences/firstLogin\=firstLogin", "profile/email=OIDC_CLAIM_email"]
+        user.propertyMapping=["preferences/firstLogin\=firstLogin", "profile/email\=OIDC_CLAIM_email"]
         group.autoMembership=[""]
         group.expirationTime="1d"
         group.pathPrefix=""

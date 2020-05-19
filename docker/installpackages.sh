@@ -4,7 +4,7 @@
 # We need to build Peregrine because themeclean-flex needs com.peregrine-cms:base.core:jar:1.0-SNAPSHOT.
 git clone https://github.com/headwirecom/peregrine-cms.git
 cd peregrine-cms
-git checkout issues/93
+git checkout issue/322
 mvn clean install -P autoInstallPackage
 cd ..
 rm -rf peregrine-cms
