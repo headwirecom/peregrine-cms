@@ -101,13 +101,13 @@
 				}
 			}
 			&.drop-top {
-				border-top: 2px solid color("blue-grey", "base");
+				border-top: 2px dashed color("blue-grey", "base");
 			}
 			&.drop-bottom {
-				border-bottom: 2px solid color("blue-grey", "base");
+				border-bottom: 2px dashed color("blue-grey", "base");
 			}
 			&.selected {
-				border: 2px solid color("blue-grey", "base");
+				border: 2px dashed color("blue-grey", "base");
 				.editable-actions {
 					display: flex;
 				}
