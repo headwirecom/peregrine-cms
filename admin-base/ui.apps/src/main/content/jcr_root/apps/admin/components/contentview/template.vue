@@ -337,12 +337,14 @@
             if (vm.component !== vm.previousComponent) {
               if (vm.autoSave) {
                 vm.autoSave = false
+                vm.restoreLinkTargets()
                 $perAdminApp.stateAction('savePageEdit', {
                   data: vm.node,
                   path: vm.view.state.editor.path
                 }).then(() => {
                   $perAdminApp.action(vm, 'showComponentEdit', vm.path).then(() => {
                     vm.flushInlineState()
+                    vm.removeLinkTargets()
                   })
                 })
               } else {
@@ -381,6 +383,31 @@
         return el
       },
 
+      findVnode(vmCmp, fullPath) {
+        fullPath.reverse()
+        let vnode = vmCmp._vnode
+        let startIndex = 1
+        fullPath.some((el) => {
+          if (el !== vnode.elm) {
+            startIndex++
+          } else {
+            return true
+          }
+        })
+        const path = fullPath.slice(startIndex)
+        path.reverse()
+        while (path.length > 0 && vnode.children && vnode.children.length > 0) {
+          const wanted = path.pop()
+          vnode.children.some((child) => {
+            if (child.elm === wanted) {
+              vnode = child
+              return true
+            }
+          })
+        }
+        return vnode
+      },
+
       writeInlineToModel() {
         const dataInline = this.targetInline.split('.').slice(1)
         dataInline.reverse()
@@ -393,6 +420,9 @@
 
       onInlineEdit(event) {
         this.target = event.target
+        const vnode = this.findVnode(this.component.__vue__, event.path)
+        const attr = this.isRich ? 'innerHTML' : 'innerText'
+        vnode.data.domProps.innerHTML = this.target[attr]
         this.writeInlineToModel()
         this.autoSave = true
         this.reWrapEditable()
@@ -414,6 +444,7 @@
 
       onInlineKeyDown(event) {
         const key = event.which
+        const shift = event.shiftKey
         const ctrlOrCmd = event.ctrlKey || event.metaKey
         const backspaceOrDelete = key === Key.BACKSPACE || key === Key.DELETE
         const arrowKey = key >= Key.ARROW_LEFT && key <= Key.ARROW_DOWN
@@ -426,7 +457,8 @@
           this.addComponent(true)
         } else if (key === Key.COMMA && ctrlOrCmd) {
           this.addComponent(false)
-        } else if (arrowKey) {
+        } else if (arrowKey && !shift) {
+          console.log(event, event.shiftKey)
           this.onInlineArrowKey(event)
         }
         this.holdingDown = true
@@ -616,53 +648,41 @@
         event.dataTransfer.clearData('text')
       },
 
-      removeLinkTargets() {
-        const anchors = this.iframe.app.querySelectorAll('a')
+      removeLinkTargets(vm=this) {
+        const anchors = vm.iframe.app.querySelectorAll('a')
         anchors.forEach((a) => {
+          console.log(a, a.getAttribute('href'))
           a.setAttribute('data-original-href', a.getAttribute('href'))
           a.setAttribute('href', 'javascript:void(0);')
         })
       },
 
-      restoreLinkTargets() {
-        const anchors = this.iframe.app.querySelectorAll('a')
+      restoreLinkTargets(vm=this) {
+        const anchors = vm.iframe.app.querySelectorAll('a')
         anchors.forEach((a) => {
-          a.setAttribute('href', a.getAttribute('data-original-href'))
-          a.removeAttribute('data-original-href')
+          const orgHref = a.getAttribute('data-original-href')
+          if (orgHref) {
+            a.setAttribute('href', a.getAttribute('data-original-href'))
+            a.removeAttribute('data-original-href')
+          }
         })
       },
 
       refreshInlineEditClones() {
-        const selector = `[${Attribute.INLINE}]:not(.inline-edit-clone)`
+        const selector = `[${Attribute.INLINE}]:not(.inline-edit)`
         const elements = this.iframe.app.querySelectorAll(selector)
         if (!elements || elements.length <= 0) return
 
         elements.forEach((el) => {
           if (this.isFromTemplate(el)) return
 
-          const component = this.findComponentEl(el)
-          const dataInline = el.getAttribute(Attribute.INLINE)
-          const existingSelector = `.inline-edit-clone[${Attribute.INLINE}="${dataInline}"]`
-          const existing = component.querySelectorAll(existingSelector)
-          if (existing.length > 0) return el.remove()
-
-          const cmpPath = this.getPath(el)
-          const clsList = el.classList
-          const clone = el.cloneNode(true)
-          clone.classList.add('inline-edit-clone')
-          clone.addEventListener('input', this.onInlineEdit)
-          clone.addEventListener('focus', this.onInlineFocus)
-          clone.addEventListener('focusout', this.onInlineFocusOut)
-          clone.addEventListener('keydown', this.onInlineKeyDown)
-          clone.addEventListener('keyup', this.onInlineKeyUp)
-          clone.setAttribute('contenteditable', this.previewMode !== 'preview' + '')
-          el.parentNode.insertBefore(clone, el)
-          el.remove()
-          this.$watch(`node.${dataInline.split('.').slice(1).join('.')}`, (val, oldVal) => {
-            if (cmpPath === this.path && clone && !clone.classList.contains('inline-editing')) {
-              clone.innerHTML = val
-            }
-          })
+          el.classList.add('inline-edit')
+          el.addEventListener('input', this.onInlineEdit)
+          el.addEventListener('focus', this.onInlineFocus)
+          el.addEventListener('focusout', this.onInlineFocusOut)
+          el.addEventListener('keydown', this.onInlineKeyDown)
+          el.addEventListener('keyup', this.onInlineKeyUp)
+          el.setAttribute('contenteditable', this.previewMode !== 'preview' + '')
         })
       },
 
@@ -714,7 +734,7 @@
             cursor: not-allowed !important;
           }
 
-          html.edit-mode #peregrine-app .inline-edit-clone {
+          html.edit-mode #peregrine-app .inline-edit {
             cursor: text !important
           }`
         const style = this.iframe.doc.createElement('style')
