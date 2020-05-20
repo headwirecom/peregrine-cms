@@ -426,7 +426,7 @@
         this.target = event.target
         const vnode = this.findVnode(this.component.__vue__, event.path)
         const attr = this.isRich ? 'innerHTML' : 'innerText'
-        vnode.data.domProps.innerHTML = this.target[attr]
+        if(vnode.data.domProps) vnode.data.domProps.innerHTML = this.target[attr]
         this.writeInlineToModel()
         this.autoSave = true
         this.reWrapEditable()
@@ -434,6 +434,9 @@
 
       onInlineFocus(event) {
         event.target.classList.add('inline-editing')
+        if(event.target.innerHTML === ' ') {
+          event.target.innerHTML = ''
+        }
         this.editing = true
         this.caret.pos = -1
         this.caret.counter = 0
@@ -527,6 +530,9 @@
       },
 
       onInlineArrowKey(event, isKeyUp = false) {
+        const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor)
+        if(chrome) return
+
         const key = event.which
         const newCaretPos = getCaretCharacterOffsetWithin(event.target)
         if (this.caret.pos === newCaretPos && (isKeyUp || this.holdingDown)) {
@@ -686,6 +692,9 @@
           if (this.isFromTemplate(el)) return
 
           el.classList.add('inline-edit')
+          if(el.children.length === 0) {
+            el.appendChild(document.createTextNode(' '))
+          }
           el.addEventListener('input', this.onInlineEdit)
           el.addEventListener('focus', this.onInlineFocus)
           el.addEventListener('focusout', this.onInlineFocusOut)
@@ -706,6 +715,8 @@
           if (this.isFromTemplate(el)) return
           el.setAttribute('contenteditable', 'true')
         })
+        this.iframe.body.setAttribute('contenteditable', 'true')
+        this.iframe.doc.getElementById('peregrine-app').setAttribute('contenteditable', 'false')
       },
 
       iframePreviewMode() {
@@ -716,7 +727,7 @@
         const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el, index) => {
           if (this.isFromTemplate(el)) return
-          el.setAttribute('contenteditable', false)
+          el.setAttribute('contenteditable', 'false')
         })
       },
 
