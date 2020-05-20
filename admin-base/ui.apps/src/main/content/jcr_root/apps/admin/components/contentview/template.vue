@@ -89,6 +89,7 @@
         {{componentDisplayName(component)}}
       </button>
     </div>
+    <admin-components-richtoolbar :element="this.target"/>
   </div>
 </template>
 
