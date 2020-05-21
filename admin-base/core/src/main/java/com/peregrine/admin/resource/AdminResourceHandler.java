@@ -214,6 +214,22 @@ public interface AdminResourceHandler {
     Resource rename(Resource fromResource, String newName) throws ManagementException;
 
     /**
+     * Updates the jcr:title of a given JCR:CONTENT resource
+     * @param resource Resource to get new title. It must exist and be JCR:CONTENT
+     * @param jcrTitle as String
+     * @return void
+     */
+    void updateTitle(Resource resource, String jcrTitle);
+
+    /**
+     * Updates the title of a given JCR:CONTENT resource (Assets)
+     * @param resource Asset Resource to get new title. It must exist and be JCR:CONTENT
+     * @param title as String
+     * @return void
+     */
+    void updateOrCreateAssetTitle(Resource resource, String title);
+
+    /**
      * Create an Asset Resource which the given Byte Input Stream
      * @param parent Parent Source under which the asset is created. It must exist
      * @param assetName Name of the Asset. There must not be an asset with that name already exist

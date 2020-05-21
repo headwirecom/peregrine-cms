@@ -637,6 +637,10 @@ public class AdminResourceHandlerService
         }
         try {
             final Resource answer = resourceRelocation.rename(fromResource, newName, true);
+            ModifiableValueMap mvm = getModifiableProperties(answer, true);
+            if (mvm != null && mvm.containsKey(NAME_PROPERTY)) {
+                mvm.put(NAME_PROPERTY, newName);
+            }
             baseResourceHandler.updateModification(answer);
             return answer;
         } catch (Exception e) {
@@ -1524,12 +1528,23 @@ public class AdminResourceHandlerService
         return answer;
     }
 
-    private void updateTitle(Resource resource, String title) {
+    public void updateTitle(Resource resource, String title) {
         if (JCR_CONTENT.equals(resource.getName())) {
             ValueMap properties = getModifiableProperties(resource, false);
             if (properties.containsKey(JCR_TITLE)) {
                 properties.put(JCR_TITLE, title);
             }
+            if (properties.containsKey(TITLE)){
+                properties.put(TITLE, title);
+            }
+        }
+    }
+
+    public void updateOrCreateAssetTitle(Resource resource, String title) {
+        if (JCR_CONTENT.equals(resource.getName())) {
+            ValueMap properties = getModifiableProperties(resource, false);
+            properties.put(TITLE, title);
+            properties.put(JCR_TITLE, title);
         }
     }
 

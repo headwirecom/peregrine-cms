@@ -24,6 +24,9 @@
   -->
 <template>
   <div ref="modal" :id="id" class="modal materialize-modal">
+    <div v-if="modalTitle" class="modal-header">
+      {{$i18n(modalTitle)}}
+    </div>
     <div v-if="!!$slots.default" class="modal-content">
       <slot></slot>
     </div>
@@ -59,7 +62,8 @@
       endingTop: {
         type: String,
         default: '10%'
-      }
+      },
+      modalTitle: String
     },
     data() {
       return {
@@ -100,3 +104,22 @@
     }
   }
 </script>
+
+<style>
+    .modal-header {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 32px;
+        padding: 6px 10px;
+        font-size: 16px;
+        font-weight: bold;
+        background-color: #f5f5f5;
+        border-bottom: 1px solid #adadad;
+        text-align: center;
+    }
+    .modal .modal-content {
+      padding-top: 54px;
+    }
+</style>

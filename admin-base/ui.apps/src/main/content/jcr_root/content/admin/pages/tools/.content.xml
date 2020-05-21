@@ -70,11 +70,11 @@
 
   <recyclebin jcr:primaryType="nt:unstructured" jcr:title="Recyclebin"
     sling:resourceType="admin/components/iconaction"
-    jcr:description="recover deleted items"
+    jcr:description="recover deleted pages and assets"
     action="/content/admin/pages/recyclebin">
     <experiences jcr:primaryType="nt:unstructured">
       <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Recyclebin"
-        description="Gel&ouml;schte daten wieder herstellen"/>
+        description="Geloschte daten wieder herstellen"/>
     </experiences>
   </recyclebin>
 

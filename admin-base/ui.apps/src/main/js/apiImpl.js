@@ -588,13 +588,18 @@ class PerAdminImpl {
         .then(() => this.populateNodesForBrowser(path))
   }
 
-  renameAsset(path, newName) {
+  renameAsset(path, newName, newTitle) {
     return new Promise((resolve, reject) => {
       let data = new FormData()
       data.append('to', newName)
+      data.append('title', newTitle)
       updateWithForm('/admin/asset/rename.json' + path, data)
           .then((data) => this.populateNodesForBrowser(path))
           .then(() => resolve())
+          .catch(error => {
+              logger.error('Failed to change name: ' + error)
+              reject('Unable to change name. ' + error)
+          })
     })
   }
 
@@ -639,13 +644,18 @@ class PerAdminImpl {
         .then(() => this.populateNodesForBrowser(root))
   }
 
-  renamePage(path, newName) {
+  renamePage(path, newName, newTitle) {
     return new Promise((resolve, reject) => {
       let data = new FormData()
       data.append('to', newName)
+      data.append('title', newTitle)
       updateWithForm('/admin/page/rename.json' + path, data)
           .then((data) => this.populateNodesForBrowser(path))
           .then(() => resolve())
+          .catch(error => {
+              logger.error('Failed to change name: ' + error)
+              reject('Unable to change name. ' + error)
+          })
     })
   }
 

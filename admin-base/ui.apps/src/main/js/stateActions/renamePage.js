@@ -38,12 +38,9 @@ export default function(me, target) {
         destination = Admin.Page.EDIT
     }
 
-    return new Promise( (resolve, reject) => {
-        api.renamePage(target.path, target.name).then( () => {
-            let path = me.getNodeFromView('/state/tools/pages')
-            me.loadContent(`${destination}/path${SUFFIX_PARAM_SEPARATOR + path}`)
-            resolve()
-        })
+    return api.renamePage(target.path, target.name, target.title).then( () => {
+        let path = me.getNodeFromView('/state/tools/pages')
+        me.loadContent(`${destination}/path${SUFFIX_PARAM_SEPARATOR + path}`)
     })
 
 }
