@@ -1,3 +1,5 @@
 #!/bin/bash
 
-export DOCKER_IMAGE=peregrinecms/peregrine-cms:sso-sans-auth-20200519r1
+if [ -z ${DOCKER_IMAGE+x} ]; then
+  export DOCKER_IMAGE=peregrinecms/peregrine-cms:sso-sans-auth-20200519r1
+fi

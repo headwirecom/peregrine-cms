@@ -143,8 +143,6 @@ public class CreateTenantServlet extends AbstractBaseServlet {
                 ModifiableValueMap properties = site.adaptTo(ModifiableValueMap.class);
                 properties.put(JCR_TITLE, title);
             }
-            // Check if Admin user and if not get password
-            String userName = request.getRequest().getUserPrincipal().getName();
             // Get User Password
             String userPwd = request.getParameter(TENANT_USER_PWD);
             boolean isPwdProvided = isNotEmpty(userPwd);
