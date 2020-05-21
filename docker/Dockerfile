@@ -1,5 +1,8 @@
 FROM adoptopenjdk/openjdk8:latest
 
+ARG PEREGRINECMS_BRANCH=develop
+ARG THEMECLEANFLEX_BRANCH=develop
+
 ENV APP_VERSION 1.0.0-snapshot
 
 WORKDIR /app
@@ -32,6 +35,8 @@ RUN echo "deb http://archive.ubuntu.com/ubuntu/ eoan main restricted" >> /etc/ap
 
 RUN mkdir -p /usr/local/lib/nodejs \
     && tar -xf /app/binaries/node-v10.16.0-linux-x64.tar.xz -C /usr/local/lib/nodejs \
+    && echo "peregrine-cms branch: $PEREGRINECMS_BRANCH" \
+    && echo "themeclean-flex branch: $THEMECLEANFLEX_BRANCH" \
     && java -version \
     && echo $PATH \
     && echo node: $(node -v) \
@@ -49,7 +54,7 @@ RUN npm install percli @peregrinecms/slingpackager \
 RUN mv /app/tasks.js /app/node_modules/percli/lib/tasks.js
 RUN npx percli server register author
 RUN npx percli server start author \
-    && ./installpackages.sh \
+    && ./installpackages.sh $PEREGRINECMS_BRANCH $THEMECLEANFLEX_BRANCH \
     && sleep 10 \
     && npx percli server stop author \
     && rm -rf binaries

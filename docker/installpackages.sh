@@ -1,10 +1,18 @@
 #!/bin/bash
 
+usage () {
+  echo "Usage: `basename $0` <peregrine-cms branch> <themeclean-flex branch>"
+}
+
+if [ $# -ne 2 ]; then
+  usage
+  exit 1
+fi
+
 # Install peregrine-cms
-# We need to build Peregrine because themeclean-flex needs com.peregrine-cms:base.core:jar:1.0-SNAPSHOT.
 git clone https://github.com/headwirecom/peregrine-cms.git
 cd peregrine-cms
-git checkout issue/322
+git checkout $1
 mvn clean install -P autoInstallPackage
 cd ..
 rm -rf peregrine-cms
@@ -12,5 +20,5 @@ rm -rf peregrine-cms
 # Install themeclean-flex
 git clone https://github.com/headwirecom/themeclean-flex.git
 cd themeclean-flex
-git checkout feature/contentrestructure
+git checkout $2
 mvn clean install -P autoInstallPackage
