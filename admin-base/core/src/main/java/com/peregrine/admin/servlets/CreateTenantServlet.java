@@ -143,8 +143,6 @@ public class CreateTenantServlet extends AbstractBaseServlet {
                 ModifiableValueMap properties = site.adaptTo(ModifiableValueMap.class);
                 properties.put(JCR_TITLE, title);
             }
-            // Check if Admin user and if not get password
-            String userName = request.getRequest().getUserPrincipal().getName();
             // Get User Password
             String userPwd = request.getParameter(TENANT_USER_PWD);
             boolean isPwdProvided = isNotEmpty(userPwd);
@@ -201,7 +199,7 @@ public class CreateTenantServlet extends AbstractBaseServlet {
                 tenantGroup.addMember(tenantUser);
             } else {
                 // We also need to add the current non-admin user to the group so that new site is visible for them
-                Authorizable authorizable = userManager.getAuthorizable(userName);
+                Authorizable authorizable = userManager.getAuthorizable(request.getRequest().getUserPrincipal());
                 if(authorizable != null) {
                     tenantGroup.addMember(authorizable);
                 }
