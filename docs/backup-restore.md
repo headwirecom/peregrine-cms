@@ -1,5 +1,7 @@
 # Requirement for Backup / Restore
 
+This is a document to gather the requirements for [ticket 392](https://github.com/headwirecom/peregrine-cms/issues/392)
+
 ## Andy
 
 In my opinion a full backup and restore (to restore a crashed server or to clone an existing server) should
