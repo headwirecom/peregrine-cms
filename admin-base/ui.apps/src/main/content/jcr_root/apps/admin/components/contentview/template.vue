@@ -89,7 +89,6 @@
         {{componentDisplayName(component)}}
       </button>
     </div>
-    <admin-components-richtoolbar :element="this.target"/>
   </div>
 </template>
 
@@ -294,6 +293,9 @@
             }, this.editable.delay)
           }
         }
+      },
+      'view.state.editor.inline.doc'(neo) {
+        console.log('view.state.editor.inline.doc: ', neo)
       }
     },
     mounted() {
@@ -307,6 +309,7 @@
         }
         set(this.view, '/state/editorVisible', false)
         set(this.view, '/state/editor/path', null)
+        set(this.view, '/state/editor/inline/rich', null)
       })
     },
     methods: {
@@ -555,6 +558,7 @@
         this.iframe.loaded = true
         this.iframe.win = this.$refs.editview.contentWindow
         this.iframe.doc = this.iframe.win.document
+        set(this.view, '/state/editor/inline/doc', this.iframe.doc)
         this.iframe.html = this.iframe.doc.querySelector('html')
         this.iframe.body = this.iframe.doc.querySelector('body')
         this.iframe.head = this.iframe.doc.querySelector('head')

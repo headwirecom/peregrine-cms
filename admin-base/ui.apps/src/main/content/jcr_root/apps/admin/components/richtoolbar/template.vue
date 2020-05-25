@@ -49,13 +49,13 @@
       <i class="material-icons" @click="link">insert_link</i>
     </button>
     <button class="btn">
-      <i class="material-icons" @click="cut">cut</i>
+      <i class="material-icons" @click="cut">content_cut</i>
     </button>
     <button class="btn">
-      <i class="material-icons" @click="copy">copy</i>
+      <i class="material-icons" @click="copy">content_copy</i>
     </button>
     <button class="btn">
-      <i class="material-icons" @click="paste">paste</i>
+      <i class="material-icons" @click="paste">content_paste</i>
     </button>
   </div>
 </template>
@@ -63,23 +63,23 @@
 <script>
   export default {
     name: 'RichToolbar',
-    props: {
-      element: null
-    },
-    data() {
-      return {}
-    },
     computed: {
-      win() {
-        return this.doc.defaultView || this.doc.parentWindow
+      view() {
+        return $perAdminApp.getView()
       },
-      doc() {
-        return this.element.ownerDocument
-      }
     },
     methods: {
+      getInlineDoc() {
+        if (this.view
+            && this.view.state
+            && this.view.state.editor
+            && this.view.state.editor.inline) {
+          return this.view.state.editor.inline.doc
+        }
+        return null
+      },
       exec(cmd, value = null, showUi = false) {
-        this.doc.execCommand(cmd, showUi, value)
+        this.getInlineDoc().execCommand(cmd, showUi, value)
       },
       clear() {
         if (confirm('Are you sure you want to clear all content?')) {

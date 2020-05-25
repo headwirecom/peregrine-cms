@@ -24,11 +24,19 @@
   -->
 <template>
     <div class="nav-content sub-nav" :class="classes">
+        <template>
+            <admin-components-richtoolbar v-if="isRich()"/>
+            <div v-else class="toolbar-placeholder"></div>
+        </template>
+        <template v-for="child in model.children">
+            <div v-bind:is="child.component" v-bind:model="child" v-bind:key="child.path"></div>
+        </template>
         <div v-if="showNodeTree" class="page-tree">
             <admin-components-materializedropdown
                 ref="dropdown"
                 :on-focus-out="() => {}"
-                :below-origin="true">
+                :below-origin="true"
+                alignment="right">
                 <template>
                     {{ currentNodeName }}<span class="caret-down"></span>
                 </template>
@@ -43,15 +51,12 @@
                 </template>
             </admin-components-materializedropdown>
         </div>
-        <template v-for="child in model.children">
-            <div v-bind:is="child.component" v-bind:model="child" v-bind:key="child.path"></div>
-        </template>
-        <span v-if="showNodeTree" class="center-keeper"></span>
     </div>
 </template>
 
 <script>
     import {NodeTree} from '../../../../../../js/constants'
+    import {get} from '../../../../../../js/utils'
 
     export default {
     props: ['model'],
@@ -132,6 +137,9 @@
         },
         isSupportedNodeTreeResourceType(resourceType) {
             return resourceType && NodeTree.SUPPORTED_RESOURCE_TYPES.indexOf(resourceType) >= 0
+        },
+        isRich() {
+            return get($perAdminApp.getView(), '/state/editor/inline/rich', false)
         }
     }
 }
