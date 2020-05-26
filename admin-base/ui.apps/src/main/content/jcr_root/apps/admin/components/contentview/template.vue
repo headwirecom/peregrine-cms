@@ -293,9 +293,6 @@
             }, this.editable.delay)
           }
         }
-      },
-      'view.state.inline.doc'(neo) {
-        console.log('view.state.inline.doc: ', neo)
       }
     },
     mounted() {
