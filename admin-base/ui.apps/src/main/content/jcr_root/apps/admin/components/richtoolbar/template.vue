@@ -70,11 +70,8 @@
     },
     methods: {
       getInlineDoc() {
-        if (this.view
-            && this.view.state
-            && this.view.state.editor
-            && this.view.state.editor.inline) {
-          return this.view.state.editor.inline.doc
+        if (this.view && this.view.state && this.view.state.inline) {
+          return this.view.state.inline.doc
         }
         return null
       },

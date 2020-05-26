@@ -139,7 +139,7 @@
             return resourceType && NodeTree.SUPPORTED_RESOURCE_TYPES.indexOf(resourceType) >= 0
         },
         isRich() {
-            return get($perAdminApp.getView(), '/state/editor/inline/rich', false)
+            return get($perAdminApp.getView(), '/state/inline/rich', false)
         }
     }
 }

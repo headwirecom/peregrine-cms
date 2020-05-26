@@ -123,7 +123,7 @@
           }
       },
         watch: {
-          'view.state.editor.inline.model'(val) {
+          'view.state.inline.model'(val) {
               if (!val) return
               this.focusFieldByModel(val)
           }
@@ -249,14 +249,14 @@
           
           if (['input', 'texteditor', 'material-textarea'].indexOf(field.type) >= 0) {
             this.$refs.formGenerator.$children[index].$el.scrollIntoView()
-            set(this.view, '/state/editor/inline/rich', this.isRichEditor(field))
+            set(this.view, '/state/inline/rich', this.isRichEditor(field))
           } else if (field.type === 'collection') {
             this.focusCollectionField(model, field, index)
           } else {
             console.warn('Unsupported field type: ', field.type)
           }
 
-          set(this.view, '/state/editor/inline/model', null)
+          set(this.view, '/state/inline/model', null)
         },
         focusCollectionField(model, field, index) {
           const fieldCollection = this.$refs.formGenerator.$children[index].$children[0]
@@ -264,7 +264,7 @@
           this.$nextTick(() => {
             const formGen = fieldCollection.$children[0]
             const fieldAndIndex = this.getFieldAndIndexByModel(field.fields, model.pop())
-            set(this.view, '/state/editor/inline/rich', this.isRichEditor(fieldAndIndex.field))
+            set(this.view, '/state/inline/rich', this.isRichEditor(fieldAndIndex.field))
             this.clearFocusStuff()
             this.focus.loop = setInterval(() => {
               formGen.$children[fieldAndIndex.index].$el.scrollIntoView()

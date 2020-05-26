@@ -224,7 +224,7 @@
         return $perAdminApp.findNodeFromPath(this.pageView.page, this.path).fromTemplate === true
       },
       isRich() {
-        return get(this.view, '/state/editor/inline/rich', false)
+        return get(this.view, '/state/inline/rich', false)
       },
       allowedComponents() {
         return get(this.view, '/admin/components/data', [])
@@ -294,8 +294,8 @@
           }
         }
       },
-      'view.state.editor.inline.doc'(neo) {
-        console.log('view.state.editor.inline.doc: ', neo)
+      'view.state.inline.doc'(neo) {
+        console.log('view.state.inline.doc: ', neo)
       }
     },
     mounted() {
@@ -309,7 +309,7 @@
         }
         set(this.view, '/state/editorVisible', false)
         set(this.view, '/state/editor/path', null)
-        set(this.view, '/state/editor/inline/rich', null)
+        set(this.view, '/state/inline/rich', null)
       })
     },
     methods: {
@@ -374,7 +374,7 @@
 
       flushInlineState() {
         if (this.inline) {
-          set(this.view, '/state/editor/inline/model', this.inline)
+          set(this.view, '/state/inline/model', this.inline)
           this.inline = null
         }
       },
@@ -564,7 +564,7 @@
         this.iframe.loaded = true
         this.iframe.win = this.$refs.editview.contentWindow
         this.iframe.doc = this.iframe.win.document
-        set(this.view, '/state/editor/inline/doc', this.iframe.doc)
+        set(this.view, '/state/inline/doc', this.iframe.doc)
         this.iframe.html = this.iframe.doc.querySelector('html')
         this.iframe.body = this.iframe.doc.querySelector('body')
         this.iframe.head = this.iframe.doc.querySelector('head')
