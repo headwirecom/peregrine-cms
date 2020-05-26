@@ -158,6 +158,14 @@ public interface AdminResourceHandler {
      */
     List<Recyclable> getRecyclables(ResourceResolver resourceResolver, String path) ;
 
+    /**
+     * Get a Recyclable item
+     * @param resourceResolver Resource Resolver
+     * @param path of item from the recycle bin to restore
+     * @return Null or a Recyclable item
+     * @throws ManagementException if there's an error
+     */
+    Recyclable getRecyclable(ResourceResolver resourceResolver, String path);
 
     /**
      * Updates a given resource based on the given JSon Content

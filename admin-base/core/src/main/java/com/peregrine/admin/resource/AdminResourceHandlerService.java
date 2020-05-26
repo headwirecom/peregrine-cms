@@ -403,7 +403,7 @@ public class AdminResourceHandlerService
     @Override
     public List<Recyclable> getRecyclables(ResourceResolver resourceResolver, String path) {
         final Resource resource = path.startsWith(RECYCLE_BIN_PATH) ?
-                getResource(resourceResolver,path) : getResource(resourceResolver, RECYCLE_BIN_PATH + path);
+                getResource(resourceResolver, path) : getResource(resourceResolver, RECYCLE_BIN_PATH + path);
         if (resource == null) {
             return new ArrayList<>();
         }
@@ -417,6 +417,16 @@ public class AdminResourceHandlerService
             }
         }
         return recyclables;
+    }
+
+    @Override
+    public Recyclable getRecyclable(ResourceResolver resourceResolver, String path) {
+        final Resource resource = path.startsWith(RECYCLE_BIN_PATH) ?
+                getResource(resourceResolver, path) : getResource(resourceResolver, RECYCLE_BIN_PATH + path);
+        if (resource == null) {
+            return null;
+        }
+        return resource.adaptTo(Recyclable.class);
     }
 
     public boolean hasPermission(ResourceResolver resourceResolver, String jcrActions, String path) {

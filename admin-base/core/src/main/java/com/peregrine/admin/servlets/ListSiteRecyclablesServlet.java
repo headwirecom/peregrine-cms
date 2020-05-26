@@ -97,8 +97,8 @@ public class ListSiteRecyclablesServlet extends AbstractBaseServlet {
         }
 
         final String queryStr =  "SELECT * from [nt:unstructured] as r " +
-            "WHERE r.[hasRecyclables] = true "+
-            "AND ISDESCENDANTNODE(r, '" + RECYCLE_BIN_PATH + sitePath + "') ";
+            "WHERE [sling:resourceType]='admin/components/recyclable' "+
+            "AND ISDESCENDANTNODE(r, '" + RECYCLE_BIN_PATH + sitePath + "') ORDER BY [jcr:created] DESC";
 
         try {
             QueryManager qm = session.getWorkspace().getQueryManager();
@@ -113,15 +113,14 @@ public class ListSiteRecyclablesServlet extends AbstractBaseServlet {
             long size = nodes.getSize();
             while(nodes.hasNext()) {
                 Node node = nodes.nextNode();
-                if (nodes.getPosition() < ROWS_PER_PAGE+ 1) {
-                    for (Recyclable r : resourceManagement.getRecyclables(request.getResourceResolver(), node.getPath())) {
-                        answer.writeObject();
-                        answer.writeAttribute(PATH, r.getResourcePath());
-                        answer.writeAttribute(DELETED_BY, r.getDeletedBy());
-                        answer.writeAttribute(DATE_DELETED, DELETED_DATE_FORMAT.format(r.getDeletedDate()));
-                        answer.writeAttribute(RECYCLE_BIN, r.getResource().getPath());
-                        answer.writeClose();
-                    }
+                if (nodes.getPosition() < ROWS_PER_PAGE + 1) {
+                    Recyclable r = resourceManagement.getRecyclable(request.getResourceResolver(), node.getPath());
+                    answer.writeObject();
+                    answer.writeAttribute(PATH, r.getResourcePath());
+                    answer.writeAttribute(DELETED_BY, r.getDeletedBy());
+                    answer.writeAttribute(DATE_DELETED, DELETED_DATE_FORMAT.format(r.getDeletedDate()));
+                    answer.writeAttribute(RECYCLE_BIN, r.getResource().getPath());
+                    answer.writeClose();
                 }
             }
             answer.writeClose();
