@@ -501,6 +501,9 @@ class PerAdminImpl {
                  populateView('/admin', 'recyclebin', result)
                     .then(() => resolve())
             })
+            .catch(error => {
+                $perAdminApp.notifyUser('error', `${error}. Unable to load Recycle Bin`)
+            })
     })
   }
 

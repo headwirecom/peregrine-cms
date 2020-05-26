@@ -105,7 +105,6 @@
         },
         watch: {
             page: function(val){
-                console.log(`page changed to ${val}`)
                 $perAdminApp.getApi().populateRecyclebin(val)
             }
         }
