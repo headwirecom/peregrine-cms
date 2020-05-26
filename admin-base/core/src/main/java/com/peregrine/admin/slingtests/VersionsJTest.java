@@ -346,6 +346,36 @@ public class VersionsJTest {
         }
     }
 
+    @Test
+    public void deletePageForever() {
+        final String newPath =  "/content/example/pages/index/about2";
+        try {
+            resourceManagement.copyResource(
+                    resourceResolver,
+                    aboutRes,
+                    indexRes,
+                    "about2",
+                    "About 2 be Deleted",
+                    null,
+                    false
+            );
+        } catch (AdminResourceHandler.ManagementException e) {
+            fail("failed to setup");
+        }
+        Resource newRes = resourceResolver.getResource(newPath);
+        assertNotNull(newRes);
+        try {
+            resourceManagement.deleteResource(resourceResolver, newRes.getPath(), null);
+        } catch (AdminResourceHandler.ManagementException e) {
+            fail("failed to delete");
+        }
+        List<Recyclable> recList = resourceManagement.getRecyclables(resourceResolver, pathPrefix);
+        assertEquals(recList.size(), 1);
+        assertEquals(recList.get(0).getResourcePath(), newPath);
+
+
+    }
+
     @After
     public void cleanUp() {
         resourceResolver.refresh();
