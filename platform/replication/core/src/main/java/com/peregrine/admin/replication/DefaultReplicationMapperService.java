@@ -5,6 +5,7 @@ import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
@@ -38,7 +39,7 @@ import static com.peregrine.commons.util.PerUtil.splitIntoParameterMap;
  */
 @Component(
     configurationPolicy = ConfigurationPolicy.REQUIRE,
-    service = { DefaultReplicationMapper.class, Replication.class },
+    service = DefaultReplicationMapper.class,
     immediate = true
 )
 @Designate(ocd = DefaultReplicationMapperService.Configuration.class, factory = true)
@@ -130,6 +131,7 @@ public class DefaultReplicationMapperService
 
     private void setup(BundleContext context, final Configuration configuration) {
         init(configuration.name(), configuration.description());
+        // Register this service as Replication instance
         logger.trace("Default Mapping: '{}'", configuration.defaultMapping());
         Map<String, Map<String, String>> temp = splitIntoParameterMap(new String[] {configuration.defaultMapping()}, ":", "\\|", "=");
         logger.trace("Mapped Default Mapping: '{}'", temp);

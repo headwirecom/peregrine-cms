@@ -1,5 +1,7 @@
 #!/bin/bash
 
-imageid=$(docker images peregrine-cms:latest --format {{.ID}})
-docker tag $imageid peregrinecms/peregrine-cms:develop
+. env.sh
+
+imageid=$(docker images ${DOCKER_IMAGE} --format {{.ID}})
+docker tag $imageid ${DOCKER_IMAGE}
 docker push peregrinecms/peregrine-cms

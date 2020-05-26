@@ -52,7 +52,7 @@
                             <admin-components-action
                                 v-bind:model="{
                                     target: { path: '/content', name: child.name },
-                                    command: 'configureSite',
+                                    command: 'configureTenant',
                                     tooltipTitle: `${$i18n('configure')} '${child.title || child.name}'`
                                 }">
                                 <i class="material-icons">settings</i>
@@ -62,7 +62,7 @@
                             <admin-components-action
                                 v-bind:model="{
                                     target: { path: '/content', name: child.name },
-                                    command: 'deleteSite',
+                                    command: 'deleteTenant',
                                     tooltipTitle: `${$i18n('delete')} '${child.title || child.name}'`
                                 }">
                                 <i class="material-icons">delete</i>
@@ -127,10 +127,10 @@
                 });
             },
 
-            deleteSite: function(me, target) {
+            deleteTenant: function(me, target) {
                 $perAdminApp.askUser('Delete Site', me.$i18n('Are you sure you want to delete this site, its children, and generated content and components?'), {
                     yes() {
-                        $perAdminApp.stateAction('deleteSite', target)
+                        $perAdminApp.stateAction('deleteTenant', target)
                     }
                 })
             },
@@ -140,7 +140,7 @@
             },
 
             onCreateNewSiteClick() {
-                $perAdminApp.action(this, 'selectPath', '/content/admin/pages/pages/createsite')
+                $perAdminApp.action(this, 'selectPath', '/content/admin/pages/pages/createtenant')
             },
 
             onTabClick(index) {

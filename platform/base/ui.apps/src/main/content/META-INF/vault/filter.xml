@@ -50,10 +50,4 @@
         <exclude pattern="/apps/per/install/.*"/>
     </filter>
     <filter root="/apps/runmodes"/>
-    <filter root="/home/users/system/sitemaps-cache"/>
-    <filter root="/content/rep:policy">
-        <include pattern="/content/rep:policy/sitemaps-cache"/>
-        <exclude pattern="/content/rep:policy/.*"/>
-    </filter>
-    <filter root="/var/sitemaps"/>
 </workspaceFilter>

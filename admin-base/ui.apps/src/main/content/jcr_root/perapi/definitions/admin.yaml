@@ -242,41 +242,56 @@ paths:
           description: If the path or template path did not resolve to a resource, the name is null or the page already exists
           schema:
             $ref: "#/definitions/Error"
-  '/createSite.json':
+  '/createTenant.json':
     post:
-      description: Create a new Site by copying from an existing site
+      description: Create a new Tenant by copying from an existing Tenant
       parameters:
-        - name: fromSite
+        - name: fromTenant
           type: string
           in: formData
-          description: The Name of the Source Site to copy from which must exist
+          description: The Name of the Source Tenant to copy from which must exist
           required: true
-        - name: toSite
+        - name: toTenant
           type: string
           in: formData
-          description: The Name of the Target Site to be copied to which must not exist
+          description: The Name of the Target Tenant to be copied to which must not exist
           required: true
+        - name: tenantTitle
+          type: string
+          in: formData
+          description: The Title of the Target Tenant (if not provided the name is used instead)
+          required: false
+        - name: colorPalette
+          type: string
+          in: formData
+          description: Path to the Color Palette to be set like '/content/themecleanflex/pages/css/palettes/default.css'
+          required: false
+        - name: tenantUserPwd
+          type: string
+          in: formData
+          description: A password for the tenant user created for Admin
+          required: false
       responses:
         200:
-          description: returns the path of the new site and the path to the source
+          description: returns the path of the new Tenant and the path to the source
           schema:
             type: object
             properties:
               type:
                 type: string
-                description: Type set to 'site'
+                description: Type set to 'tenant'
               status:
                 type: string
                 description: Status set to 'created'
               name:
                 type: string
-                description: Name of the newly crated site
+                description: Name of the newly crated tenant
               path:
                 type: string
-                description: Path of the newly created site
+                description: Path of the newly created tenant
               sourcePath:
                 type: string
-                description: Path of the source site
+                description: Path of the source tenant
         400:
           description: If the path did not resolve to a resource
           schema:
@@ -382,30 +397,30 @@ paths:
           description: If the path did not resolve to a resource, if the reosurce is not a page or if the page could not be deleted
           schema:
             $ref: "#/definitions/Error"
-  '/deleteSite.json':
+  '/deleteTenant.json':
     post:
-      description: Delete a Site
+      description: Delete a Tenant
       parameters:
         - name: name
           type: string
           in: formData
-          description: The Name of the Site to delete
+          description: The Name of the Tenant to delete
           required: true
       responses:
         200:
-          description: returns the path of the deleted site
+          description: returns the path of the deleted tenant
           schema:
             type: object
             properties:
               type:
                 type: string
-                description: Type set to 'site'
+                description: Type set to 'tenant'
               status:
                 type: string
                 description: Status set to 'deleted'
               sourcePath:
                 type: string
-                description: Path of the source site
+                description: Path of the source tenant
         400:
           description: If the path did not resolve to a resource
           schema:
@@ -426,32 +441,32 @@ paths:
             type: object
             additionalProperties:
               type: object
-  '/updateSite.json':
+  '/updateTenant.json':
     post:
-      description: Update a site's components and frontend libs from its source site
+      description: Update a tenant's components and frontend libs from its source tenant
       parameters:
         - name: name
           type: string
           in: formData
-          description: The Name of the site to update
+          description: The Name of the tenant to update
           required: true
       responses:
         200:
-          description: returns the path of the new site and the path to the source
+          description: returns the path of the new tenant and the path to the source
           schema:
             type: object
             properties:
               type:
                 type: string
-                description: Type set to 'site'
+                description: Type set to 'tenant'
               status:
                 type: string
                 description: Status set to 'updated'
               name:
                 type: string
-                description: Name of the updated site
+                description: Name of the updated tenant
         400:
-          description: If the name was not a valid site name
+          description: If the name was not a valid tenant name
           schema:
             $ref: "#/definitions/Error"
   '/insertNodeAt.json{path}':
@@ -516,7 +531,7 @@ paths:
             $ref: "#/definitions/Error"
   '/listTenants.json':
     get:
-      description: List all the tenants (top level sites) on this peregrine instance
+      description: List all the tenants (top level tenants) on this peregrine instance
       responses:
         200:
           description: returns the list of tenants

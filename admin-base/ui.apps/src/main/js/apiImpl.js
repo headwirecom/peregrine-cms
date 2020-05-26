@@ -487,6 +487,7 @@ class PerAdminImpl {
     })
   }
 
+
   populateRecyclebin(page = 0) {
     let tenant = getOrCreate(callbacks.getView(), '/state/tenant').name
     if (tenant == undefined) {
@@ -522,17 +523,17 @@ class PerAdminImpl {
       })
   }
 
-  createSite(fromName, toName, title, tenantUserPwd, colorPalette) {
+  createTenant(fromName, toName, tenantTitle, tenantUserPwd, colorPalette) {
     return new Promise((resolve, reject) => {
       let data = new FormData()
-      data.append('fromSite', fromName)
-      data.append('toSite', toName)
-      data.append('title', title)
+      data.append('fromTenant', fromName)
+      data.append('toTenant', toName)
+      data.append('tenantTitle', tenantTitle)
       data.append('tenantUserPwd', tenantUserPwd)
       if (colorPalette) {
         data.append('colorPalette', colorPalette)
       }
-      updateWithForm('/admin/createSite.json', data)
+      updateWithForm('/admin/createTenant.json', data)
           .then((data) => this.populateNodesForBrowser(
               callbacks.getView().state.tools.pages))
           .then(() => resolve())
@@ -638,12 +639,12 @@ class PerAdminImpl {
         .then(() => this.populateNodesForBrowser(path))
   }
 
-  deleteSite(target) {
+  deleteTenant(target) {
     const name = target.name;
     const root = '/content'
     const data = new FormData()
     data.append('name', name)
-    return updateWithForm('/admin/deleteSite.json', data)
+    return updateWithForm('/admin/deleteTenant.json', data)
         .then(() => this.populateNodesForBrowser(root))
   }
 
@@ -972,10 +973,10 @@ class PerAdminImpl {
         })
   }
 
-  siteSetupReplication(path, withSite) {
+  tenantSetupReplication(path, withSite) {
     let formData = new FormData();
     formData.append('withSite', withSite)
-    return updateWithForm('/admin/siteSetupReplication.json' + path, formData)
+    return updateWithForm('/admin/tenantSetupReplication.json' + path, formData)
   }
 
 

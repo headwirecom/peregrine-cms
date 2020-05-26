@@ -67,9 +67,13 @@ public final class SiteMapResourceChangeJobConsumer implements JobConsumer {
 
     @Activate
     public void activate(final SiteMapResourceChangeJobConsumerConfig config) {
-        primaryTypes.clear();
-        for (final String type : config.primaryTypes()) {
-            primaryTypes.add(type);
+        if(config == null || config.primaryTypes() == null) {
+            logger.debug("Configuration for Site Map Resource Change Job Consumer config is not valid -> ignored");
+        } else {
+            primaryTypes.clear();
+            for (final String type : config.primaryTypes()) {
+                primaryTypes.add(type);
+            }
         }
     }
 

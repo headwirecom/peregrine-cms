@@ -1,5 +1,0 @@
-<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:rep="internal"
-          jcr:primaryType="rep:SystemUser"
-          jcr:uuid="452fbb9f-dbe9-325e-b927-f9e5b339d293"
-          rep:authorizableId="sitemaps-cache"
-          rep:principalName="sitemaps-cache" />
