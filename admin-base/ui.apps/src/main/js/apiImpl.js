@@ -537,6 +537,12 @@ class PerAdminImpl {
           .then((data) => this.populateNodesForBrowser(
               callbacks.getView().state.tools.pages))
           .then(() => resolve())
+          .catch(error => {
+              if (error.response && error.response.data && error.response.data.message) {
+                  reject(error.response.data.message)
+              }
+              reject(error)
+            })
     })
   }
 
