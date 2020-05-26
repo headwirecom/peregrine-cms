@@ -31,13 +31,16 @@ import static com.peregrine.admin.util.AdminConstants.PEREGRINE_SERVICE_NAME;
 import static com.peregrine.admin.util.AdminConstants.USER_NAME_SUFFIX;
 import static com.peregrine.commons.util.PerConstants.ADMIN_USER;
 import static com.peregrine.commons.util.PerConstants.ALL_TENANTS_GROUP_NAME;
+import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
 import static com.peregrine.commons.util.PerConstants.COLOR_PALETTE;
 import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
 import static com.peregrine.commons.util.PerConstants.CREATED;
+import static com.peregrine.commons.util.PerConstants.FELIBS_ROOT;
 import static com.peregrine.commons.util.PerConstants.FROM_TENANT_NAME;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.PACKAGES_PATH;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.SITE;
 import static com.peregrine.commons.util.PerConstants.SLASH;
@@ -207,11 +210,20 @@ public class CreateTenantServlet extends AbstractBaseServlet {
             // Finally set permissions on site
             try {
                 AccessControlManager accessControlManager = adminSession.getAccessControlManager();
-                JackrabbitAccessControlList policies = AccessControlUtils.getAccessControlList(accessControlManager, site.getPath());
-                Privilege[] privileges = AccessControlUtils.privilegesFromNames(accessControlManager, "jcr:all");
-                policies.addEntry(allTenantsGroup.getPrincipal(), privileges, false, null);
-                policies.addEntry(tenantGroup.getPrincipal(), privileges, true, null);
-                accessControlManager.setPolicy(site.getPath(), policies);
+                setAccessRights(accessControlManager, site.getPath(), allTenantsGroup, tenantGroup);
+                // Set permission on apps, etc/felibs and etc/packages
+                Resource apps = resourceResolver.getResource(APPS_ROOT + SLASH + toTenant);
+                if(apps != null) {
+                    setAccessRights(accessControlManager, apps.getPath(), allTenantsGroup, tenantGroup);
+                }
+                Resource felibs = resourceResolver.getResource(FELIBS_ROOT + SLASH  + toTenant);
+                if(felibs != null) {
+                    setAccessRights(accessControlManager, felibs.getPath(), allTenantsGroup, tenantGroup);
+                }
+                Resource packages = resourceResolver.getResource(PACKAGES_PATH + SLASH  + toTenant);
+                if(packages != null) {
+                    setAccessRights(accessControlManager, packages.getPath(), allTenantsGroup, tenantGroup);
+                }
                 // Done settings permissions
             } catch(RuntimeException e) {
                 logger.warn("Setting Site Permissions failed", e);
@@ -250,6 +262,16 @@ public class CreateTenantServlet extends AbstractBaseServlet {
         }
     }
 
+    private void setAccessRights(AccessControlManager accessControlManager, String path, Group allTenantsGroup, Group tenantGroup)
+        throws RepositoryException
+    {
+        JackrabbitAccessControlList policies = AccessControlUtils.getAccessControlList(accessControlManager, path);
+        Privilege[] privileges = AccessControlUtils.privilegesFromNames(accessControlManager, "jcr:all");
+        policies.addEntry(allTenantsGroup.getPrincipal(), privileges, false, null);
+        policies.addEntry(tenantGroup.getPrincipal(), privileges, true, null);
+        accessControlManager.setPolicy(path, policies);
+
+    }
     private void setColorPalette(ResourceResolver resourceResolver, String colorPalette, String fromTenant, String toTenant) throws PersistenceException {
         final Resource templateContent = getResource(
             resourceResolver,
