@@ -230,6 +230,17 @@ public interface AdminResourceHandler {
     void updateOrCreateAssetTitle(Resource resource, String title);
 
     /**
+     * Check whether user has a permision on a resource
+     * @param resourceResolver the user's resource resolver
+     * @param jcrAction the JCR permission(s) to validate. Refer to links for info about this param...
+     *        https://jackrabbit.apache.org/oak/docs/security/permission.html#oak_permissions
+     *        https://jackrabbit.apache.org/oak/docs/apidocs/org/apache/jackrabbit/oak/spi/security/authorization/permission/Permissions.html
+     * @param path path of the resource to check
+     * @return true if user has the specified permission on the path
+     */
+    boolean hasPermission(ResourceResolver resourceResolver, String jcrAction, String path);
+
+    /**
      * Create an Asset Resource which the given Byte Input Stream
      * @param parent Parent Source under which the asset is created. It must exist
      * @param assetName Name of the Asset. There must not be an asset with that name already exist

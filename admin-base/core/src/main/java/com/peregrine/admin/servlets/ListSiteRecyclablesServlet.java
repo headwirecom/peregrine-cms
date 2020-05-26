@@ -24,15 +24,9 @@ package com.peregrine.admin.servlets;
 
 import com.peregrine.admin.models.Recyclable;
 import com.peregrine.admin.resource.AdminResourceHandler;
-import com.peregrine.admin.resource.AdminResourceHandler.DeletionResponse;
-import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
-import org.apache.sling.api.adapter.AdapterManager;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
@@ -43,19 +37,17 @@ import javax.jcr.query.QueryResult;
 import javax.servlet.Servlet;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.List;
-
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_DELETE_PAGE;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_LIST_RECYCLABLES;
 import static com.peregrine.admin.util.AdminConstants.*;
 import static com.peregrine.admin.util.AdminConstants.DATA;
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.*;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
-import static org.osgi.framework.Constants.SERVICE_VENDOR;
+
 
 /**
  * List all the recoverable items for a given site
@@ -73,8 +65,11 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 public class ListSiteRecyclablesServlet extends AbstractBaseServlet {
 
     public static final String FAILED_TO_LIST_RECYCLABLES = "Failed get recyclable list :-/ ";
+    public static final String ACL_FOR_RECYCLABLES_INSUFF = "Insufficient permissions to view or restore from recycle bin";
     public static final String DELETED_BY = "deleted_by";
     public static final String DATE_DELETED = "date_deleted";
+    public static final String READ_PERMISSIONS = "READ_NODE,READ_PROPERTY";
+    public static final String VERSION_PERMISSIONS = "VERSION_MANAGEMENT";
     public static final SimpleDateFormat DELETED_DATE_FORMAT = new SimpleDateFormat("MMM dd, yyyy h:mm a");
     private static final long ROWS_PER_PAGE = 100;
 
@@ -86,6 +81,11 @@ public class ListSiteRecyclablesServlet extends AbstractBaseServlet {
         final Session session = request.getResourceResolver().adaptTo(Session.class);
         JsonResponse answer = new JsonResponse();
         final String sitePath = request.getSuffix();
+
+        if (!resourceManagement.hasPermission(request.getResourceResolver(), READ_PERMISSIONS, RECYCLE_BIN_PATH+sitePath) ||
+                !resourceManagement.hasPermission(request.getResourceResolver(), VERSION_PERMISSIONS, sitePath)) {
+            return new ErrorResponse().setHttpErrorCode(SC_FORBIDDEN).setErrorMessage(ACL_FOR_RECYCLABLES_INSUFF);
+        }
 
         // Set up pagination
         String pageParam = request.getParameter(PAGE, "0");

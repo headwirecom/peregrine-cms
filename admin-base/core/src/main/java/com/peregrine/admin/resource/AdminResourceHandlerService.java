@@ -193,6 +193,7 @@ public class AdminResourceHandlerService
         cardinality = ReferenceCardinality.MULTIPLE,
         policy = ReferencePolicy.DYNAMIC
     )
+
     void addImageMetadataSelector(ImageMetadataSelector selector) {
         imageMetadataSelectors.add(selector);
     }
@@ -416,6 +417,16 @@ public class AdminResourceHandlerService
             }
         }
         return recyclables;
+    }
+
+    public boolean hasPermission(ResourceResolver resourceResolver, String jcrActions, String path) {
+        Session session = resourceResolver.adaptTo(Session.class);
+        try {
+            return session.hasPermission(path, jcrActions);
+        } catch (RepositoryException e) {
+            logger.error("Failed to evaluate user permissions ", e);
+        }
+        return false;
     }
 
 //    Assets, Pages, Folders are recyclable. Individual component nodes under jcr:content are not recyclable.
