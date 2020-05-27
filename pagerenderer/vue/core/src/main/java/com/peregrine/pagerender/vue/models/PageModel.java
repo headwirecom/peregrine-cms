@@ -1,5 +1,4 @@
 package com.peregrine.pagerender.vue.models;
-
 /*-
  * #%L
  * peregrine vuejs page renderer - Core
@@ -24,7 +23,6 @@ package com.peregrine.pagerender.vue.models;
  * under the License.
  * #L%
  */
-
 import static com.peregrine.commons.util.PerConstants.JACKSON;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
@@ -32,7 +30,6 @@ import static com.peregrine.commons.util.PerConstants.JSON;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.pagerender.vue.models.PageRenderVueConstants.PR_VUE_COMPONENT_PAGE_TYPE;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.peregrine.commons.util.PerConstants;
 import com.peregrine.nodetypes.models.IComponent;
@@ -48,7 +45,6 @@ import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.Optional;
 import org.apache.sling.models.factory.ModelFactory;
-
 /**
  * Created by rr on 12/2/2016.
  */
@@ -61,17 +57,14 @@ import org.apache.sling.models.factory.ModelFactory;
     name = JACKSON,
     extensions = JSON)
 public class PageModel extends Container {
-
     public static final String SITE_CSS = "siteCSS";
     public static final String PREFETCH_DNS = "prefetchDNS";
     public static final String DOMAINS = "domains";
     public static final String SITE_JS = "siteJS";
     public static final String TEMPLATE = "template";
-
     public PageModel(Resource r) {
         super(r);
     }
-
     public Resource getParentContent(Resource res) {
         Resource page = res.getParent();
         if(page != null) {
@@ -85,65 +78,49 @@ public class PageModel extends Container {
         }
         return null;
     }
-
     @Inject
     private ModelFactory modelFactory;
-
     @Inject
     @Optional
     private String[] prefetchDNS;
-
     @Inject
     @Optional
     private String[] siteCSS;
-
     @Inject
     @Optional
     private String[] siteJS;
-
     @Inject
     @Optional
     private String[] domains;
-
     @Inject
     @Named(TEMPLATE)
     @Optional
     private String template;
-
     @Inject
     @Named(JCR_TITLE)
     @Optional
     private String title;
-
     @Inject
     private String dataFrom;
-
     @Inject
     private String dataDefault;
-
     @Inject
     private String[] loaders;
-
     @Inject
     private String[] suffixToParameter;
-
     @Inject
     private String description;
-
     @Inject
     @Optional
     private String brand;
-
     public String getSiteRoot() {
         String path = getPagePath();
         String[] segments = path.split(SLASH);
         return String.join(SLASH, segments[0], segments[1], segments[2], segments[3]);
     }
-
     public String getPagePath() {
         return getResource().getParent().getPath();
     }
-
     public String[] getPrefetchDNS() {
         if(prefetchDNS == null) {
             String[] value = (String[]) getInheritedProperty(PREFETCH_DNS);
@@ -157,7 +134,6 @@ public class PageModel extends Container {
         }
         return prefetchDNS;
     }
-
     public String[] getSiteCSS() {
         if(siteCSS == null) {
             String[] value = (String[]) getInheritedProperty(SITE_CSS);
@@ -171,7 +147,6 @@ public class PageModel extends Container {
         }
         return siteCSS;
     }
-
     public String[] getDomains() {
         if(domains == null) {
             String[] value = (String[]) getInheritedProperty(DOMAINS);
@@ -185,14 +160,12 @@ public class PageModel extends Container {
         }
         return domains;
     }
-
     private PageModel getTemplatePageModel() {
         String template = getTemplate();
         if(template == null) return null;
         Resource templateResource = getResource().getResourceResolver().getResource(getTemplate() + SLASH + JCR_CONTENT);
         return (PageModel) modelFactory.getModelFromResource(templateResource);
     }
-
     private Object getInheritedProperty(String propertyName) {
         Resource parentContent = getParentContent(getResource());
         while(parentContent != null) {
@@ -205,7 +178,6 @@ public class PageModel extends Container {
         }
         return null;
     }
-
     public String[] getSiteJS() {
         if(siteJS == null) {
             String[] value = (String[]) getInheritedProperty(SITE_JS);
@@ -217,7 +189,6 @@ public class PageModel extends Container {
         }
         return siteJS;
     }
-
     public String getTemplate() {
         if(template == null) {
             String value = (String) getInheritedProperty(TEMPLATE);
@@ -228,49 +199,49 @@ public class PageModel extends Container {
         }
         return template;
     }
-
     public String getTitle() {
         return title;
     }
-
     public String getDataFrom() {
         return dataFrom;
     }
-
     public String getDataDefault() {
         return dataDefault;
     }
-
     public String[] getLoaders() {
         return loaders;
     }
-
     public String[] getSuffixToParameter() {
         return suffixToParameter;
     }
-
     public List<Tag> getTags() {
         Resource tags = getResource().getChild("tags");
         List<Tag> answer = new ArrayList<Tag>();
         if(tags != null) {
             for(Resource tag: tags.getChildren()) {
-                answer.add(new Tag(tag));
+                String tagString = tag.getValueMap().get("value", String.class);
+                Resource tagResource = tag.getResourceResolver().getResource(tagString);
+                if (tagResource != null) { 
+                    answer.add(new Tag(tag));
+                }
             }
         }
         return answer;
     }
-
     public List<String> getRenderedTags() {
         Resource tags = getResource().getChild("tags");
         List<String> answer = new ArrayList<String>();
         if(tags != null) {
             for(Resource tag: tags.getChildren()) {
-                answer.add(new Tag(tag).getName());
+                String tagString = tag.getValueMap().get("value", String.class);
+                Resource tagResource = tag.getResourceResolver().getResource(tagString);
+                if (tagResource != null) { 
+                    answer.add(new Tag(tag).getName());
+                }
             }
         }
         return answer;
     }
-
     public List<MetaProperty> getMetaproperties() {
         Resource metaproperties = getResource().getChild(PerConstants.METAPROPERTIES);
         List<MetaProperty> answer = new ArrayList<>();
@@ -282,7 +253,6 @@ public class PageModel extends Container {
         }
         return answer;
     }
-
     public List<MetaProperty> getMetanames() {
         Resource metaproperties = getResource().getChild(PerConstants.METAPROPERTIES);
         List<MetaProperty> answer = new ArrayList<>();
@@ -294,11 +264,9 @@ public class PageModel extends Container {
         }
         return answer;
     }
-
     public String getDescription() {
         return description;
     }
-
     public String getBrand() {
         if(brand == null) {
             String value = (String) getInheritedProperty("brand");
@@ -310,19 +278,23 @@ public class PageModel extends Container {
         }
         return brand;
     }
-
     class Tag {
         private String path;
         private String name;
         private String value;
-
         public Tag(Resource r) {
             this.path = r.getPath();
             this.path = path.substring(path.indexOf("/jcr:content"));
             this.name = r.getName();
-            this.value = r.getValueMap().get("value", String.class);
+            String tag = r.getValueMap().get("value", String.class);
+            Resource tagResource = r.getResourceResolver().getResource(tag);
+            if (tagResource != null) {
+                this.value = tagResource.getValueMap().get("value", String.class);
+            }
+            if (this.value == null) {
+                this.value = null;
+            }
         }
-
         public String getName() { return name; }
         public String getValue() { return value; }
         public String getPath() { return path; }
