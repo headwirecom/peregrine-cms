@@ -27,5 +27,6 @@
   xmlns:jcr="http://www.jcp.org/jcr/1.0"
   jcr:primaryType="per:Site"
   jcr:title="Example Site"
+  sourceSite="pagerendervue"
   internal="true"
   template="false"/>

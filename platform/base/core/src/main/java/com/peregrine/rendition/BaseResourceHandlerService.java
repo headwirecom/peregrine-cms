@@ -106,7 +106,7 @@ public class BaseResourceHandlerService
                         logger.error("Resource: '{}' does not contain a data element", resource.getName());
                     }
                 } catch(TransformationException e) {
-                    logger.error("Transformation failed, image ignore", e);
+                    logger.error("Transformation failed, image ignored", e);
                 } catch(RepositoryException e) {
                     logger.error("Failed to create Rendition Node for Resource: '{}', rendition name: '{}'", resource, renditionName);
                 } catch(PersistenceException e) {
@@ -124,7 +124,7 @@ public class BaseResourceHandlerService
                         imageTransformationConfigurationList = imageTransformationConfigurationProvider.getImageTransformationConfigurations("thumbnail.no.crop.png", "/");
                         answer = transform(renditionName, "image/svg+xml", brokenImageStream, PNG_MIME_TYPE, imageTransformationConfigurationList);
                     } catch(TransformationException e) {
-                        logger.error("Transformation failed, image ignore", e);
+                        logger.error("Transformation failed, image ignored", e);
                     }
                 }
                 logger.trace("Broken Image Rendition Context: '{}'", answer);

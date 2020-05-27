@@ -39,7 +39,7 @@ export default {
     props: ['model'],
     data: function() {
       return {
-          show: true
+          show: false
       }
     },
     computed: {
@@ -56,16 +56,17 @@ export default {
     created() {
         const vm = this;
 
-        if(window.frameElement && window.frameElement.attributes['data-per-mode']) {
-            if(window.frameElement.attributes['data-per-mode'].value) {
-                return;
-            }
-        }
-
         if (window.parent && window.parent.$perAdminApp  && window.parent.$perAdminApp.eventBus) {
             window.parent.$perAdminApp.eventBus.$on('edit-preview', (data) => {
                 vm.show = data !== 'preview'
             })
+        }
+
+        if(window.frameElement && window.frameElement.attributes['data-per-mode']) {
+            if(window.frameElement.attributes['data-per-mode'].value) {
+                vm.show = false
+                return;
+            }
         }
     },
     mounted() {
@@ -98,7 +99,7 @@ export default {
 
 <style>
     .per-drop-target {
-        border: 1px solid #c0c0c0;
+        border: 1px dashed #c0c0c0;
         clear: both;
         padding: 4px;
         margin: 4px;

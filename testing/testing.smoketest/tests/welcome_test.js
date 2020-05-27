@@ -20,7 +20,7 @@ Scenario('demo flow simple site', async (I) => {
     I.fillField('Password', 'admin')
     I.click('Log In')
     I.waitForNavigation()
-    const response = await I.sendPostRequest('/admin/deleteSite.json?name=sunshine', {}, {
+    const response = await I.sendPostRequest('/admin/deleteTenant.json?name=sunshine', {}, {
         'Authorization': `Basic ${token}`
       })
     I.seeInTitle('Welcome')

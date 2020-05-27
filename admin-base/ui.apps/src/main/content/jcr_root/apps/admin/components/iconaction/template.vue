@@ -56,7 +56,11 @@
                 return !action.startsWith('http') && (target === undefined || target === null)
             },
             onCardContentClick() {
-                $perAdminApp.action(this, 'selectPath', this.model.action)
+                if (this.internal(this.model.action, this.model.target)) {
+                    $perAdminApp.action(this, 'selectPath', this.model.action)
+                } else {
+                    window.open(this.model.action, this.model.target).focus()
+                }
             }
         }
     }

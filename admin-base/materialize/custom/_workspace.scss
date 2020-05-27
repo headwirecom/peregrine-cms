@@ -216,6 +216,14 @@
 			}
 
 		}
+
+		.spinner-wrapper {
+			display: flex;
+			width: 100%;
+			height: 100%;
+			justify-content: center;
+			padding-top: 50px;
+		}
 	}
 	.show-right-panel {
 		background-color: color("blue-grey", "lighten-5");

@@ -45,8 +45,8 @@
                     </admin-components-action>
                 </li>
                 <li
-                    v-for ="(child,i) in children"
-                    v-bind:key="i"
+                    v-for ="child in children"
+                    v-bind:key="child.path"
                     v-bind:class="`collection-item ${isSelected(child) ? 'explorer-item-selected' : ''}`"
                     draggable ="true"
                     v-on:dragstart ="onDragRowStart(child,$event)"
@@ -139,12 +139,42 @@
                         <admin-components-action
                             v-bind:model="{
                                 target: child,
-                                command: 'deleteSiteOrPage',
+                                command: 'deleteTenantOrPage',
                                 tooltipTitle: `${$i18n('delete')} '${child.title || child.name}'`
                             }">
                             <i class="material-icons">delete</i>
                         </admin-components-action>
                     </div>
+                </li>
+                <li class="collection-item" v-if="isPages(path)">
+                    <admin-components-action
+                        v-bind:model="{
+                            target: '',
+                            command: 'addPage',
+                            tooltipTitle: `${$i18n('add page')}`
+                        }">
+                            <i class="material-icons">add_circle</i> {{$i18n('add page')}}
+                    </admin-components-action>
+                </li>
+                <li class="collection-item" v-if="isObjects(path)">
+                    <admin-components-action
+                        v-bind:model="{
+                            target: '',
+                            command: 'addObject',
+                            tooltipTitle: `${$i18n('add object')}`
+                        }">
+                            <i class="material-icons">add_circle</i> {{$i18n('add object')}}
+                    </admin-components-action>
+                </li>
+                <li class="collection-item" v-if="isTemplates(path)">
+                    <admin-components-action
+                        v-bind:model="{
+                            target: '',
+                            command: 'addTemplate',
+                            tooltipTitle: `${$i18n('add template')}`
+                        }">
+                            <i class="material-icons">add_circle</i> {{$i18n('add template')}}
+                    </admin-components-action>
                 </li>
             </ul>
             <div v-if="children && children.length == 0" class="empty-explorer">
@@ -505,7 +535,7 @@
             },
 
             addSite: function(me, target) {
-                $perAdminApp.stateAction('createSiteWizard', '/content')
+                $perAdminApp.stateAction('createTenantWizard', '/content')
             },
 
             addPage: function(me, target) {
@@ -546,9 +576,9 @@
                 $perAdminApp.stateAction('sourceImageWizard', me.pt.path)
             },
 
-            deleteSiteOrPage: function(me, target) {
+            deleteTenantOrPage: function(me, target) {
                 if(me.path === '/content') {
-                    me.deleteSite(me, target)
+                    me.deleteTenant(me, target)
                 } else {
                     me.deletePage(me, target)
                 }
@@ -575,10 +605,10 @@
                 })
             },
 
-            deleteSite: function(me, target) {
+            deleteTenant: function(me, target) {
                 $perAdminApp.askUser('Delete Site', me.$i18n('Are you sure you want to delete this site, its children, and generated content and components?'), {
                     yes() {
-                        $perAdminApp.stateAction('deleteSite', target)
+                        $perAdminApp.stateAction('deleteTenant', target)
                     }
                 })
             },

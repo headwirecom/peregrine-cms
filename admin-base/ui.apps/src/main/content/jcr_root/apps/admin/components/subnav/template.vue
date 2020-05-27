@@ -24,31 +24,41 @@
   -->
 <template>
     <div class="nav-content sub-nav" :class="classes">
-        <div v-if="isEditPage" class="page-tree">
+        <div v-if="showNodeTree" class="page-tree">
             <admin-components-materializedropdown
-                :below-origin="true"
-                :items="pageTree.items">
+                ref="dropdown"
+                :on-focus-out="() => {}"
+                :below-origin="true">
                 <template>
-                    {{ currentPage }}<span class="caret-down"></span>
+                    {{ currentNodeName }}<span class="caret-down"></span>
+                </template>
+                <template slot="content" v-if="filteredChildren.length > 0">
+                    <admin-components-nodetreeitem
+                        v-for="(node, index) in filteredChildren"
+                        :key="`page-tree-item-${node.path}`"
+                        :item="node"
+                        :supported-resource-types="NodeTree.SUPPORTED_RESOURCE_TYPES"
+                        @click.native.stop="() => {}"
+                        @edit-node="onTreeItemEditNode"/>
                 </template>
             </admin-components-materializedropdown>
         </div>
         <template v-for="child in model.children">
             <div v-bind:is="child.component" v-bind:model="child" v-bind:key="child.path"></div>
         </template>
-        <span v-if="isEditPage" class="center-keeper"></span>
+        <span v-if="showNodeTree" class="center-keeper"></span>
     </div>
 </template>
 
 <script>
-export default {
+    import {NodeTree} from '../../../../../../js/constants'
+
+    export default {
     props: ['model'],
     data() {
-      return {
-          pageTree: {
-              items: []
-          }
-      }
+        return {
+            NodeTree: NodeTree
+        }
     },
     computed: {
         classes() {
@@ -60,61 +70,68 @@ export default {
         isEditPage() {
             return this.model.classes && this.model.classes.indexOf('navcenter') >= 0
         },
+        tenant() {
+            return $perAdminApp.getView().state.tenant
+        },
+        section() {
+          return this.getPath().split('/')[3]
+        },
+        sectionRoot() {
+            return this.tenant.roots[this.section]
+        },
+        showNodeTree() {
+            return this.isEditPage && ['pages', 'templates'].indexOf(this.section) >= 0
+        },
         nodes() {
             return $perAdminApp.getView().admin.nodes
         },
-        currentPage() {
+        nodeTreeRootNode() {
+            try {
+                if (this.showNodeTree) {
+                    return $perAdminApp.findNodeFromPath(this.nodes, this.sectionRoot)
+                } else {
+                    return {}
+                }
+            } catch(err) {
+                return {}
+            }
+        },
+        filteredChildren() {
+            if (this.nodeTreeRootNode && this.nodeTreeRootNode.children) {
+                return this.nodeTreeRootNode.children.filter((ch) => {
+                    return this.isSupportedNodeTreeResourceType(ch.resourceType)
+                })
+            } else {
+                return []
+            }
+        },
+        currentNodeName() {
             return this.getPath().split('/').pop() || 'loading...'
         }
     },
-    watch: {
-      nodes(newVal) {
-          this.populatePageTree(newVal)
-      }
-    },
     methods: {
-        isEditor: function() {
-            return this.$root.$data.adminPage.title === "editor"
+        isEditor() {
+            return this.$root.$data.adminPage.title === 'editor'
         },
-        getPath: function(){
+        getPath(){
             if( this.$root.$data.pageView){
                 if( this.$root.$data.pageView.path ){
                     return this.$root.$data.pageView.path;
                 } else {
-                    return "";
+                    return '';
                 }
             } else {
-                return "";
+                return '';
             }
         },
         getDownloadPath(){
             return this.getPath().split('/').reverse()[0];
         },
-        populatePageTree(nodes) {
-            if (!this.isEditPage) return
-
-            const tenant = $perAdminApp.getView().state.tenant
-            const pageRootNode = $perAdminApp.findNodeFromPath(nodes, tenant.roots.pages)
-
-            if (pageRootNode && pageRootNode.children) {
-                pageRootNode.children.forEach((child) => this.crawl(child))
-            }
+        onTreeItemEditNode() {
+            this.$refs.dropdown.close()
         },
-        crawl(node) {
-            if (this.pageTree.items.filter((item) => item.path === node.path).length <= 0) {
-                const shortName = node.path.split('/');
-                shortName.splice(0, 4)
-                this.pageTree.items.push({
-                    label: shortName.join('/'),
-                    icon: 'description',
-                    path: node.path,
-                    click: () => $perAdminApp.stateAction('editPage', node.path)
-                })
-            }
-
-            if (node.children) {
-                node.children.forEach((child) => this.crawl(child))
-            }
+        isSupportedNodeTreeResourceType(resourceType) {
+            return resourceType && NodeTree.SUPPORTED_RESOURCE_TYPES.indexOf(resourceType) >= 0
         }
     }
 }
