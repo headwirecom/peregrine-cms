@@ -10,31 +10,38 @@
               title="component explorer"
               :class="{'active': isTab(Tab.COMPONENTS)}"
               @click="setActiveTab(Tab.COMPONENTS)"/>
+
           <admin-components-explorerpreviewnavitem
               :icon="Icon.SETTINGS"
               :title="`${nodeType}-info`"
               :class="{'active': isTab(Tab.INFO)}"
-              @click="setActiveTab(Tab.INFO)">
-          </admin-components-explorerpreviewnavitem>
+              @click="setActiveTab(Tab.INFO)" />
+
           <admin-components-explorerpreviewnavitem
               v-if="hasOgTags"
               :icon="Icon.LABEL"
               :title="'og-tags'"
               :class="{'active': isTab(Tab.OG_TAGS)}"
-              @click="setActiveTab(Tab.OG_TAGS)">
-          </admin-components-explorerpreviewnavitem>
+              @click="setActiveTab(Tab.OG_TAGS)" />
+
           <admin-components-explorerpreviewnavitem
               v-if="hasReferences"
               :icon="Icon.LIST"
               :title="'references'"
               :class="{'active': isTab(Tab.REFERENCES)}"
-              @click="setActiveTab(Tab.REFERENCES)">
-          </admin-components-explorerpreviewnavitem>
+              @click="setActiveTab(Tab.REFERENCES)" />
+
+            <admin-components-explorerpreviewnavitem
+                :icon="Icon.VERSIONS"
+                :title="`${nodeType}-versions`"
+                :class="{'active': isTab(Tab.VERSIONS)}"
+                @click="setActiveTab(Tab.VERSIONS)" />
+
           <admin-components-explorerpreviewnavitem
               :icon="Icon.MORE_VERT"
               :title="'actions'"
               :class="{'active': isTab(Tab.ACTIONS)}"
-              @click="setActiveTab(Tab.ACTIONS)"/>
+              @click="setActiveTab(Tab.ACTIONS)" />
         </ul>
 
         <ul class="nav-right"></ul>
@@ -117,6 +124,14 @@
         </ul>
       </template>
 
+      <template v-else-if="isTab(Tab.VERSIONS)">
+          <div v-if="allowOperations" class="action-list">
+              <div class="action"  :title="`create new ${nodeType} version`">
+                <i class="material-icons">{{Icon.CREATE}}</i> Create {{nodeType}} Version
+              </div>
+          </div>
+      </template>
+
       <template v-else-if="isTab(Tab.ACTIONS)">
         <div v-if="allowOperations" class="action-list">
           <div class="action" :title="`rename ${nodeType}`" @click="$refs.renameModal.open()">
@@ -133,7 +148,9 @@
           </div>
         </div>
       </template>
+
     </template>
+
     <template v-else>
       <div v-if="!currentObject" class="explorer-preview-empty">
         <span>{{ $i18n(`no${uNodeType}Selected`) }}</span>
@@ -184,6 +201,7 @@
     INFO: 'info',
     OG_TAGS: 'og-tags',
     REFERENCES: 'references',
+    VERSIONS: 'versions',
     COMPONENTS: 'components',
     ACTIONS: 'actions'
   };

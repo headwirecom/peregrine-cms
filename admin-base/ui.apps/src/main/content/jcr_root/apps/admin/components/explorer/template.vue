@@ -41,7 +41,7 @@
                             target: null,
                             command: 'selectParent',
                             tooltipTitle: $i18n('backToParentDir')
-                        }"><i class="material-icons">folder_open</i> ..
+                        }"><i class="material-icons">folder_open</i><i class="material-icons">arrow_upward</i>
                     </admin-components-action>
                 </li>
                 <li
@@ -51,6 +51,7 @@
                     draggable ="true"
                     v-on:dragstart ="onDragRowStart(child,$event)"
                     v-on:drag      ="onDragRow"
+                    v-on:click     ="showRow(child,$event)"
                     v-on:dragend   ="onDragRowEnd(child,$event)"
                     v-on:dragenter.stop.prevent ="onDragEnterRow"
                     v-on:dragover.stop.prevent  ="onDragOverRow"
@@ -500,6 +501,12 @@
                     $perAdminApp.stateAction('showTemplateInfo', { selected: target })
                 } else {
                     $perAdminApp.stateAction('showPageInfo', { selected: target })
+                }
+            },
+
+            showRow: function(item, ev) {
+                if (this.editable(item)) {
+                    this.showInfo(this, item.path);
                 }
             },
 
