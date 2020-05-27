@@ -339,6 +339,7 @@
           }
           if (!vm.dragging) {
             if (vm.component !== vm.previousComponent) {
+              set(this.view, '/state/inline/rich', null)
               if (vm.autoSave) {
                 vm.autoSave = false
                 vm.restoreLinkTargets()

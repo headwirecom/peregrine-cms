@@ -1,61 +1,63 @@
 <template>
   <div class="toolbar">
-    <button class="btn" :title="$i18n('clear')">
-      <i class="material-icons" @click="clear">clear</i>
-    </button>
     <button class="btn" :title="$i18n('undo')">
-      <i class="material-icons" @click="undo">undo</i>
+      <i class="material-icons" @click="exec('undo')">undo</i>
     </button>
     <button class="btn" :title="$i18n('redo')">
-      <i class="material-icons" @click="redo">redo</i>
+      <i class="material-icons" @click="exec('redo')">redo</i>
     </button>
-    <button class="btn" :title="$i18n('remove format')">
-      <i class="material-icons" @click="removeFormat">format_clear</i>
-    </button>
+    <admin-components-materializedropdown
+        :below-origin="true"
+        :items="formattingItems">
+      <button class="btn" :title="$i18n('remove format')">
+        <i class="material-icons">text_format</i><span class="caret-down"></span>
+      </button>
+    </admin-components-materializedropdown>
     <button class="btn" :title="$i18n('bold')">
-      <i class="material-icons" @click="bold">format_bold</i>
+      <i class="material-icons" @click="exec('bold')">format_bold</i>
     </button>
     <button class="btn" :title="$i18n('italic')">
-      <i class="material-icons" @click="italic">format_italic</i>
+      <i class="material-icons" @click="exec('italic')">format_italic</i>
     </button>
-    <button class="btn" :title="$i18n('underline')">
-      <i class="material-icons" @click="underline">format_underline</i>
+    <button class="btn" :title="$i18n('superscript')">
+      <i class="material-icons" @click="exec('superscript')">format_superscript</i>
+    </button>
+    <button class="btn" :title="$i18n('subscript')">
+      <i class="material-icons" @click="exec('subscript')">format_subscript</i>
+    </button>
+    <admin-components-materializedropdown
+        :below-origin="true"
+        :items="linkItems">
+      <button class="btn" :title="$i18n('insert link')">
+        <i class="material-icons">link</i><span class="caret-down"></span>
+      </button>
+    </admin-components-materializedropdown>
+    <button class="btn" :title="$i18n('insert image')">
+      <i class="material-icons" @click="insertImage">insert_photo</i>
     </button>
     <button class="btn" :title="$i18n('align left')">
-      <i class="material-icons" @click="alignLeft">format_align_left</i>
+      <i class="material-icons" @click="exec('justifyLeft')">format_align_left</i>
     </button>
     <button class="btn" :title="$i18n('align center')">
-      <i class="material-icons" @click="alignCenter">format_align_center</i>
+      <i class="material-icons" @click="exec('justifyCenter')">format_align_center</i>
     </button>
     <button class="btn" :title="$i18n('align right')">
-      <i class="material-icons" @click="alignRight">format_align_right</i>
+      <i class="material-icons" @click="exec('justifyRight')">format_align_right</i>
+    </button>
+    <button class="btn" :title="$i18n('align right')">
+      <i class="material-icons" @click="exec('justifyFull')">format_align_justify</i>
     </button>
     <button class="btn" :title="$i18n('numbered list')">
-      <i class="material-icons" @click="numberedList">format_list_numbered</i>
+      <i class="material-icons" @click="exec('insertOrderedList')">format_list_numbered</i>
     </button>
     <button class="btn" :title="$i18n('bulleted list')">
-      <i class="material-icons" @click="bulletedList">format_list_bulleted</i>
+      <i class="material-icons" @click="exec('insertUnorderedList')">format_list_bulleted</i>
     </button>
     <button class="btn" :title="$i18n('quote')">
-      <i class="material-icons" @click="quote">format_quote</i>
+      <i class="material-icons" @click="exec('formatBlock')">format_quote</i>
     </button>
-    <button class="btn" :title="$i18n('indent')">
-      <i class="material-icons" @click="indent">format_indent_increase</i>
-    </button>
-    <button class="btn" :title="$i18n('outdent')">
-      <i class="material-icons" @click="outdent">format_indent_decrease</i>
-    </button>
-    <button class="btn" :title="$i18n('insert link')">
-      <i class="material-icons" @click="link">insert_link</i>
-    </button>
-    <button class="btn" :title="$i18n('cut')">
-      <i class="material-icons" @click="cut">content_cut</i>
-    </button>
-    <button class="btn" :title="$i18n('copy')">
-      <i class="material-icons" @click="copy">content_copy</i>
-    </button>
-    <button class="btn" :title="$i18n('paste')">
-      <i class="material-icons" @click="paste">content_paste</i>
+    <button class="btn" :title="$i18n('remove format')">
+      <i class="material-icons" @click="exec('removeFormat')">format_clear</i>
     </button>
   </div>
 </template>
@@ -67,6 +69,38 @@
       view() {
         return $perAdminApp.getView()
       },
+      formattingItems() {
+        const headlines = []
+        for (let i = 1; i <= 6; i++) {
+          headlines.push({
+            label: `${this.$i18n('headline')} ${i}`,
+            icon: 'title',
+            click: () => this.exec('formatBlock', `h${i}`)
+          })
+        }
+        return [
+          {
+            label: this.$i18n('Paragraph'),
+            icon: 'format_textdirection_l_to_r',
+            click: () => this.exec('formatBlock', 'p')
+          },
+          ...headlines
+        ]
+      },
+      linkItems() {
+        return [
+          {
+            label: this.$i18n('insert link'),
+            icon: 'add',
+            click: this.link
+          },
+          {
+            label: this.$i18n('unlink'),
+            icon: 'clear',
+            click: () => this.exec('unlink')
+          }
+        ]
+      }
     },
     methods: {
       getInlineDoc() {
@@ -84,60 +118,16 @@
           this.exec('delete')
         }
       },
-      undo() {
-        this.exec('undo')
-      },
-      redo() {
-        this.exec('redo')
-      },
-      removeFormat() {
-        this.exec('removeFormat')
-      },
-      bold() {
-        this.exec('bold')
-      },
-      italic() {
-        this.exec('italic')
-      },
-      underline() {
-        this.exec('underline')
-      },
-      alignLeft() {
-        this.exec('justifyLeft')
-      },
-      alignCenter() {
-        this.exec('justifyCenter')
-      },
-      alignRight() {
-        this.exec('justifyRight')
-      },
-      numberedList() {
-        this.exec('insertOrderedList')
-      },
-      bulletedList() {
-        this.exec('insertUnorderedList')
-      },
-      quote() {
-        this.exec('formatBlock')
-      },
-      indent() {
-        this.exec('indent')
-      },
-      outdent() {
-        this.exec('outdent')
-      },
       link() {
-        const uri = prompt('Insert your link')
+        const uri = prompt('Provide link')
         this.exec('createLink', uri)
       },
-      cut() {
-        this.exec('cut')
+      unlink() {
+        this.exec('unlink')
       },
-      copy() {
-        this.exec('copy')
-      },
-      paste() {
-        this.exec('paste')
+      insertImage() {
+        const imgUri = prompt('provide image link')
+        this.exec('insertImage', imgUri)
       }
     }
   }

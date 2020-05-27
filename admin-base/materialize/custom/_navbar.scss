@@ -298,6 +298,7 @@ nav {
       margin-right: 6.8rem;
 
       .btn {
+        position: relative;
         width: 32px;
         height: 32px;
         padding: 0;
@@ -307,6 +308,33 @@ nav {
           font-size: 20px;
           height: 100%;
           line-height: unset;
+        }
+      }
+
+      .materialize-drop-down {
+        > a {
+          display: flex;
+          height: 100%;
+        }
+
+        .dropdown-content {
+          .item {
+            height: 35px;
+            min-height: 35px;
+
+            .material-icons {
+              height: 35px;
+              line-height: 35px;
+            }
+          }
+        }
+
+        .caret-down:before {
+          content: '▼';
+          font-size: 8px;
+          position: absolute;
+          top: 9px;
+          right: 1px;
         }
       }
     }
