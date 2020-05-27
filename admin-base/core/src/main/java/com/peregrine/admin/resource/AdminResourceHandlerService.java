@@ -399,7 +399,6 @@ public class AdminResourceHandlerService
         return null;
     }
 
-
     @Override
     public List<Recyclable> getRecyclables(ResourceResolver resourceResolver, String path) {
         final Resource resource = path.startsWith(RECYCLE_BIN_PATH) ?
@@ -417,15 +416,6 @@ public class AdminResourceHandlerService
             }
         }
         return recyclables;
-    }
-
-    @Override
-    public void deleteRecyclableForever(ResourceResolver resourceResolver, String path) throws ManagementException {
-        final Resource recyclableItem = resourceResolver.getResource(path);
-        if (recyclableItem == null || !recyclableItem.getPath().startsWith(RECYCLE_BIN_PATH)) {
-            throw new ManagementException("Invalid recyclable path. Can't delete forever");
-        }
-        
     }
 
     @Override

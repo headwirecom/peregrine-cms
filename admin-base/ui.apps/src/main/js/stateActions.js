@@ -82,6 +82,7 @@ import deleteTemplate from './stateActions/deleteTemplate'
 import renameTemplate from './stateActions/renameTemplate'
 import setTenant from './stateActions/setTenant'
 import recycleItem from './stateActions/recycleItem'
+import deleteRecyclable from './stateActions/deleteRecyclable'
 import tenantSetupReplication from './stateActions/tenantSetupReplication'
 
 let log = LoggerFactory.logger('actions').setLevelDebug()
@@ -147,6 +148,7 @@ actions['renameTemplate'] = renameTemplate
 actions['moveTemplate'] = moveTemplate
 actions['deleteTemplate'] = deleteTemplate
 actions['recycleItem'] = recycleItem
+actions['deleteRecyclable'] = deleteRecyclable
 actions['setTenant'] = setTenant
 actions['tenantSetupReplication'] = tenantSetupReplication
 

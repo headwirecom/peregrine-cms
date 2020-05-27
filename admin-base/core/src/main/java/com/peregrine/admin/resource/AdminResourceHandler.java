@@ -168,16 +168,6 @@ public interface AdminResourceHandler {
     Recyclable getRecyclable(ResourceResolver resourceResolver, String path);
 
     /**
-     * 'Delete a Recyclable item forever' means it was already deleted once, and this method removes recycle bin reference
-     * and prepares the item for garbage collection.
-     * @param resourceResolver Resource Resolver
-     * @param path of item from the recycle bin to delete
-     * @return void
-     * @throws ManagementException if there's an error
-     */
-    void deleteRecyclableForever(ResourceResolver resourceResolver, String path) throws ManagementException ;
-
-    /**
      * Updates a given resource based on the given JSon Content
      * @param resourceResolver Resource Resolver to manage resources and cannot be null
      * @param path Absolute Path to the resource to be updated and this resource must exist

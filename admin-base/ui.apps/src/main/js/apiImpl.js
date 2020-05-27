@@ -519,8 +519,23 @@ class PerAdminImpl {
                     reject(error.response.data.message)
                 }
                 reject(error)
-              })
+            })
       })
+  }
+
+  deleteRecyclable(path) {
+        return new Promise((resolve, reject) => {
+            let data = new FormData()
+            updateWithForm('/admin/deleteNode.json' + path, data)
+                .then( (data) => callbacks.getApi().populateRecyclebin(0))
+                .then(() => resolve())
+                .catch(error => {
+                    if (error.response && error.response.data && error.response.data.message) {
+                        reject(error.response.data.message)
+                    }
+                    reject(error)
+                })
+        })
   }
 
   createTenant(fromName, toName, tenantTitle, tenantUserPwd, colorPalette) {

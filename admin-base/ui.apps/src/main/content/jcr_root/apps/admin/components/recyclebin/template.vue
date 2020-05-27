@@ -21,6 +21,8 @@
   specific language governing permissions and limitations
   under the License.
   #L%
+
+  Contributed by Cris Rockwell University of Michigan
   -->
 <template>
 <div>
@@ -46,9 +48,17 @@
                             v-bind:model="{
                                 target: result,
                                 command: 'restoreRecyclable',
-                                tooltipTitle: `${$i18n('restore')} ${result.name}`
+                                tooltipTitle: `${$i18n('restore version from')} ${result.date_deleted}`
                             }">
                             <i class="material-icons">restore_page</i>
+                        </admin-components-action>
+                        <admin-components-action
+                                v-bind:model="{
+                                target: result,
+                                command: 'deleteRecyclable',
+                                tooltipTitle: `${$i18n('delete forever')} ${result.recyclebin}`
+                            }">
+                            <i class="material-icons">delete_forever</i>
                         </admin-components-action>
                     </td>
                   </tr>
@@ -101,6 +111,15 @@
                         })
                     }
                 })
+            },
+            deleteRecyclable(me, target) {
+                const heading = `${me.$i18n('Delete')} "${target.path}" ${me.$i18n('from')} ${target.date_deleted}`
+                $perAdminApp.askUser(heading, me.$i18n('Delete this item forever?'), {
+                    yes() {
+                        $perAdminApp.stateAction('deleteRecyclable', target.recyclebin )
+                    }
+                })
+
             }
         },
         watch: {

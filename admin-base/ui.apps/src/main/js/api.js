@@ -207,6 +207,10 @@ class PerApi {
         return impl.recycleItem(recyclebinItemPath)
     }
 
+    deleteRecyclable(path) {
+        return impl.deleteRecyclable(path)
+    }
+
     nameAvailable(value, path) {
         return impl.nameAvailable(value, path)
     }

@@ -2,7 +2,6 @@
  * #%L
  * admin base - UI Apps
  * %%
- * Copyright (C) 2017 headwire inc.
  * %%
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -21,13 +20,12 @@
  * specific language governing permissions and limitations
  * under the License.
  * #L%
- * Contributed by Cris Rockwell, University of Michigan
  */
 import { LoggerFactory } from '../logger'
 let log = LoggerFactory.logger('recycleItem').setLevelDebug()
 
 export default function(me, target) {
     log.fine(target)
-    var api = me.getApi()
-    return api.recycleItem(target)
+    let api = me.getApi()
+    return api.deleteRecyclable(target)
 }
