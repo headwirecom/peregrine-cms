@@ -239,8 +239,8 @@ class PerApi {
         return impl.getPalettes(templateName)
     }
 
-    tenantSetupReplication(path) {
-        return impl.tenatSetupReplication(path)
+    tenantSetupReplication(path, withSite) {
+        return impl.tenantSetupReplication(path, withSite)
     }
 }
 

@@ -99,41 +99,45 @@ public class ReplicationUtil {
         if(source != null) {
             boolean replicationMixin = ReplicationUtil.supportsReplicationProperties(source);
             LOGGER.trace("Is Replication Mixin: : {}, Source: '{}'", replicationMixin, source.getPath());
-            if(replicationMixin) {
+            if (replicationMixin) {
                 ensureMixin(source);
                 ModifiableValueMap sourceProperties = getModifiableProperties(source, false);
-                Calendar replicated = Calendar.getInstance();
-                sourceProperties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());
-                sourceProperties.put(PER_REPLICATED, replicated);
-                LOGGER.trace("Updated Source Replication Properties");
-                if(target == null) {
-                    if(isEmpty(targetPath)) {
-                        // If Target Path is empty remove the replication ref property
-                        sourceProperties.remove(PER_REPLICATION_REF);
+                if (sourceProperties != null) {
+                    Calendar replicated = Calendar.getInstance();
+                    sourceProperties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());
+                    sourceProperties.put(PER_REPLICATED, replicated);
+                    LOGGER.trace("Updated Source Replication Properties");
+                    if (target == null) {
+                        if (isEmpty(targetPath)) {
+                            // If Target Path is empty remove the replication ref property
+                            sourceProperties.remove(PER_REPLICATION_REF);
+                        } else {
+                            sourceProperties.put(PER_REPLICATION_REF, targetPath);
+                        }
                     } else {
-                        sourceProperties.put(PER_REPLICATION_REF, targetPath);
+                        ensureMixin(target);
+                        try {
+                            ModifiableValueMap targetProperties = getModifiableProperties(target, false);
+                            String userId = source.getResourceResolver().getUserID();
+                            LOGGER.trace("Replication User Id: '{}' for target: '{}'", userId, target.getPath());
+                            targetProperties.put(PER_REPLICATED_BY, userId);
+                            targetProperties.put(PER_REPLICATED, replicated);
+                            if (JCR_CONTENT.equals(source.getName())) {
+                                // For jcr:content nodes set the replication ref to its parent
+                                sourceProperties.put(PER_REPLICATION_REF, target.getParent().getPath());
+                                targetProperties.put(PER_REPLICATION_REF, source.getParent().getPath());
+                            } else {
+                                sourceProperties.put(PER_REPLICATION_REF, target.getPath());
+                                targetProperties.put(PER_REPLICATION_REF, source.getPath());
+                            }
+                            LOGGER.trace("Updated Target: '{}' Replication Properties", target.getPath());
+                        } catch (IllegalArgumentException e) {
+                            LOGGER.error("Failed to add replication properties", e);
+                            throw e;
+                        }
                     }
                 } else {
-                    ensureMixin(target);
-                    try {
-                        ModifiableValueMap targetProperties = getModifiableProperties(target, false);
-                        String userId = source.getResourceResolver().getUserID();
-                        LOGGER.trace("Replication User Id: '{}' for target: '{}'", userId, target.getPath());
-                        targetProperties.put(PER_REPLICATED_BY, userId);
-                        targetProperties.put(PER_REPLICATED, replicated);
-                        if(JCR_CONTENT.equals(source.getName())) {
-                            // For jcr:content nodes set the replication ref to its parent
-                            sourceProperties.put(PER_REPLICATION_REF, target.getParent().getPath());
-                            targetProperties.put(PER_REPLICATION_REF, source.getParent().getPath());
-                        } else {
-                            sourceProperties.put(PER_REPLICATION_REF, target.getPath());
-                            targetProperties.put(PER_REPLICATION_REF, source.getPath());
-                        }
-                        LOGGER.trace("Updated Target: '{}' Replication Properties", target.getPath());
-                    } catch(IllegalArgumentException e) {
-                        LOGGER.error("Failed to add replication properties", e);
-                        throw e;
-                    }
+                    LOGGER.debug("Source: '{}' is not writable -> ignored", source);
                 }
             }
         }
