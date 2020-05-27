@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.mock.MockTools.setParentChildRelationships;
+import static com.peregrine.mock.MockTools.setPaths;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
@@ -26,9 +28,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 @RunWith(MockitoJUnitRunner.class)
 public final class CacheBuilderBaseTest extends SlingResourcesTest {
 
-    private static final String CACHE_LOCATION = "/var";
-
-    private final ResourceMock var = new ResourceMock("Var Root");
+    private final ResourceMock var = repo.getVar();
     private final ResourceMock rootCache = new ResourceMock("Cache Root");
     private final ResourceMock parentCache = new ResourceMock("Cache Parent");
     private final PageMock pageCache = new PageMock("Cache Page");
@@ -36,11 +36,10 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
     private final ResourceMock resourceCache = new ResourceMock("Cache Resource");
 
     {
-        setPaths(CACHE_LOCATION + PAGE_PATH, var, rootCache, parentCache, pageCache);
+        setPaths(var.getPath() + PAGE_PATH, rootCache, parentCache, pageCache);
         resourceCache.setPath(contentCache.getPath() + SLASH + NN_RESOURCE);
-        setParentChildRelationships(var, repoRoot, rootCache, parentCache, pageCache);
+        setParentChildRelationships(var, rootCache, parentCache, pageCache);
         setParentChildRelationships(contentCache, resourceCache);
-        init(var);
         init(rootCache);
         init(parentCache);
         init(pageCache);
@@ -50,7 +49,7 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
     private final CacheBuilderBase model = Mockito.spy(new CacheBuilderBase() {
 
         {
-            setLocation(CACHE_LOCATION);
+            setLocation(var.getPath());
         }
 
         @Override
@@ -152,10 +151,10 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
         model.rebuild(resource.getPath() + SLASH + "not-cached");
         verifyCommits(1);
         assertTrue(rebuildImplCalled.contains(resource.getPath()));
-        assertTrue(rebuildImplCalled.contains(content.getPath()));
+        assertTrue(rebuildImplCalled.contains(jcrContent.getPath()));
         assertTrue(rebuildImplCalled.contains(page.getPath()));
         assertTrue(rebuildImplCalled.contains(parent.getPath()));
-        assertTrue(rebuildImplCalled.contains(root.getPath()));
+        assertTrue(rebuildImplCalled.contains(contentRoot.getPath()));
     }
 
     @Test
@@ -164,28 +163,28 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
         model.rebuild(resource.getPath());
         verifyCommits(1);
         assertTrue(rebuildImplCalled.contains(resource.getPath()));
-        assertTrue(rebuildImplCalled.contains(content.getPath()));
+        assertTrue(rebuildImplCalled.contains(jcrContent.getPath()));
         assertTrue(rebuildImplCalled.contains(page.getPath()));
         assertTrue(rebuildImplCalled.contains(parent.getPath()));
-        assertTrue(rebuildImplCalled.contains(root.getPath()));
+        assertTrue(rebuildImplCalled.contains(contentRoot.getPath()));
     }
 
     @Test
     public void rebuild() {
-        model.rebuild(content.getPath());
+        model.rebuild(jcrContent.getPath());
         verifyCommits(1);
-        assertTrue(rebuildImplCalled.contains(content.getPath()));
+        assertTrue(rebuildImplCalled.contains(jcrContent.getPath()));
         assertTrue(rebuildImplCalled.contains(page.getPath()));
         assertTrue(rebuildImplCalled.contains(parent.getPath()));
-        assertTrue(rebuildImplCalled.contains(root.getPath()));
+        assertTrue(rebuildImplCalled.contains(contentRoot.getPath()));
     }
 
     @Test
     public void buildCache() {
-        final Resource cache = model.buildCache(content.getPath());
+        final Resource cache = model.buildCache(jcrContent.getPath());
         verifyCommits(1);
         assertEquals(contentCache, cache);
-        assertEquals(contentCache, buildCacheCalled.get(content));
+        assertEquals(contentCache, buildCacheCalled.get(jcrContent));
     }
 
     @Test
@@ -201,10 +200,10 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
         model.rebuildAll();
         verifyCommits(1);
         assertTrue(rebuildImplCalled.contains(resource.getPath()));
-        assertTrue(rebuildImplCalled.contains(content.getPath()));
+        assertTrue(rebuildImplCalled.contains(jcrContent.getPath()));
         assertTrue(rebuildImplCalled.contains(page.getPath()));
         assertTrue(rebuildImplCalled.contains(parent.getPath()));
-        assertTrue(rebuildImplCalled.contains(root.getPath()));
+        assertTrue(rebuildImplCalled.contains(contentRoot.getPath()));
     }
 
 }

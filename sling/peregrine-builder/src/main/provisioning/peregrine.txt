@@ -110,6 +110,7 @@
 
     set ACL for sitemaps-cache
         allow jcr:all on /var/sitemaps
+        allow jcr:read on /content
     end
 
 # Set Repository ACL for Sling Distribution
