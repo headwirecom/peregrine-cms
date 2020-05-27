@@ -291,9 +291,6 @@ public class PageModel extends Container {
             if (tagResource != null) {
                 this.value = tagResource.getValueMap().get("value", String.class);
             }
-            if (this.value == null) {
-                this.value = null;
-            }
         }
         public String getName() { return name; }
         public String getValue() { return value; }
