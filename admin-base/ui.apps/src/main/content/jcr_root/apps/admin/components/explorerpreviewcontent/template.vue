@@ -112,7 +112,16 @@
                     <admin-components-iconeditpage></admin-components-iconeditpage>
                 </admin-components-action>
               </span>
-            <span class="right">{{item.path}}</span>
+            <span class="right">
+              <admin-components-action
+                    v-bind:model="{
+                      target: item.path,
+                      command: 'editPage',
+                      tooltipTitle: `edit '${item.path}'`
+                    }">
+                    {{item.path}}
+                </admin-components-action>
+              </span>
           </li>
         </ul>
       </template>

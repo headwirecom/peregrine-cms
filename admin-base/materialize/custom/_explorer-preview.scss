@@ -6,7 +6,6 @@
   padding: 45px 0 0 !important;
   overflow: hidden;
   height: 100%;
-
   &:before {
     content: '';
     display: inline-block;
@@ -18,7 +17,6 @@
     background-color: color("blue-grey", "lighten-4");
     border-bottom: 1px solid color("blue-grey", "lighten-3");
   }
-
   .toggle-fullscreen {
     display: inline-block;
     position: absolute;
@@ -32,41 +30,34 @@
     height: 44px;
     line-height: 44px;
     text-align: center;
-
     .material-icons {
       line-height: 44px;
       color: color("blue-grey", "darken-3");
     }
-
     &:hover,
     &:focus,
     &:active {
       background-color: color("blue-grey", "lighten-3");
     }
   }
-
   .explorer-preview-content {
     display: flex;
     flex-direction: column;
     height: 100%;
-
     .panel-title {
       position: initial;
     }
-
     .vue-form-generator {
       overflow: auto;
       height: 100%;
       padding: 0 0.75rem;
     }
-
     .action-list {
       display: flex;
       width: 100%;
       height: 100%;
       flex-direction: column;
       align-items: center;
-
       .action {
         width: 100%;
         display: flex;
@@ -75,17 +66,14 @@
         border-bottom: 1px solid rgba(0, 0, 0, .1);
         transition: background-color 0.25s ease-out;
         cursor: pointer;
-
         &:hover {
           background-color: rgba(0, 0, 0, .1)
         }
-
         .material-icons {
           margin-right: 1rem;
         }
       }
     }
-
     .explorer-confirm-dialog {
       display: flex;
       justify-content: space-between;
@@ -96,65 +84,66 @@
       background-color: #cfd8dc;
       border-top: 1px solid #b4c1c8;
     }
-
     .explorer-preview-empty {
       padding: 3rem 0 0;
       text-align: center;
-
       > span {
         display: inline-block;
         width: 100%;
       }
-
       .material-icons {
         color: color("blue-grey", "lighten-2");
         font-size: 80px;
       }
     }
-
     .explorer-asset-referenced-by {
       color: $primary-color-dark;
-
+      overflow-y: scroll;
       .svg-icon {
         .svg-content {
           fill: color("blue-grey", "darken-2");
           transition: fill .3s ease;
         }
-
         &:hover {
           .svg-content {
             fill: color("orange", "base");
           }
         }
       }
+      .collection-item {
+        display: flex;
+        .right {
+          display: block;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+          text-align: right;
+          direction: rtl;
+          margin-right:5px;
+        }
+      }
     }
-
     &.preview-asset {
       .asset-info {
         font-size: 1rem;
-
         > li {
           .asset-name {
             padding-right: 0.75rem;
             font-weight: 500;
           }
-
           .asset-value {
             font-weight: 400;
           }
         }
       }
-
       .asset-info-view {
         display: flex;
         flex-direction: column;
         overflow: auto;
         height: 100%;
-
         .vue-form-generator {
           overflow: visible;
         }
-
         img {
           width: auto;
           max-width: 100%;
@@ -162,7 +151,6 @@
           max-height: 50%;
           align-self: center;
         }
-
         iframe {
           border: 0;
           max-width: 100%;
@@ -170,31 +158,23 @@
         }
       }
     }
-
     &.preview-object {
-
     }
-
     &.preview-page {
-
     }
-
     .editor-icon {
       height: 44px;
       margin-right: 5px;
       margin-left: 5px;
     }
-
     .info-view-iframe {
       width: 100%;
       height: 60%;
     }
-
     &.preview-asset {
       .asset-info-view {
         max-height: 50%;
         height: unset;
-
         img {
           max-height: 100%;
           padding-top: 1em;
@@ -202,7 +182,6 @@
       }
     }
   }
-
   &.fullscreen {
     position: fixed;
     top: 104px;
@@ -212,7 +191,6 @@
     width: 100%;
     padding: 45px 0 0;
   }
-
   .explorer-preview-nav {
     display: flex;
     justify-content: flex-end;
@@ -226,33 +204,27 @@
     padding: 0;
     height: 45px;
     border-right: 1px solid color("blue-grey", "lighten-5");
-
     > li {
       border-left: 1px solid color("blue-grey", "lighten-5");
       border-right: 1px solid color("blue-grey", "lighten-3");
       height: 100%;
       line-height: 45px;
-
       &:first-child {
         border-left: none;
       }
-
       > a {
         padding: 0 0.75rem;
         height: 100%;
         display: inline-block;
-
         .material-icons,
         .svg-icon {
           line-height: 45px;
         }
-
         .svg-icon {
           .svg-content {
             stroke: color("blue-grey", "darken-3");
           }
         }
-
         &:hover,
         &:focus,
         &:active {
@@ -260,34 +232,28 @@
         }
       }
     }
-
     .nav-left,
     .nav-right {
       padding: 0;
       display: flex;
-
       > li {
         border-left: 1px solid #eceff1;
         border-right: 1px solid #b0bec5;
         height: 100%;
         line-height: 45px;
         cursor: pointer;
-
         &:first-child {
           border-left: none;
         }
-
         > a {
           padding: 0 0.4rem;
           height: 100%;
           display: inline-block;
-
           &:hover,
           &:focus,
           &:active {
             background-color: #b0bec5;
           }
-
           .material-icons,
           .svg-icon {
             line-height: 45px;
@@ -295,46 +261,37 @@
         }
       }
     }
-
     .nav-left {
       margin: 0 auto 0 0;
-
       > li {
         &:first-child {
           border-left: none;
         }
       }
     }
-
     .nav-right {
       margin: 0;
-
       > li {
         &:first-child {
           border-left: 1px solid #b0bec5
         }
       }
     }
-
-
     li.active a {
       background-color: #37474f;
       color: #cfd8dc;
     }
   }
-
   /* tablet styles */
   @media #{$medium-and-up} {
     &.fullscreen {
       top: $nav-full-height;
       padding-bottom: 112px;
-
       .explorer-preview-content {
         padding: 0 10%;
       }
     }
   }
-
   @media #{$large-and-up} {
     &.fullscreen {
       .explorer-preview-content {
@@ -342,7 +299,6 @@
       }
     }
   }
-
   @media #{$extra-large-and-up} {
     &.fullscreen {
       .explorer-preview-content {
