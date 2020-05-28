@@ -35,6 +35,7 @@ import javax.imageio.stream.ImageInputStream;
 import javax.jcr.*;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
+import javax.jcr.version.VersionIterator;
 import javax.jcr.version.VersionManager;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -446,6 +447,28 @@ public class AdminResourceHandlerService
         return (resource.getPath().matches(SITE_PAGES_PATTERN) ||
                 resource.getPath().matches(SITE_ASSETS_PATTERN))
                 && !resource.getPath().contains(JCR_CONTENT);
+    }
+
+    @Override
+    public VersionIterator getVersionIterator(ResourceResolver resourceResolver, Resource resource) throws ManagementException, RepositoryException {
+        if (resource == null) {
+            return null;
+        }
+        VersionManager vm = resourceResolver.adaptTo(Session.class).getWorkspace().getVersionManager();
+        VersionHistory vh;
+        try {
+            vh = vm.getVersionHistory(resource.getPath());
+        } catch (UnsupportedRepositoryOperationException e) {
+            logger.debug("resource has no history of versions, therefore resource has no versions.");
+            return null;
+        }
+        return vh.getAllLinearVersions();
+    }
+
+    @Override
+    public Version getBaseVersion(ResourceResolver resourceResolver, String path) throws RepositoryException {
+        VersionManager versionManager = resourceResolver.adaptTo(Session.class).getWorkspace().getVersionManager();
+        return versionManager.getBaseVersion(path);
     }
 
     // jcr 2.0 Chapter 3

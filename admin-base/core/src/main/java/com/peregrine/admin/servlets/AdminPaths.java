@@ -30,5 +30,6 @@ public interface AdminPaths {
     public static final String RESOURCE_TYPE_UPDATE_TENANT = API_PREFIX + "updateTenant";
     public static final String RESOURCE_TYPE_LIST_TENANTS = API_PREFIX + "listTenants";
     public static final String RESOURCE_TYPE_LIST_RECYCLABLES = API_PREFIX + "listRecyclables";
+    public static final String RESOURCE_TYPE_LIST_VERSIONS = API_PREFIX + "listVersions";
     public static final String RESOURCE_TYPE_RESTORE_RECYCLABLE = API_PREFIX + "restoreRecyclable";
 }

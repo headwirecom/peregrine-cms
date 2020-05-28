@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.version.Version;
+import javax.jcr.version.VersionIterator;
 
 import com.peregrine.admin.models.Recyclable;
 import org.apache.sling.api.resource.PersistenceException;
@@ -99,6 +100,19 @@ public interface AdminResourceHandler {
      * @throws ManagementException If creating the version failed
      */
     Version createVersion(ResourceResolver resourceResolver, String path) throws ManagementException;
+
+
+    /**
+     * Get a version iterator for given resource
+     * @param resourceResolver Resource Resolver to manage resources and cannot be null
+     * @param resource
+     * @return a version iterator for the resource
+     * @throws ManagementException an error was encountered
+     * @throws RepositoryException an error was encountered
+     */
+    VersionIterator getVersionIterator(ResourceResolver resourceResolver, Resource resource) throws ManagementException, RepositoryException;
+
+    Version getBaseVersion(ResourceResolver resourceResolver, String path) throws RepositoryException;
 
     /**
      * Restore a version

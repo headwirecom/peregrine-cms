@@ -48,6 +48,7 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
+import javax.jcr.version.VersionIterator;
 import javax.jcr.version.VersionManager;
 
 import java.util.Calendar;
@@ -368,6 +369,32 @@ public class VersionsJTest {
             fail("could not restore deleted");
         }
     }
+
+    @Test
+    public void listVersions() {
+        try {
+            VersionIterator viNullResource = resourceManagement.getVersionIterator(resourceResolver, null);
+            assertNull(viNullResource);
+            VersionIterator viNoVersions = resourceManagement.getVersionIterator(resourceResolver, indexRes);
+            assertNull(viNoVersions);
+            resourceManagement.createVersion(resourceResolver, indexRes.getPath());
+            VersionIterator viOneVersion = resourceManagement.getVersionIterator(resourceResolver, indexRes);
+            assertTrue(viOneVersion.hasNext());
+            Version rootversion = (Version) viOneVersion.next();
+            assertNull(rootversion.getLinearPredecessor());
+            assertEquals("jcr:rootVersion", rootversion.getName());
+            Version firstversion = (Version) viOneVersion.next();
+            assertNotNull(firstversion.getLinearPredecessor());
+            assertFalse(viOneVersion.hasNext());
+            assertNull(firstversion.getLinearSuccessor());
+            Version base = vmPage.getBaseVersion(indexRes.getPath());
+            assertEquals(firstversion.getFrozenNode().getPath(), base.getFrozenNode().getPath());
+
+        } catch (AdminResourceHandler.ManagementException | RepositoryException e) {
+            fail("failed to create or get versions");
+        }
+    }
+
 
     @Test
     public void deletePageForever() {
