@@ -84,6 +84,10 @@ public class ListSiteRecyclablesServlet extends AbstractBaseServlet {
         JsonResponse answer = new JsonResponse();
         final String sitePath = request.getSuffix();
 
+        if (sitePath == null || sitePath.isEmpty()) {
+            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_LIST_RECYCLABLES);
+        }
+
         if (!resourceManagement.hasPermission(request.getResourceResolver(), READ_PERMISSIONS, RECYCLE_BIN_PATH+sitePath) ||
                 !resourceManagement.hasPermission(request.getResourceResolver(), VERSION_PERMISSIONS, sitePath)) {
             return new ErrorResponse().setHttpErrorCode(SC_FORBIDDEN).setErrorMessage(ACL_FOR_RECYCLABLES_INSUFF);
