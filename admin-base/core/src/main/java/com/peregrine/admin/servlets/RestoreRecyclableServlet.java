@@ -91,7 +91,7 @@ public class RestoreRecyclableServlet extends AbstractBaseServlet {
                 .setErrorMessage(FAILED_TO_RESTORE_RECYCLABLE_3 )
                 .setRequestPath(path)
                 .setException(e);
-        } catch (AdminResourceHandler.ManagementException e) {
+        } catch (Exception e) {
             return new ErrorResponse()
                 .setHttpErrorCode(SC_BAD_REQUEST)
                 .setErrorMessage(FAILED_TO_RESTORE_RECYCLABLE )
