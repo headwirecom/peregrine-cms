@@ -508,6 +508,21 @@ class PerAdminImpl {
     })
   }
 
+  populateVersions(page) {
+    return new Promise((resolve, reject) => {
+      fetch(`/admin/listVersions.json/${page}`)
+        .then(function(result) {
+            populateView('/state', 'versions', result)
+                .then(() => resolve())
+        })
+        .catch(error => {
+            if (error.response && error.response.data && error.response.data.message) {
+                reject(error.response.data.message)
+            }
+        })
+    })
+  }
+
   recycleItem(item) {
       return new Promise((resolve, reject) => {
         let data = new FormData()

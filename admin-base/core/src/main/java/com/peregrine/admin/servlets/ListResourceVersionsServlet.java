@@ -42,6 +42,7 @@ import static com.peregrine.admin.servlets.ListSiteRecyclablesServlet.DELETED_DA
 import static com.peregrine.admin.util.AdminConstants.CURRENT;
 import static com.peregrine.commons.util.PerUtil.*;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -63,6 +64,7 @@ import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 public class ListResourceVersionsServlet extends AbstractBaseServlet {
 
     public static final String FAILED_TO_LIST_VERSIONS = "Unable to list versions";
+    public static final String RESOURCE_NOT_FOUND = "Resource not found";
     public static final String HAS_VERSIONS = "has_versions";
 
     @Reference
@@ -71,11 +73,15 @@ public class ListResourceVersionsServlet extends AbstractBaseServlet {
     @Override
     protected Response handleRequest(Request request) throws IOException {
         final String resourcePath = request.getSuffix();
-        VersionIterator vi;
+        VersionIterator vi = null;
+        Resource resource = null;
         JsonResponse answer = new JsonResponse();
         try {
             if (resourcePath != null && !resourcePath.isEmpty()) {
-                Resource resource = request.getResourceResolver().getResource(resourcePath);
+                resource = request.getResourceResolver().getResource(resourcePath);
+                if (resource == null) {
+                    return new ErrorResponse().setHttpErrorCode(SC_NOT_FOUND).setErrorMessage(RESOURCE_NOT_FOUND);
+                }
                 vi = resourceManagement.getVersionIterator(request.getResourceResolver(), resource);
             } else {
                 return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_LIST_VERSIONS);
@@ -99,24 +105,22 @@ public class ListResourceVersionsServlet extends AbstractBaseServlet {
             }
             // write an array of version
             answer.writeArray("versions");
+            Version base = resourceManagement.getBaseVersion(request.getResourceResolver(), resourcePath);
             do {
                 Version v = vi.nextVersion();
                 answer.writeObject();
                 answer.writeAttribute("name", v.getName());
                 answer.writeAttribute("created", DELETED_DATE_FORMAT.format(v.getCreated().getTime()));
                 answer.writeAttribute("path", v.getPath());
+                if (base.getName().equals(v.getName())) {
+                    answer.writeAttribute("base", true);
+                } else {
+                    answer.writeAttribute("base", false);
+                }
                 answer.writeClose();
             } while (vi.hasNext());
             answer.writeClose();
 
-            // write the current base version
-            Version base = resourceManagement.getBaseVersion(request.getResourceResolver(), resourcePath);
-            if (base != null) {
-                answer.writeObject("base");
-                answer.writeAttribute("name", base.getName());
-                answer.writeAttribute("path", base.getPath());
-                answer.writeClose();
-            }
 
             return answer;
 

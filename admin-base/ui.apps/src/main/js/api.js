@@ -104,6 +104,9 @@ class PerApi {
         return impl.populateRecyclebin(page)
     }
 
+    populateVersions(page) {
+        return impl.populateVersions(page)
+    }
     setInitialPageEditorState() {
         return impl.setInitialPageEditorState()
     }

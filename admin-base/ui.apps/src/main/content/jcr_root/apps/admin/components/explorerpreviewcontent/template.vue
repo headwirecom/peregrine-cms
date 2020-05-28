@@ -124,11 +124,16 @@
         </ul>
       </template>
 
-      <template v-else-if="isTab(Tab.VERSIONS)">
+      <template v-else-if="isTab(Tab.VERSIONS)" >
           <div v-if="allowOperations" class="action-list">
               <div class="action"  :title="`create new ${nodeType} version`">
                 <i class="material-icons">{{Icon.CREATE}}</i> Create {{nodeType}} Version
               </div>
+              <ul class="versions">
+                  <li v-for="version in version">
+                      {{ version.name }}
+                  </li>
+              </ul>
           </div>
       </template>
 
@@ -270,7 +275,8 @@
         },
         formGenerator: {
           changes: []
-        }
+        },
+        versions: {}
       }
     },
     mixins: [NodeNameValidation],
@@ -342,6 +348,11 @@
     watch: {
       edit(newVal) {
         $perAdminApp.getNodeFromView('/state/tools').edit = newVal;
+      },
+      activeTab : function (tab) {
+        if (tab === 'versions'){
+            this.showVersions()
+        }
       }
     },
     created() {
@@ -507,6 +518,9 @@
       },
       setSelectedPath(path) {
         this.path.selected = path;
+      },
+      showVersions() {
+        console.log(`show versions for ${this.currentObject}`)
       },
       onMoveCancel() {
         this.isOpen = false;
