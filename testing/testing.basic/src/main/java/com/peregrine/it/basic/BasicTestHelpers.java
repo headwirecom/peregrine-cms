@@ -70,7 +70,7 @@ public class BasicTestHelpers {
     }
 
     public static Map listServicesAsJson(SlingClient client) throws ClientException, IOException {
-        SlingHttpResponse response = client.doGet("/system/console/services.json", 200);
+        SlingHttpResponse response = client.doGet("/system/console/sitemaps.json", 200);
         assertEquals("Unexpected Mime Type", "application/json;charset=utf-8", response.getFirstHeader("Content-Type").getValue());
         return convertToMap(response);
     }

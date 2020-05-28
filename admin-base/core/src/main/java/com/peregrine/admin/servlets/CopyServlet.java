@@ -25,31 +25,35 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
+import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_COPY;
+import static com.peregrine.admin.util.AdminConstants.SOURCE_NAME;
+import static com.peregrine.admin.util.AdminConstants.SOURCE_PATH;
+import static com.peregrine.commons.util.PerConstants.JSON;
+import static com.peregrine.commons.util.PerConstants.ORDER_BEFORE_TYPE;
+import static com.peregrine.commons.util.PerConstants.ORDER_CHILD_TYPE;
+import static com.peregrine.commons.util.PerConstants.PATH;
+import static com.peregrine.commons.util.PerConstants.TYPE;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
+import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
+import static com.peregrine.commons.util.PerUtil.POST;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_SELECTORS;
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
+
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
-import com.peregrine.admin.resource.ResourceRelocation;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.commons.util.PerUtil;
+import java.io.IOException;
+import javax.servlet.Servlet;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-
-import javax.servlet.Servlet;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-
-import static com.peregrine.admin.servlets.AdminPaths.JSON_EXTENSION;
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_COPY;
-import static com.peregrine.admin.util.AdminConstants.SOURCE_NAME;
-import static com.peregrine.admin.util.AdminConstants.SOURCE_PATH;
-import static com.peregrine.commons.util.PerConstants.*;
-import static com.peregrine.commons.util.PerUtil.*;
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-import static org.apache.sling.api.servlets.ServletResolverConstants.*;
-import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
-import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 @Component(
     service = Servlet.class,
@@ -58,7 +62,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
         SLING_SERVLET_METHODS + EQUALS + POST,
         SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_COPY,
-        SLING_SERVLET_SELECTORS + EQUALS + JSON_EXTENSION
+        SLING_SERVLET_SELECTORS + EQUALS + JSON
     }
 )
 @SuppressWarnings("serial")
@@ -70,7 +74,6 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  */
 public class CopyServlet extends AbstractBaseServlet {
 
-
     public static final String TAGET_NAME = "tagetName";
     public static final String TARGET_PATH = "targetPath";
     public static final String TO = "to";
@@ -78,10 +81,6 @@ public class CopyServlet extends AbstractBaseServlet {
     public static final String NEW_TITLE = "newTitle";
     public static final String DEEP = "deep";
 
-    private List<String> acceptedTypes = Arrays.asList(ORDER_BEFORE_TYPE, ORDER_CHILD_TYPE);
-
-    @Reference
-    private ResourceRelocation resourceRelocation;
     @Reference
     AdminResourceHandler resourceManagement;
 
@@ -108,15 +107,23 @@ public class CopyServlet extends AbstractBaseServlet {
             }
         }
         else {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Unknown type parameter: " + type).setRequestPath(fromPath);
+            return new ErrorResponse().
+                setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage("Unknown type parameter: " + type)
+                .setRequestPath(fromPath);
         }
 
         Resource copiedResource = null;
         ResourceResolver resourceResolver = request.getResourceResolver();
         try {
-            copiedResource = resourceManagement.copyResource(resourceResolver, from, newParent, newName, newTitle, nextSibling, deep);
+            copiedResource = resourceManagement
+                .copyResource(resourceResolver, from, newParent, newName, newTitle, nextSibling, deep);
         } catch (ManagementException e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setRequestPath(fromPath).setException(e);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(e.getMessage())
+                .setRequestPath(fromPath)
+                .setException(e);
         }
 
         resourceResolver.commit();

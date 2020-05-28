@@ -13,9 +13,9 @@ package com.example.site.models;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -29,20 +29,16 @@ import com.peregrine.nodetypes.merge.PageMerge;
 import com.peregrine.nodetypes.merge.RenderContext;
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
-import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceUtil;
-import org.apache.sling.api.resource.ValueMap;
-import org.apache.sling.models.annotations.Default;
-import org.apache.sling.models.annotations.DefaultInjectionStrategy;
-import org.apache.sling.models.annotations.Exporter;
-import org.apache.sling.models.annotations.Model;
-
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.models.annotations.DefaultInjectionStrategy;
+import org.apache.sling.models.annotations.Exporter;
+import org.apache.sling.models.annotations.Model;
 
 /**
  * Created by rr on 4/18/2017.
@@ -69,7 +65,6 @@ public class NavModel extends AbstractComponent {
         RenderContext rx = PageMerge.getRenderContext();
         SlingHttpServletRequest request = rx.getRequest();
         Resource homePage = getResourceAt(request.getResource(), 3);
-        // Resource homePage = getResource().getResourceResolver().getResource("/content/sites/example");
 
         Iterator<Resource> children = homePage.listChildren();
 

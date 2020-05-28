@@ -26,7 +26,7 @@
     <div id="aboutPeregrine" class="modal">
         <div class="modal-content">
             <p class="left-align">
-                <img style="margin: 10px; width: 100px; max-width: 100px;" src="/etc/felibs/admin/images/peregrine-logo.svg" align="right"/>
+                <img style="margin: 10px; width: 100px; max-width: 100px;" src="/etc/felibs/admin/peregrine-logo.svg" align="right"/>
                 <img style="width: 0px; height: 0px;" src="https://www.headwire.com/t/peregrine.png"/>
                 <span v-html="$i18n('aboutp1')"></span>
             </p>

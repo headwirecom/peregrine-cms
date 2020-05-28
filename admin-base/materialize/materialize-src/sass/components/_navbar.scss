@@ -1,7 +1,7 @@
 nav {
-  &.nav-extended {
-    height: auto;
+  height: auto;
 
+  &.nav-extended {
     .nav-wrapper {
       min-height: $navbar-height-mobile;
       height: auto;
@@ -17,7 +17,6 @@ nav {
   @extend .z-depth-1;
   background-color: $primary-color;
   width: 100%;
-  height: $navbar-height-mobile;
   line-height: $navbar-line-height-mobile;
 
   a { color: $navbar-font-color; }
@@ -58,9 +57,7 @@ nav {
 
   // Logo
   .brand-logo {
-    position: absolute;
     color: $navbar-font-color;
-    display: inline-block;
     font-size: $navbar-brand-font-size;
     padding: 0;
 
@@ -195,13 +192,6 @@ nav {
   }
 }
 @media #{$medium-and-up} {
-  nav.nav-extended .nav-wrapper {
-    min-height: $navbar-height;
-  }
-  nav, nav .nav-wrapper i, nav a.button-collapse, nav a.button-collapse i {
-    height: $navbar-height;
-    line-height: $navbar-line-height;
-  }
   .navbar-fixed {
     height: $navbar-height;
   }

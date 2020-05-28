@@ -23,14 +23,17 @@
  * #L%
  */
 import {LoggerFactory} from './logger'
+import loadToolsNodesPath from './stateActions/loadToolsNodesPath'
 import selectToolsNodesPath from './stateActions/selectToolsNodesPath'
 import createPage from './stateActions/createPage'
-import createPageFromSkeletonPage from './stateActions/createPageFromSkeletonPage'
+import createPageFromSkeletonPage
+    from './stateActions/createPageFromSkeletonPage'
 import createPageWizard from './stateActions/createPageWizard'
-import createSiteWizard from './stateActions/createSiteWizard'
-import createSite from './stateActions/createSite'
+import createTenantWizard from './stateActions/createTenantWizard'
+import createTenant from './stateActions/createTenant'
 import deletePage from './stateActions/deletePage'
-import deleteSite from './stateActions/deleteSite'
+import deleteTenant from './stateActions/deleteTenant'
+import configureTenant from './stateActions/configureTenant'
 import renamePage from './stateActions/renamePage'
 import movePage from './stateActions/movePage'
 import createTemplate from './stateActions/createTemplate'
@@ -75,21 +78,25 @@ import replicate from './stateActions/replicate'
 import moveTemplate from './stateActions/moveTemplate'
 import renameObject from './stateActions/renameObject'
 import moveObject from './stateActions/moveObject'
-import deleteTemplate from './stateActions/deleteTemplate';
-import renameTemplate from './stateActions/renameTemplate';
+import deleteTemplate from './stateActions/deleteTemplate'
+import renameTemplate from './stateActions/renameTemplate'
+import setTenant from './stateActions/setTenant'
+import tenantSetupReplication from './stateActions/tenantSetupReplication'
 
 let log = LoggerFactory.logger('actions').setLevelDebug()
 
 let actions = []
 
+actions['loadToolsNodesPath'] = loadToolsNodesPath
 actions['selectToolsNodesPath'] = selectToolsNodesPath
-actions['createSiteWizard'] = createSiteWizard
-actions['createSite'] = createSite
+actions['createTenantWizard'] = createTenantWizard
+actions['createTenant'] = createTenant
 actions['createPageWizard'] = createPageWizard
 actions['createPage'] = createPage
 actions['createPageFromSkeletonPage'] = createPageFromSkeletonPage
 actions['deletePage'] = deletePage
-actions['deleteSite'] = deleteSite
+actions['deleteTenant'] = deleteTenant
+actions['configureTenant'] = configureTenant
 actions['renamePage'] = renamePage
 actions['movePage'] = movePage
 actions['createTemplate'] = createTemplate
@@ -133,12 +140,13 @@ actions['renameObject'] = renameObject
 actions['savePageProperties'] = savePageProperties
 actions['replicate'] = replicate
 actions['moveObject'] = moveObject
-
 actions['showTemplateInfo'] = showPageInfo
 actions['saveTemplateProperties'] = savePageProperties
 actions['renameTemplate'] = renameTemplate
 actions['moveTemplate'] = moveTemplate
 actions['deleteTemplate'] = deleteTemplate
+actions['setTenant'] = setTenant
+actions['tenantSetupReplication'] = tenantSetupReplication
 
 function noopAction(me, target) {
     log.error('state action noop with target:', target)

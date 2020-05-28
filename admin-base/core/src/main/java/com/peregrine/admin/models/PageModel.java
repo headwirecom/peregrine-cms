@@ -25,23 +25,22 @@ package com.peregrine.admin.models;
  * #L%
  */
 
+import static com.peregrine.admin.util.AdminConstants.TOOLING_PAGE_COMPONENT_PATH;
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JSON;
+
 import com.peregrine.nodetypes.models.Container;
 import com.peregrine.nodetypes.models.IComponent;
+import java.util.LinkedList;
+import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import java.util.LinkedList;
-import java.util.List;
-
-import static com.peregrine.commons.util.PerConstants.JACKSON;
-import static com.peregrine.commons.util.PerConstants.JSON;
-import static com.peregrine.admin.util.AdminConstants.TOOLING_PAGE_COMPONENT_PATH;
 
 /**
  * Created by rr on 12/2/2016.
@@ -52,8 +51,7 @@ import static com.peregrine.admin.util.AdminConstants.TOOLING_PAGE_COMPONENT_PAT
        adapters = IComponent.class)
 @Exporter(name = JACKSON,
           extensions = JSON)
-public class PageModel
-    extends Container {
+public class PageModel extends Container {
 
     public PageModel(Resource r) {
         super(r);
@@ -154,7 +152,7 @@ public class PageModel
             ret.addFirst(new TitlePath(res));
             res = getParentContent(res);
             // we do not want to stop at level 2 and not include it
-            if(res != null && res.getParent().getPath().equals("/content/admin")) {
+            if(res != null && res.getParent().getPath().equals("/content/admin/pages")) {
                 break;
             }
         }

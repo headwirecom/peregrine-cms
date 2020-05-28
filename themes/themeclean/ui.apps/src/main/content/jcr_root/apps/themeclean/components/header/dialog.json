@@ -2,7 +2,7 @@
   "fields": [
     {
       "type": "pathbrowser",
-      "browserRoot": "/content/assets",
+      "browserRoot": "/content/themeclean/assets",
       "placeholder": "logo",
       "label": "Logo",
       "model": "logo"
@@ -16,7 +16,7 @@
     },
     {
       "type": "pathbrowser",
-      "browserRoot": "/content/sites",
+      "browserRoot": "/content/themeclean/pages",
       "placeholder": "logourl",
       "label": "Logo Url",
       "model": "logourl"
@@ -74,7 +74,7 @@
         },
         {
           "type": "pathbrowser",
-          "browserRoot": "/content/sites",
+          "browserRoot": "/content/themeclean/pages",
           "placeholder": "link",
           "label": "Link Url",
           "model": "link"
@@ -121,7 +121,7 @@
         },
         {
           "type": "pathbrowser",
-          "browserRoot": "/content/sites",
+          "browserRoot": "/content/themeclean/pages",
           "placeholder": "buttonlink",
           "label": "Button Link",
           "model": "buttonlink"
@@ -235,7 +235,7 @@
     },
     {
       "type": "pathbrowser",
-      "browserRoot": "/content/assets",
+      "browserRoot": "/content/themeclean/assets",
       "placeholder": "bgvideo",
       "label": "Background Video",
       "model": "bgvideo",
@@ -243,7 +243,7 @@
     },
     {
       "type": "pathbrowser",
-      "browserRoot": "/content/assets",
+      "browserRoot": "/content/themeclean/assets",
       "placeholder": "bgimage",
       "label": "Background Image",
       "model": "bgimage",

@@ -25,26 +25,11 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.admin.resource.AdminResourceHandler;
-import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
-import com.peregrine.admin.resource.ResourceRelocation;
-import com.peregrine.commons.servlets.AbstractBaseServlet;
-import com.peregrine.commons.util.PerUtil;
-import org.apache.sling.api.resource.Resource;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
-import javax.servlet.Servlet;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-
-import static com.peregrine.admin.servlets.AdminPaths.JSON_EXTENSION;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_MOVE;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_RENAME;
 import static com.peregrine.admin.util.AdminConstants.SOURCE_NAME;
 import static com.peregrine.admin.util.AdminConstants.SOURCE_PATH;
-import static com.peregrine.commons.util.PerConstants.ORDER_AFTER_TYPE;
+import static com.peregrine.commons.util.PerConstants.JSON;
 import static com.peregrine.commons.util.PerConstants.ORDER_BEFORE_TYPE;
 import static com.peregrine.commons.util.PerConstants.ORDER_CHILD_TYPE;
 import static com.peregrine.commons.util.PerConstants.PATH;
@@ -60,6 +45,16 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+import com.peregrine.admin.resource.AdminResourceHandler;
+import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
+import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.commons.util.PerUtil;
+import java.io.IOException;
+import javax.servlet.Servlet;
+import org.apache.sling.api.resource.Resource;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
 @Component(
     service = Servlet.class,
     property = {
@@ -68,7 +63,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
         SLING_SERVLET_METHODS + EQUALS + POST,
         SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_MOVE,
         SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_RENAME,
-        SLING_SERVLET_SELECTORS + EQUALS + JSON_EXTENSION
+        SLING_SERVLET_SELECTORS + EQUALS + JSON
     }
 )
 @SuppressWarnings("serial")
@@ -76,21 +71,16 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  * This servlet provides the ability to move a resource
  *
  * The API Definition can be found in the Swagger Editor configuration:
- *    ui.apps/src/main/content/jcr_root/api/definintions/admin.yaml
+ *    ui.apps/src/main/content/jcr_root/perapi/definitions/admin.yaml
  */
 public class MoveServlet extends AbstractBaseServlet {
 
-
-    public static final String TAGET_NAME = "tagetName";
+    public static final String TARGET_NAME = "targetName";
     public static final String TARGET_PATH = "targetPath";
     public static final String RENAME = "rename";
     public static final String MOVE = "move";
     public static final String TO = "to";
 
-    private List<String> acceptedTypes = Arrays.asList(ORDER_BEFORE_TYPE, ORDER_AFTER_TYPE, ORDER_CHILD_TYPE);
-
-    @Reference
-    private ResourceRelocation resourceRelocation;
     @Reference
     AdminResourceHandler resourceManagement;
 
@@ -108,22 +98,32 @@ public class MoveServlet extends AbstractBaseServlet {
             try {
                 newResource = resourceManagement.moveNode(from, to, addAsChild, addBefore);
             } catch(ManagementException e) {
-                return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setRequestPath(fromPath).setException(e);
+                return new ErrorResponse()
+                    .setHttpErrorCode(SC_BAD_REQUEST)
+                    .setErrorMessage(e.getMessage())
+                    .setRequestPath(fromPath)
+                    .setException(e);
             }
         } else if(request.getResource().getName().equals(RENAME)) {
             try {
                 newResource = resourceManagement.rename(from, toPath);
             } catch(ManagementException e) {
-                return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setRequestPath(fromPath).setException(e);
+                return new ErrorResponse()
+                    .setHttpErrorCode(SC_BAD_REQUEST)
+                    .setErrorMessage(e.getMessage())
+                    .setRequestPath(fromPath)
+                    .setException(e);
             }
         } else {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage("Unknown request: " + request.getResource().getName());
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage("Unknown request: " + request.getResource().getName());
         }
         request.getResourceResolver().commit();
         JsonResponse answer = new JsonResponse();
         answer.writeAttribute(SOURCE_NAME, from.getName());
         answer.writeAttribute(SOURCE_PATH, from.getPath());
-        answer.writeAttribute(TAGET_NAME, newResource.getName());
+        answer.writeAttribute(TARGET_NAME, newResource.getName());
         answer.writeAttribute(TARGET_PATH, newResource.getPath());
         return answer;
     }

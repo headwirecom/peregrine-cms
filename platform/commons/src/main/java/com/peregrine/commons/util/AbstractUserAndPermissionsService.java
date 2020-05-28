@@ -22,6 +22,7 @@ import javax.jcr.security.Privilege;
 
 import java.security.Principal;
 
+import static com.peregrine.commons.util.PerConstants.ADMIN_USER;
 import static com.peregrine.commons.util.PerUtil.loginService;
 
 /**
@@ -32,7 +33,7 @@ import static com.peregrine.commons.util.PerUtil.loginService;
  */
 public abstract class AbstractUserAndPermissionsService {
 
-    private static final String DEFAULT_USER_NAME = "admin";
+    private static final String DEFAULT_USER_NAME = ADMIN_USER;
 
     final Logger log = LoggerFactory.getLogger(getClass());
 

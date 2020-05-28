@@ -24,7 +24,7 @@
   -->
 <template>
 <div class="row">
-    <admin-components-iconaction v-for="(action, key) in fromSource" v-bind:key="key" v-bind:model="action"></admin-components-iconaction>
+    <admin-components-iconaction v-for="(action) in fromSource" v-bind:key="action.path" v-bind:model="action"></admin-components-iconaction>
 </div>
 </template>
 

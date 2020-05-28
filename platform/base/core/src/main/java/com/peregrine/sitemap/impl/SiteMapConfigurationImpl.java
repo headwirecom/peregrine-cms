@@ -26,6 +26,7 @@ package com.peregrine.sitemap.impl;
  */
 
 import com.peregrine.sitemap.*;
+import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -35,8 +36,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Objects.isNull;
 
@@ -80,13 +84,24 @@ public final class SiteMapConfigurationImpl implements SiteMapConfiguration {
 
     @Override
     public PageRecognizer getPageRecognizer() {
-        final String[] names = config.pageRecognizers();
-        final PageRecognizer[] recognizers = new PageRecognizer[names.length];
-        for (int i = 0; i < names.length; i++) {
-            recognizers[i] = getNamedService(PageRecognizer.class, names[i]);
+        final List<PageRecognizer> recognizers
+                = getServices(SiteMapConfigurationImplConfig::pageRecognizers, PageRecognizer.class);
+        return new PageRecognizersAndChain(recognizers);
+    }
+
+    private <S extends HasName> List<S> getServices(final Function<? super SiteMapConfigurationImplConfig, String[]> getNames, final Class<S> clazz) {
+        final Optional<Stream<String>> stream = Optional.of(config)
+                .map(getNames)
+                .map(Arrays::stream);
+        if (!stream.isPresent()) {
+            return Collections.emptyList();
         }
 
-        return new PageRecognizersAndChain(recognizers);
+        return stream.get()
+                .filter(StringUtils::isNotBlank)
+                .map(name -> getNamedService(clazz, name))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     private <S extends HasName> S getNamedService(final Class<S> clazz, final String name) {
@@ -111,17 +126,7 @@ public final class SiteMapConfigurationImpl implements SiteMapConfiguration {
 
     @Override
     public Collection<PropertyProvider> getPropertyProviders() {
-        final String[] propertyProviders = config.propertyProviders();
-        if (isNull(propertyProviders)) {
-            return Collections.emptyList();
-        }
-
-        final List<PropertyProvider> result = new LinkedList<>();
-        for (final String name : propertyProviders) {
-            result.add(getNamedService(PropertyProvider.class, name));
-        }
-
-        return result;
+        return getServices(SiteMapConfigurationImplConfig::propertyProviders, PropertyProvider.class);
     }
 
     @Override

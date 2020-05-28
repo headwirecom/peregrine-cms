@@ -22,7 +22,7 @@ in the top-level directory of the Sling source code.
 
 	 java -jar target/com.peregrine-cms.sling.launchpad-9.1.jar 
 	 
-Use the correct version number instead of 8, if needed.
+Use the correct version number instead of 9.1, if needed.
 
 3) Browse Sling in:
 

@@ -1,4 +1,4 @@
-/etc/felibs/pagerender-vue/js/pagerenderVueStructureContainer.js
-/etc/felibs/pagerender-vue/js/pagerenderVueComponentsBase.js
-/etc/felibs/pagerender-vue/js/pagerenderVueComponentsPlaceholder.js
+/etc/felibs/pagerendervue/js/pagerendervueStructureContainer.js
+/etc/felibs/pagerendervue/js/pagerendervueComponentsBase.js
+/etc/felibs/pagerendervue/js/pagerendervueComponentsPlaceholder.js
 font-families.js

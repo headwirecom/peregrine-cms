@@ -26,7 +26,7 @@
 	<div class="wrap">
     <label>{{schema.title}} </label>
     <ul v-if="!schema.preview" class="collapsible" v-bind:class="schema.multifield ? 'multifield' : 'singlefield'" ref="collapsible">
-        <li v-for="(item, index) in value" v-bind:class="getItemClass(item, index)"> {{item._opDelete}}
+        <li v-for="(item, index) in value" v-bind:class="getItemClass(item, index)" v-bind:key="item.path"> {{item._opDelete}}
             <div 
               class="collapsible-header" 
               draggable="true" 
@@ -157,7 +157,7 @@
         this.value.splice(index, 1)
         if( this.schema.multifield ) {
           if( item.hasOwnProperty('path') ) {
-            let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted");
+            let _deleted = $perAdminApp.getNodeFromViewWithDefault("/state/tools/_deleted", {});
             let copy = JSON.parse(JSON.stringify(item));
             copy._opDelete = true;
             if(!_deleted[this.schema.model]) _deleted[this.schema.model] = [];

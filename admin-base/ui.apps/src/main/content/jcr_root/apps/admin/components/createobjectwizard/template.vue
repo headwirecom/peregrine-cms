@@ -25,10 +25,11 @@
 <template>
 <div class="container">
     <form-wizard v-bind:title="'create an object'" v-bind:subtitle="''" @on-complete="onComplete" color="#37474f">
-        <tab-content title="select template" :before-change="leaveTabOne">
+        <tab-content title="select object type" :before-change="leaveTabOne">
             <ul class="collection">
                 <li class="collection-item"
                     v-for="item in objects"
+                    v-bind:key="item.path"
                     v-on:click.stop.prevent="selectItem(null, item.path)"
                     v-bind:class="isSelected(item.path) ? 'grey lighten-2' : ''">
                     <admin-components-action v-bind:model="{ command: 'selectItem', target: item.path, title: item.name }"></admin-components-action>
@@ -44,7 +45,8 @@
 
             </vue-form-generator>
         </tab-content>
-        <tab-content title="verify">
+        <tab-content title="values">
+            <div>Provide the values for this object</div>
             <vue-form-generator :model="formmodel"
                                 :schema="objectSchema"
                                 :options="formOptions"
@@ -95,8 +97,9 @@
                     const path = this.formmodel.objectPath.split('/')
                     const componentName = path.slice(2).join('-')
                     const definitions = $perAdminApp.getNodeFromView('/admin/componentDefinitions')
-                    if(definitions) {
-                        return $perAdminApp.getNodeFromView('/admin/componentDefinitions')[componentName]
+                    console.log(componentName, definitions)
+                    if(definitions &&  definitions[componentName]) {
+                        return definitions[componentName].model
                     }
                 }
             },
@@ -114,12 +117,17 @@
                     }
                     return ret
                 }
-                return objects
+                const tenant = $perAdminApp.getView().state.tenant;
+                return objects.filter( object => { 
+                    return object.path.startsWith('/apps/admin/') || (tenant && object.path.startsWith(`/apps/${tenant.name}/`))
+                })
             }
         },
         created: function() {
             //By default select the first item in the list;
-            this.selectItem(null, this.objects[0].path)
+            if(this.objects.length > 0) {
+                this.selectItem(null, this.objects[0].path)
+            }
         },
         methods: {
             findAllowedObjects(path) {

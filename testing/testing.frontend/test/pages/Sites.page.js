@@ -14,7 +14,7 @@ class SitesPage extends LoginPage {
     }
 
     open() {
-        super.open('content/admin/pages.html')
+        super.open('content/admin/pages/pages.html')
         browser.execute( require('../drag-mock') )
     }
 }

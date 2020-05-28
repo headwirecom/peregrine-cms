@@ -12,24 +12,24 @@
     "cardcolor": "#eeeeee",
     "cards": [
       {
-        "buttonlink": "/content/sites/themeclean",
+        "buttonlink": "/content/themeclean/pages",
         "buttontext": "View",
         "buttoncolor": "#008080",
-        "image": "/content/assets/themeclean/images/background1.jpg",
+        "image": "/content/themeclean/assets/images/background1.jpg",
         "text": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sagittis, est eget commodo imperdiet, lectus quam bibendum ex, eu commodo mi diam molestie tortor. Maecenas fermentum neque feugiat purus condimentum, sed molestie dolor fermentum. Nullam vestibulum tellus dolor. Cras viverra vel diam quis iaculis.</p>",
         "title": "Card One"
       },{
-        "buttonlink": "/content/sites/themeclean",
+        "buttonlink": "/content/themeclean/pages",
         "buttontext": "View",
         "buttoncolor": "#008080",
-        "image": "/content/assets/themeclean/images/background2.jpg",
+        "image": "/content/themeclean/assets/images/background2.jpg",
         "text": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sagittis, est eget commodo imperdiet, lectus quam bibendum ex, eu commodo mi diam molestie tortor. Maecenas fermentum neque feugiat purus condimentum, sed molestie dolor fermentum. Nullam vestibulum tellus dolor. Cras viverra vel diam quis iaculis.</p>",
         "title": "Card Two"
       },{
-        "buttonlink": "/content/sites/themeclean",
+        "buttonlink": "/content/themeclean/pages",
         "buttontext": "View",
         "buttoncolor": "#008080",
-        "image": "/content/assets/themeclean/images/background3.jpg",
+        "image": "/content/themeclean/assets/images/background3.jpg",
         "text": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sagittis, est eget commodo imperdiet, lectus quam bibendum ex, eu commodo mi diam molestie tortor. Maecenas fermentum neque feugiat purus condimentum, sed molestie dolor fermentum. Nullam vestibulum tellus dolor. Cras viverra vel diam quis iaculis.</p>",
         "title": "Card Three"
       }

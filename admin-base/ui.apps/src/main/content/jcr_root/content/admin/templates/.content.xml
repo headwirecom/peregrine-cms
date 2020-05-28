@@ -12,9 +12,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,163 +23,18 @@
   under the License.
   #L%
   -->
+<jcr:root
+  xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+  xmlns:jcr="http://www.jcp.org/jcr/1.0"
+  jcr:primaryType="per:Page"
+  jcr:title="admin root template"
+  jcr:description="Admin Templates Root">
 
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
-          jcr:primaryType="per:Page"
->
-    <jcr:content
-            jcr:primaryType="per:PageContent"
-            sling:resourceType="admin/components/toolingpage"
-            jcr:title="templates"
-            jcr:description="admin base Content Root"
-            suffixToParam="[path,/state/tools/templates]"
-            dataFrom="/state/tools/templates" dataDefault="/content/templates"
-            loaders="[populateNodesForBrowser:/state/tools/templates]"
-    >
-        <nav jcr:primaryType="nt:unstructured"
-             sling:resourceType="admin/components/nav"
-        >
-            <subnav jcr:primaryType="nt:unstructured"
-                    sling:resourceType="admin/components/subnav">
-                <pathfield jcr:primaryType="nt:unstructured"
-                           sling:resourceType="admin/components/pathfield" dataFrom="/state/tools/templates"/>
-                <add jcr:primaryType="nt:unstructured"
-                  sling:resourceType="admin/components/action" target="" type="icon"
-                  title="add template" command="addTemplate" icon="add">
-                    <experiences jcr:primaryType="nt:unstructured">
-                        <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
-                          title="Template hinzufügen"/>
-                    </experiences>
-                </add>
-            </subnav>
-        </nav>
+  <jcr:content
+    jcr:primaryType="per:PageContent"
+    sling:resourceType="admin/components/toolingpage"
+    jcr:title="admin root template"
+    siteCSS="[/etc/felibs/admin/dependencies/material-design-icons/material-icons.css,/etc/felibs/materialize/materialize.css]"
+    siteJS="[/etc/felibs/admin/dependencies/jquery/jquery.js,/etc/felibs/admin/dependencies/materialize-css/js/materialize.min.js]"/>
 
-            <explorer jcr:primaryType="nt:unstructured"
-                       sling:resourceType="admin/components/explorer" dataFrom="/state/tools/templates">
-                <!--
-                <actions jcr:primaryType="nt:unstructured" sling:resourceType="pagerender/vue/structure/container">
-                    <add jcr:primaryType="nt:unstructured"
-                         sling:resourceType="admin/components/action" target="" type="icon" title="add template" command="addTemplate" icon="add"/>
-                </actions>
-                -->
-                <edit jcr:primaryType="nt:unstructured" sling:resourceType="admin/components/templateview"/>
-
-            </explorer>
-
-            <jsonview jcr:primaryType="nt:unstructured"
-                      sling:resourceType="admin/components/debugger" dataFrom="/"/>
-
-        <tour jcr:primaryType="nt:unstructured"
-          sling:resourceType="admin/components/tour">
-            <item1
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="Welcome to the page explorer, where you can manage templates within your site."
-              anchor="top right">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Wilkommen im Page-Erkunder, wo du die Templates deiner Webseite verwalten kannst."/>
-                </experiences>
-            </item1>
-            <item2
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="Select a template here"
-              selector=".explorer-main">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Wähle hier ein Template aus"/>
-                </experiences>
-            </item2>
-            <item3
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="Sort your templates by dragging them"
-              selector=".draggable">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Sortiere deine Templates, indem du sie an eine gewünschte Stelle ziehst"/>
-                </experiences>
-            </item3>
-            <item4
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="Here you can navigate to the subfolders of the template"
-              selector="li.collection-item>span:nth-child(2)>a>i">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Hier kannst du zu den Unterordnern der Templates navigieren"/>
-                </experiences>
-            </item4>
-            <item5
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="Click here to edit this template"
-              selector=".secondary-content>span:nth-child(1)">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Klicke hier, um das Template zu bearbeiten"/>
-                </experiences>
-            </item5>
-            <item6
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="Click here to replicate this template"
-              selector=".secondary-content>span:nth-child(2)">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Klicke hier, um das Template zu replizieren"/>
-                </experiences>
-            </item6>
-            <item7
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="Click here to get useful information for a template"
-              selector=".secondary-content>span:nth-child(3)">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Klicke hier, um nützliche Informationen zu einem Template zu bekommen"/>
-                </experiences>
-            </item7>
-            <item8
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="These information will be displayed here"
-              selector=".explorer-preview">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Diese Informationen werden dann hier angezeigt"/>
-                </experiences>
-            </item8>
-            <item9
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="Here you can have a preview of the template displayed"
-              selector=".secondary-content>span:nth-child(4)">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Hier kannst du dir eine Vorschau des Templates anzeigen lassen"/>
-                </experiences>
-            </item9>
-            <item10
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="Click here if you want to delete a template"
-              selector=".secondary-content>span:nth-child(5)">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Klicke hier, wenn du ein Template löschen möchtest"/>
-                </experiences>
-            </item10>
-            <item11
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/nav"
-              text="Create a new template here"
-              selector="a.btn-floating>i">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Hier kannst du eine neues Template erstellen"/>
-                </experiences>
-            </item11>
-            <item12
-              jcr:primaryType="nt:unstructured"
-              locator="/jcr:content/explorer"
-              text="That's all, have fun!"
-              anchor="left">
-                <experiences jcr:primaryType="nt:unstructured">
-                    <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" text="Das ist alles, viel Spaß!"/>
-                </experiences>
-            </item12>
-        </tour>
-
-    </jcr:content>
 </jcr:root>

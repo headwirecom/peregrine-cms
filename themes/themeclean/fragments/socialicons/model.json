@@ -48,7 +48,7 @@
               "x-source": "inject",
               "x-form-label": "Icon Url",
               "x-form-type": "pathbrowser",
-              "x-form-browserRoot": "/content/sites"
+              "x-form-browserRoot": "/content/themeclean/pages"
             }
           }
         }

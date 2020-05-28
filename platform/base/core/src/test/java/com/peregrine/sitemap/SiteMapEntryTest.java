@@ -7,12 +7,13 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SiteMapEntryTest implements SiteMapEntry.Visitor<Integer> {
 
-    private static final String PATH = "/content/sites/page";
+    private static final String PATH = "/content/example/pages/index";
     private static final String URL = "http://www.example.com";
     private static final String NAME = "propertyName";
     private static final String VALUE = "propertyValue";

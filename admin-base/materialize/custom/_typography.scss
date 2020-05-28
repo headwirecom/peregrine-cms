@@ -1,15 +1,21 @@
 .panel-title {
-  display: inline-block;
   font-size: 1rem;
   font-weight: 500;
-  margin-top: 1rem;
-  padding: 0.75rem 0;
-  text-transform: uppercase;
   color: $primary-color-dark;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 45px;
+  text-align: center;
+  height: 45px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
 code,
 kbd,
 pre,
 samp {
-	font-family: "Source Code Pro", "Consolas", "Menlo", monospace;
+  font-family: "Source Code Pro", "Consolas", "Menlo", monospace;
 }

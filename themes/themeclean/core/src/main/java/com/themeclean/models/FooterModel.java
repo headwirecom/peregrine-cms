@@ -2,16 +2,13 @@ package com.themeclean.models;
 
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
-import com.peregrine.nodetypes.models.Container;
+import java.util.List;
+import javax.inject.Inject;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Named;
 
 /*
     //GEN[:DATA
@@ -33,7 +30,7 @@ import javax.inject.Named;
           "x-form-label": "Logo",
           "x-form-type": "pathbrowser",
           "x-form-visible": "model.showlogo == 'true'",
-          "x-form-browserRoot": "/content/assets"
+          "x-form-browserRoot": "/content/themeclean/assets"
         },
         "logoalttext": {
           "type": "string",
@@ -48,7 +45,7 @@ import javax.inject.Named;
           "x-form-label": "Logo Url",
           "x-form-type": "pathbrowser",
           "x-form-visible": "model.showlogo == 'true'",
-          "x-form-browserRoot": "/content/sites"
+          "x-form-browserRoot": "/content/themeclean/pages"
         },
         "logosize": {
           "type": "string",
@@ -138,7 +135,7 @@ import javax.inject.Named;
                   "x-source": "inject",
                   "x-form-label": "Icon Url",
                   "x-form-type": "pathbrowser",
-                  "x-form-browserRoot": "/content/sites"
+                  "x-form-browserRoot": "/content/themeclean/pages"
                 }
               }
             }
@@ -215,7 +212,7 @@ import javax.inject.Named;
               "x-form-type": "pathbrowser",
               "x-form-visible": "model.backgroundtype == 'video' and model.custombackground == 'true'",
               "x-default": "https://www.youtube.com/embed/Ju86mknumYM",
-              "x-form-browserRoot": "/content/assets"
+              "x-form-browserRoot": "/content/themeclean/assets"
             },
             "bgimage": {
               "type": "string",
@@ -223,7 +220,7 @@ import javax.inject.Named;
               "x-form-label": "Background Image",
               "x-form-type": "pathbrowser",
               "x-form-visible": "model.backgroundtype == 'image' and model.custombackground == 'true'",
-              "x-form-browserRoot": "/content/assets"
+              "x-form-browserRoot": "/content/themeclean/assets"
             },
             "overlay": {
               "type": "string",
@@ -332,7 +329,7 @@ public class FooterModel extends AbstractComponent {
 	@Inject
 	private String showlogo;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Logo","x-form-type":"pathbrowser","x-form-visible":"model.showlogo == 'true'","x-form-browserRoot":"/content/assets"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Logo","x-form-type":"pathbrowser","x-form-visible":"model.showlogo == 'true'","x-form-browserRoot":"/content/themeclean/assets"} */
 	@Inject
 	private String logo;
 
@@ -340,7 +337,7 @@ public class FooterModel extends AbstractComponent {
 	@Inject
 	private String logoalttext;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Logo Url","x-form-type":"pathbrowser","x-form-visible":"model.showlogo == 'true'","x-form-browserRoot":"/content/sites"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Logo Url","x-form-type":"pathbrowser","x-form-visible":"model.showlogo == 'true'","x-form-browserRoot":"/content/themeclean/pages"} */
 	@Inject
 	private String logourl;
 
@@ -370,7 +367,7 @@ public class FooterModel extends AbstractComponent {
 	@Default(values ="25")
 	private String iconsize;
 
-	/* {"type":"object","x-form-type":"collection","x-form-label":"Icons","x-source":"inject","properties":{"icon":{"type":"string","x-source":"inject","x-form-label":"Icon Chooser","x-form-type":"iconbrowser","x-form-hint":"Select an icon.","x-form-required":true,"x-form-validator":"required","x-form-families":["material","font awesome"]},"url":{"type":"string","x-source":"inject","x-form-label":"Icon Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"}}} */
+	/* {"type":"object","x-form-type":"collection","x-form-label":"Icons","x-source":"inject","properties":{"icon":{"type":"string","x-source":"inject","x-form-label":"Icon Chooser","x-form-type":"iconbrowser","x-form-hint":"Select an icon.","x-form-required":true,"x-form-validator":"required","x-form-families":["material","font awesome"]},"url":{"type":"string","x-source":"inject","x-form-label":"Icon Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/themeclean/pages"}}} */
 	@Inject
 	private List<IComponent> icons;
 
@@ -392,12 +389,12 @@ public class FooterModel extends AbstractComponent {
 	@Inject
 	private String backgroundtype;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Background Video","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'video' and model.custombackground == 'true'","x-default":"https://www.youtube.com/embed/Ju86mknumYM","x-form-browserRoot":"/content/assets"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Background Video","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'video' and model.custombackground == 'true'","x-default":"https://www.youtube.com/embed/Ju86mknumYM","x-form-browserRoot":"/content/themeclean/assets"} */
 	@Inject
 	@Default(values ="https://www.youtube.com/embed/Ju86mknumYM")
 	private String bgvideo;
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Background Image","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'image' and model.custombackground == 'true'","x-form-browserRoot":"/content/assets"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Background Image","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'image' and model.custombackground == 'true'","x-form-browserRoot":"/content/themeclean/assets"} */
 	@Inject
 	private String bgimage;
 
@@ -450,7 +447,7 @@ public class FooterModel extends AbstractComponent {
 		return showlogo;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Logo","x-form-type":"pathbrowser","x-form-visible":"model.showlogo == 'true'","x-form-browserRoot":"/content/assets"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Logo","x-form-type":"pathbrowser","x-form-visible":"model.showlogo == 'true'","x-form-browserRoot":"/content/themeclean/assets"} */
 	public String getLogo() {
 		return logo;
 	}
@@ -460,7 +457,7 @@ public class FooterModel extends AbstractComponent {
 		return logoalttext;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Logo Url","x-form-type":"pathbrowser","x-form-visible":"model.showlogo == 'true'","x-form-browserRoot":"/content/sites"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Logo Url","x-form-type":"pathbrowser","x-form-visible":"model.showlogo == 'true'","x-form-browserRoot":"/content/themeclean/pages"} */
 	public String getLogourl() {
 		return logourl;
 	}
@@ -495,7 +492,7 @@ public class FooterModel extends AbstractComponent {
 		return iconsize;
 	}
 
-	/* {"type":"object","x-form-type":"collection","x-form-label":"Icons","x-source":"inject","properties":{"icon":{"type":"string","x-source":"inject","x-form-label":"Icon Chooser","x-form-type":"iconbrowser","x-form-hint":"Select an icon.","x-form-required":true,"x-form-validator":"required","x-form-families":["material","font awesome"]},"url":{"type":"string","x-source":"inject","x-form-label":"Icon Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/sites"}}} */
+	/* {"type":"object","x-form-type":"collection","x-form-label":"Icons","x-source":"inject","properties":{"icon":{"type":"string","x-source":"inject","x-form-label":"Icon Chooser","x-form-type":"iconbrowser","x-form-hint":"Select an icon.","x-form-required":true,"x-form-validator":"required","x-form-families":["material","font awesome"]},"url":{"type":"string","x-source":"inject","x-form-label":"Icon Url","x-form-type":"pathbrowser","x-form-browserRoot":"/content/themeclean/pages"}}} */
 	public List<IComponent> getIcons() {
 		return icons;
 	}
@@ -520,12 +517,12 @@ public class FooterModel extends AbstractComponent {
 		return backgroundtype;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Background Video","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'video' and model.custombackground == 'true'","x-default":"https://www.youtube.com/embed/Ju86mknumYM","x-form-browserRoot":"/content/assets"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Background Video","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'video' and model.custombackground == 'true'","x-default":"https://www.youtube.com/embed/Ju86mknumYM","x-form-browserRoot":"/content/themeclean/assets"} */
 	public String getBgvideo() {
 		return bgvideo;
 	}
 
-	/* {"type":"string","x-source":"inject","x-form-label":"Background Image","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'image' and model.custombackground == 'true'","x-form-browserRoot":"/content/assets"} */
+	/* {"type":"string","x-source":"inject","x-form-label":"Background Image","x-form-type":"pathbrowser","x-form-visible":"model.backgroundtype == 'image' and model.custombackground == 'true'","x-form-browserRoot":"/content/themeclean/assets"} */
 	public String getBgimage() {
 		return bgimage;
 	}

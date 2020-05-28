@@ -2,12 +2,11 @@ package com.example.site.models;
 
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
+import javax.inject.Inject;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
-
-import javax.inject.Inject;
 
 /*
     //GEN[:DATA
@@ -22,7 +21,7 @@ import javax.inject.Inject;
           "x-source": "inject",
           "x-form-label": "Project",
           "x-form-type": "materialselect",
-          "x-form-from": "/content/objects/timetracker/projects.infinity.json"
+          "x-form-from": "/content/example/objects/timetracker/projects.infinity.json"
         },
         "description": {
           "type": "string",

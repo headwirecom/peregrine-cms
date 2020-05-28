@@ -96,8 +96,8 @@ class PerApi {
         return impl.populateReferencedBy(path)
     }
 
-    populateTenants(path) {
-        return impl.populateTenants(path)
+    populateTenants() {
+        return impl.populateTenants()
     }
 
     setInitialPageEditorState() {
@@ -115,8 +115,8 @@ class PerApi {
         return impl.populateI18N(language)
     }
 
-    createSite(fromName, toName, title, colorPalette) {
-        return impl.createSite(fromName, toName, title, colorPalette)
+    createTenant(fromName, toName, title, tenantUserPwd, colorPalette) {
+        return impl.createTenant(fromName, toName, title, tenantUserPwd, colorPalette)
     }
 
     createPage(parentPath, name, templatePath, title) {
@@ -131,8 +131,8 @@ class PerApi {
         return impl.deletePage(path)
     }
 
-    deleteSite(name, path) {
-        return impl.deleteSite(name, path)
+    deleteTenant(name, path) {
+        return impl.deleteTenant(name, path)
     }
 
     renamePage(path, newName) {
@@ -199,6 +199,10 @@ class PerApi {
         return impl.uploadFiles(path, files, cb)
     }
 
+    nameAvailable(value, path) {
+        return impl.nameAvailable(value, path)
+    }
+
     fetchExternalImage(path, url, name, config) {
         return impl.fetchExternalImage(path, url, name, config)
     }
@@ -233,6 +237,10 @@ class PerApi {
 
     getPalettes(templateName) {
         return impl.getPalettes(templateName)
+    }
+
+    tenantSetupReplication(path, withSite) {
+        return impl.tenantSetupReplication(path, withSite)
     }
 }
 

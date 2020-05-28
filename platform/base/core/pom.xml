@@ -75,6 +75,8 @@
                         </Sling-Namespaces>
 
                         <Sling-Nodetypes>
+                            SLING-INF/nodetypes/versionable.cnd,
+                            SLING-INF/nodetypes/site.cnd,
                             SLING-INF/nodetypes/replication.cnd,
                             SLING-INF/nodetypes/asset.cnd,
                             SLING-INF/nodetypes/pagecontent.cnd,
@@ -87,6 +89,9 @@
                             SLING-INF/nodetypes/extension.cnd
                         </Sling-Nodetypes>
 
+                        <Sling-Initial-Content>
+                            SLING-INF/apps/per/sitemaps;path:=/apps/per/sitemaps;overwrite=true
+                        </Sling-Initial-Content>
                     </instructions>
                 </configuration>
             </plugin>
@@ -184,6 +189,10 @@
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.commons.mime</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.serviceusermapper</artifactId>
         </dependency>
 
         <dependency>

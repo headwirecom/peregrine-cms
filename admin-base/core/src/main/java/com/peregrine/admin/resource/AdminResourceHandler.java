@@ -75,8 +75,6 @@ public interface AdminResourceHandler {
      */
     Resource createTemplate(ResourceResolver resourceResolver, String parentPath, String name, String component, String title) throws ManagementException;
 
-    DeletionResponse deleteResource(ResourceResolver resourceResolver, String path) throws ManagementException;
-
     /**
      * Deletes a resource
      * @param resourceResolver Resource Resolver to manage resources and cannot be null
@@ -164,27 +162,27 @@ public interface AdminResourceHandler {
     Node copyNode(Node source, Node target, boolean deep) throws ManagementException;
 
     /**
-     * Copies the Content of a given Site to another Site which includes
+     * Copies the Content of a given Tenant to another Tenant which includes
      * its content, assets, objects, templates and apps, felibs settings
      * @param resourceResolver Resource Resolver to obtain the resources
-     * @param sitesParentPath Absolute Path to Sites
-     * @param fromName Name of the source Site which must exist
-     * @param targetName Name of the target Site which cannot be null and must not exist
+     * @param tenantsParentPath Absolute Path to Tenants
+     * @param fromName Name of the source Tenant which must exist
+     * @param toName Name of the target Tenant which cannot be null and must not exist
      * @return Resource of the Target Copy
      * @throws ManagementException If a management error occurs
      */
-    Resource copySite(ResourceResolver resourceResolver, String sitesParentPath, String fromName, String targetName, String title) throws ManagementException;
+    Resource copyTenant(ResourceResolver resourceResolver, String tenantsParentPath, String fromName, String toName) throws ManagementException;
 
     /**
-     * Delete a peregrine cms site
+     * Delete a peregrine cms Tenant
      *
      * @param resourceResolver Resource Resolver to obtain the resources
-     * @param sitesParentPath Absolute Path to Sites
-     * @param name Name of the Site to delete
+     * @param tenantsParentPath Absolute Path to Tenants
+     * @param name Name of the Tenant to delete
      * @return
      * @throws ManagementException
      */
-    void deleteSite(ResourceResolver resourceResolver, String sitesParentPath, String name) throws ManagementException;
+    void deleteTenant(ResourceResolver resourceResolver, String tenantsParentPath, String name) throws ManagementException;
 
     /**
      * Copies a resource to a new location
@@ -202,17 +200,15 @@ public interface AdminResourceHandler {
     Resource copyResource(ResourceResolver resourceResolver, Resource resourceToCopy, Resource newParent, String newName, String newTitle, Resource nextSibling, boolean deep) throws ManagementException;
 
     /**
-     * Update a peregrine cms site's components and felibs from its source site
+     * Update a peregrine cms Tenant's components and felibs from its source Tenant
      *
      * @param resourceResolver Resource Resolver to obtain the resources
-     * @param siteName The name of the site to update
+     * @param tenantName The name of the Tenant to update
      * @throws ManagementException
      */
-    void updateSite(ResourceResolver resourceResolver, String siteName) throws ManagementException;
+    void updateTenant(ResourceResolver resourceResolver, String tenantName) throws ManagementException;
 
-    class ManagementException
-        extends Exception
-    {
+    class ManagementException extends Exception {
         public ManagementException(String message) {
             super(message);
         }

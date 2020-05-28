@@ -3,7 +3,7 @@
   "jcr:title": "Export One Sub",
   "sling:resourceType": "it/objects/export/one/sub",
   "breadcrumb": "My-Breadcrumb",
-  "persona_type_ss": "/content/objects/a/b/c",
+  "persona_type_ss": "/content/it/objects/a/b/c",
   "q": "Let's get this party started",
   "title": "Export One Sub",
   "exportOneGrandSub": {
@@ -11,7 +11,7 @@
     "jcr:title": "basics",
     "sling:resourceType": "it/objects/export/one/sub",
     "breadcrumb": "My-Grand-Breadcrumb",
-    "persona_type_ss": "/content/objects/a/b/c/d",
+    "persona_type_ss": "/content/it/objects/a/b/c/d",
     "q": "Another one bites the dust",
     "title": "Export One Grand Sub"
   }

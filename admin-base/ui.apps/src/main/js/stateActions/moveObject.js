@@ -34,7 +34,7 @@ export default function(me, target) {
     new Promise( (resolve, reject) => {
         api.movePage(target.path, target.to, target.type).then( () => {
             let path = me.getNodeFromView('/state/tools/objects')
-            me.loadContent('/content/admin/objects.html/path'+SUFFIX_PARAM_SEPARATOR+ path)
+            me.loadContent('/content/admin/pages/objects.html/path'+SUFFIX_PARAM_SEPARATOR+ path)
             resolve()
         })
     })

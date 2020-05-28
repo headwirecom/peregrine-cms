@@ -25,9 +25,9 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
+import com.peregrine.commons.ResourceUtils;
 import com.peregrine.sitemap.ResourceResolverFactoryProxy;
 import com.peregrine.sitemap.SiteMapStructureCache;
-import com.peregrine.commons.ResourceUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -67,9 +67,13 @@ public final class SiteMapResourceChangeJobConsumer implements JobConsumer {
 
     @Activate
     public void activate(final SiteMapResourceChangeJobConsumerConfig config) {
-        primaryTypes.clear();
-        for (final String type : config.primaryTypes()) {
-            primaryTypes.add(type);
+        if(config == null || config.primaryTypes() == null) {
+            logger.debug("Configuration for Site Map Resource Change Job Consumer config is not valid -> ignored");
+        } else {
+            primaryTypes.clear();
+            for (final String type : config.primaryTypes()) {
+                primaryTypes.add(type);
+            }
         }
     }
 

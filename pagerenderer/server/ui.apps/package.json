@@ -10,7 +10,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node ../../../buildscripts/buildvue.js pagerender-server",
+    "build": "node ../../../buildscripts/buildvue.js pagerenderserver",
     "site": "node ./node_modules/jsdoc/jsdoc.js -c jsdoc.config.json"
   },
   "author": "",

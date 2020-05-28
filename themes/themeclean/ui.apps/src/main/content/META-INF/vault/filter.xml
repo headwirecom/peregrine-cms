@@ -1,35 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <workspaceFilter version="1.0">
-    <!--
-        Any node that will contain customer data needs to be excluded
-        otherwise a Pacakge Installation will wipe them.
-
-        If there is a mix then all provided nodes must be included and
-        all custom nodes excluded.
-
-        If unsure what to do then go to the Composum Package Manager
-        (/bin/packages.html) and create a test package. To to the package
-        filter list and add filter entries until all of the app provides
-        nodes are included but none of the customer generatedd nodes.
-
-        Also any sub pckage of this module needs to exclude /apps/themeclean/install
-        folder otherwise they wipe all installed bundles.
-    -->
-   
-    <filter root="/content/sites/themeclean" mode="merge"/>
-    <filter root="/content/assets/themeclean" mode="merge"/>
-    <filter root="/content/objects/themeclean" mode="merge"/>
-    <filter root="/content/templates/themeclean" mode="merge"/>
-   
-    <filter root="/etc/felibs/themeclean"/>
-
-    <!--
-        Need to exclude the Install folder otherwise the Bundle will be undeployed
-        as it is in the '/apps/themeclean/install' folder (see the 'all'
-        package).
-    -->
-    <filter root="/apps/themeclean">
-        <exclude pattern="/apps/themeclean/install/.*"/>
-    </filter>
+  <filter root="/content/themeclean" mode="merge">
+    <exclude pattern="/content/themeclean/objects/tags/.*"/>
+  </filter>
+  <filter root="/etc/felibs/themeclean"/>
+  <filter root="/apps/themeclean">
+    <exclude pattern="/apps/themeclean/install/.*"/>
+  </filter>
 </workspaceFilter>

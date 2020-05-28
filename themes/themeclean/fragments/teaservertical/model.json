@@ -145,7 +145,7 @@
               "x-source": "inject",
               "x-form-label": "Button Link",
               "x-form-type": "pathbrowser",
-              "x-form-browserRoot": "/content/sites"
+              "x-form-browserRoot": "/content/themeclean/pages"
             },
             "buttoncolor": {
               "type": "string",

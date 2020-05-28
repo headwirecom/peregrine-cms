@@ -16,7 +16,7 @@ public final class EtcMapUrlExternalizerTest extends SlingResourcesTest {
     public void map() {
         final String url = "/content/page.html";
         final String mappedUrl = "http://www.example.com/page.html";
-        resourceResolverMap.put(url, mappedUrl);
+        repo.map(url, mappedUrl);
         assertEquals(mappedUrl, model.map(resourceResolver, url));
     }
 

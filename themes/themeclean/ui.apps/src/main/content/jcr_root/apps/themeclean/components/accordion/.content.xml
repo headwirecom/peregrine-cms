@@ -11,7 +11,7 @@
       </jcr:content>
     </sample>
     <sample-accordionmedia jcr:primaryType="nt:unstructured" title="Accordion With Media" group="Features">
-      <jcr:content jcr:primaryType="nt:unstructured" showtitle="true" title="Peregrine Accordion" backgroundtype="color" bgcolor="#ffffff" color2="#ffffff" fullheight="false" bottompadding="30" toppadding="30" mediatype="image" imagesrc="/content/assets/themeclean/images/workers-looking-tablet.jpg" mediawidth="33" showmedia="true" toggletype="accordion">
+      <jcr:content jcr:primaryType="nt:unstructured" showtitle="true" title="Peregrine Accordion" backgroundtype="color" bgcolor="#ffffff" color2="#ffffff" fullheight="false" bottompadding="30" toppadding="30" mediatype="image" imagesrc="/content/themeclean/assets/images/workers-looking-tablet.jpg" mediawidth="33" showmedia="true" toggletype="accordion">
         <accordiontoggle jcr:primaryType="nt:unstructured">
           <accordiontoggle0 jcr:primaryType="nt:unstructured" text="&lt;p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s&lt;/p>" title="Learn More"/>
           <accordiontoggle1 jcr:primaryType="nt:unstructured" text="&lt;p>when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting&lt;/p>" title="Contact Us"/>
@@ -28,7 +28,7 @@
       </jcr:content>
     </sample-toggle>
     <sample-togglemedia jcr:primaryType="nt:unstructured" title="Toggle With Media" group="Features">
-      <jcr:content jcr:primaryType="nt:unstructured" showtitle="true" title="Peregrine Toggle" backgroundtype="color" bgcolor="#ffffff" color2="#ffffff" fullheight="false" bottompadding="30" toppadding="30" mediatype="image" imagesrc="/content/assets/themeclean/images/workers-looking-tablet.jpg" mediawidth="33" showmedia="true" toggletype="toggle">
+      <jcr:content jcr:primaryType="nt:unstructured" showtitle="true" title="Peregrine Toggle" backgroundtype="color" bgcolor="#ffffff" color2="#ffffff" fullheight="false" bottompadding="30" toppadding="30" mediatype="image" imagesrc="/content/themeclean/assets/images/workers-looking-tablet.jpg" mediawidth="33" showmedia="true" toggletype="toggle">
         <accordiontoggle jcr:primaryType="nt:unstructured">
           <accordiontoggle0 jcr:primaryType="nt:unstructured" text="&lt;p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s&lt;/p>" title="Learn More"/>
           <accordiontoggle1 jcr:primaryType="nt:unstructured" text="&lt;p>when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting&lt;/p>" title="Contact Us"/>

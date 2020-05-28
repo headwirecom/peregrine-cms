@@ -25,28 +25,25 @@ package com.peregrine.nodetypes.models;
  * #L%
  */
 
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.SLASH;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.nodetypes.merge.PageMerge;
-
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.annotations.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
+import javax.inject.Inject;
 
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.SLASH;
+import com.peregrine.nodetypes.merge.RenderContext;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.annotations.Optional;
 
 /**
  * Created by rr on 12/2/2016.
  */
 public class AbstractComponent implements IComponent {
-
-	// private static final Logger LOG = LoggerFactory.getLogger(AbstractComponent.class);
 
     private final Resource resource;
 
@@ -62,7 +59,10 @@ public class AbstractComponent implements IComponent {
     }
 
     public Resource getRootResource() {
-        return PageMerge.getRenderContext().getRequest().getResource();
+        return java.util.Optional.ofNullable(PageMerge.getRenderContext())
+                .map(RenderContext::getRequest)
+                .map(SlingHttpServletRequest::getResource)
+                .orElse(resource);
     }
 
     public String getPath() {

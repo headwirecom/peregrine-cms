@@ -26,9 +26,8 @@ package com.peregrine.nodetypes.models;
  */
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.sling.api.resource.Resource;
-
 import java.util.List;
+import org.apache.sling.api.resource.Resource;
 
 public interface IComponent {
 

@@ -25,18 +25,17 @@ package com.peregrine.admin.models;
  * #L%
  */
 
+import static com.peregrine.admin.util.AdminConstants.PATH_FIELD_COMPONENT_PATH;
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JSON;
+import static org.apache.sling.models.annotations.DefaultInjectionStrategy.OPTIONAL;
+
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
+import javax.inject.Inject;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
-
-import javax.inject.Inject;
-
-import static com.peregrine.commons.util.PerConstants.JACKSON;
-import static com.peregrine.commons.util.PerConstants.JSON;
-import static com.peregrine.admin.util.AdminConstants.PATH_FIELD_COMPONENT_PATH;
-import static org.apache.sling.models.annotations.DefaultInjectionStrategy.*;
 
 /*
     //GEN[:DATA

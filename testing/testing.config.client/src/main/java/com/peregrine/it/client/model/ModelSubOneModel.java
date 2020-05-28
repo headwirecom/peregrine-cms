@@ -105,7 +105,7 @@ public class ModelSubOneModel
             String k = (String) key;
             if((k.indexOf(":") < 0 && !k.equals("breadcrumb"))) {
                 String value = (String) values.get(key);
-                if(value != null && value.startsWith("/content/objects")) {
+                if(value != null && value.startsWith("/content/it/objects")) {
                     Resource val = getResource().getResourceResolver().getResource(value);
                     if(val != null) {
                         value = val.getValueMap().get("jcr:title", String.class);

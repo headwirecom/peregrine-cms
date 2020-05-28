@@ -23,7 +23,7 @@
   #L%
   -->   
 <template>
-    <span v-if="visible">
+    <component :is="tag" v-if="visible">
         <a 
             v-if                    = "!model.type"
             v-bind:href             = "targetHtml"
@@ -45,7 +45,7 @@
                 <slot></slot>
             </i>
         </a>
-    </span>
+    </component>
 </template>
 
 <script>
@@ -79,7 +79,13 @@
      *
      */
     export default {
-    props: ['model'],
+    props: {
+        model: Object,
+        tag: {
+            type: String,
+            default: 'span'
+        }
+    },
     data: function() {
         return {
             clickCount: 0,

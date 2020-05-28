@@ -23,7 +23,7 @@
   under the License.
   #L%
   -->
-<sly data-sly-use.helper="apps.pagerender.vue.structure.page.Helper"/>
+<sly data-sly-use.helper="apps.pagerendervue.structure.page.Helper"/>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -44,7 +44,7 @@
 
     <script type="text/javascript">
         if(/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) {
-            document.write('<script src="/etc/felibs/pagerender-vue/conditional-js/shim.min.js"><\/script>');
+            document.write('<script src="/etc/felibs/pagerendervue/conditional-js/shim.min.js"><\/script>');
         }
 
         if('ResizeObserver' in window === false) {
@@ -52,15 +52,60 @@
         }
     </script>
 
+    <style>
+        .tutorial-visible {
+            display: flex;
+        }
+
+        #peregrine-adminapp {
+            flex-grow: 1;
+        }
+
+        .peregrine-tutorial {
+            display: none;
+        }
+
+        .tutorial-visible .peregrine-tutorial {
+            width: 400px;
+            background: #37474f;
+            height: 100vh;
+            display: block;
+            top: 0px;
+            position: sticky;
+        }
+
+        .tutorial-visible .tooling-page .explorer {
+            right: 400px;
+        }
+
+        .tutorial-visible .tooling-page .peregrine-workspace {
+            right: 400px;
+        }
+
+        .tutorial-visible .peregrine-workspace .peregrine-content-view.preview {
+            right: 400px;
+        }
+
+        .tutorial-visible .preview #editview {
+            width: calc(100% - 400px) !important;
+        }
+
+    </style>
+
 </head>
 <body>
 
 <div id="waitMask" style="display: none; z-index: 999; position: absolute; top: 0; right: 0; height: 100%; width: 100%; cursor: wait; background-color: black; opacity: 0.2;">&nbsp;</div>
 
-<div id="peregrine-adminapp">
-    <span v-cloak>
-        <component v-bind:is="adminPage.component" v-bind:model="adminPage"></component>
-    </span>
+<div id="peregrine-main">
+    <div id="peregrine-adminapp">
+        <span v-cloak>
+            <component v-bind:is="adminPage.component" v-bind:model="adminPage"></component>
+        </span>
+    </div>
+    <div class="peregrine-tutorial">
+        <iframe src="/content/admin/pages/tutorials.html" style="height: 100%; width: 100%; background: white;" data-per-mode="tutorial"></iframe>
+    </div>
 </div>
 
 <sly data-sly-list="${helper.model.siteJS}">
@@ -93,6 +138,14 @@
         $perAdminApp.loadComponent('admin-components-fileupload')
         $perAdminApp.loadComponent('admin-components-separator')
         $perAdminApp.loadComponent('admin-components-colorpaletteselector')
+        $perAdminApp.loadComponent('admin-components-materializeswitch')
+        $perAdminApp.loadComponent('admin-components-componentexplorer')
+        $perAdminApp.loadComponent('admin-components-nodetreeitem')
+
+        $perAdminApp.loadComponent('admin-components-materializedropdown')
+        $perAdminApp.loadComponent('admin-components-materializemodal')
+        $perAdminApp.loadComponent('admin-components-materializespinner')
+
 
         $perAdminApp.loadComponent('field-pathbrowser')
         $perAdminApp.loadComponent('field-texteditor')
@@ -120,7 +173,7 @@
         $perAdminApp.loadComponent('admin-components-draghandle')
         $perAdminApp.loadComponent('admin-components-iconbrowser')
 
-        $perAdminApp.loadComponent('pagerender-vue-components-placeholder')
+        $perAdminApp.loadComponent('pagerendervue-components-placeholder')
 
         // init peregrine admin app
         $perAdminApp.init($perAdminView)

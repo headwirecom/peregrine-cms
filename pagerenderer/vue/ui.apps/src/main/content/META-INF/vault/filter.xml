@@ -23,33 +23,13 @@
   under the License.
   #L%
   -->
-
-
 <workspaceFilter version="1.0">
-    <!--
-        Any node that will contain customer data needs to be excluded
-        otherwise a Package Installation will wipe them.
-
-        If there is a mix then all provided nodes must be included and
-        all custom nodes excluded.
-
-        If unsure what to do then go to the Composum Package Manager
-        (/bin/packages.html) and create a test package. To to the package
-        filter list and add filter entries until all of the app provides
-        nodes are included but none of the customer generatedd nodes.
-
-        Also any sub pckage of this module needs to exclude /apps/pagerender/vue/install
-        folder otherwise they wipe all installed bundles.
-    -->
-    <filter root="/content/pagerenderer/vue"/>
-    <filter root="/etc/felibs/pagerender-vue"/>
-    <!--
-        Need to exclude the Install folder otherwise the Bundle will be undeployed
-        as it is in the '/apps/pagerender/vue/install' folder (see the 'all'
-        package).
-    -->
-    <filter root="/apps/pagerender/vue">
-        <exclude pattern="/apps/pagerender/vue/install/.*"/>
-    </filter>
-    <filter root="/conf/nodejs/ssr-html"/>
+  <filter root="/conf/nodejs/ssr-html"/>
+  <filter root="/etc/felibs/pagerendervue"/>
+  <filter root="/content/pagerendervue">
+    <exclude pattern="/content/pagerendervue/objects/tags/.*"/>
+  </filter>
+  <filter root="/apps/pagerendervue">
+    <exclude pattern="/apps/pagerendervue/install/.*"/>
+  </filter>
 </workspaceFilter>

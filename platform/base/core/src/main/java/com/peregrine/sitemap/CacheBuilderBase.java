@@ -61,21 +61,18 @@ public abstract class CacheBuilderBase implements CacheBuilder {
     }
 
     protected final Resource getCache(final ResourceResolver resourceResolver, final Resource rootPage) {
-        try {
-            final Resource cache;
-            if (isCached(resourceResolver, rootPage.getPath())) {
-                final String cachePath = getCachePath(rootPage);
-                cache = resourceResolver.getResource(cachePath);
-            } else {
-                cache = buildCache(resourceResolver, rootPage);
+        if (!isCached(resourceResolver, rootPage.getPath())) {
+            try {
+                final Resource cache = buildCache(resourceResolver, rootPage);
                 resourceResolver.commit();
+                return cache;
+            } catch (final PersistenceException e) {
+                logger.error(COULD_NOT_SAVE_SITE_MAP_CACHE, e);
             }
-
-            return cache;
-        } catch (final PersistenceException e) {
-            logger.error(COULD_NOT_SAVE_SITE_MAP_CACHE, e);
-            return null;
         }
+
+        final String path = getCachePath(rootPage);
+        return resourceResolver.getResource(path);
     }
 
     protected abstract ResourceResolver getServiceResourceResolver() throws LoginException;
@@ -93,7 +90,11 @@ public abstract class CacheBuilderBase implements CacheBuilder {
     }
 
     protected String getCachePath(final String rootPagePath) {
-        return location + rootPagePath;
+        return isRepositoryRoot(rootPagePath) ? location : location + rootPagePath;
+    }
+
+    protected static boolean isRepositoryRoot(final String path) {
+        return StringUtils.equals(SLASH, StringUtils.trim(path));
     }
 
     protected final String getOriginalPath(final Resource cache) {
@@ -195,7 +196,7 @@ public abstract class CacheBuilderBase implements CacheBuilder {
     }
 
     @Override
-    public final void rebuildAll() {
+    public void rebuildAll() {
         try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
             cleanRemovedChildren(resourceResolver, SLASH);
             rebuildMandatoryContent();

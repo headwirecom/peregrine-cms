@@ -29,6 +29,7 @@ import com.peregrine.commons.concurrent.Callback;
 import com.peregrine.commons.concurrent.DeBouncer;
 import com.peregrine.sitemap.*;
 import org.apache.sling.api.resource.*;
+import org.apache.sling.serviceusermapping.ServiceUserMapped;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -62,6 +63,10 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
 
     @Reference
     private SiteMapConfigurationsContainer siteMapConfigurationsContainer;
+
+    // This reference makes sure that the Service User is available when this service activates
+    @Reference(target = "(subServiceName=sitemaps)")
+    private ServiceUserMapped wfxServices;
 
     private DeBouncer<String> deBouncer;
 
@@ -148,7 +153,8 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
 
     @Override
     protected String getCachePath(final String rootPagePath) {
-        return super.getCachePath(rootPagePath) + SLASH_JCR_CONTENT;
+        final String cachePath = super.getCachePath(rootPagePath);
+        return isRepositoryRoot(rootPagePath) ? cachePath : cachePath + SLASH_JCR_CONTENT;
     }
 
     @Override

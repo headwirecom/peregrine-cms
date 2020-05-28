@@ -4,16 +4,15 @@ import com.peregrine.adaption.PerPage;
 import com.peregrine.adaption.PerPageManager;
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Inject;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 
 /*
     //GEN[:DATA
@@ -28,7 +27,7 @@ import java.util.List;
           "x-source": "inject",
           "x-form-type": "pathbrowser",
           "x-form-label": "Root Page",
-          "x-form-browserRoot": "/content/sites"
+          "x-form-browserRoot": "/content/themeclean/pages"
         },
         "includeroot": {
           "type": "string",
@@ -75,7 +74,7 @@ public class PagelistModel extends AbstractComponent {
     public PagelistModel(Resource r) { super(r); }
 
     //GEN[:INJECT
-    	/* {"type":"string","x-source":"inject","x-form-type":"pathbrowser","x-form-label":"Root Page","x-form-browserRoot":"/content/sites"} */
+    	/* {"type":"string","x-source":"inject","x-form-type":"pathbrowser","x-form-label":"Root Page","x-form-browserRoot":"/content/themeclean/pages"} */
 	@Inject
 	private String rootpage;
 
@@ -91,7 +90,7 @@ public class PagelistModel extends AbstractComponent {
 //GEN]
 
     //GEN[:GETTERS
-    	/* {"type":"string","x-source":"inject","x-form-type":"pathbrowser","x-form-label":"Root Page","x-form-browserRoot":"/content/sites"} */
+    	/* {"type":"string","x-source":"inject","x-form-type":"pathbrowser","x-form-label":"Root Page","x-form-browserRoot":"/content/themeclean/pages"} */
 	public String getRootpage() {
 		return rootpage;
 	}

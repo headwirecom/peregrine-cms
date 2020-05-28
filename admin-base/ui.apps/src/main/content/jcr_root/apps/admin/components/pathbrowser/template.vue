@@ -27,6 +27,9 @@
     <div class="modal-mask" v-on:click.stop.prevent="onCancel">
         <div class="modal-wrapper">
         <div class="pathbrowser modal-container" v-on:click.stop.prevent="onPrevent">
+            <div class="modal-header" v-if="">
+                {{ header }}
+            </div>
             <ul class="pathbrowser-tabs">
                 <li class="tab">
                     <a href="#" :class="tab === 'browse' ? 'active' : ''" v-on:click="select('browse')">
@@ -288,25 +291,25 @@
                         </div>
                         <div class="form-group" v-if="altText !== undefined">
                             <label for="altText">Image Alternate Text</label>
-                            <input 
-                                id="altText" 
-                                type="text" 
-                                placeholder="Alt Text" 
+                            <input
+                                id="altText"
+                                type="text"
+                                placeholder="Alt Text"
                                 :value="altText"
                                 @input="setAltText" />
                         </div>
                         <div class="form-group" v-if="linkTitle !== undefined">
                             <label for="linkTitle">Link Title</label>
-                            <input 
-                                id="linkTitle" 
-                                type="text" 
-                                placeholder="Link Title" 
+                            <input
+                                id="linkTitle"
+                                type="text"
+                                placeholder="Link Title"
                                 :value="linkTitle"
                                 @input="setLinkTitle" />
                         </div>
                         <div class="pathbrowser-newwindow" v-if="newWindow !== undefined"
-                            @click="toggleNewWindow" 
-                            @keyup.space="toggleNewWindow">  
+                            @click="toggleNewWindow"
+                            @keyup.space="toggleNewWindow">
                             <input type="checkbox" id="newWindow" :checked="newWindow"/>
                             <label for="newWindow">Open in new window?</label>
                         </div>
@@ -348,7 +351,7 @@
                                 class="modal-action waves-effect waves-light btn-flat">
                                 cancel
                         </button>
-                        <button v-on:click="onSelect" 
+                        <button v-on:click="onSelect"
                                 class="modal-action waves-effect waves-light btn-flat">
                                 select
                         </button>
@@ -361,25 +364,26 @@
 </template>
 
 <script>
-    import {PathBrowser} from "../../../../../../js/constants";
+    import {PathBrowser} from '../../../../../../js/constants';
 
     export default {
         props: [
-            'isOpen', 
-            'browserRoot', 
-            'browserType', 
-            'currentPath', 
-            'selectedPath', 
-            'withLinkTab', 
+            'isOpen',
+            'header',
+            'browserRoot',
+            'browserType',
+            'currentPath',
+            'selectedPath',
+            'withLinkTab',
             'newWindow',
             'toggleNewWindow',
-            'setCurrentPath', 
-            'setSelectedPath', 
+            'setCurrentPath',
+            'setSelectedPath',
             'linkTitle',
             'setLinkTitle',
             'altText',
             'setAltText',
-            'onCancel', 
+            'onCancel',
             'onSelect',
         ],
         watch: {
@@ -394,6 +398,13 @@
             } else {
                 this.tab = 'browse'
             }
+
+            this.$on('setSelectedPath', () => {
+                console.log('setSelectedPath')
+            })
+            this.$on('setCurrentPath', () => {
+                console.log('setCurrentPath')
+            })
         },
         data: function() {
             return {

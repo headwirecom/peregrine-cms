@@ -33,4 +33,8 @@ public class AdminConstants {
     public static final String MORE = "more";
     public static final String DATA = "data";
 
+    public static final String PEREGRINE_SERVICE_NAME = "peregrine-services";
+
+    public static final String GROUP_NAME_SUFFIX = "_group";
+    public static final String USER_NAME_SUFFIX = "_user";
 }

@@ -30,7 +30,7 @@
           description="Replication Service that is replicating the resources to a File / Folder on the local machine by rendering it using Sling"
           targetFolder="${sling.home}/staticreplication"
           creationStrategy="1"
-          exportExtensions="[data.json=per:Page|per:Template,infinity.json=per:Object,html=per:Page|per:Template,*~raw=nt:file]"
+          exportExtensions="[data.json=per:Page|per:Template,infinity.json=per:Object,html=per:Page|per:Template,*~raw=nt:file,css=per:Site|per:FeLib,js=per:Site|per:FeLib]"
           mandatoryRenditions="thumbnail.png"
 >
     <!-- The Export Extensions defines what and how they are exported. The key is the extension of rendering as well as

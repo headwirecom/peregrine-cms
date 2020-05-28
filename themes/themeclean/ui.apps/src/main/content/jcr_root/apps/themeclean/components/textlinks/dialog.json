@@ -17,7 +17,7 @@
         },
         {
           "type": "pathbrowser",
-          "browserRoot": "/content/sites",
+          "browserRoot": "/content/themeclean/pages",
           "placeholder": "link",
           "label": "Link Url",
           "model": "link"

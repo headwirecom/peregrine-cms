@@ -29,7 +29,7 @@
           name="defaultRepl"
           description="Replication Service that is replicating resources based on its path by one or more predefined Replication Services"
           defaultMapping="localFS"
-          pathMapping="[local:path=/content/assets]"
+          pathMapping=""
 >
     <!--
         The Mappings are in this format:

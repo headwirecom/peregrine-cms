@@ -5,6 +5,12 @@
       <div class="explorer-preview-nav">
         <ul class="nav-left" v-if="hasMultipleTabs">
           <admin-components-explorerpreviewnavitem
+              v-if="!!($slots.default)"
+              icon="view_list"
+              title="component explorer"
+              :class="{'active': isTab(Tab.COMPONENTS)}"
+              @click="setActiveTab(Tab.COMPONENTS)"/>
+          <admin-components-explorerpreviewnavitem
               :icon="Icon.SETTINGS"
               :title="`${nodeType}-info`"
               :class="{'active': isTab(Tab.INFO)}"
@@ -24,45 +30,21 @@
               :class="{'active': isTab(Tab.REFERENCES)}"
               @click="setActiveTab(Tab.REFERENCES)">
           </admin-components-explorerpreviewnavitem>
+          <admin-components-explorerpreviewnavitem
+              :icon="Icon.MORE_VERT"
+              :title="'actions'"
+              :class="{'active': isTab(Tab.ACTIONS)}"
+              @click="setActiveTab(Tab.ACTIONS)"/>
         </ul>
 
-        <ul class="nav-right">
-          <template v-if="allowOperations">
-            <admin-components-explorerpreviewnavitem
-                :icon="Icon.TEXT_FORMAT"
-                :title="`rename ${nodeType}`"
-                @click="renameNode()">
-            </admin-components-explorerpreviewnavitem>
-            <admin-components-explorerpreviewnavitem
-                v-if="allowMove"
-                :icon="Icon.COMPARE_ARROWS"
-                :title="`move ${nodeType}`"
-                @click="moveNode()">
-            </admin-components-explorerpreviewnavitem>
-            <admin-components-explorerpreviewnavitem
-                :icon="Icon.DELETE"
-                :title="`delete ${nodeType}`"
-                @click="deleteNode()">
-            </admin-components-explorerpreviewnavitem>
-          </template>
-          <template>
-            <admin-components-explorerpreviewnavitem
-                v-if="edit"
-                :icon="Icon.INFO"
-                :title="`cancel edit`"
-                @click="onCancel()">
-            </admin-components-explorerpreviewnavitem>
-            <admin-components-explorerpreviewnavitem
-                v-else
-                :icon="Icon.EDIT"
-                :title="`cancel edit`"
-                @click="onEdit()">
-            </admin-components-explorerpreviewnavitem>
-          </template>
-        </ul>
+        <ul class="nav-right"></ul>
       </div>
 
-      <template v-if="isTab([Tab.INFO, Tab.OG_TAGS])">
+      <template v-if="isTab([Tab.COMPONENTS])">
+        <slot></slot>
+      </template>
+
+      <template v-else-if="isTab([Tab.INFO, Tab.OG_TAGS])">
         <div v-if="hasInfoView && !edit"
              :class="`${nodeType}-info-view`">
           <img v-if="isImage"
@@ -75,21 +57,42 @@
           </iframe>
         </div>
         <vue-form-generator
+            v-if="node && getSchemaByActiveTab()"
             :class="{'vfg-preview': !edit}"
             :schema="getSchemaByActiveTab()"
             :model="node"
             :options="options"
-            @validated="onValidated()">
+            @validated="onValidated()"
+            @model-updated="onModelUpdate">
         </vue-form-generator>
-        <div v-if="edit" class="explorer-confirm-dialog">
-          <button
-              class="btn btn-raised waves-effect waves-light right"
-              type="button"
-              :title="`save ${nodeType} properties`"
-              :disabled="!valid"
-              @click.stop.prevent="save()">
-            <i class="material-icons">{{Icon.CHECK}}</i>
-          </button>
+        <div class="explorer-confirm-dialog">
+          <template v-if="edit">
+            <button
+                class="btn btn-raised waves-effect waves-light right"
+                type="button"
+                :title="`cancel editing ${nodeType} properties`"
+                @click.stop.prevent="onCancel()">
+              <i class="material-icons">{{Icon.CANCEL}}</i>
+            </button>
+            <button
+                class="btn btn-raised waves-effect waves-light right"
+                type="button"
+                :title="`save ${nodeType} properties`"
+                :disabled="!valid"
+                @click.stop.prevent="save()">
+              <i class="material-icons">{{Icon.CHECK}}</i>
+            </button>
+          </template>
+          <template v-else>
+            <span></span>
+            <button
+                class="btn btn-raised waves-effect waves-light right"
+                type="button"
+                :title="`edit ${nodeType} properties`"
+                @click.stop.prevent="onEdit()">
+              <i class="material-icons">{{Icon.EDIT}}</i>
+            </button>
+          </template>
         </div>
       </template>
 
@@ -98,7 +101,7 @@
           <li class="collection-header">
             referenced in {{referencedBy.length}} locations
           </li>
-          <li class="collection-item" v-for="item in referencedBy">
+          <li v-for="item in referencedBy" :key="item.path" class="collection-item">
               <span>
                 <admin-components-action
                     v-bind:model="{
@@ -113,11 +116,28 @@
           </li>
         </ul>
       </template>
+
+      <template v-else-if="isTab(Tab.ACTIONS)">
+        <div v-if="allowOperations" class="action-list">
+          <div class="action" :title="`rename ${nodeType}`" @click="renameNode()">
+            <i class="material-icons">{{Icon.TEXT_FORMAT}}</i>
+            Rename {{nodeType}}
+          </div>
+          <div class="action" :title="`move ${nodeType}`" @click="moveNode()">
+            <i class="material-icons">{{Icon.COMPARE_ARROWS}}</i>
+            Move {{nodeType}}
+          </div>
+          <div class="action" :title="`delete ${nodeType}`" @click="deleteNode()">
+            <i class="material-icons">{{Icon.DELETE}}</i>
+            Delete {{nodeType}}
+          </div>
+        </div>
+      </template>
     </template>
 
     <template v-else>
       <div v-if="!currentObject" class="explorer-preview-empty">
-        <span>{{ $i18n(`no ${nodeType} selected`) }}</span>
+        <span>{{ $i18n(`no${uNodeType}Selected`) }}</span>
         <i class="material-icons">info</i>
       </div>
     </template>
@@ -125,10 +145,11 @@
     <admin-components-pathbrowser
         v-if="isOpen"
         :isOpen="isOpen"
+        :header="`Move ${nodeName}`"
         :browserRoot="browserRoot"
         :browserType="nodeType"
-        :currentPath="currentPath"
-        :selectedPath="selectedPath"
+        :currentPath="path.current"
+        :selectedPath="path.selected"
         :setCurrentPath="setCurrentPath"
         :setSelectedPath="setSelectedPath"
         :onCancel="onMoveCancel"
@@ -139,12 +160,15 @@
 </template>
 
 <script>
-  import {Icon, MimeType, NodeType} from '../../../../../../js/constants';
+  import {Icon, MimeType, NodeType, SUFFIX_PARAM_SEPARATOR} from '../../../../../../js/constants'
+  import {deepClone} from '../../../../../../js/utils'
 
   const Tab = {
     INFO: 'info',
     OG_TAGS: 'og-tags',
-    REFERENCES: 'references'
+    REFERENCES: 'references',
+    COMPONENTS: 'components',
+    ACTIONS: 'actions'
   };
 
   const SchemaKey = {
@@ -169,6 +193,14 @@
       currentPath: {
         type: String,
         required: true
+      },
+      tab: {
+        type: String,
+        default: Tab.INFO
+      },
+      isEdit: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
@@ -177,7 +209,7 @@
         Tab: Tab,
         SchemaKey: SchemaKey,
         NodeType: NodeType,
-        activeTab: Tab.INFO,
+        activeTab: null,
         edit: false,
         valid: {
           state: true,
@@ -196,6 +228,13 @@
           selectStateAction: [NodeType.ASSET, NodeType.OBJECT],
           showProp: [NodeType.ASSET, NodeType.OBJECT],
           allowMove: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET]
+        },
+        path: {
+          current: null,
+          selected: null
+        },
+        formGenerator: {
+          changes: []
         }
       }
     },
@@ -218,8 +257,8 @@
         return obj;
       },
       node() {
-        if(this.nodeType === NodeType.OBJECT) {
-              return this.rawCurrentObject.data
+        if (this.nodeType === NodeType.OBJECT) {
+          return this.rawCurrentObject.data
         }
         return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, this.currentObject);
       },
@@ -252,12 +291,26 @@
       },
       hasInfoView() {
         return [NodeType.ASSET].indexOf(this.nodeType) > -1;
+      },
+      nodeName() {
+        let nodeName = this.node.name;
+        if (this.nodeType === NodeType.OBJECT) {
+          nodeName = this.node.path.split('/').slice(-1).pop()
+        }
+        return nodeName
       }
     },
     watch: {
       edit(newVal) {
         $perAdminApp.getNodeFromView('/state/tools').edit = newVal;
       }
+    },
+    created() {
+      this.activeTab = this.tab
+    },
+    mounted() {
+      this.path.selected = this.selectedPath
+      this.path.current = this.currentPath
     },
     methods: {
       getSchema(schemaKey) {
@@ -272,14 +325,22 @@
         if (this.nodeType === NodeType.OBJECT) {
           component = this.getObjectComponent();
         }
-        let schema = view.admin.componentDefinitions[component][schemaKey];
+        const componentDefinitions = view.admin.componentDefinitions
+        if (!componentDefinitions) {
+          return {}
+        }
+        const cmpDefinition = view.admin.componentDefinitions[component]
+        if (!cmpDefinition) {
+          return {}
+        }
+        let schema = cmpDefinition[schemaKey];
         if (this.edit) {
           return schema;
         }
         if (!schema) {
           return {};
         }
-        schema = JSON.parse(JSON.stringify(schema));
+        schema = deepClone(schema);
         schema.fields.forEach((field) => {
           field.preview = true;
           field.readonly = true;
@@ -311,15 +372,25 @@
         return string.charAt(0).toUpperCase() + string.slice(1);
       },
       onEdit() {
-        this.edit = true;
+        this.edit = true
+        this.formGenerator.original = deepClone(this.node)
       },
       onCancel() {
-        const payload = {selected: this.currentObject};
-        this.edit = false;
-        if (this.nodeTypeGroups.selectStateAction.indexOf(this.nodeType) > -1) {
-          $perAdminApp.stateAction(`select${this.uNodeType}`, payload)
-        } else {
-          $perAdminApp.stateAction(`show${this.uNodeType}Info`, payload);
+        const payload = {selected: this.currentObject}
+        this.edit = false
+        let node = this.node
+        this.formGenerator.changes.forEach((ch) => {
+          node[ch.key] = ch.oldVal
+        })
+        this.formGenerator.changes = []
+      },
+      onModelUpdate(newVal, schemaKey) {
+        if (this.edit) {
+          this.formGenerator.changes.push({
+            key: schemaKey,
+            oldVal: this.formGenerator.original[schemaKey],
+            newVal: newVal
+          })
         }
       },
       onValidated(isValid, errors) {
@@ -330,39 +401,55 @@
         this.valid.errors = errors;
       },
       renameNode() {
-        let nodeName = this.node.name;
-        if (this.nodeType === NodeType.OBJECT){
-          nodeName = this.node.path.split('/').slice(-1).pop()
-        }
-        if (prompt(`new name for "${nodeName}"`)) {
+        const newName = prompt(`new name for "${this.nodeName}"`)
+        if (newName) {
+          const that = this;
           $perAdminApp.stateAction(`rename${this.uNodeType}`, {
             path: this.currentObject,
-            name: newName
+            name: newName,
+            edit: this.isEdit
+          }).then(() => {
+            if (that.nodeType === 'asset' || that.nodeType === 'object') {
+              const currNode = $perAdminApp.getNodeFromView(`/state/tools/${that.nodeType}/show`)
+              const currNodeArr = currNode.split('/');
+              currNodeArr[currNodeArr.length - 1] = newName
+              $perAdminApp.getNodeFromView(`/state/tools/${that.nodeType}`).show = currNodeArr.join(
+                  '/')
+            } else { // page and template handling
+              const currNode = $perAdminApp.getNodeFromView('/state/tools')[that.nodeType]
+              const currNodeArr = currNode.split('/');
+              currNodeArr[currNodeArr.length - 1] = newName
+              $perAdminApp.getNodeFromView('/state/tools')[that.nodeType] = currNodeArr.join('/')
+            }
           });
-          $perAdminApp.getNodeFromView('/state/tools')[this.nodeType] = null;
         }
       },
       moveNode() {
-        $perAdminApp.getApi().populateNodesForBrowser(this.currentPath, 'pathBrowser')
-        .then(() => {
-          this.isOpen = true;
-        }).catch((err) => {
-          $perAdminApp.getApi().populateNodesForBrowser('/content', 'pathBrowser');
+        $perAdminApp.getApi().populateNodesForBrowser(this.path.current, 'pathBrowser')
+            .then(() => {
+              this.isOpen = true;
+            }).catch(() => {
+          $perAdminApp.getApi().populateNodesForBrowser(`/content/${site.tenant}`, 'pathBrowser');
         });
       },
       deleteNode() {
         const really = confirm(`Are you sure you want to delete this ${this.nodeType}?`);
         if (really) {
-          $perAdminApp.stateAction(`delete${this.uNodeType}`, this.node.path);
-          $perAdminApp.stateAction(`unselect${this.uNodeType}`, {});
+          $perAdminApp.stateAction(`delete${this.uNodeType}`, this.node.path).then(() => {
+            $perAdminApp.stateAction(`unselect${this.uNodeType}`, {})
+          }).then(() => {
+            const path = $perAdminApp.getNodeFromView('/state/tools/pages')
+            $perAdminApp.loadContent(
+                '/content/admin/pages/pages.html/path' + SUFFIX_PARAM_SEPARATOR + path)
+          })
           this.isOpen = false;
         }
       },
       setCurrentPath(path) {
-        this.currentPath = path;
+        this.path.current = path;
       },
       setSelectedPath(path) {
-        this.selectedPath = path;
+        this.path.selected = path;
       },
       onMoveCancel() {
         this.isOpen = false;
@@ -370,7 +457,7 @@
       onMoveSelect() {
         $perAdminApp.stateAction(`move${this.uNodeType}`, {
           path: this.node.path,
-          to: this.selectedPath,
+          to: this.path.selected,
           type: 'child'
         });
         $perAdminApp.stateAction(`unselect${this.uNodeType}`, {});
@@ -387,7 +474,7 @@
       saveObject() {
         let data = this.node;
         let {show} = this.rawCurrentObject;
-        let _deleted = $perAdminApp.getNodeFromView("/state/tools/_deleted") || {};
+        let _deleted = $perAdminApp.getNodeFromViewWithDefault('/state/tools/_deleted', {});
 
         //Find child nodes with subchildren for our edited object
         for (const key in data) {
@@ -422,7 +509,9 @@
             data[key] = targetNode;
           }
         }
-        $perAdminApp.stateAction('saveObjectEdit', {data: data, path: show});
+        $perAdminApp.stateAction('saveObjectEdit', {data: data, path: show}).then(() => {
+          $perAdminApp.getNodeFromView('/state/tools')._deleted = {}
+        });
         $perAdminApp.stateAction('selectObject', {selected: show})
         this.edit = false;
       },
@@ -438,40 +527,3 @@
     }
   }
 </script>
-<style scoped>
-
-  .editor-icon {
-    height: 44px;
-    margin-right: 5px;
-    margin-left: 5px;
-  }
-
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-right,
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-left {
-    margin: 0;
-    padding: 0;
-    display: flex;
-  }
-
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-nav .nav-left {
-    margin-right: auto;
-  }
-
-  .info-view-image {
-  }
-
-  .info-view-iframe {
-    width: 100%;
-    height: 60%;
-  }
-
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-content.preview-asset .asset-info-view {
-    max-height: 50%;
-    height: unset;
-  }
-
-  .explorer .explorer-layout .row .explorer-preview .explorer-preview-content.preview-asset .asset-info-view img {
-    max-height: 100%;
-    padding-top: 1em;
-  }
-</style>

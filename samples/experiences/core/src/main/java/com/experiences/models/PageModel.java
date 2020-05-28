@@ -151,7 +151,7 @@ public class PageModel extends Container {
             ret.addFirst(new TitlePath(res));
             res = getParentContent(res);
             // we do not want to stop at level 2 and not include it
-            if(res != null && res.getParent().getPath().equals("/content/admin")) {
+            if(res != null && res.getParent().getPath().equals("/content/admin/pages")) {
                 break;
             }
         }

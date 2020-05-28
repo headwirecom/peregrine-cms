@@ -44,6 +44,7 @@
         <!-- Sling Dependencies Versions -->
         <org.apache.sling.api.version>2.16.4</org.apache.sling.api.version>
         <org.apache.sling.jcr.api.version>2.4.0</org.apache.sling.jcr.api.version>
+        <org.apache.sling.jcr.base.version>3.0.2</org.apache.sling.jcr.base.version>
         <org.apache.sling.commons.mime.version>2.1.10</org.apache.sling.commons.mime.version>
         <org.apache.sling.settings.version>1.3.8</org.apache.sling.settings.version>
         <org.apache.sling.commons.osgi.version>2.4.0</org.apache.sling.commons.osgi.version>
@@ -78,7 +79,7 @@
 
         <sourceReleaseAssemblyDescriptor>source-release</sourceReleaseAssemblyDescriptor>
 
-        <organization.logo>http://www.peregrine-cms.com/etc/felibs/admin/images/peregrine-logo.png</organization.logo>
+        <organization.logo>http://www.peregrine-cms.com/peregrine-logo.png</organization.logo>
         <repositoryName>Peregrine Release Distribution Repository</repositoryName>
         <repositoryUrl>https://oss.sonatype.org/service/local/staging/deploy/maven2</repositoryUrl>
         <snapshotRepositoryName>Peregrine CMS Development Snapshot Repository</snapshotRepositoryName>
@@ -86,6 +87,8 @@
         <gpg.useagent>true</gpg.useagent>
 
         <noContent>true</noContent>
+        <org.apache.sling.serviceusermapper.version>1.3.2</org.apache.sling.serviceusermapper.version>
+        <org.apache.sling.event.version>4.2.12</org.apache.sling.event.version>
     </properties>
 
     <build>
@@ -96,6 +99,11 @@
             </resource>
         </resources>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.9.0</version>
+            </plugin>
             <plugin>
                 <groupId>org.commonjava.maven.plugins</groupId>
                 <artifactId>directory-maven-plugin</artifactId>
@@ -165,6 +173,7 @@
                 <artifactId>wcmio-content-package-maven-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
+                    <serviceURL>http://${sling.host}:${sling.port}/bin/cpm/package.service.html</serviceURL>
                     <userId>${sling.user}</userId>
                     <password>${sling.password}</password>
                     <failOnMissingEmbed>true</failOnMissingEmbed>
@@ -465,6 +474,12 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.jcr.base</artifactId>
+                <version>${org.apache.sling.jcr.base.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.sling</groupId>
                 <artifactId>org.apache.sling.commons.mime</artifactId>
                 <version>${org.apache.sling.commons.mime.version}</version>
                 <scope>provided</scope>
@@ -526,9 +541,16 @@
             <dependency>
                 <groupId>org.apache.sling</groupId>
                 <artifactId>org.apache.sling.event</artifactId>
-                <version>4.2.12</version>
+                <version>${org.apache.sling.event.version}</version>
                 <scope>provided</scope>
             </dependency>
+            <dependency>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.serviceusermapper</artifactId>
+                <version>${org.apache.sling.serviceusermapper.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
 
 
             <!-- Support -->
@@ -681,6 +703,16 @@
 
     <profiles>
         <profile>
+            <!-- Plenty of javadoc errors with JDK8: https://stackoverflow.com/a/34591533 -->
+            <id>disable-java8-doclint</id>
+            <activation>
+                <jdk>[1.8,)</jdk>
+            </activation>
+            <properties>
+                <additionalparam>-Xdoclint:none</additionalparam>
+            </properties>
+        </profile>
+        <profile>
             <id>sign</id>
             <!--<activation>-->
                 <!--<activeByDefault>true</activeByDefault>-->
@@ -729,7 +761,7 @@
                                             <filtering>false</filtering>
                                         </resource>
                                         <resource>
-                                            <directory>pagerender-vue/ui.apps/target/site/jsdoc</directory>
+                                            <directory>pagerenderer/vue/ui.apps/target/site/jsdoc</directory>
                                             <filtering>false</filtering>
                                         </resource>
                                     </resources>
@@ -743,6 +775,12 @@
                         <artifactId>wcmio-content-package-maven-plugin</artifactId>
                         <extensions>true</extensions>
                         <inherited>false</inherited>
+                        <configuration>
+                            <userId>${sling.user}</userId>
+                            <password>${sling.password}</password>
+                            <failOnMissingEmbed>true</failOnMissingEmbed>
+                            <group>com.peregrine-cms</group>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>aggregate-install</id>
@@ -960,7 +998,7 @@
         <module>themes/themeclean</module>
         <!--AS TODO: This module causes 'mvn site' to deploy an undeployable package and for now it is taken out -->
         <!--<module>autodocs</module>-->
-        <module>tooling/maven/archetypes/project</module>
+<!--        <module>tooling/maven/archetypes/project</module>-->
     </modules>
 
 </project>

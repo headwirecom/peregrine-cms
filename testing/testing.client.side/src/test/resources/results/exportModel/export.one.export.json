@@ -7,14 +7,14 @@
         "path": "/exportOneSub/exportOneGrandSub",
         "component": "it-objects-export-one-sub",
         "q": "Another one bites the dust",
-        "persona_type_ss": "/content/objects/a/b/c/d",
+        "persona_type_ss": "/content/it/objects/a/b/c/d",
         "title": "Export One Grand Sub"
       }
     ],
     "path": "/exportOneSub",
     "component": "it-objects-export-one-sub",
     "q": "Let's get this party started",
-    "persona_type_ss": "/content/objects/a/b/c",
+    "persona_type_ss": "/content/it/objects/a/b/c",
     "title": "Export One Sub"
   }
 ]

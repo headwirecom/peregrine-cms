@@ -22,10 +22,10 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from './logger'
-let logger = LoggerFactory.logger('utils').setLevelDebug()
+import {LoggerFactory} from './logger'
+import {DATA_EXTENSION, SUFFIX_PARAM_SEPARATOR} from './constants.js'
 
-import { DATA_EXTENSION, SUFFIX_PARAM_SEPARATOR } from './constants.js'
+let logger = LoggerFactory.logger('utils').setLevelDebug()
 
 export function makePathInfo(path) {
 
@@ -134,4 +134,19 @@ export function stripNulls(data) {
             stripNulls(data[key])
         }
     }
+}
+
+export function jsonEqualizer(name, value) {
+    if(value === null || value === undefined || value.length === 0) {
+        return undefined
+    }
+    return value
+}
+
+export const deepClone = (obj) => {
+    return JSON.parse(JSON.stringify(obj))
+}
+
+export const capitalizeFirstLetter = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
 }

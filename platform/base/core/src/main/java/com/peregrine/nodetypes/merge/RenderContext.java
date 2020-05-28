@@ -30,8 +30,8 @@ import org.apache.sling.api.SlingHttpServletRequest;
 /**
  * Created by rr on 5/29/2017.
  */
-public class RenderContext
-{
+public class RenderContext {
+
     private final SlingHttpServletRequest request;
 
     public RenderContext(SlingHttpServletRequest request) {

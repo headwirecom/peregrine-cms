@@ -1,5 +1,8 @@
 FROM adoptopenjdk/openjdk8:latest
 
+ARG PEREGRINECMS_BRANCH=develop
+ARG THEMECLEANFLEX_BRANCH=develop
+
 ENV APP_VERSION 1.0.0-snapshot
 
 WORKDIR /app
@@ -11,7 +14,9 @@ RUN apt update -q \
         jq \
         libvips libvips-tools \
         tar \
-        xz-utils
+        xz-utils \
+        git \
+        maven
 
 ENV PATH "/usr/local/lib/nodejs/node-v10.16.0-linux-x64/bin:$PATH"
 
@@ -22,14 +27,16 @@ COPY patchfiles/tasks.js .
 
 # Start - Use repository/package pinning to upgrade libvips from version 8.4 to 8.6
 COPY peregrine.pref /etc/apt/preferences.d/
-RUN echo "deb http://archive.ubuntu.com/ubuntu/ disco main restricted" >> /etc/apt/sources.list \
-    && echo "deb http://archive.ubuntu.com/ubuntu/ disco universe" >> /etc/apt/sources.list \
+RUN echo "deb http://archive.ubuntu.com/ubuntu/ eoan main restricted" >> /etc/apt/sources.list \
+    && echo "deb http://archive.ubuntu.com/ubuntu/ eoan universe" >> /etc/apt/sources.list \
     && apt update \
     && apt --only-upgrade install -y libvips libvips-tools
 # End 
 
 RUN mkdir -p /usr/local/lib/nodejs \
     && tar -xf /app/binaries/node-v10.16.0-linux-x64.tar.xz -C /usr/local/lib/nodejs \
+    && echo "peregrine-cms branch: $PEREGRINECMS_BRANCH" \
+    && echo "themeclean-flex branch: $THEMECLEANFLEX_BRANCH" \
     && java -version \
     && echo $PATH \
     && echo node: $(node -v) \
@@ -47,7 +54,7 @@ RUN npm install percli @peregrinecms/slingpackager \
 RUN mv /app/tasks.js /app/node_modules/percli/lib/tasks.js
 RUN npx percli server register author
 RUN npx percli server start author \
-    && ./installpackages.sh \
+    && ./installpackages.sh $PEREGRINECMS_BRANCH $THEMECLEANFLEX_BRANCH \
     && sleep 10 \
     && npx percli server stop author \
     && rm -rf binaries
