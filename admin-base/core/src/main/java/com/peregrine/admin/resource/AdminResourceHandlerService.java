@@ -471,6 +471,14 @@ public class AdminResourceHandlerService
         return versionManager.getBaseVersion(path);
     }
 
+    @Override
+    public void deleteVersion(ResourceResolver resourceResolver, String path, String versionName)
+            throws RepositoryException {
+        VersionManager vm = resourceResolver.adaptTo(Session.class).getWorkspace().getVersionManager();
+        VersionHistory vh = vm.getVersionHistory(path);
+        vh.removeVersion(versionName);
+    }
+
     // jcr 2.0 Chapter 3
     // https://docs.adobe.com/docs/en/spec/jcr/2.0/3_Repository_Model.html
     // jcr 2.0 Chapter 15

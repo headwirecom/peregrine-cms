@@ -99,10 +99,16 @@ public class ManageVersions extends AbstractBaseServlet {
                     .setException(e);
             }
         } else if (DELETE_VERSION.equals(action)) {
-            return new ErrorResponse()
+            try {
+                resourceManagement.deleteVersion(request.getResourceResolver(), resourcePath, version);
+                return answer;
+            } catch (RepositoryException e) {
+                return new ErrorResponse()
                     .setHttpErrorCode(SC_BAD_REQUEST)
                     .setErrorMessage(FAILED_TO_DELETE_VERSION)
-                    .setRequestPath(resourcePath);
+                    .setRequestPath(resourcePath)
+                    .setException(e);
+            }
         } else if (CHECKOUT_VERSION.equals(action)) {
             return new ErrorResponse()
                     .setHttpErrorCode(SC_BAD_REQUEST)

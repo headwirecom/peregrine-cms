@@ -148,7 +148,7 @@
                           <admin-components-action
                             v-bind:model="{
                                 command: 'deleteVersion',
-                                target: version,
+                                target: {version: version, path: currentObject},
                                 tooltipTitle: 'delete version'}">
                               <i class="material-icons">{{Icon.DELETE}}</i>
                           </admin-components-action>
@@ -554,13 +554,10 @@
       showVersions() {
         $perAdminApp.getApi().populateVersions(this.currentObject);
       },
-      deleteVersion(version){
-        console.log("delete version")
-        console.log(version)
+      deleteVersion(me, target) {
+        $perAdminApp.stateAction(`deleteVersion`, { path: target.path, version: target.version.name });
       },
       createVersion(){
-        console.log("create version")
-        console.log(this.currentObject)
         $perAdminApp.stateAction(`createVersion`, this.currentObject);
       },
       checkoutVersion(version){

@@ -120,15 +120,10 @@ public class ListResourceVersionsServlet extends AbstractBaseServlet {
                 answer.writeClose();
             } while (vi.hasNext());
             answer.writeClose();
-
-
             return answer;
-
         } catch (Exception e) {
-            // Some error
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_LIST_VERSIONS).setException(e);
         }
-
     }
 }
 

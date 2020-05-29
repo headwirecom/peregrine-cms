@@ -395,6 +395,27 @@ public class VersionsJTest {
         }
     }
 
+    @Test
+    public void deleteVersion() {
+        try {
+            Version version1 = resourceManagement.createVersion(resourceResolver, indexRes.getPath());
+            Version version2 = resourceManagement.createVersion(resourceResolver, indexRes.getPath());
+            Version baseVersion = vmPage.getBaseVersion(indexRes.getPath());
+            assertEquals(version2.getFrozenNode().getPath(), baseVersion.getFrozenNode().getPath());
+            int beforeSize = Iterators.size(
+                resourceManagement.getVersionIterator(resourceResolver,indexRes));
+            assertEquals(3, beforeSize);
+            VersionIterator viBefore = resourceManagement.getVersionIterator(resourceResolver, indexRes);
+            Version rootVersion = viBefore.nextVersion();
+            Version versionToBeDeleted = viBefore.nextVersion();
+            assertEquals(version1.getFrozenNode().getPath(), versionToBeDeleted.getFrozenNode().getPath());
+            resourceManagement.deleteVersion(resourceResolver, indexRes.getPath(), versionToBeDeleted.getName());
+            int afterSize = Iterators.size( resourceManagement.getVersionIterator(resourceResolver,indexRes));
+            assertEquals(2, afterSize);
+        } catch (AdminResourceHandler.ManagementException | RepositoryException e) {
+            fail("failed to create or delete version");
+        }
+    }
 
     @Test
     public void deletePageForever() {

@@ -553,20 +553,23 @@ class PerAdminImpl {
         })
   }
 
-  deleteVersion(version) {
+  deleteVersion(info) {
     console.log('api deleted version')
-//        return new Promise((resolve, reject) => {
-//            let data = new FormData()
-//            updateWithForm('/admin/deleteNode.json' + path, data)
-//                .then( (data) => callbacks.getApi().populateRecyclebin(0))
-//                .then(() => resolve())
-//                .catch(error => {
-//                    if (error.response && error.response.data && error.response.data.message) {
-//                        reject(error.response.data.message)
-//                    }
-//                    reject(error)
-//                })
-//        })
+    console.log(info)
+        return new Promise((resolve, reject) => {
+            let data = new FormData()
+            data.append('action', 'deleteVersion')
+            data.append('version', info.version)
+            updateWithForm('/admin/manageVersions.json' + info.path, data)
+                .then( (data) => callbacks.getApi().populateVersions(info.path))
+                .then(() => resolve())
+                .catch(error => {
+                    if (error.response && error.response.data && error.response.data.message) {
+                        reject(error.response.data.message)
+                    }
+                    reject(error)
+                })
+        })
   }
 
   createVersion(path) {

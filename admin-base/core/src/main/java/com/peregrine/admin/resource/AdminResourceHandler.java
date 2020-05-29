@@ -126,6 +126,16 @@ public interface AdminResourceHandler {
     Resource restoreVersion(ResourceResolver resourceResolver, String path, String versionPath, boolean force) throws ManagementException;
 
     /**
+     * Delete a version
+     * @param resourceResolver Resource Resolver to manage resources and cannot be null
+     * @param path Absolute path of the resource having the version
+     * @param versionPath Absolute frozen node path of version to be restored
+     *
+     * @throws RepositoryException If deleting the version failed
+     */
+    void deleteVersion(ResourceResolver resourceResolver, String path, String versionPath) throws RepositoryException;
+
+    /**
      * Restore a delete item based on a path where it was and the path of a version
      * @param resourceResolver Resource Resolver to manage resources and cannot be null
      * @param path Absolute path of the resource having the version
