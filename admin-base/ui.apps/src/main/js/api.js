@@ -214,6 +214,14 @@ class PerApi {
         return impl.deleteRecyclable(path)
     }
 
+    createVersion(path) {
+        return impl.createVersion(path)
+    }
+
+    deleteVersion(version) {
+        return impl.deleteVersion(version)
+    }
+
     nameAvailable(value, path) {
         return impl.nameAvailable(value, path)
     }

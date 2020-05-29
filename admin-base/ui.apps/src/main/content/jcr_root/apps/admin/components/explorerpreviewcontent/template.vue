@@ -126,7 +126,9 @@
 
       <template v-else-if="isTab(Tab.VERSIONS)" >
           <div v-if="allowOperations" class="action-list">
-              <div class="action"  :title="`create new ${nodeType} version`">
+              <div class="action"
+                   v-on:click.stop.prevent="createVersion"
+                   v-bind:title="`create new ${nodeType} version`">
                 <i class="material-icons">{{Icon.CREATE}}</i> Create new {{nodeType}} version
               </div>
 
@@ -137,10 +139,20 @@
               <template v-else>
                   <div v-for="version in versions"
                        class="action"
+                       v-on:click="checkoutVersion(version)"
                        v-bind:title="`Version ${version.name}`">
                       <i v-if="version.base" class="material-icons">{{Icon.CHECKED}}</i>
                       <i v-else-if="!version.base" class="material-icons">{{Icon.UNCHECKED}}</i>
                       {{version.name}} -{{version.created}} {{version.base ? '(current)':''}}
+                      <span v-if="!version.base" class="deleteVersionWrapper">
+                          <admin-components-action
+                            v-bind:model="{
+                                command: 'deleteVersion',
+                                target: version,
+                                tooltipTitle: 'delete version'}">
+                              <i class="material-icons">{{Icon.DELETE}}</i>
+                          </admin-components-action>
+                      </span>
                   </div>
               </template>
 
@@ -542,6 +554,32 @@
       showVersions() {
         $perAdminApp.getApi().populateVersions(this.currentObject);
       },
+      deleteVersion(version){
+        console.log("delete version")
+        console.log(version)
+      },
+      createVersion(){
+        console.log("create version")
+        console.log(this.currentObject)
+        $perAdminApp.stateAction(`createVersion`, this.currentObject);
+      },
+      checkoutVersion(version){
+        if(version.base === true){
+          $perAdminApp.notifyUser('Info', 'You cannot checkout the current version')
+          return
+        }
+        $perAdminApp.askUser('Checkout Version',
+          `Would you like to checkout ${version.name}? Doing so will create a new version saving the current state.`, {
+              yesText: 'Yes',
+              noText: 'No',
+              yes() {
+                console.log('yes')
+              },
+              no() {
+                console.log('no')
+              }
+          })
+      },
       onMoveCancel() {
         this.isOpen = false;
       },
@@ -618,3 +656,9 @@
     }
   }
 </script>
+
+<style>
+.deleteVersionWrapper{
+    margin-left: auto;
+}
+</style>

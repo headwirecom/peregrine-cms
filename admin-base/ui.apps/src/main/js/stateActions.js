@@ -79,6 +79,8 @@ import moveTemplate from './stateActions/moveTemplate'
 import renameObject from './stateActions/renameObject'
 import moveObject from './stateActions/moveObject'
 import deleteTemplate from './stateActions/deleteTemplate'
+import deleteVersion from './stateActions/deleteVersion'
+import createVersion from './stateActions/createVersion'
 import renameTemplate from './stateActions/renameTemplate'
 import setTenant from './stateActions/setTenant'
 import recycleItem from './stateActions/recycleItem'
@@ -149,6 +151,8 @@ actions['moveTemplate'] = moveTemplate
 actions['deleteTemplate'] = deleteTemplate
 actions['recycleItem'] = recycleItem
 actions['deleteRecyclable'] = deleteRecyclable
+actions['deleteVersion'] = deleteVersion
+actions['createVersion'] = createVersion
 actions['setTenant'] = setTenant
 actions['tenantSetupReplication'] = tenantSetupReplication
 
