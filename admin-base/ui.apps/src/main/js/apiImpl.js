@@ -510,7 +510,7 @@ class PerAdminImpl {
 
   populateVersions(page) {
     return new Promise((resolve, reject) => {
-      fetch(`/admin/listVersions.json/${page}`)
+      fetch(`/admin/listVersions.json${page}`)
         .then(function(result) {
             populateView('/state', 'versions', result)
                 .then(() => resolve())

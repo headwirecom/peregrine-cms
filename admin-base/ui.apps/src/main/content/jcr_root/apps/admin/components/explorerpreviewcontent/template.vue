@@ -127,13 +127,23 @@
       <template v-else-if="isTab(Tab.VERSIONS)" >
           <div v-if="allowOperations" class="action-list">
               <div class="action"  :title="`create new ${nodeType} version`">
-                <i class="material-icons">{{Icon.CREATE}}</i> Create {{nodeType}} Version
+                <i class="material-icons">{{Icon.CREATE}}</i> Create new {{nodeType}} version
               </div>
-              <ul class="versions">
-                  <li v-for="version in version">
-                      {{ version.name }}
-                  </li>
-              </ul>
+
+              <p v-if="!hasVersions"
+                   v-bind:title="`no versions created yet`">
+                  This {{nodeType}} has no versions
+              </p>
+              <template v-else>
+                  <div v-for="version in versions"
+                       class="action"
+                       v-bind:title="`Version ${version.name}`">
+                      <i v-if="version.base" class="material-icons">{{Icon.CHECKED}}</i>
+                      <i v-else-if="!version.base" class="material-icons">{{Icon.UNCHECKED}}</i>
+                      {{version.name}} -{{version.created}} {{version.base ? '(current)':''}}
+                  </div>
+              </template>
+
           </div>
       </template>
 
@@ -275,8 +285,7 @@
         },
         formGenerator: {
           changes: []
-        },
-        versions: {}
+        }
       }
     },
     mixins: [NodeNameValidation],
@@ -325,6 +334,9 @@
       referencedBy() {
         return $perAdminApp.getView().state.referencedBy.referencedBy
       },
+      versions() {
+        return this.hasVersions ? $perAdminApp.getView().state.versions.versions : []
+      },
       isImage() {
         const node = $perAdminApp.findNodeFromPath(
             $perAdminApp.getView().admin.nodes, this.currentObject);
@@ -336,6 +348,9 @@
       },
       hasInfoView() {
         return [NodeType.ASSET].indexOf(this.nodeType) > -1;
+      },
+      hasVersions() {
+        return $perAdminApp.getView().state.versions ? $perAdminApp.getView().state.versions.has_versions : false
       },
       nodeName() {
         let nodeName = this.node.name;
@@ -349,8 +364,13 @@
       edit(newVal) {
         $perAdminApp.getNodeFromView('/state/tools').edit = newVal;
       },
-      activeTab : function (tab) {
+      activeTab : function(tab) {
         if (tab === 'versions'){
+            this.showVersions()
+        }
+      },
+      currentObject : function(path) {
+        if (this.activeTab === 'versions'){
             this.showVersions()
         }
       }
@@ -520,7 +540,7 @@
         this.path.selected = path;
       },
       showVersions() {
-        console.log(`show versions for ${this.currentObject}`)
+        $perAdminApp.getApi().populateVersions(this.currentObject);
       },
       onMoveCancel() {
         this.isOpen = false;
