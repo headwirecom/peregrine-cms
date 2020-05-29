@@ -1,73 +1,90 @@
 <template>
   <div class="toolbar">
-    <button class="btn" :title="$i18n('undo')">
-      <i class="material-icons" @click="exec('undo')">undo</i>
-    </button>
-    <button class="btn" :title="$i18n('redo')">
-      <i class="material-icons" @click="exec('redo')">redo</i>
-    </button>
-    <admin-components-materializedropdown
-        :below-origin="true"
-        :items="formattingItems">
-      <button class="btn" :title="$i18n('remove format')">
-        <i class="material-icons">text_format</i><span class="caret-down"></span>
-      </button>
-    </admin-components-materializedropdown>
-    <button class="btn" :title="$i18n('bold')">
-      <i class="material-icons" @click="exec('bold')">format_bold</i>
-    </button>
-    <button class="btn" :title="$i18n('italic')">
-      <i class="material-icons" @click="exec('italic')">format_italic</i>
-    </button>
-    <button class="btn" :title="$i18n('superscript')">
-      <i class="material-icons" @click="exec('superscript')">format_superscript</i>
-    </button>
-    <button class="btn" :title="$i18n('subscript')">
-      <i class="material-icons" @click="exec('subscript')">format_subscript</i>
-    </button>
-    <admin-components-materializedropdown
-        :below-origin="true"
-        :items="linkItems">
-      <button class="btn" :title="$i18n('insert link')">
-        <i class="material-icons">link</i><span class="caret-down"></span>
-      </button>
-    </admin-components-materializedropdown>
-    <button class="btn" :title="$i18n('insert image')">
-      <i class="material-icons" @click="insertImage">insert_photo</i>
-    </button>
-    <button class="btn" :title="$i18n('align left')">
-      <i class="material-icons" @click="exec('justifyLeft')">format_align_left</i>
-    </button>
-    <button class="btn" :title="$i18n('align center')">
-      <i class="material-icons" @click="exec('justifyCenter')">format_align_center</i>
-    </button>
-    <button class="btn" :title="$i18n('align right')">
-      <i class="material-icons" @click="exec('justifyRight')">format_align_right</i>
-    </button>
-    <button class="btn" :title="$i18n('align right')">
-      <i class="material-icons" @click="exec('justifyFull')">format_align_justify</i>
-    </button>
-    <button class="btn" :title="$i18n('numbered list')">
-      <i class="material-icons" @click="exec('insertOrderedList')">format_list_numbered</i>
-    </button>
-    <button class="btn" :title="$i18n('bulleted list')">
-      <i class="material-icons" @click="exec('insertUnorderedList')">format_list_bulleted</i>
-    </button>
-    <button class="btn" :title="$i18n('quote')">
-      <i class="material-icons" @click="exec('formatBlock')">format_quote</i>
-    </button>
-    <button class="btn" :title="$i18n('remove format')">
-      <i class="material-icons" @click="exec('removeFormat')">format_clear</i>
-    </button>
+    <admin-components-richtoolbarbtn
+        v-for="(btn, i) in buttons"
+        :key="getButtonKey(btn, i)"
+        :items="btn.items"
+        :icon="btn.icon"
+        :title="$i18n(btn.title) + (btn.isActive())"
+        :active="btn.isActive()"
+        @click="exec(btn.cmd)">
+    </admin-components-richtoolbarbtn>
   </div>
 </template>
 
 <script>
+  import {itemIsLink, set} from '../../../../../../js/utils'
+
   export default {
     name: 'RichToolbar',
+    data() {
+      return {
+        key: 0
+      }
+    },
     computed: {
-      view() {
-        return $perAdminApp.getView()
+      buttons() {
+        const buttons = [
+          {title: 'undo', icon: 'undo', cmd: 'undo'},
+          {title: 'redo', icon: 'redo', cmd: 'redo'},
+          {title: 'text format', icon: 'text_format', items: this.formattingItems},
+          {
+            title: 'bold',
+            icon: 'format_bold',
+            cmd: 'bold',
+            isActive: () => this.queryCmdState('bold')
+          },
+          {
+            title: 'italic',
+            icon: 'format_italic',
+            cmd: 'italic',
+            isActive: () => this.queryCmdState('italic')
+          },
+          {
+            title: 'superscript',
+            icon: 'arrow_upward',
+            cmd: 'superscript',
+            isActive: () => this.queryCmdState('superscript')
+          },
+          {
+            title: 'subscript',
+            icon: 'arrow_downward',
+            cmd: 'subscript',
+            isActive: () => this.queryCmdState('subscript')
+          },
+          {
+            title: 'insert link',
+            icon: 'link',
+            cmd: 'link',
+            isActive: () => itemIsLink(this.getInlineDoc())
+          },
+          {title: 'insert image', icon: 'insert_photo', cmd: 'insertImage'},
+          {title: 'align left', icon: 'format_align_left', cmd: 'justifyLeft'},
+          {title: 'align center', icon: 'format_align_center', cmd: 'justifyCenter'},
+          {title: 'align right', icon: 'format_align_right', cmd: 'justifyRight'},
+          {title: 'justify', icon: 'format_align_justify', cmd: 'justifyFull'},
+          {title: 'numbered list', icon: 'format_list_numbered', cmd: 'insertOrderedList'},
+          {title: 'bulleted list', icon: 'format_list_bulleted', cmd: 'insertUnorderedList'},
+          {title: 'quote', icon: 'format_quote', cmd: 'quote'},
+          {title: 'remove format', icon: 'format_clear', cmd: 'removeFormat'}
+        ]
+        buttons.forEach((btn) => {
+          if (!btn.isActive) {
+            btn.isActive = () => null
+          }
+        })
+        return buttons
+      },
+      inline() {
+        if (!$perAdminApp.getView() || !$perAdminApp.getView().state) return null
+        return $perAdminApp.getView().state.inline
+      },
+      specialCases() {
+        return {
+          link: this.link,
+          insertImage: this.insertImage,
+          quote: this.quote
+        }
       },
       formattingItems() {
         const headlines = []
@@ -75,7 +92,9 @@
           headlines.push({
             label: `${this.$i18n('headline')} ${i}`,
             icon: 'title',
-            click: () => this.exec('formatBlock', `h${i}`)
+            click: () => {
+              this.exec('formatBlock', `h${i}`)
+            }
           })
         }
         return [
@@ -86,48 +105,61 @@
           },
           ...headlines
         ]
-      },
-      linkItems() {
-        return [
-          {
-            label: this.$i18n('insert link'),
-            icon: 'add',
-            click: this.link
-          },
-          {
-            label: this.$i18n('unlink'),
-            icon: 'clear',
-            click: () => this.exec('unlink')
-          }
-        ]
       }
+    },
+    watch: {
+      'inline.ping'(val) {
+        if (val) {
+          this.key++
+          set($perAdminApp.getView(), '/state/inline/ping', false)
+        }
+        console.log('inline.ping', val)
+      }
+    },
+    mounted() {
+      set($perAdminApp.getView(), '/state/inline/rich', false)
     },
     methods: {
       getInlineDoc() {
-        if (this.view && this.view.state && this.view.state.inline) {
-          return this.view.state.inline.doc
-        }
-        return null
+        if (!this.inline) return null
+        return this.inline.doc
       },
-      exec(cmd, value = null, showUi = false) {
+      execCmd(cmd, value = null, showUi = false) {
+        if (!this.getInlineDoc() || !this.getInlineDoc().execCommand) return
         this.getInlineDoc().execCommand(cmd, showUi, value)
       },
-      clear() {
-        if (confirm('Are you sure you want to clear all content?')) {
-          this.exec('selectAll')
-          this.exec('delete')
+      queryCmdState(cmd) {
+        if (!this.getInlineDoc() || !this.getInlineDoc().queryCommandState) return
+        return this.getInlineDoc().queryCommandState(cmd) || false
+      },
+      exec(cmd, value = null) {
+        if (Object.keys(this.specialCases).indexOf(cmd) >= 0) {
+          this.specialCases[cmd]()
+        } else {
+          this.execCmd(cmd, value)
         }
       },
       link() {
         const uri = prompt('Provide link')
-        this.exec('createLink', uri)
-      },
-      unlink() {
-        this.exec('unlink')
+        if (uri && uri.length >= 11) { // e.g. http://a.de (11 symbols)
+          this.execCmd('createLink', uri)
+        }
       },
       insertImage() {
         const imgUri = prompt('provide image link')
-        this.exec('insertImage', imgUri)
+        if (imgUri && imgUri.length >= 11) { // e.g. http://a.de (11 symbols)
+          this.execCmd('insertImage', imgUri)
+        }
+      },
+      quote() {
+        this.execCmd('formatBlock,', 'pre')
+      },
+      getButtonKey(btn, index) {
+        let key = `btn-${index}-${btn.title}`
+        if (btn.isActive() !== null) {
+          key += `-${this.key}`
+        }
+        return key
       }
     }
   }

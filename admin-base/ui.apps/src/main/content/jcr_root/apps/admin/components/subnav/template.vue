@@ -25,8 +25,8 @@
 <template>
     <div class="nav-content sub-nav" :class="classes">
         <template>
-            <admin-components-richtoolbar v-if="isRich()"/>
-            <div v-else class="toolbar-placeholder"></div>
+            <admin-components-richtoolbar v-if="renderRichToolbar"  v-show="isRich()"/>
+            <div v-if="!isRich()" class="toolbar-placeholder"></div>
         </template>
         <template v-for="child in model.children">
             <div v-bind:is="child.component" v-bind:model="child" v-bind:key="child.path"></div>
@@ -85,6 +85,9 @@
             return this.tenant.roots[this.section]
         },
         showNodeTree() {
+            return this.isEditPage && ['pages', 'templates'].indexOf(this.section) >= 0
+        },
+        renderRichToolbar() {
             return this.isEditPage && ['pages', 'templates'].indexOf(this.section) >= 0
         },
         nodes() {

@@ -350,11 +350,13 @@
                   $perAdminApp.action(vm, 'showComponentEdit', vm.path).then(() => {
                     vm.flushInlineState()
                     vm.removeLinkTargets()
+                    vm.$nextTick(vm.pingToolbar)
                   })
                 })
               } else {
                 $perAdminApp.action(vm, 'showComponentEdit', vm.path).then(() => {
                   vm.flushInlineState()
+                  vm.$nextTick(vm.pingToolbar)
                 })
               }
             } else {
@@ -427,15 +429,19 @@
         this.target = event.target
         const vnode = this.findVnode(this.component.__vue__, event.path)
         const attr = this.isRich ? 'innerHTML' : 'innerText'
-        if(vnode.data.domProps) vnode.data.domProps.innerHTML = this.target[attr]
+        if (vnode.data.domProps) vnode.data.domProps.innerHTML = this.target[attr]
         this.writeInlineToModel()
         this.autoSave = true
         this.reWrapEditable()
       },
 
+      onInlineClick(event) {
+        this.pingToolbar()
+      },
+
       onInlineFocus(event) {
         event.target.classList.add('inline-editing')
-        if(event.target.innerHTML === ' ') {
+        if (event.target.innerHTML === ' ') {
           event.target.innerHTML = ''
         }
         this.editing = true
@@ -452,6 +458,7 @@
       },
 
       onInlineKeyDown(event) {
+        this.pingToolbar()
         const key = event.which
         const shift = event.shiftKey
         const ctrlOrCmd = event.ctrlKey || event.metaKey
@@ -473,6 +480,7 @@
       },
 
       onInlineKeyUp(event) {
+        this.pingToolbar()
         const key = event.which
         const shift = event.shiftKey
         const ctrlOrCmd = event.ctrlKey || event.metaKey
@@ -532,7 +540,7 @@
 
       onInlineArrowKey(event, isKeyUp = false) {
         const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor)
-        if(chrome) return
+        if (chrome) return
 
         const key = event.which
         const newCaretPos = getCaretCharacterOffsetWithin(event.target)
@@ -666,7 +674,7 @@
         event.dataTransfer.clearData('text')
       },
 
-      removeLinkTargets(vm=this) {
+      removeLinkTargets(vm = this) {
         const anchors = vm.iframe.app.querySelectorAll('a')
         anchors.forEach((a) => {
           a.setAttribute('data-original-href', a.getAttribute('href'))
@@ -674,7 +682,7 @@
         })
       },
 
-      restoreLinkTargets(vm=this) {
+      restoreLinkTargets(vm = this) {
         const anchors = vm.iframe.app.querySelectorAll('a')
         anchors.forEach((a) => {
           const orgHref = a.getAttribute('data-original-href')
@@ -694,10 +702,11 @@
           if (this.isFromTemplate(el)) return
 
           el.classList.add('inline-edit')
-          if(el.children.length === 0) {
+          if (el.children.length === 0) {
             el.appendChild(document.createTextNode(' '))
           }
           el.addEventListener('input', this.onInlineEdit)
+          el.addEventListener('click', this.onInlineClick)
           el.addEventListener('focus', this.onInlineFocus)
           el.addEventListener('focusout', this.onInlineFocusOut)
           el.addEventListener('keydown', this.onInlineKeyDown)
@@ -950,6 +959,12 @@
           textRange.moveToElementText(el)
           textRange.collapse(false)
           textRange.select()
+        }
+      },
+
+      pingToolbar() {
+        if (this.isRich) {
+          set(this.view, '/state/inline/ping', true)
         }
       }
     }

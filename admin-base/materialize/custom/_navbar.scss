@@ -304,6 +304,10 @@ nav {
         padding: 0;
         margin: 0 1px;
 
+        &.active {
+          background-color: #ff9800;
+        }
+
         .material-icons {
           font-size: 20px;
           height: 100%;
