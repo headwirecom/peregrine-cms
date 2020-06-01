@@ -82,6 +82,8 @@ import deleteTemplate from './stateActions/deleteTemplate'
 import renameTemplate from './stateActions/renameTemplate'
 import setTenant from './stateActions/setTenant'
 import tenantSetupReplication from './stateActions/tenantSetupReplication'
+import backupTenant from "./stateActions/backupTenant";
+import restoreTenant from "./stateActions/restoreTenant";
 
 let log = LoggerFactory.logger('actions').setLevelDebug()
 
@@ -147,6 +149,8 @@ actions['moveTemplate'] = moveTemplate
 actions['deleteTemplate'] = deleteTemplate
 actions['setTenant'] = setTenant
 actions['tenantSetupReplication'] = tenantSetupReplication
+actions['backupTenant'] = backupTenant
+actions['restoreTenant'] = restoreTenant
 
 function noopAction(me, target) {
     log.error('state action noop with target:', target)

@@ -44,6 +44,26 @@
             }">
         </admin-components-action>
     </div>
+    <div>
+        <admin-components-action
+            v-bind:model="{
+                command: 'backupTenant',
+                title: 'backup tenant',
+                target: '/content/admin/pages/templates/edit',
+                classes: 'btn'
+            }">
+        </admin-components-action>
+    </div>
+    <div>
+        <admin-components-action
+            v-bind:model="{
+                command: 'restoreTenant',
+                title: 'restore tenant',
+                target: '/content/admin/pages/templates/edit',
+                classes: 'btn'
+            }">
+        </admin-components-action>
+    </div>
 </div>
 </template>
 
@@ -58,6 +78,14 @@
             tenantSetupReplication(me, target) {
                 const tenant = $perAdminApp.getView().state.tenant.name;
                 $perAdminApp.stateAction('tenantSetupReplication', `/content/${tenant}`, 'true');
+            },
+            backupTenant(me, target) {
+                const tenant = $perAdminApp.getView().state.tenant.name;
+                $perAdminApp.stateAction('backupTenant', `/content/${tenant}`);
+            },
+            restoreTenant(me, target) {
+                const tenant = $perAdminApp.getView().state.tenant.name;
+                $perAdminApp.stateAction('restoreTenant', `/content/${tenant}`);
             }
         }
     }

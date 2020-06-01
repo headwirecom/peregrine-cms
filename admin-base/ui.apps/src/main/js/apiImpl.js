@@ -930,6 +930,16 @@ class PerAdminImpl {
     formData.append('withSite', withSite)
     return updateWithForm('/admin/tenantSetupReplication.json' + path, formData)
   }
+
+  backupTenant(path) {
+    let formData = new FormData();
+    return updateWithForm('/admin/backupTenant.json' + path, formData)
+  }
+
+  restoreTenant(path) {
+    let formData = new FormData();
+    return updateWithForm('/admin/restoreTenant.json' + path, formData)
+  }
 }
 
 export default PerAdminImpl

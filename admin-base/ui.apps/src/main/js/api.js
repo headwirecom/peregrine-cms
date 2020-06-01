@@ -242,6 +242,14 @@ class PerApi {
     tenantSetupReplication(path, withSite) {
         return impl.tenantSetupReplication(path, withSite)
     }
+
+    backupTenant(path) {
+        return impl.backupTenant(path)
+    }
+
+    restoreTenant(path) {
+        return impl.restoreTenant(path)
+    }
 }
 
 export default PerApi

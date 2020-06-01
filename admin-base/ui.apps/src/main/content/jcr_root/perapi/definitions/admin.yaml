@@ -845,6 +845,42 @@ paths:
           description: If the path or if the asset creation failed
           schema:
             $ref: "#/definitions/Error"
+  '/backupTenant.json{path}':
+    post:
+      description: Backs up a Tenant Site
+      parameters:
+        - name: path
+          type: string
+          in: path
+          description: the path of the tenant site
+          required: true
+      responses:
+        200:
+          description: returns the status from the operation
+          schema:
+            $ref: "#/definitions/OperationResponse"
+        400:
+          description: Error of the failed backup
+          schema:
+            $ref: "#/definitions/Error"
+  '/restoreTenant.json{path}':
+    post:
+      description: Restores a previously backed up Tenant Site
+      parameters:
+        - name: path
+          type: string
+          in: path
+          description: the path of the tenant site
+          required: true
+      responses:
+        200:
+          description: returns the status from the operation
+          schema:
+            $ref: "#/definitions/OperationResponse"
+        400:
+          description: Error of the failed restoring
+          schema:
+            $ref: "#/definitions/Error"
 definitions:
   Error:
     type: object
@@ -869,4 +905,13 @@ definitions:
       targetName:
         type: string
       targetPath:
+        type: string
+  OperationResponse:
+    type: object
+    properties:
+      tenant:
+        type: string
+      action:
+        type: string
+      outcome:
         type: string
