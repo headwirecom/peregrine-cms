@@ -593,7 +593,10 @@ class PerAdminImpl {
             data.append('version', versionName)
             updateWithForm('/admin/manageVersions.json' + path, data)
                 .then( (data) => callbacks.getApi().populateVersions(path))
-                .then(() => resolve())
+                .then( function(){
+                    callbacks.getApi().populatePageView(path)
+                })
+                .then( () => resolve())
                 .catch(error => {
                     if (error.response && error.response.data && error.response.data.message) {
                         reject(error.response.data.message)
