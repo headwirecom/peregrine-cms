@@ -39,7 +39,10 @@ export default function(me, target) {
             if(target.selected.startsWith(`/content/${tenant.name}/pages`)) {
                 set(view, '/state/tools/page', target.selected)
             } else if(target.selected.startsWith(`/content/${tenant.name}/templates`)) {
-                set(view, '/state/tools/template', target.selected)
+                me.getApi().populateReferencedBy(target.selected).then( () => {
+                    set(view, '/state/tools/template', target.selected)
+                    resolve()
+                }).catch( error => reject(error))
             }
             resolve()
         }).catch( error => reject(error))
