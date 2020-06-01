@@ -462,7 +462,7 @@ public class AdminResourceHandlerService
             logger.debug("resource has no history of versions, therefore resource has no versions.");
             return null;
         }
-        return vh.getAllLinearVersions();
+        return vh.getAllVersions();
     }
 
     @Override
@@ -537,6 +537,25 @@ public class AdminResourceHandlerService
             return getResource(resourceResolver,path);
         } catch (RepositoryException e) {
             throw new ManagementException("Failed to restore Version", e);
+        }
+    }
+
+    @Override
+    public void restoreVersionByName(ResourceResolver resourceResolver, String path, String versionName, boolean removingExisting)
+            throws RepositoryException {
+        Session jcrSession = resourceResolver.adaptTo(Session.class);
+        VersionManager vm = jcrSession.getWorkspace().getVersionManager();
+        vm.restore(path, versionName, removingExisting);
+        vm.checkout(path);
+    }
+
+    @Override
+    public boolean isCheckedOut(ResourceResolver resourceResolver, String path) throws ManagementException {
+        try {
+            VersionManager vm = resourceResolver.adaptTo(Session.class).getWorkspace().getVersionManager();
+            return vm.isCheckedOut(path);
+        } catch (RepositoryException e) {
+            throw new ManagementException("isCheckedOut failed ", e);
         }
     }
 

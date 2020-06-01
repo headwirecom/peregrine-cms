@@ -126,6 +126,26 @@ public interface AdminResourceHandler {
     Resource restoreVersion(ResourceResolver resourceResolver, String path, String versionPath, boolean force) throws ManagementException;
 
     /**
+     * Restore a version by it's name
+     * @param resourceResolver Resource Resolver to manage resources and cannot be null
+     * @param path Absolute path of the resource having the version
+     * @param versionName of the version having the version
+     * @param removingExisting remove a resource already in the location of the path if true
+     * @throws RepositoryException If creating the version failed due to repository errors
+     */
+    void restoreVersionByName(ResourceResolver resourceResolver, String path, String versionName, boolean removingExisting)
+            throws RepositoryException;
+
+    /**
+     * Checks whether a resource is checked-out (editabled), or checked-in (frozen)
+     * @param resourceResolver Resource Resolver to manage resources and cannot be null
+     * @param path Absolute path of the resource
+     * @return true if the resource is checked-out or false if the resource is checked-in (and frozen)
+     * @throws RepositoryException If version management fails
+     */
+    boolean isCheckedOut(ResourceResolver resourceResolver, String path) throws ManagementException;
+
+    /**
      * Delete a version
      * @param resourceResolver Resource Resolver to manage resources and cannot be null
      * @param path Absolute path of the resource having the version

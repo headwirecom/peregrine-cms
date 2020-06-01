@@ -222,6 +222,10 @@ class PerApi {
         return impl.deleteVersion(version)
     }
 
+    restoreVersion(path, versionName) {
+        return impl.restoreVersion(path, versionName)
+    }
+
     nameAvailable(value, path) {
         return impl.nameAvailable(value, path)
     }

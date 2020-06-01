@@ -64,13 +64,15 @@ public class ManageVersions extends AbstractBaseServlet {
 
     private static final String FAILED_TO_CREATE_VERSION = "Failed to create version";
     private static final String FAILED_TO_DELETE_VERSION = "Failed to delete version";
-    private static final String FAILED_TO_CHECKOUT_VERSION = "Failed to delete version";
+    private static final String FAILED_TO_RESTORE_VERSION = "Failed to delete version";
     private static final String UNKNOWN_ACTION = "Bad request. unsupported or missing action";
+    private static final String RESOURCE_FROZEN = "Resource Checked-in & frozen. ";
+    private static final String VERSION_MGT_ERROR = "Versions cannot be managed.";
     private static final String ACTION = "action";
     private static final String VERSION = "version";
     private static final String CREATE_VERSION = "createVersion";
     private static final String DELETE_VERSION = "deleteVersion";
-    private static final String CHECKOUT_VERSION = "checkoutVersion";
+    private static final String RESTORE_VERSION = "restoreVersion";
 
 
     @Reference
@@ -84,6 +86,20 @@ public class ManageVersions extends AbstractBaseServlet {
         final String action = request.getParameter(ACTION);
         JsonResponse answer = new JsonResponse();
 
+        try {
+            if (!resourceManagement.isCheckedOut(request.getResourceResolver(),resourcePath)){
+                return new ErrorResponse()
+                    .setHttpErrorCode(SC_BAD_REQUEST)
+                    .setErrorMessage(RESOURCE_FROZEN+VERSION_MGT_ERROR)
+                    .setRequestPath(resourcePath);
+            }
+        } catch (ManagementException e) {
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(VERSION_MGT_ERROR)
+                .setRequestPath(resourcePath)
+                .setException(e);
+        }
         if (CREATE_VERSION.equals(action)) {
             Version newVersion = null;
             try {
@@ -109,16 +125,26 @@ public class ManageVersions extends AbstractBaseServlet {
                     .setRequestPath(resourcePath)
                     .setException(e);
             }
-        } else if (CHECKOUT_VERSION.equals(action)) {
-            return new ErrorResponse()
+        } else if (RESTORE_VERSION.equals(action)) {
+            try {
+                resourceManagement.restoreVersionByName(
+                    request.getResourceResolver(),
+                    resourcePath,
+                    version,
+                    true);
+                return answer;
+            } catch (RepositoryException e) {
+                return new ErrorResponse()
                     .setHttpErrorCode(SC_BAD_REQUEST)
-                    .setErrorMessage(FAILED_TO_CHECKOUT_VERSION)
-                    .setRequestPath(resourcePath);
+                    .setErrorMessage(FAILED_TO_RESTORE_VERSION)
+                    .setRequestPath(resourcePath)
+                    .setException(e);
+            }
         }
         return new ErrorResponse()
-                .setHttpErrorCode(SC_BAD_REQUEST)
-                .setErrorMessage(UNKNOWN_ACTION)
-                .setRequestPath(resourcePath);
+            .setHttpErrorCode(SC_BAD_REQUEST)
+            .setErrorMessage(UNKNOWN_ACTION)
+            .setRequestPath(resourcePath);
     }
 }
 

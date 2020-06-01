@@ -554,8 +554,6 @@ class PerAdminImpl {
   }
 
   deleteVersion(info) {
-    console.log('api deleted version')
-    console.log(info)
         return new Promise((resolve, reject) => {
             let data = new FormData()
             data.append('action', 'deleteVersion')
@@ -573,8 +571,6 @@ class PerAdminImpl {
   }
 
   createVersion(path) {
-    console.log('api create version')
-    console.log(path)
       return new Promise((resolve, reject) => {
           let data = new FormData()
           data.append('action', 'createVersion')
@@ -588,6 +584,23 @@ class PerAdminImpl {
                   reject(error)
               })
       })
+  }
+
+  restoreVersion(path, versionName) {
+        return new Promise((resolve, reject) => {
+            let data = new FormData()
+            data.append('action', 'restoreVersion')
+            data.append('version', versionName)
+            updateWithForm('/admin/manageVersions.json' + path, data)
+                .then( (data) => callbacks.getApi().populateVersions(path))
+                .then(() => resolve())
+                .catch(error => {
+                    if (error.response && error.response.data && error.response.data.message) {
+                        reject(error.response.data.message)
+                    }
+                    reject(error)
+                })
+        })
   }
 
   createTenant(fromName, toName, tenantTitle, tenantUserPwd, colorPalette) {

@@ -555,22 +555,23 @@
         $perAdminApp.getApi().populateVersions(this.currentObject);
       },
       deleteVersion(me, target) {
-        $perAdminApp.stateAction(`deleteVersion`, { path: target.path, version: target.version.name });
+        $perAdminApp.stateAction('deleteVersion', { path: target.path, version: target.version.name });
       },
       createVersion(){
-        $perAdminApp.stateAction(`createVersion`, this.currentObject);
+        $perAdminApp.stateAction('createVersion', this.currentObject);
       },
       checkoutVersion(version){
         if(version.base === true){
           $perAdminApp.notifyUser('Info', 'You cannot checkout the current version')
           return
         }
-        $perAdminApp.askUser('Checkout Version',
-          `Would you like to checkout ${version.name}? Doing so will create a new version saving the current state.`, {
+        let self = this;
+        $perAdminApp.askUser('Restore Version',
+          `Would you like to restore ${version.name}? You may lose work unless you create a new version saving the current state.`, {
               yesText: 'Yes',
               noText: 'No',
               yes() {
-                console.log('yes')
+                $perAdminApp.stateAction('restoreVersion', {path: self.currentObject, versionName: version.name});
               },
               no() {
                 console.log('no')
