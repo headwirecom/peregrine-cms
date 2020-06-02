@@ -7,7 +7,8 @@
     <button
         class="btn"
         :class="{'active': active}"
-        :title="$i18n(title)">
+        :title="$i18n(title)"
+        @mousedown.prevent="() => {}">
       <i class="material-icons">{{ icon }}</i><span class="caret-down"></span>
     </button>
   </admin-components-materializedropdown>
@@ -17,6 +18,7 @@
       class="btn"
       :class="{'active': active}"
       :title="$i18n(title)"
+      @mousedown.prevent="() => {}"
       @click="$emit('click')">
     <i class="material-icons">{{ icon }}</i>
   </button>

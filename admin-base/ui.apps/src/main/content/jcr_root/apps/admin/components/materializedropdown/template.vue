@@ -11,7 +11,7 @@
       <li v-if="items" v-for="(item, index) in items"
           :key="`item-${index}`"
           class="item"
-          :class="{disabled: item.disabled}"
+          :class="[{disabled: item.disabled}, item.class? item.class() : null]"
           :title="item.title? $i18n(item.title) : false"
           @click="onItemClick(item, index)">
         <i v-if="item.icon" class="material-icons">{{item.icon}}</i>

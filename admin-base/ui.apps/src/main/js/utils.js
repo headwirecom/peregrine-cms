@@ -174,17 +174,3 @@ export const getCaretCharacterOffsetWithin = (element)  => {
     }
     return caretOffset
 }
-
-export const itemIsLink = (document) => {
-    if (!document || !document.defaultView) return false
-    const window = document.defaultView
-    let selection = window.getSelection()
-    if (!selection|| selection.rangeCount <= 0) return false
-    selection = selection.getRangeAt(0)
-    if (selection) {
-        return selection.startContainer.parentNode.tagName === 'A'
-            || selection.endContainer.parentNode.tagName === 'A'
-    } else {
-        return false
-    }
-}
