@@ -112,19 +112,31 @@
       }
     }
 
-    .explorer-asset-referenced-by {
+    [class$="referenced-by"] {
       color: $primary-color-dark;
-
+      overflow-y: scroll;
       .svg-icon {
         .svg-content {
           fill: color("blue-grey", "darken-2");
           transition: fill .3s ease;
-        }
+        }	     
 
-        &:hover {
-          .svg-content {
+        &:hover {	
+          .svg-content {	     
             fill: color("orange", "base");
-          }
+          }	          
+        }	        
+      }	      
+      .collection-item {
+        display: flex;
+        .right {
+          display: block;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+          text-align: right;
+          direction: rtl;
+          margin-right:5px;
         }
       }
     }
