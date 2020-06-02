@@ -506,11 +506,10 @@
             selectPath: function(me, target) {
                 let resourceType = target.resourceType
                 if(resourceType) {
-//                    if(resourceType === 'per:Object') {
-//                        me.selectedObject = target.path
-//                        $perAdminApp.stateAction('selectObject', { selected: target.path, path: me.model.dataFrom })
-//                        return
-//                    }
+                    if(resourceType === 'per:Object') {
+                        $perAdminApp.stateAction('selectObject', { selected: target.path, path: me.model.dataFrom })
+                        return
+                    }
                     if(resourceType === 'per:Asset') {
                         $perAdminApp.stateAction('selectAsset', { selected: target.path })
                         return

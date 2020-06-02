@@ -224,7 +224,7 @@
         },
         nodeTypeGroups: {
           ogTags: [NodeType.PAGE, NodeType.TEMPLATE],
-          references: [NodeType.ASSET],
+          references: [NodeType.ASSET, NodeType.PAGE, NodeType.TEMPLATE, NodeType.OBJECT],
           selectStateAction: [NodeType.ASSET, NodeType.OBJECT],
           showProp: [NodeType.ASSET, NodeType.OBJECT],
           allowMove: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET]
