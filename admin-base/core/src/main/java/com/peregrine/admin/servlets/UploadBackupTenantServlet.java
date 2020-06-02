@@ -25,19 +25,28 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
+import com.peregrine.admin.resource.AdminResourceHandler;
+import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
-import com.peregrine.intra.IntraSlingCaller;
+import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import javax.servlet.http.Part;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_UPLOAD_BACKUP_TENANT;
+import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.commons.util.PerUtil.POST;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -68,14 +77,65 @@ public class UploadBackupTenantServlet extends AbstractBaseServlet {
     private static final String PACKAGE_PATH = "/bin/cpm/package";
     private static final String DOWNLOAD_SELECTOR = "download";
 
+    private static final String RESOURCE_NAME = "resourceName";
+    private static final String RESOURCE_PATH = "resourcePath";
+    private static final String ASSET_NAME = "assetName";
+    private static final String ASSET_PATH = "assetPath";
+    private static final String UPLOAD_FAILED_BECAUSE_OF_SERVLET_PARTS_PROBLEM = "Upload Failed because of Servlet Parts Problem";
+
     @Reference
-    @SuppressWarnings("unused")
-    private IntraSlingCaller intraSlingCaller;
+    AdminResourceHandler resourceManagement;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        // Because the IntraSlingCaller cannot handle 'multipart forms' because of the limitation
-        // of the used Request object this service is not working yet
-        return new ErrorResponse().setErrorMessage("This service is not supported yet");
+        String characterEncoding = request.getRequest().getCharacterEncoding();
+        logger.debug("Current Character Encoding: '{}'", characterEncoding);
+        String path = request.getParameter(PATH);
+        try {
+            Resource resource = request.getResourceByPath(path);
+            logger.debug("Upload files to resource: '{}'", resource);
+            List<Resource> assets = new ArrayList<>();
+            for (Part part : request.getParts()) {
+                String assetName = part.getName();
+                if(!characterEncoding.equalsIgnoreCase(StandardCharsets.UTF_8.toString())) {
+                    String originalName = assetName;
+                    assetName = new String(originalName.getBytes (characterEncoding), StandardCharsets.UTF_8);
+                    logger.debug("Asset Name, original: '{}', converted: '{}'", originalName, assetName);
+                }
+                String contentType = part.getContentType();
+                logger.debug("part type {}",contentType);
+                logger.debug("part name {}",assetName);
+                //TODO: figure out the data send by the multiparts and then create a method to store the backups
+//                Resource asset = resourceManagement.
+//                    createAssetFromStream(resource, assetName, contentType, part.getInputStream());
+//                assets.add(asset);
+            }
+            resource.getResourceResolver().commit();
+            logger.debug("Upload Done successfully and saved");
+            JsonResponse answer = new JsonResponse()
+                .writeAttribute(RESOURCE_NAME, resource.getName())
+                .writeAttribute(RESOURCE_PATH, resource.getPath())
+                .writeArray("assets");
+            for(Resource asset : assets) {
+                answer.writeObject();
+                answer.writeAttribute(ASSET_NAME, asset.getName());
+                answer.writeAttribute(ASSET_PATH, asset.getPath());
+                answer.writeClose();
+            }
+            return answer;
+//        } catch(ManagementException e) {
+//            logger.debug("Upload Failed", e);
+//            return new ErrorResponse()
+//                .setHttpErrorCode(SC_BAD_REQUEST)
+//                .setErrorMessage(e.getMessage())
+//                .setRequestPath(path)
+//                .setException(e);
+        } catch(ServletException e) {
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(UPLOAD_FAILED_BECAUSE_OF_SERVLET_PARTS_PROBLEM)
+                .setRequestPath(path)
+                .setException(e);
+        }
     }
 }

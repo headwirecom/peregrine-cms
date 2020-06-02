@@ -58,7 +58,17 @@
         <admin-components-action
             v-bind:model="{
                 command: 'downloadBackupTenant',
-                title: 'download tenant backups',
+                title: 'download tenant backup',
+                target: '/content/admin/pages/templates/edit',
+                classes: 'btn'
+            }">
+        </admin-components-action>
+    </div>
+    <div>
+        <admin-components-action
+            v-bind:model="{
+                command: 'uploadBackupTenant',
+                title: 'upload tenant backup',
                 target: '/content/admin/pages/templates/edit',
                 classes: 'btn'
             }">
@@ -96,6 +106,10 @@
             downloadBackupTenant(me, target) {
                 const tenant = $perAdminApp.getView().state.tenant.name;
                 $perAdminApp.stateAction('downloadBackupTenant', `/content/${tenant}`);
+            },
+            uploadBackupTenant(me, target) {
+                const tenant = $perAdminApp.getView().state.tenant.name;
+                $perAdminApp.stateAction('uploadBackupTenant', `/content/${tenant}`, 'test-file.zip');
             },
             restoreTenant(me, target) {
                 const tenant = $perAdminApp.getView().state.tenant.name;
