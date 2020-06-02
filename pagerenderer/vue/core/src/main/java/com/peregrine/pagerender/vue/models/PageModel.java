@@ -254,7 +254,11 @@ public class PageModel extends Container {
         List<Tag> answer = new ArrayList<Tag>();
         if(tags != null) {
             for(Resource tag: tags.getChildren()) {
-                answer.add(new Tag(tag));
+                String tagString = tag.getValueMap().get("value", String.class);
+                Resource tagResource = tag.getResourceResolver().getResource(tagString);
+                if (tagResource != null) { 
+                    answer.add(new Tag(tag));
+                }
             }
         }
         return answer;
@@ -265,7 +269,11 @@ public class PageModel extends Container {
         List<String> answer = new ArrayList<String>();
         if(tags != null) {
             for(Resource tag: tags.getChildren()) {
-                answer.add(new Tag(tag).getName());
+                String tagString = tag.getValueMap().get("value", String.class);
+                Resource tagResource = tag.getResourceResolver().getResource(tagString);
+                if (tagResource != null) { 
+                    answer.add(new Tag(tag).getName());
+                }
             }
         }
         return answer;
@@ -320,7 +328,11 @@ public class PageModel extends Container {
             this.path = r.getPath();
             this.path = path.substring(path.indexOf("/jcr:content"));
             this.name = r.getName();
-            this.value = r.getValueMap().get("value", String.class);
+            String tag = r.getValueMap().get("value", String.class);
+            Resource tagResource = r.getResourceResolver().getResource(tag);
+            if (tagResource != null) {
+                this.value = tagResource.getValueMap().get("value", String.class);
+            }
         }
 
         public String getName() { return name; }
