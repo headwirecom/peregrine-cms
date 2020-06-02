@@ -247,6 +247,10 @@ class PerApi {
         return impl.backupTenant(path)
     }
 
+    downloadBackupTenant(path) {
+        return impl.downloadBackupTenant(path)
+    }
+
     restoreTenant(path) {
         return impl.restoreTenant(path)
     }

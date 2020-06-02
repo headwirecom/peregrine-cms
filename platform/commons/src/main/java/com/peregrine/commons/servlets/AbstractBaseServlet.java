@@ -39,6 +39,8 @@ import static com.peregrine.commons.util.PerConstants.JSON;
 import static com.peregrine.commons.util.PerConstants.JSON_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.TEXT_MIME_TYPE;
+import static com.peregrine.commons.util.PerUtil.GET;
+import static com.peregrine.commons.util.PerUtil.POST;
 
 /**
  * Base Class for Peregrine Servlets
@@ -136,6 +138,10 @@ public abstract class AbstractBaseServlet
         public boolean isAdmin() {
             return request.getUserPrincipal().getName().equals(ADMIN_USER);
         }
+
+        public boolean isPost() { return request.getMethod().equals(POST); };
+        public boolean isGet() { return request.getMethod().equals(GET); };
+
         public SlingHttpServletRequest getRequest() {
             return request;
         }

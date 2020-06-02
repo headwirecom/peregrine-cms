@@ -57,6 +57,16 @@
     <div>
         <admin-components-action
             v-bind:model="{
+                command: 'downloadBackupTenant',
+                title: 'download tenant backups',
+                target: '/content/admin/pages/templates/edit',
+                classes: 'btn'
+            }">
+        </admin-components-action>
+    </div>
+    <div>
+        <admin-components-action
+            v-bind:model="{
                 command: 'restoreTenant',
                 title: 'restore tenant',
                 target: '/content/admin/pages/templates/edit',
@@ -82,6 +92,10 @@
             backupTenant(me, target) {
                 const tenant = $perAdminApp.getView().state.tenant.name;
                 $perAdminApp.stateAction('backupTenant', `/content/${tenant}`);
+            },
+            downloadBackupTenant(me, target) {
+                const tenant = $perAdminApp.getView().state.tenant.name;
+                $perAdminApp.stateAction('downloadBackupTenant', `/content/${tenant}`);
             },
             restoreTenant(me, target) {
                 const tenant = $perAdminApp.getView().state.tenant.name;

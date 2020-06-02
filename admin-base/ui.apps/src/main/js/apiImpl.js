@@ -936,6 +936,11 @@ class PerAdminImpl {
     return updateWithForm('/admin/backupTenant.json' + path, formData)
   }
 
+  downloadBackupTenant(path) {
+    let formData = new FormData();
+    return fetch('/admin/downloadBackupTenant.json' + path)
+  }
+
   restoreTenant(path) {
     let formData = new FormData();
     return updateWithForm('/admin/restoreTenant.json' + path, formData)
