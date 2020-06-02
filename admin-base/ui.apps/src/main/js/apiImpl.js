@@ -509,18 +509,20 @@ class PerAdminImpl {
   }
 
   populateVersions(page) {
-    return new Promise((resolve, reject) => {
-      fetch(`/admin/listVersions.json${page}`)
-        .then(function(result) {
-            populateView('/state', 'versions', result)
-                .then(() => resolve())
+    if (page) {
+        return new Promise((resolve, reject) => {
+          fetch(`/admin/listVersions.json${page}`)
+            .then(function(result) {
+                populateView('/state', 'versions', result)
+                    .then(() => resolve())
+            })
+            .catch(error => {
+                if (error.response && error.response.data && error.response.data.message) {
+                    reject(error.response.data.message)
+                }
+            })
         })
-        .catch(error => {
-            if (error.response && error.response.data && error.response.data.message) {
-                reject(error.response.data.message)
-            }
-        })
-    })
+    }
   }
 
   recycleItem(item) {
@@ -594,7 +596,11 @@ class PerAdminImpl {
             updateWithForm('/admin/manageVersions.json' + path, data)
                 .then( (data) => callbacks.getApi().populateVersions(path))
                 .then( function(){
-                    callbacks.getApi().populatePageView(path)
+                    if (path.includes("/assets/")) {
+                        $perAdminApp.loadContent("/content/admin/pages/assets")
+                    } else {
+                        callbacks.getApi().populatePageView(path)
+                    }
                 })
                 .then( () => resolve())
                 .catch(error => {
