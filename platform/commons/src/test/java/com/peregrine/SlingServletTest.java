@@ -6,11 +6,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import static com.peregrine.mock.MockTools.fullName;
 import static org.mockito.Mockito.*;
 
 public class SlingServletTest extends SlingResourcesTest {
 
-    protected final SlingHttpServletResponse response = mock(SlingHttpServletResponse.class, fullName("Response"));
+    protected final SlingHttpServletResponse response = mock(SlingHttpServletResponse.class, fullName(this, "Response"));
     protected final StringWriter writer = new StringWriter();
     private final PrintWriter printWriter = new PrintWriter(writer);
 

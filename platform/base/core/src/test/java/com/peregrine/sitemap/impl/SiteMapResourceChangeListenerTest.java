@@ -11,7 +11,8 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.*;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -30,7 +31,7 @@ public final class SiteMapResourceChangeListenerTest extends SlingResourcesTest 
     public void setUp() throws NoSuchFieldException {
         PrivateAccessor.setField(model, "jobManager", jobManager);
         addChange(resource.getPath());
-        addChange(content.getPath());
+        addChange(jcrContent.getPath());
         addChange(page.getPath());
     }
 
@@ -53,7 +54,7 @@ public final class SiteMapResourceChangeListenerTest extends SlingResourcesTest 
         assertTrue(pathsObj instanceof Set);
         final Set<String> paths = (Set<String>) pathsObj;
         assertTrue(paths.contains(resource.getPath()));
-        assertTrue(paths.contains(content.getPath()));
+        assertTrue(paths.contains(jcrContent.getPath()));
         assertTrue(paths.contains(page.getPath()));
     }
 

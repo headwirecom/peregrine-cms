@@ -1,6 +1,9 @@
 #!/bin/bash
 . env.sh
 
+git branch -v
+git log -p -1
+
 echo "Removing old build artifacts..."
 rm files/*.xz files/*.jar
 

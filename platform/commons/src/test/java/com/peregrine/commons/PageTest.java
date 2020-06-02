@@ -29,7 +29,7 @@ public final class PageTest extends SlingResourcesTest {
     @Test
     public void getContent() {
         assertNull(missingContent.getContent());
-        assertEquals(content, properPage.getContent());
+        assertEquals(jcrContent, properPage.getContent());
     }
 
     @Test
@@ -39,7 +39,7 @@ public final class PageTest extends SlingResourcesTest {
         assertTrue(missingContent.containsProperty(NAME));
 
         assertFalse(properPage.containsProperty(NAME));
-        content.putProperty(NAME, VALUE);
+        jcrContent.putProperty(NAME, VALUE);
         assertTrue(properPage.containsProperty(NAME));
     }
 
@@ -53,17 +53,17 @@ public final class PageTest extends SlingResourcesTest {
     @Test
     public void getProperty_type() {
         assertNull(properPage.getProperty(NAME, String.class));
-        content.putProperty(NAME, VALUE);
+        jcrContent.putProperty(NAME, VALUE);
         assertEquals(VALUE, properPage.getProperty(NAME, String.class));
     }
 
     @Test
     public void getProperty_defaultValue() {
         assertEquals(DEFAULT_VALUE, properPage.getProperty(NAME, DEFAULT_VALUE));
-        content.putProperty(NAME, VALUE);
+        jcrContent.putProperty(NAME, VALUE);
         assertEquals(VALUE, properPage.getProperty(NAME, DEFAULT_VALUE));
 
-        content.putProperty(NAME, null);
+        jcrContent.putProperty(NAME, null);
         assertNull(properPage.getProperty(NAME, DEFAULT_VALUE));
     }
 
@@ -73,12 +73,12 @@ public final class PageTest extends SlingResourcesTest {
         assertNull(properPage.getLastModifiedDate());
 
         final Calendar created = Calendar.getInstance();
-        content.putProperty(JcrConstants.JCR_CREATED, created);
+        jcrContent.putProperty(JcrConstants.JCR_CREATED, created);
         assertEquals(created, properPage.getLastModified());
         assertEquals(created.getTime(), properPage.getLastModifiedDate());
 
         final Calendar lastModified = Calendar.getInstance();
-        content.putProperty(JcrConstants.JCR_LASTMODIFIED, lastModified);
+        jcrContent.putProperty(JcrConstants.JCR_LASTMODIFIED, lastModified);
         assertEquals(lastModified, properPage.getLastModified());
         assertEquals(lastModified.getTime(), properPage.getLastModifiedDate());
     }

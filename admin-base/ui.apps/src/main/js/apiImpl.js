@@ -803,7 +803,7 @@ class PerAdminImpl {
   }
 
   savePageEdit(path, node) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       let formData = new FormData()
       // convert to a new object
       let nodeData = JSON.parse(JSON.stringify(node))
@@ -830,8 +830,12 @@ class PerAdminImpl {
       formData.append('content', json(nodeData))
 
       updateWithForm('/admin/updateResource.json' + path + node.path, formData)
-          // .then( (data) => this.populateNodesForBrowser(parentPath) )
-          .then(() => resolve())
+      // .then( (data) => this.populateNodesForBrowser(parentPath) )
+      .then(() => resolve())
+      .catch( error => {
+         logger.error('Failed to save page: ' + error)
+         reject('Unable to save change. '+ error)
+       })
     })
   }
 

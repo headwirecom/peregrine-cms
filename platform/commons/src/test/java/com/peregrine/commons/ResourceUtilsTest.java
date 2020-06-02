@@ -26,14 +26,14 @@ public final class ResourceUtilsTest extends SlingResourcesTest {
     @Test
     public void getFirstExistingAncestorOnPath_emptyPath() {
         final Resource resource = ResourceUtils.getFirstExistingAncestorOnPath(resourceResolver, null);
-        assertEquals(repoRoot, resource);
+        assertEquals(repo.getRoot(), resource);
     }
 
     @Test
     public void getFirstExistingAncestorOnPath_noResourceUnderPath() {
         when(resourceResolver.getResource(path)).thenReturn(null);
         final Resource resource = ResourceUtils.getFirstExistingAncestorOnPath(resourceResolver, path);
-        assertEquals(content, resource);
+        assertEquals(jcrContent, resource);
     }
 
     @Test
@@ -51,7 +51,7 @@ public final class ResourceUtilsTest extends SlingResourcesTest {
     @Test
     public void getOrCreateResource_resourceGetsCreated() throws PersistenceException {
         when(resourceResolver.getResource(path)).thenReturn(null);
-        when(resourceResolver.create(eq(content), eq(NN_RESOURCE), any())).thenAnswer(invocation -> {
+        when(resourceResolver.create(eq(jcrContent), eq(NN_RESOURCE), any())).thenAnswer(invocation -> {
             when(resourceResolver.getResource(path)).thenReturn(resource);
             return resource;
         });

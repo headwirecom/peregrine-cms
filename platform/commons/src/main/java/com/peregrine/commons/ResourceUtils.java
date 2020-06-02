@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -83,6 +84,12 @@ public final class ResourceUtils {
         }
 
         return name;
+    }
+
+    public static boolean exists(final Resource resource) {
+        return !ResourceUtil.isNonExistingResource(resource)
+                && !ResourceUtil.isStarResource(resource)
+                && !ResourceUtil.isSyntheticResource(resource);
     }
 
 }

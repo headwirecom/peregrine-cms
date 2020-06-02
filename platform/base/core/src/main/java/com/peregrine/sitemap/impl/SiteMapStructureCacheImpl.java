@@ -153,7 +153,8 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
 
     @Override
     protected String getCachePath(final String rootPagePath) {
-        return super.getCachePath(rootPagePath) + SLASH_JCR_CONTENT;
+        final String cachePath = super.getCachePath(rootPagePath);
+        return isRepositoryRoot(rootPagePath) ? cachePath : cachePath + SLASH_JCR_CONTENT;
     }
 
     @Override

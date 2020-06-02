@@ -141,6 +141,7 @@ public class PerConstants {
     public static final String TENANT_USER_PWD = "tenantUserPwd";
     public static final String DEPENDENCIES = "dependencies";
     public static final String INTERNAL = "internal";
+    public static final String DOMAINS = "domains";
 
     public static final String EXCLUDE_FROM_SITEMAP = "excludeFromSitemap";
     public static final String CHANGE_FREQUENCY = "changefreq";

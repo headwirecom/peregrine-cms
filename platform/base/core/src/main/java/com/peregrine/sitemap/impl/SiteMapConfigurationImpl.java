@@ -43,13 +43,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
 @Component(service = SiteMapConfiguration.class, immediate = true)
 @Designate(ocd = SiteMapConfigurationImplConfig.class, factory = true)
 public final class SiteMapConfigurationImpl implements SiteMapConfiguration {
-
-    private final String[] EMPTY_NAMES = new String[0];
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
