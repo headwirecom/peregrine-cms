@@ -944,10 +944,29 @@ class PerAdminImpl {
     return fetch('/admin/downloadBackupTenant.json' + path)
   }
 
-  uploadBackupTenant(path, filePath) {
-    let formData = new FormData();
-    formData.append('filePath', filePath)
-    return updateWithForm('/admin/uploadBackupTenant.json' + path, formData)
+  uploadBackupTenant(path, files, cb) {
+    const config = {
+      onUploadProgress: progressEvent => {
+        const percentCompleted = Math.floor(
+            (progressEvent.loaded * 100) / progressEvent.total);
+        cb(percentCompleted)
+      }
+    }
+    const data = new FormData()
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]
+      data.append(file.name, file, file.name)
+    }
+    if (!data.entries().next().done) {
+      return updateWithFormAndConfig('/admin/uploadBackupTenant.json' + path, data,
+          config)
+          .then(() => this.populateNodesForBrowser(path))
+          .catch(error => {
+//            log.error('Failed to upload: ' + error)
+            reject('Unable to upload due to an error. ' + error)
+          })
+    }
+    return
   }
 
   restoreTenant(path) {

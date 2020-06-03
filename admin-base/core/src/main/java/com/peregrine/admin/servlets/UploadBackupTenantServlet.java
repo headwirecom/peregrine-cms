@@ -36,16 +36,21 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.Part;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_UPLOAD_BACKUP_TENANT;
+import static com.peregrine.admin.util.AdminConstants.BACKUP_FOLDER_FORMAT;
+import static com.peregrine.admin.util.AdminConstants.BACKUP_FORMAT;
+import static com.peregrine.commons.util.PerConstants.NT_FILE;
+import static com.peregrine.commons.util.PerConstants.NT_RESOURCE;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.commons.util.PerUtil.POST;
+import static com.peregrine.commons.util.PerUtil.extractName;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -74,13 +79,10 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @SuppressWarnings("serial")
 public class UploadBackupTenantServlet extends AbstractBaseServlet {
 
-    private static final String PACKAGE_PATH = "/bin/cpm/package";
-    private static final String DOWNLOAD_SELECTOR = "download";
-
     private static final String RESOURCE_NAME = "resourceName";
     private static final String RESOURCE_PATH = "resourcePath";
-    private static final String ASSET_NAME = "assetName";
-    private static final String ASSET_PATH = "assetPath";
+    private static final String PACKAGE_NAME = "packageName";
+    private static final String PACKAGE_PATH = "packagePath";
     private static final String UPLOAD_FAILED_BECAUSE_OF_SERVLET_PARTS_PROBLEM = "Upload Failed because of Servlet Parts Problem";
 
     @Reference
@@ -88,53 +90,51 @@ public class UploadBackupTenantServlet extends AbstractBaseServlet {
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        String characterEncoding = request.getRequest().getCharacterEncoding();
-        logger.debug("Current Character Encoding: '{}'", characterEncoding);
-        String path = request.getParameter(PATH);
+        String tenantPath = request.getParameter(PATH);
+        String tenantName = extractName(tenantPath);
+        String packageName = String.format(BACKUP_FORMAT, tenantName);
+        String packageFolderPath = String.format(BACKUP_FOLDER_FORMAT, tenantName);
         try {
-            Resource resource = request.getResourceByPath(path);
-            logger.debug("Upload files to resource: '{}'", resource);
-            List<Resource> assets = new ArrayList<>();
+            Resource resource = request.getResourceByPath(packageFolderPath);
+            logger.info("Upload files to resource: '{}'", resource);
+            List<Resource> packages = new ArrayList<>();
             for (Part part : request.getParts()) {
-                String assetName = part.getName();
-                if(!characterEncoding.equalsIgnoreCase(StandardCharsets.UTF_8.toString())) {
-                    String originalName = assetName;
-                    assetName = new String(originalName.getBytes (characterEncoding), StandardCharsets.UTF_8);
-                    logger.debug("Asset Name, original: '{}', converted: '{}'", originalName, assetName);
-                }
-                String contentType = part.getContentType();
-                logger.debug("part type {}",contentType);
-                logger.debug("part name {}",assetName);
-                //TODO: figure out the data send by the multiparts and then create a method to store the backups
-//                Resource asset = resourceManagement.
-//                    createAssetFromStream(resource, assetName, contentType, part.getInputStream());
-//                assets.add(asset);
+                String contentMimeType = part.getContentType();
+                logger.info("part type {}", contentMimeType);
+                InputStream inputStream = part.getInputStream();
+                Resource aPackage = resourceManagement.createDataNodeFromStream(
+                    resource, packageName, NT_FILE, NT_RESOURCE, contentMimeType, part.getInputStream(),
+                    "Package", "vlt:Package"
+                );
+                logger.info("Package created {}", aPackage);
+                packages.add(aPackage);
             }
             resource.getResourceResolver().commit();
-            logger.debug("Upload Done successfully and saved");
+            logger.info("Upload Done successfully and saved");
             JsonResponse answer = new JsonResponse()
                 .writeAttribute(RESOURCE_NAME, resource.getName())
                 .writeAttribute(RESOURCE_PATH, resource.getPath())
-                .writeArray("assets");
-            for(Resource asset : assets) {
+                .writeArray("packages");
+            for(Resource aPackage : packages) {
                 answer.writeObject();
-                answer.writeAttribute(ASSET_NAME, asset.getName());
-                answer.writeAttribute(ASSET_PATH, asset.getPath());
+                answer.writeAttribute(PACKAGE_NAME, aPackage.getName());
+                answer.writeAttribute(PACKAGE_PATH, aPackage.getPath());
                 answer.writeClose();
             }
             return answer;
-//        } catch(ManagementException e) {
-//            logger.debug("Upload Failed", e);
-//            return new ErrorResponse()
-//                .setHttpErrorCode(SC_BAD_REQUEST)
-//                .setErrorMessage(e.getMessage())
-//                .setRequestPath(path)
-//                .setException(e);
+        } catch(ManagementException e) {
+            logger.info("Upload Failed", e);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(e.getMessage())
+                .setRequestPath(tenantPath)
+                .setException(e);
         } catch(ServletException e) {
+            logger.info("Upload Servlet Failed", e);
             return new ErrorResponse()
                 .setHttpErrorCode(SC_BAD_REQUEST)
                 .setErrorMessage(UPLOAD_FAILED_BECAUSE_OF_SERVLET_PARTS_PROBLEM)
-                .setRequestPath(path)
+                .setRequestPath(tenantPath)
                 .setException(e);
         }
     }

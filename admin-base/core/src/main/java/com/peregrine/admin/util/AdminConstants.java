@@ -53,6 +53,7 @@ public class AdminConstants {
 
     public static final String BACKUP_FORMAT = "%1$s-full-package-1.0.zip";
     public static final String PACKAGE_FORMAT = "%1$s/" + BACKUP_FORMAT;
+    public static final String BACKUP_FOLDER_FORMAT = "/etc/packages/%1$s";
 
     public static final String SLING_EVENT_ID = "slingevent:eventId";
     public static final String EVENT_FINISHED_STATE = "slingevent:finishedState";

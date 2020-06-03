@@ -65,14 +65,11 @@
         </admin-components-action>
     </div>
     <div>
-        <admin-components-action
-            v-bind:model="{
-                command: 'uploadBackupTenant',
-                title: 'upload tenant backup',
-                target: '/content/admin/pages/templates/edit',
-                classes: 'btn'
-            }">
-        </admin-components-action>
+        <label class='btn'>
+            Upload Backup File
+            <input type="file" ref="file_upload" style="display:none" v-on:change="addFiles">
+            <i class="material-icons">file_upload</i>
+        </label>
     </div>
     <div>
         <admin-components-action
@@ -114,6 +111,23 @@
             restoreTenant(me, target) {
                 const tenant = $perAdminApp.getView().state.tenant.name;
                 $perAdminApp.stateAction('restoreTenant', `/content/${tenant}`);
+            },
+            addFiles (ev) {
+                this.uploadFile(ev.target.files)
+            },
+            uploadFile(files) {
+                const tenant = $perAdminApp.getView().state.tenant.name;
+                $perAdminApp.stateAction(
+                    'uploadBackupTenant',
+                    {
+                        path: `/content/${tenant}`,
+                        files: files,
+                        cb: this.fileUploadComplete
+                    }
+                );
+            },
+            fileUploadComplete(percentCompleted) {
+                return
             }
         }
     }
