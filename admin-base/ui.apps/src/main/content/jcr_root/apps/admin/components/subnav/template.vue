@@ -25,9 +25,6 @@
 <template>
     <div class="nav-content sub-nav" :class="classes">
         <admin-components-richtoolbar v-if="renderRichToolbar"/>
-        <template v-for="child in model.children">
-            <div v-bind:is="child.component" v-bind:model="child" v-bind:key="child.path"></div>
-        </template>
         <div v-if="showNodeTree" class="page-tree">
             <admin-components-materializedropdown
                 ref="dropdown"
