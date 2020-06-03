@@ -296,7 +296,7 @@ class PerAdminImpl {
             let promises = []
             if (data && data.model) {
               if (data.model.groups) {
-                for (let j = 0; j < data.model.groups.lenght; j++) {
+                for (let j = 0; j < data.model.groups.length; j++) {
                   for (let i = 0; i < data.model.groups[j].fields.length; i++) {
                     let from = data.model.groups[j].fields[i].valuesFrom
                     if (from) {
@@ -471,7 +471,17 @@ class PerAdminImpl {
 
   populateReferencedBy(path) {
     return fetch('/admin/refBy.json' + path)
-        .then((data) => populateView('/state', 'referencedBy', data))
+        .then((data) => {
+          // let stateData = data;
+          // for (let i = 0; i < data.referencedBy.length; ++i ) {
+          //   if (data.referencedBy.path){
+          //     return
+          //   }
+          // }
+          // // data.referencedBy
+          // console.log('this is data', data.referencedBy);
+          populateView('/state', 'referencedBy', data)
+        })
   }
 
   populateI18N(language) {
