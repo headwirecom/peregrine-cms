@@ -37,7 +37,10 @@ export default function(me, target) {
     return new Promise( (resolve, reject) => {
         me.getApi().populateExplorerDialog(target.selected).then( () => {
             if(target.selected.startsWith(`/content/${tenant.name}/pages`)) {
-                set(view, '/state/tools/page', target.selected)
+                me.getApi().populateReferencedBy(target.selected).then( () => {
+                    set(view, '/state/tools/page', target.selected)
+                    resolve()
+                }).catch( error => reject(error))
             } else if(target.selected.startsWith(`/content/${tenant.name}/templates`)) {
                 set(view, '/state/tools/template', target.selected)
             }
