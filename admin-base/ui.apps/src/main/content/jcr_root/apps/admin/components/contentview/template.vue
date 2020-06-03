@@ -340,6 +340,7 @@
           if (!vm.dragging) {
             if (vm.component !== vm.previousComponent) {
               set(this.view, '/state/inline/rich', null)
+              set(this.view, '/state/inline/model', null)
               if (vm.autoSave) {
                 vm.autoSave = false
                 vm.restoreLinkTargets()
@@ -554,7 +555,6 @@
           for (let i = 0; i < len; i++) {
             if (inlineEditNodes[i] === this.target) {
               if (i > 0 && (key === Key.ARROW_LEFT || key === Key.ARROW_UP)) {
-                //inlineEditNodes[i - 1].focus()
                 this.placeCaretAtEnd(inlineEditNodes[i - 1])
               } else if (i < len - 1 && (key === Key.ARROW_RIGHT || key === Key.ARROW_DOWN)) {
                 inlineEditNodes[i + 1].focus()
@@ -963,9 +963,7 @@
       },
 
       pingToolbar() {
-        if (this.isRich) {
-          set(this.view, '/state/inline/ping', true)
-        }
+        set(this.view, '/state/inline/ping', true)
       }
     }
   }

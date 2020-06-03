@@ -246,7 +246,6 @@
           model.reverse()
           const {field, index} = this.getFieldAndIndexByModel(this.schema.fields, model.pop())
           if (!field) return
-          
           if (['input', 'texteditor', 'material-textarea'].indexOf(field.type) >= 0) {
             this.$refs.formGenerator.$children[index].$el.scrollIntoView()
             set(this.view, '/state/inline/rich', this.isRichEditor(field))

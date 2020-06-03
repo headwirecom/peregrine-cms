@@ -297,6 +297,19 @@ nav {
       align-items: center;
       margin-right: 6.8rem;
 
+      &.disabled {
+        pointer-events: none;
+
+        .btn {
+          background-color: #9e9e9e !important;
+          box-shadow: none !important;
+        }
+
+        * {
+          color: var(--pcms-blue-grey-darken-3) !important;
+        }
+      }
+
       .btn {
         position: relative;
         width: 32px;
@@ -312,6 +325,7 @@ nav {
           font-size: 20px;
           height: 100%;
           line-height: unset;
+          width: 100%;
         }
       }
 
@@ -346,11 +360,6 @@ nav {
           right: 1px;
         }
       }
-    }
-
-    .toolbar-placeholder {
-      margin-right: 6.8rem;
-      width: calc(34px * 19);
     }
 
     .page-tree {

@@ -1,5 +1,5 @@
 <template>
-  <div class="toolbar">
+  <div class="toolbar" :class="{disabled: !inlineRich}">
     <admin-components-richtoolbarbtn
         v-for="(btn, i) in buttons"
         :key="getButtonKey(btn, i)"
@@ -63,12 +63,7 @@
             cmd: 'link',
             isActive: () => this.itemIsTag('A')
           },
-          {
-            title: 'insert image',
-            icon: 'insert_photo',
-            cmd: 'insertImage',
-            isActive: () => this.itemIsTag('img')
-          },
+          {title: 'insert image', icon: 'insert_photo', cmd: 'insertImage'},
           {
             title: 'align left',
             icon: 'format_align_left',
@@ -114,8 +109,7 @@
           {
             title: 'remove format',
             icon: 'format_clear',
-            cmd: 'removeFormat',
-            isActive: () => this.queryCmdState('removeFormat')
+            cmd: 'removeFormat'
           }
         ]
         buttons.forEach((btn) => {
@@ -128,6 +122,10 @@
       inline() {
         if (!$perAdminApp.getView() || !$perAdminApp.getView().state) return null
         return $perAdminApp.getView().state.inline
+      },
+      inlineRich() {
+        if (!this.inline) return null
+        return this.inline.rich
       },
       specialCases() {
         return {
@@ -164,9 +162,6 @@
           set($perAdminApp.getView(), '/state/inline/ping', false)
         }
       }
-    },
-    mounted() {
-      set($perAdminApp.getView(), '/state/inline/rich', false)
     },
     methods: {
       getInlineDoc() {

@@ -24,10 +24,7 @@
   -->
 <template>
     <div class="nav-content sub-nav" :class="classes">
-        <template>
-            <admin-components-richtoolbar v-if="renderRichToolbar"  v-show="isRich()"/>
-            <div v-if="!isRich()" class="toolbar-placeholder"></div>
-        </template>
+        <admin-components-richtoolbar v-if="renderRichToolbar"/>
         <template v-for="child in model.children">
             <div v-bind:is="child.component" v-bind:model="child" v-bind:key="child.path"></div>
         </template>
@@ -115,7 +112,7 @@
         },
         currentNodeName() {
             return this.getPath().split('/').pop() || 'loading...'
-        }
+        },
     },
     methods: {
         isEditor() {
