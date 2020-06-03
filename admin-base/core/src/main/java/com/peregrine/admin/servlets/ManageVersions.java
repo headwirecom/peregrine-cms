@@ -29,15 +29,20 @@ package com.peregrine.admin.servlets;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+
 import javax.jcr.RepositoryException;
 import javax.jcr.version.Version;
 import javax.servlet.Servlet;
 import java.io.IOException;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_MANAGE_VERSIONS;
+import static com.peregrine.admin.servlets.ListResourceVersionsServlet.RESOURCE_NOT_FOUND;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerUtil.*;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -85,9 +90,17 @@ public class ManageVersions extends AbstractBaseServlet {
         final String version = request.getParameter(VERSION);
         final String action = request.getParameter(ACTION);
         JsonResponse answer = new JsonResponse();
+        Resource resource = request.getResourceResolver().getResource(resourcePath);
+        if (resource == null) {
+            return new ErrorResponse().setHttpErrorCode(SC_NOT_FOUND).setErrorMessage(RESOURCE_NOT_FOUND);
+        }
+        Resource resourceContent = resource.getChild(JCR_CONTENT);
+        if (resourceContent == null) {
+            return new ErrorResponse().setHttpErrorCode(SC_NOT_FOUND).setErrorMessage(RESOURCE_NOT_FOUND);
+        }
 
         try {
-            if (!resourceManagement.isCheckedOut(request.getResourceResolver(),resourcePath)){
+            if (!resourceManagement.isCheckedOut(request.getResourceResolver(), resourceContent.getPath())){
                 return new ErrorResponse()
                     .setHttpErrorCode(SC_BAD_REQUEST)
                     .setErrorMessage(RESOURCE_FROZEN+VERSION_MGT_ERROR)
@@ -103,7 +116,7 @@ public class ManageVersions extends AbstractBaseServlet {
         if (CREATE_VERSION.equals(action)) {
             Version newVersion = null;
             try {
-                newVersion = resourceManagement.createVersion(request.getResourceResolver(), resourcePath);
+                newVersion = resourceManagement.createVersion(request.getResourceResolver(), resourceContent.getPath());
                 answer.writeAttribute("new_version", newVersion.getName());
                 answer.writeClose();
                 return answer;
@@ -116,7 +129,7 @@ public class ManageVersions extends AbstractBaseServlet {
             }
         } else if (DELETE_VERSION.equals(action)) {
             try {
-                resourceManagement.deleteVersion(request.getResourceResolver(), resourcePath, version);
+                resourceManagement.deleteVersion(request.getResourceResolver(), resourceContent.getPath(), version);
                 return answer;
             } catch (RepositoryException e) {
                 return new ErrorResponse()
@@ -129,7 +142,7 @@ public class ManageVersions extends AbstractBaseServlet {
             try {
                 resourceManagement.restoreVersionByName(
                     request.getResourceResolver(),
-                    resourcePath,
+                    resourceContent.getPath(),
                     version,
                     true);
                 return answer;

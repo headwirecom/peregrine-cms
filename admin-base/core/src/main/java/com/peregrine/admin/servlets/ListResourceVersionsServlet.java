@@ -40,6 +40,7 @@ import java.io.IOException;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_LIST_VERSIONS;
 import static com.peregrine.admin.servlets.ListSiteRecyclablesServlet.DELETED_DATE_FORMAT;
 import static com.peregrine.admin.util.AdminConstants.CURRENT;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerUtil.*;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
@@ -75,6 +76,7 @@ public class ListResourceVersionsServlet extends AbstractBaseServlet {
         final String resourcePath = request.getSuffix();
         VersionIterator vi = null;
         Resource resource = null;
+        Resource resourceContent = null;
         JsonResponse answer = new JsonResponse();
         try {
             if (resourcePath != null && !resourcePath.isEmpty()) {
@@ -82,7 +84,11 @@ public class ListResourceVersionsServlet extends AbstractBaseServlet {
                 if (resource == null) {
                     return new ErrorResponse().setHttpErrorCode(SC_NOT_FOUND).setErrorMessage(RESOURCE_NOT_FOUND);
                 }
-                vi = resourceManagement.getVersionIterator(request.getResourceResolver(), resource);
+                resourceContent = resource.getChild(JCR_CONTENT);
+                if (resourceContent == null) {
+                    return new ErrorResponse().setHttpErrorCode(SC_NOT_FOUND).setErrorMessage(RESOURCE_NOT_FOUND);
+                }
+                vi = resourceManagement.getVersionIterator(request.getResourceResolver(), resourceContent);
             } else {
                 return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_LIST_VERSIONS);
             }
@@ -105,7 +111,7 @@ public class ListResourceVersionsServlet extends AbstractBaseServlet {
             }
             // write an array of version
             answer.writeArray("versions");
-            Version base = resourceManagement.getBaseVersion(request.getResourceResolver(), resourcePath);
+            Version base = resourceManagement.getBaseVersion(request.getResourceResolver(), resourceContent.getPath());
             do {
                 Version v = vi.nextVersion();
                 answer.writeObject();
@@ -122,7 +128,10 @@ public class ListResourceVersionsServlet extends AbstractBaseServlet {
             answer.writeClose();
             return answer;
         } catch (Exception e) {
-            return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_LIST_VERSIONS).setException(e);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(FAILED_TO_LIST_VERSIONS)
+                .setException(e);
         }
     }
 }
