@@ -101,7 +101,7 @@
           <li class="collection-header">
             referenced in {{referencedBy.length}} locations
           </li>
-          <li v-for="item in referencedBy" :key="item.path" class="collection-item">
+          <li v-for="item in referencedBy" :key="item.propertyPath" class="collection-item">
               <span>
                 <admin-components-action
                     v-bind:model="{
