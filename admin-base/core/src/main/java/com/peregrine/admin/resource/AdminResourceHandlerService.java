@@ -445,7 +445,9 @@ public class AdminResourceHandlerService
             return false;
         }
         return (resource.getPath().matches(SITE_PAGES_PATTERN) ||
-                resource.getPath().matches(SITE_ASSETS_PATTERN))
+                resource.getPath().matches(SITE_ASSETS_PATTERN) ||
+                resource.getPath().matches(SITE_TEMPLATES_PATTERN) ||
+                resource.getPath().matches(SITE_OBJECTS_PATTERN))
                 && !resource.getPath().contains(JCR_CONTENT);
     }
 

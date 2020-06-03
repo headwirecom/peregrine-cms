@@ -156,6 +156,8 @@ public class PerConstants {
     public static final String SITE_HOME_PATTERN = REGEX_SLASH + CONTENT + REGEX_SLASH + "[^" + REGEX_SLASH + "]+" + REGEX_SLASH ;
     public static final String SITE_PAGES_PATTERN = SITE_HOME_PATTERN + PAGES + REGEX_SLASH + "?.*";
     public static final String SITE_ASSETS_PATTERN = SITE_HOME_PATTERN + ASSETS + REGEX_SLASH + "?.*";
+    public static final String SITE_TEMPLATES_PATTERN = SITE_HOME_PATTERN + TEMPLATES + REGEX_SLASH + "?.*";
+    public static final String SITE_OBJECTS_PATTERN = SITE_HOME_PATTERN + OBJECTS + REGEX_SLASH + "?.*";
     public static final String SITE_RECYCLEBIN_PATTERN
             = REGEX_SLASH + VAR + REGEX_SLASH + RECYCLE_BIN + SITE_HOME_PATTERN + "?.*";
 }
