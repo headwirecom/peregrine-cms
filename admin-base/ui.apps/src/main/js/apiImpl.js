@@ -953,9 +953,10 @@ class PerAdminImpl {
       }
     }
     const data = new FormData()
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i]
-      data.append(file.name, file, file.name)
+    if(files.length > 0) {
+      const file = files[0]
+      data.append('file', file, file.name)
+      data.append('force', 'true');
     }
     if (!data.entries().next().done) {
       return updateWithFormAndConfig('/admin/uploadBackupTenant.json' + path, data,

@@ -25,32 +25,29 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.admin.resource.AdminResourceHandler;
-import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
-import org.apache.sling.api.resource.Resource;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.vault.packaging.JcrPackage;
+import org.apache.jackrabbit.vault.packaging.JcrPackageManager;
+import org.apache.jackrabbit.vault.packaging.Packaging;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.request.RequestParameter;
+import org.apache.sling.api.request.RequestParameterMap;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.http.Part;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_UPLOAD_BACKUP_TENANT;
-import static com.peregrine.admin.util.AdminConstants.BACKUP_FOLDER_FORMAT;
-import static com.peregrine.admin.util.AdminConstants.BACKUP_FORMAT;
-import static com.peregrine.commons.util.PerConstants.NT_FILE;
-import static com.peregrine.commons.util.PerConstants.NT_RESOURCE;
-import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.commons.util.PerUtil.POST;
-import static com.peregrine.commons.util.PerUtil.extractName;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -83,59 +80,73 @@ public class UploadBackupTenantServlet extends AbstractBaseServlet {
     private static final String RESOURCE_PATH = "resourcePath";
     private static final String PACKAGE_NAME = "packageName";
     private static final String PACKAGE_PATH = "packagePath";
-    private static final String UPLOAD_FAILED_BECAUSE_OF_SERVLET_PARTS_PROBLEM = "Upload Failed because of Servlet Parts Problem";
+
+    public static final String PARAM_FILE = "file";
+    public static final String PARAM_FORCE = "force";
 
     @Reference
-    AdminResourceHandler resourceManagement;
+    private Packaging packaging;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        String tenantPath = request.getParameter(PATH);
-        String tenantName = extractName(tenantPath);
-        String packageName = String.format(BACKUP_FORMAT, tenantName);
-        String packageFolderPath = String.format(BACKUP_FOLDER_FORMAT, tenantName);
         try {
-            Resource resource = request.getResourceByPath(packageFolderPath);
-            logger.info("Upload files to resource: '{}'", resource);
-            List<Resource> packages = new ArrayList<>();
-            for (Part part : request.getParts()) {
-                String contentMimeType = part.getContentType();
-                logger.info("part type {}", contentMimeType);
-                InputStream inputStream = part.getInputStream();
-                Resource aPackage = resourceManagement.createDataNodeFromStream(
-                    resource, packageName, NT_FILE, NT_RESOURCE, contentMimeType, part.getInputStream(),
-                    "Package", "vlt:Package"
-                );
-                logger.info("Package created {}", aPackage);
-                packages.add(aPackage);
-            }
-            resource.getResourceResolver().commit();
-            logger.info("Upload Done successfully and saved");
-            JsonResponse answer = new JsonResponse()
-                .writeAttribute(RESOURCE_NAME, resource.getName())
-                .writeAttribute(RESOURCE_PATH, resource.getPath())
-                .writeArray("packages");
-            for(Resource aPackage : packages) {
+            RequestParameterMap parameters = request.getRequest().getRequestParameterMap();
+
+            RequestParameter file = parameters.getValue(PARAM_FILE);
+            if (file != null) {
+                InputStream input = file.getInputStream();
+                boolean force = getParameter(request.getRequest(), PARAM_FORCE, false);
+
+                JcrPackageManager manager = getPackageManager(packaging, request.getRequest());
+                JcrPackage jcrPackage = manager.upload(input, force);
+
+                logger.info("Upload Done successfully and saved");
+                JsonResponse answer = new JsonResponse()
+                    .writeAttribute(RESOURCE_NAME, request.getResource().getName())
+                    .writeAttribute(RESOURCE_PATH, request.getResource().getPath())
+                    .writeArray("packages");
                 answer.writeObject();
-                answer.writeAttribute(PACKAGE_NAME, aPackage.getName());
-                answer.writeAttribute(PACKAGE_PATH, aPackage.getPath());
+                answer.writeAttribute(PACKAGE_NAME, jcrPackage.getPackage().getId().toString());
+                answer.writeAttribute(PACKAGE_PATH, jcrPackage.getNode().getPath());
                 answer.writeClose();
+                return answer;
+            } else {
+                logger.info("No Package File provided");
+                return new ErrorResponse()
+                    .setHttpErrorCode(SC_BAD_REQUEST)
+                    .setErrorMessage("No Package File provided")
+                    .setRequestPath(request.getRequestPath());
             }
-            return answer;
-        } catch(ManagementException e) {
+        } catch(RepositoryException e) {
             logger.info("Upload Failed", e);
             return new ErrorResponse()
                 .setHttpErrorCode(SC_BAD_REQUEST)
                 .setErrorMessage(e.getMessage())
-                .setRequestPath(tenantPath)
-                .setException(e);
-        } catch(ServletException e) {
-            logger.info("Upload Servlet Failed", e);
-            return new ErrorResponse()
-                .setHttpErrorCode(SC_BAD_REQUEST)
-                .setErrorMessage(UPLOAD_FAILED_BECAUSE_OF_SERVLET_PARTS_PROBLEM)
-                .setRequestPath(tenantPath)
+                .setRequestPath(request.getRequestPath())
                 .setException(e);
         }
     }
+
+    /**
+     * Retrieves a package manager for the JCR session.
+     */
+    public static JcrPackageManager getPackageManager(Packaging packaging, SlingHttpServletRequest request) throws RepositoryException {
+        ResourceResolver resolver = request.getResourceResolver();
+        Session session = resolver.adaptTo(Session.class);
+        if (session != null) {
+            return packaging.getPackageManager(session);
+        } else {
+            throw new RepositoryException("can't adapt resolver to session"); // should be impossible
+        }
+    }
+
+    public static Boolean getParameter(SlingHttpServletRequest request, String name, Boolean defaultValue) {
+        Boolean result = null;
+        String string = request.getParameter(name);
+        if (string != null) {
+            result = StringUtils.isBlank(string) || name.equals(string) || Boolean.parseBoolean(string);
+        }
+        return result != null ? result : defaultValue;
+    }
+
 }
