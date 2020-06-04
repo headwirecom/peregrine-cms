@@ -456,6 +456,14 @@ class PerAdminImpl {
     })
   }
 
+  populateBackupInfo(path, target = 'nodes', includeParents = false) {
+    let stateTools = $perAdminApp.getNodeFromViewWithDefault("/state/tools", {});
+    const tenant = '/content/test1';
+    fetch(
+        '/admin/backupTenant.json' + tenant + '?includeParents=' + includeParents)
+        .then((data) => populateView('/admin', target, data))
+  }
+
   populatePageView(path) {
     return fetch('/admin/readNode.json' + path)
         .then((data) => populateView('/pageView', 'page', data))
@@ -941,7 +949,7 @@ class PerAdminImpl {
   }
 
   downloadBackupTenant(path) {
-    return fetch('/admin/downloadBackupTenant.json' + path)
+    return fetch('/admin/downloadBackupTenant.zip' + path + ".zip")
   }
 
   uploadBackupTenant(path, files, cb) {

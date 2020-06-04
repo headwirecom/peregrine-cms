@@ -48,25 +48,19 @@
         <admin-components-action
             v-bind:model="{
                 command: 'backupTenant',
-                title: 'backup tenant',
+                title: 'backup site',
                 target: '/content/admin/pages/templates/edit',
+                tooltipTitle: 'Create Backup of this Site',
                 classes: 'btn'
             }">
         </admin-components-action>
     </div>
     <div>
-        <admin-components-action
-            v-bind:model="{
-                command: 'downloadBackupTenant',
-                title: 'download tenant backup',
-                target: '/content/admin/pages/templates/edit',
-                classes: 'btn'
-            }">
-        </admin-components-action>
+        <a v-bind:href="downloadUrl" title="Download the latest Backup" target="_blank" class='btn'>download site backup</a>
     </div>
     <div>
-        <label class='btn'>
-            Upload Backup File
+        <label class='btn' title="Upload a Site Backup to this Server">
+            Upload Site Backup File
             <input type="file" ref="file_upload" style="display:none" v-on:change="addFiles">
             <i class="material-icons">file_upload</i>
         </label>
@@ -75,8 +69,9 @@
         <admin-components-action
             v-bind:model="{
                 command: 'restoreTenant',
-                title: 'restore tenant',
+                title: 'restore site',
                 target: '/content/admin/pages/templates/edit',
+                tooltipTitle: 'Restore the latest Site Backup',
                 classes: 'btn'
             }">
         </admin-components-action>
@@ -99,10 +94,6 @@
             backupTenant(me, target) {
                 const tenant = $perAdminApp.getView().state.tenant.name;
                 $perAdminApp.stateAction('backupTenant', `/content/${tenant}`);
-            },
-            downloadBackupTenant(me, target) {
-                const tenant = $perAdminApp.getView().state.tenant.name;
-                $perAdminApp.stateAction('downloadBackupTenant', `/content/${tenant}`);
             },
             uploadBackupTenant(me, target) {
                 const tenant = $perAdminApp.getView().state.tenant.name;
@@ -128,6 +119,13 @@
             },
             fileUploadComplete(percentCompleted) {
                 return
+            }
+        },
+        computed: {
+            // Build up the Download URL with the tenant name
+            downloadUrl() {
+                const tenant = $perAdminApp.getView().state.tenant;
+                return tenant ? '/perapi/admin/downloadBackupTenant.zip/content/' + tenant.name : '';
             }
         }
     }

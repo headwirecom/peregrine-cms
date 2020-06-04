@@ -28,11 +28,13 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
@@ -101,21 +103,23 @@ public abstract class AbstractBaseServlet
             throw e;
         }
         if(!ALREADY_HANDLED.equals(out.getType())) {
-            response.setContentType(out.getMimeType());
-            Map<String, Object> headers = out.getHeaders();
+            Map<String, List<Object>> headers = out.getHeaders();
             if(headers != null) {
-                for(Entry<String, Object> entry: headers.entrySet()) {
+                for(Entry<String, List<Object>> entry: headers.entrySet()) {
                     String name = entry.getKey();
-                    Object value = entry.getValue();
-                    if(value instanceof Calendar) {
-                        response.addDateHeader(name, ((Calendar) value).getTimeInMillis());
-                    } else if(value instanceof Integer) {
-                        response.addIntHeader(name, (Integer) value);
-                    } else {
-                        response.addHeader(name, value + "");
+                    List<Object> values = entry.getValue();
+                    for(Object value: values) {
+                        if (value instanceof Calendar) {
+                            response.addDateHeader(name, ((Calendar) value).getTimeInMillis());
+                        } else if (value instanceof Integer) {
+                            response.addIntHeader(name, (Integer) value);
+                        } else {
+                            response.addHeader(name, value + "");
+                        }
                     }
                 }
             }
+            response.setContentType(out.getMimeType());
             String output = out.getContent();
             if(DIRECT.equals(out.getType())) {
                 out.handleDirect(request, response);
@@ -230,7 +234,7 @@ public abstract class AbstractBaseServlet
      */
     public static abstract class Response {
         private String type;
-        private Map<String, Object> headers = new HashMap<>();
+        private Map<String, List<Object>> headers = new HashMap<>();
 
         public Response(String type) {
             this.type = type;
@@ -240,9 +244,18 @@ public abstract class AbstractBaseServlet
         public String getType() { return type; }
 
         /** @return A Map of Response Headers which can be null or empty **/
-        public Map<String, Object> getHeaders() { return headers; }
+        public Map<String, List<Object>> getHeaders() { return headers; }
 
-        public void addHeader(String name, Object value) { headers.put(name, value); }
+        public void addHeader(String name, Object value) {
+            List<Object> values = headers.get(name);
+            if(values == null) {
+                values = new ArrayList<>();
+                headers.put(name, values);
+            }
+            if(!values.contains(value)) {
+                values.add(value);
+            }
+        }
         public void clearHeaders() { headers.clear(); }
 
         /** @return Response Content as text **/

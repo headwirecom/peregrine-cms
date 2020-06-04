@@ -45,6 +45,7 @@ import java.util.Calendar;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_DOWNLOAD_BACKUP_TENANT;
 import static com.peregrine.admin.util.AdminConstants.BACKUP_FOLDER_FORMAT;
+import static com.peregrine.admin.util.AdminConstants.BACKUP_FORMAT;
 import static com.peregrine.admin.util.AdminConstants.PACKAGE_FORMAT;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.ZIP_MIME_TYPE;
@@ -97,6 +98,9 @@ public class DownloadBackupTenantServlet extends AbstractPackageServlet {
         try {
             String path = request.getParameter(PATH);
             String tenantName = extractName(path);
+            if(tenantName.endsWith(".zip")) {
+                tenantName = tenantName.substring(0, tenantName.length() - 4);
+            }
             if(request.isGet()) {
                 JcrPackageManager manager = getPackageManager(request);
                 String tenantPath = String.format(BACKUP_FOLDER_FORMAT, String.format(PACKAGE_FORMAT, tenantName));
@@ -112,11 +116,15 @@ public class DownloadBackupTenantServlet extends AbstractPackageServlet {
                         (stream = binary.getStream()) != null) {
 
                         ZipResponse answer = new ZipResponse(stream);
-                        answer.addHeader("Content-Disposition", "inline; filename=" + jcrPackage.getPackage().getFile().getName());
+                        answer.addHeader("Content-Disposition", "inline; filename=" + String.format(BACKUP_FORMAT, tenantName));
                         Calendar lastModified = jcrPackage.getDefinition().getLastModified();
                         if (lastModified != null) {
                             answer.addHeader(HEADER_LAST_MODIFIED, lastModified);
                         }
+                        answer.addHeader("Cache-Control", "no-cache");
+                        answer.addHeader("Cache-Control", "no-store");
+                        answer.addHeader("Cache-Control", "must-revalidate");
+                        answer.addHeader("Pragma", "no-cache");
                         return answer;
                     } else {
                         logger.info("Could not download package because it is either not a package or has not content: '{}'", tenantPath);

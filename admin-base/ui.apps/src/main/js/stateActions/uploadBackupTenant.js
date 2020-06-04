@@ -27,5 +27,9 @@ let log = LoggerFactory.logger('uploadBackupTenant').setLevelDebug()
 
 export default function(me, target) {
     log.fine(target)
-    return me.getApi().uploadBackupTenant(target.path, target.files, target.cb)
+
+    return new Promise( (resolve, reject) => {
+        me.getApi().uploadBackupTenant(target.path, target.files, target.cb)
+            .then( () => alert('done') )
+    })
 }

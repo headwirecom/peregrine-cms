@@ -31,6 +31,7 @@ export default function(me, target) {
 
     return new Promise( (resolve, reject) => {
         me.getApi().backupTenant(target).then( () => {
+            alert('done')
             resolve()
         })
     })

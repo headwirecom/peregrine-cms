@@ -100,6 +100,10 @@ class PerApi {
         return impl.populateTenants()
     }
 
+    populateBackupInfo(path, target, includeParents) {
+        return impl.populateBackupInfo(path, target, includeParents)
+    }
+
     setInitialPageEditorState() {
         return impl.setInitialPageEditorState()
     }
