@@ -26,57 +26,44 @@ package com.peregrine.admin.servlets;
  */
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.intra.IntraSlingCaller;
 import com.peregrine.intra.IntraSlingCaller.CallException;
+import org.apache.jackrabbit.vault.packaging.Packaging;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.event.jobs.JobManager;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import javax.servlet.Servlet;
-
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_BACKUP_TENANT;
 import static com.peregrine.admin.util.AdminConstants.BACKUP_FORMAT;
-import static com.peregrine.admin.util.AdminConstants.CHARSET;
-import static com.peregrine.admin.util.AdminConstants.CHARSET_NAME;
 import static com.peregrine.admin.util.AdminConstants.EVENT_FINISHED_STATE;
 import static com.peregrine.admin.util.AdminConstants.JOBS_PATH;
-import static com.peregrine.admin.util.AdminConstants.JOB_CONTROL_PATH;
-import static com.peregrine.admin.util.AdminConstants.JOB_CONTROL_SELECTOR;
 import static com.peregrine.admin.util.AdminConstants.JOB_STATE_SUCCEEDED;
-import static com.peregrine.admin.util.AdminConstants.JOB_TOPIC;
-import static com.peregrine.admin.util.AdminConstants.JOB_TOPIC_NAME;
 import static com.peregrine.admin.util.AdminConstants.OPERATION_ASSEMBLE;
-import static com.peregrine.admin.util.AdminConstants.OPERATION_NAME;
 import static com.peregrine.admin.util.AdminConstants.PACKAGE_FORMAT;
 import static com.peregrine.admin.util.AdminConstants.PEREGRINE_SERVICE_NAME;
 import static com.peregrine.admin.util.AdminConstants.REFERENCE_NAME;
 import static com.peregrine.admin.util.AdminConstants.SLING_EVENT_CREATED;
 import static com.peregrine.admin.util.AdminConstants.SLING_EVENT_ID;
-import static com.peregrine.commons.util.PerConstants.JSON;
 import static com.peregrine.commons.util.PerConstants.PATH;
-import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.commons.util.PerUtil.POST;
+import static com.peregrine.commons.util.PerUtil.extractName;
 import static com.peregrine.commons.util.PerUtil.loginService;
-import static org.apache.sling.api.servlets.HttpConstants.METHOD_GET;
-import static org.apache.sling.api.servlets.HttpConstants.METHOD_POST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -105,7 +92,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
     }
 )
 @SuppressWarnings("serial")
-public class BackupTenantServlet extends AbstractBaseServlet {
+public class BackupTenantServlet extends AbstractPackageServlet {
 
     private static DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -118,14 +105,28 @@ public class BackupTenantServlet extends AbstractBaseServlet {
     private ResourceResolverFactory resourceResolverFactory;
 
     @Override
+    Packaging getPackaging() { return null; }
+
+    @Reference
+    private JobManager jobManager;
+
+    JobManager getJobManager() { return jobManager; }
+
+    @Override
     protected Response handleRequest(Request request) throws IOException {
+        ResourceResolver tester = null;
         try {
             ResourceResolver resourceResolver = request.getResourceResolver();
             String tenantPath = request.getParameter(PATH);
-            String tenantName = extractTenantName(tenantPath);
+            String tenantName = extractName(tenantPath);
             if(request.isPost()) {
                 // Execute the build of the Tenant Package
-                JsonNode jobDetails = buildPackage(resourceResolver, tenantName);
+                JsonNode jobDetails = executeJob(
+                    request.getResourceResolver(),
+                    request.getParameters(),
+                    tenantName,
+                    OPERATION_ASSEMBLE
+                );
                 // Check the progress
                 String eventId = "";
                 if (jobDetails.has(SLING_EVENT_ID)) {
@@ -141,13 +142,12 @@ public class BackupTenantServlet extends AbstractBaseServlet {
                 int count = 0;
                 String eventFinalState = "";
                 JsonNode jobUpdate = null;
-                long timestamp = System.currentTimeMillis();
                 while (count < 20) {
                     count++;
                     logger.trace("Check Round: '{}'", count);
                     // Using the user's resource resolver is failing even though /var is readable to everyone -> use Peregrine Service User instead
-                    ResourceResolver tester = loginService(resourceResolverFactory, PEREGRINE_SERVICE_NAME);
-                    jobUpdate = checkPackageJob(tester, eventId, timestamp++);
+                    tester = loginService(resourceResolverFactory, PEREGRINE_SERVICE_NAME);
+                    jobUpdate = getJobById(getJobManager(), tester, eventId);
                     logger.trace("Check Details: '{}'", jobUpdate);
                     if (jobUpdate != null && jobUpdate.has(EVENT_FINISHED_STATE)) {
                         eventFinalState = jobUpdate.get(EVENT_FINISHED_STATE).textValue();
@@ -250,65 +250,10 @@ public class BackupTenantServlet extends AbstractBaseServlet {
         } catch (LoginException e) {
             logger.warn("Cannot login to Peregrine Service User", e);
             return new ErrorResponse().setErrorMessage("Cannot login to Peregrine Service User").setException(e);
-        }
-    }
-
-    private JsonNode buildPackage(ResourceResolver resourceResolver, String tenantName)
-        throws CallException, IOException
-    {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put(JOB_TOPIC, JOB_TOPIC_NAME);
-        parameters.put(REFERENCE_NAME, String.format(PACKAGE_FORMAT, tenantName));
-        parameters.put(CHARSET_NAME, CHARSET);
-        parameters.put(OPERATION_NAME, OPERATION_ASSEMBLE);
-        byte[] response = intraSlingCaller.call(
-            intraSlingCaller.createContext()
-                .setResourceResolver(resourceResolver)
-                .setMethod(METHOD_POST)
-                .setPath(JOB_CONTROL_PATH)
-                .setSelectors(JOB_CONTROL_SELECTOR)
-                .setExtension(JSON)
-                .setParameterMap(parameters)
-        );
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readTree(response);
-    }
-
-    private JsonNode checkPackageJob(ResourceResolver resourceResolver, String slingEventId, long timestamp)
-        throws CallException, IOException
-    {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("_", timestamp + "");
-        logger.trace("Before start check package job, timestamp: '{}', event id: '{}'", timestamp, slingEventId);
-        byte[] response = intraSlingCaller.call(
-            intraSlingCaller.createContext()
-                .setResourceResolver(resourceResolver)
-                .setMethod(METHOD_GET)
-                .setPath(JOB_CONTROL_PATH)
-                .setSelectors(JOB_CONTROL_SELECTOR)
-                .setExtension(JSON)
-                .setSuffix(SLASH + slingEventId)
-                .setParameterMap(parameters)
-        );
-        logger.trace("After start check package job, details: '{}'", new String(response));
-        ObjectMapper objectMapper = new ObjectMapper();
-        return response.length == 0 ?
-            null : objectMapper.readTree(response);
-    }
-
-    private String extractTenantName(String tenantPath) {
-        String answer = tenantPath;
-        if(answer != null && answer.length() > 0) {
-            while (answer.length() > 1 && answer.endsWith("/")) {
-                answer = answer.substring(0, tenantPath.length() - 1);
-            }
-            if (answer.length() > 1) {
-                int index = answer.lastIndexOf('/');
-                if (index >= 0) {
-                    answer = answer.substring(index + 1);
-                }
+        } finally {
+            if(tester != null) {
+                tester.close();
             }
         }
-        return answer;
     }
 }

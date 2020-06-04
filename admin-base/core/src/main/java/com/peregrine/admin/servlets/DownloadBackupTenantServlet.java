@@ -25,31 +25,36 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.commons.servlets.AbstractBaseServlet;
-import com.peregrine.intra.IntraSlingCaller;
-import com.peregrine.intra.IntraSlingCaller.CallException;
-import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.commons.io.IOUtils;
+import org.apache.jackrabbit.vault.packaging.JcrPackage;
+import org.apache.jackrabbit.vault.packaging.JcrPackageManager;
+import org.apache.jackrabbit.vault.packaging.Packaging;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.event.jobs.JobManager;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import javax.jcr.Binary;
+import javax.jcr.Property;
+import javax.jcr.RepositoryException;
 import javax.servlet.Servlet;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Calendar;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_DOWNLOAD_BACKUP_TENANT;
-import static com.peregrine.admin.util.AdminConstants.DOWNLOAD_SELECTOR;
+import static com.peregrine.admin.util.AdminConstants.BACKUP_FOLDER_FORMAT;
 import static com.peregrine.admin.util.AdminConstants.PACKAGE_FORMAT;
-import static com.peregrine.admin.util.AdminConstants.PACKAGE_PATH;
 import static com.peregrine.commons.util.PerConstants.PATH;
-import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerConstants.ZIP;
 import static com.peregrine.commons.util.PerConstants.ZIP_MIME_TYPE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.commons.util.PerUtil.extractName;
-import static org.apache.sling.api.servlets.HttpConstants.METHOD_GET;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static org.apache.sling.api.servlets.HttpConstants.HEADER_LAST_MODIFIED;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -75,56 +80,97 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
     }
 )
 @SuppressWarnings("serial")
-public class DownloadBackupTenantServlet extends AbstractBaseServlet {
-
+public class DownloadBackupTenantServlet extends AbstractPackageServlet {
 
     @Reference
-    @SuppressWarnings("unused")
-    private IntraSlingCaller intraSlingCaller;
+    private Packaging packaging;
+
+    @Override
+    Packaging getPackaging() {
+        return packaging;
+    }
+
+    JobManager getJobManager() { return null; }
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
         try {
-            ResourceResolver resourceResolver = request.getResourceResolver();
-            String tenantPath = request.getParameter(PATH);
-            String tenantName = extractName(tenantPath);
+            String path = request.getParameter(PATH);
+            String tenantName = extractName(path);
             if(request.isGet()) {
-                //TODO: shall we check against the Audit Job to verify the requested download ?
-                byte[] response = intraSlingCaller.call(
-                    intraSlingCaller.createContext()
-                        .setResourceResolver(resourceResolver)
-                        .setMethod(METHOD_GET)
-                        .setPath(PACKAGE_PATH)
-                        .setSelectors(DOWNLOAD_SELECTOR)
-                        .setExtension(ZIP)
-                        .setSuffix(SLASH + String.format(PACKAGE_FORMAT, tenantName))
-                );
-                if (response.length > 0) {
-                    return new ZipResponse(response);
+                JcrPackageManager manager = getPackageManager(request);
+                String tenantPath = String.format(BACKUP_FOLDER_FORMAT, String.format(PACKAGE_FORMAT, tenantName));
+                Resource packageResource = request.getResourceByPath(tenantPath);
+                JcrPackage jcrPackage = getJcrPackage(manager, packageResource);
+
+                if (jcrPackage != null) {
+                    Property data;
+                    Binary binary;
+                    InputStream stream;
+                    if ((data = jcrPackage.getData()) != null &&
+                        (binary = data.getBinary()) != null &&
+                        (stream = binary.getStream()) != null) {
+
+                        ZipResponse answer = new ZipResponse(stream);
+                        answer.addHeader("Content-Disposition", "inline; filename=" + jcrPackage.getPackage().getFile().getName());
+                        Calendar lastModified = jcrPackage.getDefinition().getLastModified();
+                        if (lastModified != null) {
+                            answer.addHeader(HEADER_LAST_MODIFIED, lastModified);
+                        }
+                        return answer;
+                    } else {
+                        logger.info("Could not download package because it is either not a package or has not content: '{}'", tenantPath);
+                        return new ErrorResponse()
+                            .setHttpErrorCode(SC_BAD_REQUEST)
+                            .setErrorMessage("This is either no a package or has not content")
+                            .setRequestPath(tenantPath);
+                    }
+
                 } else {
-                    return new ErrorResponse().setErrorMessage("No ZIP Content returned for tenant: " + tenantName);
+                    logger.info("Resource could not be found: '{}'", tenantPath);
+                    return new ErrorResponse()
+                        .setHttpErrorCode(SC_BAD_REQUEST)
+                        .setErrorMessage("Resource could not be found")
+                        .setRequestPath(tenantPath);
                 }
             } else {
-                return new ErrorResponse().setErrorMessage("Unsupported Request for: " + tenantName);
+                return new ErrorResponse()
+                    .setHttpErrorCode(SC_BAD_REQUEST)
+                    .setErrorMessage("Unsupported Request Method: " + request.getRequest().getMethod())
+                    .setRequestPath(path);
             }
-        } catch (CallException e) {
-            logger.warn("Download Failure", e);
-            return new ErrorResponse().setErrorMessage("Download Failed").setException(e);
+        } catch(RepositoryException e) {
+            logger.info("Download Failed", e);
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(e.getMessage())
+                .setRequestPath(request.getRequestPath())
+                .setException(e);
         }
     }
 
     private class ZipResponse extends Response {
 
         private byte[] data;
+        private InputStream stream;
 
         public ZipResponse(byte[] data) {
             super("ZIP");
             this.data = data;
         }
 
+        public ZipResponse(InputStream stream) {
+            super("ZIP");
+            this.stream = stream;
+        }
+
         @Override
         public void writeTo(OutputStream outputStream) throws IOException {
-            outputStream.write(data);
+            if(data != null) {
+                outputStream.write(data);
+            } else if(stream != null) {
+                IOUtils.copy(stream, outputStream);
+            }
         }
 
         @Override

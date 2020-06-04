@@ -213,6 +213,10 @@
             <groupId>org.apache.jackrabbit.vault</groupId>
             <artifactId>org.apache.jackrabbit.vault</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.event</artifactId>
+        </dependency>
     </dependencies>
 
     <profiles>

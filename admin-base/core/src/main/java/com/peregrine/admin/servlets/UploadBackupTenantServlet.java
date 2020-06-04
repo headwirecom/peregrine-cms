@@ -25,20 +25,16 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.commons.servlets.AbstractBaseServlet;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.vault.packaging.JcrPackage;
 import org.apache.jackrabbit.vault.packaging.JcrPackageManager;
 import org.apache.jackrabbit.vault.packaging.Packaging;
-import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.request.RequestParameter;
 import org.apache.sling.api.request.RequestParameterMap;
-import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.event.jobs.JobManager;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 import javax.servlet.Servlet;
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,7 +70,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
     }
 )
 @SuppressWarnings("serial")
-public class UploadBackupTenantServlet extends AbstractBaseServlet {
+public class UploadBackupTenantServlet extends AbstractPackageServlet {
 
     private static final String RESOURCE_NAME = "resourceName";
     private static final String RESOURCE_PATH = "resourcePath";
@@ -88,6 +84,11 @@ public class UploadBackupTenantServlet extends AbstractBaseServlet {
     private Packaging packaging;
 
     @Override
+    Packaging getPackaging() { return packaging; }
+
+    JobManager getJobManager() { return null; }
+
+    @Override
     protected Response handleRequest(Request request) throws IOException {
         try {
             RequestParameterMap parameters = request.getRequest().getRequestParameterMap();
@@ -95,9 +96,9 @@ public class UploadBackupTenantServlet extends AbstractBaseServlet {
             RequestParameter file = parameters.getValue(PARAM_FILE);
             if (file != null) {
                 InputStream input = file.getInputStream();
-                boolean force = getParameter(request.getRequest(), PARAM_FORCE, false);
+                boolean force = request.getBooleanParameter(PARAM_FORCE, false);
 
-                JcrPackageManager manager = getPackageManager(packaging, request.getRequest());
+                JcrPackageManager manager = getPackageManager(request);
                 JcrPackage jcrPackage = manager.upload(input, force);
 
                 logger.info("Upload Done successfully and saved");
@@ -126,27 +127,4 @@ public class UploadBackupTenantServlet extends AbstractBaseServlet {
                 .setException(e);
         }
     }
-
-    /**
-     * Retrieves a package manager for the JCR session.
-     */
-    public static JcrPackageManager getPackageManager(Packaging packaging, SlingHttpServletRequest request) throws RepositoryException {
-        ResourceResolver resolver = request.getResourceResolver();
-        Session session = resolver.adaptTo(Session.class);
-        if (session != null) {
-            return packaging.getPackageManager(session);
-        } else {
-            throw new RepositoryException("can't adapt resolver to session"); // should be impossible
-        }
-    }
-
-    public static Boolean getParameter(SlingHttpServletRequest request, String name, Boolean defaultValue) {
-        Boolean result = null;
-        String string = request.getParameter(name);
-        if (string != null) {
-            result = StringUtils.isBlank(string) || name.equals(string) || Boolean.parseBoolean(string);
-        }
-        return result != null ? result : defaultValue;
-    }
-
 }

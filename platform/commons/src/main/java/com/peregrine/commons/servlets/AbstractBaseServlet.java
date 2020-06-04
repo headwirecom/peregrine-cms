@@ -28,10 +28,13 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Stack;
 
 import static com.peregrine.commons.util.PerConstants.ADMIN_USER;
@@ -99,6 +102,20 @@ public abstract class AbstractBaseServlet
         }
         if(!ALREADY_HANDLED.equals(out.getType())) {
             response.setContentType(out.getMimeType());
+            Map<String, Object> headers = out.getHeaders();
+            if(headers != null) {
+                for(Entry<String, Object> entry: headers.entrySet()) {
+                    String name = entry.getKey();
+                    Object value = entry.getValue();
+                    if(value instanceof Calendar) {
+                        response.addDateHeader(name, ((Calendar) value).getTimeInMillis());
+                    } else if(value instanceof Integer) {
+                        response.addIntHeader(name, (Integer) value);
+                    } else {
+                        response.addHeader(name, value + "");
+                    }
+                }
+            }
             String output = out.getContent();
             if(DIRECT.equals(out.getType())) {
                 out.handleDirect(request, response);
@@ -170,6 +187,15 @@ public abstract class AbstractBaseServlet
             return detector.getString(rawParam.getBytes(), "utf-8");
         }
 
+        public boolean getBooleanParameter(String name, boolean defaultValue) {
+            boolean answer = defaultValue;
+            String parameter = parameters.get(name);
+            if(parameter != null) {
+                answer = "on".equalsIgnoreCase(parameter) || "true".equalsIgnoreCase(parameter);
+            }
+            return answer;
+        }
+
         public int getIntParameter(String name, int defaultValue) {
             int answer = defaultValue;
             try {
@@ -204,6 +230,7 @@ public abstract class AbstractBaseServlet
      */
     public static abstract class Response {
         private String type;
+        private Map<String, Object> headers = new HashMap<>();
 
         public Response(String type) {
             this.type = type;
@@ -211,6 +238,12 @@ public abstract class AbstractBaseServlet
 
         /** @return Type of the response **/
         public String getType() { return type; }
+
+        /** @return A Map of Response Headers which can be null or empty **/
+        public Map<String, Object> getHeaders() { return headers; }
+
+        public void addHeader(String name, Object value) { headers.put(name, value); }
+        public void clearHeaders() { headers.clear(); }
 
         /** @return Response Content as text **/
         public String getContent() throws IOException {
