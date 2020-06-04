@@ -599,15 +599,22 @@ class PerAdminImpl {
                     if (path.includes("/assets/")) {
                         $perAdminApp.loadContent("/content/admin/pages/assets")
                     } else {
-                        callbacks.getApi().populatePageView(path)
+                         callbacks.getApi().populatePageView(path)
+                            .then(function(){
+                                const editView = document.getElementById('editview')
+                                if (editView) {
+                                    editView.contentWindow.$peregrineApp.loadContent(path+ '.html')
+                                }
+                            })
                     }
                 })
                 .then( () => resolve())
                 .catch(error => {
                     if (error.response && error.response.data && error.response.data.message) {
                         reject(error.response.data.message)
+                    } else {
+                        reject(error)
                     }
-                    reject(error)
                 })
         })
   }
