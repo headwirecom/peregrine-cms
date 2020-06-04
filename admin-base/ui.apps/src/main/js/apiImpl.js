@@ -606,6 +606,17 @@ class PerAdminImpl {
                                     editView.contentWindow.$peregrineApp.loadContent(path+ '.html')
                                 }
                             })
+                            .then(function(){
+                                let nodes = ''
+                                if (path.includes("/pages/")) {
+                                    nodes = $perAdminApp.getView().state.tools.pages
+                                } else if (path.includes("/templates/")){
+                                    nodes = $perAdminApp.getView().state.tools.templates
+                                }
+                                if (nodes != '') {
+                                    $perAdminApp.getApi().populateNodesForBrowser(nodes)
+                                }
+                            })
                     }
                 })
                 .then( () => resolve())
