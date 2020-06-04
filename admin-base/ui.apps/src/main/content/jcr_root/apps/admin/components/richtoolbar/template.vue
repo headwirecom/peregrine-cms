@@ -122,7 +122,8 @@
             title: 'preview',
             icon: 'visibility',
             cmd: 'preview',
-            class: 'separate always-active'
+            class: 'separate always-active',
+            isActive: () => this.preview === 'preview'
           }
         ]
         buttons.forEach((btn) => {
@@ -142,6 +143,9 @@
       },
       viewport() {
         return $perAdminApp.getNodeFromViewOrNull('/state/tools/workspace/view')
+      },
+      preview() {
+        return $perAdminApp.getNodeFromViewOrNull('/state/tools/workspace/preview')
       },
       specialCases() {
         return {
@@ -218,7 +222,7 @@
         ]
       },
       viewportIcon() {
-        let currentItem
+        let currentItem = {}
         this.viewportItems.some((item) => {
           if (item.id === this.viewport) {
             return currentItem = item
