@@ -287,7 +287,8 @@
         return this.hasOgTags || this.hasReferences;
       },
       referencedBy() {
-        return $perAdminApp.getView().state.referencedBy.referencedBy
+        let trimmedReferences = this.trimReferences($perAdminApp.getView().state.referencedBy.referencedBy);
+        return trimmedReferences;
       },
       isImage() {
         const node = $perAdminApp.findNodeFromPath(
@@ -369,6 +370,64 @@
         } else {
           return {};
         }
+      },
+      //returns an array of references with a count property and gets rid of duplicates
+      trimReferences(referenceList) {
+        //ex input [{
+        //   name: "name1",
+        //   path: "path1",
+        //   propertyName: "propertyName1",
+        //   propertyPath: "propertyPath1"
+        // },
+        // {
+        //   name: "name1",
+        //   path: "path1",
+        //   propertyName: "propertyName2",
+        //   propertyPath: "propertyPath2"
+        // },
+        // {
+        //   name: "name1",
+        //   path: "path1",
+        //   propertyName: "propertyName2",
+        //   propertyPath: "propertyPath2"
+        // }]
+        let refBy = [];
+        let refByObj = {};
+        // refByObj exmaple = {
+        //   'somepath/name/here': {
+        //     name: 'name',
+        //     path: 'path',
+        //     propertyName: "propertyName2",
+        //     propertyPath: "propertyPath2",
+        //     count: 1
+        //   }
+        // };
+
+        for( let i = 0; i < referenceList.length; ++i ) {
+          let ref = referenceList[i];
+          if(refByObj.hasOwnProperty(ref.path)) {
+            refByObj[ref.path].count += 1;
+            refBy.map((object, index) => {
+              if ( object.path == ref.path) {
+                object.count++;
+              }
+              return object;
+            });
+          } else {
+            refByObj[ref.path] = Object.assign({}, ref);
+            refByObj[ref.path].count = 1;
+            refBy.push(Object.assign({}, refByObj[ref.path]));
+          }
+        }
+
+        //ex result [{
+        //   count: 2,
+        //   name: "name1",
+        //   path: "path1",
+        //   propertyName: "propertyName",
+        //   propertyPath: "propertyPath"
+        // }]
+        return refBy;
       },
       getObjectComponent() {
         let resourceType = this.rawCurrentObject.data['component'];

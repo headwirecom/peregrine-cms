@@ -472,13 +472,7 @@ class PerAdminImpl {
   populateReferencedBy(path) {
     return fetch('/admin/refBy.json' + path)
         .then((data) => {
-          let newData = {};
-          let trimmedReferences = this.trimReferences(data.referencedBy);
-          newData = Object.assign({}, data, {
-            referencedBy: trimmedReferences
-          });
-          console.log(newData);
-          populateView('/state', 'referencedBy', newData);
+          populateView('/state', 'referencedBy', data);
         })
   }
 
