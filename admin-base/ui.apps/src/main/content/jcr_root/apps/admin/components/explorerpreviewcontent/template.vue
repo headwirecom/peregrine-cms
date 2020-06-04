@@ -102,16 +102,17 @@
             referenced in {{referencedBy.length}} locations
           </li>
           <li v-for="item in referencedBy" :key="item.propertyPath" class="collection-item">
-              <span>
-                <admin-components-action
-                    v-bind:model="{
-                      target: item.path,
-                      command: 'editPage',
-                      tooltipTitle: `edit '${item.name}'`
-                    }">
-                    <admin-components-iconeditpage></admin-components-iconeditpage>
-                </admin-components-action>
-              </span>
+            <span>
+              <admin-components-action
+                  v-bind:model="{
+                    target: item.path,
+                    command: 'editPage',
+                    tooltipTitle: `edit '${item.name}'`
+                  }">
+                  <admin-components-iconeditpage></admin-components-iconeditpage>
+              </admin-components-action>
+            </span>
+            <span v-if="item.count" class="count">{{item.count}}</span>
             <span class="right">
               <admin-components-action
                   v-bind:model="{

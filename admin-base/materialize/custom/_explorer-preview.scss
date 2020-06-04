@@ -129,6 +129,16 @@
       }	      
       .collection-item {
         display: flex;
+        align-items: center;
+
+        .count {
+          padding: 1px 10px;
+          margin: 0 5px;
+          border-radius: 10px;
+          background-color: #37474f;
+          color: #fff;
+        }
+
         .right {
           display: block;
           text-overflow: ellipsis;
