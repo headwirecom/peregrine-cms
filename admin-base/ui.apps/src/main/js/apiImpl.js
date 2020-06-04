@@ -472,35 +472,74 @@ class PerAdminImpl {
   populateReferencedBy(path) {
     return fetch('/admin/refBy.json' + path)
         .then((data) => {
-          var refBy = data.referencedBy;        
-          for (var i = 0; i < refBy.length; ++i) {
-            //checks if object in position of array is valid
-            if (refBy[i].path){
-              //if count is not set, sets it
-              if (!refBy[i].count){
-                refBy[i].count = 0;
-              }
-              //will give it a count of 1, then if its the different element on the same page, will add again
-              refBy[i].count += 1;
-            }
-            //checks if there is an element next to current element
-            if (refBy[i+1]) {
-              //checks if its the different element on the same page
-              if (refBy[i].path === refBy[i+1].path) {
-                //checks if its the same element on the same page (only used on templates)
-                if (refBy[i].propertyPath === refBy[i+1].propertyPath && i < refBy.length - 1) {
-                  //removed from count because not valid element comparision
-                  refBy[i].count -= 1;
-                }
-                //removes duplicate element
-                refBy.splice(i+1, 1);
-                //goes back to element just checked to check the next in line against for same element
-                i -= 1;
-              }
-            }
-          }
-          populateView('/state', 'referencedBy', data);
+          let newData = {};
+          let trimmedReferences = this.trimReferences(data.referencedBy);
+          newData = Object.assign({}, data, {
+            referencedBy: trimmedReferences
+          });
+          console.log(newData);
+          populateView('/state', 'referencedBy', newData);
         })
+  }
+
+  //returns an array of references with a count property and gets rid of duplicates
+  trimReferences(referenceList) {
+    //ex input [{
+    //   name: "name1",
+    //   path: "path1",
+    //   propertyName: "propertyName1",
+    //   propertyPath: "propertyPath1"
+    // },
+    // {
+    //   name: "name1",
+    //   path: "path1",
+    //   propertyName: "propertyName2",
+    //   propertyPath: "propertyPath2"
+    // },
+    // {
+    //   name: "name1",
+    //   path: "path1",
+    //   propertyName: "propertyName2",
+    //   propertyPath: "propertyPath2"
+    // }]
+    let refBy = [];
+    for (let j = 0; j < referenceList.length; ++j){
+        refBy[j] = Object.assign({}, referenceList[j]);
+    }
+    for (let i = 0; i < refBy.length; ++i) {
+      //checks if object in position of array is valid
+      if (refBy[i].path){
+        //if count is not set, sets it
+        if (!refBy[i].count){
+          refBy[i].count = 0;
+        }
+        //will give it a count of 1, then if its the different element on the same page, will add again
+        refBy[i].count += 1;
+      }
+      //checks if there is an element next to current element
+      if (refBy[i+1]) {
+        //checks if its the different element on the same page
+        if (refBy[i].path === refBy[i+1].path) {
+          //checks if its the same element on the same page (only used on templates)
+          if (refBy[i].propertyPath === refBy[i+1].propertyPath && i < refBy.length - 1) {
+            //removed from count because not valid element comparision
+            refBy[i].count -= 1;
+          }
+          //removes duplicate element
+          refBy.splice(i+1, 1);
+          //goes back to element just checked to check the next in line against for same element
+          i -= 1;
+        }
+      }
+    }
+    //ex result [{
+    //   count: 2,
+    //   name: "name1",
+    //   path: "path1",
+    //   propertyName: "propertyName",
+    //   propertyPath: "propertyPath"
+    // }]
+    return refBy;
   }
 
   populateI18N(language) {
