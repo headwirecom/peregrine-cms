@@ -10,31 +10,38 @@
               title="component explorer"
               :class="{'active': isTab(Tab.COMPONENTS)}"
               @click="setActiveTab(Tab.COMPONENTS)"/>
+
           <admin-components-explorerpreviewnavitem
               :icon="Icon.SETTINGS"
               :title="`${nodeType}-info`"
               :class="{'active': isTab(Tab.INFO)}"
-              @click="setActiveTab(Tab.INFO)">
-          </admin-components-explorerpreviewnavitem>
+              @click="setActiveTab(Tab.INFO)" />
+
           <admin-components-explorerpreviewnavitem
               v-if="hasOgTags"
               :icon="Icon.LABEL"
               :title="'og-tags'"
               :class="{'active': isTab(Tab.OG_TAGS)}"
-              @click="setActiveTab(Tab.OG_TAGS)">
-          </admin-components-explorerpreviewnavitem>
+              @click="setActiveTab(Tab.OG_TAGS)" />
+
           <admin-components-explorerpreviewnavitem
               v-if="hasReferences"
               :icon="Icon.LIST"
               :title="'references'"
               :class="{'active': isTab(Tab.REFERENCES)}"
-              @click="setActiveTab(Tab.REFERENCES)">
-          </admin-components-explorerpreviewnavitem>
+              @click="setActiveTab(Tab.REFERENCES)" />
+
+            <admin-components-explorerpreviewnavitem
+                :icon="Icon.VERSIONS"
+                :title="`${nodeType}-versions`"
+                :class="{'active': isTab(Tab.VERSIONS)}"
+                @click="setActiveTab(Tab.VERSIONS)" />
+
           <admin-components-explorerpreviewnavitem
               :icon="Icon.MORE_VERT"
               :title="'actions'"
               :class="{'active': isTab(Tab.ACTIONS)}"
-              @click="setActiveTab(Tab.ACTIONS)"/>
+              @click="setActiveTab(Tab.ACTIONS)" />
         </ul>
 
         <ul class="nav-right"></ul>
@@ -127,9 +134,44 @@
         </ul>
       </template>
 
+      <template v-else-if="isTab(Tab.VERSIONS)" >
+          <div v-if="allowOperations" class="action-list">
+              <div class="action"
+                   v-on:click.stop.prevent="createVersion"
+                   v-bind:title="`create new ${nodeType} version`">
+                <i class="material-icons">{{Icon.CREATE}}</i> Create new {{nodeType}} version
+              </div>
+
+              <p v-if="!hasVersions"
+                   v-bind:title="`no versions created yet`">
+                  This {{nodeType}} has no versions
+              </p>
+              <template v-else>
+                  <div v-for="version in versions"
+                       class="action"
+                       v-on:click="checkoutVersion(version)"
+                       v-bind:title="`Version ${version.name}`">
+                      <i v-if="version.base" class="material-icons">{{Icon.CHECKED}}</i>
+                      <i v-else-if="!version.base" class="material-icons">{{Icon.UNCHECKED}}</i>
+                      {{version.name}} -{{version.created}} {{version.base ? '(current)':''}}
+                      <span v-if="!version.base" class="deleteVersionWrapper">
+                          <admin-components-action
+                            v-bind:model="{
+                                command: 'deleteVersion',
+                                target: {version: version, path: currentObject},
+                                tooltipTitle: 'delete version'}">
+                              <i class="material-icons">{{Icon.DELETE}}</i>
+                          </admin-components-action>
+                      </span>
+                  </div>
+              </template>
+
+          </div>
+      </template>
+
       <template v-else-if="isTab(Tab.ACTIONS)">
         <div v-if="allowOperations" class="action-list">
-          <div class="action" :title="`rename ${nodeType}`" @click="renameNode()">
+          <div class="action" :title="`rename ${nodeType}`" @click="$refs.renameModal.open()">
             <i class="material-icons">{{Icon.TEXT_FORMAT}}</i>
             Rename {{nodeType}}
           </div>
@@ -143,6 +185,7 @@
           </div>
         </div>
       </template>
+
     </template>
 
     <template v-else>
@@ -151,6 +194,23 @@
         <i class="material-icons">info</i>
       </div>
     </template>
+
+    <admin-components-materializemodal
+        ref="renameModal"
+        v-bind:modalTitle="modalTitle"
+        v-on:ready="onReady">
+        <vue-form-generator
+                :model   ="formmodel"
+                :schema  ="nameSchema"
+                :options ="formOptions"
+                ref      ="renameForm">
+        </vue-form-generator>
+        <template slot="footer">
+            <admin-components-confirmdialog
+                submitText="submit"
+                v-on:confirm-dialog="onConfirmDialog" />
+        </template>
+    </admin-components-materializemodal>
 
     <admin-components-pathbrowser
         v-if="isOpen"
@@ -172,11 +232,13 @@
 <script>
   import {Icon, MimeType, NodeType, SUFFIX_PARAM_SEPARATOR} from '../../../../../../js/constants'
   import {deepClone} from '../../../../../../js/utils'
+  import NodeNameValidation from '../../../../../../js/mixins/NodeNameValidation'
 
   const Tab = {
     INFO: 'info',
     OG_TAGS: 'og-tags',
     REFERENCES: 'references',
+    VERSIONS: 'versions',
     COMPONENTS: 'components',
     ACTIONS: 'actions'
   };
@@ -248,9 +310,13 @@
         }
       }
     },
+    mixins: [NodeNameValidation],
     computed: {
       uNodeType() {
         return this.capFirstLetter(this.nodeType);
+      },
+      modalTitle() {
+        return `Rename ${this.uNodeType}`
       },
       rawCurrentObject() {
         return $perAdminApp.getNodeFromViewOrNull(`/state/tools/${this.nodeType}`);
@@ -290,6 +356,9 @@
       referencedBy() {
         return this.trimReferences($perAdminApp.getView().state.referencedBy.referencedBy);
       },
+      versions() {
+        return this.hasVersions ? $perAdminApp.getView().state.versions.versions : []
+      },
       isImage() {
         const node = $perAdminApp.findNodeFromPath(
             $perAdminApp.getView().admin.nodes, this.currentObject);
@@ -302,6 +371,9 @@
       hasInfoView() {
         return [NodeType.ASSET].indexOf(this.nodeType) > -1;
       },
+      hasVersions() {
+        return $perAdminApp.getView().state.versions ? $perAdminApp.getView().state.versions.has_versions : false
+      },
       nodeName() {
         let nodeName = this.node.name;
         if (this.nodeType === NodeType.OBJECT) {
@@ -313,6 +385,16 @@
     watch: {
       edit(newVal) {
         $perAdminApp.getNodeFromView('/state/tools').edit = newVal;
+      },
+      activeTab : function(tab) {
+        if (tab === 'versions'){
+            this.showVersions()
+        }
+      },
+      currentObject : function(path) {
+        if (this.activeTab === 'versions'){
+            this.showVersions()
+        }
       }
     },
     created() {
@@ -424,13 +506,31 @@
         this.valid.state = isValid;
         this.valid.errors = errors;
       },
-      renameNode() {
-        const newName = prompt(`new name for "${this.nodeName}"`)
-        if (newName) {
+      onConfirmDialog (event) {
+        if (event === 'confirm') {
+            const isValid = this.$refs.renameForm.validate()
+            if (isValid) {
+                this.renameNode(this.formmodel.name, this.formmodel.title)
+            } else {
+                return
+            }
+        }
+        this.nameChanged = false
+        this.formmodel.name = ''
+        this.formmodel.title = ''
+        this.$refs.renameForm.clearValidationErrors()
+        this.$refs.renameModal.close()
+      },
+      onReady (event) {
+        this.formmodel.name = this.node.name
+        this.formmodel.title = this.node.title
+      },
+      renameNode(newName, newTitle) {
           const that = this;
           $perAdminApp.stateAction(`rename${this.uNodeType}`, {
             path: this.currentObject,
             name: newName,
+            title: newTitle,
             edit: this.isEdit
           }).then(() => {
             if (that.nodeType === 'asset' || that.nodeType === 'object') {
@@ -445,8 +545,8 @@
               currNodeArr[currNodeArr.length - 1] = newName
               $perAdminApp.getNodeFromView('/state/tools')[that.nodeType] = currNodeArr.join('/')
             }
-          });
-        }
+            this.setActiveTab(Tab.INFO)
+          })
       },
       moveNode() {
         $perAdminApp.getApi().populateNodesForBrowser(this.path.current, 'pathBrowser')
@@ -474,6 +574,33 @@
       },
       setSelectedPath(path) {
         this.path.selected = path;
+      },
+      showVersions() {
+        $perAdminApp.getApi().populateVersions(this.currentObject);
+      },
+      deleteVersion(me, target) {
+        $perAdminApp.stateAction('deleteVersion', { path: target.path, version: target.version.name });
+      },
+      createVersion(){
+        $perAdminApp.stateAction('createVersion', this.currentObject);
+      },
+      checkoutVersion(version){
+        if(version.base === true){
+          $perAdminApp.notifyUser('Info', 'You cannot checkout the current version')
+          return
+        }
+        let self = this;
+        $perAdminApp.askUser('Restore Version',
+          `Would you like to restore ${version.name}? You may lose work unless you create a new version saving the current state.`, {
+              yesText: 'Yes',
+              noText: 'No',
+              yes() {
+                $perAdminApp.stateAction('restoreVersion', {path: self.currentObject, versionName: version.name});
+              },
+              no() {
+                console.log('no')
+              }
+          })
       },
       onMoveCancel() {
         this.isOpen = false;
@@ -551,3 +678,9 @@
     }
   }
 </script>
+
+<style>
+.deleteVersionWrapper{
+    margin-left: auto;
+}
+</style>

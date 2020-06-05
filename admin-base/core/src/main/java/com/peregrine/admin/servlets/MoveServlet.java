@@ -29,11 +29,7 @@ import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_MOVE;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_RENAME;
 import static com.peregrine.admin.util.AdminConstants.SOURCE_NAME;
 import static com.peregrine.admin.util.AdminConstants.SOURCE_PATH;
-import static com.peregrine.commons.util.PerConstants.JSON;
-import static com.peregrine.commons.util.PerConstants.ORDER_BEFORE_TYPE;
-import static com.peregrine.commons.util.PerConstants.ORDER_CHILD_TYPE;
-import static com.peregrine.commons.util.PerConstants.PATH;
-import static com.peregrine.commons.util.PerConstants.TYPE;
+import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -86,9 +82,10 @@ public class MoveServlet extends AbstractBaseServlet {
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        String fromPath = request.getParameter(PATH);
+        final String fromPath = request.getParameter(PATH);
+        final String newTitle = request.getParameter(TITLE);
+        final String toPath = request.getParameter(TO);
         Resource from = PerUtil.getResource(request.getResourceResolver(), fromPath);
-        String toPath = request.getParameter(TO);
         Resource newResource;
         if(request.getResource().getName().equals(MOVE)) {
             String type = request.getParameter(TYPE);
@@ -107,6 +104,13 @@ public class MoveServlet extends AbstractBaseServlet {
         } else if(request.getResource().getName().equals(RENAME)) {
             try {
                 newResource = resourceManagement.rename(from, toPath);
+                if (newTitle != null && !newTitle.isEmpty()) {
+                    if (newResource.getResourceType().equals("per:Asset")){
+                        resourceManagement.updateOrCreateAssetTitle(newResource.getChild(JCR_CONTENT), newTitle);
+                    } else {
+                        resourceManagement.updateTitle(newResource.getChild(JCR_CONTENT), newTitle);
+                    }
+                }
             } catch(ManagementException e) {
                 return new ErrorResponse()
                     .setHttpErrorCode(SC_BAD_REQUEST)

@@ -1,8 +1,15 @@
 package com.peregrine.admin.resource;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import javax.jcr.version.Version;
+import javax.jcr.version.VersionIterator;
+
+import com.peregrine.admin.models.Recyclable;
+import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
@@ -86,6 +93,125 @@ public interface AdminResourceHandler {
     DeletionResponse deleteResource(ResourceResolver resourceResolver, String path, String primaryType) throws ManagementException;
 
     /**
+     * Creates a resource version
+     * @param resourceResolver Resource Resolver to manage resources and cannot be null
+     * @param path Absolute Path of the resource to be versioned and this resource must exist
+     * @return The Version which was created from the Resource
+     * @throws ManagementException If creating the version failed
+     */
+    Version createVersion(ResourceResolver resourceResolver, String path) throws ManagementException;
+
+
+    /**
+     * Get a version iterator for given resource
+     * @param resourceResolver Resource Resolver to manage resources and cannot be null
+     * @param resource
+     * @return a version iterator for the resource
+     * @throws ManagementException an error was encountered
+     * @throws RepositoryException an error was encountered
+     */
+    VersionIterator getVersionIterator(ResourceResolver resourceResolver, Resource resource) throws ManagementException, RepositoryException;
+
+    Version getBaseVersion(ResourceResolver resourceResolver, String path) throws RepositoryException;
+
+    /**
+     * Restore a version
+     * @param resourceResolver Resource Resolver to manage resources and cannot be null
+     * @param path Absolute path of the resource having the version
+     * @param versionPath Absolute frozen node path of version to be restored
+     * @param force if there is a resource already in the location of the path, it will be replaced if force is true
+     * @return The Resource at the supplied Version
+     * @throws ManagementException If creating the version failed
+     */
+    Resource restoreVersion(ResourceResolver resourceResolver, String path, String versionPath, boolean force) throws ManagementException;
+
+    /**
+     * Restore a version by it's name
+     * @param resourceResolver Resource Resolver to manage resources and cannot be null
+     * @param path Absolute path of the resource having the version
+     * @param versionName of the version having the version
+     * @param removingExisting remove a resource already in the location of the path if true
+     * @throws RepositoryException If creating the version failed due to repository errors
+     */
+    void restoreVersionByName(ResourceResolver resourceResolver, String path, String versionName, boolean removingExisting)
+            throws RepositoryException;
+
+    /**
+     * Checks whether a resource is checked-out (editabled), or checked-in (frozen)
+     * @param resourceResolver Resource Resolver to manage resources and cannot be null
+     * @param path Absolute path of the resource
+     * @return true if the resource is checked-out or false if the resource is checked-in (and frozen)
+     * @throws RepositoryException If version management fails
+     */
+    boolean isCheckedOut(ResourceResolver resourceResolver, String path) throws ManagementException;
+
+    /**
+     * Delete a version
+     * @param resourceResolver Resource Resolver to manage resources and cannot be null
+     * @param path Absolute path of the resource having the version
+     * @param versionPath Absolute frozen node path of version to be restored
+     *
+     * @throws RepositoryException If deleting the version failed
+     */
+    void deleteVersion(ResourceResolver resourceResolver, String path, String versionPath) throws RepositoryException;
+
+    /**
+     * Restore a delete item based on a path where it was and the path of a version
+     * @param resourceResolver Resource Resolver to manage resources and cannot be null
+     * @param path Absolute path of the resource having the version
+     * @param versionPath Absolute frozen node path of version to be restored
+     * @param force if there is a resource already in the location of the path, it will be replaced if force is true
+     * @return The Resource at the supplied Version
+     * @throws ManagementException If restoring the version failed
+     */
+    Resource restoreDeleted(ResourceResolver resourceResolver, String path, String versionPath, boolean force) throws ManagementException, PersistenceException, RepositoryException;
+
+    /**
+     * Pull an item from the recyclebin
+     * @param resourceResolver Resource Resolver to manage resources and cannot be null
+     * @param recyclable resource from /var/recyclebin
+     * @param force if there is a resource already in the location of the path, it will be replaced if force is true
+     * @return The Resource at the supplied Version
+     * @throws ManagementException If restoring the version failed
+     */
+    Resource recycleDeleted(ResourceResolver resourceResolver, Recyclable recyclable, boolean force) throws ManagementException, PersistenceException, RepositoryException;
+
+    /**
+     * Creates a recyclable item
+     * @param resourceResolver Resource Resolver
+     * @param resource like pages, assets and folders under pages or assets can be recycled
+     * @return Null or a recyclable item
+     * @throws ManagementException if there's an error
+     */
+    Recyclable createRecyclable(ResourceResolver resourceResolver, Resource resource) throws ManagementException;
+
+    /**
+     * Given a resource, return the path of the Site Home
+     * @param resourceResolver Resource Resolver
+     * @param resource any resource (pages, assets) under the site home
+     * @return Null or a String
+     */
+    String getSiteHomePath(ResourceResolver resourceResolver, Resource resource);
+
+    /**
+     * Get a list of Recyclable items
+     * @param resourceResolver Resource Resolver
+     * @param path of a resource to restore (recycle)
+     * @return Null or a List recyclable (restorable) items
+     * @throws ManagementException if there's an error
+     */
+    List<Recyclable> getRecyclables(ResourceResolver resourceResolver, String path) ;
+
+    /**
+     * Get a Recyclable item
+     * @param resourceResolver Resource Resolver
+     * @param path of item from the recycle bin to restore
+     * @return Null or a Recyclable item
+     * @throws ManagementException if there's an error
+     */
+    Recyclable getRecyclable(ResourceResolver resourceResolver, String path);
+
+    /**
      * Updates a given resource based on the given JSon Content
      * @param resourceResolver Resource Resolver to manage resources and cannot be null
      * @param path Absolute Path to the resource to be updated and this resource must exist
@@ -138,6 +264,33 @@ public interface AdminResourceHandler {
      * @throws ManagementException If the rename failed
      */
     Resource rename(Resource fromResource, String newName) throws ManagementException;
+
+    /**
+     * Updates the jcr:title of a given JCR:CONTENT resource
+     * @param resource Resource to get new title. It must exist and be JCR:CONTENT
+     * @param jcrTitle as String
+     * @return void
+     */
+    void updateTitle(Resource resource, String jcrTitle);
+
+    /**
+     * Updates the title of a given JCR:CONTENT resource (Assets)
+     * @param resource Asset Resource to get new title. It must exist and be JCR:CONTENT
+     * @param title as String
+     * @return void
+     */
+    void updateOrCreateAssetTitle(Resource resource, String title);
+
+    /**
+     * Check whether user has a permision on a resource
+     * @param resourceResolver the user's resource resolver
+     * @param jcrAction the JCR permission(s) to validate. Refer to links for info about this param...
+     *        https://jackrabbit.apache.org/oak/docs/security/permission.html#oak_permissions
+     *        https://jackrabbit.apache.org/oak/docs/apidocs/org/apache/jackrabbit/oak/spi/security/authorization/permission/Permissions.html
+     * @param path path of the resource to check
+     * @return true if user has the specified permission on the path
+     */
+    boolean hasPermission(ResourceResolver resourceResolver, String jcrAction, String path);
 
     /**
      * Create an Asset Resource which the given Byte Input Stream
