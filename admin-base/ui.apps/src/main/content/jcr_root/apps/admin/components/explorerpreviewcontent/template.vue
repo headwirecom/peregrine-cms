@@ -405,7 +405,7 @@
         )
 
         //ex result [{
-        //   count: 2,
+        //   count: 3,
         //   name: "name1",
         //   path: "path1",
         //   propertyName: "propertyName",
