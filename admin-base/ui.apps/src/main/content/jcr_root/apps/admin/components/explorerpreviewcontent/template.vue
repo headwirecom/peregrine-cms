@@ -288,8 +288,7 @@
         return this.hasOgTags || this.hasReferences;
       },
       referencedBy() {
-        let trimmedReferences = this.trimReferences($perAdminApp.getView().state.referencedBy.referencedBy);
-        return trimmedReferences;
+        return this.trimReferences($perAdminApp.getView().state.referencedBy.referencedBy);
       },
       isImage() {
         const node = $perAdminApp.findNodeFromPath(
@@ -373,7 +372,7 @@
         }
       },
       trimReferences(referenceList) {
-        let result = referenceList.reduce(
+        return referenceList.reduce(
           (map => (r, a) => (!map.has(a.path) && map.set(a.path, 
           r[r.push({
             name: a.name,
@@ -384,8 +383,7 @@
           }) - 1]), 
           map.get(a.path).count++, r))(new Map),
           []
-        )
-        return result;
+        );
       },
       getObjectComponent() {
         let resourceType = this.rawCurrentObject.data['component'];
