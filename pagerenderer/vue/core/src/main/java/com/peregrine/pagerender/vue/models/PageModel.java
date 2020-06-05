@@ -86,6 +86,8 @@ public class PageModel extends Container {
         return null;
     }
 
+    // private String publicDomain;
+
     @Inject
     private ModelFactory modelFactory;
 
@@ -186,6 +188,27 @@ public class PageModel extends Container {
         return domains;
     }
 
+    // public String getPublicDomain() {
+    //     String[] doa = domainGetter();
+    //     if (doa.length < 1){
+    //         return null;
+    //     }
+    //     return doa[0];
+    // }
+
+    // public String[] domainGetter() {
+    //     if(domains == null) {
+    //         String[] value = (String[]) getInheritedProperty(DOMAINS);
+    //         if(value != null && value.length != 0) return value;
+    //         if(getTemplate() != null) {
+    //             PageModel templatePageModel = getTemplatePageModel();
+    //             if(templatePageModel != null) {
+    //                 return templatePageModel.getDomains();
+    //             }
+    //         }
+    //     }
+    //     return domains;
+    // }
     private PageModel getTemplatePageModel() {
         String template = getTemplate();
         if(template == null) return null;
