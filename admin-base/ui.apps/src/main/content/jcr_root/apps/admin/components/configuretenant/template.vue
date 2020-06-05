@@ -33,6 +33,11 @@
                 classes: 'btn'
             }">
         </admin-components-action>
+        <p>
+            The root template references all your domain names this website
+            is exposed at as well as yout js/css includes, prefetch domains and
+            your brand slug 
+        </p>
     </div>
     <div>
         <admin-components-action
@@ -43,7 +48,14 @@
                 classes: 'btn'
             }">
         </admin-components-action>
+        <p>
+            Use the 'site setup replication' button to go live with your whole
+            site and push all the necessary information out to your web server.
+            Once you're live you can easily push any new pages or page changes
+            out in the admin console.   
+        </p>
     </div>
+    <h2>backup and restore</h2>
     <div>
         <admin-components-action
             v-bind:model="{
