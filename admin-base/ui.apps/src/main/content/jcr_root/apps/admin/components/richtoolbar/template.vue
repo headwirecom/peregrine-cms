@@ -10,6 +10,24 @@
         :active="btn.isActive()"
         @click="exec(btn.cmd)">
     </admin-components-richtoolbarbtn>
+
+    <admin-components-pathbrowser
+        v-if="browser.open"
+        :isOpen="browser.open"
+        :browserRoot="browser.root"
+        :browserType="browser.type"
+        :withLinkTab="browser.withLinkTab"
+        :newWindow="browser.newWindow"
+        :toggleNewWindow="browser.toggleNewWindow"
+        :linkTitle="browser.linkTitle"
+        :setLinkTitle="browser.setLinkTitle"
+        :currentPath="browser.path.current"
+        :setCurrentPath="browser.path.setCurrent"
+        :selectedPath="browser.path.selected"
+        :setSelectedPath="browser.path.setSelected"
+        :onCancel="browser.cancel"
+        :onSelect="browser.select">
+    </admin-components-pathbrowser>
   </div>
 </template>
 
@@ -20,7 +38,29 @@
     name: 'RichToolbar',
     data() {
       return {
-        key: 0
+        key: 0,
+        browser: {
+          open: false,
+          root: '',
+          type: 'image',
+          withLinkTab: false,
+          newWindow: false,
+          toggleNewWindow: () => {
+          },
+          linkTitle: 'TODO - SET TITLE',
+          setLinkTitle: () => {
+          },
+          path: {
+            current: '',
+            setCurrent: () => {
+            },
+            selected: '',
+            setSelected: () => {
+            }
+          },
+          cancel: this.browserOnCancel,
+          select: this.browserOnSelect
+        }
       }
     },
     computed: {
@@ -147,6 +187,9 @@
       preview() {
         return $perAdminApp.getNodeFromViewOrNull('/state/tools/workspace/preview')
       },
+      roots() {
+        return $perAdminApp.getNodeFromViewOrNull('/state/tenant/roots')
+      },
       specialCases() {
         return {
           link: this.link,
@@ -271,10 +314,9 @@
         }
       },
       insertImage() {
-        const imgUri = prompt('provide image link')
-        if (imgUri && imgUri.length >= 11) { // e.g. http://a.de (11 symbols)
-          this.execCmd('insertImage', imgUri)
-        }
+        this.browser.open = true
+        this.browser.path.current = this.roots.pages
+        this.browser.path.selected = this.roots.pages
       },
       quote() {
         this.execCmd('formatBlock,', 'pre')
@@ -316,6 +358,12 @@
         }
         const tags = ['P', ...headlines]
         return tags.some((tag) => this.itemIsTag(tag))
+      },
+      browserOnCancel() {
+        this.browser.open = false
+      },
+      browserOnSelect() {
+        this.browser.open = false
       }
     }
   }
