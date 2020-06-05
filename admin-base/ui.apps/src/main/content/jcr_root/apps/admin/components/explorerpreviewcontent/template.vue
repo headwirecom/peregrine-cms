@@ -99,7 +99,7 @@
       <template v-else-if="isTab(Tab.REFERENCES)">
         <ul :class="['collection', 'with-header', `explorer-${nodeType}-referenced-by`]">
           <li class="collection-header">
-            referenced in {{referencedBy.length}} locations
+            referenced in {{referencedBy.length}} location<span v-if="referencedBy.length > 1">s</span>
           </li>
           <li v-for="item in referencedBy" :key="item.path" class="collection-item">
             <span>
