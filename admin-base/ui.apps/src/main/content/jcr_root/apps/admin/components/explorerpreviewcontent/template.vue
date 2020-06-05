@@ -371,26 +371,7 @@
           return {};
         }
       },
-      //returns an array of references with a count property and gets rid of duplicates
       trimReferences(referenceList) {
-        //ex input [{
-        //   name: "name1",
-        //   path: "path1",
-        //   propertyName: "propertyName1",
-        //   propertyPath: "propertyPath1"
-        // },
-        // {
-        //   name: "name1",
-        //   path: "path1",
-        //   propertyName: "propertyName2",
-        //   propertyPath: "propertyPath2"
-        // },
-        // {
-        //   name: "name1",
-        //   path: "path1",
-        //   propertyName: "propertyName2",
-        //   propertyPath: "propertyPath2"
-        // }]
         let result = referenceList.reduce(
           (map => (r, a) => (!map.has(a.path) && map.set(a.path, 
           r[r.push({
@@ -403,14 +384,6 @@
           map.get(a.path).count++, r))(new Map),
           []
         )
-
-        //ex result [{
-        //   count: 3,
-        //   name: "name1",
-        //   path: "path1",
-        //   propertyName: "propertyName",
-        //   propertyPath: "propertyPath"
-        // }]
         return result;
       },
       getObjectComponent() {
