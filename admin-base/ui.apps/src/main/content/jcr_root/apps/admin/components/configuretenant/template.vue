@@ -153,7 +153,15 @@
             },
             backupState() {
                 const backup = $perAdminApp.getView().state.tools.backup;
-                return backup ? backup.state : "No Backup Info for State";
+                let state = backup ? backup.state : '';
+                if(state === '') {
+                   state = 'No Backup Info for State';
+                } else if(state === 'SUCCEEDED') {
+                    state = 'Successfully Built';
+                } else {
+                    state = 'Failed Built';
+                }
+                return state;
             }
         }
     }
