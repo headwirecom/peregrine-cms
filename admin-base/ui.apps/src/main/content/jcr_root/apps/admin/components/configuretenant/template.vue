@@ -81,6 +81,7 @@
             }">
         </admin-components-action>
     </div>
+    <pre>{{JSON.stringify(backupInfo, true, 2)}}</pre>
 </div>
 </template>
 
@@ -132,6 +133,8 @@
                 const tenant = $perAdminApp.getView().state.tenant;
                 return tenant ? '/perapi/admin/downloadBackupTenant.zip/content/' + tenant.name : '';
             },
+            backupInfo() {
+                return $perAdminApp.getView().state.tools.backup
             backupDate() {
                 return $perAdminApp.getView().state.tools.backups.last;
             },
