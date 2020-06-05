@@ -101,7 +101,7 @@
           <li class="collection-header">
             referenced in {{referencedBy.length}} locations
           </li>
-          <li v-for="item in referencedBy" :key="item.propertyPath" class="collection-item">
+          <li v-for="item in referencedBy" :key="item.path" class="collection-item">
               <span>
                 <admin-components-action
                     v-bind:model="{
@@ -391,34 +391,18 @@
         //   propertyName: "propertyName2",
         //   propertyPath: "propertyPath2"
         // }]
-        let refBy = [];
-        let refByObj = {};
-        // refByObj exmaple = {
-        //   'somepath/name/here': {
-        //     name: 'name',
-        //     path: 'path',
-        //     propertyName: "propertyName2",
-        //     propertyPath: "propertyPath2",
-        //     count: 1
-        //   }
-        // };
-
-        for( let i = 0; i < referenceList.length; ++i ) {
-          let ref = referenceList[i];
-          if(refByObj.hasOwnProperty(ref.path)) {
-            refByObj[ref.path].count += 1;
-            refBy.map((object, index) => {
-              if ( object.path == ref.path) {
-                object.count++;
-              }
-              return object;
-            });
-          } else {
-            refByObj[ref.path] = Object.assign({}, ref);
-            refByObj[ref.path].count = 1;
-            refBy.push(Object.assign({}, refByObj[ref.path]));
-          }
-        }
+        let result = referenceList.reduce(
+          (map => (r, a) => (!map.has(a.path) && map.set(a.path, 
+          r[r.push({
+            name: a.name,
+            path: a.path,
+            propertyName: a.propertyName,
+            propertyPath: a.propertyPath,
+            count: 0
+          }) - 1]), 
+          map.get(a.path).count++, r))(new Map),
+          []
+        )
 
         //ex result [{
         //   count: 2,
@@ -427,7 +411,7 @@
         //   propertyName: "propertyName",
         //   propertyPath: "propertyPath"
         // }]
-        return refBy;
+        return result;
       },
       getObjectComponent() {
         let resourceType = this.rawCurrentObject.data['component'];
