@@ -608,9 +608,11 @@ class PerAdminImpl {
                             })
                             .then(function(){
                                 let nodes = ''
-                                if (path.includes("/pages/")) {
+                                const pagesRgx = new RegExp('^\/content\/[^\/]+\/pages\/');
+                                const templatesRgx = new RegExp('^\/content\/[^\/]+\/templates\/');
+                                if (pagesRgx.test(path)) {
                                     nodes = $perAdminApp.getView().state.tools.pages
-                                } else if (path.includes("/templates/")){
+                                } else if (templatesRgx.test(path)){
                                     nodes = $perAdminApp.getView().state.tools.templates
                                 }
                                 if (nodes != '') {
