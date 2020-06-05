@@ -201,8 +201,14 @@
       }
     },
     beforeCreate() {
+      $perAdminApp.eventBus.$on('tenant-update', (event, next) => {
+        console.log('event', event, next);
+        this.refreshTenants()
+      });
+      console.log('before-create', $perAdminApp);
       $perAdminApp.getApi().populateTenants().then(() => {
         this.refreshTenants()
+        $perAdminApp.action('selectToolsNodesPath', this.state.tenant.name )
       })
     },
     methods: {
@@ -218,6 +224,7 @@
         $perAdminApp.forceFullRedraw()
       },
       onSelectTenant(tenant) {
+        console.log('onSelectTenant', tenant);
         $perAdminApp.stateAction('setTenant', tenant)
       },
       onHelpClick() {
