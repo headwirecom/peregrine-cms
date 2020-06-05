@@ -238,7 +238,28 @@
             }
         },
 
+        mounted() {
+            $perAdminApp.eventBus.$on('tenants-update', (next) => {
+                this.selectPath(this, {
+                    selected: next.current.roots[this.pathIs],
+                    path: this.path
+                })
+            })
+        },
         computed: {
+            pathIs() {
+                if (this.isPages(this.path)){
+                    return 'pages'
+                } else if (this.isAssets(this.path)) {
+                    return 'assets';
+                } else if (this.isTemplates(this.path)) {
+                    return 'templates';
+                } else if (this.isObjects(this.path)) {
+                    return 'objects';
+                } else {
+                    return '';
+                }
+            },
             showNavigateToParent() {
                 return this.path.split('/').length > 4
             },
@@ -249,7 +270,8 @@
             },
             pt: function() {
                 var node = this.path
-                return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, node)
+                console.log('nodes', this.$root.$data, this, node, this.path);
+                return $perAdminApp.findNodeFromPath(this.$root.admin.nodes, node)
             },
             children: function() {
                 if ( this.pt.children ) {

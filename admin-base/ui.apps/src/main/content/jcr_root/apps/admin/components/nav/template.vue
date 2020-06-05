@@ -201,15 +201,19 @@
       }
     },
     beforeCreate() {
-      $perAdminApp.eventBus.$on('tenant-update', (event, next) => {
-        console.log('event', event, next);
-        this.refreshTenants()
-      });
       console.log('before-create', $perAdminApp);
       $perAdminApp.getApi().populateTenants().then(() => {
         this.refreshTenants()
-        $perAdminApp.action('selectToolsNodesPath', this.state.tenant.name )
       })
+    },
+    created() {
+      $perAdminApp.eventBus.$on('tenants-update', (event, next) => {
+        console.log(Object.assign({}, $perAdminApp.getView().state.tools))
+        console.log('event-caught', event);
+        $perAdminApp.stateAction('loadToolsNodesPath', {
+          selected: `/content/${event.current.name}/pages`,
+        })
+      });
     },
     methods: {
       getSectionModel(section) {

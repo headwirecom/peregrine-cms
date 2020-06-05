@@ -53,6 +53,7 @@ export default function(me, tenant) {
       objects: `/content/${tenant.name}/objects`,
       templates: `/content/${tenant.name}/templates`
     })
+    console.log(Object.assign({},me.getView().state.tools))
     console.log('before event emitted');
     next = next[0]
     set(me.getView(), '/state/tenant', next)
