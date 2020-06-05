@@ -42,9 +42,11 @@ export default function(me, target) {
                     resolve()
                 }).catch( error => reject(error))
             } else if(target.selected.startsWith(`/content/${tenant.name}/templates`)) {
-                set(view, '/state/tools/template', target.selected)
+                me.getApi().populateReferencedBy(target.selected).then( () => {
+                    set(view, '/state/tools/template', target.selected)
+                    resolve()
+                }).catch( error => reject(error))
             }
-            resolve()
         }).catch( error => reject(error))
     })
 }
