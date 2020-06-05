@@ -37,6 +37,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.peregrine.commons.util.PerConstants;
 import com.peregrine.nodetypes.models.IComponent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -185,24 +186,22 @@ public class PageModel extends Container {
                 }
             }
         }
+        if(domains != null && domains.length > 0) {
+            System.out.println("setPublicDomain");
+            System.out.println(domains);
+            setPublicDomain(domains);
+        }
         return domains;
     }
 
     public String getPublicDomain() {
-        if(domains == null) {
-            String[] value = (String[]) getInheritedProperty(DOMAINS);
-            if(value != null && value.length != 0) return value[0];
-            if(getTemplate() != null) {
-                PageModel templatePageModel = getTemplatePageModel();
-                if(templatePageModel != null) {
-                    return templatePageModel.getDomains()[0];
-                }
-            }
-        }
-        if (domains == null){
-            return null;
-        }
-        return domains[0];
+        System.out.println("getPublicDomain");
+        return publicDomain;
+    }
+
+    private String setPublicDomain(String[] domainArray) {
+        publicDomain = domainArray[0];
+        return publicDomain;
     }
 
     private PageModel getTemplatePageModel() {
