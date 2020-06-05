@@ -45,6 +45,11 @@
         </admin-components-action>
     </div>
     <div>
+        <div>
+            <p>Latest Site Backup</p>
+            <p><b>Date:</b>&nbsp;{{backupDate}}</p>
+            <p><b>Outcome:</b>&nbsp;{{backupState}}</p>
+        </div>
         <admin-components-action
             v-bind:model="{
                 command: 'backupTenant',
@@ -126,6 +131,12 @@
             downloadUrl() {
                 const tenant = $perAdminApp.getView().state.tenant;
                 return tenant ? '/perapi/admin/downloadBackupTenant.zip/content/' + tenant.name : '';
+            },
+            backupDate() {
+                return $perAdminApp.getView().state.tools.backups.last;
+            },
+            backupState() {
+                return $perAdminApp.getView().state.tools.backups.state;
             }
         }
     }

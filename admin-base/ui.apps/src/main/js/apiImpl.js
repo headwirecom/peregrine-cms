@@ -458,10 +458,11 @@ class PerAdminImpl {
 
   populateBackupInfo(path, target = 'nodes', includeParents = false) {
     let stateTools = $perAdminApp.getNodeFromViewWithDefault("/state/tools", {});
-    const tenant = '/content/test1';
+    if(!stateTools.backups) { stateTools.backups = {} }
+    const tenant = stateTools.pages.substr(0, stateTools.pages.length - 6)
     fetch(
         '/admin/backupTenant.json' + tenant + '?includeParents=' + includeParents)
-        .then((data) => populateView('/admin', target, data))
+        .then((data) => populateView('/state/tools', 'backups', data))
   }
 
   populatePageView(path) {

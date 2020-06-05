@@ -35,7 +35,7 @@
     jcr:title="Configure Tenant"
     jcr:description="admin configure tenant page"
     suffixToParameter="[path,/state/tools/backups]"
-    loaders="[populateBackupInfo:/state/tools/backups]"
+    loaders="[populateBackupInfo:/state/tools]"
   >
 
     <nav jcr:primaryType="nt:unstructured"
