@@ -101,18 +101,17 @@
           <li class="collection-header">
             referenced in {{referencedBy.length}} locations
           </li>
-          <li v-for="item in referencedBy" :key="item.propertyPath" class="collection-item">
-            <span>
-              <admin-components-action
-                  v-bind:model="{
-                    target: item.path,
-                    command: 'editPage',
-                    tooltipTitle: `edit '${item.name}'`
-                  }">
-                  <admin-components-iconeditpage></admin-components-iconeditpage>
-              </admin-components-action>
-            </span>
-            <span v-if="item.count" class="count">{{item.count}}</span>
+          <li v-for="item in referencedBy" :key="item.path" class="collection-item">
+              <span>
+                <admin-components-action
+                    v-bind:model="{
+                      target: item.path,
+                      command: 'editPage',
+                      tooltipTitle: `edit '${item.name}'`
+                    }">
+                    <admin-components-iconeditpage></admin-components-iconeditpage>
+                </admin-components-action>
+              </span>
             <span class="right">
               <admin-components-action
                   v-bind:model="{
@@ -288,7 +287,8 @@
         return this.hasOgTags || this.hasReferences;
       },
       referencedBy() {
-        return $perAdminApp.getView().state.referencedBy.referencedBy
+        let trimmedReferences = this.trimReferences($perAdminApp.getView().state.referencedBy.referencedBy);
+        return trimmedReferences;
       },
       isImage() {
         const node = $perAdminApp.findNodeFromPath(
@@ -370,6 +370,21 @@
         } else {
           return {};
         }
+      },
+      trimReferences(referenceList) {
+        let result = referenceList.reduce(
+          (map => (r, a) => (!map.has(a.path) && map.set(a.path, 
+          r[r.push({
+            name: a.name,
+            path: a.path,
+            propertyName: a.propertyName,
+            propertyPath: a.propertyPath,
+            count: 0
+          }) - 1]), 
+          map.get(a.path).count++, r))(new Map),
+          []
+        )
+        return result;
       },
       getObjectComponent() {
         let resourceType = this.rawCurrentObject.data['component'];
