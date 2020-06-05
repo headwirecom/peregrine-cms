@@ -456,12 +456,14 @@ class PerAdminImpl {
     })
   }
 
-  populateBackupInfo(path) {
-    const stateTools = $perAdminApp.getNodeFromViewWithDefault("/state/tools", {});
-    const tenant = $perAdminApp.getNodeFromViewWithDefault("/state/tenant", {});
-    fetch(
-        '/admin/backupTenant.json/content/' + tenant.name)
-        .then((data) => populateView('/state/tools', 'backup', data))
+  populateBackupInfo(backup) {
+    let tenantName = backup ? backup.tenant : '';
+    if(tenantName === '' || tenantName === 'undefined') {
+      const tenant = $perAdminApp.getNodeFromViewWithDefault("/state/tenant", {});
+      tenantName = tenant ? tenant.name : '';
+    }
+    fetch('/admin/backupTenant.json/content/' + tenantName)
+        .then((data) => populateView('/state/tools', 'backup', data));
   }
 
   populatePageView(path) {

@@ -34,7 +34,7 @@
     sling:resourceType="admin/components/toolingpage"
     jcr:title="Configure Tenant"
     jcr:description="admin configure tenant page"
-    loaders="[populateBackupInfo:/state/tools/backups]"
+    loaders="[populateBackupInfo:/state/tools/backup]"
   >
 
     <nav jcr:primaryType="nt:unstructured"

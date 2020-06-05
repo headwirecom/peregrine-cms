@@ -119,6 +119,7 @@ public class BackupTenantServlet extends AbstractPackageServlet {
             ResourceResolver resourceResolver = request.getResourceResolver();
             String tenantPath = request.getParameter(PATH);
             String tenantName = extractName(tenantPath);
+            logger.debug("Backup Tenant: '{}'", tenantName);
             if(request.isPost()) {
                 // Execute the build of the Tenant Package
                 JsonNode jobDetails = executeJob(
@@ -138,7 +139,7 @@ public class BackupTenantServlet extends AbstractPackageServlet {
                         .writeAttribute("message", "backup job not created properly")
                         .writeAttribute("outcome", "failed");
                 }
-                logger.trace("Build Package Job Details: '{}', Event Id: '{}'", jobDetails, eventId);
+                logger.debug("Build Package Job Details: '{}', Event Id: '{}'", jobDetails, eventId);
                 int count = 0;
                 String eventFinalState = "";
                 JsonNode jobUpdate = null;
@@ -174,7 +175,7 @@ public class BackupTenantServlet extends AbstractPackageServlet {
                 if (eventFinalState.isEmpty()) {
                     return new ErrorResponse().setErrorMessage("Build did not finish in time");
                 }
-                logger.trace("Build finished: '{}'", jobUpdate);
+                logger.debug("Build finished: '{}'", jobUpdate);
                 // Execute the download of the Package
                 return new JsonResponse()
                     .writeAttribute("tenant", tenantName)
@@ -186,6 +187,7 @@ public class BackupTenantServlet extends AbstractPackageServlet {
             } else if(request.isGet()) {
                 // Get the Node of /var/audit/jobs
                 Resource jobs = resourceResolver.getResource(JOBS_PATH);
+                logger.trace("Backup Audit Jobs: '{}'", jobs);
                 if(jobs != null) {
                     // Loop over the Package Job Executor Nodes
                     Resource backup = null;
@@ -196,6 +198,7 @@ public class BackupTenantServlet extends AbstractPackageServlet {
                             break;
                         }
                     }
+                    logger.debug("Backup Audit Job: '{}'", backup);
                     if (backup != null) {
                         // Find newest node
                         Resource details = null;

@@ -846,6 +846,23 @@ paths:
           schema:
             $ref: "#/definitions/Error"
   '/backupTenant.json{path}':
+    get:
+      description: Provides data about latest Site Backup
+      parameters:
+        - name: path
+          type: string
+          in: path
+          description: the path of the tenant site
+          required: true
+      responses:
+        200:
+          description: returns the status from the operation
+          schema:
+            $ref: "#/definitions/OperationResponse"
+        400:
+          description: Error of the failed backup
+          schema:
+            $ref: "#/definitions/Error"
     post:
       description: Backs up a Tenant Site
       parameters:
@@ -863,9 +880,48 @@ paths:
           description: Error of the failed backup
           schema:
             $ref: "#/definitions/Error"
+  '/downloadBackupTenant.json{path}':
+    get:
+      description: Downloads latest Site Backup
+      parameters:
+        - name: path
+          type: string
+          in: path
+          description: the path of the tenant site
+          required: true
+      responses:
+        200:
+          description: returns the package as byte stream
+          schema:
+            type: string
+            format: binary
+        400:
+          description: Error of the failed backup
+          schema:
+            $ref: "#/definitions/Error"
+  '/uploadBackupTenant.json{path}':
+    post:
+      description: Upload Site Backup
+      parameters:
+        - name: file
+          type: string
+          format: binary
+          in: file
+          description: the file to be uploaded
+          required: true
+      responses:
+        200:
+          description: returns the package as byte stream
+          schema:
+            type: string
+            format: binary
+        400:
+          description: Error of the failed backup
+          schema:
+            $ref: "#/definitions/Error"
   '/restoreTenant.json{path}':
     post:
-      description: Restores a previously backed up Tenant Site
+      description: Restores a previously Tenant Site Backup
       parameters:
         - name: path
           type: string

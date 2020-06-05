@@ -45,11 +45,6 @@
         </admin-components-action>
     </div>
     <div>
-        <div>
-            <p>Latest Site Backup</p>
-            <p><b>Date:</b>&nbsp;{{backupDate}}</p>
-            <p><b>Outcome:</b>&nbsp;{{backupState}}</p>
-        </div>
         <admin-components-action
             v-bind:model="{
                 command: 'backupTenant',
@@ -81,7 +76,11 @@
             }">
         </admin-components-action>
     </div>
-    <pre>{{JSON.stringify(backupInfo, true, 2)}}</pre>
+    <div>
+        <p>Latest Site Backup</p>
+        <p><b>Date:</b>&nbsp;{{backupDate}}</p>
+        <p><b>Result:</b>&nbsp;{{backupState}}</p>
+    </div>
 </div>
 </template>
 
@@ -135,11 +134,14 @@
             },
             backupInfo() {
                 return $perAdminApp.getView().state.tools.backup
+            },
             backupDate() {
-                return $perAdminApp.getView().state.tools.backups.last;
+                const backup = $perAdminApp.getView().state.tools.backup;
+                return backup ? backup.last : "No Backup Info for Date";
             },
             backupState() {
-                return $perAdminApp.getView().state.tools.backups.state;
+                const backup = $perAdminApp.getView().state.tools.backup;
+                return backup ? backup.state : "No Backup Info for State";
             }
         }
     }
