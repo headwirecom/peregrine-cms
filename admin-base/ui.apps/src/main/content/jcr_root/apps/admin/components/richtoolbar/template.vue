@@ -8,26 +8,25 @@
         :class="btn.class"
         :title="$i18n(btn.title)"
         :active="btn.isActive()"
-        @click="exec(btn.cmd)">
-    </admin-components-richtoolbarbtn>
+        @click="exec(btn.cmd)"/>
 
     <admin-components-pathbrowser
         v-if="browser.open"
         :isOpen="browser.open"
+        :header="browser.header"
         :browserRoot="browser.root"
         :browserType="browser.type"
         :withLinkTab="browser.withLinkTab"
         :newWindow="browser.newWindow"
-        :toggleNewWindow="browser.toggleNewWindow"
+        :toggleNewWindow="toggleBrowserNewWindow"
         :linkTitle="browser.linkTitle"
         :setLinkTitle="browser.setLinkTitle"
         :currentPath="browser.path.current"
-        :setCurrentPath="browser.path.setCurrent"
+        :setCurrentPath="setBrowserPathCurrent"
         :selectedPath="browser.path.selected"
-        :setSelectedPath="browser.path.setSelected"
-        :onCancel="browser.cancel"
-        :onSelect="browser.select">
-    </admin-components-pathbrowser>
+        :setSelectedPath="setBrowserPathSelected"
+        :onCancel="onBrowserCancel"
+        :onSelect="onBrowserSelect"/>
   </div>
 </template>
 
@@ -41,25 +40,19 @@
         key: 0,
         browser: {
           open: false,
+          cmd: null,
+          header: '',
           root: '',
           type: 'image',
           withLinkTab: false,
           newWindow: false,
-          toggleNewWindow: () => {
-          },
           linkTitle: 'TODO - SET TITLE',
           setLinkTitle: () => {
           },
           path: {
             current: '',
-            setCurrent: () => {
-            },
-            selected: '',
-            setSelected: () => {
-            }
-          },
-          cancel: this.browserOnCancel,
-          select: this.browserOnSelect
+            selected: null,
+          }
         }
       }
     },
@@ -314,9 +307,10 @@
         }
       },
       insertImage() {
-        this.browser.open = true
-        this.browser.path.current = this.roots.pages
-        this.browser.path.selected = this.roots.pages
+        this.browser.cmd = 'insertImage'
+        this.browser.header = this.$i18n('Insert Image')
+        this.browser.path.current = this.roots.assets
+        this.startBrowsing()
       },
       quote() {
         this.execCmd('formatBlock,', 'pre')
@@ -359,11 +353,32 @@
         const tags = ['P', ...headlines]
         return tags.some((tag) => this.itemIsTag(tag))
       },
-      browserOnCancel() {
+      startBrowsing() {
+        $perAdminApp.getApi()
+            .populateNodesForBrowser(this.browser.path.current, 'pathBrowser')
+            .then(() => this.browser.open = true)
+            .catch((err) => {
+              $perAdminApp.getApi().populateNodesForBrowser('/content', 'pathBrowser')
+            })
+      },
+      onBrowserCancel() {
         this.browser.open = false
       },
-      browserOnSelect() {
+      onBrowserSelect() {
         this.browser.open = false
+        console.log('execCmd: ', this.browser.cmd, this.browser.path.selected)
+        this.execCmd(this.browser.cmd, this.browser.path.selected)
+        this.browser.cmd = null
+        this.browser.selected = null
+      },
+      setBrowserPathCurrent(path) {
+        this.browser.path.current = path
+      },
+      setBrowserPathSelected(path) {
+        this.browser.path.selected = path
+      },
+      toggleBrowserNewWindow() {
+        this.browser.newWindow = !this.browser.newWindow
       }
     }
   }
