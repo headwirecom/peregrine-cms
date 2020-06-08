@@ -186,24 +186,27 @@ public class PageModel extends Container {
                 }
             }
         }
-        if(domains != null && domains.length > 0) {
-            System.out.println("setPublicDomain");
-            System.out.println(domains);
-            setPublicDomain(domains);
-        }
         return domains;
     }
 
     public String getPublicDomain() {
-        System.out.println("getPublicDomain");
+        if(domains == null) {
+            String[] value = (String[]) getInheritedProperty(DOMAINS);
+            if(value != null && value.length != 0) return value[0];
+            if(getTemplate() != null) {
+                PageModel templatePageModel = getTemplatePageModel();
+                if(templatePageModel != null) {
+                    if (templatePageModel.getDomains() != null && templatePageModel.getDomains().length > 0)
+                        return templatePageModel.getDomains()[0];
+                }
+            }
+        }
+        if(domains != null && domains.length > 0) {
+            publicDomain = domains[0];
+        }
         return publicDomain;
     }
-
-    private String setPublicDomain(String[] domainArray) {
-        publicDomain = domainArray[0];
-        return publicDomain;
-    }
-
+    
     private PageModel getTemplatePageModel() {
         String template = getTemplate();
         if(template == null) return null;
