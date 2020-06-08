@@ -25,8 +25,8 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.commons.util.PerConstants;
 import com.peregrine.commons.Page;
+import com.peregrine.commons.util.PerConstants;
 import com.peregrine.sitemap.PropertyProvider;
 import com.peregrine.sitemap.PropertyProviderBase;
 import com.peregrine.sitemap.SiteMapConstants;

@@ -33,6 +33,7 @@ import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.pagerender.vue.models.PageRenderVueConstants.PR_VUE_COMPONENT_PAGE_TYPE;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.peregrine.commons.util.PerConstants;
 import com.peregrine.nodetypes.models.IComponent;
 import java.util.ArrayList;
@@ -129,6 +130,10 @@ public class PageModel extends Container {
     @Inject
     private String description;
 
+    @Inject
+    @Optional
+    private String brand;
+
     public String getSiteRoot() {
         String path = getPagePath();
         String[] segments = path.split(SLASH);
@@ -217,7 +222,7 @@ public class PageModel extends Container {
         if(template == null) {
             String value = (String) getInheritedProperty(TEMPLATE);
             if(value != null) {
-                this.template = template;
+                this.template = value;
                 return value;
             }
         }
@@ -249,7 +254,11 @@ public class PageModel extends Container {
         List<Tag> answer = new ArrayList<Tag>();
         if(tags != null) {
             for(Resource tag: tags.getChildren()) {
-                answer.add(new Tag(tag));
+                String tagString = tag.getValueMap().get("value", String.class);
+                Resource tagResource = tag.getResourceResolver().getResource(tagString);
+                if (tagResource != null) { 
+                    answer.add(new Tag(tag));
+                }
             }
         }
         return answer;
@@ -260,7 +269,11 @@ public class PageModel extends Container {
         List<String> answer = new ArrayList<String>();
         if(tags != null) {
             for(Resource tag: tags.getChildren()) {
-                answer.add(new Tag(tag).getName());
+                String tagString = tag.getValueMap().get("value", String.class);
+                Resource tagResource = tag.getResourceResolver().getResource(tagString);
+                if (tagResource != null) { 
+                    answer.add(new Tag(tag).getName());
+                }
             }
         }
         return answer;
@@ -294,6 +307,18 @@ public class PageModel extends Container {
         return description;
     }
 
+    public String getBrand() {
+        if(brand == null) {
+            String value = (String) getInheritedProperty("brand");
+            if(value != null && value.trim().length() > 0) return value;
+            PageModel templatePageModel = getTemplatePageModel();
+            if(templatePageModel != null) {
+                return templatePageModel.getBrand();
+            }
+        }
+        return brand;
+    }
+
     class Tag {
         private String path;
         private String name;
@@ -303,7 +328,11 @@ public class PageModel extends Container {
             this.path = r.getPath();
             this.path = path.substring(path.indexOf("/jcr:content"));
             this.name = r.getName();
-            this.value = r.getValueMap().get("value", String.class);
+            String tag = r.getValueMap().get("value", String.class);
+            Resource tagResource = r.getResourceResolver().getResource(tag);
+            if (tagResource != null) {
+                this.value = tagResource.getValueMap().get("value", String.class);
+            }
         }
 
         public String getName() { return name; }

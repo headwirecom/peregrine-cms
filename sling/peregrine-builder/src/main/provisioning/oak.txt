@@ -32,6 +32,7 @@
     org.apache.jackrabbit/oak-lucene/${oak.version}
     org.apache.jackrabbit/oak-blob/${oak.version}
     org.apache.jackrabbit/oak-jcr/${oak.version}
+    org.apache.jackrabbit/oak-auth-external/${oak.version}
 
 [artifacts startLevel=15 runModes=oak_tar]
     org.apache.jackrabbit/oak-segment-tar/${oak.version}

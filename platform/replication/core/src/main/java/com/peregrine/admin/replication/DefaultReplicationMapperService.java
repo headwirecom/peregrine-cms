@@ -5,6 +5,7 @@ import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
@@ -38,7 +39,7 @@ import static com.peregrine.commons.util.PerUtil.splitIntoParameterMap;
  */
 @Component(
     configurationPolicy = ConfigurationPolicy.REQUIRE,
-    service = { DefaultReplicationMapper.class, Replication.class },
+    service = DefaultReplicationMapper.class,
     immediate = true
 )
 @Designate(ocd = DefaultReplicationMapperService.Configuration.class, factory = true)
@@ -130,6 +131,7 @@ public class DefaultReplicationMapperService
 
     private void setup(BundleContext context, final Configuration configuration) {
         init(configuration.name(), configuration.description());
+        // Register this service as Replication instance
         logger.trace("Default Mapping: '{}'", configuration.defaultMapping());
         Map<String, Map<String, String>> temp = splitIntoParameterMap(new String[] {configuration.defaultMapping()}, ":", "\\|", "=");
         logger.trace("Mapped Default Mapping: '{}'", temp);
@@ -183,16 +185,19 @@ public class DefaultReplicationMapperService
         }
         // Now we loop over the all resources, separate them into pods of Replication Services
         for(Resource resource: resourceList) {
-            boolean found = false;
+            boolean handled = false;
             for(DefaultReplicationConfig config: pathMapping) {
                 if(config.isHandled(resource)) {
                     logger.trace("Replicate Resource: '{}' using DRC: '{}'", resource.getPath(), config);
                     resourceByReplication.get(config).add(resource);
-                    found = true;
-                    break;
+                    // Resource is handled if the service name here is the same as for the default
+                    if(!handled) {
+                        handled = !config.serviceName.equals(defaultMapping.serviceName);
+                    }
                 }
             }
-            if(!found) {
+            if(!handled) {
+                // Resource was not added to default mapping so add it here
                 logger.trace("Replicate Resource: '{}' using default DRC: '{}'", resource.getPath(), defaultMapping);
                 resourceByReplication.get(defaultMapping).add(resource);
             }
@@ -203,10 +208,11 @@ public class DefaultReplicationMapperService
                 throw new ReplicationException("Could not find replication with name: " + pot.getKey().getServiceName());
             }
             logger.trace("Replicate with Replication: '{}' these resources: '{}'", replication.getName(), pot.getValue());
-            for(Resource resource: pot.getValue()) {
-                logger.trace("DRH Replicate: '{}'", resource.getPath());
-                List<Resource> replicatedResources = replication.replicate(resource, false);
-                if(!replicatedResources.isEmpty()) { answer.addAll(replicatedResources); }
+            List<Resource> resources = new ArrayList<>(pot.getValue());
+            logger.trace("DRH Replication: '{}', Replicates: '{}'", replication.getName(), resources);
+            List<Resource> replicatedResources = replication.replicate(resources);
+            if(!replicatedResources.isEmpty()) {
+                answer.addAll(replicatedResources);
             }
         }
         return answer;

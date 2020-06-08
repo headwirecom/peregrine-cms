@@ -17,7 +17,7 @@ public final class ResourceResolverFactoryProxyImplTest extends SlingResourcesTe
 
     @Before
     public void setUp() throws NoSuchFieldException {
-        PrivateAccessor.setField(model, "resourceResolverFactory", resolverFactory);
+        PrivateAccessor.setField(model, "resourceResolverFactory", repo.getResolverFactory());
     }
 
     @Test

@@ -21,8 +21,12 @@
 #
 [feature name=peregrine]
 
+[variables]
+    peregrine.version=1.0.0-SNAPSHOT
+
 [artifacts startLevel=30]
     com.peregrine-cms/login/1.0-SNAPSHOT
+#    com.peregrine-cms/peregrinecms-com-peregrine-sling-auth-header/${peregrine.version}
 # All 3 artifacts bundle together into one Sling instance does not work
 #    com.eclipsesource.j2v8/j2v8_linux_x86_64/4.6.0
 #    com.eclipsesource.j2v8/j2v8_macosx_x86_64/4.6.0
@@ -30,10 +34,54 @@
 
 [:repoinit]
 
+#
+# ATTENTION: In order to allow existing customers to upgrade to new versions of Peregrine
+#            new users and permissions must be added here as well as base/ui.apps
+#            org.apache.sling.jcr.repoinit.RepositoryInitializer-peregrine.config file.
+#            They are added here to make sure that a new installation of Peregrine comes up
+#            without errors
+#
+# Also: keep Service User Mappings both here together with the creation of the users
+#       and in the run mode configurations to avoid sporadic errors in the logs
+#
+
+# To include the Peregrine Header Authentication Handler and Login Module in Sling, perform the following:
+# 1. Remove the artifact comment for `com.peregrine-cms/peregrinecms-com-peregrine-sling-auth-header/${peregrine.version}` at the top.
+# 2. Add the two configurations below to the configurations section at the end..
+#
+#
+#    org.apache.jackrabbit.oak.spi.security.authentication.external.impl.DefaultSyncHandler-HeaderLoginModule
+#        handler.name="default"
+#        user.autoMembership=["all_tenants"]
+#        user.disableMissing=B"false"
+#        user.dynamicMembership=B"false"
+#        user.expirationTime="1h"
+#        user.membershipExpTime="1h"
+#        user.membershipNestingDepth=I"0"
+#        user.pathPrefix="tenants"
+#        user.propertyMapping=["preferences/firstLogin\=firstLogin", "profile/email\=OIDC_CLAIM_email"]
+#        group.autoMembership=[""]
+#        group.expirationTime="1d"
+#        group.pathPrefix=""
+#        group.propertyMapping=[""]
+#        enableRFC7613UsercaseMappedProfile=B"false"
+#
+#      org.apache.felix.jaas.Configuration.factory-HeaderLoginModule
+#        jaas.controlFlag="sufficient"
+#        jaas.realmName="jackrabbit.oak"
+#        jaas.classname="com.peregrine.sling.auth.header.HeaderExternalLoginModule"
+#        jaas.ranking=I"5000"
+
 # Create the two System User Peregrine uses for Service Resource Resolvers
 
+    create service user sitemaps-cache
     create service user distribution-agent-user
     create service user nodejs-service-user
+    create service user peregrine-service-user
+
+# Create Users / Groups for Peregrine
+
+    create group all_tenants with path /home/groups/tenants
 
 # Create the necessary folders to apply permissions below otherwise the Launchpad will fail during startup
 
@@ -44,6 +92,7 @@
     create path (sling:Folder) /libs/sling
     create path (sling:Folder) /libs/sling/distribution
     create path (sling:Folder) /var
+    create path (sling:Folder) /var/sitemaps
     create path (sling:Folder) /var/sling
     create path (sling:Folder) /var/sling/distribution
     create path (sling:Folder) /var/sling/distribution/packages
@@ -57,8 +106,51 @@
         allow jcr:all on /var/sling/distribution/packages
     end
 
+# Set Permissions for Sitemaps Cache
+
+    set ACL for sitemaps-cache
+        allow jcr:all on /var/sitemaps
+        allow jcr:read on /content
+    end
+
 # Set Repository ACL for Sling Distribution
 
     set repository ACL for distribution-agent-user
         allow jcr:all
     end
+
+
+[configurations]
+
+# We keep the Service User Mappings here to make startup of Peregrine as Error free as possible when using Peregrine Sling
+
+    org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended-sitemaps
+        user.mapping=[
+            "com.peregrine-cms.base.core:sitemaps\=sitemaps-cache"
+        ]
+
+    org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended-distributionEventHandler
+        user.mapping=[
+            "com.peregrine-cms.admin.core:peregrine-distribution-sub-service\=distribution-agent-user",
+            "com.peregrine-cms.replication.core:peregrine-distribution-sub-service\=distribution-agent-user"
+        ]
+
+    org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended-distributionAgentService
+        user.mapping=[
+            "org.apache.sling.distribution.core:defaultAgentService\=distribution-agent-user",
+            "org.apache.sling.distribution.core\=distribution-agent-user",
+            "com.peregrine-cms.distribution:test-distribution\=distribution-agent-user"
+        ]
+
+    org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended-nodejs
+        user.mapping=[
+            "com.peregrine-cms.nodejs:nodejs-service\=nodejs-service-user",
+            "com.peregrine-cms.nodejs.scripts:nodejs-service\=nodejs-service-user",
+            "com.peregrine-cms.nodejs.j2v8:nodejs-service\=nodejs-service-user"
+        ]
+
+    org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended-peregrine
+        user.mapping=[
+            "com.peregrine-cms.admin.core:peregrine-services\=peregrine-service-user"
+        ]
+

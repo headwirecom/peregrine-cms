@@ -85,6 +85,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>com.peregrine-cms.distribution</Bundle-SymbolicName>
+                        <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
                         <Sling-Initial-Content>
                             SLING-CONTENT/libs/sling/distribution;path:=/libs/sling/distribution;overwrite:=true,
                             SLING-CONTENT/var/sling/distribution;path:=/var/sling/distribution;overwrite:=true,

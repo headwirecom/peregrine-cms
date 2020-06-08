@@ -110,7 +110,6 @@ public abstract class AbstractVipsImageTransformation
                 ProcessContext processContext = runner.execute(commands);
                 vipsInstalled = processContext.getExitCode() == 0;
             } catch(ExternalProcessException e) {
-                log.error("Failed to execute VIPS", e);
                 vipsInstalled = false;
             }
         }
@@ -203,14 +202,18 @@ public abstract class AbstractVipsImageTransformation
                         }
                         imageContext.resetImageStream(inputStream);
                     } catch (ExternalProcessException e) {
-                        log.error("Failed to execute VIPS", e);
+                        if(!log.isDebugEnabled()) {
+                            log.warn("Failed to execute VIPS command: " + operationName);
+                        } else {
+                            log.debug("Failed to execute VIPS command: " + operationName, e);
+                        }
                         throw new TransformationException(FAILED_TO_EXECUTE_VIPS_OPERATION + operationName, e);
                     }
                 } else {
                     throw new TransformationException(COULD_NOT_CREATE_TEMPORARY_FOLDER + name);
                 }
             } else {
-                log.debug("VIPS not installed -> ignore transformation: '{}'", transformationName);
+                log.warn("VIPS not installed -> ignore transformation: '{}'", transformationName);
             }
         }
     }
@@ -259,11 +262,15 @@ public abstract class AbstractVipsImageTransformation
             log.error("Failed to create Output File", e);
         } catch(FileNotFoundException e) {
             log.error("Failed to create File Output Stream", e);
-            output.delete();
+            if(output != null && output.exists()) {
+                output.delete();
+            }
             output = null;
         } catch(IOException e) {
             log.error("Failed to write to file", e);
-            output.delete();
+            if(output != null && output.exists()) {
+                output.delete();
+            }
             output = null;
         } finally {
             IOUtils.closeQuietly(fos);

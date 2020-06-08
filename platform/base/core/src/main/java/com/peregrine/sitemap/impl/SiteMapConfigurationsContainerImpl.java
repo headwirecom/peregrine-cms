@@ -41,6 +41,9 @@ public final class SiteMapConfigurationsContainerImpl extends ConfigurationFacto
     @Reference
     private SiteMapExtractorsContainerImpl extractors;
 
+    @Reference
+    private DefaultSiteMapExtractor defaultSiteMapExtractor;
+
     protected void addImpl(final SiteMapConfiguration item) {
         extractors.add(item);
     }
@@ -51,6 +54,8 @@ public final class SiteMapConfigurationsContainerImpl extends ConfigurationFacto
 
     @Override
     public Collection<SiteMapConfiguration> getAll() {
-        return new HashSet<>(items);
+        final HashSet<SiteMapConfiguration> result = new HashSet<>(items);
+        result.add(defaultSiteMapExtractor);
+        return result;
     }
 }

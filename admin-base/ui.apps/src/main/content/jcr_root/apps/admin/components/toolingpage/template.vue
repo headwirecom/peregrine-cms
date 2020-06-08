@@ -66,10 +66,10 @@
         editPage: function(me, target) {
         },
         addSite: function(me, target) {
-            $perAdminApp.stateAction('createSiteWizard', '/content')
+            $perAdminApp.stateAction('createTenantWizard', '/content')
         },
-        configureSite: function(me, target) {
-            $perAdminApp.stateAction('configureSite', target)
+        configureTenant: function(me, target) {
+            $perAdminApp.stateAction('configureTenant', target)
         }
     }
 }

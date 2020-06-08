@@ -1,19 +1,20 @@
 #!/bin/bash
-if [ "$1" != "skipMaven" ]; then
-  cd ..
-  mvn clean install --show-version
-  
-  if [ $? -ne 0 ]; then
-    echo "Exiting build with error due to failed Maven build."
-    exit 1
-  fi
+. env.sh
 
-  cd docker
-fi
+git branch -v
+git log -p -1
 
 echo "Removing old build artifacts..."
-rm files/*.zip files/*.xz files/*.jar
+rm files/*.xz files/*.jar
 
 ./fetchfiles.sh
-docker build --tag=peregrinecms/peregrine-cms .
 
+if [ $# -eq 2 ]; then
+  docker build \
+      --build-arg PEREGRINECMS_BRANCH=$1 \
+      --build-arg THEMECLEANFLEX_BRANCH=$2 \
+      --tag=${DOCKER_IMAGE} .
+else
+  echo "Tip: You can change the branches used: `basename $0` <peregrine-cms branch> <themeclean-flex branch>"
+  docker build --tag=${DOCKER_IMAGE} .
+fi

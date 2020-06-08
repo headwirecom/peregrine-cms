@@ -41,7 +41,7 @@ public class PageRecognizerBaseTest extends SlingResourcesTest {
         assertFalse(model.isPage(new Page(parent)));
         page.putProperty(JCR_PRIMARY_TYPE, model.getPagePrimaryType());
         assertFalse(model.isPage(candidate));
-        content.putProperty(JCR_PRIMARY_TYPE, model.getPageContentPrimaryType());
+        jcrContent.setPrimaryType(model.getPageContentPrimaryType());
         assertFalse(model.isPage(candidate));
         page.putProperty(SLING_RESOURCE_TYPE, RESOURCE_TYPE);
         assertTrue(model.isPage(candidate));

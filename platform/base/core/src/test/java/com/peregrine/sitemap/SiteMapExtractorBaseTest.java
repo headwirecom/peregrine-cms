@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
@@ -30,7 +31,9 @@ public final class SiteMapExtractorBaseTest extends SlingResourcesTest
     private static final String NAME = "name";
     private static final String CONTENT = "content";
 
-    private final SiteMapConfiguration configuration = Mockito.mock(SiteMapConfiguration.class);
+    private final Pattern pattern = Pattern.compile(resource.getPath());
+
+    private final SiteMapConfiguration config = Mockito.mock(SiteMapConfiguration.class);
 
     private final List<PropertyProvider> propertyProviders = new LinkedList<>();
     private final List<PropertyProvider> defaultPropertyProviders = new LinkedList<>();
@@ -72,7 +75,12 @@ public final class SiteMapExtractorBaseTest extends SlingResourcesTest
         pages.add(page);
     }
 
-    private final SiteMapExtractorBase model = new SiteMapExtractorBase(configuration) {
+    private final SiteMapExtractorBase model = new SiteMapExtractorBase() {
+
+        @Override
+        public SiteMapConfiguration getConfiguration() {
+            return config;
+        }
 
         @Override
         protected Iterable<? extends PropertyProvider> getDefaultPropertyProviders() {
@@ -84,10 +92,6 @@ public final class SiteMapExtractorBaseTest extends SlingResourcesTest
             return SiteMapExtractorBaseTest.this;
         }
 
-        @Override
-        public boolean appliesTo(final Resource root) {
-            return pages.contains(root);
-        }
     };
 
     @Override
@@ -121,25 +125,35 @@ public final class SiteMapExtractorBaseTest extends SlingResourcesTest
 
     @Before
     public void setUp() {
-        when(configuration.getPageRecognizer()).thenReturn(this);
-        when(configuration.getPropertyProviders()).thenReturn(propertyProviders);
-        when(configuration.getUrlExternalizer()).thenReturn(this);
+        when(config.getPageRecognizer()).thenReturn(this);
+        when(config.getPropertyProviders()).thenReturn(propertyProviders);
+        when(config.getUrlExternalizer()).thenReturn(this);
     }
 
     @Test
     public void getConfiguration() {
-        assertEquals(configuration, model.getConfiguration());
+        assertEquals(config, model.getConfiguration());
+    }
+
+    @Test
+    public void appliesTo() {
+        assertFalse(model.appliesTo(null));
+        assertTrue(model.appliesTo(page));
+        assertTrue(model.appliesTo(resource));
+        when(config.getPagePathPattern()).thenReturn(pattern);
+        assertFalse(model.appliesTo(page));
+        assertTrue(model.appliesTo(resource));
     }
 
     @Test
     public void extract_notAPage() {
-        final List<SiteMapEntry> entries = model.extract(root);
+        final List<SiteMapEntry> entries = model.extract(contentRoot);
         assertTrue(entries.isEmpty());
     }
 
     @Test
     public void extract_noRecognizer() {
-        when(configuration.getPageRecognizer()).thenReturn(null);
+        when(config.getPageRecognizer()).thenReturn(null);
         final List<SiteMapEntry> entries = model.extract(resource);
         assertEquals(1, entries.size());
         final SiteMapEntry entry = entries.get(0);
@@ -150,7 +164,7 @@ public final class SiteMapExtractorBaseTest extends SlingResourcesTest
 
     @Test
     public void extract_noExternalizer() {
-        when(configuration.getUrlExternalizer()).thenReturn(null);
+        when(config.getUrlExternalizer()).thenReturn(null);
         final List<SiteMapEntry> entries = model.extract(parent);
         assertEquals(2, entries.size());
         final SiteMapEntry entry = entries.get(1);
@@ -175,7 +189,7 @@ public final class SiteMapExtractorBaseTest extends SlingResourcesTest
             assertEquals(expected, model.buildSiteMapUrl(resource, i));
         }
 
-        when(configuration.getUrlExternalizer()).thenReturn(null);
+        when(config.getUrlExternalizer()).thenReturn(null);
         for (int i = 0; i < 10; i++) {
             final String expected = buildSiteMapUrl(resource, i);
             assertEquals(expected, model.buildSiteMapUrl(resource, i));

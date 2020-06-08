@@ -28,7 +28,7 @@
             <template v-if="schema !== undefined && dataModel !== undefined">
                 <span v-if="title" class="panel-title">{{title}}</span>
                 <div v-if="!hasSchema">this component does not have a dialog defined</div>
-                <vue-form-generator v-bind:schema="schema" v-bind:model="dataModel" v-bind:options="formOptions">
+            <vue-form-generator :key="dataModel.path" v-bind:schema="schema" v-bind:model="dataModel" v-bind:options="formOptions">
                 </vue-form-generator>
             </template>
         </div>
@@ -54,10 +54,12 @@
       props: ['model'],
         updated: function() {
             let stateTools = $perAdminApp.getNodeFromViewWithDefault("/state/tools", {});
-            stateTools._deleted = {}; // reset to empty? 
+            stateTools._deleted = {}; // reset to empty?
+            if(this.schema.hasOwnProperty('groups')) this.hideGroups();
         },
       mounted(){
         this.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints
+        if(this.schema.hasOwnProperty('groups')) this.hideGroups();
       },
       data() {
         return {
@@ -146,20 +148,37 @@
                 $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
             })
         },
-        onDelete(e) {
-            const vm = this;
-            var view = $perAdminApp.getView()
-            $perAdminApp.askUser('Delete Component?', 'Are you sure you want to delete the component?', {
-                yesText: 'Yes',
-                noText: 'No',
-                yes() {
-                    $perAdminApp.action(vm, 'onEditorExitFullscreen')
-                    $perAdminApp.stateAction('deletePageNode', { pagePath: view.pageView.path, path: view.state.editor.path } ).then( () => {
-                        $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
-                    })
-                },
-                no() {
+          onDelete(e) {
+              const vm = this;
+              var view = $perAdminApp.getView()
+              $perAdminApp.askUser('Delete Component?', 'Are you sure you want to delete the component?', {
+                  yesText: 'Yes',
+                  noText: 'No',
+                  yes() {
+                      $perAdminApp.action(vm, 'onEditorExitFullscreen')
+                      $perAdminApp.stateAction('deletePageNode', { pagePath: view.pageView.path, path: view.state.editor.path } ).then( () => {
+                          $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
+                      })
+                  },
+                  no() {
+                  }
+              })
+          },
+        hideGroups() {
+            const $groups = $('.vue-form-generator fieldset');
+            $groups.each( function(i) {
+                const $group = $(this);
+                const $title = $group.find('legend');
+                $title.click(function(e){
+                    $group.find('div').toggle();
+                    $group.toggleClass('active');
+                })
+                if(i !== 0) {
+                    $group.find('div').hide();
+                    $group.removeClass('active');
                 }
+                if(i === 0) $group.addClass('active');
+                $group.addClass('vfg-group');
             })
         }
       }
@@ -169,3 +188,4 @@
 //      }
     }
 </script>
+

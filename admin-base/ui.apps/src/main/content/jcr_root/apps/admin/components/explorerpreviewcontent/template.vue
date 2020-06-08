@@ -99,20 +99,30 @@
       <template v-else-if="isTab(Tab.REFERENCES)">
         <ul :class="['collection', 'with-header', `explorer-${nodeType}-referenced-by`]">
           <li class="collection-header">
-            referenced in {{referencedBy.length}} locations
+            referenced in {{referencedBy.length}} location<span v-if="referencedBy.length !== 1 ">s</span>
           </li>
           <li v-for="item in referencedBy" :key="item.path" class="collection-item">
-              <span>
-                <admin-components-action
-                    v-bind:model="{
-                      target: item.path,
-                      command: 'editPage',
-                      tooltipTitle: `edit '${item.name}'`
-                    }">
-                    <admin-components-iconeditpage></admin-components-iconeditpage>
-                </admin-components-action>
-              </span>
-            <span class="right">{{item.path}}</span>
+            <span>
+              <admin-components-action
+                  v-bind:model="{
+                    target: item.path,
+                    command: 'editPage',
+                    tooltipTitle: `edit '${item.name}'`
+                  }">
+                  <admin-components-iconeditpage></admin-components-iconeditpage>
+              </admin-components-action>
+            </span>
+            <span v-if="item.count" class="count">{{item.count}}</span>
+            <span class="right">
+              <admin-components-action
+                  v-bind:model="{
+                    target: item.path,
+                    command: 'editPage',
+                    tooltipTitle: `edit '${item.path}'`
+                  }">
+                  {{item.path}}
+              </admin-components-action>
+            </span>
           </li>
         </ul>
       </template>
@@ -224,7 +234,7 @@
         },
         nodeTypeGroups: {
           ogTags: [NodeType.PAGE, NodeType.TEMPLATE],
-          references: [NodeType.ASSET],
+          references: [NodeType.ASSET, NodeType.PAGE, NodeType.TEMPLATE, NodeType.OBJECT],
           selectStateAction: [NodeType.ASSET, NodeType.OBJECT],
           showProp: [NodeType.ASSET, NodeType.OBJECT],
           allowMove: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET]
@@ -278,7 +288,7 @@
         return this.hasOgTags || this.hasReferences;
       },
       referencedBy() {
-        return $perAdminApp.getView().state.referencedBy.referencedBy
+        return this.trimReferences($perAdminApp.getView().state.referencedBy.referencedBy);
       },
       isImage() {
         const node = $perAdminApp.findNodeFromPath(
@@ -325,7 +335,15 @@
         if (this.nodeType === NodeType.OBJECT) {
           component = this.getObjectComponent();
         }
-        let schema = view.admin.componentDefinitions[component][schemaKey];
+        const componentDefinitions = view.admin.componentDefinitions
+        if (!componentDefinitions) {
+          return {}
+        }
+        const cmpDefinition = view.admin.componentDefinitions[component]
+        if (!cmpDefinition) {
+          return {}
+        }
+        let schema = cmpDefinition[schemaKey];
         if (this.edit) {
           return schema;
         }
@@ -352,6 +370,20 @@
         } else {
           return {};
         }
+      },
+      trimReferences(referenceList) {
+        return referenceList.reduce(
+          (map => (r, a) => (!map.has(a.path) && map.set(a.path, 
+          r[r.push({
+            name: a.name,
+            path: a.path,
+            propertyName: a.propertyName,
+            propertyPath: a.propertyPath,
+            count: 0
+          }) - 1]), 
+          map.get(a.path).count++, r))(new Map),
+          []
+        );
       },
       getObjectComponent() {
         let resourceType = this.rawCurrentObject.data['component'];
@@ -501,8 +533,8 @@
             data[key] = targetNode;
           }
         }
-        $perAdminApp.stateAction('saveObjectEdit', {data: data, path: show}).then( () => {
-          $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
+        $perAdminApp.stateAction('saveObjectEdit', {data: data, path: show}).then(() => {
+          $perAdminApp.getNodeFromView('/state/tools')._deleted = {}
         });
         $perAdminApp.stateAction('selectObject', {selected: show})
         this.edit = false;
