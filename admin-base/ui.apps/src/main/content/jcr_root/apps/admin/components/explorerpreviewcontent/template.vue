@@ -103,13 +103,13 @@
           </li>
           <li v-for="item in referencedBy" :key="item.path" class="collection-item">
             <span v-if="referenceListEditCheck(item)" class="non-editable">
-              <span v-if="item.count" class="count">{{item.count}}</span>
+              <span v-if="item.count" class="count">{{item.count > 99 ? '99+' : item.count}}</span>
               <span class="right">
                 <bdo>{{item.path}}</bdo>
               </span>
             </span>
             <span v-else>
-              <span v-if="item.count" class="count">{{item.count}}</span> 
+              <span v-if="item.count" class="count">{{item.count > 99 ? '99+' : item.count}}</span> 
               <span class="right">
                 <admin-components-action
                     v-bind:model="{
