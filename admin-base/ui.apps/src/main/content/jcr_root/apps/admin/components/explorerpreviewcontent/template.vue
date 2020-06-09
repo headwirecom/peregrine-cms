@@ -372,8 +372,9 @@
         }
       },
       trimReferences(referenceList) {
+        const tenant = $perAdminApp.getView().state.tenant.name;
         return referenceList.reduce(
-          (map => (r, a) => (!map.has(a.path) && map.set(a.path, 
+          (map => (r, a) => (!map.has(a.path)  && !a.propertyPath.startsWith(`/content/${tenant}/objects`) && !a.propertyPath.startsWith(`/content/${tenant}/assets`) && map.set(a.path, 
           r[r.push({
             name: a.name,
             path: a.path,
@@ -381,7 +382,7 @@
             propertyPath: a.propertyPath,
             count: 0
           }) - 1]), 
-          map.get(a.path).count++, r))(new Map),
+          !a.propertyPath.startsWith(`/content/${tenant}/objects`) && !a.propertyPath.startsWith(`/content/${tenant}/assets`) && map.get(a.path).count++, r))(new Map),
           []
         );
       },
