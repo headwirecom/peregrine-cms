@@ -128,15 +128,32 @@
         }	        
       }	      
       .collection-item {
-        display: flex;
-        align-items: center;
+        >span {
+          display: inline-flex;
+          align-items: center;
+          position: relative;
+          width: 100%;
+          justify-content: space-between;
+        }
 
+        span.non-editable {
+          .count {
+            margin: 0 5px 0 0;
+          }
+        }
         .count {
-          padding: 1px 10px;
-          margin: 0 5px;
+          padding: 1px 5px;
           border-radius: 10px;
           background-color: #37474f;
           color: #fff;
+          position: absolute;
+          bottom: -7px;
+          left: -20px;
+          font-size: 10px;
+          line-height: 1rem;
+        }
+        .edit-icon {
+          align-self: flex-end;
         }
         .right {
           display: block;
@@ -146,6 +163,7 @@
           text-align: right;
           direction: rtl;
           margin-right:5px;
+          max-width: 92%;
 
           bdo {
             direction: ltr;

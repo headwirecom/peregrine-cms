@@ -102,27 +102,36 @@
             referenced in {{referencedBy.length}} location<span v-if="referencedBy.length !== 1 ">s</span>
           </li>
           <li v-for="item in referencedBy" :key="item.path" class="collection-item">
-            <span>
-              <admin-components-action
-                  v-bind:model="{
-                    target: item.path,
-                    command: 'editPage',
-                    tooltipTitle: `edit '${item.name}'`
-                  }">
-                  <admin-components-iconeditpage></admin-components-iconeditpage>
-              </admin-components-action>
+            <span v-if="referenceListEditCheck(item)" class="non-editable">
+              <span v-if="item.count" class="count">{{item.count}}</span>
+              <span class="right">
+                <bdo>{{item.path}}</bdo>
+              </span>
             </span>
-            <span v-if="item.count" class="count">{{item.count}}</span>
-            <span class="right">
-              <admin-components-action
-                  v-bind:model="{
-                    target: item.path,
-                    command: 'editPage',
-                    tooltipTitle: `edit '${item.path}'`
-                  }">
-                  <bdo>{{item.path}}</bdo>
-              </admin-components-action>
+            <span v-else>
+              <span v-if="item.count" class="count">{{item.count}}</span> 
+              <span class="right">
+                <admin-components-action
+                    v-bind:model="{
+                      target: item.path,
+                      command: 'editPage',
+                      tooltipTitle: `edit '${item.path}'`
+                    }">
+                    <bdo>{{item.path}}</bdo>
+                </admin-components-action>
+              </span>
+              <span class="edit-icon">
+                <admin-components-action
+                    v-bind:model="{
+                      target: item.path,
+                      command: 'editPage',
+                      tooltipTitle: `edit '${item.name}'`
+                    }">
+                    <admin-components-iconeditpage></admin-components-iconeditpage>
+                </admin-components-action>
+              </span>
             </span>
+            
           </li>
         </ul>
       </template>
@@ -372,9 +381,8 @@
         }
       },
       trimReferences(referenceList) {
-        const tenant = $perAdminApp.getView().state.tenant.name;
         return referenceList.reduce(
-          (map => (r, a) => (!map.has(a.path)  && !a.propertyPath.startsWith(`/content/${tenant}/objects`) && !a.propertyPath.startsWith(`/content/${tenant}/assets`) && map.set(a.path, 
+          (map => (r, a) => (!map.has(a.path) && map.set(a.path, 
           r[r.push({
             name: a.name,
             path: a.path,
@@ -382,9 +390,17 @@
             propertyPath: a.propertyPath,
             count: 0
           }) - 1]), 
-          !a.propertyPath.startsWith(`/content/${tenant}/objects`) && !a.propertyPath.startsWith(`/content/${tenant}/assets`) && map.get(a.path).count++, r))(new Map),
+          map.get(a.path).count++, r))(new Map),
           []
         );
+      },
+      referenceListEditCheck(item) {
+        const tenant = $perAdminApp.getView().state.tenant.name;
+          if (item.propertyPath.startsWith(`/content/${tenant}/objects`) || item.propertyPath.startsWith(`/content/${tenant}/assets`) ){
+            return true;
+          } else {
+            return false;
+          }
       },
       getObjectComponent() {
         let resourceType = this.rawCurrentObject.data['component'];
