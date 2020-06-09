@@ -114,7 +114,7 @@
 
     [class$="referenced-by"] {
       color: $primary-color-dark;
-      overflow-y: scroll;
+      overflow-y: auto;
       .svg-icon {
         .svg-content {
           fill: color("blue-grey", "darken-2");
