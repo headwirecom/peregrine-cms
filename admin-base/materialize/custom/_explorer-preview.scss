@@ -146,6 +146,10 @@
           text-align: right;
           direction: rtl;
           margin-right:5px;
+
+          bdo {
+            direction: ltr;
+          }
         }
       }
     }

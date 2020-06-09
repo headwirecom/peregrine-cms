@@ -120,7 +120,7 @@
                     command: 'editPage',
                     tooltipTitle: `edit '${item.path}'`
                   }">
-                  {{item.path}}
+                  <bdo>{{item.path}}</bdo>
               </admin-components-action>
             </span>
           </li>
