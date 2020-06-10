@@ -58,6 +58,28 @@
             // $perAdminApp.stateAction('selectToolsNodesPath', payload).then(() => {
             //     $perAdminApp.loadContent(action + '.html')
             // })
+            if (target.startsWith(`/content/admin/pages/objects`)) {
+                $perAdminApp.stateAction('unselectAsset', {});
+                $perAdminApp.stateAction('unselectPage', {});
+                $perAdminApp.stateAction('unselectTemplate', {});
+            } else if (target.startsWith(`/content/admin/pages/assets`)) {
+                $perAdminApp.stateAction('unselectObject', {});
+                $perAdminApp.stateAction('unselectPage', {});
+                $perAdminApp.stateAction('unselectTemplate', {});
+            } else if (target.startsWith(`/content/admin/pages/pages`)) {
+                $perAdminApp.stateAction('unselectObject', {});
+                $perAdminApp.stateAction('unselectAsset', {});
+                $perAdminApp.stateAction('unselectTemplate', {});
+            } else if (target.startsWith(`/content/admin/pages/templates`)) {
+                $perAdminApp.stateAction('unselectObject', {});
+                $perAdminApp.stateAction('unselectAsset', {});
+                $perAdminApp.stateAction('unselectPage', {});
+            } else {
+                $perAdminApp.stateAction('unselectObject', {});
+                $perAdminApp.stateAction('unselectAsset', {});
+                $perAdminApp.stateAction('unselectPage', {});
+                $perAdminApp.stateAction('unselectTemplate', {});
+            }
             $perAdminApp.loadContent(target + '.html')
         },
         editPreview: function(me, target) {

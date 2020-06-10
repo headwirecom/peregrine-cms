@@ -504,7 +504,7 @@
             },
 
             selectPath: function(me, target) {
-                let resourceType = target.resourceType
+                let resourceType = target.resourceType;
                 if(resourceType) {
                     if(resourceType === 'per:Object') {
                         $perAdminApp.stateAction('selectObject', { selected: target.path, path: me.model.dataFrom })
@@ -619,8 +619,12 @@
 
                 if(target.startsWith(`/content/${tenant.name}/pages`)) {
                     set(view, '/state/tools/page', target)
+                    $perAdminApp.stateAction('showPageInfo', { selected: target })
                 } else if(target.startsWith(`/content/${tenant.name}/templates`)) {
                     set(view, '/state/tools/template', target)
+                    $perAdminApp.stateAction('showPageInfo', { selected: target })
+                } else if (target.startsWith(`/content/${tenant.name}/objects`)) {
+                    $perAdminApp.stateAction('selectObject', { selected: target, path: me.model.dataFrom })
                 }
 
                 if(path.startsWith(`/content/${tenant.name}/objects`)) {
