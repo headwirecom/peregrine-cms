@@ -33,15 +33,6 @@
     <name>Peregrine CMS - Platform - Base Parent</name>
     <description>Parent POM for the Peregrine CMS Platform</description>
 
-    <properties>
-        <sling.host>localhost</sling.host>
-        <sling.port>8080</sling.port>
-        <sling.user>admin</sling.user>
-        <sling.password>admin</sling.password>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    </properties>
-
     <build>
         <plugins>
             <!-- Maven Release Plugin -->
