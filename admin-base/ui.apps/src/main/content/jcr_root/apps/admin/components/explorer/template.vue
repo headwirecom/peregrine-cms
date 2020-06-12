@@ -270,7 +270,6 @@
             },
             pt: function() {
                 var node = this.path
-                console.log('nodes', this.$root.$data, this, node, this.path);
                 return $perAdminApp.findNodeFromPath(this.$root.admin.nodes, node)
             },
             children: function() {
