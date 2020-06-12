@@ -9,11 +9,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ *
+ * This is required by the TeleporterRule, to setup the client-side
+ *   teleporter with (at least) the test server URL.
+ *
  * Created by Andreas Schaefer on 7/5/17.
  */
-public class PeregrineTeleporterCustomizer
-    implements TeleporterRule.Customizer
-{
+public class PeregrineTeleporterCustomizer implements TeleporterRule.Customizer {
     private static final Logger logger = LoggerFactory.getLogger(PeregrineTeleporterCustomizer.class.getName());
 
     private final static SlingTestBase S = new SlingTestBase();

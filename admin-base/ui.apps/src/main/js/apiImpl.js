@@ -456,10 +456,12 @@ class PerAdminImpl {
     })
   }
 
+
   populatePageView(path) {
     return fetch('/admin/readNode.json' + path)
         .then((data) => populateView('/pageView', 'page', data))
   }
+
 
   populateObject(path, target, name) {
     return this.populateComponentDefinitionFromNode(path)
@@ -485,6 +487,151 @@ class PerAdminImpl {
     })
   }
 
+
+  populateRecyclebin(page = 0) {
+    let tenant = getOrCreate(callbacks.getView(), '/state/tenant').name
+    if (tenant == undefined) {
+        tenant = callbacks.getView().state.tenant.name
+    }
+    if (page instanceof Object) {
+        page = 0;
+    }
+    return new Promise((resolve, reject) => {
+        fetch(`/admin/listRecyclables.json/content/${tenant}?page=${page}`)
+            .then(function(result) {
+                 populateView('/admin', 'recyclebin', result)
+                    .then(() => resolve())
+            })
+            .catch(error => {
+                $perAdminApp.notifyUser('error', `${error}. Unable to load Recycle Bin`)
+            })
+    })
+  }
+
+  populateVersions(page) {
+    if (page) {
+        return new Promise((resolve, reject) => {
+          fetch(`/admin/listVersions.json${page}`)
+            .then(function(result) {
+                populateView('/state', 'versions', result)
+                    .then(() => resolve())
+            })
+            .catch(error => {
+                if (error.response && error.response.data && error.response.data.message) {
+                    reject(error.response.data.message)
+                }
+            })
+        })
+    }
+  }
+
+  recycleItem(item) {
+      return new Promise((resolve, reject) => {
+        let data = new FormData()
+        updateWithForm('/admin/restoreRecyclable.json' + item.recyclebinItemPath, data)
+            .then( (data) => callbacks.getApi().populateRecyclebin(0) )
+            .then(() => resolve())
+            .catch(error => {
+                if (error.response && error.response.data && error.response.data.message) {
+                    reject(error.response.data.message)
+                }
+                reject(error)
+            })
+      })
+  }
+
+  deleteRecyclable(path) {
+        return new Promise((resolve, reject) => {
+            let data = new FormData()
+            updateWithForm('/admin/deleteNode.json' + path, data)
+                .then( (data) => callbacks.getApi().populateRecyclebin(0))
+                .then(() => resolve())
+                .catch(error => {
+                    if (error.response && error.response.data && error.response.data.message) {
+                        reject(error.response.data.message)
+                    }
+                    reject(error)
+                })
+        })
+  }
+
+  deleteVersion(info) {
+        return new Promise((resolve, reject) => {
+            let data = new FormData()
+            data.append('action', 'deleteVersion')
+            data.append('version', info.version)
+            updateWithForm('/admin/manageVersions.json' + info.path, data)
+                .then( (data) => callbacks.getApi().populateVersions(info.path))
+                .then(() => resolve())
+                .catch(error => {
+                    if (error.response && error.response.data && error.response.data.message) {
+                        reject(error.response.data.message)
+                    }
+                    reject(error)
+                })
+        })
+  }
+
+  createVersion(path) {
+      return new Promise((resolve, reject) => {
+          let data = new FormData()
+          data.append('action', 'createVersion')
+          updateWithForm('/admin/manageVersions.json' + path, data)
+              .then( (data) => callbacks.getApi().populateVersions(path))
+              .then(() => resolve())
+              .catch(error => {
+                  if (error.response && error.response.data && error.response.data.message) {
+                      reject(error.response.data.message)
+                  }
+                  reject(error)
+              })
+      })
+  }
+
+  restoreVersion(path, versionName) {
+        return new Promise((resolve, reject) => {
+            let data = new FormData()
+            data.append('action', 'restoreVersion')
+            data.append('version', versionName)
+            updateWithForm('/admin/manageVersions.json' + path, data)
+                .then( (data) => callbacks.getApi().populateVersions(path))
+                .then( function(){
+                    if (path.includes("/assets/")) {
+                        $perAdminApp.loadContent("/content/admin/pages/assets")
+                    } else {
+                         callbacks.getApi().populatePageView(path)
+                            .then(function(){
+                                const editView = document.getElementById('editview')
+                                if (editView) {
+                                    editView.contentWindow.$peregrineApp.loadContent(path+ '.html')
+                                }
+                            })
+                            .then(function(){
+                                let nodes = ''
+                                const pagesRgx = new RegExp('^\/content\/[^\/]+\/pages\/');
+                                const templatesRgx = new RegExp('^\/content\/[^\/]+\/templates\/');
+                                if (pagesRgx.test(path)) {
+                                    nodes = $perAdminApp.getView().state.tools.pages
+                                } else if (templatesRgx.test(path)){
+                                    nodes = $perAdminApp.getView().state.tools.templates
+                                }
+                                if (nodes != '') {
+                                    $perAdminApp.getApi().populateNodesForBrowser(nodes)
+                                }
+                            })
+                    }
+                })
+                .then( () => resolve())
+                .catch(error => {
+                    if (error.response && error.response.data && error.response.data.message) {
+                        reject(error.response.data.message)
+                    } else {
+                        reject(error)
+                    }
+                })
+        })
+  }
+
   createTenant(fromName, toName, tenantTitle, tenantUserPwd, colorPalette) {
     return new Promise((resolve, reject) => {
       let data = new FormData()
@@ -499,6 +646,12 @@ class PerAdminImpl {
           .then((data) => this.populateNodesForBrowser(
               callbacks.getView().state.tools.pages))
           .then(() => resolve())
+          .catch(error => {
+              if (error.response && error.response.data && error.response.data.message) {
+                  reject(error.response.data.message)
+              }
+              reject(error)
+            })
     })
   }
 
@@ -554,13 +707,18 @@ class PerAdminImpl {
         .then(() => this.populateNodesForBrowser(path))
   }
 
-  renameAsset(path, newName) {
+  renameAsset(path, newName, newTitle) {
     return new Promise((resolve, reject) => {
       let data = new FormData()
       data.append('to', newName)
+      data.append('title', newTitle)
       updateWithForm('/admin/asset/rename.json' + path, data)
           .then((data) => this.populateNodesForBrowser(path))
           .then(() => resolve())
+          .catch(error => {
+              logger.error('Failed to change name: ' + error)
+              reject('Unable to change name. ' + error)
+          })
     })
   }
 
@@ -605,13 +763,18 @@ class PerAdminImpl {
         .then(() => this.populateNodesForBrowser(root))
   }
 
-  renamePage(path, newName) {
+  renamePage(path, newName, newTitle) {
     return new Promise((resolve, reject) => {
       let data = new FormData()
       data.append('to', newName)
+      data.append('title', newTitle)
       updateWithForm('/admin/page/rename.json' + path, data)
           .then((data) => this.populateNodesForBrowser(path))
           .then(() => resolve())
+          .catch(error => {
+              logger.error('Failed to change name: ' + error)
+              reject('Unable to change name. ' + error)
+          })
     })
   }
 
@@ -934,6 +1097,8 @@ class PerAdminImpl {
     formData.append('withSite', withSite)
     return updateWithForm('/admin/tenantSetupReplication.json' + path, formData)
   }
+
+
 }
 
 export default PerAdminImpl

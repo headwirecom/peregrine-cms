@@ -9,9 +9,8 @@ export default function (me, target) {
 
   const api = me.getApi();
 
-  api.renamePage(target.path, target.name).then(() => {
+  return api.renamePage(target.path, target.name, target.title).then(() => {
     let path = me.getNodeFromView('/state/tools/templates');
-    me.loadContent(
-        `/content/admin/pages/templates.html/path${SUFFIX_PARAM_SEPARATOR + path}`);
+    me.loadContent(`/content/admin/pages/templates.html/path${SUFFIX_PARAM_SEPARATOR + path}`);
   });
 };

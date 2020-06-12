@@ -6,6 +6,7 @@ public interface AdminPaths {
     public static final String RESOURCE_TYPE_COMPONENT_DEFINITION = API_PREFIX + "componentDefinition";
     public static final String RESOURCE_TYPE_CONTENT = API_PREFIX + "content";
     public static final String RESOURCE_TYPE_CREATION_FOLDER = API_PREFIX + "createFolder";
+    public static final String RESOURCE_TYPE_MANAGE_VERSIONS = API_PREFIX + "manageVersions";
     public static final String RESOURCE_TYPE_CREATION_TENANT = API_PREFIX + "createTenant";
     public static final String RESOURCE_TYPE_DELETE_TENANT = API_PREFIX + "deleteTenant";
     public static final String RESOURCE_TYPE_CREATION_OBJECT = API_PREFIX + "createObject";
@@ -29,4 +30,7 @@ public interface AdminPaths {
     public static final String RESOURCE_TYPE_UPLOAD_FILES = API_PREFIX + "uploadFiles";
     public static final String RESOURCE_TYPE_UPDATE_TENANT = API_PREFIX + "updateTenant";
     public static final String RESOURCE_TYPE_LIST_TENANTS = API_PREFIX + "listTenants";
+    public static final String RESOURCE_TYPE_LIST_RECYCLABLES = API_PREFIX + "listRecyclables";
+    public static final String RESOURCE_TYPE_LIST_VERSIONS = API_PREFIX + "listVersions";
+    public static final String RESOURCE_TYPE_RESTORE_RECYCLABLE = API_PREFIX + "restoreRecyclable";
 }

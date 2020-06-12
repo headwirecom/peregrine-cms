@@ -22,7 +22,7 @@ import java.util.Map.Entry;
 
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
-import static com.peregrine.commons.util.PerUtil.TEMPLATE;
+import static com.peregrine.commons.util.PerConstants.TEMPLATE;
 import static com.peregrine.it.basic.BasicTestHelpers.checkFolderExists;
 import static com.peregrine.it.basic.BasicTestHelpers.checkResourceByJson;
 import static com.peregrine.it.basic.BasicTestHelpers.convertToMap;

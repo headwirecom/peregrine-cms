@@ -32,7 +32,16 @@ export default function(me, target) {
 
     log.fine(target)
 
-    set(me.getView(), '/state/contentview/editor/type', EditorTypes.PAGE)
+    const view = me.getView()
+    const tenant = view.state.tenant
+
+    if(target.startsWith(`/content/${tenant.name}/pages`)) {
+        set(view, '/state/tools/page', target)
+    } else if(target.startsWith(`/content/${tenant.name}/templates`)) {
+        set(view, '/state/tools/template', target)
+    }
+
+    set(view, '/state/contentview/editor/type', EditorTypes.PAGE)
 
     return new Promise( (resolve, reject) => {
         me.loadContent('/content/admin/pages/pages/edit.html/path'+SUFFIX_PARAM_SEPARATOR+target)
