@@ -444,14 +444,11 @@ class PerAdminImpl {
           .then((data) => {
             const state = callbacks.getView().state
             if (!state.tenant && data.tenants.length > 0) {
-              console.log($perAdminApp.getView().admin.tenants);
-              console.log('populateTenants - !exist', data.tenants);
               populateView('/admin', 'tenants', data.tenants)
               $perAdminApp.stateAction('setTenant',
                   data.tenants[data.tenants.length - 1])
                   .then(() => resolve())
             } else {
-              console.log('populateTenants - exist')
               populateView('/admin', 'tenants', data.tenants)
                   .then(() => resolve())
             }

@@ -201,15 +201,12 @@
       }
     },
     beforeCreate() {
-      console.log('before-create', $perAdminApp);
       $perAdminApp.getApi().populateTenants().then(() => {
         this.refreshTenants()
       })
     },
     created() {
       $perAdminApp.eventBus.$on('tenants-update', (event, next) => {
-        console.log(Object.assign({}, $perAdminApp.getView().state.tools))
-        console.log('event-caught', event);
         $perAdminApp.stateAction('loadToolsNodesPath', {
           selected: `/content/${event.current.name}/pages`,
         })
@@ -228,7 +225,6 @@
         $perAdminApp.forceFullRedraw()
       },
       onSelectTenant(tenant) {
-        console.log('onSelectTenant', tenant);
         $perAdminApp.stateAction('setTenant', tenant)
       },
       onHelpClick() {

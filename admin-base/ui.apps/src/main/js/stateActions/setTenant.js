@@ -28,36 +28,28 @@ import {set} from '../utils'
 let log = LoggerFactory.logger('setTenant').setLevelDebug()
 
 export default function(me, tenant) {
-  console.log('setTenant', Object.assign({},me), Object.assign({},tenant));
   log.fine(tenant)
 
   let view = me.getView()
   let eventBus = me.eventBus
   const list = view.admin.tenants
-  console.log(list, Object.assign({}, me.getView().admin), me.getView().admin.tenants);
 
   return new Promise( (resolve, reject) => {
     if (!list) resolve()
-    console.log('in promise', list);
     let next = list.filter((item) => (item.name === tenant.name))
     if (next.length <= 0) {
-      console.log('in throw');
       throw 'tenant not found'
     }
 
     // prepopulate tree viewers
-    console.log('populate tree viewers');
     set(me.getView(), '/state/tools', {
       pages: `/content/${tenant.name}/pages`,
       assets: `/content/${tenant.name}/assets`,
       objects: `/content/${tenant.name}/objects`,
       templates: `/content/${tenant.name}/templates`
     })
-    console.log(Object.assign({},me.getView().state.tools))
-    console.log('before event emitted');
     next = next[0]
     set(me.getView(), '/state/tenant', next)
-    console.log('event emitted', me.getView().state.tenant, next);
     eventBus.$emit('tenants-update', {
       current: next
     })
