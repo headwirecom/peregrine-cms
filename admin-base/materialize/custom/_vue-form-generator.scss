@@ -513,6 +513,21 @@
                 .ql-tooltip {
                     display: none;
                 }
+
+                .text-editor {
+                    border: 1px solid #cfd8dc;
+                    padding: 0 .75rem;
+                    outline: none;
+
+                    &:focus {
+                        border-bottom: 1px solid #607d8b;
+                        box-shadow: 0 1px 0 0 #607d8b;
+                    }
+
+                    a {
+                        color: #2b6cb0
+                    }
+                }
             }
             &.field-checkbox {
                 .field-wrap {

@@ -52,6 +52,7 @@
           path: {
             current: '',
             selected: null,
+            suffix: ''
           }
         }
       }
@@ -305,6 +306,7 @@
           this.browser.path.current = this.roots.pages
           this.browser.withLinkTab = true
           this.browser.type = 'page'
+          this.browser.path.suffix = '.html'
           this.startBrowsing()
         }
       },
@@ -314,6 +316,7 @@
         this.browser.path.current = this.roots.assets
         this.browser.withLinkTab = false
         this.browser.type = 'image'
+        this.browser.path.suffix = ''
         this.startBrowsing()
       },
       quote() {
@@ -370,9 +373,9 @@
       },
       onBrowserSelect() {
         this.browser.open = false
-        this.execCmd(this.browser.cmd, `${this.browser.path.selected}.html`)
+        this.execCmd(this.browser.cmd, this.browser.path.selected + this.browser.path.suffix)
         this.browser.cmd = null
-        this.browser.selected = null
+        this.browser.path.selected = null
       },
       setBrowserPathCurrent(path) {
         this.browser.path.current = path

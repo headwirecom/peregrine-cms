@@ -32,17 +32,20 @@
             </div>
             <ul class="pathbrowser-tabs">
                 <li class="tab">
-                    <a href="#" :class="tab === 'browse' ? 'active' : ''" v-on:click="select('browse')">
+                    <a href="#" :class="tab === 'browse' ? 'active' : ''" v-on:click="select('browse')"
+                       @mousedown.prevent="() => {}">
                         <i class="material-icons">list</i>
                     </a>
                 </li>
                 <li class="tab">
-                    <a href="#" :class="tab === 'cards' ? 'active' : ''" v-on:click="select('cards')">
+                    <a href="#" :class="tab === 'cards' ? 'active' : ''" v-on:click="select('cards')"
+                       @mousedown.prevent="() => {}">
                         <i class="material-icons">view_module</i>
                     </a>
                 </li>
                 <li v-if="withLinkTab" class="tab">
-                    <a href="#" :class="tab === 'link' ? 'active' : ''" v-on:click="select('link')">
+                    <a href="#" :class="tab === 'link' ? 'active' : ''" v-on:click="select('link')"
+                       @mousedown.prevent="() => {}">
                         <i class="material-icons">link</i>
                     </a>
                 </li>
@@ -86,7 +89,8 @@
                                     <template v-if="!isRoot">
                                         <a
                                             href="#!"
-                                            v-on:click.stop.prevent="selectParent">
+                                            v-on:click.stop.prevent="selectParent"
+                                            @mousedown.prevent="() => {}">
                                             <i class="material-icons">keyboard_arrow_left</i>
                                         </a>
                                         {{currentPath}} ({{list.length}})
@@ -106,20 +110,23 @@
                             <template v-for="item in list">
                                 <li v-if="isFolder(item)"
                                     v-on:click.stop.prevent="navigateFolder(item)"
+                                    @mousedown.prevent="() => {}"
                                     :class="isSelected(item.path) ? 'selected' : ''">
                                     <template v-if="!isBrowserTypeImage">
                                         <input name="selectedItem" type="radio" class="with-gap" :checked="isSelected(item.path)" />
-                                        <label v-on:click.stop.prevent="selectItem(item)"></label>
+                                        <label v-on:click.stop.prevent="selectItem(item)"
+                                               @mousedown.prevent="() => {}"></label>
                                     </template>
                                     <i class="material-icons">{{getFolderIcon()}}</i>
                                     <span>{{item.name}}</span>
                                 </li>
                                 <li v-if="isFile(item) && isFileAllowed()"
                                     v-on:click.stop.prevent="selectItem(item)"
+                                    @mousedown.prevent="() => {}"
                                     :class="isSelected(item.path) ? 'selected' : ''">
                                     <template v-if="isSelectable(item)">
                                         <input name="selectedItem" type="radio" class="with-gap" :checked="isSelected(item.path)" />
-                                        <label></label>
+                                        <label @mousedown.prevent="() => {}"></label>
                                     </template>
                                     <i class="material-icons">image</i>
                                     <span>{{item.name}}</span>
@@ -348,10 +355,12 @@
                 </div>
                     <div class="pathbrowser-buttons">
                         <button v-on:click="onCancel"
+                                @mousedown.prevent="() => {}"
                                 class="modal-action waves-effect waves-light btn-flat">
                                 cancel
                         </button>
                         <button v-on:click="onSelect"
+                                @mousedown.prevent="() => {}"
                                 class="modal-action waves-effect waves-light btn-flat">
                                 select
                         </button>

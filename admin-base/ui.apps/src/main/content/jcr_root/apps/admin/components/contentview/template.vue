@@ -451,11 +451,13 @@
         this.target = event.target
         const dataInline = this.targetInline.split('.').slice(1)
         this.inline = dataInline.join('.')
+        set(this.view, '/state/inline/doc', this.iframe.doc)
       },
 
       onInlineFocusOut(event) {
         event.target.classList.remove('inline-editing')
         this.editing = false
+        set(this.view, '/state/inline/doc', null)
       },
 
       onInlineKeyDown(event) {
@@ -570,7 +572,6 @@
         this.iframe.loaded = true
         this.iframe.win = this.$refs.editview.contentWindow
         this.iframe.doc = this.iframe.win.document
-        set(this.view, '/state/inline/doc', this.iframe.doc)
         this.iframe.html = this.iframe.doc.querySelector('html')
         this.iframe.body = this.iframe.doc.querySelector('body')
         this.iframe.head = this.iframe.doc.querySelector('head')
