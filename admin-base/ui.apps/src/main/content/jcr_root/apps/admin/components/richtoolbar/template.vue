@@ -1,5 +1,5 @@
 <template>
-  <div class="toolbar" :class="{disabled: !inlineRich}">
+  <div class="toolbar" :class="{disabled: !inlineRich || this.preview === 'preview'}">
     <admin-components-richtoolbarbtn
         v-for="(btn, i) in buttons"
         :key="getButtonKey(btn, i)"
@@ -59,6 +59,19 @@
     computed: {
       buttons() {
         const buttons = [
+          {
+            title: 'change viewport',
+            icon: this.viewportIcon,
+            items: this.viewportItems,
+            class: 'always-active separate'
+          },
+          {
+            title: 'preview',
+            icon: 'visibility',
+            cmd: 'preview',
+            class: 'always-active separate',
+            isActive: () => this.preview === 'preview'
+          },
           {title: 'undo', icon: 'undo', cmd: 'undo'},
           {title: 'redo', icon: 'redo', cmd: 'redo'},
           {
@@ -144,19 +157,6 @@
             title: 'remove format',
             icon: 'format_clear',
             cmd: 'removeFormat'
-          },
-          {
-            title: 'change viewport',
-            icon: this.viewportIcon,
-            items: this.viewportItems,
-            class: 'separate always-active'
-          },
-          {
-            title: 'preview',
-            icon: 'visibility',
-            cmd: 'preview',
-            class: 'separate always-active',
-            isActive: () => this.preview === 'preview'
           }
         ]
         buttons.forEach((btn) => {

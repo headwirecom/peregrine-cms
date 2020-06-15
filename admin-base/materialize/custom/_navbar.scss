@@ -296,6 +296,7 @@ nav {
       justify-content: left;
       align-items: center;
       margin-right: 6.8rem;
+      margin-left: 1rem;
 
       &.disabled {
         .btn:not(.always-active) {
@@ -323,7 +324,7 @@ nav {
         }
 
         &.separate {
-          margin-left: 10px;
+          margin-right: 10px;
         }
 
         &:hover:not(.active) {
