@@ -370,7 +370,6 @@
       },
       onBrowserSelect() {
         this.browser.open = false
-        console.log(this.browser.path, this.browser.path.selected)
         this.execCmd(this.browser.cmd, `${this.browser.path.selected}.html`)
         this.browser.cmd = null
         this.browser.selected = null
