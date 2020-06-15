@@ -731,8 +731,12 @@
       },
 
       iframePreviewMode() {
-        this.iframe.doc.removeEventListener('click', this.onIframeClick)
-        this.iframe.doc.removeEventListener('scroll', this.onIframeScroll)
+        try {
+          this.iframe.doc.removeEventListener('click', this.onIframeClick)
+          this.iframe.doc.removeEventListener('scroll', this.onIframeScroll)
+        } catch (err) {
+          console.trace('no event listener to be removed from iframe')
+        }
         this.iframe.body.setAttribute('contenteditable', 'false')
         this.iframe.html.classList.remove('edit-mode')
         const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)

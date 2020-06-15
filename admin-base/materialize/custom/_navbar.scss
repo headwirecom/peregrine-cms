@@ -326,6 +326,10 @@ nav {
           margin-left: 10px;
         }
 
+        &:hover:not(.active) {
+          background-color: var(--pcms-orange-hover)
+        }
+
         .material-icons {
           font-size: 20px;
           height: 100%;

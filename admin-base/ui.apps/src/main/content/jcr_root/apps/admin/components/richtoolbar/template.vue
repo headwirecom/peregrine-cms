@@ -300,16 +300,20 @@
         if (this.itemIsTag('A')) {
           this.execCmd('unlink')
         } else {
-          const uri = prompt('Provide link')
-          if (uri && uri.length >= 11) { // e.g. http://a.de (11 symbols)
-            this.execCmd('createLink', uri)
-          }
+          this.browser.cmd = 'createLink'
+          this.browser.header = this.$i18n('Create Link')
+          this.browser.path.current = this.roots.pages
+          this.browser.withLinkTab = true
+          this.browser.type = 'page'
+          this.startBrowsing()
         }
       },
       insertImage() {
         this.browser.cmd = 'insertImage'
         this.browser.header = this.$i18n('Insert Image')
         this.browser.path.current = this.roots.assets
+        this.browser.withLinkTab = false
+        this.browser.type = 'image'
         this.startBrowsing()
       },
       quote() {
@@ -366,7 +370,8 @@
       },
       onBrowserSelect() {
         this.browser.open = false
-        this.execCmd(this.browser.cmd, this.browser.path.selected)
+        console.log(this.browser.path, this.browser.path.selected)
+        this.execCmd(this.browser.cmd, `${this.browser.path.selected}.html`)
         this.browser.cmd = null
         this.browser.selected = null
       },
