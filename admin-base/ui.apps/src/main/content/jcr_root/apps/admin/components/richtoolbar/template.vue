@@ -1,5 +1,5 @@
 <template>
-  <div class="toolbar" :class="{disabled: !inlineRich || this.preview === 'preview'}">
+  <div class="toolbar" :class="{disabled: !inlineRich || preview === 'preview'}">
     <admin-components-richtoolbarbtn
         v-for="(btn, i) in buttons"
         :key="getButtonKey(btn, i)"
