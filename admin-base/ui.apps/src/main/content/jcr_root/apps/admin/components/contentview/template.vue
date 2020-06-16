@@ -534,7 +534,7 @@
 
       onInlineDelete(event) {
         const selection = this.iframe.win.getSelection()
-        if (selection.anchorNode === this.target) {
+        if (selection.rangeCount > 1 && selection.anchorNode === this.target) {
           event.preventDefault();
           this.iframe.doc.execCommand('delete')
           this.target.innerHTML = ''
