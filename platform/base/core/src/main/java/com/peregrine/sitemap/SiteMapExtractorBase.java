@@ -30,24 +30,24 @@ import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Matcher;
 
 import static java.util.Objects.isNull;
 
 public abstract class SiteMapExtractorBase implements SiteMapExtractor {
 
-    protected final SiteMapConfiguration configuration;
-
-    protected SiteMapExtractorBase(final SiteMapConfiguration configuration) {
-        this.configuration = configuration;
-    }
-
     @Override
-    public SiteMapConfiguration getConfiguration() {
-        return configuration;
+    public boolean appliesTo(final Resource root) {
+        if (isNull(root)) {
+            return false;
+        }
+
+        return Optional.ofNullable(getConfiguration())
+                .map(SiteMapConfiguration::getPagePathPattern)
+                .map(p -> p.matcher(root.getPath()))
+                .map(Matcher::matches)
+                .orElse(true);
     }
 
     @Override
@@ -73,7 +73,7 @@ public abstract class SiteMapExtractorBase implements SiteMapExtractor {
     }
 
     private boolean isPage(final Page page) {
-        final PageRecognizer recognizer = configuration.getPageRecognizer();
+        final PageRecognizer recognizer = getConfiguration().getPageRecognizer();
         return isNull(recognizer) || recognizer.isPage(page);
     }
 
@@ -90,7 +90,7 @@ public abstract class SiteMapExtractorBase implements SiteMapExtractor {
 
     private Map<String, PropertyProvider> getPropertyProviders() {
         final Map<String, PropertyProvider> result = new LinkedHashMap<>();
-        for (final PropertyProvider provider : configuration.getPropertyProviders()) {
+        for (final PropertyProvider provider : getConfiguration().getPropertyProviders()) {
             addPropertyProvider(result, provider);
         }
 
@@ -115,7 +115,7 @@ public abstract class SiteMapExtractorBase implements SiteMapExtractor {
     protected abstract Iterable<? extends PropertyProvider> getDefaultPropertyProviders();
 
     private String externalize(final Page page) {
-        final UrlExternalizer externalizer = getExternalizer();
+        final UrlExternalizer externalizer = getUrlExternalizer();
         if (isNull(externalizer)) {
             return page.getPath() + SiteMapConstants.DOT_HTML;
         }
@@ -123,8 +123,8 @@ public abstract class SiteMapExtractorBase implements SiteMapExtractor {
         return externalizer.map(page);
     }
 
-    protected UrlExternalizer getExternalizer() {
-        return configuration.getUrlExternalizer();
+    protected UrlExternalizer getUrlExternalizer() {
+        return getConfiguration().getUrlExternalizer();
     }
 
     protected abstract SiteMapUrlBuilder getUrlBuilder();
@@ -136,7 +136,7 @@ public abstract class SiteMapExtractorBase implements SiteMapExtractor {
     }
 
     private String externalize(final ResourceResolver resourceResolver, final String url) {
-        final UrlExternalizer externalizer = getExternalizer();
+        final UrlExternalizer externalizer = getUrlExternalizer();
         if (isNull(externalizer)) {
             return url;
         }

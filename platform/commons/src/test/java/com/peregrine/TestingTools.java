@@ -1,9 +1,13 @@
 package com.peregrine;
 
+import com.peregrine.mock.ResourceMock;
+import org.apache.commons.lang3.StringUtils;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 
+import static com.peregrine.commons.util.PerConstants.SLASH;
 import static org.junit.Assert.*;
 
 public final class TestingTools {

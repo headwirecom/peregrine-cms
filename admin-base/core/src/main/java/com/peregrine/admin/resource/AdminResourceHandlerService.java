@@ -1,69 +1,7 @@
 package com.peregrine.admin.resource;
 
-import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
-import static com.peregrine.commons.util.PerConstants.ASSET;
-import static com.peregrine.commons.util.PerConstants.ASSETS_ROOT;
-import static com.peregrine.commons.util.PerConstants.ASSET_CONTENT_TYPE;
-import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.COMPONENT;
-import static com.peregrine.commons.util.PerConstants.COMPONENTS;
-import static com.peregrine.commons.util.PerConstants.COMPONENT_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
-import static com.peregrine.commons.util.PerConstants.DEPENDENCIES;
-import static com.peregrine.commons.util.PerConstants.FELIBS_ROOT;
-import static com.peregrine.commons.util.PerConstants.FOLDER;
-import static com.peregrine.commons.util.PerConstants.INTERNAL;
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.JCR_CREATED;
-import static com.peregrine.commons.util.PerConstants.JCR_CREATED_BY;
-import static com.peregrine.commons.util.PerConstants.JCR_DATA;
-import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
-import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
-import static com.peregrine.commons.util.PerConstants.JCR_UUID;
-import static com.peregrine.commons.util.PerConstants.NAME;
-import static com.peregrine.commons.util.PerConstants.NODE;
-import static com.peregrine.commons.util.PerConstants.NT_FILE;
-import static com.peregrine.commons.util.PerConstants.NT_RESOURCE;
-import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
-import static com.peregrine.commons.util.PerConstants.OBJECT;
-import static com.peregrine.commons.util.PerConstants.OBJECTS;
-import static com.peregrine.commons.util.PerConstants.OBJECTS_ROOT;
-import static com.peregrine.commons.util.PerConstants.OBJECT_DEFINITION_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.OBJECT_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.PACKAGES_PATH;
-import static com.peregrine.commons.util.PerConstants.PAGE;
-import static com.peregrine.commons.util.PerConstants.PAGES_ROOT;
-import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
-import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.PATH;
-import static com.peregrine.commons.util.PerConstants.RENDITION;
-import static com.peregrine.commons.util.PerConstants.SITE_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
-import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
-import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_SUPER_TYPE;
-import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
-import static com.peregrine.commons.util.PerConstants.TEMPLATE;
-import static com.peregrine.commons.util.PerConstants.TEMPLATES_ROOT;
-import static com.peregrine.commons.util.PerConstants.TENANT;
-import static com.peregrine.commons.util.PerConstants.TEXT_MIME_TYPE;
-import static com.peregrine.commons.util.PerConstants.VARIATIONS;
-import static com.peregrine.commons.util.PerUtil.convertToMap;
-import static com.peregrine.commons.util.PerUtil.getBoolean;
-import static com.peregrine.commons.util.PerUtil.getChildIndex;
-import static com.peregrine.commons.util.PerUtil.getClassOrNull;
-import static com.peregrine.commons.util.PerUtil.getComponentVariableNameFromString;
-import static com.peregrine.commons.util.PerUtil.getFirstChild;
-import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
-import static com.peregrine.commons.util.PerUtil.getNode;
-import static com.peregrine.commons.util.PerUtil.getNodeAtPosition;
-import static com.peregrine.commons.util.PerUtil.getPath;
-import static com.peregrine.commons.util.PerUtil.getResource;
-import static com.peregrine.commons.util.PerUtil.getString;
-import static com.peregrine.commons.util.PerUtil.isPrimaryType;
-import static com.peregrine.commons.util.PerUtil.isPropertyPresentAndEqualsTrue;
-import static com.peregrine.commons.util.PerUtil.toStringOrNull;
+import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerUtil.*;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isAnyBlank;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -80,45 +18,30 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.peregrine.adaption.PerAsset;
+import com.peregrine.admin.models.Recyclable;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.rendition.BaseResourceHandler;
 import com.peregrine.replication.ImageMetadataSelector;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import javax.jcr.Binary;
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
+import javax.jcr.*;
+import javax.jcr.version.Version;
+import javax.jcr.version.VersionHistory;
+import javax.jcr.version.VersionIterator;
+import javax.jcr.version.VersionManager;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
-import org.apache.sling.api.resource.ModifiableValueMap;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.api.resource.*;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -172,6 +95,7 @@ public class AdminResourceHandlerService
     private static final String RESOURCE_NOT_FOUND = "Resource not found, Path: '%s'";
     private static final String NO_CONTENT_PROVIDED = "No Content provided, Path: '%s'";
     private static final String FAILED_TO_PARSE_JSON = "Failed to parse Json Content: '%s'";
+    private static final String FAILED_CREATE_RECYCLEABLE = "Failed to create recyclable: deleted item {} not recoverable.";
 
     private static final String FAILED_TO_DELETE_CHILD = "Failed to delete child resource: '%s'";
     private static final String OBJECT_FIRST_ITEM_WITH_UNSUPPORTED_TYPE = "Object List had an unsupported first entry: '%s' (type: '%s')";
@@ -195,6 +119,7 @@ public class AdminResourceHandlerService
     public static final String COPY_FAILED = "Copy of %s: '%s' failed";
     private static final String IMAGE_METADATA_TAG_NAME = "Image Metadata Tag Name: '{}'";
     private static final String ADD_TAG_CATEGORY_TAG_NAME_VALUE = "Add Tag, Category: '{}', Tag Name: '{}', Value: '{}'";
+    public static final SimpleDateFormat RECYCLABLE_PATH_DATE_FORMAT = new SimpleDateFormat("yyyy/MM");
 
     public static final String MISSING_RESOURCE_RESOLVER_FOR_UPDATE = "Resource Resolver must be provided to update a site from its source";
     public static final String MISSING_SITE_RESOURCE = "Site: '%s' does not exist";
@@ -269,6 +194,7 @@ public class AdminResourceHandlerService
         cardinality = ReferenceCardinality.MULTIPLE,
         policy = ReferencePolicy.DYNAMIC
     )
+
     void addImageMetadataSelector(ImageMetadataSelector selector) {
         imageMetadataSelectors.add(selector);
     }
@@ -414,6 +340,15 @@ public class AdminResourceHandlerService
             throw new ManagementException(String.format(RESOURCE_FOR_DELETION_NOT_FOUND, path));
         }
         try {
+            createRecyclable(resourceResolver, resource);
+        } catch (Exception e) {
+            // Creating a recyclable when deleting a resource may fail
+            // * if the user does not write permission to /var/recyclebin/{site}
+            // * if the user does not ACL jcr:versionManagement permissions
+            // Under these circumstances, the deletion will continue and a warning will be printed to the logs.
+            logger.warn(FAILED_CREATE_RECYCLEABLE, path, e);
+        }
+        try {
             final String primaryTypeValue = resource.getValueMap().get(JCR_PRIMARY_TYPE, EMPTY);
             if (isNotEmpty(primaryType) && !primaryTypeValue.equals(primaryType)) {
                 throw new ManagementException(String.format(PRIMARY_TYPE_ASKEW_FOR_DELETION, path, primaryType, primaryTypeValue));
@@ -431,6 +366,244 @@ public class AdminResourceHandlerService
             throw new ManagementException(String.format(FAILED_TO_DELETE, path), e);
         }
     }
+
+    @Override
+    public Recyclable createRecyclable(ResourceResolver resourceResolver, Resource resource) throws ManagementException {
+        if (isRecyclable(resource)) {
+            Version version = createVersion(resourceResolver, resource.getPath());
+            final Calendar now = Calendar.getInstance();
+            final String siteHomePath = getSiteHomePath(resourceResolver, resource);
+            final String recyclablePath = RECYCLE_BIN_PATH + siteHomePath + SLASH + RECYCLABLE_PATH_DATE_FORMAT.format(now.getTime());
+
+            try {
+                Resource item = ResourceUtil.getOrCreateResource(
+                        resourceResolver,
+                        recyclablePath + SLASH + now.getTimeInMillis(),
+                        "admin/components/recyclable",
+                        NT_UNSTRUCTURED, false);
+                Node itemNode = item.adaptTo(Node.class);
+                itemNode.setProperty(JCR_CREATED, now);
+                itemNode.setProperty(JCR_CREATED_BY, resourceResolver.getUserID());
+                itemNode.setProperty("frozenNodePath", version.getPath());
+                itemNode.setProperty("resourcePath", resource.getPath());
+                Node parentNode = item.getParent().adaptTo(Node.class);
+                parentNode.setProperty("hasRecyclables", true);
+                resourceResolver.refresh();
+                resourceResolver.commit();
+                return item.adaptTo(Recyclable.class);
+            } catch (RepositoryException e) {
+                throw new ManagementException("Failed to create recyclable", e);
+            } catch (PersistenceException e) {
+                throw new ManagementException("Failed to create recyclable", e);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<Recyclable> getRecyclables(ResourceResolver resourceResolver, String path) {
+        final Resource resource = path.startsWith(RECYCLE_BIN_PATH) ?
+                getResource(resourceResolver, path) : getResource(resourceResolver, RECYCLE_BIN_PATH + path);
+        if (resource == null) {
+            return new ArrayList<>();
+        }
+        ArrayList<Recyclable> recyclables = new ArrayList<>();
+        for (Resource res : resource.getChildren()){
+            if (res.getResourceType().equals(RECYCLEBIN_RESOURCE_TYPE)){
+                final Recyclable recyclable = res.adaptTo(Recyclable.class);
+                if (recyclable != null) {
+                    recyclables.add(recyclable);
+                }
+            }
+        }
+        return recyclables;
+    }
+
+    @Override
+    public Recyclable getRecyclable(ResourceResolver resourceResolver, String path) {
+        final Resource resource = path.startsWith(RECYCLE_BIN_PATH) ?
+                getResource(resourceResolver, path) : getResource(resourceResolver, RECYCLE_BIN_PATH + path);
+        if (resource == null) {
+            return null;
+        }
+        return resource.adaptTo(Recyclable.class);
+    }
+
+    public boolean hasPermission(ResourceResolver resourceResolver, String jcrActions, String path) {
+        Session session = resourceResolver.adaptTo(Session.class);
+        try {
+            return session.hasPermission(path, jcrActions);
+        } catch (RepositoryException e) {
+            logger.error("Failed to evaluate user permissions ", e);
+        }
+        return false;
+    }
+
+//    Assets, Pages, Folders are recyclable. Individual component nodes under jcr:content are not recyclable.
+    private boolean isRecyclable(Resource resource) {
+        if (checkResource(resource) == null) {
+            return false;
+        }
+        return (resource.getPath().matches(SITE_PAGES_PATTERN) ||
+                resource.getPath().matches(SITE_ASSETS_PATTERN) ||
+                resource.getPath().matches(SITE_TEMPLATES_PATTERN) ||
+                resource.getPath().matches(SITE_OBJECTS_PATTERN))
+                && !resource.getPath().contains(JCR_CONTENT);
+    }
+
+    @Override
+    public VersionIterator getVersionIterator(ResourceResolver resourceResolver, Resource resource) throws ManagementException, RepositoryException {
+        if (resource == null) {
+            return null;
+        }
+        VersionManager vm = resourceResolver.adaptTo(Session.class).getWorkspace().getVersionManager();
+        VersionHistory vh;
+        try {
+            vh = vm.getVersionHistory(resource.getPath());
+        } catch (UnsupportedRepositoryOperationException e) {
+            logger.debug("resource has no history of versions, therefore resource has no versions.");
+            return null;
+        }
+        return vh.getAllVersions();
+    }
+
+    @Override
+    public Version getBaseVersion(ResourceResolver resourceResolver, String path) throws RepositoryException {
+        VersionManager versionManager = resourceResolver.adaptTo(Session.class).getWorkspace().getVersionManager();
+        return versionManager.getBaseVersion(path);
+    }
+
+    @Override
+    public void deleteVersion(ResourceResolver resourceResolver, String path, String versionName)
+            throws RepositoryException {
+        VersionManager vm = resourceResolver.adaptTo(Session.class).getWorkspace().getVersionManager();
+        VersionHistory vh = vm.getVersionHistory(path);
+        vh.removeVersion(versionName);
+    }
+
+    // jcr 2.0 Chapter 3
+    // https://docs.adobe.com/docs/en/spec/jcr/2.0/3_Repository_Model.html
+    // jcr 2.0 Chapter 15
+    // https://docs.adobe.com/content/docs/en/spec/jcr/2.0/15_Versioning.html#15.2.1%20Version%20Object
+    @Override
+    public Version createVersion(ResourceResolver resourceResolver, String path) throws ManagementException {
+        Resource resource = getResource(resourceResolver, path);
+        if (resource == null) {
+            throw new ManagementException("Could not find resource for versioning "+ path);
+        }
+        Node versionableNode = resource.adaptTo(Node.class);
+        try {
+            VersionManager vm = versionableNode.getSession().getWorkspace().getVersionManager();
+            VersionHistory vh = null;
+            try {
+                vh = vm.getVersionHistory(versionableNode.getPath());
+            } catch (RepositoryException e) {
+                logger.warn("not mix:versionable, adding mix:versionable and returning the root version");
+                versionableNode.addMixin("mix:versionable");
+                vh = vm.getVersionHistory(versionableNode.getPath());
+                try {
+                    resourceResolver.commit();
+                } catch (PersistenceException ex) {
+                    logger.error("could not make node versionable", e);
+                    return null;
+                }
+                vm = versionableNode.getSession().getWorkspace().getVersionManager();
+            }
+            if (vh != null) {
+                if (vm.isCheckedOut(path)){
+                    Version v = vm.checkin(path);
+                    vm.checkout(path);
+                    vh.addVersionLabel(v.getName(), "recyclableItem", true);
+                    logger.warn("Version created for {} at {}", path, v.getFrozenNode().getPath());
+                    return v;
+                }
+            }
+            return null;
+
+        } catch (RepositoryException e) {
+            logger.error("RepositoryException while creating version  {}", path, e);
+            throw new ManagementException("Create Version FAILED", e);
+        }
+    }
+
+    @Override
+    public Resource restoreVersion(ResourceResolver resourceResolver, String path, String frozenNodepath, boolean force)
+            throws ManagementException {
+        resourceResolver.refresh();
+        Session jcrSession = resourceResolver.adaptTo(Session.class);
+        try {
+            Version restoreVersion = (Version) jcrSession.getNode(frozenNodepath);
+            VersionManager vm = jcrSession.getWorkspace().getVersionManager();
+            vm.restore(restoreVersion, force);
+            vm.checkout(path);
+            return getResource(resourceResolver,path);
+        } catch (RepositoryException e) {
+            throw new ManagementException("Failed to restore Version", e);
+        }
+    }
+
+    @Override
+    public void restoreVersionByName(ResourceResolver resourceResolver, String path, String versionName, boolean removingExisting)
+            throws RepositoryException {
+        Session jcrSession = resourceResolver.adaptTo(Session.class);
+        VersionManager vm = jcrSession.getWorkspace().getVersionManager();
+        vm.restore(path, versionName, removingExisting);
+        vm.checkout(path);
+    }
+
+    @Override
+    public boolean isCheckedOut(ResourceResolver resourceResolver, String path) throws ManagementException {
+        try {
+            VersionManager vm = resourceResolver.adaptTo(Session.class).getWorkspace().getVersionManager();
+            return vm.isCheckedOut(path);
+        } catch (RepositoryException e) {
+            throw new ManagementException("isCheckedOut failed ", e);
+        }
+    }
+
+    @Override
+    public Resource recycleDeleted(ResourceResolver resourceResolver, Recyclable recyclable, boolean force)
+            throws ManagementException, PersistenceException, RepositoryException {
+        Resource resource = restoreDeleted(resourceResolver, recyclable.getResourcePath(), recyclable.getFrozenNodePath(), force);
+        if (resource != null) {
+            boolean deleteParentRecyclingNode = true;
+            for (Resource sibling : recyclable.getResource().getParent().getChildren()){
+                if( !sibling.getPath().equals(recyclable.getResource().getPath()) && sibling.getResourceType().equals(RECYCLEBIN_RESOURCE_TYPE)) {
+                    deleteParentRecyclingNode = false;
+                    break;
+                }
+            }
+            if( deleteParentRecyclingNode) {
+                resourceResolver.delete(recyclable.getResource().getParent());
+            } else {
+                resourceResolver.delete(recyclable.getResource());
+            }
+            resourceResolver.commit();
+        }
+        return resource;
+    }
+
+    @Override
+    public Resource restoreDeleted(ResourceResolver resourceResolver, String path, String version, boolean force)
+            throws ManagementException, RepositoryException {
+        resourceResolver.refresh();
+        final Session jcrSession = resourceResolver.adaptTo(Session.class);
+        try {
+            Version restoreVersion = (Version) jcrSession.getNode(version);
+            VersionManager vm = jcrSession.getWorkspace().getVersionManager();
+            vm.restore(path, restoreVersion, force);
+            vm.checkin(path);
+            vm.checkout(path);
+            return getResource(resourceResolver,path);
+        } catch (PathNotFoundException pe) {
+            throw pe;
+        } catch (RepositoryException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ManagementException("Failed to restore Version", e);
+        }
+    }
+
 
     @Override
     public Resource insertNode(Resource resource, Map<String, Object> properties, boolean addAsChild, boolean orderBefore, String variation) throws ManagementException {
@@ -511,6 +684,11 @@ public class AdminResourceHandlerService
         }
     }
 
+    @Override
+    public String getSiteHomePath(ResourceResolver resourceResolver, Resource resource) {
+        return resource == null ? null : resource.getPath().substring(0,
+            resource.getPath().indexOf(resource.getPath().replaceFirst(SITE_HOME_PATTERN, ""))-1);
+    }
 
     @Override
     public Resource rename(Resource fromResource, String newName) throws ManagementException {
@@ -531,6 +709,10 @@ public class AdminResourceHandlerService
         }
         try {
             final Resource answer = resourceRelocation.rename(fromResource, newName, true);
+            ModifiableValueMap mvm = getModifiableProperties(answer, true);
+            if (mvm != null && mvm.containsKey(NAME_PROPERTY)) {
+                mvm.put(NAME_PROPERTY, newName);
+            }
             baseResourceHandler.updateModification(answer);
             return answer;
         } catch (Exception e) {
@@ -1418,12 +1600,23 @@ public class AdminResourceHandlerService
         return answer;
     }
 
-    private void updateTitle(Resource resource, String title) {
+    public void updateTitle(Resource resource, String title) {
         if (JCR_CONTENT.equals(resource.getName())) {
             ValueMap properties = getModifiableProperties(resource, false);
             if (properties.containsKey(JCR_TITLE)) {
                 properties.put(JCR_TITLE, title);
             }
+            if (properties.containsKey(TITLE)){
+                properties.put(TITLE, title);
+            }
+        }
+    }
+
+    public void updateOrCreateAssetTitle(Resource resource, String title) {
+        if (JCR_CONTENT.equals(resource.getName())) {
+            ValueMap properties = getModifiableProperties(resource, false);
+            properties.put(TITLE, title);
+            properties.put(JCR_TITLE, title);
         }
     }
 

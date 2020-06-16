@@ -63,8 +63,18 @@ public abstract class PageRecognizerBase implements PageRecognizer {
             return false;
         }
 
-        if (candidate.getProperty(excludeFromSiteMapPropertyName, false)) {
-            return false;
+        if (candidate.containsProperty(excludeFromSiteMapPropertyName)) {
+            Object excludeFromSiteMapProperty = candidate.getProperty(excludeFromSiteMapPropertyName);
+            if (excludeFromSiteMapProperty instanceof String) {
+                if (((String) excludeFromSiteMapProperty).equalsIgnoreCase("true")) {
+                    return false;
+                }
+            } else if (excludeFromSiteMapProperty instanceof Boolean) {
+                if (candidate.getProperty(excludeFromSiteMapPropertyName, false)) {
+                    return false;
+                }
+            }
+
         }
 
         return isPageImpl(candidate);

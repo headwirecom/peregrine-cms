@@ -29,28 +29,7 @@ import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_CREATION_TEN
 import static com.peregrine.admin.util.AdminConstants.GROUP_NAME_SUFFIX;
 import static com.peregrine.admin.util.AdminConstants.PEREGRINE_SERVICE_NAME;
 import static com.peregrine.admin.util.AdminConstants.USER_NAME_SUFFIX;
-import static com.peregrine.commons.util.PerConstants.ADMIN_USER;
-import static com.peregrine.commons.util.PerConstants.ALL_TENANTS_GROUP_NAME;
-import static com.peregrine.commons.util.PerConstants.COLOR_PALETTE;
-import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
-import static com.peregrine.commons.util.PerConstants.CREATED;
-import static com.peregrine.commons.util.PerConstants.FROM_TENANT_NAME;
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
-import static com.peregrine.commons.util.PerConstants.NAME;
-import static com.peregrine.commons.util.PerConstants.PATH;
-import static com.peregrine.commons.util.PerConstants.SITE;
-import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerConstants.SOURCE_PATH;
-import static com.peregrine.commons.util.PerConstants.STATUS;
-import static com.peregrine.commons.util.PerConstants.TEMPLATES_ROOT;
-import static com.peregrine.commons.util.PerConstants.TENANT;
-import static com.peregrine.commons.util.PerConstants.TENANT_GROUP_HOME;
-import static com.peregrine.commons.util.PerConstants.TENANT_USER_HOME;
-import static com.peregrine.commons.util.PerConstants.TENANT_USER_PWD;
-import static com.peregrine.commons.util.PerConstants.TO_TENANT_NAME;
-import static com.peregrine.commons.util.PerConstants.TO_TENANT_TITLE;
-import static com.peregrine.commons.util.PerConstants.TYPE;
+import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -70,6 +49,7 @@ import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import java.io.IOException;
 import java.util.Arrays;
+import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.security.AccessControlManager;
@@ -82,6 +62,7 @@ import org.apache.jackrabbit.api.security.user.AuthorizableExistsException;
 import org.apache.jackrabbit.api.security.user.Group;
 import org.apache.jackrabbit.api.security.user.User;
 import org.apache.jackrabbit.api.security.user.UserManager;
+import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.commons.jackrabbit.authorization.AccessControlUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ModifiableValueMap;
@@ -143,8 +124,6 @@ public class CreateTenantServlet extends AbstractBaseServlet {
                 ModifiableValueMap properties = site.adaptTo(ModifiableValueMap.class);
                 properties.put(JCR_TITLE, title);
             }
-            // Check if Admin user and if not get password
-            String userName = request.getRequest().getUserPrincipal().getName();
             // Get User Password
             String userPwd = request.getParameter(TENANT_USER_PWD);
             boolean isPwdProvided = isNotEmpty(userPwd);
@@ -201,7 +180,7 @@ public class CreateTenantServlet extends AbstractBaseServlet {
                 tenantGroup.addMember(tenantUser);
             } else {
                 // We also need to add the current non-admin user to the group so that new site is visible for them
-                Authorizable authorizable = userManager.getAuthorizable(userName);
+                Authorizable authorizable = userManager.getAuthorizable(request.getRequest().getUserPrincipal());
                 if(authorizable != null) {
                     tenantGroup.addMember(authorizable);
                 }
@@ -214,6 +193,16 @@ public class CreateTenantServlet extends AbstractBaseServlet {
                 policies.addEntry(allTenantsGroup.getPrincipal(), privileges, false, null);
                 policies.addEntry(tenantGroup.getPrincipal(), privileges, true, null);
                 accessControlManager.setPolicy(site.getPath(), policies);
+                Node recycleBin = JcrUtils.getOrCreateByPath(
+                        RECYCLE_BIN_PATH + site.getPath(),
+                        NT_UNSTRUCTURED,
+                        NT_UNSTRUCTURED,
+                        resourceResolver.adaptTo(Session.class),
+                        false);
+                JackrabbitAccessControlList rbPolicies = AccessControlUtils.getAccessControlList(accessControlManager, recycleBin.getPath());
+                rbPolicies.addEntry(allTenantsGroup.getPrincipal(), privileges, false, null);
+                rbPolicies.addEntry(tenantGroup.getPrincipal(), privileges, true, null);
+                accessControlManager.setPolicy(recycleBin.getPath(), rbPolicies);
                 // Done settings permissions
             } catch(RuntimeException e) {
                 logger.warn("Setting Site Permissions failed", e);

@@ -79,8 +79,13 @@ import moveTemplate from './stateActions/moveTemplate'
 import renameObject from './stateActions/renameObject'
 import moveObject from './stateActions/moveObject'
 import deleteTemplate from './stateActions/deleteTemplate'
+import deleteVersion from './stateActions/deleteVersion'
+import createVersion from './stateActions/createVersion'
+import restoreVersion from './stateActions/restoreVersion'
 import renameTemplate from './stateActions/renameTemplate'
 import setTenant from './stateActions/setTenant'
+import recycleItem from './stateActions/recycleItem'
+import deleteRecyclable from './stateActions/deleteRecyclable'
 import tenantSetupReplication from './stateActions/tenantSetupReplication'
 
 let log = LoggerFactory.logger('actions').setLevelDebug()
@@ -145,8 +150,14 @@ actions['saveTemplateProperties'] = savePageProperties
 actions['renameTemplate'] = renameTemplate
 actions['moveTemplate'] = moveTemplate
 actions['deleteTemplate'] = deleteTemplate
+actions['recycleItem'] = recycleItem
+actions['deleteRecyclable'] = deleteRecyclable
+actions['deleteVersion'] = deleteVersion
+actions['createVersion'] = createVersion
+actions['restoreVersion'] = restoreVersion
 actions['setTenant'] = setTenant
 actions['tenantSetupReplication'] = tenantSetupReplication
+
 
 function noopAction(me, target) {
     log.error('state action noop with target:', target)

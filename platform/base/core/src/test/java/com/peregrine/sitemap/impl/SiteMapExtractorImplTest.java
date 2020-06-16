@@ -5,7 +5,6 @@ import com.peregrine.sitemap.PropertyProvider;
 import com.peregrine.sitemap.SiteMapConfiguration;
 import com.peregrine.sitemap.SiteMapUrlBuilder;
 import com.peregrine.sitemap.UrlExternalizer;
-import junitx.util.PrivateAccessor;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +13,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -28,10 +26,6 @@ public final class SiteMapExtractorImplTest extends SlingResourcesTest {
     private final LastModPropertyProvider lastMod = new LastModPropertyProvider();
     private final PriorityPropertyProvider priority = new PriorityPropertyProvider();
 
-    private final SiteMapExtractorDefaults extractorDefaults = new SiteMapExtractorDefaults();
-
-    private final Pattern pattern = Pattern.compile(resource.getPath());
-
     private SiteMapExtractorImpl model;
 
     @Mock
@@ -41,13 +35,8 @@ public final class SiteMapExtractorImplTest extends SlingResourcesTest {
     private SiteMapUrlBuilder urlBuilder;
 
     @Before
-    public void setUp() throws NoSuchFieldException {
-        PrivateAccessor.setField(extractorDefaults, "urlBuilder", urlBuilder);
-        PrivateAccessor.setField(extractorDefaults, "etcMapUrlExternalizer", externalizer);
-        PrivateAccessor.setField(extractorDefaults, "lastModPropertyProvider", lastMod);
-        PrivateAccessor.setField(extractorDefaults, "changeFreqPropertyProvider", changeFreq);
-        PrivateAccessor.setField(extractorDefaults, "priorityPropertyProvider", priority);
-        model = new SiteMapExtractorImpl(config, extractorDefaults);
+    public void setUp() {
+        model = new SiteMapExtractorImpl(config, urlBuilder, externalizer, lastMod, changeFreq, priority);
     }
 
     @Test
@@ -57,18 +46,9 @@ public final class SiteMapExtractorImplTest extends SlingResourcesTest {
 
     @Test
     public void getExternalizer() {
-        assertEquals(externalizer, model.getExternalizer());
+        assertEquals(externalizer, model.getUrlExternalizer());
         when(config.getUrlExternalizer()).thenReturn(mock(UrlExternalizer.class));
-        assertNotEquals(externalizer, model.getExternalizer());
-    }
-
-    @Test
-    public void appliesTo() {
-        assertTrue(model.appliesTo(page));
-        assertTrue(model.appliesTo(resource));
-        when(config.getPagePathPattern()).thenReturn(pattern);
-        assertFalse(model.appliesTo(page));
-        assertTrue(model.appliesTo(resource));
+        assertNotEquals(externalizer, model.getUrlExternalizer());
     }
 
     @Test
