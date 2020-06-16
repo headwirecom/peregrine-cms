@@ -27,7 +27,8 @@
      v-html="value"
      contenteditable="true"
      @focusin="onFocusIn"
-     @focusout="onFocusOut">
+     @focusout="onFocusOut"
+     @input="onInput">
   </p>
 </template>
 
@@ -52,6 +53,10 @@
       },
       onFocusOut() {
         set(this.view, '/state/inline/doc', null)
+      },
+      onInput(event) {
+        if (this._vnode.data.domProps) this._vnode.data.domProps.innerHTML = event.target.innerHTML
+        this.model.text = event.target.innerHTML
       }
     }
   }
