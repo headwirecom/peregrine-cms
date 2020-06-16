@@ -371,6 +371,7 @@
         vm.target = null
         vm.editable.class = null
         vm.autoSave = false
+        set(vm.view, '/state/inline/rich', false)
       },
 
       flushInlineState() {
