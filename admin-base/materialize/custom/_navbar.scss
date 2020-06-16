@@ -338,6 +338,14 @@ nav {
           width: 100%;
           color: #ffffff;
         }
+
+        &.materialize-drop-down {
+          a {
+            &.active {
+              background-color: #ff9800;
+            }
+          }
+        }
       }
 
       .materialize-drop-down {
