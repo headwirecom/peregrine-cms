@@ -45,6 +45,9 @@
                 </template>
             </admin-components-materializedropdown>
         </div>
+        <template v-else v-for="child in model.children">
+            <div v-bind:is="child.component" v-bind:model="child" v-bind:key="child.path"></div>
+        </template>
     </div>
 </template>
 
