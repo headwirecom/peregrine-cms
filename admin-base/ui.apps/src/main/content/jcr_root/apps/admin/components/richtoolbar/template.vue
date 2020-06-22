@@ -35,6 +35,16 @@
 
   export default {
     name: 'RichToolbar',
+    props: {
+      showViewportBtn: {
+        type: Boolean,
+        default: true
+      },
+      showPreviewBtn: {
+        type: Boolean,
+        default: true
+      }
+    },
     data() {
       return {
         key: 0,
@@ -60,19 +70,6 @@
     computed: {
       buttons() {
         const buttons = [
-          {
-            title: 'change viewport',
-            icon: this.viewportIcon,
-            items: this.viewportItems,
-            class: 'always-active separate'
-          },
-          {
-            title: 'preview',
-            icon: 'visibility',
-            cmd: 'preview',
-            class: 'always-active separate',
-            isActive: () => this.preview === 'preview'
-          },
           {title: 'undo', icon: 'undo', cmd: 'undo'},
           {title: 'redo', icon: 'redo', cmd: 'redo'},
           {
@@ -160,11 +157,29 @@
             cmd: 'removeFormat'
           }
         ]
+        if (this.showViewportBtn) {
+          buttons.unshift({
+            title: 'change viewport',
+            icon: this.viewportIcon,
+            items: this.viewportItems,
+            class: 'always-active separate'
+          })
+        }
+        if (this.showPreviewBtn) {
+          buttons.unshift({
+            title: 'preview',
+            icon: 'visibility',
+            cmd: 'preview',
+            class: 'always-active separate',
+            isActive: () => this.preview === 'preview'
+          })
+        }
         buttons.forEach((btn) => {
           if (!btn.isActive) {
             btn.isActive = () => null
           }
         })
+
         return buttons
       },
       inline() {

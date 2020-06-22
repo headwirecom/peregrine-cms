@@ -23,13 +23,18 @@
   #L%
   -->
 <template>
-  <p class="text-editor"
-     v-html="value"
-     contenteditable="true"
-     @focusin="onFocusIn"
-     @focusout="onFocusOut"
-     @input="onInput">
-  </p>
+  <div class="text-editor-wrapper">
+    <admin-components-richtoolbar
+        :showViewportBtn="false"
+        :showPreviewBtn="false"/>
+    <p class="text-editor"
+       v-html="value"
+       contenteditable="true"
+       @focusin="onFocusIn"
+       @focusout="onFocusOut"
+       @input="onInput">
+    </p>
+  </div>
 </template>
 
 <script>
@@ -57,6 +62,9 @@
       onInput(event) {
         if (this._vnode.data.domProps) this._vnode.data.domProps.innerHTML = event.target.innerHTML
         this.model.text = event.target.innerHTML
+      },
+      pingToolbar() {
+        set(this.view, '/state/inline/ping', true)
       }
     }
   }
