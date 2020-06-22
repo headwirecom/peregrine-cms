@@ -32,7 +32,10 @@
        contenteditable="true"
        @focusin="onFocusIn"
        @focusout="onFocusOut"
-       @input="onInput">
+       @input="onInput"
+       @click="pingToolbar"
+       @keydown="pingToolbar"
+       @keyup="pingToolbar">
     </p>
   </div>
 </template>
@@ -64,7 +67,7 @@
         this.model.text = event.target.innerHTML
       },
       pingToolbar() {
-        set(this.view, '/state/inline/ping', true)
+        set(this.view, '/state/inline/ping', [])
       }
     }
   }

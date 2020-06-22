@@ -969,7 +969,7 @@
       },
 
       pingToolbar() {
-        set(this.view, '/state/inline/ping', true)
+        set(this.view, '/state/inline/ping', [])
       }
     }
   }

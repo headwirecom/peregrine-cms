@@ -31,7 +31,7 @@
 </template>
 
 <script>
-  import {get, set} from '../../../../../../js/utils'
+  import {deepClone, get, set} from '../../../../../../js/utils'
 
   export default {
     name: 'RichToolbar',
@@ -285,9 +285,11 @@
     },
     watch: {
       'inline.ping'(val) {
-        if (val) {
+        if (!val || !val.includes(this._uid)) {
           this.key++
-          set($perAdminApp.getView(), '/state/inline/ping', false)
+          const newVal = val? deepClone(val) : []
+          newVal.push(this._uid)
+          set($perAdminApp.getView(), '/state/inline/ping', newVal)
         }
       }
     },
