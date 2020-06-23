@@ -523,8 +523,8 @@
 
                         .btn {
                             position: relative;
-                            width: 25.5px;
-                            height: 25.5px;
+                            width: 32.5px;
+                            height: 32.5px;
                             padding: 0;
                             margin: 2px 2px;
                             color: #ffffff;
@@ -583,10 +583,10 @@
 
                             .caret-down:before {
                                 content: '▼';
-                                font-size: 6px;
+                                font-size: 8px;
                                 position: absolute;
-                                top: 2px;
-                                right: 0;
+                                top: 7px;
+                                right: 2px;
                                 color: #ffffff;
                             }
                         }
