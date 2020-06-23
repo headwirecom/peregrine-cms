@@ -431,7 +431,9 @@
         this.target = event.target
         const vnode = this.findVnode(this.component.__vue__, event.path)
         const attr = this.isRich ? 'innerHTML' : 'innerText'
-        if (vnode.data.domProps) vnode.data.domProps.innerHTML = this.target[attr]
+        if (vnode.data.domProps) {
+          vnode.data.domProps.innerHTML = this.target[attr]
+        }
         this.writeInlineToModel()
         this.autoSave = true
         this.reWrapEditable()
@@ -577,11 +579,15 @@
         this.iframe.body = this.iframe.doc.querySelector('body')
         this.iframe.head = this.iframe.doc.querySelector('head')
         this.iframe.app = this.iframe.doc.querySelector('#peregrine-app')
-        //this.iframe.doc.querySelector('#peregrine-app').setAttribute('contenteditable', 'false')
         this.addIframeExtraStyles()
         this.removeLinkTargets()
         this.refreshInlineEditElems()
         this.iframeEditMode()
+        const firstCmp = this.iframe.app.querySelectorAll('[data-per-path]')[2]
+        firstCmp.click()
+        setTimeout(() => {
+          document.querySelectorAll('.editor-panel-buttons button')[1].click()
+        }, 500)
       },
 
       onIframeClick(ev) {
