@@ -418,13 +418,19 @@
       },
 
       writeInlineToModel() {
+        let content = ''
+        if (this.isRich) {
+          content = this.target.innerHTML.replace(/(?:\r\n|\r|\n)/g, '<br>')
+        } else {
+          content = this.target.innerText
+        }
         const dataInline = this.targetInline.split('.').slice(1)
         dataInline.reverse()
         let parentProp = this.node
         while (dataInline.length > 1) {
           parentProp = parentProp[dataInline.pop()]
         }
-        parentProp[dataInline.pop()] = this.isRich ? this.target.innerHTML : this.target.innerText
+        parentProp[dataInline.pop()] = content
       },
 
       onInlineEdit(event) {
@@ -432,7 +438,11 @@
         const vnode = this.findVnode(this.component.__vue__, event.path)
         const attr = this.isRich ? 'innerHTML' : 'innerText'
         if (vnode.data.domProps) {
-          vnode.data.domProps.innerHTML = this.target[attr]
+          if (this.isRich) {
+            vnode.data.domProps.innerHTML = this.target.innerHTML.replace(/(?:\r\n|\r|\n)/g, '<br>')
+          } else {
+            vnode.data.domProps.innerHTML = this.target.innerText
+          }
         }
         this.writeInlineToModel()
         this.autoSave = true
