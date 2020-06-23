@@ -598,6 +598,9 @@
                         padding: 0 .75rem;
                         margin-top: 0;
                         outline: none;
+                        min-height: 10rem;
+                        max-height: 50rem;
+                        overflow: auto;
 
                         &:focus {
                             border-bottom: 1px solid #607d8b;
