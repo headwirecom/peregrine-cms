@@ -46,6 +46,12 @@ under the License.
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>external</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>example-vue.ui.apps</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
@@ -186,6 +192,10 @@ under the License.
                             <fmOutput>${project.build.directory}/fm</fmOutput>
                             <fmPrefix>peregrine-</fmPrefix>
                             <contentPackages>
+                                <contentPackage>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>external</artifactId>
+                                </contentPackage>
                                 <contentPackage>
                                     <groupId>${project.groupId}</groupId>
                                     <artifactId>admin.ui.materialize</artifactId>

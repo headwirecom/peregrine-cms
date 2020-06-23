@@ -50,6 +50,11 @@
                 return this.$root.$data.page.siteRoot+'.html'
             }
         },
+        mounted: function() {
+          window.addEventListener('pageRendered', (e) => {
+              $('.collapse').collapse('hide');
+          }, false);
+        },
         methods: {
             isActive: function(item) {
                 return item.path === this.$root.$data.page.pagePath ? 'active': ''
