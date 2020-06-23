@@ -583,11 +583,6 @@
         this.removeLinkTargets()
         this.refreshInlineEditElems()
         this.iframeEditMode()
-        const firstCmp = this.iframe.app.querySelectorAll('[data-per-path]')[2]
-        firstCmp.click()
-        setTimeout(() => {
-          document.querySelectorAll('.editor-panel-buttons button')[1].click()
-        }, 500)
       },
 
       onIframeClick(ev) {
