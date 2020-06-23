@@ -518,7 +518,7 @@
                     .toolbar {
                         display: flex;
                         flex-wrap: wrap;
-                        background: #66808d;
+                        background: #ecf0f1;
                         padding: 1px;
 
                         .btn {
@@ -527,7 +527,9 @@
                             height: 32.5px;
                             padding: 0;
                             margin: 2px 2px;
-                            color: #ffffff;
+                            color: #222222;
+                            box-shadow: unset;
+                            background-color: unset;
 
                             .material-icons {
                                 width: 100%;
@@ -536,7 +538,7 @@
                                 display: flex;
                                 justify-content: center;
                                 align-items: center;
-                                color: #ffffff;
+                                color: #222222;
                             }
 
                             &.active {
