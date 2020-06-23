@@ -63,8 +63,11 @@
         set(this.view, '/state/inline/doc', null)
       },
       onInput(event) {
-        if (this._vnode.data.domProps) this._vnode.data.domProps.innerHTML = event.target.innerHTML
-        this.model.text = event.target.innerHTML
+        const domProps = this._vnode.children[2].data.domProps
+        const content = event.target.innerHTML
+        if (domProps) domProps.innerHTML = content
+        this.value = content
+        this.model.text = content
       },
       pingToolbar() {
         set(this.view, '/state/inline/ping', [])
