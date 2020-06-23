@@ -5,6 +5,7 @@
         :key="getButtonKey(btn, i)"
         :items="btn.items"
         :icon="btn.icon"
+        :label="btn.label"
         :class="btn.class"
         :title="$i18n(btn.title)"
         :active="btn.isActive()"
@@ -92,13 +93,13 @@
           },
           {
             title: 'superscript',
-            icon: 'arrow_upward',
+            label: 'A<sup>2</sup>',
             cmd: 'superscript',
             isActive: () => this.queryCmdState('superscript')
           },
           {
             title: 'subscript',
-            icon: 'arrow_downward',
+            label: 'A<sub>2</sub>',
             cmd: 'subscript',
             isActive: () => this.queryCmdState('subscript')
           },

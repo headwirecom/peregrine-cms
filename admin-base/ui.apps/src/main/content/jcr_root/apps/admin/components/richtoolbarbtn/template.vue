@@ -9,7 +9,8 @@
       :below-origin="true"
       :items="items"
       @mousedown.native.prevent="() => {}">
-    <i class="material-icons">{{ icon }}</i><span class="caret-down"></span>
+    <i v-if="icon" class="material-icons">{{ icon }}</i><span class="caret-down"></span>
+    <div v-if="label" class="label" v-html="label"></div>
   </admin-components-materializedropdown>
   <!-- ELSE -->
   <button
@@ -19,7 +20,8 @@
       :title="$i18n(title)"
       @mousedown.prevent="() => {}"
       @click="$emit('click')">
-    <i class="material-icons">{{ icon }}</i>
+    <i v-if="icon" class="material-icons">{{ icon }}</i>
+    <div v-if="label" class="label" v-html="label"></div>
   </button>
 </template>
 
@@ -28,6 +30,7 @@
     name: 'RichToolbarBtn',
     props: {
       icon: String,
+      label: String,
       title: String,
       active: Boolean,
       items: Array
