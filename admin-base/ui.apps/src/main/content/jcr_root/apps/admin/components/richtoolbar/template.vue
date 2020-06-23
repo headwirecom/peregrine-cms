@@ -146,12 +146,6 @@
             isActive: () => this.queryCmdState('insertUnorderedList')
           },
           {
-            title: 'quote',
-            icon: 'format_quote',
-            cmd: 'quote',
-            isActive: () => this.itemIsTag('PRE')
-          },
-          {
             title: 'remove format',
             icon: 'format_clear',
             cmd: 'removeFormat'
@@ -203,7 +197,6 @@
         return {
           link: this.link,
           insertImage: this.insertImage,
-          quote: this.quote,
           preview: this.togglePreview
         }
       },
@@ -335,9 +328,6 @@
         this.browser.type = 'image'
         this.browser.path.suffix = ''
         this.startBrowsing()
-      },
-      quote() {
-        this.execCmd('formatBlock,', 'pre')
       },
       setViewport(viewport) {
         set($perAdminApp.getView(), '/state/tools/workspace/view', viewport)
