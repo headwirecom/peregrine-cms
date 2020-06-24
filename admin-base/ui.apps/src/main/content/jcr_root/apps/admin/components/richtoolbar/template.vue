@@ -1,15 +1,17 @@
 <template>
   <div class="toolbar" :class="{disabled: !inlineRich || preview === 'preview'}">
-    <admin-components-richtoolbarbtn
-        v-for="(btn, i) in buttons"
-        :key="getButtonKey(btn, i)"
-        :items="btn.items"
-        :icon="btn.icon"
-        :label="btn.label"
-        :class="btn.class"
-        :title="$i18n(btn.title)"
-        :active="btn.isActive()"
-        @click="exec(btn.cmd)"/>
+    <div v-for="(btnGroup, groupName) in btns" :class="['btn-group', `group-${groupName}`]">
+      <admin-components-richtoolbarbtn
+          v-for="(btn, i) in btnGroup"
+          :key="getButtonKey(btn, i)"
+          :items="btn.items"
+          :icon="btn.icon"
+          :label="btn.label"
+          :class="btn.class"
+          :title="$i18n(btn.title)"
+          :active="btn.isActive()"
+          @click="exec(btn.cmd)"/>
+    </div>
 
     <admin-components-pathbrowser
         v-if="browser.open"
@@ -69,99 +71,110 @@
       }
     },
     computed: {
-      buttons() {
-        const buttons = [
-          {title: 'undo', icon: 'undo', cmd: 'undo'},
-          {title: 'redo', icon: 'redo', cmd: 'redo'},
-          {
-            title: 'text format',
-            icon: 'text_format',
-            items: this.formattingItems,
-            isActive: this.formattingIsActive
-          },
-          {
-            title: 'bold',
-            icon: 'format_bold',
-            cmd: 'bold',
-            isActive: () => this.queryCmdState('bold')
-          },
-          {
-            title: 'italic',
-            icon: 'format_italic',
-            cmd: 'italic',
-            isActive: () => this.queryCmdState('italic')
-          },
-          {
-            title: 'superscript',
-            label: 'A<sup>2</sup>',
-            cmd: 'superscript',
-            isActive: () => this.queryCmdState('superscript')
-          },
-          {
-            title: 'subscript',
-            label: 'A<sub>2</sub>',
-            cmd: 'subscript',
-            isActive: () => this.queryCmdState('subscript')
-          },
-          {
-            title: 'insert link',
-            icon: 'link',
-            cmd: 'link',
-            isActive: () => this.itemIsTag('A')
-          },
-          {title: 'insert image', icon: 'insert_photo', cmd: 'insertImage'},
-          {
-            title: 'align left',
-            icon: 'format_align_left',
-            cmd: 'justifyLeft',
-            isActive: () => this.queryCmdState('justifyLeft')
-          },
-          {
-            title: 'align center',
-            icon: 'format_align_center',
-            cmd: 'justifyCenter',
-            isActive: () => this.queryCmdState('justifyCenter')
-          },
-          {
-            title: 'align right',
-            icon: 'format_align_right',
-            cmd: 'justifyRight',
-            isActive: () => this.queryCmdState('justifyRight')
-          },
-          {
-            title: 'justify',
-            icon: 'format_align_justify',
-            cmd: 'justifyFull',
-            isActive: () => this.queryCmdState('justifyFull')
-          },
-          {
-            title: 'numbered list',
-            icon: 'format_list_numbered',
-            cmd: 'insertOrderedList',
-            isActive: () => this.queryCmdState('insertOrderedList')
-          },
-          {
-            title: 'bulleted list',
-            icon: 'format_list_bulleted',
-            cmd: 'insertUnorderedList',
-            isActive: () => this.queryCmdState('insertUnorderedList')
-          },
-          {
-            title: 'remove format',
-            icon: 'format_clear',
-            cmd: 'removeFormat'
-          }
-        ]
-        if (this.showViewportBtn) {
-          buttons.unshift({
-            title: 'change viewport',
-            icon: this.viewportIcon,
-            items: this.viewportItems,
-            class: 'always-active separate'
-          })
+      btns() {
+        const btns = {
+          alwaysActives: [],
+          actions: [
+            {title: 'undo', icon: 'undo', cmd: 'undo'},
+            {title: 'redo', icon: 'redo', cmd: 'redo'}
+          ],
+          textFormat: [
+            {
+              title: 'text format',
+              label: '&#182;',
+              items: this.formattingItems,
+              isActive: this.formattingIsActive
+            }
+          ],
+          boldItalic: [
+            {
+              title: 'bold',
+              icon: 'format_bold',
+              cmd: 'bold',
+              isActive: () => this.queryCmdState('bold')
+            },
+            {
+              title: 'italic',
+              icon: 'format_italic',
+              cmd: 'italic',
+              isActive: () => this.queryCmdState('italic')
+            }
+          ],
+          superSub: [
+            {
+              title: 'superscript',
+              label: 'A<sup>2</sup>',
+              cmd: 'superscript',
+              isActive: () => this.queryCmdState('superscript')
+            },
+            {
+              title: 'subscript',
+              label: 'A<sub>2</sub>',
+              cmd: 'subscript',
+              isActive: () => this.queryCmdState('subscript')
+            }
+          ],
+          link: [
+            {
+              title: 'insert link',
+              icon: 'link',
+              cmd: 'link',
+              isActive: () => this.itemIsTag('A')
+            }
+          ],
+          image: [
+            {title: 'insert image', icon: 'insert_photo', cmd: 'insertImage'}
+          ],
+          align: [
+            {
+              title: 'align left',
+              icon: 'format_align_left',
+              cmd: 'justifyLeft',
+              isActive: () => this.queryCmdState('justifyLeft')
+            },
+            {
+              title: 'align center',
+              icon: 'format_align_center',
+              cmd: 'justifyCenter',
+              isActive: () => this.queryCmdState('justifyCenter')
+            },
+            {
+              title: 'align right',
+              icon: 'format_align_right',
+              cmd: 'justifyRight',
+              isActive: () => this.queryCmdState('justifyRight')
+            },
+            {
+              title: 'justify',
+              icon: 'format_align_justify',
+              cmd: 'justifyFull',
+              isActive: () => this.queryCmdState('justifyFull')
+            }
+          ],
+          list: [
+            {
+              title: 'numbered list',
+              icon: 'format_list_numbered',
+              cmd: 'insertOrderedList',
+              isActive: () => this.queryCmdState('insertOrderedList')
+            },
+            {
+              title: 'bulleted list',
+              icon: 'format_list_bulleted',
+              cmd: 'insertUnorderedList',
+              isActive: () => this.queryCmdState('insertUnorderedList')
+            }
+          ],
+          removeFormat: [
+            {
+              title: 'remove format',
+              icon: 'format_clear',
+              cmd: 'removeFormat'
+            }
+          ]
         }
         if (this.showPreviewBtn) {
-          buttons.unshift({
+          btns.alwaysActives.push({
             title: 'preview',
             icon: 'visibility',
             cmd: 'preview',
@@ -169,13 +182,23 @@
             isActive: () => this.preview === 'preview'
           })
         }
-        buttons.forEach((btn) => {
-          if (!btn.isActive) {
-            btn.isActive = () => null
-          }
+        if (this.showViewportBtn) {
+          btns.alwaysActives.push({
+            title: 'change viewport',
+            icon: this.viewportIcon,
+            items: this.viewportItems,
+            class: 'always-active separate'
+          })
+        }
+        Object.keys(btns).forEach((group) => {
+          btns[group].forEach((btn) => {
+            if (!btn.isActive) {
+              btn.isActive = () => null
+            }
+          })
         })
 
-        return buttons
+        return btns
       },
       inline() {
         if (!$perAdminApp.getView() || !$perAdminApp.getView().state) return null
@@ -281,7 +304,7 @@
       'inline.ping'(val) {
         if (!val || !val.includes(this._uid)) {
           this.key++
-          const newVal = val? deepClone(val) : []
+          const newVal = val ? deepClone(val) : []
           newVal.push(this._uid)
           set($perAdminApp.getView(), '/state/inline/ping', newVal)
         }
