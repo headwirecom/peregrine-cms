@@ -52,12 +52,8 @@
 </sly>
 
 <sly data-sly-include="renderer.html"></sly>
+<sly data-sly-include="renderer-init.html"></sly>
 
-<script>
-    var $perView = { view: 'preview' };
-    $peregrineApp.registerView($perView)
-    $peregrineApp.loadContentFrom("perPage", "${resource.parent.path @ context='unsafe'}.html", true)
-</script>
 <sly data-sly-include=serviceworker.html"></sly>
 <sly data-sly-include=tracker-bodyend.html"></sly>
 </body>
