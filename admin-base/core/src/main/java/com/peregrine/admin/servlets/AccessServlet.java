@@ -25,28 +25,31 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
+import com.peregrine.commons.servlets.AbstractBaseServlet;
+import org.apache.jackrabbit.api.security.user.Authorizable;
+import org.apache.jackrabbit.api.security.user.UserManager;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.jcr.base.util.AccessControlUtil;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+import javax.jcr.Session;
+import javax.servlet.Servlet;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_ACCESS;
-import static com.peregrine.commons.util.PerConstants.JSON;
-import static com.peregrine.commons.util.PerConstants.JSON_MIME_TYPE;
-import static com.peregrine.commons.util.PerUtil.EQUALS;
-import static com.peregrine.commons.util.PerUtil.GET;
-import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
-import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
+import static com.peregrine.admin.util.AdminConstants.PEREGRINE_SERVICE_NAME;
+import static com.peregrine.commons.util.PerUtil.*;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
-import com.peregrine.commons.servlets.AbstractBaseServlet;
-import com.peregrine.intra.IntraSlingCaller;
-import java.io.IOException;
-import javax.servlet.Servlet;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
 /**
- * Redirects Request to 'Session Info'
- *
  * The API Definition can be found in the Swagger Editor configuration:
  *    ui.apps/src/main/content/jcr_root/perapi/definitions/admin.yaml
  */
@@ -62,28 +65,63 @@ import org.osgi.service.component.annotations.Reference;
 @SuppressWarnings("serial")
 public class AccessServlet extends AbstractBaseServlet {
 
-    private static final String SESSION_PATH = "/system/sling/info";
-    private static final String SESSION_SELECTOR = "sessionInfo";
-
     @Reference
-    @SuppressWarnings("unused")
-    private IntraSlingCaller intraSlingCaller;
+    ResourceResolverFactory resourceResolverFactory;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        // Load that content internally  and return as JSON Content. If it fails redirect
-        try {
-            byte[] response = intraSlingCaller.call(
-                intraSlingCaller.createContext()
-                    .setResourceResolver(request.getRequest().getResourceResolver())
-                    .setPath(SESSION_PATH)
-                    .setSelectors(SESSION_SELECTOR)
-                    .setExtension(JSON));
-            return new TextResponse(JSON, JSON_MIME_TYPE).write(new String(response));
-        } catch(IntraSlingCaller.CallException e) {
-            logger.warn("Internal call failed", e);
+
+        JsonResponse jsonResponse = new JsonResponse();
+        return jsonResponse.writeMap(getInfo(request));
+    }
+
+    private Map<String, String> getInfo(final Request request) {
+
+        final Map<String, String> info = new HashMap<>();
+        final ResourceResolver resolver = request.getResourceResolver();
+
+        info.put("userID", resolver.getUserID());
+
+        Authorizable authorizable = null;
+        try
+        {
+            authorizable = getUserManager(request).getAuthorizable(request.getRequest().getUserPrincipal());
+            Resource resource = resolver.getResource(authorizable.getPath());
+
+            // TODO: Refactor - serialize node to JSON
+            // TODO: Read white list from OSGi configuration admin
+            if (resource != null) {
+                info.put("firstLogin", resource.getValueMap().get("preferences/firstLogin", String.class));
+                info.put("profileEmail", resource.getValueMap().get("profile/email", String.class));
+                info.put("profileAvatar", resource.getValueMap().get("profile/avatar", String.class));
+            }
+        } catch (Exception e)
+        {
+            logger.warn("Error getting user's profile", e);
         }
-        return new RedirectResponse(SESSION_PATH + "." + SESSION_SELECTOR + "." + JSON);
+
+        return info;
+    }
+
+    private UserManager getUserManager(final Request request) {
+
+        ResourceResolver resourceResolver = null;
+        UserManager userManager = null;
+
+        try
+        {
+            resourceResolver = request.isAdmin() ?
+                    request.getResourceResolver() :
+                    loginService(resourceResolverFactory, PEREGRINE_SERVICE_NAME);
+            Session adminSession = resourceResolver.adaptTo(Session.class);
+            userManager = AccessControlUtil.getUserManager(adminSession);
+
+        } catch (Exception e)
+        {
+            logger.warn("Error getting UserManager", e);
+        }
+
+        return userManager;
     }
 }
 
