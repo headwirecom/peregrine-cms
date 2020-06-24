@@ -1,17 +1,19 @@
 <template>
   <div class="toolbar" :class="{disabled: !inlineRich || preview === 'preview'}">
-    <div v-for="(btnGroup, groupName) in btns" :class="['btn-group', `group-${groupName}`]">
-      <admin-components-richtoolbarbtn
-          v-for="(btn, i) in btnGroup"
-          :key="getButtonKey(btn, i)"
-          :items="btn.items"
-          :icon="btn.icon"
-          :label="btn.label"
-          :class="btn.class"
-          :title="$i18n(btn.title)"
-          :active="btn.isActive()"
-          @click="exec(btn.cmd)"/>
-    </div>
+    <template v-for="(btnGroup, groupName) in btns">
+      <div v-if="btnGroup.length > 0" :class="['btn-group', `group-${groupName}`]">
+        <admin-components-richtoolbarbtn
+            v-for="(btn, i) in btnGroup"
+            :key="getButtonKey(btn, i)"
+            :items="btn.items"
+            :icon="btn.icon"
+            :label="btn.label"
+            :class="btn.class"
+            :title="$i18n(btn.title)"
+            :active="btn.isActive()"
+            @click="exec(btn.cmd)"/>
+      </div>
+    </template>
 
     <admin-components-pathbrowser
         v-if="browser.open"
