@@ -140,17 +140,15 @@ public class AccessServlet extends AbstractBaseServlet {
 
         Iterable<Resource> children = resource.getChildren();
         for(Resource child : children) {
-            StringBuilder path = new StringBuilder();
-            path.append(child.getName());
 
-            if (isAllowedParentPath(path.toString()))
+            if (isAllowedParentPath(child.getName()))
             {
                 json.writeObject(child.getName());
             }
 
             for (String key: child.getValueMap().keySet()) {
                 if (key.indexOf(":") < 0) {
-                    StringBuilder curPath = new StringBuilder(path);
+                    StringBuilder curPath = new StringBuilder(child.getName());
                     curPath.append("/").append(key).toString();
 
                     if (isAllowedPath(curPath.toString()))
@@ -162,7 +160,7 @@ public class AccessServlet extends AbstractBaseServlet {
 
             convertResource(json, child);
 
-            if (isAllowedParentPath(path.toString()))
+            if (isAllowedParentPath(child.getName()))
             {
                 json.writeClose();
             }
