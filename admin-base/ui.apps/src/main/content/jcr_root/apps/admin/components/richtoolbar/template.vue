@@ -118,7 +118,7 @@
           ],
           link: [
             {
-              title: 'insert link',
+              title: () => this.itemIsTag('A')? 'remove link' : 'insert link',
               icon: 'link',
               cmd: 'link',
               isActive: () => this.itemIsTag('A')
@@ -334,17 +334,34 @@
         this.key++
       },
       link() {
-        if (this.itemIsTag('A')) {
-          this.execCmd('unlink')
+        if (!this.itemIsTag('A')) {
+          this.insertLink()
         } else {
-          this.browser.cmd = 'createLink'
-          this.browser.header = this.$i18n('Create Link')
-          this.browser.path.current = this.roots.pages
-          this.browser.withLinkTab = true
-          this.browser.type = 'page'
-          this.browser.path.suffix = '.html'
-          this.startBrowsing()
+          this.removeLink()
         }
+      },
+      insertLink() {
+        this.browser.cmd = 'createLink'
+        this.browser.header = this.$i18n('Create Link')
+        this.browser.path.current = this.roots.pages
+        this.browser.withLinkTab = true
+        this.browser.type = 'page'
+        this.browser.path.suffix = '.html'
+        this.startBrowsing()
+      },
+      removeLink() {
+        const document = this.getInlineDoc()
+        if (!document || !document.defaultView) return false
+        const window = document.defaultView
+        let selection = window.getSelection()
+        if (!selection || selection.rangeCount <= 0) return false
+
+        const range = document.createRange();
+        range.setStart(selection.anchorNode, 0);
+        range.setEnd(selection.anchorNode, selection.anchorNode.length)
+        selection.removeAllRanges()
+        selection.addRange(range)
+        this.execCmd('unlink')
       },
       insertImage() {
         this.browser.cmd = 'insertImage'

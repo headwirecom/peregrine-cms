@@ -5,7 +5,7 @@
       tag="button"
       class="btn"
       :class="{'active': active}"
-      :title="$i18n(title)"
+      :title="computedTitle"
       :below-origin="true"
       :items="items"
       @mousedown.native.prevent="() => {}">
@@ -17,7 +17,7 @@
       v-else
       class="btn"
       :class="{'active': active}"
-      :title="$i18n(title)"
+      :title="computedTitle"
       @mousedown.prevent="() => {}"
       @click="$emit('click')">
     <i v-if="icon" class="material-icons">{{ icon }}</i>
@@ -31,9 +31,18 @@
     props: {
       icon: String,
       label: String,
-      title: String,
+      title: [String, Function],
       active: Boolean,
       items: Array
+    },
+    computed: {
+      computedTitle() {
+        let title = this.title
+        if (typeof this.title === 'function') {
+          title = title()
+        }
+        return this.$i18n(title)
+      }
     }
   }
 </script>
