@@ -89,10 +89,6 @@
 <script>
     export default {
         props: ['model'],
-        beforeMount(){
-          Vue.set($perAdminApp.getView().state, 'rightPanelFullscreen', false)
-          Vue.set($perAdminApp.getView().state, 'rightPanelVisible', true)
-        },
         computed: {
             state: function() {
                 return $perAdminApp.getView().state
