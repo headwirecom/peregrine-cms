@@ -894,3 +894,11 @@
         }
     }
 }
+
+.fullscreen .vue-form-generator fieldset .form-group.field-texteditor {
+  .text-editor-wrapper {
+    .text-editor {
+      max-height: 50rem;
+    }
+  }
+}
