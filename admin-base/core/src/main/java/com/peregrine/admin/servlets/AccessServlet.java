@@ -26,18 +26,23 @@ package com.peregrine.admin.servlets;
  */
 
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.UserManager;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.jcr.base.util.AccessControlUtil;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.*;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 import javax.jcr.Session;
 import javax.servlet.Servlet;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_ACCESS;
 import static com.peregrine.admin.util.AdminConstants.PEREGRINE_SERVICE_NAME;
@@ -55,6 +60,8 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  */
 @Component(
     service = Servlet.class,
+    configurationPolicy = ConfigurationPolicy.OPTIONAL,
+    immediate = true,
     property = {
         SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Access Servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
@@ -62,10 +69,26 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
         SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_ACCESS
     }
 )
+@Designate(ocd = AccessServlet.Configuration.class)
 @SuppressWarnings("serial")
 public class AccessServlet extends AbstractBaseServlet {
 
+    @ObjectClassDefinition(
+            name = "Peregrine: Access Servlet",
+            description = "Provides information about the current principal"
+    )
+    @interface Configuration {
+        @AttributeDefinition(
+                name = "Profile Whitelist",
+                description = "A list of allowed JCR property paths relative to a user's home directory that will be included in the response",
+                required = false
+        )
+        String[] profile_whilelist();
+    }
+
     public static final String USER_ID = "userID";
+
+    private List<String> profileWhitelist = new ArrayList<>();
 
     @Reference
     ResourceResolverFactory resourceResolverFactory;
@@ -125,6 +148,27 @@ public class AccessServlet extends AbstractBaseServlet {
             }
             convertResource(json, child);
             json.writeClose();
+        }
+    }
+
+    @Activate
+    @SuppressWarnings("unused")
+    void activate(AccessServlet.Configuration configuration) { setup(configuration); }
+
+    @Modified
+    @SuppressWarnings("unused")
+    void modified(AccessServlet.Configuration configuration) { setup(configuration); }
+
+    private void setup(AccessServlet.Configuration configuration) {
+
+        String[] profileWhitelistConfig = configuration.profile_whilelist();
+        profileWhitelist = new ArrayList<>();
+
+        for(String path: profileWhitelistConfig) {
+            if(StringUtils.isNoneBlank(path)) {
+                logger.debug("Adding profile whitelist path: '{}'", path);
+                profileWhitelist.add(path);
+            }
         }
     }
 }
