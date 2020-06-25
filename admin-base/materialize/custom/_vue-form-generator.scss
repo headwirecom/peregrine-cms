@@ -518,12 +518,16 @@
                     .toolbar {
                         display: flex;
                         flex-wrap: wrap;
-                        background: #f2f2f2;
                         padding: 1px;
+                        border-bottom: 2px solid var(--pcms-blue-grey);
 
-                        .btn-group:not(:first-child) {
-                            border-left: 1px solid var(--pcms-gray);
-                            padding: 0 2px;
+                        .btn-group {
+                            background-color: #ffffff;
+
+                            &:not(:first-child) {
+                                border-left: 1px solid var(--pcms-gray);
+                                padding: 0 2px;
+                            }
                         }
 
                         .btn {
