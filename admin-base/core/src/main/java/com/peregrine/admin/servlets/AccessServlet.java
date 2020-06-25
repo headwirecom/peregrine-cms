@@ -29,6 +29,7 @@ import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.UserManager;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
@@ -87,6 +88,7 @@ public class AccessServlet extends AbstractBaseServlet {
     }
 
     public static final String USER_ID = "userID";
+    public static final String AUTH_TYPE = "authType";
 
     private List<String> profileIncludeList = new ArrayList<>();
 
@@ -98,6 +100,11 @@ public class AccessServlet extends AbstractBaseServlet {
 
         JsonResponse jsonResponse = new JsonResponse();
         jsonResponse.writeAttribute(USER_ID, request.getResourceResolver().getUserID());
+
+        if (request instanceof SlingHttpServletRequest && ((SlingHttpServletRequest)request).getAuthType() != null) {
+            jsonResponse.writeAttribute(AUTH_TYPE, ((SlingHttpServletRequest)request).getAuthType());
+        }
+
         convertResource(jsonResponse, getUserHome(request));
 
         return jsonResponse;
