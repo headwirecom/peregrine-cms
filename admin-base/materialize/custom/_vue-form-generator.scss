@@ -518,7 +518,7 @@
                     .toolbar {
                         display: flex;
                         flex-wrap: wrap;
-                        background: #ecf0f1;
+                        background: #f2f2f2;
                         padding: 1px;
 
                         .btn-group:not(:first-child) {
@@ -528,8 +528,8 @@
 
                         .btn {
                             position: relative;
-                            width: 28px;
-                            height: 28px;
+                            width: 2rem;
+                            height: 2rem;
                             padding: 0;
                             margin: 1px 1px;
                             color: #222222;
@@ -602,7 +602,7 @@
                                 position: absolute;
                                 top: 7px;
                                 right: 2px;
-                                color: #ffffff;
+                                color: #222222;
                             }
                         }
                     }
