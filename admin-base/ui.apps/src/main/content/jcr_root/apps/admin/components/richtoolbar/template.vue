@@ -426,6 +426,7 @@
         this.execCmd(this.browser.cmd, this.browser.path.selected + this.browser.path.suffix)
         this.browser.cmd = null
         this.browser.path.selected = null
+        this.key++
       },
       setBrowserPathCurrent(path) {
         this.browser.path.current = path
