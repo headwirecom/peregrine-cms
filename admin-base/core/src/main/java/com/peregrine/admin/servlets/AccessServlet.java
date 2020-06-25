@@ -38,8 +38,6 @@ import org.osgi.service.component.annotations.Reference;
 import javax.jcr.Session;
 import javax.servlet.Servlet;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_ACCESS;
 import static com.peregrine.admin.util.AdminConstants.PEREGRINE_SERVICE_NAME;
