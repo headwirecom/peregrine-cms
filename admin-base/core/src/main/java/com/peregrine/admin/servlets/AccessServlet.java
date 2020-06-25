@@ -79,16 +79,16 @@ public class AccessServlet extends AbstractBaseServlet {
     )
     @interface Configuration {
         @AttributeDefinition(
-                name = "Profile Whitelist",
+                name = "Profile Include List",
                 description = "A list of allowed JCR property paths relative to a user's home directory that will be included in the response",
-                required = false
+                required = true
         )
-        String[] profile_whilelist();
+        String[] profile_include_list();
     }
 
     public static final String USER_ID = "userID";
 
-    private List<String> profileWhitelist = new ArrayList<>();
+    private List<String> profileIncludeList = new ArrayList<>();
 
     @Reference
     ResourceResolverFactory resourceResolverFactory;
@@ -170,8 +170,8 @@ public class AccessServlet extends AbstractBaseServlet {
     private boolean isAllowedParentPath(final String path) {
 
         if (StringUtils.isNoneBlank(path)) {
-            for (String whitelistPath : profileWhitelist) {
-                if (whitelistPath.startsWith(path)) {
+            for (String includeListPath : profileIncludeList) {
+                if (includeListPath.startsWith(path)) {
                     return true;
                 }
             }
@@ -182,8 +182,8 @@ public class AccessServlet extends AbstractBaseServlet {
     private boolean isAllowedPath(final String path) {
 
         if (StringUtils.isNoneBlank(path)) {
-            for (String whitelistPath: profileWhitelist) {
-                if (path.equals(whitelistPath)) {
+            for (String includeListPath: profileIncludeList) {
+                if (path.equals(includeListPath)) {
                     return true;
                 }
             }
@@ -201,13 +201,17 @@ public class AccessServlet extends AbstractBaseServlet {
 
     private void setup(AccessServlet.Configuration configuration) {
 
-        String[] profileWhitelistConfig = configuration.profile_whilelist();
-        profileWhitelist = new ArrayList<>();
+        profileIncludeList = new ArrayList<>();
 
-        for(String path: profileWhitelistConfig) {
-            if(StringUtils.isNoneBlank(path)) {
-                logger.debug("Adding profile whitelist path: '{}'", path);
-                profileWhitelist.add(path);
+        if (configuration.profile_include_list() != null)
+        {
+            for (String path : configuration.profile_include_list())
+            {
+                if (StringUtils.isNoneBlank(path))
+                {
+                    logger.debug("Adding profile include path: '{}'", path);
+                    profileIncludeList.add(path);
+                }
             }
         }
     }
