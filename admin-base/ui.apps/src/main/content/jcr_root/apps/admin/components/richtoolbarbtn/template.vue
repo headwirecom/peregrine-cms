@@ -9,7 +9,7 @@
       :below-origin="true"
       :items="items"
       @mousedown.native.prevent="() => {}">
-    <i v-if="icon" class="material-icons">{{ icon }}</i><span class="caret-down"></span>
+    <i v-if="icon" class="material-icons">{{ computedIcon }}</i><span class="caret-down"></span>
     <div v-if="label" class="label" v-html="label"></div>
   </admin-components-materializedropdown>
   <!-- ELSE -->
@@ -20,7 +20,7 @@
       :title="computedTitle"
       @mousedown.prevent="() => {}"
       @click="$emit('click')">
-    <i v-if="icon" class="material-icons">{{ icon }}</i>
+    <i v-if="icon" class="material-icons">{{ computedIcon }}</i>
     <div v-if="label" class="label" v-html="label"></div>
   </button>
 </template>
@@ -29,7 +29,7 @@
   export default {
     name: 'RichToolbarBtn',
     props: {
-      icon: String,
+      icon: [String, Function],
       label: String,
       title: [String, Function],
       active: Boolean,
@@ -38,10 +38,17 @@
     computed: {
       computedTitle() {
         let title = this.title
-        if (typeof this.title === 'function') {
+        if (typeof title === 'function') {
           title = title()
         }
         return this.$i18n(title)
+      },
+      computedIcon() {
+        let icon = this.icon
+        if (typeof icon === 'function') {
+          icon = icon()
+        }
+        return icon
       }
     }
   }
