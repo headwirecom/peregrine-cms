@@ -89,7 +89,7 @@ public class AccessServlet extends AbstractBaseServlet {
             Authorizable authorizable = getUserManager(request).getAuthorizable(request.getRequest().getUserPrincipal());
             resource = resolver.getResource(authorizable.getPath());
         } catch (Exception e) {
-            logger.warn("Error getting user's home", e);
+            logger.error("Error getting user's home", e);
         }
         return resource;
     }
@@ -107,7 +107,7 @@ public class AccessServlet extends AbstractBaseServlet {
             userManager = AccessControlUtil.getUserManager(adminSession);
 
         } catch (Exception e) {
-            logger.warn("Error getting UserManager", e);
+            logger.error("Error getting UserManager", e);
         }
 
         return userManager;
