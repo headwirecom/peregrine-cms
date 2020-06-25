@@ -140,15 +140,57 @@ public class AccessServlet extends AbstractBaseServlet {
 
         Iterable<Resource> children = resource.getChildren();
         for(Resource child : children) {
-            json.writeObject(child.getName());
+            StringBuilder path = new StringBuilder();
+            path.append(child.getName());
+
+            if (isAllowedParentPath(path.toString()))
+            {
+                json.writeObject(child.getName());
+            }
+
             for (String key: child.getValueMap().keySet()) {
-                if(key.indexOf(":") < 0) {
-                    json.writeAttribute(key, child.getValueMap().get(key, String.class));
+                if (key.indexOf(":") < 0) {
+                    StringBuilder curPath = new StringBuilder(path);
+                    curPath.append("/").append(key).toString();
+
+                    if (isAllowedPath(curPath.toString()))
+                    {
+                        json.writeAttribute(key, child.getValueMap().get(key, String.class));
+                    }
                 }
             }
+
             convertResource(json, child);
-            json.writeClose();
+
+            if (isAllowedParentPath(path.toString()))
+            {
+                json.writeClose();
+            }
         }
+    }
+
+    private boolean isAllowedParentPath(final String path) {
+
+        if (StringUtils.isNoneBlank(path)) {
+            for (String whitelistPath : profileWhitelist) {
+                if (whitelistPath.startsWith(path)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isAllowedPath(final String path) {
+
+        if (StringUtils.isNoneBlank(path)) {
+            for (String whitelistPath: profileWhitelist) {
+                if (path.equals(whitelistPath)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Activate
