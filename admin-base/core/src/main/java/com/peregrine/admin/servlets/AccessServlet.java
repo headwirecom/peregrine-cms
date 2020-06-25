@@ -72,35 +72,27 @@ public class AccessServlet extends AbstractBaseServlet {
     protected Response handleRequest(Request request) throws IOException {
 
         JsonResponse jsonResponse = new JsonResponse();
-        return jsonResponse.writeMap(getInfo(request));
+        convertResource(jsonResponse, getInfo(request));
+        return jsonResponse;
     }
 
-    private Map<String, String> getInfo(final Request request) {
+    private Resource getInfo(final Request request) {
 
         final Map<String, String> info = new HashMap<>();
         final ResourceResolver resolver = request.getResourceResolver();
 
         info.put("userID", resolver.getUserID());
 
-        Authorizable authorizable = null;
+        Resource resource = null;
         try
         {
-            authorizable = getUserManager(request).getAuthorizable(request.getRequest().getUserPrincipal());
-            Resource resource = resolver.getResource(authorizable.getPath());
-
-            // TODO: Refactor - serialize node to JSON
-            // TODO: Read white list from OSGi configuration admin
-            if (resource != null) {
-                info.put("firstLogin", resource.getValueMap().get("preferences/firstLogin", String.class));
-                info.put("profileEmail", resource.getValueMap().get("profile/email", String.class));
-                info.put("profileAvatar", resource.getValueMap().get("profile/avatar", String.class));
-            }
+            Authorizable authorizable = getUserManager(request).getAuthorizable(request.getRequest().getUserPrincipal());
+            resource = resolver.getResource(authorizable.getPath());
         } catch (Exception e)
         {
             logger.warn("Error getting user's profile", e);
         }
-
-        return info;
+        return resource;
     }
 
     private UserManager getUserManager(final Request request) {
@@ -122,6 +114,21 @@ public class AccessServlet extends AbstractBaseServlet {
         }
 
         return userManager;
+    }
+
+    private void convertResource(JsonResponse json, Resource resource) throws IOException {
+
+        Iterable<Resource> children = resource.getChildren();
+        for(Resource child : children) {
+            json.writeObject(child.getName());
+            for (String key: child.getValueMap().keySet()) {
+                if(key.indexOf(":") < 0) {
+                    json.writeAttribute(key, child.getValueMap().get(key, String.class));
+                }
+            }
+            convertResource(json, child);
+            json.writeClose();
+        }
     }
 }
 
