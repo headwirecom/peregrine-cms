@@ -119,7 +119,7 @@
           link: [
             {
               title: () => this.itemIsTag('A')? 'remove link' : 'insert link',
-              icon: 'link',
+              icon: () => this.itemIsTag('A')? 'delete' : 'link' ,
               cmd: 'link',
               isActive: () => this.itemIsTag('A')
             }
