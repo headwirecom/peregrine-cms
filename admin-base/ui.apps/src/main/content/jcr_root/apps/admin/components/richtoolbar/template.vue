@@ -107,13 +107,13 @@
               title: 'superscript',
               label: 'A<sup>2</sup>',
               cmd: 'superscript',
-              isActive: () => this.queryCmdState('superscript')
+              isActive: () => this.itemIsTag('SUP')
             },
             {
               title: 'subscript',
               label: 'A<sub>2</sub>',
               cmd: 'subscript',
-              isActive: () => this.queryCmdState('subscript')
+              isActive: () => this.itemIsTag('SUB')
             }
           ],
           link: [
