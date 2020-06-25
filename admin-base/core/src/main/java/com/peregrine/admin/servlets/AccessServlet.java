@@ -50,6 +50,8 @@ import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 /**
+ * The AccessServlet returns session information about the current principal.
+ *
  * The API Definition can be found in the Swagger Editor configuration:
  *    ui.apps/src/main/content/jcr_root/perapi/definitions/admin.yaml
  */
@@ -65,6 +67,8 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 @SuppressWarnings("serial")
 public class AccessServlet extends AbstractBaseServlet {
 
+    public static final String USER_ID = "userID";
+
     @Reference
     ResourceResolverFactory resourceResolverFactory;
 
@@ -72,25 +76,22 @@ public class AccessServlet extends AbstractBaseServlet {
     protected Response handleRequest(Request request) throws IOException {
 
         JsonResponse jsonResponse = new JsonResponse();
-        convertResource(jsonResponse, getInfo(request));
+        jsonResponse.writeAttribute(USER_ID, request.getResourceResolver().getUserID());
+        convertResource(jsonResponse, getUserHome(request));
+
         return jsonResponse;
     }
 
-    private Resource getInfo(final Request request) {
+    private Resource getUserHome(final Request request) {
 
-        final Map<String, String> info = new HashMap<>();
         final ResourceResolver resolver = request.getResourceResolver();
-
-        info.put("userID", resolver.getUserID());
-
         Resource resource = null;
-        try
-        {
+
+        try {
             Authorizable authorizable = getUserManager(request).getAuthorizable(request.getRequest().getUserPrincipal());
             resource = resolver.getResource(authorizable.getPath());
-        } catch (Exception e)
-        {
-            logger.warn("Error getting user's profile", e);
+        } catch (Exception e) {
+            logger.warn("Error getting user's home", e);
         }
         return resource;
     }
@@ -100,16 +101,14 @@ public class AccessServlet extends AbstractBaseServlet {
         ResourceResolver resourceResolver = null;
         UserManager userManager = null;
 
-        try
-        {
+        try {
             resourceResolver = request.isAdmin() ?
                     request.getResourceResolver() :
                     loginService(resourceResolverFactory, PEREGRINE_SERVICE_NAME);
             Session adminSession = resourceResolver.adaptTo(Session.class);
             userManager = AccessControlUtil.getUserManager(adminSession);
 
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.warn("Error getting UserManager", e);
         }
 
@@ -131,4 +130,3 @@ public class AccessServlet extends AbstractBaseServlet {
         }
     }
 }
-
