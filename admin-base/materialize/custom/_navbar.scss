@@ -306,6 +306,7 @@ nav {
 
           .label,
           .material-icons,
+          .fa,
           .caret-down:before {
             color: var(--pcms-blue-grey-darken-3);
           }
@@ -337,12 +338,20 @@ nav {
           background-color: var(--pcms-orange-hover)
         }
 
-        .material-icons {
-          font-size: 20px;
+        .material-icons,
+        .fa {
           height: 100%;
           line-height: unset;
           width: 100%;
           color: #ffffff;
+        }
+
+        .material-icons {
+          font-size: 20px;
+        }
+
+        .fa {
+          font-size: 17px;
         }
 
         .label {

@@ -7,6 +7,7 @@
             :key="getButtonKey(btn, i)"
             :items="btn.items"
             :icon="btn.icon"
+            :icon-lib="btn.iconLib"
             :label="btn.label"
             :class="btn.class"
             :title="$i18n(btn.title)"
@@ -78,12 +79,12 @@
           alwaysActives: [],
           actions: [
             {title: 'undo', icon: 'undo', cmd: 'undo'},
-            {title: 'redo', icon: 'redo', cmd: 'redo'}
+            {title: 'redo', icon: 'repeat', cmd: 'redo'}
           ],
           textFormat: [
             {
               title: 'text format',
-              label: '&#182;',
+              icon: 'paragraph',
               items: this.formattingItems,
               isActive: this.formattingIsActive
             }
@@ -91,13 +92,13 @@
           boldItalic: [
             {
               title: 'bold',
-              icon: 'format_bold',
+              icon: 'bold',
               cmd: 'bold',
               isActive: () => this.queryCmdState('bold')
             },
             {
               title: 'italic',
-              icon: 'format_italic',
+              icon: 'italic',
               cmd: 'italic',
               isActive: () => this.queryCmdState('italic')
             }
@@ -119,36 +120,36 @@
           link: [
             {
               title: () => this.itemIsTag('A')? 'remove link' : 'insert link',
-              icon: () => this.itemIsTag('A')? 'delete' : 'link' ,
+              icon: () => this.itemIsTag('A')? 'chain-broken' : 'link' ,
               cmd: 'link',
               isActive: () => this.itemIsTag('A')
             }
           ],
           image: [
-            {title: 'insert image', icon: 'insert_photo', cmd: 'insertImage'}
+            {title: 'insert image', icon: 'picture-o', cmd: 'insertImage'}
           ],
           align: [
             {
               title: 'align left',
-              icon: 'format_align_left',
+              icon: 'align-left',
               cmd: 'justifyLeft',
               isActive: () => this.queryCmdState('justifyLeft')
             },
             {
               title: 'align center',
-              icon: 'format_align_center',
+              icon: 'align-center',
               cmd: 'justifyCenter',
               isActive: () => this.queryCmdState('justifyCenter')
             },
             {
               title: 'align right',
-              icon: 'format_align_right',
+              icon: 'align-right',
               cmd: 'justifyRight',
               isActive: () => this.queryCmdState('justifyRight')
             },
             {
               title: 'justify',
-              icon: 'format_align_justify',
+              icon: 'align-justify',
               cmd: 'justifyFull',
               isActive: () => this.queryCmdState('justifyFull')
             }
@@ -156,13 +157,13 @@
           list: [
             {
               title: 'numbered list',
-              icon: 'format_list_numbered',
+              icon: 'list-ol',
               cmd: 'insertOrderedList',
               isActive: () => this.queryCmdState('insertOrderedList')
             },
             {
               title: 'bulleted list',
-              icon: 'format_list_bulleted',
+              icon: 'list-ul',
               cmd: 'insertUnorderedList',
               isActive: () => this.queryCmdState('insertUnorderedList')
             }
@@ -171,6 +172,7 @@
             {
               title: 'remove format',
               icon: 'format_clear',
+              iconLib: 'material-icons',
               cmd: 'removeFormat'
             }
           ]
@@ -179,6 +181,7 @@
           btns.alwaysActives.push({
             title: 'preview',
             icon: 'visibility',
+            iconLib: 'material-icons',
             cmd: 'preview',
             class: 'always-active separate',
             isActive: () => this.preview === 'preview'
@@ -188,6 +191,7 @@
           btns.alwaysActives.push({
             title: 'change viewport',
             icon: this.viewportIcon,
+            iconLib: 'material-icons',
             items: this.viewportItems,
             class: 'always-active separate'
           })
