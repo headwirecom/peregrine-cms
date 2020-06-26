@@ -524,9 +524,10 @@
                         .btn-group {
                             background-color: #ffffff;
 
-                            &:not(:first-child) {
-                                border-left: 1px solid var(--pcms-gray);
-                                padding: 0 2px;
+                            .btn {
+                                &:first-child {
+                                    border-left-color: var(--pcms-gray);
+                                }
                             }
                         }
 
@@ -535,7 +536,8 @@
                             width: 2rem;
                             height: 2rem;
                             padding: 0;
-                            margin: 1px 1px;
+                            border-left: 1px solid transparent;
+                            border-right: 1px solid transparent;
                             color: #222222;
                             box-shadow: unset;
                             background-color: unset;
