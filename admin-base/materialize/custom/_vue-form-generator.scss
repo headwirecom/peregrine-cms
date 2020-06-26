@@ -639,6 +639,15 @@
                         a {
                             color: #2b6cb0
                         }
+
+                        ul {
+                            padding-left: 20px;
+                            list-style-type: disc;
+
+                            li {
+                                list-style-type: disc;
+                            }
+                        }
                     }
                 }
             }
