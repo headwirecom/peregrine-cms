@@ -47,6 +47,8 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.commons.util.PerUtil;
+
 import java.io.IOException;
 import java.util.Arrays;
 import javax.jcr.Node;
@@ -165,6 +167,17 @@ public class CreateTenantServlet extends AbstractBaseServlet {
                         () -> tenantUserId,
                         TENANT_USER_HOME
                     );
+                    if(tenantUser != null) {
+                        try {
+                            Resource resUser = resourceResolver.getResource(tenantUser.getPath());
+                            Node nodeUser = PerUtil.getNode(resUser);
+                            Node nodeUserPreferences = nodeUser.addNode("preferences");
+                            nodeUserPreferences.setProperty("firstLogin", "true");
+                            adminSession.save();
+                        } catch( RepositoryException re ) {
+                            logger.error("was not able to set firstLogin pereference for user", re);
+                        }
+                    }
                     if(tenantUser != null && !isPwdProvided) {
                         tenantUser.disable(DISABLE_USER_REASON);
                     }
