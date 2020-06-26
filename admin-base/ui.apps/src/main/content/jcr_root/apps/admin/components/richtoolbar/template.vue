@@ -119,9 +119,10 @@
           ],
           link: [
             {
-              title: () => this.itemIsTag('A')? 'remove link' : 'insert link',
-              icon: () => this.itemIsTag('A')? 'chain-broken' : 'link' ,
+              title: () => this.itemIsTag('A') ? 'edit/remove link' : 'insert link',
+              icon: 'link',
               cmd: 'link',
+              items: () => this.itemIsTag('A') ? this.linkItems : null,
               isActive: () => this.itemIsTag('A')
             }
           ],
@@ -304,6 +305,22 @@
           }
         })
         return currentItem.icon || 'desktop_windows'
+      },
+      linkItems() {
+        return [
+          {
+            label: this.$i18n('edit link'),
+            icon: 'pencil',
+            iconLib: 'font-awesome',
+            click: () => this.editLink()
+          },
+          {
+            label: this.$i18n('remove link'),
+            icon: 'chain-broken',
+            iconLib: 'font-awesome',
+            click: () => this.removeLink()
+          }
+        ]
       }
     },
     watch: {
@@ -352,6 +369,9 @@
         this.browser.type = 'page'
         this.browser.path.suffix = '.html'
         this.startBrowsing()
+      },
+      editLink() {
+        this.insertLink() //TODO
       },
       removeLink() {
         const document = this.getInlineDoc()

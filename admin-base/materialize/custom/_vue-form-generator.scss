@@ -562,6 +562,12 @@
 
                             &.active {
                                 background-color: #ff9800;
+
+                                .material-icons,
+                                .fa,
+                                .caret-down {
+                                    color: #ffffff;
+                                }
                             }
 
                             &:hover:not(.active) {
@@ -595,8 +601,10 @@
                                 .item {
                                     height: 35px;
                                     min-height: 35px;
+                                    white-space: nowrap;
 
-                                    .material-icons {
+                                    .material-icons,
+                                    .fa {
                                         height: 35px;
                                         line-height: 35px;
                                         width: unset;

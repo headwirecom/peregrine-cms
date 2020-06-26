@@ -1,13 +1,13 @@
 <template>
   <!-- IF -->
   <admin-components-materializedropdown
-      v-if="items && items.length > 0"
+      v-if="computedItems && computedItems.length > 0"
       tag="button"
       class="btn"
       :class="{'active': active}"
       :title="computedTitle"
       :below-origin="true"
-      :items="items"
+      :items="computedItems"
       @mousedown.native.prevent="() => {}">
     <template v-if="icon">
       <i v-if="iconLib === 'material-icons'" class="material-icons">{{ computedIcon }}</i>
@@ -41,7 +41,7 @@
       label: String,
       title: [String, Function],
       active: Boolean,
-      items: Array
+      items: [Array, Function]
     },
     computed: {
       computedTitle() {
@@ -57,6 +57,13 @@
           icon = icon()
         }
         return icon
+      },
+      computedItems() {
+        let items = this.items
+        if (typeof items === 'function') {
+          items = items()
+        }
+        return items
       }
     }
   }

@@ -52,7 +52,8 @@
         color: var(--pcms-gray);
       }
 
-      .material-icons {
+      .material-icons,
+      .fa {
         margin-left: .5rem;
         margin-right: auto;
         transition: margin .3s ease-out;
@@ -67,7 +68,8 @@
 
       &:not(.disabled) {
         &:hover {
-          .material-icons {
+          .material-icons,
+          .fa {
             margin-left: .8rem;
           }
 
