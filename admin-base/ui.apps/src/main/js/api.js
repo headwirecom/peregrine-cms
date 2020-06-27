@@ -273,6 +273,10 @@ class PerApi {
     fetchRecyclables(siteName) {
         return impl.fetchRecyclables(siteName)
     }
+
+    acceptTermsAndConditions() {
+        return impl.acceptTermsAndConditions()
+    }
 }
 
 export default PerApi

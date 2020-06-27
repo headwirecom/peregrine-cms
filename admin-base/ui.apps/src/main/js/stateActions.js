@@ -87,6 +87,7 @@ import setTenant from './stateActions/setTenant'
 import recycleItem from './stateActions/recycleItem'
 import deleteRecyclable from './stateActions/deleteRecyclable'
 import tenantSetupReplication from './stateActions/tenantSetupReplication'
+import acceptTermsAndConditions from './stateActions/acceptTermsAndConditions'
 
 let log = LoggerFactory.logger('actions').setLevelDebug()
 
@@ -157,6 +158,7 @@ actions['createVersion'] = createVersion
 actions['restoreVersion'] = restoreVersion
 actions['setTenant'] = setTenant
 actions['tenantSetupReplication'] = tenantSetupReplication
+actions['acceptTermsAndConditions'] = acceptTermsAndConditions
 
 
 function noopAction(me, target) {

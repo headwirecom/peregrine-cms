@@ -226,9 +226,10 @@ class PerAdminImpl {
         .then((data) => {
           return populateView('/state', 'user', data.userID).then(() => {
             if (data.userID === 'anonymous') {
-              alert('please login to continue')
+              // alert('please login to continue')
               window.location = '/'
             }
+            return populateView('/state', 'userPreferences', data.preferences)
           })
         })
   }
@@ -1098,6 +1099,12 @@ class PerAdminImpl {
     return updateWithForm('/admin/tenantSetupReplication.json' + path, formData)
   }
 
+  acceptTermsAndConditions() {
+    let formData = new FormData();
+    return updateWithForm('/admin/acceptTermsAndConditions.json', formData).then( ()=> {
+      return this.populateUser()
+    })
+  }
 
 }
 
