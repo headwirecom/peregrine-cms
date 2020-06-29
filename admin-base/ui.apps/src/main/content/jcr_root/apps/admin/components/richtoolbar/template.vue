@@ -371,7 +371,34 @@
         this.startBrowsing()
       },
       editLink() {
-        this.insertLink() //TODO
+        let anchor
+        const document = this.getInlineDoc()
+        if (!document || !document.defaultView) return false
+        const window = document.defaultView
+        let selection = window.getSelection()
+        if (!selection || selection.rangeCount <= 0) return false
+        selection = selection.getRangeAt(0)
+
+        if (selection.startContainer.parentNode.tagName === 'A') {
+          anchor = selection.startContainer.parentNode
+        } else if (selection.endContainer.parentNode.tagName === 'A') {
+          anchor = selection.endContainer.parentNode
+        }
+
+        let href = anchor.getAttribute('href')
+        if (href === 'javascript:void(0);') {
+          href = anchor.getAttribute('data-original-href')
+        }
+        const hrefArr = href.substr(0, href.length - 5).split('/')
+        this.browser.cmd = 'editLink'
+        this.browser.header = this.$i18n('Edit Link')
+        this.browser.path.selected = hrefArr.join('/')
+        hrefArr.pop()
+        this.browser.path.current = hrefArr.join('/')
+        this.browser.withLinkTab = true
+        this.browser.type = 'page'
+        this.browser.path.suffix = '.html'
+        this.startBrowsing()
       },
       removeLink() {
         const document = this.getInlineDoc()
@@ -380,8 +407,8 @@
         let selection = window.getSelection()
         if (!selection || selection.rangeCount <= 0) return false
 
-        const range = document.createRange();
-        range.setStart(selection.anchorNode, 0);
+        const range = document.createRange()
+        range.setStart(selection.anchorNode, 0)
         range.setEnd(selection.anchorNode, selection.anchorNode.length)
         selection.removeAllRanges()
         selection.addRange(range)
@@ -446,6 +473,10 @@
         this.browser.open = false
       },
       onBrowserSelect() {
+        if (this.browser.cmd === 'editLink') {
+          this.removeLink()
+          this.browser.cmd = 'createLink'
+        }
         this.browser.open = false
         this.execCmd(this.browser.cmd, this.browser.path.selected + this.browser.path.suffix)
         this.browser.cmd = null

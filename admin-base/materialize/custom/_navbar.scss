@@ -151,7 +151,8 @@ nav {
         > a {
           padding: 0 .5rem;
 
-          .material-icons {
+          .material-icons,
+          .fa {
             margin-top: 4px;
           }
         }
@@ -382,7 +383,8 @@ nav {
             height: 35px;
             min-height: 35px;
 
-            .material-icons {
+            .material-icons,
+            .fa{
               height: 35px;
               line-height: 35px;
               width: unset;
