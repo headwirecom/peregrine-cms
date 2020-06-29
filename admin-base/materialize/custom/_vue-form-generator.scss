@@ -520,10 +520,10 @@
                         flex-wrap: wrap;
                         padding: 1px;
                         border-bottom: 2px solid var(--pcms-blue-grey);
+                        background-color: #ffffff;
+
 
                         .btn-group {
-                            background-color: #ffffff;
-
                             .btn {
                                 &:first-child {
                                     border-left-color: var(--pcms-gray);

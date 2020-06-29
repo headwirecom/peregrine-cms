@@ -26,7 +26,7 @@
   <div class="text-editor-wrapper">
     <admin-components-richtoolbar
         :showViewportBtn="false"
-        :showPreviewBtn="false" style="background-color: white;"/>
+        :showPreviewBtn="false"/>
     <p class="text-editor"
        ref="textEditor"
        v-html="value"
