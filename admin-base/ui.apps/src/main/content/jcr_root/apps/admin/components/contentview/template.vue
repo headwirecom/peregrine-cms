@@ -296,17 +296,18 @@
       }
     },
     mounted() {
-      this.$nextTick(() => {
+      const vm = this
+      vm.$nextTick(() => {
         /* is this a touch device */
-        this.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints
-        this.isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
-        if (this.isTouch) {
+        vm.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints
+        vm.isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
+        if (vm.isTouch) {
           /* selected components are not immediatly draggable on touch devices */
-          this.selected.draggable = false
+          vm.selected.draggable = false
         }
-        set(this.view, '/state/editorVisible', false)
-        set(this.view, '/state/editor/path', null)
-        set(this.view, '/state/inline/rich', null)
+        set(vm.view, '/state/editorVisible', false)
+        set(vm.view, '/state/editor/path', null)
+        set(vm.view, '/state/inline/rich', null)
       })
     },
     methods: {
@@ -343,14 +344,13 @@
               set(this.view, '/state/inline/model', null)
               if (vm.autoSave) {
                 vm.autoSave = false
-                vm.restoreLinkTargets()
                 $perAdminApp.stateAction('savePageEdit', {
                   data: vm.node,
                   path: vm.view.state.editor.path
                 }).then(() => {
                   $perAdminApp.action(vm, 'showComponentEdit', vm.path).then(() => {
                     vm.flushInlineState()
-                    vm.removeLinkTargets()
+                    vm.disableLinks()
                     vm.$nextTick(vm.pingToolbar)
                   })
                 })
@@ -592,7 +592,7 @@
         this.iframe.head = this.iframe.doc.querySelector('head')
         this.iframe.app = this.iframe.doc.querySelector('#peregrine-app')
         this.addIframeExtraStyles()
-        this.removeLinkTargets()
+        this.disableLinks()
         this.refreshInlineEditElems()
         this.iframeEditMode()
       },
@@ -689,21 +689,13 @@
         event.dataTransfer.clearData('text')
       },
 
-      removeLinkTargets(vm = this) {
+      disableLinks(vm = this) {
         const anchors = vm.iframe.app.querySelectorAll('a')
         anchors.forEach((a) => {
-          a.setAttribute('data-original-href', a.getAttribute('href'))
-          a.setAttribute('href', 'javascript:void(0);')
-        })
-      },
-
-      restoreLinkTargets(vm = this) {
-        const anchors = vm.iframe.app.querySelectorAll('a')
-        anchors.forEach((a) => {
-          const orgHref = a.getAttribute('data-original-href')
-          if (orgHref) {
-            a.setAttribute('href', a.getAttribute('data-original-href'))
-            a.removeAttribute('data-original-href')
+          console.log(a);
+          a.onclick = (event) => {
+            event.preventDefault()
+            event.stopPropagation()
           }
         })
       },

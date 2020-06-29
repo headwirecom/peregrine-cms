@@ -26,7 +26,7 @@
         :newWindow="browser.newWindow"
         :toggleNewWindow="toggleBrowserNewWindow"
         :linkTitle="browser.linkTitle"
-        :setLinkTitle="browser.setLinkTitle"
+        :setLinkTitle="setBrowserLinkTitle"
         :currentPath="browser.path.current"
         :setCurrentPath="setBrowserPathCurrent"
         :selectedPath="browser.path.selected"
@@ -56,23 +56,25 @@
         key: 0,
         selection: {
           buffer: null,
-          doc: null
+          doc: null,
+          container: null,
+          innerHTML: null
+        },
+        param: {
+          cmd: null,
+          value: null
         },
         browser: {
           open: false,
-          cmd: null,
           header: '',
           root: '',
           type: 'image',
           withLinkTab: false,
           newWindow: false,
-          linkTitle: 'TODO - SET TITLE',
-          setLinkTitle: () => {
-          },
+          linkTitle: '',
           path: {
             current: '',
-            selected: null,
-            suffix: ''
+            selected: null
           }
         }
       }
@@ -370,12 +372,16 @@
         }
       },
       insertLink() {
-        this.browser.cmd = 'createLink'
+        const selection = this.getSelection(0)
+        if (!selection) throw 'no selection found'
+        const len = selection.endOffset - selection.startOffset
+        const start = selection.startOffset
+        this.selection.innerHTML = selection.startContainer.textContent.substr(start, len)
+        this.param.cmd = 'createLink'
         this.browser.header = this.$i18n('Create Link')
         this.browser.path.current = this.roots.pages
         this.browser.withLinkTab = true
         this.browser.type = 'page'
-        this.browser.path.suffix = '.html'
         this.startBrowsing()
       },
       editLink() {
@@ -385,6 +391,12 @@
         const window = document.defaultView
         let selection = window.getSelection()
         if (!selection || selection.rangeCount <= 0) return false
+
+        const range = document.createRange()
+        range.setStart(selection.anchorNode, 0)
+        range.setEnd(selection.anchorNode, selection.anchorNode.length)
+        selection.removeAllRanges()
+        selection.addRange(range)
         selection = selection.getRangeAt(0)
 
         if (selection.startContainer.parentNode.tagName === 'A') {
@@ -393,12 +405,13 @@
           anchor = selection.endContainer.parentNode
         }
 
+        this.selection.innerHTML = anchor.innerHTML
         let href = anchor.getAttribute('href')
         if (href === 'javascript:void(0);') {
           href = anchor.getAttribute('data-original-href')
         }
         const hrefArr = href.substr(0, href.length - 5).split('/')
-        this.browser.cmd = 'editLink'
+        this.param.cmd = 'editLink'
         this.browser.header = this.$i18n('Edit Link')
         this.browser.path.selected = hrefArr.join('/')
         hrefArr.pop()
@@ -423,7 +436,7 @@
         this.execCmd('unlink')
       },
       insertImage() {
-        this.browser.cmd = 'insertImage'
+        this.param.cmd = 'insertImage'
         this.browser.header = this.$i18n('Insert Image')
         this.browser.path.current = this.roots.assets
         this.browser.withLinkTab = false
@@ -447,16 +460,12 @@
         return key
       },
       itemIsTag(tagName) {
-        const document = this.getInlineDoc()
-        tagName = tagName.toUpperCase()
-        if (!document || !document.defaultView) return false
-        const window = document.defaultView
-        let selection = window.getSelection()
-        if (!selection || selection.rangeCount <= 0) return false
-        selection = selection.getRangeAt(0)
+        const selection = this.getSelection(0)
         if (selection) {
-          return selection.startContainer.parentNode.tagName === tagName
-              || selection.endContainer.parentNode.tagName === tagName
+          const start = selection.startContainer
+          const end = selection.endContainer
+          return (start && start.parentNode.tagName === tagName)
+              || (end && end.parentNode.tagName === tagName)
         } else {
           return false
         }
@@ -478,21 +487,43 @@
               $perAdminApp.getApi().populateNodesForBrowser('/content', 'pathBrowser')
             })
       },
+      saveSelection() {
+        this.selection.buffer = saveSelection(this.getInlineContainer(), this.getInlineDoc())
+        this.selection.doc = this.getInlineDoc()
+        this.selection.container = this.getInlineContainer()
+      },
+      restoreSelection() {
+        this.selection.container.focus()
+        restoreSelection(this.selection.container, this.selection.buffer, this.selection.doc)
+      },
       onBrowserCancel() {
         this.browser.open = false
         this.restoreSelection()
       },
       onBrowserSelect() {
         this.restoreSelection()
-        if (this.browser.cmd === 'editLink') {
-          this.removeLink()
-          this.browser.cmd = 'createLink'
+        if (['editLink', 'createLink'].includes(this.param.cmd)) {
+          this.onLinkSelect()
+        } else if (this.param.cmd === 'insertImage') {
+          this.onImageSelect()
         }
         this.browser.open = false
-        this.execCmd(this.browser.cmd, this.browser.path.selected + this.browser.path.suffix)
-        this.browser.cmd = null
+        this.execCmd(this.param.cmd, this.param.value)
+        $perAdminApp.action(this, 'disableLinks')
+        this.param.cmd = null
+        this.param.value = null
         this.browser.path.selected = null
         this.key++
+      },
+      onLinkSelect() {
+        if (this.browser.path.selected.startsWith('/')) {
+          this.browser.path.selected += '.html'
+        } console.log(this.selection.innerHTML)
+        this.param.cmd = 'insertHTML'
+        this.param.value = `<a href="${this.browser.path.selected}" title="${this.browser.linkTitle}" target="${this.browser.newWindow? '_blank' : '_self'}">${this.selection.innerHTML}</a>`
+      },
+      onImageSelect() {
+        this.param.value = this.browser.path.selected
       },
       setBrowserPathCurrent(path) {
         this.browser.path.current = path
@@ -503,14 +534,20 @@
       toggleBrowserNewWindow() {
         this.browser.newWindow = !this.browser.newWindow
       },
-      saveSelection() {
-        this.selection.buffer = saveSelection(this.getInlineContainer(), this.getInlineDoc())
-        this.selection.doc = this.getInlineDoc()
-        this.selection.container = this.getInlineContainer()
+      setBrowserLinkTitle(event) {
+        this.browser.linkTitle = event.target.value
       },
-      restoreSelection() {
-        this.selection.container.focus()
-        restoreSelection(this.selection.container, this.selection.buffer, this.selection.doc)
+      getSelection(index = null) {
+        const document = this.getInlineDoc()
+        if (!document || !document.defaultView) return false
+        const window = document.defaultView
+        let selection = window.getSelection()
+        if (!selection || selection.rangeCount <= 0) return false
+        if (index >= 0) {
+          selection = selection.getRangeAt(index)
+        }
+
+        return selection
       }
     }
   }

@@ -168,10 +168,9 @@
 
             var view = $perAdminApp.getView()
             $perAdminApp.action(this, 'onEditorExitFullscreen')
-            $perAdminApp.action(this, 'restoreLinkTargets')
             $perAdminApp.stateAction('savePageEdit', { data: data, path: view.state.editor.path } ).then( () => {
               $perAdminApp.action(this, 'unselect')
-              $perAdminApp.action(this, 'removeLinkTargets')
+              $perAdminApp.action(this, 'disableLinks')
               $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
             })
         },
