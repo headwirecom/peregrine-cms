@@ -37,7 +37,7 @@
 </template>
 
 <script>
-  import {deepClone, get, set} from '../../../../../../js/utils'
+  import {deepClone, get, restoreSelection, saveSelection, set} from '../../../../../../js/utils'
 
   export default {
     name: 'RichToolbar',
@@ -54,6 +54,10 @@
     data() {
       return {
         key: 0,
+        selection: {
+          buffer: null,
+          doc: null
+        },
         browser: {
           open: false,
           cmd: null,
@@ -338,6 +342,10 @@
         if (!this.inline) return null
         return this.inline.doc
       },
+      getInlineContainer() {
+        if (!this.inline) return null
+        return this.inline.container
+      },
       execCmd(cmd, value = null, showUi = false) {
         if (!this.getInlineDoc() || !this.getInlineDoc().execCommand) return
         this.getInlineDoc().execCommand(cmd, showUi, value)
@@ -462,6 +470,7 @@
         return tags.some((tag) => this.itemIsTag(tag))
       },
       startBrowsing() {
+        this.saveSelection()
         $perAdminApp.getApi()
             .populateNodesForBrowser(this.browser.path.current, 'pathBrowser')
             .then(() => this.browser.open = true)
@@ -471,8 +480,10 @@
       },
       onBrowserCancel() {
         this.browser.open = false
+        this.restoreSelection()
       },
       onBrowserSelect() {
+        this.restoreSelection()
         if (this.browser.cmd === 'editLink') {
           this.removeLink()
           this.browser.cmd = 'createLink'
@@ -491,6 +502,15 @@
       },
       toggleBrowserNewWindow() {
         this.browser.newWindow = !this.browser.newWindow
+      },
+      saveSelection() {
+        this.selection.buffer = saveSelection(this.getInlineContainer(), this.getInlineDoc())
+        this.selection.doc = this.getInlineDoc()
+        this.selection.container = this.getInlineContainer()
+      },
+      restoreSelection() {
+        this.selection.container.focus()
+        restoreSelection(this.selection.container, this.selection.buffer, this.selection.doc)
       }
     }
   }

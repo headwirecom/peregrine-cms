@@ -28,6 +28,7 @@
         :showViewportBtn="false"
         :showPreviewBtn="false"/>
     <p class="text-editor"
+       ref="textEditor"
        v-html="value"
        contenteditable="true"
        @focusin="onFocusIn"
@@ -56,11 +57,13 @@
       }
     },
     methods: {
-      onFocusIn() {
+      onFocusIn(event) {
         set(this.view, '/state/inline/doc', this.doc)
+        set(this.view, '/state/inline/container', event.target)
       },
       onFocusOut() {
         set(this.view, '/state/inline/doc', null)
+        set(this.view, '/state/inline/container', null)
       },
       onInput(event) {
         const domProps = this._vnode.children[2].data.domProps

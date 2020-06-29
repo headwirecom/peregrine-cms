@@ -465,12 +465,14 @@
         const dataInline = this.targetInline.split('.').slice(1)
         this.inline = dataInline.join('.')
         set(this.view, '/state/inline/doc', this.iframe.doc)
+        set(this.view, '/state/inline/container', this.target)
       },
 
       onInlineFocusOut(event) {
         event.target.classList.remove('inline-editing')
         this.editing = false
         set(this.view, '/state/inline/doc', null)
+        set(this.view, '/state/inline/container', null)
       },
 
       onInlineKeyDown(event) {

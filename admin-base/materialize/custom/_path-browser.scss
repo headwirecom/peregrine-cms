@@ -98,6 +98,11 @@
 				.col-browse {
 					width: 100%;
 					padding: 0 0.75rem;
+
+					#pathBrowserLink {
+						color: #263238;
+					}
+
 					.modal-content-nav {
 						height: auto;
 						line-height: 35px;

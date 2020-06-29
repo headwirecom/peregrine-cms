@@ -27,8 +27,8 @@
     <div class="modal-mask" v-on:click.stop.prevent="onCancel">
         <div class="modal-wrapper">
         <div class="pathbrowser modal-container"
-             @click.stop.prevent="onPrevent"
-             @mousedown.prevent="() => {}">
+             @click.stop.prevent="onPrevent">
+             <!-- @mousedown.prevent="() => {}" -->
             <div class="modal-header" v-if="">
                 {{ header }}
             </div>
@@ -286,9 +286,11 @@
                             <label for="pathBrowserLink">URL</label>
                             <input
                                 id="pathBrowserLink"
+                                ref="pathBrowserLink"
                                 type="url"
                                 placeholder="https://"
                                 :value="selectedPath"
+                                @mousedown=""
                                 @input="selectLink" />
                         </div>
                         <div class="form-group" v-if="altText !== undefined">
