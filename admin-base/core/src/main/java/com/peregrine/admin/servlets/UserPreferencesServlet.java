@@ -49,7 +49,7 @@ import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
 import static com.peregrine.commons.util.PerConstants.TAGS;
 import static com.peregrine.commons.util.PerConstants.TITLE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
-import static com.peregrine.commons.util.PerUtil.GET;
+import static com.peregrine.commons.util.PerUtil.POST;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.commons.util.PerUtil.getProperties;
@@ -99,7 +99,7 @@ import static com.peregrine.admin.util.AdminConstants.PEREGRINE_SERVICE_NAME;
     property = {
         SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "User Preferences Servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
-        SLING_SERVLET_METHODS + EQUALS + GET,
+        SLING_SERVLET_METHODS + EQUALS + POST,
         SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_USER_PREFERENCES
     }
 )

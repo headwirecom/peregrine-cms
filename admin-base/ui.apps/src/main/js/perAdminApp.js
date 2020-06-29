@@ -212,7 +212,11 @@ function initPeregrineApp() {
     const admin = sessionStorage.getItem('perAdminApp.admin')
 
     if(state && admin) {
+        const keep = { user: view.state.user, userPreferences: view.state.userPreferences }
         view.state = JSON.parse(state)
+        view.state.user = keep.user
+        view.state.userPreferences = keep.userPreferences
+
         view.admin = JSON.parse(admin)
 
         // make i18n and language selection survive session storage
@@ -314,8 +318,8 @@ function loadContentImpl(initialPath, firstTime, fromPopState) {
     view.status = undefined;
 
     api.populateUser()
-        .then(function() {
-            api.populateContent(dataUrl)
+        .then(() => {
+            return api.populateContent(dataUrl)
                 .then( function () {
                     logger.fine('got data for', path)
                     walkTreeAndLoad(view.adminPageStaged).then( function() {

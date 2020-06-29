@@ -33,8 +33,9 @@ export default function(me, target) {
 
     let view = me.getView()
     return new Promise( (resolve, reject) => {
-        me.getApi().acceptTermsAndConditions().then( () => {
+        return me.getApi().acceptTermsAndConditions().then( () => {
             me.loadContent('/content/admin/pages/onboard/welcome.html')
+            resolve()
         })
     })
 }
