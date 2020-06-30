@@ -40,6 +40,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.api.resource.ValueMap;
@@ -85,8 +87,6 @@ public class PageModel extends Container {
         }
         return null;
     }
-
-    private String publicDomain;
 
     @Inject
     private ModelFactory modelFactory;
@@ -136,6 +136,13 @@ public class PageModel extends Container {
     @Optional
     private String brand;
 
+
+    @Inject
+    @Optional
+    private String ogImage;
+
+    private String absOgImage;
+
     public String getSiteRoot() {
         String path = getPagePath();
         String[] segments = path.split(SLASH);
@@ -174,6 +181,19 @@ public class PageModel extends Container {
         return siteCSS;
     }
 
+    /**
+     * Retrieves the primary public-facing domain for the site if it exists. The primary domain is considered the
+     * first domain listed.
+     *
+     * @return The primary domain on success, and an empty string otherwise.
+     */
+    public String getPrimaryDomain() {
+
+        return getDomains() != null && getDomains().length > 0
+                ? getDomains()[0]
+                : "";
+    }
+
     public String[] getDomains() {
         if(domains == null) {
             String[] value = (String[]) getInheritedProperty(DOMAINS);
@@ -188,24 +208,6 @@ public class PageModel extends Container {
         return domains;
     }
 
-    public String getPublicDomain() {
-        if(domains == null) {
-            String[] value = (String[]) getInheritedProperty(DOMAINS);
-            if(value != null && value.length != 0) return value[0];
-            if(getTemplate() != null) {
-                PageModel templatePageModel = getTemplatePageModel();
-                if(templatePageModel != null) {
-                    if (templatePageModel.getDomains() != null && templatePageModel.getDomains().length > 0)
-                        return templatePageModel.getDomains()[0];
-                }
-            }
-        }
-        if(domains != null && domains.length > 0) {
-            publicDomain = domains[0];
-        }
-        return publicDomain;
-    }
-    
     private PageModel getTemplatePageModel() {
         String template = getTemplate();
         if(template == null) return null;
@@ -337,6 +339,40 @@ public class PageModel extends Container {
             }
         }
         return brand;
+    }
+
+    /**
+     * Constructs an absolute og:image URL, if and only if, a primary domain is set and and og:image is set. The
+     * og:image may be set on the page, an ancestor page, or the page template.
+     *
+     * @return An absolute og:image URL on success and an empty string otherwise.
+     */
+    public String getAbsOgImage() {
+
+        String absOgImagePath = "";
+
+        // 1. try current page
+        String ogImagePath = getResource().getValueMap().get("ogImage", String.class);
+
+        // 2. try to fallback to closest parent or ancestor page
+        if (StringUtils.isBlank(ogImagePath)) {
+            ogImagePath  = (String) getInheritedProperty("ogImage");
+
+            // 3. try to fallback to template
+            if (StringUtils.isBlank(ogImagePath) && getTemplate() != null) {
+                PageModel templatePageModel = getTemplatePageModel();
+                if (templatePageModel != null) {
+                    ogImagePath = templatePageModel.ogImage;
+                }
+            }
+        }
+
+        final String domain = getPrimaryDomain();
+        if (StringUtils.isNotBlank(domain) & StringUtils.isNotBlank(ogImagePath)) {
+            absOgImagePath = domain + ogImagePath;
+        }
+
+        return absOgImagePath;
     }
 
     class Tag {
