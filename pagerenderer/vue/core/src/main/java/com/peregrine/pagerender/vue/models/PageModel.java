@@ -208,6 +208,36 @@ public class PageModel extends Container {
         return domains;
     }
 
+    /**
+     * Attempts to determine a fallback domain based on the request. A fallback domain is formatted as:
+     * [scheme]://[domain]:[port]. If the remote port is 80, then the port is not included.
+     *
+     * @return A prefix URL on success, and an empty string otherwise.
+     */
+    public String getFallbackDomain() {
+
+        // TODO: get SlingHttpServletRequest
+        /*
+        String domain = "";
+
+        if (request != null) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(request.getScheme()).append("://").append(request.getServerName());
+
+            if (request.getServerPort() != 80)
+            {
+                sb.append(":").append(request.getServerPort());
+            }
+            domain = sb.toString();
+        } else {
+            System.out.println("request is null");
+        }
+
+        return domain;
+         */
+        return "http://localhost:8080";
+    }
+
     private PageModel getTemplatePageModel() {
         String template = getTemplate();
         if(template == null) return null;
@@ -367,7 +397,10 @@ public class PageModel extends Container {
             }
         }
 
-        final String domain = getPrimaryDomain();
+        final String domain = StringUtils.isNotBlank(getPrimaryDomain())
+                ? getPrimaryDomain()
+                : getFallbackDomain();
+
         if (StringUtils.isNotBlank(domain) & StringUtils.isNotBlank(ogImagePath)) {
             absOgImagePath = domain + ogImagePath;
         }
