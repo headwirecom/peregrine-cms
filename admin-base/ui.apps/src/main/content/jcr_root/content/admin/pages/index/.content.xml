@@ -33,6 +33,7 @@
     jcr:primaryType="per:PageContent"
     sling:resourceType="admin/components/toolingpage"
     jcr:title="Welcome"
+    loaders="[populateTenants:/"
     jcr:description="admin base welcome page">
 
     <nav jcr:primaryType="nt:unstructured"
