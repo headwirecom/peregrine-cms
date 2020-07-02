@@ -308,7 +308,16 @@
         set(vm.view, '/state/editorVisible', false)
         set(vm.view, '/state/editor/path', null)
         set(vm.view, '/state/inline/rich', null)
+
+        if (this.previewMode !== 'preview') {
+          set($perAdminApp.getView(), '/state/contentview/editor/active', true)
+        } else {
+          set($perAdminApp.getView(), '/state/contentview/editor/active', false)
+        }
       })
+    },
+    beforeDestroy() {
+      set($perAdminApp.getView(), '/state/contentview/editor/active', false)
     },
     methods: {
       componentKey(component) {
@@ -350,7 +359,6 @@
                 }).then(() => {
                   $perAdminApp.action(vm, 'showComponentEdit', vm.path).then(() => {
                     vm.flushInlineState()
-                    vm.disableLinks()
                     vm.$nextTick(vm.pingToolbar)
                   })
                 })
@@ -592,9 +600,12 @@
         this.iframe.head = this.iframe.doc.querySelector('head')
         this.iframe.app = this.iframe.doc.querySelector('#peregrine-app')
         this.addIframeExtraStyles()
-        this.disableLinks()
         this.refreshInlineEditElems()
-        this.iframeEditMode()
+        if (this.previewMode !== 'preview') {
+          this.iframeEditMode()
+        } else {
+          this.iframePreviewMode()
+        }
       },
 
       onIframeClick(ev) {
@@ -689,16 +700,6 @@
         event.dataTransfer.clearData('text')
       },
 
-      disableLinks(vm = this) {
-        const anchors = vm.iframe.app.querySelectorAll('a')
-        anchors.forEach((a) => {
-          a.onclick = (event) => {
-            event.preventDefault()
-            event.stopPropagation()
-          }
-        })
-      },
-
       refreshInlineEditElems() {
         const selector = `[${Attribute.INLINE}]:not(.inline-edit)`
         const elements = this.iframe.app.querySelectorAll(selector)
@@ -722,6 +723,7 @@
       },
 
       iframeEditMode() {
+        set($perAdminApp.getView(), '/state/contentview/editor/active', true)
         this.iframe.doc.addEventListener('click', this.onIframeClick)
         this.iframe.doc.addEventListener('scroll', this.onIframeScroll)
         this.iframe.doc.addEventListener('dragover', this.onIframeDragOver)
@@ -737,19 +739,26 @@
       },
 
       iframePreviewMode() {
+        set($perAdminApp.getView(), '/state/contentview/editor/active', false)
         try {
           this.iframe.doc.removeEventListener('click', this.onIframeClick)
           this.iframe.doc.removeEventListener('scroll', this.onIframeScroll)
         } catch (err) {
-          console.trace('no event listener to be removed from iframe')
+          console.debug('no event listener to be removed from iframe', err)
         }
-        this.iframe.body.setAttribute('contenteditable', 'false')
-        this.iframe.html.classList.remove('edit-mode')
-        const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
-        elements.forEach((el, index) => {
-          if (this.isFromTemplate(el)) return
-          el.setAttribute('contenteditable', 'false')
-        })
+        if (this.iframe.body) {
+          this.iframe.body.setAttribute('contenteditable', 'false')
+        }
+        if (this.iframe.html) {
+          this.iframe.html.classList.remove('edit-mode')
+        }
+        if (this.iframe.app) {
+          const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
+          elements.forEach((el, index) => {
+            if (this.isFromTemplate(el)) return
+            el.setAttribute('contenteditable', 'false')
+          })
+        }
       },
 
       addIframeExtraStyles() {

@@ -170,7 +170,6 @@
             $perAdminApp.action(this, 'onEditorExitFullscreen')
             $perAdminApp.stateAction('savePageEdit', { data: data, path: view.state.editor.path } ).then( () => {
               $perAdminApp.action(this, 'unselect')
-              $perAdminApp.action(this, 'disableLinks')
               $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
             })
         },
