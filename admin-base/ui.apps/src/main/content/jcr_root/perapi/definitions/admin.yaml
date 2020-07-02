@@ -21,7 +21,7 @@ paths:
     get:
       responses:
         200:
-          description: returns the user id and if available the authentication type
+          description: returns the user id, authentication type if available, and a graph of additional profile properties if configured in the AccessServlet
           schema:
             type: object
             required:
