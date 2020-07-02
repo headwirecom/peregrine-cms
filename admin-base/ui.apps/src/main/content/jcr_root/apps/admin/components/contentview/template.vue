@@ -78,14 +78,17 @@
           :data-per-mode="previewMode"
           @load="onIframeLoaded"/>
     </template>
-    <div ref="addComponentModal"
-         v-show="addComponentModal.visible"
-         style="background: silver; position: absolute; top: 10px; bottom: 10px; left: 10px; width: 300px; z-index: 2; overflow-y: scroll;">
-      <input ref="addComponentModalFilter" type="text" v-model="addComponentModal.filter">
-      <button v-on:click="addComponentFromModal(componentKey(component))"
-              style="width: 100%;"
-              v-for="component in allowedComponents"
-              v-bind:key="component.path + '|' + component.variation">
+    <div v-if="addComponentModal.visible" ref="addComponentModal" class="add-component-modal">
+      <input
+          ref="addComponentModalFilter"
+          type="text"
+          class="filter"
+          v-model="addComponentModal.filter"/>
+      <button
+          v-for="component in allowedComponents"
+          :key="component.path + '|' + component.variation"
+          class="component"
+          @click="addComponentFromModal(componentKey(component))">
         {{componentDisplayName(component)}}
       </button>
     </div>
