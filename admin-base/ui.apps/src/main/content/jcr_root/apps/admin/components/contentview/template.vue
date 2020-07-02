@@ -692,7 +692,6 @@
       disableLinks(vm = this) {
         const anchors = vm.iframe.app.querySelectorAll('a')
         anchors.forEach((a) => {
-          console.log(a);
           a.onclick = (event) => {
             event.preventDefault()
             event.stopPropagation()
