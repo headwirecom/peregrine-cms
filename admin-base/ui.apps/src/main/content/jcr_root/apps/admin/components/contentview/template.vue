@@ -297,7 +297,6 @@
     },
     mounted() {
       const vm = this
-      set($perAdminApp.getView(), '/state/contentview/editor/active', true)
       vm.$nextTick(() => {
         /* is this a touch device */
         vm.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints
@@ -309,6 +308,12 @@
         set(vm.view, '/state/editorVisible', false)
         set(vm.view, '/state/editor/path', null)
         set(vm.view, '/state/inline/rich', null)
+
+        if (this.previewMode !== 'preview') {
+          set($perAdminApp.getView(), '/state/contentview/editor/active', true)
+        } else {
+          set($perAdminApp.getView(), '/state/contentview/editor/active', false)
+        }
       })
     },
     beforeDestroy() {
@@ -596,7 +601,11 @@
         this.iframe.app = this.iframe.doc.querySelector('#peregrine-app')
         this.addIframeExtraStyles()
         this.refreshInlineEditElems()
-        this.iframeEditMode()
+        if (this.previewMode !== 'preview') {
+          this.iframeEditMode()
+        } else {
+          this.iframePreviewMode()
+        }
       },
 
       onIframeClick(ev) {
@@ -735,15 +744,21 @@
           this.iframe.doc.removeEventListener('click', this.onIframeClick)
           this.iframe.doc.removeEventListener('scroll', this.onIframeScroll)
         } catch (err) {
-          console.trace('no event listener to be removed from iframe')
+          console.debug('no event listener to be removed from iframe', err)
         }
-        this.iframe.body.setAttribute('contenteditable', 'false')
-        this.iframe.html.classList.remove('edit-mode')
-        const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
-        elements.forEach((el, index) => {
-          if (this.isFromTemplate(el)) return
-          el.setAttribute('contenteditable', 'false')
-        })
+        if (this.iframe.body) {
+          this.iframe.body.setAttribute('contenteditable', 'false')
+        }
+        if (this.iframe.html) {
+          this.iframe.html.classList.remove('edit-mode')
+        }
+        if (this.iframe.app) {
+          const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
+          elements.forEach((el, index) => {
+            if (this.isFromTemplate(el)) return
+            el.setAttribute('contenteditable', 'false')
+          })
+        }
       },
 
       addIframeExtraStyles() {
