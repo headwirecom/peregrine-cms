@@ -297,6 +297,7 @@
     },
     mounted() {
       const vm = this
+      set($perAdminApp.getView(), '/state/contentview/editor/active', true)
       vm.$nextTick(() => {
         /* is this a touch device */
         vm.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints
@@ -309,6 +310,9 @@
         set(vm.view, '/state/editor/path', null)
         set(vm.view, '/state/inline/rich', null)
       })
+    },
+    beforeDestroy() {
+      set($perAdminApp.getView(), '/state/contentview/editor/active', false)
     },
     methods: {
       componentKey(component) {
@@ -350,7 +354,6 @@
                 }).then(() => {
                   $perAdminApp.action(vm, 'showComponentEdit', vm.path).then(() => {
                     vm.flushInlineState()
-                    vm.disableLinks()
                     vm.$nextTick(vm.pingToolbar)
                   })
                 })
@@ -592,7 +595,6 @@
         this.iframe.head = this.iframe.doc.querySelector('head')
         this.iframe.app = this.iframe.doc.querySelector('#peregrine-app')
         this.addIframeExtraStyles()
-        this.disableLinks()
         this.refreshInlineEditElems()
         this.iframeEditMode()
       },
@@ -689,16 +691,6 @@
         event.dataTransfer.clearData('text')
       },
 
-      disableLinks(vm = this) {
-        const anchors = vm.iframe.app.querySelectorAll('a')
-        anchors.forEach((a) => {
-          a.onclick = (event) => {
-            event.preventDefault()
-            event.stopPropagation()
-          }
-        })
-      },
-
       refreshInlineEditElems() {
         const selector = `[${Attribute.INLINE}]:not(.inline-edit)`
         const elements = this.iframe.app.querySelectorAll(selector)
@@ -722,6 +714,7 @@
       },
 
       iframeEditMode() {
+        set($perAdminApp.getView(), '/state/contentview/editor/active', true)
         this.iframe.doc.addEventListener('click', this.onIframeClick)
         this.iframe.doc.addEventListener('scroll', this.onIframeScroll)
         this.iframe.doc.addEventListener('dragover', this.onIframeDragOver)
@@ -737,6 +730,7 @@
       },
 
       iframePreviewMode() {
+        set($perAdminApp.getView(), '/state/contentview/editor/active', false)
         try {
           this.iframe.doc.removeEventListener('click', this.onIframeClick)
           this.iframe.doc.removeEventListener('scroll', this.onIframeScroll)

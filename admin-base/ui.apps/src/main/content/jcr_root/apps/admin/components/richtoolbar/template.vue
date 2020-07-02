@@ -509,7 +509,6 @@
         }
         this.browser.open = false
         this.execCmd(this.param.cmd, this.param.value)
-        $perAdminApp.action(this, 'disableLinks')
         this.param.cmd = null
         this.param.value = null
         this.browser.path.selected = null
