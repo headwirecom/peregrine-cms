@@ -78,20 +78,7 @@
           :data-per-mode="previewMode"
           @load="onIframeLoaded"/>
     </template>
-    <div v-if="addComponentModal.visible" ref="addComponentModal" class="add-component-modal">
-      <input
-          ref="addComponentModalFilter"
-          type="text"
-          class="filter"
-          v-model="addComponentModal.filter"/>
-      <button
-          v-for="component in allowedComponents"
-          :key="component.path + '|' + component.variation"
-          class="component"
-          @click="addComponentFromModal(componentKey(component))">
-        {{componentDisplayName(component)}}
-      </button>
-    </div>
+    <admin-components-addcomponentmodal/>
   </div>
 </template>
 
@@ -520,31 +507,6 @@
           this.onInlineArrowKey(event, true)
         }
         this.holdingDown = false
-      },
-
-      addComponent(below = true) {
-        this.addComponentModal.visible = true
-        this.$nextTick(() => {
-          this.$refs.addComponentModalFilter.focus()
-        })
-      },
-
-      addComponentFromModal(component) {
-        this.addComponentModal.visible = true
-        const view = this.view
-        const payload = {
-          pagePath: view.pageView.path,
-          path: this.path,
-          component: component,
-          drop: 'after'
-        }
-        $perAdminApp.stateAction('addComponentToPath', payload).then((data) => {
-          this.refreshInlineEditElems()
-          this.iframeEditMode()
-          this.addComponentModal.visible = false
-          // TODO: would be nice to select the newly inserted component and focus
-          //       into the first contenteditable if there is indeed a contenteditable
-        })
       },
 
       onInlineSelectAll(event) {

@@ -1,23 +1,42 @@
-.add-component-modal {
-  background-color: #eceff1;
-  position: absolute;
-  top: 2%;
-  left: 0;
-  width: 300px;
-  height: 93%;
-  max-height: 93%;
-  z-index: 2;
-  overflow-y: scroll;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid #cfd8dc;
-  box-shadow: 6px 6px 8px 4px #0000004d;
-  padding: 10px;
+.add-component-modal-wrapper {
+  direction: rtl;
 
-  .filter {
-    padding: 1%;
-  }
+  .add-component-modal {
+    direction: ltr;
+    background-color: #eceff1;
+    position: absolute;
+    top: 2%;
+    left: 0;
+    width: 300px;
+    height: 93%;
+    max-height: 93%;
+    z-index: 2;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #cfd8dc;
+    box-shadow: 6px 6px 8px 4px #0000004d;
+    padding: 10px;
 
-  .component {
+    .filter {
+      padding: 1%;
+      min-height: 3rem;
+    }
+
+    .component-btn {
+      background-color: #fff;
+      border: none;
+      border-bottom: 1px solid var(--pcms-gray);
+      font-size: 1.1rem;
+
+      &:hover {
+        background-color: var(--pcms-orange-hover);
+      }
+
+      &:active, &:focus {
+        background-color: var(--pcms-orange);
+        color: #fff;
+      }
+    }
   }
 }
