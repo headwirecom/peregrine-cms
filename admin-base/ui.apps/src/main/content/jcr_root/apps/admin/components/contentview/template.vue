@@ -78,7 +78,11 @@
           :data-per-mode="previewMode"
           @load="onIframeLoaded"/>
     </template>
-    <admin-components-addcomponentmodal/>
+    <admin-components-addcomponentmodal
+        v-if="iframe.win"
+        :selectedComponent="target"
+        :windows="[rootWin, iframe.win]"
+        @component-added="refreshInlineEditElems"/>
   </div>
 </template>
 
@@ -90,6 +94,7 @@
     props: ['model'],
     data() {
       return {
+        rootWin: window,
         target: null,
         previousTarget: null,
         inline: null,
@@ -121,10 +126,6 @@
         ctrlDown: false,
         isTouch: false,
         isIOS: false,
-        addComponentModal: {
-          visible: false,
-          filter: ''
-        },
         caret: {
           pos: -1,
           counter: 0
@@ -215,18 +216,6 @@
       },
       isRich() {
         return get(this.view, '/state/inline/rich', false)
-      },
-      allowedComponents() {
-        return get(this.view, '/admin/components/data', [])
-            .filter(el => {
-              if (!this.view.state.tenant || !this.view.state.tenant.name) return false
-              if (el.group === '.hidden') return false
-              if (!this.componentDisplayName(el).toLowerCase().startsWith(
-                  this.addComponentModal.filter.toLowerCase())) {
-                return false
-              }
-              return el.path.startsWith('/apps/' + this.view.state.tenant.name + '/')
-            })
       },
       componentTitle() {
         const componentName = this.view.state.editor.component.split('-').join('/')
@@ -485,10 +474,6 @@
           this.onInlineSelectAll(event)
         } else if (backspaceOrDelete) {
           this.onInlineDelete(event)
-        } else if (key === Key.DOT && ctrlOrCmd) {
-          this.addComponent(true)
-        } else if (key === Key.COMMA && ctrlOrCmd) {
-          this.addComponent(false)
         } else if (arrowKey && !shift) {
           this.onInlineArrowKey(event)
         }

@@ -23,63 +23,92 @@
   #L%
   -->
 <template>
-    <div v-if="show" class="add-component-modal-wrapper">
-      <div class="add-component-modal">
-        <input
-            ref="filter"
-            v-model="filter"
-            type="text"
-            class="filter"
-            placeholder="filter components"/>
-        <div class="component-list">
-          <button
-              v-for="component in allowedComponents"
-              :key="component.path + '|' + component.variation"
-              class="component-btn"
-              @click="addComponentFromModal(componentKey(component))">
-            {{componentDisplayName(component)}}
-          </button>
-        </div>
+  <div v-show="visible" class="add-component-modal-wrapper">
+    <div class="add-component-modal">
+      <input
+          ref="filter"
+          v-model="filter"
+          type="text"
+          class="filter"
+          placeholder="filter components"/>
+      <div class="component-list">
+        <button
+            v-for="component in filteredComponents"
+            :key="component.path + '|' + component.variation"
+            class="component-btn"
+            @click="onComponentBtnClick(component)">
+          {{componentDisplayName(component)}}
+        </button>
       </div>
     </div>
+  </div>
 </template>
 
 <script>
-  import {get} from '../../../../../../js/utils';
+  import {get} from '../../../../../../js/utils'
+  import {Key} from '../../../../../../js/constants'
 
   export default {
     name: 'AddComponentModal',
-    props: [],
+    props: {
+      selectedComponent: null,
+      windows: Array
+    },
     data() {
       return {
-        show: false,
-        filter: ''
+        visible: false,
+        filter: '',
+        component: null,
+        eventListeners: []
       }
     },
     computed: {
       view() {
         return $perAdminApp.getView()
       },
-      allowedComponents() {
-        return get(this.view, '/admin/components/data', [])
-            .filter(el => {
-              if (!this.view.state.tenant || !this.view.state.tenant.name) return false
-              if (el.group === '.hidden') return false
-              if (!this.componentDisplayName(el).toLowerCase().startsWith(
-                  this.filter.toLowerCase())) {
-                return false
-              }
-              return el.path.startsWith('/apps/' + this.view.state.tenant.name + '/')
-            })
+      filteredComponents() {
+        return get(this.view, '/admin/components/data', []).filter(el => {
+          const tenant = this.view.state.tenant
+          const lCmpName = this.componentDisplayName(el).toLowerCase()
+          const filter = this.filter.toLowerCase()
+
+          if (!tenant || !tenant.name || el.group === '.hidden' || !lCmpName.startsWith(filter)) {
+            return false
+          } else {
+            return el.path.startsWith('/apps/' + tenant.name + '/')
+          }
+        })
       },
+      componentKey() {
+        let key = this.component.path
+
+        if (this.component.variation) {
+          key += ':' + this.component.variation
+        }
+
+        return key
+      }
+    },
+    watch: {
+      visible(val) {
+        if (val) {
+          this.$nextTick(() => {
+            this.$refs.filter.focus()
+          })
+        }
+      },
+      windows(val) {
+        this.clearEventListeners()
+        this.bindEventListener()
+      }
+    },
+    mounted() {
+      this.bindEventListener()
     },
     methods: {
-      componentKey(component) {
-        if (component.variation) {
-          return component.path + ':' + component.variation
-        } else {
-          return component.path
-        }
+      onComponentBtnClick(component) {
+        this.component = component
+        this.addComponentFromModal()
       },
       componentDisplayName(component) {
         if (component.title) {
@@ -88,28 +117,50 @@
           return component.path.split('/')[2] + ' ' + component.name
         }
       },
-
-      addComponent(below = true) {
-        this.show = true
-        this.$nextTick(() => {
-          this.$refs.filter.focus()
-        })
-      },
-
-      addComponentFromModal(component) {
-        this.addComponentModal.visible = true
+      addComponentFromModal() {
         const view = this.view
         const payload = {
           pagePath: view.pageView.path,
-          path: this.path,
-          component: component,
+          path: this.selectedComponent.getAttribute('data-per-path'),
+          component: this.componentKey,
           drop: 'after'
         }
         $perAdminApp.stateAction('addComponentToPath', payload).then((data) => {
-          this.refreshInlineEditElems()
-          this.addComponentModal.visible = false
+          this.$emit('component-added')
+          this.visible = false
           // TODO: would be nice to select the newly inserted component and focus
           //       into the first contenteditable if there is indeed a contenteditable
+        })
+      },
+      onKeyDown(event) {
+        if (!this.selectedComponent) return
+
+        const key = event.which
+        const shift = event.shiftKey
+        const ctrlOrCmd = event.ctrlKey || event.metaKey
+
+        if (ctrlOrCmd) {
+          if (key === Key.DOT) {
+            this.visible = true
+          }
+        } else if (key === Key.ESC) {
+          if (this.visible) {
+            this.visible = false
+          }
+        }
+      },
+      bindEventListener() {
+        this.windows.forEach((win) => {
+          this.eventListeners.push({
+            win: win,
+            type: 'keydown',
+            id: win.addEventListener('keydown', this.onKeyDown)
+          })
+        })
+      },
+      clearEventListeners() {
+        this.eventListeners.forEach((listener) => {
+          listener.win.removeEventListener(listener.type, listener.id)
         })
       }
     }
