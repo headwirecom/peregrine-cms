@@ -21,7 +21,7 @@
  * Contributed by Cris Rockwell, University of Michigan
  */
 
-package com.peregrine.admin.slingtests;
+package com.peregrine.slingjunit;
 
 import com.peregrine.admin.resource.AdminResourceHandler;
 import org.apache.sling.api.resource.LoginException;
@@ -33,7 +33,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static com.peregrine.admin.slingtests.VersionsJTest.EXAMPLE_SITE_ROOT;
+
+import static com.peregrine.slingjunit.VersionsJTest.EXAMPLE_SITE_ROOT;
 import static org.junit.Assert.*;
 
 @RunWith(SlingAnnotationsTestRunner.class)

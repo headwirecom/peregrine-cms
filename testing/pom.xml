@@ -219,6 +219,7 @@
         <module>testing.config.client</module>
         <module>testing.client.side</module>
         <module>testing.server.side</module>
+        <module>slingjunit</module>
         <!--<module>testing.node-js</module>-->
     </modules>
 
