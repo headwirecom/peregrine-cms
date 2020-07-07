@@ -30,13 +30,16 @@
           v-model="filter"
           type="text"
           class="filter"
-          placeholder="filter components"/>
+          placeholder="filter components"
+          @keydown="onFilterKeyDown"/>
       <div class="component-list">
         <button
-            v-for="component in filteredComponents"
+            v-for="(component, index) in filteredComponents"
             :key="component.path + '|' + component.variation"
+            ref="componentBtn"
             class="component-btn"
-            @click="onComponentBtnClick(component)">
+            @click="onComponentBtnClick(component)"
+            @keydown="omComponentBtnKeyDown($event, index)">
           {{componentDisplayName(component)}}
         </button>
       </div>
@@ -59,7 +62,7 @@
         visible: false,
         filter: '',
         component: null,
-        eventListeners: []
+        windowEventListeners: []
       }
     },
     computed: {
@@ -87,23 +90,26 @@
         }
 
         return key
+      },
+      componentCount() {
+        return this.filteredComponents.length
       }
     },
     watch: {
-      visible(val) {
-        if (val) {
+      visible(val, oldVal) {
+        if (val && !oldVal) {
           this.$nextTick(() => {
             this.$refs.filter.focus()
           })
         }
       },
       windows(val) {
-        this.clearEventListeners()
-        this.bindEventListener()
+        this.clearWindowEventListeners()
+        this.bindWindowEventListeners()
       }
     },
     mounted() {
-      this.bindEventListener()
+      this.bindWindowEventListeners()
     },
     methods: {
       onComponentBtnClick(component) {
@@ -139,28 +145,59 @@
         const shift = event.shiftKey
         const ctrlOrCmd = event.ctrlKey || event.metaKey
 
-        if (ctrlOrCmd) {
-          if (key === Key.DOT) {
-            this.visible = true
+        if (!this.visible) {
+          if (ctrlOrCmd) {
+            if (key === Key.DOT) {
+              this.visible = true
+            }
           }
-        } else if (key === Key.ESC) {
-          if (this.visible) {
+        } else if (this.visible) {
+          if (key === Key.ESC) {
             this.visible = false
           }
         }
       },
-      bindEventListener() {
+      onFilterKeyDown(event) {
+        if (this.componentCount <= 0) return
+
+        const key = event.which
+
+        if (key === Key.ARROW_DOWN || key === Key.ARROW_RIGHT) {
+          event.preventDefault()
+          this.$refs.componentBtn[0].focus()
+        }
+      },
+      omComponentBtnKeyDown(event, index) {
+        if (this.componentCount <= 0) return
+
+        const key = event.which
+
+        if (key === Key.ARROW_DOWN || key === Key.ARROW_RIGHT) {
+          if (index + 1 < this.componentCount) {
+            event.preventDefault()
+            this.$refs.componentBtn[index + 1].focus()
+          }
+        } else if (key === Key.ARROW_UP || key === Key.ARROW_LEFT) {
+          if (index - 1 >= 0) {
+            event.preventDefault()
+            this.$refs.componentBtn[index - 1].focus()
+          } else {
+            this.$refs.filter.focus()
+          }
+        }
+      },
+      bindWindowEventListeners() {
         this.windows.forEach((win) => {
-          this.eventListeners.push({
-            win: win,
+          this.windowEventListeners.push({
+            window: win,
             type: 'keydown',
             id: win.addEventListener('keydown', this.onKeyDown)
           })
         })
       },
-      clearEventListeners() {
-        this.eventListeners.forEach((listener) => {
-          listener.win.removeEventListener(listener.type, listener.id)
+      clearWindowEventListeners() {
+        this.windowEventListeners.forEach((listener) => {
+          listener.window.removeEventListener(listener.type, listener.id)
         })
       }
     }
