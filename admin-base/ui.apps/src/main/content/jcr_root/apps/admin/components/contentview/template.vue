@@ -82,7 +82,7 @@
         v-if="iframe.win"
         :selectedComponent="component"
         :windows="[rootWin, iframe.win]"
-        @component-added="refreshInlineEditElems"/>
+        @component-added="onAddComponentModalComponentAdded"/>
   </div>
 </template>
 
@@ -936,6 +936,13 @@
 
       pingToolbar() {
         set(this.view, '/state/inline/ping', [])
+      },
+
+      onAddComponentModalComponentAdded(newNode) {
+        this.refreshInlineEditElems()
+        const newNodeEl = this.iframe.app.querySelector(`[data-per-path="${newNode.path}"]`)
+        newNodeEl.scrollIntoView(true)
+        newNodeEl.click()
       }
     }
   }

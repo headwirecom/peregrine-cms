@@ -22,10 +22,10 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('addComponentToPath').setLevelDebug()
+import {LoggerFactory} from '../logger'
+import {parentPath} from '../utils'
 
-import { parentPath } from '../utils'
+let log = LoggerFactory.logger('addComponentToPath').setLevelDebug()
 
 export default function(me, target) {
 
@@ -61,6 +61,7 @@ export default function(me, target) {
         processed = true;
         return me.getApi().insertNodeAt(target.pagePath+targetNode.path, componentPath, target.drop, variation)
             .then( (data) => {
+                        const newNode = findNewNode(data, targetNode, target.drop)
                         if(targetNodeUpdate.fromTemplate === true) {
                             return me.getApi().populatePageView(me.getNodeFromView('/pageView/path'))
                         } else {
@@ -72,12 +73,12 @@ export default function(me, target) {
                                 Vue.set(targetNodeUpdate, 'children', data.children)
                             }
                             log.fine(data)
-                            return
+                            return newNode
                         }
                     })
     }
 
-    // copy/paste? 
+    // copy/paste?
     if(targetNode && target.data) {
         processed = true;
         return me.getApi().insertNodeWithDataAt(target.pagePath+targetNode.path, target.data, target.drop)
@@ -121,7 +122,7 @@ export default function(me, target) {
             })
     }
     // return new Promise( (resolve, reject) => {
-    
+
     //     if(targetNode) {
     //         if(target.component) {
     //             me.getApi().insertNodeAt(target.pagePath+targetNode.path, componentPath, target.drop, variation)
@@ -180,7 +181,7 @@ export default function(me, target) {
     //                 }
     //             })
     //     }
-    
+
     // })
 
 
@@ -196,4 +197,21 @@ export default function(me, target) {
     //         set(view, '/state/rightPanelVisible', true)
     //     }
     // )
+}
+
+const findNewNode = (data, targetNode, drop) => {
+    let index = null
+
+    data.children.some((child, i) => {
+        if (child.path === targetNode.path) {
+            index = i
+            return true
+        }
+    })
+
+    if (!index) throw 'new node not found'
+    if (drop === 'after') {
+        return data.children[index + 1]
+    }
+    return null;
 }

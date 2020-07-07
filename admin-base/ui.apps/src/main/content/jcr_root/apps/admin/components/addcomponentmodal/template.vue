@@ -132,10 +132,18 @@
           drop: 'after'
         }
         $perAdminApp.stateAction('addComponentToPath', payload).then((data) => {
-          this.$emit('component-added')
+          const split = payload.path.split('/')
+          split.pop()
+          const parentPath = split.join('/')
+          const parentNode = $perAdminApp.findNodeFromPath(this.view.pageView.page, parentPath)
+          let index = null
+          parentNode.children.some((child, i) => {
+            if (child.path === payload.path) {
+              index = i
+            }
+          })
+          this.$emit('component-added', parentNode.children[index + 1])
           this.visible = false
-          // TODO: would be nice to select the newly inserted component and focus
-          //       into the first contenteditable if there is indeed a contenteditable
         })
       },
       onKeyDown(event) {
