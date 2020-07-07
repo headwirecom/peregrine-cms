@@ -80,7 +80,7 @@
     </template>
     <admin-components-addcomponentmodal
         v-if="iframe.win"
-        :selectedComponent="target"
+        :selectedComponent="component"
         :windows="[rootWin, iframe.win]"
         @component-added="refreshInlineEditElems"/>
   </div>
