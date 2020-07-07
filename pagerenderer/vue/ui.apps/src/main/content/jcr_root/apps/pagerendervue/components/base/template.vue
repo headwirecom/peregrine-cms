@@ -23,7 +23,9 @@
   #L%
   -->
 <template>
-<p v-html="text" v-bind:data-per-path="model.path"></p>
+<div v-bind:data-per-path="model.path">
+<p v-html="text" data-per-inline="model.text"></p>
+</div>
 </template>
 
 <script>

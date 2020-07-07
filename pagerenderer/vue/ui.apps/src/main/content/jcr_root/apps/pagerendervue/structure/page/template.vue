@@ -23,10 +23,16 @@
   #L%
   -->
 <template>
-<div  class="container">
-    <div v-for="child in model.children">
+<div  class="container" v-bind:data-per-path="model.path">
+    <pagerendervue-components-placeholder
+        v-bind:model="{ path: model.path, component: model.component, location: 'before' }">
+    </pagerendervue-components-placeholder>
+    <div v-for="child in model.children" v-bind:key="child.path">
         <component v-bind:is="child.component" v-bind:model="child"></component>
     </div>
+    <pagerendervue-components-placeholder
+        v-bind:model="{ path: model.path, component: model.component, location: 'after' }">
+    </pagerendervue-components-placeholder>
 </div>
 </template>
 

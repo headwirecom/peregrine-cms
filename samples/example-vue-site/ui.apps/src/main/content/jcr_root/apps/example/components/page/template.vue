@@ -32,6 +32,7 @@
             <component
                 v-bind:is="child.component"
                 v-bind:model="child"
+                v-bind:key="child.path"
                 v-bind:class="{'from-template': isFromTemplate(child)}">
             </component>
         </template>

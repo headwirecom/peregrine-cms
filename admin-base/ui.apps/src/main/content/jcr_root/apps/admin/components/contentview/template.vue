@@ -442,9 +442,10 @@
 
       onInlineFocus(event) {
         event.target.classList.add('inline-editing')
-        if (event.target.innerHTML === ' ') {
-          event.target.innerHTML = ''
+        if (event.target.innerHTML) {
+          event.target.innerHTML = event.target.innerHTML.trim()
         }
+
         this.editing = true
         this.caret.pos = -1
         this.caret.counter = 0
