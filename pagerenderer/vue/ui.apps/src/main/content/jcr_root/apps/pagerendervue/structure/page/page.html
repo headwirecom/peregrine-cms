@@ -19,14 +19,12 @@
     <meta data-sly-test="${resource.ogUrl}" property="og:url" content="${resource.ogUrl}"/>
 
     <title>${resource.jcr:title} | ${helper.model.brand}</title>
+    <link rel="canonical" href="${helper.model.canonicalUrl}"/>
     <sly data-sly-list="${helper.model.prefetchDNS}"><link rel="dns-prefetch" href="${item}"></sly>
 
     <link rel="manifest" href="${helper.siteRootPath}/manifest.json">
     <script>$peregrineSiteRoot = "${helper.siteRootPath @ context='unsafe'}"</script>
-    <script data-sly-test="${resource.jsonld}" type="application/ld+json">
-        ${resource.jsonld @ context = 'unsafe'}
-    </script>
-
+    <script data-sly-test="${resource.jsonld}" type="application/ld+json">${resource.jsonld @ context = 'unsafe'} </script>
     <sly data-sly-include="tracker-head.html"></sly>
 
     <sly data-sly-include="styles.html"></sly>

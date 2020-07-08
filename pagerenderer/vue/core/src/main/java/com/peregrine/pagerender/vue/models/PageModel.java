@@ -408,6 +408,14 @@ public class PageModel extends Container {
         return absOgImagePath;
     }
 
+    public String getCanonicalUrl() {
+        final String primaryDomain = getPrimaryDomain();
+
+        return StringUtils.isNotBlank(primaryDomain)
+                ? getPrimaryDomain() + getPagePath().replace(getSiteRoot(), "") + ".html"
+                : getPagePath() + ".html";
+    }
+
     class Tag {
         private String path;
         private String name;
