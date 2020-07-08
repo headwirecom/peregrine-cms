@@ -112,6 +112,10 @@
       this.bindWindowEventListeners()
     },
     methods: {
+      close() {
+        this.visible = false
+        this.filter = ''
+      },
       onComponentBtnClick(component) {
         this.component = component
         this.addComponentFromModal()
@@ -143,7 +147,7 @@
             }
           })
           this.$emit('component-added', parentNode.children[index + 1])
-          this.visible = false
+          this.close()
         })
       },
       onKeyDown(event) {
@@ -161,7 +165,7 @@
           }
         } else if (this.visible) {
           if (key === Key.ESC) {
-            this.visible = false
+            this.close()
           }
         }
       },
