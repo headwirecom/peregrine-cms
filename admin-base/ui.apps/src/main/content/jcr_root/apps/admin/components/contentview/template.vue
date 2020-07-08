@@ -646,7 +646,6 @@
           component: componentPath,
           drop: this.dropPosition
         }
-        console.log(payload, this.target, event.target)
         let addOrMove
         if (componentPath.includes('/components/')) {
           addOrMove = 'addComponentToPath';
