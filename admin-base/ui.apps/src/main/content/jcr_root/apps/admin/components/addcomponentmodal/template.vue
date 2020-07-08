@@ -49,7 +49,7 @@
 
 <script>
   import {get} from '../../../../../../js/utils'
-  import {Key} from '../../../../../../js/constants'
+  import {Attribute, Key} from '../../../../../../js/constants'
 
   export default {
     name: 'AddComponentModal',
@@ -131,7 +131,7 @@
         const view = this.view
         const payload = {
           pagePath: view.pageView.path,
-          path: this.selectedComponent.getAttribute('data-per-path'),
+          path: this.selectedComponent.getAttribute(Attribute.PATH),
           component: this.componentKey,
           drop: 'after'
         }

@@ -940,8 +940,9 @@
 
       onAddComponentModalComponentAdded(newNode) {
         this.refreshInlineEditElems()
-        const newNodeEl = this.iframe.app.querySelector(`[data-per-path="${newNode.path}"]`)
-        const firstInlineEditEl = newNodeEl.querySelector('[data-per-inline]')
+        const selector = `[${Attribute.PATH}="${newNode.path}"]`
+        const newNodeEl = this.iframe.app.querySelector(selector)
+        const firstInlineEditEl = newNodeEl.querySelector(`[${Attribute.INLINE}]`)
 
         if (firstInlineEditEl) {
             firstInlineEditEl.focus()
