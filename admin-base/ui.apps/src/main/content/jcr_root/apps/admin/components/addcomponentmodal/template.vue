@@ -25,7 +25,7 @@
 <template>
   <div v-show="visible" class="add-component-modal-wrapper">
     <div class="add-component-modal">
-      <div class="header">Add Component: <b>{{ computedDrop }}</b></div>
+      <div ref="header" class="header">Add Component: <b>{{ computedDrop }}</b></div>
       <div class="content">
         <input
             ref="filter"
@@ -104,13 +104,6 @@
       }
     },
     watch: {
-      visible(val, oldVal) {
-        if (val && !oldVal) {
-          this.$nextTick(() => {
-            this.$refs.filter.focus()
-          })
-        }
-      },
       windows(val) {
         this.clearWindowEventListeners()
         this.bindWindowEventListeners()
@@ -123,6 +116,10 @@
       open(drop) {
         this.visible = true
         this.drop = drop
+        this.$nextTick(() => {
+          this.$refs.header.scrollIntoView(true)
+          this.$refs.filter.focus()
+        })
       },
       close() {
         this.visible = false
@@ -230,6 +227,7 @@
             event.preventDefault()
             this.$refs.componentBtn[index - 1].focus()
           } else {
+            this.$refs.header.scrollIntoView(true)
             this.$refs.filter.focus()
           }
         }
