@@ -328,11 +328,11 @@
         vm.target = el
         if (!vm.target || !vm.component || !vm.path) return
 
-        if (!vm.dragging && vm.isTemplateNode) {
+        if (!vm.dragging && vm.isTemplateNode ) {
           vm.unselect(vm)
           $perAdminApp.toast(vm.$i18n('fromTemplateNotifyMsg'), 'warn')
         } else {
-          if (vm.path !== '/jcr:content') {
+          if (vm.dragging || vm.path !== '/jcr:content') {
             vm.wrapEditableAroundSelected()
             vm.editable.class = 'selected'
           }
@@ -612,7 +612,12 @@
               this.editable.class = 'drop-bottom'
             }
           } else {
-            this.dropPosition = 'none'
+            this.editable.class = 'selected'
+            if (relMousePos.yPercentage <= 43.5) {
+              this.dropPosition = 'into-before'
+            } else {
+              this.dropPosition = 'into-after'
+            }
           }
         } else {
           this.dropPosition = 'none'
@@ -640,6 +645,7 @@
           component: componentPath,
           drop: this.dropPosition
         }
+        console.log(payload, this.target, event.target)
         let addOrMove
         if (componentPath.includes('/components/')) {
           addOrMove = 'addComponentToPath';
