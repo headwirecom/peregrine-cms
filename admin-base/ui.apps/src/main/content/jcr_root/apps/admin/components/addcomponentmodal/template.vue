@@ -25,23 +25,26 @@
 <template>
   <div v-show="visible" class="add-component-modal-wrapper">
     <div class="add-component-modal">
-      <input
-          ref="filter"
-          v-model="filter"
-          type="text"
-          class="filter"
-          placeholder="filter components"
-          @keydown="onFilterKeyDown"/>
-      <div class="component-list">
-        <button
-            v-for="(component, index) in filteredComponents"
-            :key="component.path + '|' + component.variation"
-            ref="componentBtn"
-            class="component-btn"
-            @click="onComponentBtnClick(component)"
-            @keydown="omComponentBtnKeyDown($event, index)">
-          {{componentDisplayName(component)}}
-        </button>
+      <div class="header">Add Component: <b>{{ computedDrop }}</b></div>
+      <div class="content">
+        <input
+            ref="filter"
+            v-model="filter"
+            type="text"
+            class="filter"
+            placeholder="filter components"
+            @keydown="onFilterKeyDown"/>
+        <div class="component-list">
+          <button
+              v-for="(component, index) in filteredComponents"
+              :key="component.path + '|' + component.variation"
+              ref="componentBtn"
+              class="component-btn"
+              @click="onComponentBtnClick(component)"
+              @keydown="omComponentBtnKeyDown($event, index)">
+            {{componentDisplayName(component)}}
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -55,6 +58,7 @@
     name: 'AddComponentModal',
     props: {
       selectedComponent: null,
+      isDropTarget: Boolean,
       windows: Array
     },
     data() {
@@ -62,7 +66,8 @@
         visible: false,
         filter: '',
         component: null,
-        windowEventListeners: []
+        windowEventListeners: [],
+        drop: ''
       }
     },
     computed: {
@@ -93,6 +98,9 @@
       },
       componentCount() {
         return this.filteredComponents.length
+      },
+      computedDrop() {
+        return (this.isDropTarget ? 'into-' : '') + this.drop
       }
     },
     watch: {
@@ -112,9 +120,14 @@
       this.bindWindowEventListeners()
     },
     methods: {
+      open(drop) {
+        this.visible = true
+        this.drop = drop
+      },
       close() {
         this.visible = false
         this.filter = ''
+        this.dropBefore = false
       },
       onComponentBtnClick(component) {
         this.component = component
@@ -133,9 +146,18 @@
           pagePath: view.pageView.path,
           path: this.selectedComponent.getAttribute(Attribute.PATH),
           component: this.componentKey,
-          drop: 'after'
+          drop: this.computedDrop
         }
+
+        console.log(this.computedDrop, this.isDropTarget)
+
         $perAdminApp.stateAction('addComponentToPath', payload).then((data) => {
+          this.$emit('component-added', this.findNewNode(payload))
+          this.close()
+        })
+      },
+      findNewNode(payload) {
+        if (['after', 'before'].includes(payload.drop)) {
           const split = payload.path.split('/')
           split.pop()
           const parentPath = split.join('/')
@@ -146,9 +168,23 @@
               index = i
             }
           })
-          this.$emit('component-added', parentNode.children[index + 1])
-          this.close()
-        })
+
+          if (payload.drop === 'after') {
+            return parentNode.children[index + 1]
+          } else if (payload.drop === 'before') {
+            return parentNode.children[index - 1]
+          }
+        } else if (payload.drop.startsWith('into')) {
+          const targetNode = $perAdminApp.findNodeFromPath(this.view.pageView.page, payload.path)
+
+          if (payload.drop === 'into-before') {
+            return targetNode.children[0]
+          } else if (payload.drop === 'into-after') {
+            return targetNode.children[targetNode.children.length - 1]
+          }
+        }
+
+        throw `unexpected drop: ${payload.drop}`
       },
       onKeyDown(event) {
         if (!this.selectedComponent) return
@@ -160,7 +196,9 @@
         if (!this.visible) {
           if (ctrlOrCmd) {
             if (key === Key.DOT) {
-              this.visible = true
+              this.open('after')
+            } else if (key === Key.COMMA) {
+              this.open('before')
             }
           }
         } else if (this.visible) {

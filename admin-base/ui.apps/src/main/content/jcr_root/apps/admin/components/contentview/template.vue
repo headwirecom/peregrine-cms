@@ -80,7 +80,8 @@
     </template>
     <admin-components-addcomponentmodal
         v-if="iframe.win"
-        :selectedComponent="component"
+        :selected-component="component"
+        :is-drop-target="componentIsDropTarget"
         :windows="[rootWin, iframe.win]"
         @component-added="onAddComponentModalComponentAdded"/>
   </div>
@@ -156,7 +157,8 @@
         }
       },
       dropTarget() {
-        return this.target.getAttribute(Attribute.DROPTARGET)
+        if (!this.target) return
+        return this.target.getAttribute(Attribute.DROPTARGET) === 'true'
       },
       dropLocation() {
         return this.target.getAttribute(Attribute.LOCATION)
@@ -226,6 +228,14 @@
             return component.title
           }
         }
+      },
+      componentIsDropTarget() {
+        if (!this.component) return false
+
+        const selector = `[${Attribute.PATH}="${this.path}"][${Attribute.DROPTARGET}]`
+        const dropTargetElements = this.component.querySelectorAll(selector)
+
+        return dropTargetElements.length > 0;
       }
     },
     watch: {

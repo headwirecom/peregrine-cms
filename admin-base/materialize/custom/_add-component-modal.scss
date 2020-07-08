@@ -11,35 +11,50 @@
   z-index: 2;
   border: 1px solid #cfd8dc;
   box-shadow: 6px 6px 8px 4px #0000004d;
-  padding: 10px;
 
   .add-component-modal {
     direction: ltr;
 
-    .filter {
-      width: 100%;
-      padding: 5%;
-      min-height: 3rem;
+    .header {
+      text-align: center;
+      background-color: #cfd8dc;
+      color: #455a64;
+      padding: 5px;
+      border-bottom: 1px solid #b0bec5;
+
+      > b {
+        text-transform: uppercase;
+      }
     }
 
-    .component-list {
-      display: flex;
-      flex-direction: column;
+    .content {
+      padding: 10px;
 
-      .component-btn {
-        background-color: #fff;
-        border: none;
-        border-bottom: 1px solid var(--pcms-gray);
-        font-size: 1.1rem;
-        padding: 3px 0 ;
+      .filter {
+        width: 100%;
+        padding: 5%;
+        min-height: 3rem;
+      }
 
-        &:hover {
-          background-color: var(--pcms-orange-hover);
-        }
+      .component-list {
+        display: flex;
+        flex-direction: column;
 
-        &:active, &:focus {
-          background-color: var(--pcms-orange);
-          color: #fff;
+        .component-btn {
+          background-color: #fff;
+          border: none;
+          border-bottom: 1px solid var(--pcms-gray);
+          font-size: 1.1rem;
+          padding: 3px 0;
+
+          &:hover {
+            background-color: var(--pcms-orange-hover);
+          }
+
+          &:active, &:focus {
+            background-color: var(--pcms-orange);
+            color: #fff;
+          }
         }
       }
     }

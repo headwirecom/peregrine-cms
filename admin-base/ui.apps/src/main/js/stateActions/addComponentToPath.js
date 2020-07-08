@@ -61,7 +61,6 @@ export default function(me, target) {
         processed = true;
         return me.getApi().insertNodeAt(target.pagePath+targetNode.path, componentPath, target.drop, variation)
             .then( (data) => {
-                        const newNode = findNewNode(data, targetNode, target.drop)
                         if(targetNodeUpdate.fromTemplate === true) {
                             return me.getApi().populatePageView(me.getNodeFromView('/pageView/path'))
                         } else {
@@ -73,7 +72,6 @@ export default function(me, target) {
                                 Vue.set(targetNodeUpdate, 'children', data.children)
                             }
                             log.fine(data)
-                            return newNode
                         }
                     })
     }
@@ -197,21 +195,4 @@ export default function(me, target) {
     //         set(view, '/state/rightPanelVisible', true)
     //     }
     // )
-}
-
-const findNewNode = (data, targetNode, drop) => {
-    let index = null
-
-    data.children.some((child, i) => {
-        if (child.path === targetNode.path) {
-            index = i
-            return true
-        }
-    })
-
-    if (!index) throw 'new node not found'
-    if (drop === 'after') {
-        return data.children[index + 1]
-    }
-    return null;
 }
