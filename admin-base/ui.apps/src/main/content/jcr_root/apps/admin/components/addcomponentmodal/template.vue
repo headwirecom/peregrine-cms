@@ -37,7 +37,7 @@
         <div class="component-list">
           <button
               v-for="(component, index) in filteredComponents"
-              :key="component.path + '|' + component.variation"
+              :key="`${component.path}-${component.variation}-${index}`"
               ref="componentBtn"
               class="component-btn"
               @click="onComponentBtnClick(component)"
