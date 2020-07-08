@@ -941,8 +941,14 @@
       onAddComponentModalComponentAdded(newNode) {
         this.refreshInlineEditElems()
         const newNodeEl = this.iframe.app.querySelector(`[data-per-path="${newNode.path}"]`)
-        newNodeEl.scrollIntoView(true)
-        newNodeEl.click()
+        const firstInlineEditEl = newNodeEl.querySelector('[data-per-inline]')
+
+        if (firstInlineEditEl) {
+            firstInlineEditEl.focus()
+        } else {
+          newNodeEl.click()
+          newNodeEl.scrollIntoView(true)
+        }
       }
     }
   }
