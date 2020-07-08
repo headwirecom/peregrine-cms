@@ -329,7 +329,7 @@
         vm.target = el
         if (!vm.target || !vm.component || !vm.path) return
 
-        if (!vm.dragging && vm.isTemplateNode ) {
+        if (!vm.dragging && vm.isTemplateNode) {
           vm.unselect(vm)
           $perAdminApp.toast(vm.$i18n('fromTemplateNotifyMsg'), 'warn')
         } else {
@@ -456,7 +456,6 @@
         if (event.target.innerHTML) {
           event.target.innerHTML = event.target.innerHTML.trim()
         }
-
         this.editing = true
         this.caret.pos = -1
         this.caret.counter = 0
@@ -464,14 +463,12 @@
         const dataInline = this.targetInline.split('.').slice(1)
         this.inline = dataInline.join('.')
         set(this.view, '/state/inline/doc', this.iframe.doc)
-        set(this.view, '/state/inline/container', this.target)
       },
 
       onInlineFocusOut(event) {
         event.target.classList.remove('inline-editing')
         this.editing = false
         set(this.view, '/state/inline/doc', null)
-        set(this.view, '/state/inline/container', null)
       },
 
       onInlineKeyDown(event) {

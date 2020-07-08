@@ -345,8 +345,8 @@
         return this.inline.doc
       },
       getInlineContainer() {
-        if (!this.inline) return null
-        return this.inline.container
+        if (!this.getInlineDoc()) return
+        return this.getInlineDoc().querySelector('.inline-edit.inline-editing')
       },
       execCmd(cmd, value = null, showUi = false) {
         if (!this.getInlineDoc() || !this.getInlineDoc().execCommand) return

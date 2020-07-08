@@ -27,7 +27,8 @@
     <admin-components-richtoolbar
         :showViewportBtn="false"
         :showPreviewBtn="false"/>
-    <p class="text-editor"
+    <p class="text-editor inline-edit"
+       :class="['text-editor', 'inline-edit', {'inline-editing': editing}]"
        ref="textEditor"
        v-html="value"
        contenteditable="true"
@@ -48,7 +49,8 @@
     mixins: [VueFormGenerator.abstractField],
     data() {
       return {
-        doc: document
+        doc: document,
+        editing: false
       }
     },
     computed: {
@@ -59,11 +61,11 @@
     methods: {
       onFocusIn(event) {
         set(this.view, '/state/inline/doc', this.doc)
-        set(this.view, '/state/inline/container', event.target)
+        this.editing = true
       },
       onFocusOut() {
         set(this.view, '/state/inline/doc', null)
-        set(this.view, '/state/inline/container', null)
+        this.editing = false
       },
       onInput(event) {
         const domProps = this._vnode.children[2].data.domProps
