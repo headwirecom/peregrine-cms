@@ -149,8 +149,6 @@
           drop: this.computedDrop
         }
 
-        console.log(this.computedDrop, this.isDropTarget)
-
         $perAdminApp.stateAction('addComponentToPath', payload).then((data) => {
           this.$emit('component-added', this.findNewNode(payload))
           this.close()
