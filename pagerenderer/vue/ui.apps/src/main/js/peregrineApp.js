@@ -241,6 +241,10 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
         if(document.location !== path && !fromPopState) {
             log.fine("PUSHSTATE : " + path);
             document.title = getPerView().page.title + ' | ' + getPerView().page.brand  
+
+            let canonical = document.querySelector('link[rel="canonical"]')
+            if(canonical !== null) canonical.href = getPerView().page.canonicalUrl
+
             var url = document.location.href
             var domains = (getPerView().page.domains)
             var newLocation = path
