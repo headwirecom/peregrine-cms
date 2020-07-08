@@ -37,6 +37,11 @@
 
 
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.apache.felix</groupId>
@@ -46,6 +51,9 @@
           <instructions>
             <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
             <Sling-Test-Regexp>.*JTest</Sling-Test-Regexp>
+            <Sling-Initial-Content>
+              SLING-INF/apps/per/slingjunit;path:=/apps/per/slingjunit;overwrite=true
+            </Sling-Initial-Content>
           </instructions>
         </configuration>
       </plugin>
@@ -58,17 +66,8 @@
           <password>${sling.password}</password>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>license-maven-plugin</artifactId>
-        <configuration>
-          <licenseName>peregrine-cms-license</licenseName>
-          <licenseResolver>${project.baseUri}../../src/license</licenseResolver>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
-
 
 
   <dependencies>
@@ -77,40 +76,33 @@
       <artifactId>org.apache.sling.junit.core</artifactId>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>admin.core</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>base.core</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
-
-
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <artifactId>guava</artifactId>
       <groupId>com.google.guava</groupId>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-jcr-commons</artifactId>
@@ -123,6 +115,40 @@
       <groupId>javax.jcr</groupId>
       <artifactId>jcr</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.sling</groupId>
+      <artifactId>org.apache.sling.settings</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi.annotation</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.service.component.annotations</artifactId>
+    </dependency>
+
+
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>oak-api</artifactId>
+      <version>1.26.0</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>jackrabbit-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.sling</groupId>
+      <artifactId>org.apache.sling.jcr.jackrabbit.accessmanager</artifactId>
+      <version>3.0.4</version>
+      <scope>provided</scope>
+    </dependency>
+
+
   </dependencies>
 
   <profiles>

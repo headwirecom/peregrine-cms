@@ -430,7 +430,7 @@ public class AdminResourceHandlerService
     }
 
     public boolean hasPermission(ResourceResolver resourceResolver, String jcrActions, String path) {
-        Session session = resourceResolver.adaptTo(Session.class);
+        final Session session = resourceResolver.adaptTo(Session.class);
         try {
             return session.hasPermission(path, jcrActions);
         } catch (RepositoryException e) {
