@@ -24,7 +24,8 @@
   -->
 <template>
   <div :class="`peregrine-content-view ${viewModeClass}`">
-    <div id="editable"
+    <div v-show="previewMode !== 'preview'"
+         id="editable"
          ref="editable"
          draggable="true"
          :class="editable.class"
