@@ -25,7 +25,6 @@
     <link rel="manifest" href="${helper.siteRootPath}/manifest.json">
     <script>$peregrineSiteRoot = "${helper.siteRootPath @ context='unsafe'}"</script>
     <script data-sly-test="${resource.jsonld}" type="application/ld+json">${resource.jsonld @ context = 'unsafe'} </script>
-
     <sly data-sly-include="tracker-head.html"></sly>
 
     <sly data-sly-include="styles.html"></sly>
