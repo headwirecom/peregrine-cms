@@ -74,6 +74,14 @@
       view() {
         return $perAdminApp.getView()
       },
+      node() {
+        const path = get(this.view, '/state/editor/path', null)
+        if (path) {
+          return $perAdminApp.findNodeFromPath(this.view.pageView.page, path)
+        } else {
+          return null
+        }
+      },
       filteredComponents() {
         return get(this.view, '/admin/components/data', []).filter(el => {
           const tenant = this.view.state.tenant
@@ -146,7 +154,12 @@
           drop: this.computedDrop
         }
 
-        $perAdminApp.stateAction('addComponentToPath', payload).then((data) => {
+        $perAdminApp.stateAction('savePageEdit', {
+          data: this.node,
+          path: this.view.state.editor.path
+        }).then(() => {
+          return $perAdminApp.stateAction('addComponentToPath', payload)
+        }).then((data) => {
           this.$emit('component-added', this.findNewNode(payload))
           this.close()
         })
