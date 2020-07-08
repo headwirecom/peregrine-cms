@@ -955,11 +955,17 @@
         const firstInlineEditEl = newNodeEl.querySelector(`[${Attribute.INLINE}]`)
 
         if (firstInlineEditEl) {
-            firstInlineEditEl.focus()
+          firstInlineEditEl.focus()
         } else {
           newNodeEl.click()
-          newNodeEl.scrollIntoView(true)
+          this.scrollIntoViewCenter(newNodeEl, this.iframe.doc, this.iframe.win)
         }
+      },
+
+      scrollIntoViewCenter(el, doc, win) {
+        el.scrollIntoView(true)
+        const viewportH = Math.max(doc.documentElement.clientHeight, win.innerHeight || 0)
+        win.scrollBy(0, (el.getBoundingClientRect().height - viewportH) / 2)
       }
     }
   }
