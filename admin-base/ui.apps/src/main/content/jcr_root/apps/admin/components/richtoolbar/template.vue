@@ -407,9 +407,6 @@
 
         this.selection.innerHTML = anchor.innerHTML
         let href = anchor.getAttribute('href')
-        if (href === 'javascript:void(0);') {
-          href = anchor.getAttribute('data-original-href')
-        }
         const hrefArr = href.substr(0, href.length - 5).split('/')
         this.param.cmd = 'editLink'
         this.browser.header = this.$i18n('Edit Link')
