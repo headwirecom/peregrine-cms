@@ -193,5 +193,17 @@
     "label": "JSON-LD",
     "placeholder": "JSON-LD object",
     "rows": 10
+  },
+  {
+    "type": "material-checkbox",
+    "label": "No Index",
+    "default": false,
+    "model": "noIndex"
+  },
+  {
+    "type": "material-checkbox",
+    "label": "No Follow",
+    "default": false,
+    "model": "noFollow"
   }
 ]}
