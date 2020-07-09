@@ -245,10 +245,7 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
             var canonical = document.querySelector('link[rel="canonical"]')
             if(canonical) canonical.href = getPerView().page.canonicalUrl
 
-            updateOpenGraph('og:title', getPerView().page.title)
-            updateOpenGraph('og:description', getPerView().page.description)
-            updateOpenGraph('og:image', getPerView().page.absOgImage)
-            updateOpenGraph('og:url', getPerView().page.canonicalUrl)
+            updateOpenGraph()
 
             var url = document.location.href
             var domains = (getPerView().page.domains)
@@ -317,7 +314,14 @@ function loadContentImpl(path, firstTime, fromPopState, onPage = false) {
     }
 }
 
-function updateOpenGraph(key, val) {
+function updateOpenGraph() {
+    updateMetaProps('og:title', getPerView().page.ogTitle)
+    updateMetaProps('og:description', getPerView().page.ogDescription)
+    updateMetaProps('og:image', getPerView().page.absOgImage)
+    updateMetaProps('og:url', getPerView().page.canonicalUrl)
+}
+
+function updateMetaProps(key, val) {
     var meta = document.querySelector("meta[property=" +  CSS.escape(key) + "]")
 
     if (meta) {
