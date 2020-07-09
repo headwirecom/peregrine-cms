@@ -245,6 +245,11 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
             var canonical = document.querySelector('link[rel="canonical"]')
             if(canonical) canonical.href = getPerView().page.canonicalUrl
 
+            updateOpenGraph('og:title', getPerView().page.title)
+            updateOpenGraph('og:description', getPerView().page.description)
+            updateOpenGraph('og:image', getPerView().page.absOgImage)
+            updateOpenGraph('og:url', getPerView().page.canonicalUrl)
+
             var url = document.location.href
             var domains = (getPerView().page.domains)
             var newLocation = path
@@ -309,6 +314,25 @@ function loadContentImpl(path, firstTime, fromPopState, onPage = false) {
         }).catch(function(error) {
             log.error("error getting %s %j", dataUrl, error);
         });    
+    }
+}
+
+function updateOpenGraph(key, val) {
+    var meta = document.querySelector("meta[property=" +  CSS.escape(key) + "]")
+
+    if (meta) {
+      if (val) {
+        meta.content = val
+      } else {
+        meta.parentNode.removeChild(meta);
+      }
+    } else {
+      if (val) {
+        var el = document.createElement('meta');
+        el.setAttribute('property', key);
+        el.content = val;
+        document.getElementsByTagName('head')[0].appendChild(el);
+      }
     }
 }
 
