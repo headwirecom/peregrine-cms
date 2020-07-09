@@ -583,11 +583,10 @@
         this.target = event.target
 
         if (this.component) {
-          const isDropTarget = this.dropTarget === 'true'
           const isRoot = this.isTemplateNode
           const relMousePos = this.getRelativeMousePosition(event)
 
-          if (isDropTarget) {
+          if (this.dropTarget) {
             const dropLocation = this.dropLocation
             if (relMousePos.yPercentage <= 30 && dropLocation === 'before' && !isRoot) {
               this.dropPosition = 'before'
