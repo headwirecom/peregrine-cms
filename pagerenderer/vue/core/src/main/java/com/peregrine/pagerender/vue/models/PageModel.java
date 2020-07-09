@@ -150,6 +150,15 @@ public class PageModel extends Container {
 
     private String absOgImage;
 
+    @Inject
+    @Optional
+    private Boolean noIndex = false;
+
+    @Inject
+    @Optional
+    private Boolean noFollow = false;
+
+
     public String getSiteRoot() {
         String path = getPagePath();
         String[] segments = path.split(SLASH);
@@ -429,6 +438,17 @@ public class PageModel extends Container {
         return StringUtils.isNotBlank(primaryDomain)
                 ? getPrimaryDomain() + getPagePath().replace(getSiteRoot(), "") + ".html"
                 : getPagePath() + ".html";
+    }
+
+    public String getMetaRobots() {
+
+        StringBuilder metaRobots = new StringBuilder();
+
+        if (noIndex) metaRobots.append("noindex");
+        if (noIndex && noFollow) metaRobots.append(",");
+        if (noFollow) metaRobots.append("nofollow");
+
+        return metaRobots.toString();
     }
 
     class Tag {
