@@ -136,6 +136,13 @@ public class PageModel extends Container {
     @Optional
     private String brand;
 
+    @Inject
+    @Optional
+    private String ogTitle;
+
+    @Inject
+    @Optional
+    private String ogDescription;
 
     @Inject
     @Optional
@@ -369,6 +376,14 @@ public class PageModel extends Container {
             }
         }
         return brand;
+    }
+
+    public String getOgTitle() {
+        return StringUtils.isBlank(ogTitle) ? title : ogTitle;
+    }
+
+    public String getOgDescription() {
+        return StringUtils.isBlank(ogDescription) ? description: ogDescription;
     }
 
     /**
