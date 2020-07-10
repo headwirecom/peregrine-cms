@@ -1,7 +1,14 @@
 package com.peregrine.slingjunit;
 
 
+import com.peregrine.replication.Replication;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.sling.api.resource.LoginException;
+import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.commons.osgi.PropertiesUtil;
@@ -18,6 +25,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;;
 import javax.jcr.security.Privilege;
 import java.io.IOException;
+
 import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.List;
@@ -42,11 +50,32 @@ public class RemoteReplAuthorJTest {
     @TestReference
     private ConfigurationAdmin configAdmin;
 
+    @TestReference(name="remote")
+    private Replication remoteReplication;
+
+    private static String MAPPER_DISTRIBUTION_EVENT_PID = "org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended~distributionEventHandler";
+    private static String[] DIST_EVENT_VALUES = {
+            "com.peregrine-cms.admin.core:peregrine-distribution-sub-service=distribution-agent-user",
+            "com.peregrine-cms.replication.core:peregrine-distribution-sub-service=distribution-agent-user"
+    };
+
+    private static String MAPPER_DISTRIBUTION_SERVICE_PID = "org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended~distributionAgentService";
+    private static String[] DIST_SERVICE_VALUES = {
+            "org.apache.sling.distribution.core:defaultAgentService=distribution-agent-user",
+            "org.apache.sling.distribution.core=distribution-agent-user",
+            "com.peregrine-cms.distribution:test-distribution=distribution-agent-user"
+    };
+    private static String USER_MAPPING = "user.mapping";
+    private static String STELLA_PNG = "/content/example/assets/images/Stella.png";
+    private Resource stellaImgRes;
+    private static String PUBLISH_DOMAIN = "http://localhost:8180";
+
     @Before
     public void setup(){
         try {
             adminResourceResolver = resolverFactory.getAdministrativeResourceResolver(null);
-
+            assertNotNull(remoteReplication);
+            stellaImgRes = adminResourceResolver.getResource(STELLA_PNG);
         } catch (LoginException e) {
             fail(e.getMessage());
         }
@@ -54,6 +83,7 @@ public class RemoteReplAuthorJTest {
 
     @After
     public void cleanup(){
+        adminResourceResolver.close();
         adminResourceResolver = null;
     }
 
@@ -73,25 +103,29 @@ public class RemoteReplAuthorJTest {
         testListGranted(allList, "jcr:all", "distribution-agent-user");
     }
 
-    private static String MAPPER_DISTRIBUTION_EVENT_PID = "org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended~distributionEventHandler";
-    private static String[] DIST_EVENT_VALUES = {
-        "com.peregrine-cms.admin.core:peregrine-distribution-sub-service=distribution-agent-user",
-        "com.peregrine-cms.replication.core:peregrine-distribution-sub-service=distribution-agent-user"
-    };
 
-    private static String MAPPER_DISTRIBUTION_SERVICE_PID = "org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended~distributionAgentService";
-    private static String[] DIST_SERVICE_VALUES = {
-        "org.apache.sling.distribution.core:defaultAgentService=distribution-agent-user",
-        "org.apache.sling.distribution.core=distribution-agent-user",
-        "com.peregrine-cms.distribution:test-distribution=distribution-agent-user"
-    };
-    private static String USER_MAPPING = "user.mapping";
 
     @Test
     public void authorDistributionServiceUserMappings() {
         testOsgiStringArrayProps(MAPPER_DISTRIBUTION_EVENT_PID, USER_MAPPING, DIST_EVENT_VALUES);
         testOsgiStringArrayProps(MAPPER_DISTRIBUTION_SERVICE_PID, USER_MAPPING, DIST_SERVICE_VALUES);
     }
+
+    @Test
+    public void replicateOneAsset() {
+        deactivateResource(STELLA_PNG);
+        assertStatusOnPublish(STELLA_PNG, 404);
+
+        try {
+            remoteReplication.replicate(stellaImgRes, true);
+            assertStatusOnPublish(STELLA_PNG, 200);
+        } catch (Replication.ReplicationException e) {
+            fail(e.getMessage());
+        }
+        deactivateResource(STELLA_PNG);
+        assertStatusOnPublish(STELLA_PNG, 404);
+    }
+
 
     private void testListGranted(List<String> list, String privilege, String usedId) {
         PrivilegesInfo privilegesInfo = new PrivilegesInfo();
@@ -124,5 +158,33 @@ public class RemoteReplAuthorJTest {
             fail(e.getMessage());
         }
     }
+
+
+    private void assertStatusOnPublish(String path, int status) {
+        HttpUriRequest request = new HttpGet( PUBLISH_DOMAIN+path);
+
+        int retries = 60;
+        int attemptStatus = 0;
+        try {
+            while (attemptStatus != status && retries-- > 0) {
+                Thread.sleep(1000);
+                HttpResponse httpResponse = HttpClientBuilder.create().build().execute( request );
+                attemptStatus = httpResponse.getStatusLine().getStatusCode();
+            }
+            assertEquals(attemptStatus, status);
+        } catch (IOException | InterruptedException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    private void deactivateResource(String path) {
+        try {
+            remoteReplication.deactivate(stellaImgRes);
+        } catch (Replication.ReplicationException e) {
+            fail(e.getMessage());
+        }
+        assertStatusOnPublish(path, 404);
+    }
+
 }
 
