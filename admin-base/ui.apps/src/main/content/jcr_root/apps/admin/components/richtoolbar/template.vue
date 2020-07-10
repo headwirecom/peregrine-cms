@@ -419,6 +419,7 @@
         this.startBrowsing()
       },
       removeLink() {
+        this.saveSelection()
         const document = this.getInlineDoc()
         if (!document || !document.defaultView) return false
         const window = document.defaultView
@@ -431,6 +432,11 @@
         selection.removeAllRanges()
         selection.addRange(range)
         this.execCmd('unlink')
+        this.selection.container.focus()
+        this.selection.doc.body.focus()
+        this.$nextTick(() => {
+          this.restoreSelection()
+        })
       },
       insertImage() {
         this.param.cmd = 'insertImage'
@@ -490,33 +496,45 @@
         this.selection.container = this.getInlineContainer()
       },
       restoreSelection() {
+        this.selection.doc.body.focus()
         this.selection.container.focus()
-        restoreSelection(this.selection.container, this.selection.buffer, this.selection.doc)
+        this.$nextTick(() => {
+          restoreSelection(this.selection.container, this.selection.buffer, this.selection.doc)
+        })
       },
       onBrowserCancel() {
         this.browser.open = false
         this.restoreSelection()
       },
       onBrowserSelect() {
-        this.restoreSelection()
-        if (['editLink', 'createLink'].includes(this.param.cmd)) {
-          this.onLinkSelect()
-        } else if (this.param.cmd === 'insertImage') {
-          this.onImageSelect()
-        }
         this.browser.open = false
-        this.execCmd(this.param.cmd, this.param.value)
-        this.param.cmd = null
-        this.param.value = null
-        this.browser.path.selected = null
-        this.key++
+        this.restoreSelection()
+
+        this.$nextTick(() => {
+          if (['editLink', 'createLink'].includes(this.param.cmd)) {
+            this.onLinkSelect()
+          } else if (this.param.cmd === 'insertImage') {
+            this.onImageSelect()
+          }
+
+          this.execCmd(this.param.cmd, this.param.value)
+          this.param.cmd = null
+          this.param.value = null
+          this.browser.path.selected = null
+          this.key++
+
+          this.$nextTick(() => {
+            this.restoreSelection()
+          })
+        })
       },
       onLinkSelect() {
         if (this.browser.path.selected.startsWith('/')) {
           this.browser.path.selected += '.html'
-        } console.log(this.selection.innerHTML)
+        }
         this.param.cmd = 'insertHTML'
-        this.param.value = `<a href="${this.browser.path.selected}" title="${this.browser.linkTitle}" target="${this.browser.newWindow? '_blank' : '_self'}">${this.selection.innerHTML}</a>`
+        this.param.value = `<a href="${this.browser.path.selected}" title="${this.browser.linkTitle}" target="${this.browser.newWindow
+            ? '_blank' : '_self'}">${this.selection.innerHTML}</a>`
       },
       onImageSelect() {
         this.param.value = this.browser.path.selected

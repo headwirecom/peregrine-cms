@@ -202,10 +202,11 @@ export const saveSelection = (containerEl, document=document) => {
   }
 }
 
-export const restoreSelection = (containerEl, savedSel, document=document) => {
-  const window = document.defaultView
-  if (window.getSelection && document.createRange) {
-    let charIndex = 0, range = document.createRange()
+export const restoreSelection = (containerEl, savedSel, doc = document) => {
+  const win = doc.defaultView
+
+  if (win.getSelection && doc.createRange) {
+    let charIndex = 0, range = doc.createRange()
     range.setStart(containerEl, 0)
     range.collapse(true)
     let nodeStack = [containerEl], node, foundStart = false, stop = false
@@ -232,12 +233,11 @@ export const restoreSelection = (containerEl, savedSel, document=document) => {
       }
     }
 
-    const sel = window.getSelection()
+    const sel = win.getSelection()
     sel.removeAllRanges()
-    window.document.body.focus()
     sel.addRange(range)
-  } else if (document.selection) {
-    const textRange = document.body.createTextRange()
+  } else if (doc.selection) {
+    const textRange = doc.body.createTextRange()
     textRange.moveToElementText(containerEl)
     textRange.collapse(true)
     textRange.moveEnd('character', savedSel.end)
