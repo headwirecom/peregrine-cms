@@ -381,6 +381,7 @@
         this.browser.header = this.$i18n('Create Link')
         this.browser.path.current = this.roots.pages
         this.browser.withLinkTab = true
+        this.browser.newWindow = false
         this.browser.type = 'page'
         this.startBrowsing()
       },
@@ -442,7 +443,8 @@
         this.param.cmd = 'insertImage'
         this.browser.header = this.$i18n('Insert Image')
         this.browser.path.current = this.roots.assets
-        this.browser.withLinkTab = false
+        this.browser.withLinkTab = true
+        this.browser.newWindow = undefined
         this.browser.type = 'image'
         this.browser.path.suffix = ''
         this.startBrowsing()
@@ -537,7 +539,8 @@
             ? '_blank' : '_self'}">${this.selection.innerHTML}</a>`
       },
       onImageSelect() {
-        this.param.value = this.browser.path.selected
+        this.param.cmd = 'insertHTML'
+        this.param.value = `<img src="${this.browser.path.selected}" alt="${this.browser.linkTitle}" title="${this.browser.linkTitle}"/>`
       },
       setBrowserPathCurrent(path) {
         this.browser.path.current = path
