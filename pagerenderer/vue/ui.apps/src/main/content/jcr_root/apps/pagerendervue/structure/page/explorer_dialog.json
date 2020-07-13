@@ -185,5 +185,25 @@
       { "name": "1.0", "value": "1.0" }
     ],
     "hint": "The priority of this URL relative to other URLs on your site. Valid values range from 0.0 to 1.0. This value does not affect how your pages are compared to pages on other sites—it only lets the search engines know which pages you deem most important for the crawlers."
+  },
+  {
+    "type": "material-textarea",
+    "inputType": "text",
+    "model": "jsonld",
+    "label": "JSON-LD",
+    "placeholder": "JSON-LD object",
+    "rows": 10
+  },
+  {
+    "type": "material-checkbox",
+    "label": "No Index",
+    "default": false,
+    "model": "noIndex"
+  },
+  {
+    "type": "material-checkbox",
+    "label": "No Follow",
+    "default": false,
+    "model": "noFollow"
   }
 ]}

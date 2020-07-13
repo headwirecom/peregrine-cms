@@ -241,6 +241,13 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
         if(document.location !== path && !fromPopState) {
             log.fine("PUSHSTATE : " + path);
             document.title = getPerView().page.title + ' | ' + getPerView().page.brand  
+
+            var canonical = document.querySelector('link[rel="canonical"]')
+            if(canonical) canonical.href = getPerView().page.canonicalUrl
+
+            updateMetaName("robots", getPerView().page.metaRobots)
+            updateOpenGraph()
+
             var url = document.location.href
             var domains = (getPerView().page.domains)
             var newLocation = path
@@ -305,6 +312,40 @@ function loadContentImpl(path, firstTime, fromPopState, onPage = false) {
         }).catch(function(error) {
             log.error("error getting %s %j", dataUrl, error);
         });    
+    }
+}
+
+function updateOpenGraph() {
+    updateMetaProps('og:title', getPerView().page.ogTitle)
+    updateMetaProps('og:description', getPerView().page.ogDescription)
+    updateMetaProps('og:image', getPerView().page.absOgImage)
+    updateMetaProps('og:url', getPerView().page.canonicalUrl)
+}
+
+function updateMetaName(key, val) {
+    updateMeta(key, val, "name")
+}
+
+function updateMetaProps(key, val) {
+    updateMeta(key, val, "property")
+}
+
+function updateMeta(key, val, type) {
+    var meta = document.querySelector("meta[" + CSS.escape(type) + "=" +  CSS.escape(key) + "]")
+
+    if (meta) {
+      if (val) {
+        meta.content = val
+      } else {
+        meta.parentNode.removeChild(meta);
+      }
+    } else {
+      if (val) {
+        var el = document.createElement('meta');
+        el.setAttribute(type, key);
+        el.content = val;
+        document.getElementsByTagName('head')[0].appendChild(el);
+      }
     }
 }
 

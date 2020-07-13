@@ -136,12 +136,28 @@ public class PageModel extends Container {
     @Optional
     private String brand;
 
+    @Inject
+    @Optional
+    private String ogTitle;
+
+    @Inject
+    @Optional
+    private String ogDescription;
 
     @Inject
     @Optional
     private String ogImage;
 
     private String absOgImage;
+
+    @Inject
+    @Optional
+    private Boolean noIndex = false;
+
+    @Inject
+    @Optional
+    private Boolean noFollow = false;
+
 
     public String getSiteRoot() {
         String path = getPagePath();
@@ -371,6 +387,14 @@ public class PageModel extends Container {
         return brand;
     }
 
+    public String getOgTitle() {
+        return StringUtils.isBlank(ogTitle) ? title : ogTitle;
+    }
+
+    public String getOgDescription() {
+        return StringUtils.isBlank(ogDescription) ? description: ogDescription;
+    }
+
     /**
      * Constructs an absolute og:image URL, if and only if, a primary domain is set and and og:image is set. The
      * og:image may be set on the page, an ancestor page, or the page template.
@@ -406,6 +430,25 @@ public class PageModel extends Container {
         }
 
         return absOgImagePath;
+    }
+
+    public String getCanonicalUrl() {
+        final String primaryDomain = getPrimaryDomain();
+
+        return StringUtils.isNotBlank(primaryDomain)
+                ? getPrimaryDomain() + getPagePath().replace(getSiteRoot(), "") + ".html"
+                : getPagePath() + ".html";
+    }
+
+    public String getMetaRobots() {
+
+        StringBuilder metaRobots = new StringBuilder();
+
+        if (noIndex) metaRobots.append("noindex");
+        if (noIndex && noFollow) metaRobots.append(",");
+        if (noFollow) metaRobots.append("nofollow");
+
+        return metaRobots.toString();
     }
 
     class Tag {
