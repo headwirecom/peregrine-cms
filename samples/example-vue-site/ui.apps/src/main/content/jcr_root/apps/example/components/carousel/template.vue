@@ -23,7 +23,7 @@
   #L%
   -->
 <template>
-  <div 
+  <div
     class="carousel slide"
     v-bind:id              ="name"
     v-bind:data-interval   ="model.interval"
@@ -36,7 +36,7 @@
     v-bind:data-per-path   ="model.path"
     style="min-height: 300px;background-color:#eceff1;">
     <ol v-if="model.indicators" class="carousel-indicators">
-      <li 
+      <li
         v-for="(slide, index) in model.children"
         :data-target="`#${name}`"
         :data-slide-to="index"></li>
@@ -45,8 +45,12 @@
       <div v-for="(slide, index) in model.children" :class="`carousel-item ${index === 0 ? 'active' : ''}`">
         <img v-if="slide.imagePath" :src="slide.imagePath" :alt="slide.alt" />
         <div v-if="slide.heading || slide.text" class="carousel-caption">
-          <h3 v-if="slide.heading">{{slide.heading}}</h3>
-          <p v-if="slide.text" v-html="slide.text"></p>
+          <h3 v-if="slide.heading" :data-per-inline="`model.children.${index}.heading`">
+            {{slide.heading}}
+          </h3>
+          <p v-if="slide.text"
+             v-html="slide.text"
+             :data-per-inline="`model.children.${index}.text`"></p>
         </div>
       </div>
     </div>

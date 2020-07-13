@@ -1,0 +1,62 @@
+.add-component-modal-wrapper {
+  direction: rtl;
+  overflow-y: scroll;
+  background-color: #eceff1;
+  position: absolute;
+  top: 2%;
+  left: 0;
+  width: 300px;
+  height: 93%;
+  max-height: 93%;
+  z-index: 2;
+  border: 1px solid #cfd8dc;
+  box-shadow: 6px 6px 8px 4px #0000004d;
+
+  .add-component-modal {
+    direction: ltr;
+
+    .header {
+      text-align: center;
+      background-color: #cfd8dc;
+      color: #455a64;
+      padding: 5px;
+      border-bottom: 1px solid #b0bec5;
+
+      > b {
+        text-transform: uppercase;
+      }
+    }
+
+    .content {
+      padding: 10px;
+
+      .filter {
+        width: 100%;
+        padding: 5%;
+        min-height: 3rem;
+      }
+
+      .component-list {
+        display: flex;
+        flex-direction: column;
+
+        .component-btn {
+          background-color: #fff;
+          border: none;
+          border-bottom: 1px solid var(--pcms-gray);
+          font-size: 1.1rem;
+          padding: 3px 0;
+
+          &:hover {
+            background-color: var(--pcms-orange-hover);
+          }
+
+          &:active, &:focus {
+            background-color: var(--pcms-orange);
+            color: #fff;
+          }
+        }
+      }
+    }
+  }
+}

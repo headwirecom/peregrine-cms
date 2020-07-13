@@ -150,3 +150,98 @@ export const deepClone = (obj) => {
 export const capitalizeFirstLetter = (str) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
+export const getCaretCharacterOffsetWithin = (element)  => {
+    let caretOffset = 0
+    const doc = element.ownerDocument || element.document
+    const win = doc.defaultView || doc.parentWindow
+    let sel
+    if (typeof win.getSelection != 'undefined') {
+        sel = win.getSelection()
+        if (sel.rangeCount > 0) {
+            const range = win.getSelection().getRangeAt(0)
+            const preCaretRange = range.cloneRange()
+            preCaretRange.selectNodeContents(element)
+            preCaretRange.setEnd(range.endContainer, range.endOffset)
+            caretOffset = preCaretRange.toString().length
+        }
+    } else if ( (sel = doc.selection) && sel.type !== 'Control') {
+        const textRange = sel.createRange()
+        const preCaretTextRange = doc.body.createTextRange()
+        preCaretTextRange.moveToElementText(element)
+        preCaretTextRange.setEndPoint('EndToEnd', textRange)
+        caretOffset = preCaretTextRange.text.length
+    }
+    return caretOffset
+}
+
+export const saveSelection = (containerEl, document=document) => {
+  const window = document.defaultView
+  if (window.getSelection && document.createRange) {
+    const range = window.getSelection().getRangeAt(0)
+    const preSelectionRange = range.cloneRange()
+    preSelectionRange.selectNodeContents(containerEl)
+    preSelectionRange.setEnd(range.startContainer, range.startOffset)
+    const start = preSelectionRange.toString().length
+
+    return {
+      start: start,
+      end: start + range.toString().length
+    }
+  } else if (document.selection) {
+    const selectedTextRange = document.selection.createRange()
+    const preSelectionTextRange = document.body.createTextRange()
+    preSelectionTextRange.moveToElementText(containerEl)
+    preSelectionTextRange.setEndPoint('EndToStart', selectedTextRange)
+    const start = preSelectionTextRange.text.length
+
+    return {
+      start: start,
+      end: start + selectedTextRange.text.length
+    }
+  }
+}
+
+export const restoreSelection = (containerEl, savedSel, doc = document) => {
+  const win = doc.defaultView
+
+  if (win.getSelection && doc.createRange) {
+    let charIndex = 0, range = doc.createRange()
+    range.setStart(containerEl, 0)
+    range.collapse(true)
+    let nodeStack = [containerEl], node, foundStart = false, stop = false
+
+    while (!stop && (node = nodeStack.pop())) {
+      if (node.nodeType === 3) {
+        const nextCharIndex = charIndex + node.length
+        if (!foundStart && savedSel.start >= charIndex && savedSel.start
+            <= nextCharIndex) {
+          range.setStart(node, savedSel.start - charIndex)
+          foundStart = true
+        }
+        if (foundStart && savedSel.end >= charIndex && savedSel.end
+            <= nextCharIndex) {
+          range.setEnd(node, savedSel.end - charIndex)
+          stop = true
+        }
+        charIndex = nextCharIndex
+      } else {
+        let i = node.childNodes.length
+        while (i--) {
+          nodeStack.push(node.childNodes[i])
+        }
+      }
+    }
+
+    const sel = win.getSelection()
+    sel.removeAllRanges()
+    sel.addRange(range)
+  } else if (doc.selection) {
+    const textRange = doc.body.createTextRange()
+    textRange.moveToElementText(containerEl)
+    textRange.collapse(true)
+    textRange.moveEnd('character', savedSel.end)
+    textRange.moveStart('character', savedSel.start)
+    textRange.select()
+  }
+}

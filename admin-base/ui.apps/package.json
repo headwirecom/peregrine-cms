@@ -12,6 +12,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "node ./node_modules/rollup/bin/rollup -c --silent && node ../../buildscripts/buildvue.js admin && node ../../buildscripts/copyfelibs.js && node src/main/buildjs/mdtopage.js",
     "quickbuild": "node ./node_modules/rollup/bin/rollup -c && node ./src/main/buildjs/build.js",
+    "dev": "watch \"npm run quickbuild\" ./src/main/content/jcr_root",
     "site": "node ./node_modules/jsdoc/jsdoc.js -c jsdoc.config.json -P package.json",
     "lint-vue": "node node_modules/eslint/bin/eslint.js src/main/content/jcr_root --ext vue",
     "lint-js": "node node_modules/eslint/bin/eslint.js src/main/js"
@@ -38,7 +39,6 @@
     "rollup": "^1.1.2",
     "rollup-plugin-buble": "^0.19.6",
     "rollup-plugin-vue": "^4.6.1",
-    "trumbowyg": "^2.14.0",
     "vue": "^2.5.22",
     "vue-datetime": "^1.0.0-beta.10",
     "vue-form-generator": "^2.3.4",
@@ -46,7 +46,6 @@
     "vue-images-loaded": "^1.1.2",
     "vue-multiselect": "^2.1.3",
     "vue-template-compiler": "^2.5.22",
-    "vue-trumbowyg": "^3.4.1",
     "vueisotope": "^3.1.2",
     "weekstart": "^1.0.0",
     "xml-escape": "^1.1.0"
@@ -58,6 +57,7 @@
     "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
-    "eslint-plugin-vue": "^5.1.0"
+    "eslint-plugin-vue": "^5.1.0",
+    "watch": "^1.0.2"
   }
 }
