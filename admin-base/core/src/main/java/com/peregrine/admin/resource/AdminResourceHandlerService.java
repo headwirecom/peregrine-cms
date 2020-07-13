@@ -1571,12 +1571,25 @@ public class AdminResourceHandlerService
         }
     }
 
+    private boolean doNotCopy(Resource resource) {
+        boolean doNotCopy = false;
+        if(resource.getValueMap().containsKey("doNotCopy")) {
+            doNotCopy = resource.getValueMap().get("doNotCopy", Boolean.class);
+        }
+        return doNotCopy;
+    }
+
     private Resource copyResources(Resource source, Resource targetParent, String toName, String title) {
         Resource target = getResource(targetParent, toName);
         if (target != null) {
             logger.warn("Target Resource: '{}' already exist -> copy is ignored", target.getPath());
             return null;
         }
+
+        if(doNotCopy(source)) {
+            return null;
+        }
+
         Map<String, Object> newProperties = copyProperties(source.getValueMap());
         logger.trace("Resource Properties: '{}'", newProperties);
         try {
@@ -1699,11 +1712,13 @@ public class AdminResourceHandlerService
             logger.trace("Copy Child Resource from: '{}', to: '{}'", source.getPath(), target.getPath());
             for (Resource child : source.getChildren()) {
                 logger.trace("Child handling started: '{}'", child.getPath());
+                if(!doNotCopy(child)) {
                 try {
-                    copyChild(child, target, depth);
-                } catch (PersistenceException e) {
-                    logger.warn(String.format(COPY_FAILED, source.getName(), source.getPath()), e);
-                    return;
+                        copyChild(child, target, depth);
+                    } catch (PersistenceException e) {
+                        logger.warn(String.format(COPY_FAILED, source.getName(), source.getPath()), e);
+                        return;
+                    }
                 }
                 logger.trace("Child handled: '{}'", child.getPath());
             }
