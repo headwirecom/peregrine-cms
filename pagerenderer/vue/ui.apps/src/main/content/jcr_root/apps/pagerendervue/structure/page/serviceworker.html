@@ -1,17 +1,19 @@
 <script>
-    var enableServiceWorker = $peregrineApp.isPublicFacingSite();
-    if(enableServiceWorker) {
-        if (!$peregrineApp.isAuthorMode()) {
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function () {
-                    navigator.serviceWorker.register($peregrineSiteRoot+'/serviceworker.js').then(function (registration) {
-                        // Registration was successful
-                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                    }, function (err) {
-                        // registration failed :(
-                        console.log('ServiceWorker registration failed: ', err);
+    function peregrineAppInitServiceWorker() {
+        var enableServiceWorker = $peregrineApp.isPublicFacingSite();
+        if(enableServiceWorker) {
+            if (!$peregrineApp.isAuthorMode()) {
+                if ('serviceWorker' in navigator) {
+                    window.addEventListener('load', function () {
+                        navigator.serviceWorker.register($peregrineSiteRoot+'/serviceworker.js').then(function (registration) {
+                            // Registration was successful
+                            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                        }, function (err) {
+                            // registration failed :(
+                            console.log('ServiceWorker registration failed: ', err);
+                        });
                     });
-                });
+                }
             }
         }
     }

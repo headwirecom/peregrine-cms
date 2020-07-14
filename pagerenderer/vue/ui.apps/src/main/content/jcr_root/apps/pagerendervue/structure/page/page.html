@@ -1,6 +1,11 @@
 <!DOCTYPE html><sly data-sly-use.helper="apps.pagerendervue.structure.page.Helper"/>
 <html lang="en">
 <head>
+    <sly data-sly-list="${helper.model.prefetchDNS}"><link rel="preconnect" href="${item}"><link rel="dns-prefetch" href="${item}"></sly>
+    <sly data-sly-list="${helper.model.siteJS}"><link rel="preload" href="${item}" as="script"></sly>
+    <sly data-sly-list="${helper.model.siteCSS}"><link rel="preload" href="${item}" as="style"></sly>
+    <sly data-sly-include="preload-renderer.html"></sly>
+    
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#c0c0c0">
@@ -18,23 +23,22 @@
     <meta data-sly-test="${resource.ogImageAlt}" property="og:image:alt" content="${resource.ogImageAlt}"/>
     <meta data-sly-test="${resource.ogUrl}" property="og:url" content="${resource.ogUrl}"/>
 
-    <title>${resource.jcr:title} | ${helper.model.brand}</title>
-    <sly data-sly-list="${helper.model.prefetchDNS}"><link rel="dns-prefetch" href="${item}"></sly>
+    <title>${resource.jcr:title}${helper.model.brand ? " | " : ""}${helper.model.brand ? helper.model.brand : ""}</title>
 
     <link rel="manifest" href="${helper.siteRootPath}/manifest.json">
-    <script>$peregrineSiteRoot = "${helper.siteRootPath @ context='unsafe'}"</script>
+    <script type="text/javascript">$peregrineSiteRoot = "${helper.siteRootPath @ context='unsafe'}"</script>
 
     <sly data-sly-include="tracker-head.html"></sly>
 
     <sly data-sly-include="styles.html"></sly>
-    <sly data-sly-list="${helper.model.siteCSS}"><link rel="stylesheet" href="${item}" type="text/css"></sly>
     <script type="text/javascript">
-        if(/MSIE \d|Trident.*rv:/.test(navigator.userAgent))
+        if(/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) {
             document.write('<script src="/etc/felibs/pagerendervue/conditional-js/shim.min.js"><\/script>');
+        }
     </script>
 
     <sly data-sly-use.page="com.peregrine.nodetypes.merge.PageMerge" /><script id="perPage" data-per-path="${resource.parent.path @ context='unsafe'}.html" type="application/json">${page.mergedForScript @ context = 'unsafe'}</script>
-
+    
 </head>
 
 
@@ -45,20 +49,31 @@
     <span v-cloak>
         <component v-bind:is="page.component" v-bind:model="page"></component>
     </span>
+    <span v-cloak class="whilePeregrineLoads">
+        loading: ${resource.jcr:title} ${helper.model.brand ? helper.model.brand : ""}
+    </span>
 </div>
-
-<sly data-sly-list="${helper.model.siteJS}">
-    <script type="text/javascript" src="${item}"></script>
-</sly>
 
 <sly data-sly-include="renderer.html"></sly>
 
-<script>
+<sly data-sly-list="${helper.model.siteJS}"><script type="text/javascript" src="${item}"></script></sly>
+<sly data-sly-include="serviceworker.html"></sly>
+
+<script type="text/javascript">
     var $perView = { view: 'preview' };
-    $peregrineApp.registerView($perView)
-    $peregrineApp.loadContentFrom("perPage", "${resource.parent.path @ context='unsafe'}.html", true)
+    setTimeout( function() { 
+        $peregrineApp.registerView($perView)
+        $peregrineApp.loadContentFrom("perPage", "${resource.parent.path @ context='unsafe'}.html", true)
+    }, 0)
+
+    setTimeout( peregrineAppInitServiceWorker, 1 )
+
 </script>
-<sly data-sly-include=serviceworker.html"></sly>
-<sly data-sly-include=tracker-bodyend.html"></sly>
+
+<sly data-sly-list="${helper.model.siteCSS}"><link rel="stylesheet" href="${item}" type="text/css"></sly>
+
+<sly data-sly-include="tracker-bodyend.html"></sly>
+
+
 </body>
 </html>

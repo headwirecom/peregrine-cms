@@ -227,7 +227,7 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
             set(getPerView(), location, pathInfo.suffixParams[name])
         }
     }
-    processLoaders(data.loaders).then( () => {
+    return processLoaders(data.loaders).then( () => {
 
         log.fine('first time', firstTime)
 
@@ -280,7 +280,8 @@ function loadContentImpl(path, firstTime, fromPopState, onPage = false) {
     log.fine(dataUrl)
     getPerView().status = undefined;
     if(onPage) {
-        processLoadedContent(JSON.parse(document.getElementById('perPage').innerHTML), path, firstTime, fromPopState)
+        window.$perInitialView = JSON.parse(document.getElementById('perPage').innerHTML)
+        return processLoadedContent($perInitialView, path, firstTime, fromPopState)
     } else {
         axios.get(dataUrl).then(function (response) {
             log.fine('got data for', path)
@@ -377,7 +378,7 @@ var peregrineApp = {
 
     isPublicFacingSite() {
         const server = window.location.protocol + '//' + window.location.hostname;
-        const domains = getPerView().page.domains || [];
+        const domains = window.$perInitialView.domains || [];
         return (domains.indexOf(server) >= 0)
     }
 

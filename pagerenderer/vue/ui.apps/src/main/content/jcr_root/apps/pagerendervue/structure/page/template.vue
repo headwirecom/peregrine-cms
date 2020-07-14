@@ -24,14 +24,17 @@
   -->
 <template>
 <div  class="container">
-    <div v-for="child in model.children">
-        <component v-bind:is="child.component" v-bind:model="child"></component>
+    <div v-for="(child, idx) in model.children" v-bind:key="child.path">
+        <component v-if="idx < idxMax" v-bind:is="child.component" v-bind:model="child"></component>
     </div>
 </div>
 </template>
 
 <script>
 export default {
-    props: [ 'model' ]
+    props: [ 'model' ],
+    data() {
+        return { idxMax: 1 }
+    }
 }
 </script>
