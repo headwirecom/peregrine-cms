@@ -291,8 +291,7 @@ public class CreateTenantServlet extends AbstractBaseServlet {
                 TEMPLATES_ROOT.replace(TENANT, tenant)
         ).getChild(JCR_CONTENT);
 
-        if (templateContent != null)
-        {
+        if (templateContent != null) {
             ModifiableValueMap modifiableProperties = getModifiableProperties(templateContent);
             modifiableProperties.put(BRAND, siteName);
         }
