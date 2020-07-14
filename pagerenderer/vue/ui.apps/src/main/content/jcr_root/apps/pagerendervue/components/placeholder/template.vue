@@ -107,5 +107,13 @@ export default {
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
+        font-size: 0.75em;
+        background: #f8f8f8;
+    }
+
+    .per-drop-target-empty {
+        font-size: 1.5em;
+        height: 3em;
+        padding-top: 0.75em;
     }
 </style>
