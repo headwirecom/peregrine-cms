@@ -1749,23 +1749,10 @@ public class AdminResourceHandlerService
 
             Resource childTarget = resourceResolver.create(targetParent, sourceChild.getName(), newProperties);
             updateTitle(childTarget, ((depth > 0) && newProperties.containsKey(JCR_TITLE)) ? (String) newProperties.get(JCR_TITLE) : toName);
-            replaceAllContentPathsInProps(childTarget);
             final String childTargetPathDisplay = getPath(childTarget);
             logger.trace("Child Target Created: '{}'", childTargetPathDisplay);
             // Copy grandchildren
             copyChildren(sourceChild, childTarget, depth + 1);
-        }
-
-        private void replaceAllContentPathsInProps(final Resource resource) {
-            ValueMap properties = getModifiableProperties(resource, false);
-            Set<Entry<String, Object>> entries = properties.entrySet();
-            for (Entry<String, Object> entry : entries) {
-                final String curVal = (entry.getValue() instanceof String) ? ((String)entry.getValue()) : "";
-                final Resource referencedResource = resource.getResourceResolver().getResource(curVal);
-                if (StringUtils.isNotBlank(curVal) && curVal.contains("/content/" + fromName) && !hasDoNotCopyInPath(referencedResource)) {
-                    properties.put(entry.getKey(), curVal.replaceAll("/content/" + fromName, "/content/" + toName));
-                }
-            }
         }
 
         private void updatePaths(final Resource resource, Map<String, Object> properties) {
@@ -1782,6 +1769,8 @@ public class AdminResourceHandlerService
                                 logger.trace("Updated Properties: '{}'", properties);
                             }
                         }
+                    } else if (StringUtils.isNotBlank(curVal) && curVal.contains("href") && curVal.contains("/content/" + fromName) ) {
+                        properties.put(entry.getKey(), curVal.replaceAll("/content/" + fromName, "/content/" + toName));
                     }
 
                 }
