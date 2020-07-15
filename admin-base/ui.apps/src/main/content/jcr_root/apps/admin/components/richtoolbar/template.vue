@@ -536,12 +536,18 @@
           this.browser.path.selected += '.html'
         }
         this.param.cmd = 'insertHTML'
-        this.param.value = `<a href="${this.browser.path.selected}" title="${this.browser.linkTitle}" target="${this.browser.newWindow
-            ? '_blank' : '_self'}">${this.selection.innerHTML}</a>`
+        this.param.value =
+            `<a href="${this.browser.path.selected}"
+                title="${this.browser.linkTitle}"
+                target="${this.browser.newWindow ? '_blank' : '_self'}"
+                >${this.selection.innerHTML}</a>`
       },
       onImageSelect() {
         this.param.cmd = 'insertHTML'
-        this.param.value = `<img src="${this.browser.path.selected}" alt="${this.browser.linkTitle}" title="${this.browser.linkTitle}"/>`
+        this.param.value =
+            `<img src="${this.browser.path.selected}"
+                  alt="${this.browser.linkTitle}"
+                  title="${this.browser.linkTitle}"/>`
       },
       setBrowserPathCurrent(path) {
         this.browser.path.current = path
