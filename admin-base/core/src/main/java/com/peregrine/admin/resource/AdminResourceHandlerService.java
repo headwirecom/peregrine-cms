@@ -1579,6 +1579,23 @@ public class AdminResourceHandlerService
         return doNotCopy;
     }
 
+    private boolean hasDoNotCopyInPath(final Resource resource) {
+        Resource parentResource = resource;
+        while (parentResource != null) {
+            ValueMap props = ResourceUtil.getValueMap(parentResource);
+            Object value = props.get("doNotCopy");
+            if (value != null)  {
+                Boolean hasDoNotCopy = parentResource.getValueMap().get("doNotCopy", Boolean.class);
+                if (hasDoNotCopy) {
+                    logger.trace("Found doNotCopy='{}' on ancestor: '{}'", hasDoNotCopy, parentResource.getPath());
+                    return true;
+                }
+            }
+            parentResource = parentResource.getParent();
+        }
+        return false;
+    }
+
     private Resource copyResources(Resource source, Resource targetParent, String toName, String title) {
         Resource target = getResource(targetParent, toName);
         if (target != null) {
@@ -1727,7 +1744,7 @@ public class AdminResourceHandlerService
         private void copyChild(Resource sourceChild, Resource targetParent, int depth) throws PersistenceException {
             Map<String, Object> newProperties = copyProperties(sourceChild.getValueMap());
             if (patternLength > 0) {
-                updatePaths(newProperties);
+                updatePaths(sourceChild, newProperties);
             }
 
             Resource childTarget = resourceResolver.create(targetParent, sourceChild.getName(), newProperties);
@@ -1744,21 +1761,29 @@ public class AdminResourceHandlerService
             Set<Entry<String, Object>> entries = properties.entrySet();
             for (Entry<String, Object> entry : entries) {
                 final String curVal = (entry.getValue() instanceof String) ? ((String)entry.getValue()) : "";
-                if (StringUtils.isNotBlank(curVal) && curVal.contains("/content/" + fromName)) {
+                final Resource referencedResource = resource.getResourceResolver().getResource(curVal);
+                if (StringUtils.isNotBlank(curVal) && curVal.contains("/content/" + fromName) && !hasDoNotCopyInPath(referencedResource)) {
                     properties.put(entry.getKey(), curVal.replaceAll("/content/" + fromName, "/content/" + toName));
                 }
             }
         }
 
-        private void updatePaths(Map<String, Object> properties) {
+        private void updatePaths(final Resource resource, Map<String, Object> properties) {
             for (Entry<String, Object> entry : properties.entrySet()) {
                 final Object temp = entry.getValue();
                 if (temp instanceof String) {
-                    String newValue = updatePath((String) temp);
-                    if (newValue != null) {
-                        entry.setValue(newValue);
-                        logger.trace("Updated Properties: '{}'", properties);
+                    final String curVal = (String) temp;
+                    if (StringUtils.isNotBlank(curVal) && curVal.startsWith("/")) {
+                        final Resource referencedResource = resource.getResourceResolver().getResource(curVal);
+                        if (!hasDoNotCopyInPath(referencedResource)) {
+                            String newValue = updatePath((String) temp);
+                            if (newValue != null) {
+                                entry.setValue(newValue);
+                                logger.trace("Updated Properties: '{}'", properties);
+                            }
+                        }
                     }
+
                 }
             }
         }
