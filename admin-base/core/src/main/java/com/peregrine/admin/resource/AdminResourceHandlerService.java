@@ -1732,10 +1732,22 @@ public class AdminResourceHandlerService
 
             Resource childTarget = resourceResolver.create(targetParent, sourceChild.getName(), newProperties);
             updateTitle(childTarget, ((depth > 0) && newProperties.containsKey(JCR_TITLE)) ? (String) newProperties.get(JCR_TITLE) : toName);
+            replaceAllContentPathsInProps(childTarget);
             final String childTargetPathDisplay = getPath(childTarget);
             logger.trace("Child Target Created: '{}'", childTargetPathDisplay);
             // Copy grandchildren
             copyChildren(sourceChild, childTarget, depth + 1);
+        }
+
+        private void replaceAllContentPathsInProps(final Resource resource) {
+            ValueMap properties = getModifiableProperties(resource, false);
+            Set<Entry<String, Object>> entries = properties.entrySet();
+            for (Entry<String, Object> entry : entries) {
+                final String curVal = (entry.getValue() instanceof String) ? ((String)entry.getValue()) : "";
+                if (StringUtils.isNotBlank(curVal) && curVal.contains("/content/" + fromName)) {
+                    properties.put(entry.getKey(), curVal.replaceAll("/content/" + fromName, "/content/" + toName));
+                }
+            }
         }
 
         private void updatePaths(Map<String, Object> properties) {
