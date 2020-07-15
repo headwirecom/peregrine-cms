@@ -59,7 +59,7 @@
           buffer: null,
           doc: null,
           container: null,
-          innerHTML: null
+          content: null
         },
         param: {
           cmd: null,
@@ -373,11 +373,20 @@
         }
       },
       insertLink() {
-        const selection = this.getSelection(0)
+        const selection = this.getSelection()
         if (!selection) throw 'no selection found'
-        const len = selection.endOffset - selection.startOffset
-        const start = selection.startOffset
-        this.selection.innerHTML = selection.startContainer.textContent.substr(start, len)
+        const range = selection.getRangeAt(0)
+        if (!selection) throw 'no selection-range found'
+        const len = range.endOffset - range.startOffset
+        const start = range.startOffset
+        const text = range.startContainer.textContent.substr(start, len)
+
+        if (selection.anchorNode.parentNode.innerText === text) {
+          this.selection.content = selection.anchorNode.parentNode.outerHTML
+        } else {
+          this.selection.content = text
+        }
+
         this.param.cmd = 'createLink'
         this.browser.header = this.$i18n('Create Link')
         this.browser.path.current = this.roots.pages
@@ -407,7 +416,7 @@
           anchor = selection.endContainer.parentNode
         }
 
-        this.selection.innerHTML = anchor.innerHTML
+        this.selection.content = anchor.innerHTML
         let href = anchor.getAttribute('href')
         const hrefArr = href.substr(0, href.length - 5).split('/')
         this.param.cmd = 'editLink'
@@ -540,7 +549,7 @@
             `<a href="${this.browser.path.selected}"
                 title="${this.browser.linkTitle}"
                 target="${this.browser.newWindow ? '_blank' : '_self'}"
-                >${this.selection.innerHTML}</a>`
+                >${this.selection.content}</a>`
       },
       onImageSelect() {
         this.param.cmd = 'insertHTML'
@@ -567,7 +576,7 @@
         const window = document.defaultView
         let selection = window.getSelection()
         if (!selection || selection.rangeCount <= 0) return false
-        if (index >= 0) {
+        if (index !== null && index >= 0) {
           selection = selection.getRangeAt(index)
         }
 
