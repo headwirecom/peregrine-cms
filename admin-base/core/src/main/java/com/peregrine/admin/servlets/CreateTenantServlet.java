@@ -220,6 +220,7 @@ public class CreateTenantServlet extends AbstractBaseServlet {
             } catch(RuntimeException e) {
                 logger.warn("Setting Site Permissions failed", e);
             }
+            setBrandOnTemplate(resourceResolver, toTenant, title);
             resourceResolver.commit();
             String colorPalette = request.getParameter(COLOR_PALETTE);
             if (isNotEmpty(colorPalette)) {
@@ -281,6 +282,18 @@ public class CreateTenantServlet extends AbstractBaseServlet {
             modifiableProperties.put("siteCSS", cssReplacements);
         } else {
             logger.error("No siteCSS property found for copied template");
+        }
+    }
+
+    private void setBrandOnTemplate(final ResourceResolver resourceResolver, final String tenant, final String siteName) {
+        final Resource templateContent = getResource(
+                resourceResolver,
+                TEMPLATES_ROOT.replace(TENANT, tenant)
+        ).getChild(JCR_CONTENT);
+
+        if (templateContent != null) {
+            ModifiableValueMap modifiableProperties = getModifiableProperties(templateContent);
+            modifiableProperties.put(BRAND, siteName);
         }
     }
 }
