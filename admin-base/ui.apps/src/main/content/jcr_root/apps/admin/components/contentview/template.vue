@@ -503,6 +503,13 @@
         this.holdingDown = false
       },
 
+      onInlineDblClick(event) {
+        if (event.target.tagName === 'IMG') {
+          set(this.view, '/state/inline/param/val', event.target)
+          set(this.view, '/state/inline/param/cmd', 'editImage')
+        }
+      },
+
       onInlineSelectAll(event) {
         event.preventDefault()
         let range, selection
@@ -681,6 +688,7 @@
           el.addEventListener('focusout', this.onInlineFocusOut)
           el.addEventListener('keydown', this.onInlineKeyDown)
           el.addEventListener('keyup', this.onInlineKeyUp)
+          el.addEventListener('dblclick', this.onInlineDblClick)
           el.setAttribute('contenteditable', this.previewMode !== 'preview' + '')
         })
       },

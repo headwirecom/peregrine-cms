@@ -235,6 +235,7 @@
         return {
           link: this.link,
           insertImage: this.insertImage,
+          editImage: this.editImage,
           preview: this.togglePreview
         }
       },
@@ -338,6 +339,13 @@
           newVal.push(this._uid)
           set($perAdminApp.getView(), '/state/inline/ping', newVal)
         }
+      },
+      'inline.param.cmd'(val) {
+        if (val) {
+          set($perAdminApp.getView(), '/state/inline/param/cmd', null)
+          const paramVal = get($perAdminApp.getView(), '/state/inline/param/val')
+          this.exec(val, paramVal)
+        }
       }
     },
     methods: {
@@ -359,7 +367,7 @@
       },
       exec(cmd, value = null) {
         if (Object.keys(this.specialCases).indexOf(cmd) >= 0) {
-          this.specialCases[cmd]()
+          this.specialCases[cmd](value)
         } else {
           this.execCmd(cmd, value)
         }
@@ -459,6 +467,19 @@
         this.browser.path.suffix = ''
         this.startBrowsing()
       },
+      editImage(target) {
+        let src = target.getAttribute('src')
+        const srcArr = src.split('/')
+        this.param.cmd = 'editImage'
+        this.browser.header = this.$i18n('Edit Image')
+        this.browser.path.selected = srcArr.join('/')
+        srcArr.pop()
+        this.browser.path.current = srcArr.join('/')
+        this.browser.withLinkTab = true
+        this.browser.newWindow = undefined
+        this.browser.type = PathBrowser.Type.ASSET
+        this.startBrowsing()
+      },
       setViewport(viewport) {
         set($perAdminApp.getView(), '/state/tools/workspace/view', viewport)
       },
@@ -525,7 +546,7 @@
         this.$nextTick(() => {
           if (['editLink', 'createLink'].includes(this.param.cmd)) {
             this.onLinkSelect()
-          } else if (this.param.cmd === 'insertImage') {
+          } else if (['insertImage', 'editImage'].includes(this.param.cmd)) {
             this.onImageSelect()
           }
 
@@ -552,11 +573,18 @@
                 >${this.selection.content}</a>`
       },
       onImageSelect() {
-        this.param.cmd = 'insertHTML'
-        this.param.value =
-            `<img src="${this.browser.path.selected}"
+        if (this.param.cmd === 'editImage') {
+          const imgEl = get($perAdminApp.getView(), '/state/inline/param/val')
+          imgEl.setAttribute('src', this.browser.path.selected)
+          imgEl.setAttribute('alt', this.browser.path.linkTitle)
+          imgEl.setAttribute('title', this.browser.path.linkTitle)
+        } else {
+          this.param.cmd = 'insertHTML'
+          this.param.value =
+              `<img src="${this.browser.path.selected}"
                   alt="${this.browser.linkTitle}"
                   title="${this.browser.linkTitle}"/>`
+        }
       },
       setBrowserPathCurrent(path) {
         this.browser.path.current = path
