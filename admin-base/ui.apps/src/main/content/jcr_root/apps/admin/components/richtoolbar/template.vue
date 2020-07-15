@@ -38,6 +38,7 @@
 
 <script>
   import {deepClone, get, restoreSelection, saveSelection, set} from '../../../../../../js/utils'
+  import {PathBrowser} from '../../../../../../js/constants'
 
   export default {
     name: 'RichToolbar',
@@ -382,7 +383,7 @@
         this.browser.path.current = this.roots.pages
         this.browser.withLinkTab = true
         this.browser.newWindow = false
-        this.browser.type = 'page'
+        this.browser.type = PathBrowser.Type.PAGE
         this.startBrowsing()
       },
       editLink() {
@@ -415,7 +416,7 @@
         hrefArr.pop()
         this.browser.path.current = hrefArr.join('/')
         this.browser.withLinkTab = true
-        this.browser.type = 'page'
+        this.browser.type = PathBrowser.Type.PAGE
         this.browser.path.suffix = '.html'
         this.startBrowsing()
       },
@@ -445,7 +446,7 @@
         this.browser.path.current = this.roots.assets
         this.browser.withLinkTab = true
         this.browser.newWindow = undefined
-        this.browser.type = 'image'
+        this.browser.type = PathBrowser.Type.ASSET
         this.browser.path.suffix = ''
         this.startBrowsing()
       },
