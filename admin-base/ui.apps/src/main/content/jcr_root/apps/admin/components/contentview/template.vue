@@ -265,7 +265,7 @@
           if (!this.component) return
           this.wrapEditableAroundSelected()
           this.$nextTick(() => {
-            this.refreshInlineEditElems()
+            this.refreshIframeElements()
           })
         }
       },
@@ -565,7 +565,7 @@
         this.iframe.head = this.iframe.doc.querySelector('head')
         this.iframe.app = this.iframe.doc.querySelector('#peregrine-app')
         this.addIframeExtraStyles()
-        this.refreshInlineEditElems()
+        this.refreshIframeElements()
         if (this.previewMode !== 'preview') {
           this.iframeEditMode()
         } else {
@@ -663,13 +663,29 @@
           this.cleanUpAfterDelete(componentPath)
         }
         $perAdminApp.stateAction(addOrMove, payload).then((data) => {
-          this.refreshInlineEditElems()
+          this.refreshIframeElements()
         })
         this.unselect(this)
         event.dataTransfer.clearData('text')
       },
 
-      refreshInlineEditElems() {
+      refreshIframeElements() {
+        this.refreshComponentElements()
+        this.refreshInlineEditElements()
+      },
+
+      refreshComponentElements() {
+        const selector = `[${Attribute.PATH}]`
+        const elements = this.iframe.app.querySelectorAll(selector)
+        if (!elements || elements.length <= 0) return
+
+        elements.forEach((el) => {
+          el.addEventListener('mouseenter', this.onComponentMouseEnter)
+          el.addEventListener('mouseleave', this.onComponentMouseLeave)
+        })
+      },
+
+      refreshInlineEditElements() {
         const selector = `[${Attribute.INLINE}]:not(.inline-edit)`
         const elements = this.iframe.app.querySelectorAll(selector)
         if (!elements || elements.length <= 0) return
@@ -755,6 +771,14 @@
 
           html.edit-mode #peregrine-app .inline-edit {
             cursor: text !important
+          }
+
+          html.edit-mode #peregrine-app [${Attribute.PATH}].outline-orange {
+            outline: 2px dashed orange;
+          }
+
+          html.edit-mode #peregrine-app [${Attribute.PATH}].outline-green {
+            outline: 2px dashed green;
           }`
         const style = this.iframe.doc.createElement('style')
         this.iframe.head.appendChild(style)
@@ -895,7 +919,7 @@
         if (payload.path !== '/jcr:content') {
           $perAdminApp.stateAction('deletePageNode', payload).then((data) => {
             this.cleanUpAfterDelete(payload.path)
-            this.refreshInlineEditElems()
+            this.refreshIframeElements()
           })
         }
         this.unselect(this)
@@ -930,7 +954,7 @@
           drop: dropPosition
         }
         $perAdminApp.stateAction('addComponentToPath', payload).then((data) => {
-          this.refreshInlineEditElems()
+          this.refreshIframeElements()
         })
       },
 
@@ -958,7 +982,7 @@
       },
 
       onAddComponentModalComponentAdded(newNode) {
-        this.refreshInlineEditElems()
+        this.refreshIframeElements()
         const selector = `[${Attribute.PATH}="${newNode.path}"]`
         const newNodeEl = this.iframe.app.querySelector(selector)
         const firstInlineEditEl = newNodeEl.querySelector(`[${Attribute.INLINE}]`)
@@ -975,7 +999,21 @@
         el.scrollIntoView(true)
         const viewportH = Math.max(doc.documentElement.clientHeight, win.innerHeight || 0)
         win.scrollBy(0, (el.getBoundingClientRect().height - viewportH) / 2)
-      }
+      },
+
+      onComponentMouseEnter(event) {
+        const cls = event.target.getAttribute('class')
+
+        if (this.isFromTemplate(event.target)) {
+          event.target.setAttribute('class', 'outline-orange ' + cls)
+        } else {
+          event.target.setAttribute('class', 'outline-green ' + cls)
+        }
+      },
+
+      onComponentMouseLeave(event) {
+        event.target.classList.remove('outline-orange', 'outline-green')
+      },
     }
   }
 </script>
