@@ -475,7 +475,8 @@
         this.startBrowsing()
       },
       editImage(target) {
-        let src = target.getAttribute('src')
+        const title = target.getAttribute('title')
+        const src = target.getAttribute('src')
         const srcArr = src.split('/')
         this.param.cmd = 'editImage'
         this.browser.header = this.$i18n('Edit Image')
@@ -485,6 +486,7 @@
         this.browser.withLinkTab = true
         this.browser.newWindow = undefined
         this.browser.type = PathBrowser.Type.ASSET
+        this.browser.linkTitle = title
         this.startBrowsing()
       },
       setViewport(viewport) {
@@ -566,6 +568,7 @@
           this.param.cmd = null
           this.param.value = null
           this.browser.path.selected = null
+          this.browser.linkTitle = null
           this.key++
 
           if (this.selection.restore) {
