@@ -669,20 +669,36 @@
         event.dataTransfer.clearData('text')
       },
 
-      refreshIframeElements() {
-        this.refreshComponentElements()
-        this.refreshInlineEditElements()
+      onIframeMouseOver(event) {
+        const cmpEl = this.findComponentEl(event.target)
+
+        if (!cmpEl) return
+
+        const cls = cmpEl.getAttribute('class')
+
+        if (!cmpEl.classList.contains('hover-outline')) {
+          this.resetComponentElements()
+        }
+
+        if (this.isFromTemplate(cmpEl)) {
+          cmpEl.setAttribute('class', 'hover-outline outline-orange', cls)
+        } else {
+          cmpEl.setAttribute('class', 'hover-outline outline-green', cls)
+        }
       },
 
-      refreshComponentElements() {
-        const selector = `[${Attribute.PATH}]`
+      resetComponentElements() {
+        const selector = `[${Attribute.PATH}].hover-outline`
         const elements = this.iframe.app.querySelectorAll(selector)
         if (!elements || elements.length <= 0) return
 
         elements.forEach((el) => {
-          el.addEventListener('mouseenter', this.onComponentMouseEnter)
-          el.addEventListener('mouseleave', this.onComponentMouseLeave)
+          el.classList.remove('outline-green', 'outline-orange', 'hover-outline')
         })
+      },
+
+      refreshIframeElements() {
+        this.refreshInlineEditElements()
       },
 
       refreshInlineEditElements() {
@@ -714,6 +730,7 @@
         this.iframe.doc.addEventListener('scroll', this.onIframeScroll)
         this.iframe.doc.addEventListener('dragover', this.onIframeDragOver)
         this.iframe.doc.addEventListener('drop', this.onIframeDrop)
+        this.iframe.doc.addEventListener('mouseover', this.onIframeMouseOver)
         this.iframe.html.classList.add('edit-mode')
         const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el, index) => {
@@ -729,6 +746,7 @@
         try {
           this.iframe.doc.removeEventListener('click', this.onIframeClick)
           this.iframe.doc.removeEventListener('scroll', this.onIframeScroll)
+          this.iframe.doc.removeEventListener('mouseover', this.onIframeScroll)
         } catch (err) {
           console.debug('no event listener to be removed from iframe', err)
         }
@@ -1004,6 +1022,7 @@
       },
 
       onComponentMouseEnter(event) {
+        event.stopPropagation()
         const cls = event.target.getAttribute('class')
 
         if (this.isFromTemplate(event.target)) {
@@ -1014,8 +1033,10 @@
       },
 
       onComponentMouseLeave(event) {
+        event.stopPropagation()
         event.target.classList.remove('outline-orange', 'outline-green')
       },
+
     }
   }
 </script>
