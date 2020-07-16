@@ -670,31 +670,24 @@
       },
 
       onIframeMouseOver(event) {
+        if (this.editable.class === 'selected') return
+
         const cmpEl = this.findComponentEl(event.target)
 
-        if (!cmpEl) return
-
-        const cls = cmpEl.getAttribute('class')
-
-        if (!cmpEl.classList.contains('hover-outline')) {
-          this.resetComponentElements()
+        if (!cmpEl) {
+          this.editable.visible = false
+          return
         }
+
+        this.wrapEditableAroundElement(cmpEl)
 
         if (this.isFromTemplate(cmpEl)) {
-          cmpEl.setAttribute('class', 'hover-outline outline-orange', cls)
+          this.editable.class = 'mouseover-orange'
         } else {
-          cmpEl.setAttribute('class', 'hover-outline outline-green', cls)
+          this.editable.class = 'mouseover-green'
         }
-      },
 
-      resetComponentElements() {
-        const selector = `[${Attribute.PATH}].hover-outline`
-        const elements = this.iframe.app.querySelectorAll(selector)
-        if (!elements || elements.length <= 0) return
-
-        elements.forEach((el) => {
-          el.classList.remove('outline-green', 'outline-orange', 'hover-outline')
-        })
+        this.editable.visible = true
       },
 
       refreshIframeElements() {
@@ -789,14 +782,6 @@
 
           html.edit-mode #peregrine-app .inline-edit {
             cursor: text !important
-          }
-
-          html.edit-mode #peregrine-app [${Attribute.PATH}].outline-orange {
-            outline: 2px dashed orange;
-          }
-
-          html.edit-mode #peregrine-app [${Attribute.PATH}].outline-green {
-            outline: 2px dashed green;
           }`
         const style = this.iframe.doc.createElement('style')
         this.iframe.head.appendChild(style)
@@ -820,11 +805,11 @@
         return el.getAttribute('contenteditable') === 'true'
       },
 
-      wrapEditableAroundSelected() {
-        if (!this.component) return
+      wrapEditableAroundElement(el) {
+        if (!el) return
 
         this.$nextTick(() => {
-          const {top, left, width, height} = this.getBoundingClientRect(this.component)
+          const {top, left, width, height} = this.getBoundingClientRect(el)
           const offset = this.getBoundingClientRect(this.$refs.editview)
 
           this.editable.styles.top = `${top}px`
@@ -832,6 +817,10 @@
           this.editable.styles.width = `${width}px`
           this.editable.styles.height = `${height}px`
         })
+      },
+
+      wrapEditableAroundSelected() {
+        this.wrapEditableAroundElement(this.component)
       },
 
       reWrapEditable(vm = this) {

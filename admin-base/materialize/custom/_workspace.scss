@@ -143,6 +143,14 @@
       &.dragging {
 
       }
+
+      &.mouseover-orange {
+        border: 2px dashed var(--pcms-orange);
+      }
+
+      &.mouseover-green {
+        border: 2px dashed green;
+      }
     }
 
     #editview {
