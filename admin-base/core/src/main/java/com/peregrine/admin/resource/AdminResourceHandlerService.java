@@ -164,7 +164,7 @@ public class AdminResourceHandlerService
 
     private static final String NAME_CONSTRAINT_VIOLATION = "The provided name '%s' is not valid.";
 
-    private static final Pattern ANCHOR_SITE_REF_PATTERN = Pattern.compile("a[ +]href=\"/content/([a-z]+)/");
+    private static final Pattern ANCHOR_SITE_REF_PATTERN = Pattern.compile("(<a .*?href=\"/content/)([a-z]+)/");
 
     static {
         IGNORED_PROPERTIES_FOR_COPY.add(JCR_PRIMARY_TYPE);
@@ -1791,7 +1791,7 @@ public class AdminResourceHandlerService
             StringBuffer htmlOut = new StringBuffer();
 
             while (matcher.find()) {
-                matcher.appendReplacement(htmlOut, "a href=\"/content/" + toName + "/");
+                matcher.appendReplacement(htmlOut, "$1" + toName + "/");
             }
             return matcher.appendTail(htmlOut).toString();
         }
