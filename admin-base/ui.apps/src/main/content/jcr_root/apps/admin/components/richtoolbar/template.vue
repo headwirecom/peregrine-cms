@@ -428,7 +428,9 @@
         }
 
         this.selection.content = anchor.innerHTML
-        let href = anchor.getAttribute('href')
+        const title = anchor.getAttribute('title')
+        const target = anchor.getAttribute('target')
+        const href = anchor.getAttribute('href')
         const hrefArr = href.substr(0, href.length - 5).split('/')
         this.param.cmd = 'editLink'
         this.browser.header = this.$i18n('Edit Link')
@@ -437,6 +439,8 @@
         this.browser.path.current = hrefArr.join('/')
         this.browser.withLinkTab = true
         this.browser.type = PathBrowser.Type.PAGE
+        this.browser.newWindow = target === '_blank'
+        this.browser.linkTitle = title
         this.browser.path.suffix = '.html'
         this.saveSelection()
         this.selection.restore = true
