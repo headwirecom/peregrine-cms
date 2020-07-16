@@ -37,7 +37,7 @@
 </template>
 
 <script>
-  import {deepClone, get, restoreSelection, saveSelection, set} from '../../../../../../js/utils'
+  import {get, restoreSelection, saveSelection, set} from '../../../../../../js/utils'
   import {PathBrowser} from '../../../../../../js/constants'
 
   export default {
@@ -333,17 +333,10 @@
         ]
       }
     },
-    watch: {
-      'inline.ping'(val) {
-        if (!val || !val.includes(this._uid)) {
-          this.key++
-          const newVal = val ? deepClone(val) : []
-          newVal.push(this._uid)
-          set($perAdminApp.getView(), '/state/inline/ping', newVal)
-        }
-      }
-    },
     methods: {
+      pingRichToolbar(vm=this) {
+        vm.key = vm.key === 1? 0 : 1
+      },
       getInlineDoc() {
         if (!this.inline) return null
         return this.inline.doc
@@ -366,7 +359,7 @@
         } else {
           this.execCmd(cmd, value)
         }
-        this.key++
+        this.pingRichToolbar()
       },
       link() {
         if (!this.itemIsTag('A')) {
@@ -568,7 +561,7 @@
           this.param.value = null
           this.browser.path.selected = null
           this.browser.linkTitle = null
-          this.key++
+          this.pingRichToolbar()
 
           if (this.selection.restore) {
             this.$nextTick(() => {

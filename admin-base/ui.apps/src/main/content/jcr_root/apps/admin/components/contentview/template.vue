@@ -954,7 +954,7 @@
       },
 
       pingToolbar() {
-        set(this.view, '/state/inline/ping', [])
+        $perAdminApp.action(this, 'pingRichToolbar')
       },
 
       onAddComponentModalComponentAdded(newNode) {

@@ -84,7 +84,7 @@
         vm.model.text = vm.$refs.textEditor.innerHTML
       },
       pingToolbar() {
-        set(this.view, '/state/inline/ping', [])
+        $perAdminApp.action(this, 'pingRichToolbar')
       }
     }
   }
