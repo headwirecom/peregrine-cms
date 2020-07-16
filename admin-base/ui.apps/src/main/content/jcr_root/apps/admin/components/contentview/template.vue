@@ -415,16 +415,16 @@
         return vnode
       },
 
-      writeInlineToModel() {
+      writeInlineToModel(vm=this) {
         let content = ''
-        if (this.isRich) {
-          content = this.target.innerHTML.replace(/(?:\r\n|\r|\n)/g, '<br>')
+        if (vm.isRich) {
+          content = vm.target.innerHTML.replace(/(?:\r\n|\r|\n)/g, '<br>')
         } else {
-          content = this.target.innerText
+          content = vm.target.innerText
         }
-        const dataInline = this.targetInline.split('.').slice(1)
+        const dataInline = vm.targetInline.split('.').slice(1)
         dataInline.reverse()
-        let parentProp = this.node
+        let parentProp = vm.node
         while (dataInline.length > 1) {
           parentProp = parentProp[dataInline.pop()]
         }
@@ -793,11 +793,11 @@
         })
       },
 
-      reWrapEditable() {
-        this.editable.timer = setTimeout(() => {
-          this.editable.class = 'selected'
-          this.wrapEditableAroundSelected()
-        }, this.editable.delay)
+      reWrapEditable(vm=this) {
+        vm.editable.timer = setTimeout(() => {
+          vm.editable.class = 'selected'
+          vm.wrapEditableAroundSelected()
+        }, vm.editable.delay)
       },
 
       getElementStyle(e, styleName) {

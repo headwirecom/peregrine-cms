@@ -56,6 +56,7 @@
       return {
         key: 0,
         selection: {
+          restore: false,
           buffer: null,
           doc: null,
           container: null,
@@ -401,6 +402,8 @@
         this.browser.withLinkTab = true
         this.browser.newWindow = false
         this.browser.type = PathBrowser.Type.PAGE
+        this.saveSelection()
+        this.selection.restore = true
         this.startBrowsing()
       },
       editLink() {
@@ -435,6 +438,8 @@
         this.browser.withLinkTab = true
         this.browser.type = PathBrowser.Type.PAGE
         this.browser.path.suffix = '.html'
+        this.saveSelection()
+        this.selection.restore = true
         this.startBrowsing()
       },
       removeLink() {
@@ -465,6 +470,8 @@
         this.browser.newWindow = undefined
         this.browser.type = PathBrowser.Type.ASSET
         this.browser.path.suffix = ''
+        this.saveSelection()
+        this.selection.restore = true
         this.startBrowsing()
       },
       editImage(target) {
@@ -515,7 +522,6 @@
         return tags.some((tag) => this.itemIsTag(tag))
       },
       startBrowsing() {
-        this.saveSelection()
         $perAdminApp.getApi()
             .populateNodesForBrowser(this.browser.path.current, 'pathBrowser')
             .then(() => this.browser.open = true)
@@ -541,7 +547,10 @@
       },
       onBrowserSelect() {
         this.browser.open = false
-        this.restoreSelection()
+
+        if (this.selection.restore) {
+          this.restoreSelection()
+        }
 
         this.$nextTick(() => {
           if (['editLink', 'createLink'].includes(this.param.cmd)) {
@@ -556,9 +565,12 @@
           this.browser.path.selected = null
           this.key++
 
-          this.$nextTick(() => {
-            this.restoreSelection()
-          })
+          if (this.selection.restore) {
+            this.$nextTick(() => {
+              this.restoreSelection()
+              this.selection.restore = false
+            })
+          }
         })
       },
       onLinkSelect() {
@@ -575,9 +587,12 @@
       onImageSelect() {
         if (this.param.cmd === 'editImage') {
           const imgEl = get($perAdminApp.getView(), '/state/inline/param/val')
+          const linkTitle = this.browser.linkTitle
           imgEl.setAttribute('src', this.browser.path.selected)
-          imgEl.setAttribute('alt', this.browser.path.linkTitle)
-          imgEl.setAttribute('title', this.browser.path.linkTitle)
+          imgEl.setAttribute('alt', linkTitle? linkTitle : '')
+          imgEl.setAttribute('title', linkTitle? linkTitle : '')
+          $perAdminApp.action(this, 'reWrapEditable')
+          $perAdminApp.action(this, 'writeInlineToModel')
         } else {
           this.param.cmd = 'insertHTML'
           this.param.value =
