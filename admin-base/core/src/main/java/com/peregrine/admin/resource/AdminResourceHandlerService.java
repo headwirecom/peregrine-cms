@@ -28,6 +28,8 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -162,6 +164,7 @@ public class AdminResourceHandlerService
 
     private static final String NAME_CONSTRAINT_VIOLATION = "The provided name '%s' is not valid.";
 
+    private static final Pattern ANCHOR_SITE_REF_PATTERN = Pattern.compile("a[ +]href=\"/content/([a-z]+)/");
 
     static {
         IGNORED_PROPERTIES_FOR_COPY.add(JCR_PRIMARY_TYPE);
@@ -1761,6 +1764,7 @@ public class AdminResourceHandlerService
                 if (temp instanceof String) {
                     final String curVal = (String) temp;
                     if (StringUtils.isNotBlank(curVal) && curVal.startsWith("/")) {
+                        // handle replacements at start of line
                         final Resource referencedResource = resource.getResourceResolver().getResource(curVal);
                         if (!hasDoNotCopyInPath(referencedResource)) {
                             String newValue = updatePath((String) temp);
@@ -1769,8 +1773,15 @@ public class AdminResourceHandlerService
                                 logger.trace("Updated Properties: '{}'", properties);
                             }
                         }
-                    } else if (StringUtils.isNotBlank(curVal) && curVal.contains("href") && curVal.contains("/content/" + fromName) ) {
-                        properties.put(entry.getKey(), curVal.replaceAll("/content/" + fromName, "/content/" + toName));
+                    } else if (StringUtils.isNotBlank(curVal)) {
+                        // handle 'a href' replacements if necessary (i.e. links in rich text)
+                        Matcher matcher = ANCHOR_SITE_REF_PATTERN.matcher(curVal);
+                        StringBuffer html = new StringBuffer();
+                        while(matcher.find()){
+                            matcher.appendReplacement(html, "a href=\"/content/" + toName + "/");
+                        }
+                        matcher.appendTail(html);
+                        properties.put(entry.getKey(),html.toString());
                     }
 
                 }
