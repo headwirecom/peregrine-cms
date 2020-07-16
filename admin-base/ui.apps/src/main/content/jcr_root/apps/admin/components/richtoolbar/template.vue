@@ -336,6 +336,7 @@
     methods: {
       pingRichToolbar(vm=this) {
         vm.key = vm.key === 1? 0 : 1
+        $perAdminApp.action(vm, 'reWrapEditable')
       },
       getInlineDoc() {
         if (!this.inline) return null
