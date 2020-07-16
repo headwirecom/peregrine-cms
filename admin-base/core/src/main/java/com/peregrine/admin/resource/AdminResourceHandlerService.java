@@ -1774,18 +1774,26 @@ public class AdminResourceHandlerService
                             }
                         }
                     } else if (StringUtils.isNotBlank(curVal)) {
-                        // handle 'a href' replacements if necessary (i.e. links in rich text)
-                        Matcher matcher = ANCHOR_SITE_REF_PATTERN.matcher(curVal);
-                        StringBuffer html = new StringBuffer();
-                        while(matcher.find()){
-                            matcher.appendReplacement(html, "a href=\"/content/" + toName + "/");
-                        }
-                        matcher.appendTail(html);
-                        properties.put(entry.getKey(),html.toString());
+                        properties.put(entry.getKey(),updatePathsInAnchorTags(curVal));
                     }
 
                 }
             }
+        }
+
+        /**
+         * Updates tenant path in anchor tags to reflect target tenant.
+         * @param htmlIn html to update
+         * @return Rewritten HTML if there are matches, otherwise original html
+         */
+        private String updatePathsInAnchorTags(final String htmlIn) {
+            Matcher matcher = ANCHOR_SITE_REF_PATTERN.matcher(htmlIn);
+            StringBuffer htmlOut = new StringBuffer();
+
+            while (matcher.find()) {
+                matcher.appendReplacement(htmlOut, "a href=\"/content/" + toName + "/");
+            }
+            return matcher.appendTail(htmlOut).toString();
         }
 
         private String updatePath(String value) {
