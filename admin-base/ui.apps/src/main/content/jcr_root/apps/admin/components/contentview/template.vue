@@ -505,8 +505,7 @@
 
       onInlineDblClick(event) {
         if (event.target.tagName === 'IMG') {
-          set(this.view, '/state/inline/param/val', event.target)
-          set(this.view, '/state/inline/param/cmd', 'editImage')
+          $perAdminApp.action(this, 'editImage', event.target)
         }
       },
 

@@ -67,6 +67,7 @@
           value: null
         },
         browser: {
+          element: null,
           open: false,
           header: '',
           root: '',
@@ -340,13 +341,6 @@
           newVal.push(this._uid)
           set($perAdminApp.getView(), '/state/inline/ping', newVal)
         }
-      },
-      'inline.param.cmd'(val) {
-        if (val) {
-          set($perAdminApp.getView(), '/state/inline/param/cmd', null)
-          const paramVal = get($perAdminApp.getView(), '/state/inline/param/val')
-          this.exec(val, paramVal)
-        }
       }
     },
     methods: {
@@ -478,20 +472,21 @@
         this.selection.restore = true
         this.startBrowsing()
       },
-      editImage(target) {
+      editImage(vm = this, target) {
         const title = target.getAttribute('title')
         const src = target.getAttribute('src')
         const srcArr = src.split('/')
-        this.param.cmd = 'editImage'
-        this.browser.header = this.$i18n('Edit Image')
-        this.browser.path.selected = srcArr.join('/')
+        vm.param.cmd = 'editImage'
+        vm.browser.header = vm.$i18n('Edit Image')
+        vm.browser.path.selected = srcArr.join('/')
         srcArr.pop()
-        this.browser.path.current = srcArr.join('/')
-        this.browser.withLinkTab = true
-        this.browser.newWindow = undefined
-        this.browser.type = PathBrowser.Type.ASSET
-        this.browser.linkTitle = title
-        this.startBrowsing()
+        vm.browser.path.current = srcArr.join('/')
+        vm.browser.withLinkTab = true
+        vm.browser.newWindow = undefined
+        vm.browser.type = PathBrowser.Type.ASSET
+        vm.browser.linkTitle = title
+        vm.browser.element = target
+        vm.startBrowsing()
       },
       setViewport(viewport) {
         set($perAdminApp.getView(), '/state/tools/workspace/view', viewport)
@@ -596,13 +591,17 @@
       },
       onImageSelect() {
         if (this.param.cmd === 'editImage') {
-          const imgEl = get($perAdminApp.getView(), '/state/inline/param/val')
+          const imgEl = this.browser.element
           const linkTitle = this.browser.linkTitle
           imgEl.setAttribute('src', this.browser.path.selected)
-          imgEl.setAttribute('alt', linkTitle? linkTitle : '')
-          imgEl.setAttribute('title', linkTitle? linkTitle : '')
+          imgEl.setAttribute('alt', linkTitle ? linkTitle : '')
+          imgEl.setAttribute('title', linkTitle ? linkTitle : '')
           $perAdminApp.action(this, 'reWrapEditable')
           $perAdminApp.action(this, 'writeInlineToModel')
+          this.$nextTick(() => {
+            $perAdminApp.action(this, 'textEditorWriteToModel')
+          })
+          this.browser.element = null
         } else {
           this.param.cmd = 'insertHTML'
           this.param.value =

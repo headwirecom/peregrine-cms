@@ -36,6 +36,7 @@
        @focusout="onFocusOut"
        @input="onInput"
        @click="pingToolbar"
+       @dblclick="onDblClick"
        @keydown="pingToolbar"
        @keyup="pingToolbar">
     </p>
@@ -72,7 +73,15 @@
         const content = event.target.innerHTML
         if (domProps) domProps.innerHTML = content
         this.value = content
-        this.model.text = content
+        this.textEditorWriteToModel()
+      },
+      onDblClick(event) {
+        if (event.target.tagName === 'IMG') {
+          $perAdminApp.action(this, 'editImage', event.target)
+        }
+      },
+      textEditorWriteToModel(vm=this) {
+        vm.model.text = vm.$refs.textEditor.innerHTML
       },
       pingToolbar() {
         set(this.view, '/state/inline/ping', [])
