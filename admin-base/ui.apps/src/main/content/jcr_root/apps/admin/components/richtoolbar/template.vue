@@ -543,7 +543,10 @@
       },
       onBrowserCancel() {
         this.browser.open = false
-        this.restoreSelection()
+        if (this.selection.restore) {
+          this.restoreSelection()
+          this.selection.restore = false
+        }
       },
       onBrowserSelect() {
         this.browser.open = false
