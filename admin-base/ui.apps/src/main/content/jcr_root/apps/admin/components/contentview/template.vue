@@ -415,7 +415,7 @@
         return vnode
       },
 
-      writeInlineToModel(vm=this) {
+      writeInlineToModel(vm = this) {
         let content = ''
         if (vm.isRich) {
           content = vm.target.innerHTML.replace(/(?:\r\n|\r|\n)/g, '<br>')
@@ -792,7 +792,7 @@
         })
       },
 
-      reWrapEditable(vm=this) {
+      reWrapEditable(vm = this) {
         vm.editable.timer = setTimeout(() => {
           vm.editable.class = 'selected'
           vm.wrapEditableAroundSelected()
