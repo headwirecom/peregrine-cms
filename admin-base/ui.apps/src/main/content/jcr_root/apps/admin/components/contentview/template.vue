@@ -341,7 +341,7 @@
             if (vm.component !== vm.previousComponent) {
               set(this.view, '/state/inline/rich', null)
               set(this.view, '/state/inline/model', null)
-              if (vm.autoSave) {
+              if (vm.autoSave && vm.node && vm.view.state.editor.path) {
                 vm.autoSave = false
                 $perAdminApp.stateAction('savePageEdit', {
                   data: vm.node,
@@ -990,8 +990,10 @@
         if (firstInlineEditEl) {
           firstInlineEditEl.focus()
         } else {
-          newNodeEl.click()
-          this.scrollIntoViewCenter(newNodeEl, this.iframe.doc, this.iframe.win)
+          this.$nextTick(() => {
+            newNodeEl.click()
+            this.scrollIntoViewCenter(newNodeEl, this.iframe.doc, this.iframe.win)
+          })
         }
       },
 
