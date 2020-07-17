@@ -58,6 +58,14 @@ window.onclick = function(ev) {
         log.fine("onClick() - "+ toUrl);
         log.fine(toUrl, currentServer)
 
+        if(!(
+            toUrl.startsWith('http') ||
+            toUrl.startsWith('/') ||
+            toUrl.startsWith('#')
+        )) {
+            return true
+        }
+
         if(toUrl.startsWith("#")) {
             // do nothing, it's an internal page reference
         } else if (getContentviewEditorActive()) {
