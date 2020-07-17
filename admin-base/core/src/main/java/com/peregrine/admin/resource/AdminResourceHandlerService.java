@@ -28,6 +28,8 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -162,6 +164,7 @@ public class AdminResourceHandlerService
 
     private static final String NAME_CONSTRAINT_VIOLATION = "The provided name '%s' is not valid.";
 
+    private static final Pattern ANCHOR_SITE_REF_PATTERN = Pattern.compile("(<a .*?href=\"/content/)([a-z]+)/");
 
     static {
         IGNORED_PROPERTIES_FOR_COPY.add(JCR_PRIMARY_TYPE);
@@ -1579,6 +1582,23 @@ public class AdminResourceHandlerService
         return doNotCopy;
     }
 
+    private boolean hasDoNotCopyInPath(final Resource resource) {
+        Resource parentResource = resource;
+        while (parentResource != null) {
+            ValueMap props = ResourceUtil.getValueMap(parentResource);
+            Object value = props.get("doNotCopy");
+            if (value != null)  {
+                Boolean hasDoNotCopy = parentResource.getValueMap().get("doNotCopy", Boolean.class);
+                if (hasDoNotCopy) {
+                    logger.trace("Found doNotCopy='{}' on ancestor: '{}'", hasDoNotCopy, parentResource.getPath());
+                    return true;
+                }
+            }
+            parentResource = parentResource.getParent();
+        }
+        return false;
+    }
+
     private Resource copyResources(Resource source, Resource targetParent, String toName, String title) {
         Resource target = getResource(targetParent, toName);
         if (target != null) {
@@ -1727,7 +1747,7 @@ public class AdminResourceHandlerService
         private void copyChild(Resource sourceChild, Resource targetParent, int depth) throws PersistenceException {
             Map<String, Object> newProperties = copyProperties(sourceChild.getValueMap());
             if (patternLength > 0) {
-                updatePaths(newProperties);
+                updatePaths(sourceChild, newProperties);
             }
 
             Resource childTarget = resourceResolver.create(targetParent, sourceChild.getName(), newProperties);
@@ -1738,17 +1758,42 @@ public class AdminResourceHandlerService
             copyChildren(sourceChild, childTarget, depth + 1);
         }
 
-        private void updatePaths(Map<String, Object> properties) {
+        private void updatePaths(final Resource resource, Map<String, Object> properties) {
             for (Entry<String, Object> entry : properties.entrySet()) {
                 final Object temp = entry.getValue();
                 if (temp instanceof String) {
-                    String newValue = updatePath((String) temp);
-                    if (newValue != null) {
-                        entry.setValue(newValue);
-                        logger.trace("Updated Properties: '{}'", properties);
+                    final String curVal = (String) temp;
+                    if (StringUtils.isNotBlank(curVal) && curVal.startsWith("/")) {
+                        // handle replacements at start of line
+                        final Resource referencedResource = resource.getResourceResolver().getResource(curVal);
+                        if (!hasDoNotCopyInPath(referencedResource)) {
+                            String newValue = updatePath((String) temp);
+                            if (newValue != null) {
+                                entry.setValue(newValue);
+                                logger.trace("Updated Properties: '{}'", properties);
+                            }
+                        }
+                    } else if (StringUtils.isNotBlank(curVal)) {
+                        properties.put(entry.getKey(),updatePathsInAnchorTags(curVal));
                     }
+
                 }
             }
+        }
+
+        /**
+         * Updates tenant path in anchor tags to reflect target tenant.
+         * @param htmlIn html to update
+         * @return Rewritten HTML if there are matches, otherwise original html
+         */
+        private String updatePathsInAnchorTags(final String htmlIn) {
+            Matcher matcher = ANCHOR_SITE_REF_PATTERN.matcher(htmlIn);
+            StringBuffer htmlOut = new StringBuffer();
+
+            while (matcher.find()) {
+                matcher.appendReplacement(htmlOut, "$1" + toName + "/");
+            }
+            return matcher.appendTail(htmlOut).toString();
         }
 
         private String updatePath(String value) {
