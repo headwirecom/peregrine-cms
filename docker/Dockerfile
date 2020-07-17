@@ -59,9 +59,22 @@ RUN npx percli server start author \
     && npx percli server stop author \
     && rm -rf binaries
 
-ENTRYPOINT npx percli server start && tail -qF sling/logs/*
+
+# Add Apache HTTP server
+RUN apt update -q  && apt-get install -q -y apache2
+COPY apache2/ /etc/apache2/
+RUN curl -L -O https://dl-ssl.google.com/dl/linux/direct/mod-pagespeed-beta_current_amd64.deb \
+    && echo "N" | dpkg -i mod-pagespeed-*.deb \
+    && a2enmod expires \
+    && a2enmod pagespeed \
+    && a2enmod proxy_http \
+    && a2enmod rewrite \
+    && a2dissite 000-default \
+    && a2ensite peregrine
+
+ENTRYPOINT npx percli server start && apachectl -D FOREGROUND
 
 HEALTHCHECK --interval=15s --retries=20 \
   CMD /app/healthcheck.sh
 
-EXPOSE 8080
+EXPOSE 8080 80
