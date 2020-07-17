@@ -5,5 +5,6 @@ if [ -z ${DOCKER_IMAGE+x} ]; then
 fi
 
 export PEREGRINE_SITE=themecleanflex
+export PEREGRINE_HOSTNAME=localhost
 export APACHE_DOMAIN=localhost
 export APACHE_PROXY_URL=http://localhost:8080/

@@ -24,6 +24,7 @@ COPY files/* /app/binaries/
 COPY healthcheck.sh .
 COPY installpackages.sh .
 COPY patchfiles/tasks.js .
+COPY apache.sh .
 
 # Start - Use repository/package pinning to upgrade libvips from version 8.4 to 8.6
 COPY peregrine.pref /etc/apt/preferences.d/
@@ -72,7 +73,7 @@ RUN curl -L -O https://dl-ssl.google.com/dl/linux/direct/mod-pagespeed-beta_curr
     && a2dissite 000-default \
     && a2ensite peregrine
 
-ENTRYPOINT npx percli server start && apachectl -D FOREGROUND
+ENTRYPOINT npx percli server start && /app/apache.sh
 
 HEALTHCHECK --interval=15s --retries=20 \
   CMD /app/healthcheck.sh
