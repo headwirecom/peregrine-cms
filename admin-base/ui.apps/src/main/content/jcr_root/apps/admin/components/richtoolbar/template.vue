@@ -334,8 +334,8 @@
       }
     },
     methods: {
-      pingRichToolbar(vm=this) {
-        vm.key = vm.key === 1? 0 : 1
+      pingRichToolbar(vm = this) {
+        vm.key = vm.key === 1 ? 0 : 1
         $perAdminApp.action(vm, 'reWrapEditable')
       },
       getInlineDoc() {
@@ -378,11 +378,7 @@
         const start = range.startOffset
         const text = range.startContainer.textContent.substr(start, len)
 
-        if (selection.anchorNode.parentNode.innerText === text) {
-          this.selection.content = selection.anchorNode.parentNode.outerHTML
-        } else {
-          this.selection.content = text
-        }
+        this.selection.content = range.startContainer.textContent.substr(start, len)
 
         this.param.cmd = 'createLink'
         this.browser.header = this.$i18n('Create Link')
@@ -553,6 +549,7 @@
         this.$nextTick(() => {
           if (['editLink', 'createLink'].includes(this.param.cmd)) {
             this.onLinkSelect()
+            return;
           } else if (['insertImage', 'editImage'].includes(this.param.cmd)) {
             this.onImageSelect()
           }
@@ -573,15 +570,43 @@
         })
       },
       onLinkSelect() {
-        if (this.browser.path.selected.startsWith('/')) {
-          this.browser.path.selected += '.html'
+        if (this.param.cmd === 'createLink') {
+          if (this.browser.path.selected.startsWith('/')) {
+            this.browser.path.selected += '.html'
+          }
+
+          const link = this.selection.doc.createElement('a')
+          link.setAttribute('href', this.browser.path.selected)
+          link.setAttribute('title', this.browser.linkTitle)
+          link.setAttribute('target', this.browser.newWindow ? '_blank' : '_self')
+          link.textContent = this.selection.content
+          this.restoreSelection()
+          this.$nextTick(() => {
+            const range = this.getSelection(0)
+            range.deleteContents()
+            range.insertNode(link)
+            $perAdminApp.action(this, 'reWrapEditable')
+            $perAdminApp.action(this, 'writeInlineToModel')
+            this.$nextTick(() => {
+              $perAdminApp.action(this, 'textEditorWriteToModel')
+            })
+          })
+        } else {
+          this.restoreSelection()
+          this.$nextTick(() => {
+            const selection = this.getSelection()
+            const link = selection.focusNode.parentNode
+            link.setAttribute('href', this.browser.path.selected)
+            link.setAttribute('title', this.browser.linkTitle)
+            link.setAttribute('target', this.browser.newWindow ? '_blank' : '_self')
+            link.textContent = this.selection.content
+            $perAdminApp.action(this, 'reWrapEditable')
+            $perAdminApp.action(this, 'writeInlineToModel')
+            this.$nextTick(() => {
+              $perAdminApp.action(this, 'textEditorWriteToModel')
+            })
+          })
         }
-        this.param.cmd = 'insertHTML'
-        this.param.value =
-            `<a href="${this.browser.path.selected}"
-                title="${this.browser.linkTitle}"
-                target="${this.browser.newWindow ? '_blank' : '_self'}"
-                >${this.selection.content}</a>`
       },
       onImageSelect() {
         if (this.param.cmd === 'editImage') {
