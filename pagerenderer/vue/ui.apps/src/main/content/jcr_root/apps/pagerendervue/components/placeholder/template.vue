@@ -106,9 +106,10 @@ export default {
         width: calc(100% - 8px);
         white-space: nowrap;
         text-overflow: ellipsis;
+        color: black !important; 
         overflow: hidden;
         font-size: 0.75em;
-        background: #f8f8f8;
+        background: #f8f8f8e0;
     }
 
     .per-drop-target-empty {
