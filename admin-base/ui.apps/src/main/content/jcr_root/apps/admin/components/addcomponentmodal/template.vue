@@ -160,8 +160,8 @@
         }).then(() => {
           return $perAdminApp.stateAction('addComponentToPath', payload)
         }).then((data) => {
-          this.$emit('component-added', this.findNewNode(payload))
           this.close()
+          this.$emit('component-added', this.findNewNode(payload))
         })
       },
       findNewNode(payload) {

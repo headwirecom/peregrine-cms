@@ -37,7 +37,8 @@
 </template>
 
 <script>
-  import {deepClone, get, restoreSelection, saveSelection, set} from '../../../../../../js/utils'
+  import {get, restoreSelection, saveSelection, set} from '../../../../../../js/utils'
+  import {PathBrowser} from '../../../../../../js/constants'
 
   export default {
     name: 'RichToolbar',
@@ -55,16 +56,18 @@
       return {
         key: 0,
         selection: {
+          restore: false,
           buffer: null,
           doc: null,
           container: null,
-          innerHTML: null
+          content: null
         },
         param: {
           cmd: null,
           value: null
         },
         browser: {
+          element: null,
           open: false,
           header: '',
           root: '',
@@ -234,6 +237,7 @@
         return {
           link: this.link,
           insertImage: this.insertImage,
+          editImage: this.editImage,
           preview: this.togglePreview
         }
       },
@@ -329,17 +333,11 @@
         ]
       }
     },
-    watch: {
-      'inline.ping'(val) {
-        if (!val || !val.includes(this._uid)) {
-          this.key++
-          const newVal = val ? deepClone(val) : []
-          newVal.push(this._uid)
-          set($perAdminApp.getView(), '/state/inline/ping', newVal)
-        }
-      }
-    },
     methods: {
+      pingRichToolbar(vm = this) {
+        vm.key = vm.key === 1 ? 0 : 1
+        $perAdminApp.action(vm, 'reWrapEditable')
+      },
       getInlineDoc() {
         if (!this.inline) return null
         return this.inline.doc
@@ -358,11 +356,11 @@
       },
       exec(cmd, value = null) {
         if (Object.keys(this.specialCases).indexOf(cmd) >= 0) {
-          this.specialCases[cmd]()
+          this.specialCases[cmd](value)
         } else {
           this.execCmd(cmd, value)
         }
-        this.key++
+        this.pingRichToolbar()
       },
       link() {
         if (!this.itemIsTag('A')) {
@@ -372,17 +370,24 @@
         }
       },
       insertLink() {
-        const selection = this.getSelection(0)
+        const selection = this.getSelection()
         if (!selection) throw 'no selection found'
-        const len = selection.endOffset - selection.startOffset
-        const start = selection.startOffset
-        this.selection.innerHTML = selection.startContainer.textContent.substr(start, len)
+        const range = selection.getRangeAt(0)
+        if (!selection) throw 'no selection-range found'
+        const len = range.endOffset - range.startOffset
+        const start = range.startOffset
+        const text = range.startContainer.textContent.substr(start, len)
+
+        this.selection.content = range.startContainer.textContent.substr(start, len)
+
         this.param.cmd = 'createLink'
         this.browser.header = this.$i18n('Create Link')
         this.browser.path.current = this.roots.pages
         this.browser.withLinkTab = true
         this.browser.newWindow = false
-        this.browser.type = 'page'
+        this.browser.type = PathBrowser.Type.PAGE
+        this.saveSelection()
+        this.selection.restore = true
         this.startBrowsing()
       },
       editLink() {
@@ -406,8 +411,10 @@
           anchor = selection.endContainer.parentNode
         }
 
-        this.selection.innerHTML = anchor.innerHTML
-        let href = anchor.getAttribute('href')
+        this.selection.content = anchor.innerHTML
+        const title = anchor.getAttribute('title')
+        const target = anchor.getAttribute('target')
+        const href = anchor.getAttribute('href')
         const hrefArr = href.substr(0, href.length - 5).split('/')
         this.param.cmd = 'editLink'
         this.browser.header = this.$i18n('Edit Link')
@@ -415,8 +422,12 @@
         hrefArr.pop()
         this.browser.path.current = hrefArr.join('/')
         this.browser.withLinkTab = true
-        this.browser.type = 'page'
+        this.browser.type = PathBrowser.Type.PAGE
+        this.browser.newWindow = target === '_blank'
+        this.browser.linkTitle = title
         this.browser.path.suffix = '.html'
+        this.saveSelection()
+        this.selection.restore = true
         this.startBrowsing()
       },
       removeLink() {
@@ -445,9 +456,27 @@
         this.browser.path.current = this.roots.assets
         this.browser.withLinkTab = true
         this.browser.newWindow = undefined
-        this.browser.type = 'image'
+        this.browser.type = PathBrowser.Type.ASSET
         this.browser.path.suffix = ''
+        this.saveSelection()
+        this.selection.restore = true
         this.startBrowsing()
+      },
+      editImage(vm = this, target) {
+        const title = target.getAttribute('title')
+        const src = target.getAttribute('src')
+        const srcArr = src.split('/')
+        vm.param.cmd = 'editImage'
+        vm.browser.header = vm.$i18n('Edit Image')
+        vm.browser.path.selected = srcArr.join('/')
+        srcArr.pop()
+        vm.browser.path.current = srcArr.join('/')
+        vm.browser.withLinkTab = true
+        vm.browser.newWindow = undefined
+        vm.browser.type = PathBrowser.Type.ASSET
+        vm.browser.linkTitle = title
+        vm.browser.element = target
+        vm.startBrowsing()
       },
       setViewport(viewport) {
         set($perAdminApp.getView(), '/state/tools/workspace/view', viewport)
@@ -484,7 +513,6 @@
         return tags.some((tag) => this.itemIsTag(tag))
       },
       startBrowsing() {
-        this.saveSelection()
         $perAdminApp.getApi()
             .populateNodesForBrowser(this.browser.path.current, 'pathBrowser')
             .then(() => this.browser.open = true)
@@ -506,16 +534,23 @@
       },
       onBrowserCancel() {
         this.browser.open = false
-        this.restoreSelection()
+        if (this.selection.restore) {
+          this.restoreSelection()
+          this.selection.restore = false
+        }
       },
       onBrowserSelect() {
         this.browser.open = false
-        this.restoreSelection()
+
+        if (this.selection.restore) {
+          this.restoreSelection()
+        }
 
         this.$nextTick(() => {
           if (['editLink', 'createLink'].includes(this.param.cmd)) {
             this.onLinkSelect()
-          } else if (this.param.cmd === 'insertImage') {
+            return;
+          } else if (['insertImage', 'editImage'].includes(this.param.cmd)) {
             this.onImageSelect()
           }
 
@@ -523,24 +558,76 @@
           this.param.cmd = null
           this.param.value = null
           this.browser.path.selected = null
-          this.key++
+          this.browser.linkTitle = null
+          this.pingRichToolbar()
 
-          this.$nextTick(() => {
-            this.restoreSelection()
-          })
+          if (this.selection.restore) {
+            this.$nextTick(() => {
+              this.restoreSelection()
+              this.selection.restore = false
+            })
+          }
         })
       },
       onLinkSelect() {
-        if (this.browser.path.selected.startsWith('/')) {
-          this.browser.path.selected += '.html'
+        if (this.param.cmd === 'createLink') {
+          if (this.browser.path.selected.startsWith('/')) {
+            this.browser.path.selected += '.html'
+          }
+
+          const link = this.selection.doc.createElement('a')
+          link.setAttribute('href', this.browser.path.selected)
+          link.setAttribute('title', this.browser.linkTitle)
+          link.setAttribute('target', this.browser.newWindow ? '_blank' : '_self')
+          link.textContent = this.selection.content
+          this.restoreSelection()
+          this.$nextTick(() => {
+            const range = this.getSelection(0)
+            range.deleteContents()
+            range.insertNode(link)
+            $perAdminApp.action(this, 'reWrapEditable')
+            $perAdminApp.action(this, 'writeInlineToModel')
+            this.$nextTick(() => {
+              $perAdminApp.action(this, 'textEditorWriteToModel')
+            })
+          })
+        } else {
+          this.restoreSelection()
+          this.$nextTick(() => {
+            const selection = this.getSelection()
+            const link = selection.focusNode.parentNode
+            link.setAttribute('href', this.browser.path.selected)
+            link.setAttribute('title', this.browser.linkTitle)
+            link.setAttribute('target', this.browser.newWindow ? '_blank' : '_self')
+            link.textContent = this.selection.content
+            $perAdminApp.action(this, 'reWrapEditable')
+            $perAdminApp.action(this, 'writeInlineToModel')
+            this.$nextTick(() => {
+              $perAdminApp.action(this, 'textEditorWriteToModel')
+            })
+          })
         }
-        this.param.cmd = 'insertHTML'
-        this.param.value = `<a href="${this.browser.path.selected}" title="${this.browser.linkTitle}" target="${this.browser.newWindow
-            ? '_blank' : '_self'}">${this.selection.innerHTML}</a>`
       },
       onImageSelect() {
-        this.param.cmd = 'insertHTML'
-        this.param.value = `<img src="${this.browser.path.selected}" alt="${this.browser.linkTitle}" title="${this.browser.linkTitle}"/>`
+        if (this.param.cmd === 'editImage') {
+          const imgEl = this.browser.element
+          const linkTitle = this.browser.linkTitle
+          imgEl.setAttribute('src', this.browser.path.selected)
+          imgEl.setAttribute('alt', linkTitle ? linkTitle : '')
+          imgEl.setAttribute('title', linkTitle ? linkTitle : '')
+          $perAdminApp.action(this, 'reWrapEditable')
+          $perAdminApp.action(this, 'writeInlineToModel')
+          this.$nextTick(() => {
+            $perAdminApp.action(this, 'textEditorWriteToModel')
+          })
+          this.browser.element = null
+        } else {
+          this.param.cmd = 'insertHTML'
+          this.param.value =
+              `<img src="${this.browser.path.selected}"
+                  alt="${this.browser.linkTitle}"
+                  title="${this.browser.linkTitle}"/>`
+        }
       },
       setBrowserPathCurrent(path) {
         this.browser.path.current = path
@@ -560,7 +647,7 @@
         const window = document.defaultView
         let selection = window.getSelection()
         if (!selection || selection.rangeCount <= 0) return false
-        if (index >= 0) {
+        if (index !== null && index >= 0) {
           selection = selection.getRangeAt(index)
         }
 

@@ -265,7 +265,7 @@
           if (!this.component) return
           this.wrapEditableAroundSelected()
           this.$nextTick(() => {
-            this.refreshInlineEditElems()
+            this.refreshIframeElements()
           })
         }
       },
@@ -341,7 +341,7 @@
             if (vm.component !== vm.previousComponent) {
               set(this.view, '/state/inline/rich', null)
               set(this.view, '/state/inline/model', null)
-              if (vm.autoSave) {
+              if (vm.autoSave && vm.node && vm.view.state.editor.path) {
                 vm.autoSave = false
                 $perAdminApp.stateAction('savePageEdit', {
                   data: vm.node,
@@ -415,16 +415,16 @@
         return vnode
       },
 
-      writeInlineToModel() {
+      writeInlineToModel(vm = this) {
         let content = ''
-        if (this.isRich) {
-          content = this.target.innerHTML.replace(/(?:\r\n|\r|\n)/g, '<br>')
+        if (vm.isRich) {
+          content = vm.target.innerHTML.replace(/(?:\r\n|\r|\n)/g, '<br>')
         } else {
-          content = this.target.innerText
+          content = vm.target.innerText
         }
-        const dataInline = this.targetInline.split('.').slice(1)
+        const dataInline = vm.targetInline.split('.').slice(1)
         dataInline.reverse()
-        let parentProp = this.node
+        let parentProp = vm.node
         while (dataInline.length > 1) {
           parentProp = parentProp[dataInline.pop()]
         }
@@ -503,6 +503,12 @@
         this.holdingDown = false
       },
 
+      onInlineDblClick(event) {
+        if (event.target.tagName === 'IMG') {
+          $perAdminApp.action(this, 'editImage', event.target)
+        }
+      },
+
       onInlineSelectAll(event) {
         event.preventDefault()
         let range, selection
@@ -559,7 +565,7 @@
         this.iframe.head = this.iframe.doc.querySelector('head')
         this.iframe.app = this.iframe.doc.querySelector('#peregrine-app')
         this.addIframeExtraStyles()
-        this.refreshInlineEditElems()
+        this.refreshIframeElements()
         if (this.previewMode !== 'preview') {
           this.iframeEditMode()
         } else {
@@ -657,13 +663,38 @@
           this.cleanUpAfterDelete(componentPath)
         }
         $perAdminApp.stateAction(addOrMove, payload).then((data) => {
-          this.refreshInlineEditElems()
+          this.refreshIframeElements()
         })
         this.unselect(this)
         event.dataTransfer.clearData('text')
       },
 
-      refreshInlineEditElems() {
+      onIframeMouseOver(event) {
+        if (this.editable.class === 'selected') return
+
+        const cmpEl = this.findComponentEl(event.target)
+
+        if (!cmpEl) {
+          this.editable.visible = false
+          return
+        }
+
+        this.wrapEditableAroundElement(cmpEl)
+
+        if (this.isFromTemplate(cmpEl)) {
+          this.editable.class = 'mouseover-orange'
+        } else {
+          this.editable.class = 'mouseover-green'
+        }
+
+        this.editable.visible = true
+      },
+
+      refreshIframeElements() {
+        this.refreshInlineEditElements()
+      },
+
+      refreshInlineEditElements() {
         const selector = `[${Attribute.INLINE}]:not(.inline-edit)`
         const elements = this.iframe.app.querySelectorAll(selector)
         if (!elements || elements.length <= 0) return
@@ -681,6 +712,7 @@
           el.addEventListener('focusout', this.onInlineFocusOut)
           el.addEventListener('keydown', this.onInlineKeyDown)
           el.addEventListener('keyup', this.onInlineKeyUp)
+          el.addEventListener('dblclick', this.onInlineDblClick)
           el.setAttribute('contenteditable', this.previewMode !== 'preview' + '')
         })
       },
@@ -691,6 +723,7 @@
         this.iframe.doc.addEventListener('scroll', this.onIframeScroll)
         this.iframe.doc.addEventListener('dragover', this.onIframeDragOver)
         this.iframe.doc.addEventListener('drop', this.onIframeDrop)
+        this.iframe.doc.addEventListener('mouseover', this.onIframeMouseOver)
         this.iframe.html.classList.add('edit-mode')
         const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
         elements.forEach((el, index) => {
@@ -706,6 +739,7 @@
         try {
           this.iframe.doc.removeEventListener('click', this.onIframeClick)
           this.iframe.doc.removeEventListener('scroll', this.onIframeScroll)
+          this.iframe.doc.removeEventListener('mouseover', this.onIframeScroll)
         } catch (err) {
           console.debug('no event listener to be removed from iframe', err)
         }
@@ -771,11 +805,11 @@
         return el.getAttribute('contenteditable') === 'true'
       },
 
-      wrapEditableAroundSelected() {
-        if (!this.component) return
+      wrapEditableAroundElement(el) {
+        if (!el) return
 
         this.$nextTick(() => {
-          const {top, left, width, height} = this.getBoundingClientRect(this.component)
+          const {top, left, width, height} = this.getBoundingClientRect(el)
           const offset = this.getBoundingClientRect(this.$refs.editview)
 
           this.editable.styles.top = `${top}px`
@@ -785,11 +819,15 @@
         })
       },
 
-      reWrapEditable() {
-        this.editable.timer = setTimeout(() => {
-          this.editable.class = 'selected'
-          this.wrapEditableAroundSelected()
-        }, this.editable.delay)
+      wrapEditableAroundSelected() {
+        this.wrapEditableAroundElement(this.component)
+      },
+
+      reWrapEditable(vm = this) {
+        vm.editable.timer = setTimeout(() => {
+          vm.editable.class = 'selected'
+          vm.wrapEditableAroundSelected()
+        }, vm.editable.delay)
       },
 
       getElementStyle(e, styleName) {
@@ -888,7 +926,7 @@
         if (payload.path !== '/jcr:content') {
           $perAdminApp.stateAction('deletePageNode', payload).then((data) => {
             this.cleanUpAfterDelete(payload.path)
-            this.refreshInlineEditElems()
+            this.refreshIframeElements()
           })
         }
         this.unselect(this)
@@ -923,7 +961,7 @@
           drop: dropPosition
         }
         $perAdminApp.stateAction('addComponentToPath', payload).then((data) => {
-          this.refreshInlineEditElems()
+          this.refreshIframeElements()
         })
       },
 
@@ -947,11 +985,11 @@
       },
 
       pingToolbar() {
-        set(this.view, '/state/inline/ping', [])
+        $perAdminApp.action(this, 'pingRichToolbar')
       },
 
       onAddComponentModalComponentAdded(newNode) {
-        this.refreshInlineEditElems()
+        this.refreshIframeElements()
         const selector = `[${Attribute.PATH}="${newNode.path}"]`
         const newNodeEl = this.iframe.app.querySelector(selector)
         const firstInlineEditEl = newNodeEl.querySelector(`[${Attribute.INLINE}]`)
@@ -959,8 +997,10 @@
         if (firstInlineEditEl) {
           firstInlineEditEl.focus()
         } else {
-          newNodeEl.click()
-          this.scrollIntoViewCenter(newNodeEl, this.iframe.doc, this.iframe.win)
+          this.$nextTick(() => {
+            newNodeEl.click()
+            this.scrollIntoViewCenter(newNodeEl, this.iframe.doc, this.iframe.win)
+          })
         }
       },
 
@@ -968,7 +1008,24 @@
         el.scrollIntoView(true)
         const viewportH = Math.max(doc.documentElement.clientHeight, win.innerHeight || 0)
         win.scrollBy(0, (el.getBoundingClientRect().height - viewportH) / 2)
-      }
+      },
+
+      onComponentMouseEnter(event) {
+        event.stopPropagation()
+        const cls = event.target.getAttribute('class')
+
+        if (this.isFromTemplate(event.target)) {
+          event.target.setAttribute('class', 'outline-orange ' + cls)
+        } else {
+          event.target.setAttribute('class', 'outline-green ' + cls)
+        }
+      },
+
+      onComponentMouseLeave(event) {
+        event.stopPropagation()
+        event.target.classList.remove('outline-orange', 'outline-green')
+      },
+
     }
   }
 </script>
