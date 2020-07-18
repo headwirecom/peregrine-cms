@@ -54,6 +54,14 @@
             text="Looks like this is the first time you log in with this user to peregrine - sweet - there are a couple of actions you can take from here. But first you need to accept the terms and conditions:">
           </text2>
 
+          <text3 jcr:primaryType="nt:unstructured"
+            sling:resourceType="pagerendervue/components/base"
+            extraclasses="termsAndConditions"
+            text="&lt;iframe data-per-mode=&quot;tutorial&quot; style=&quot;width: 100%; height: 40vh;&quot; src=&quot;/content/admin/pages/onboard/terms.html&quot;/&gt;">
+          </text3>
+
+
+
           <decline jcr:primaryType="nt:unstructured"
             sling:resourceType="admin/components/action" target="" title="decline"
             command="onDecline" icon="folder" classes="btn">
