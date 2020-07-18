@@ -314,9 +314,13 @@ nav {
         }
       }
 
-      .btn-group:not(:first-child) {
-        /*border-left: 2px solid var(--pcms-gray);*/
-        padding: 0 2px;
+      .btn-group {
+        display: flex;
+
+        &:not(:first-child) {
+          /*border-left: 2px solid var(--pcms-gray);*/
+          padding: 0 2px;
+        }
       }
 
       .btn {
