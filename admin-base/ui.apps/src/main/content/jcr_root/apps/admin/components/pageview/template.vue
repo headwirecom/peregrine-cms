@@ -15,6 +15,7 @@
 
 <script>
   import {NodeType} from '../../../../../../js/constants'
+  import {set} from '../../../../../../js/utils';
 
   export default {
     props: ['model'],
@@ -30,6 +31,10 @@
       tab() {
         return this.isEditPage? 'components' : 'info'
       }
+    },
+    beforeMount(){
+      set($perAdminApp.getView(), '/state/rightPanelFullscreen', false)
+      set($perAdminApp.getView(), '/state/rightPanelVisible', true)
     },
     methods: {
       getBasePath() {

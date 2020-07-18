@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
-  example site - UI Apps
+  admin base - UI Apps
   %%
   Copyright (C) 2017 headwire inc.
   %%
@@ -22,15 +23,9 @@
   under the License.
   #L%
   -->
-<template>
-    <div class="jumbotron" v-bind:data-per-path="model.path">
-        <h1 class="display-3" data-per-inline="model.title">{{model.title}}</h1>
-        <p class="lead" data-per-inline="model.text">{{model.text}}</p>
-    </div>
-</template>
 
-<script>
-    export default {
-        props: ['model']
-    }
-</script>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          jcr:primaryType="per:Component"
+          jcr:title="rich text editing toolbar"
+          jcr:description=""
+/>

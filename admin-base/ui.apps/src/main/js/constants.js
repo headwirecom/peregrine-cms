@@ -98,3 +98,23 @@ export const NodeTree ={
       'per:Page'
   ]
 }
+
+export const Attribute = {
+  INLINE: 'data-per-inline',
+  PATH: 'data-per-path',
+  DROPTARGET: 'data-per-droptarget',
+  LOCATION: 'data-per-location'
+}
+
+export const Key = {
+  A: 65,
+  BACKSPACE: 8,
+  DELETE: 46,
+  DOT: 190,
+  COMMA: 188,
+  ARROW_LEFT: 37,
+  ARROW_UP: 38,
+  ARROW_RIGHT: 39,
+  ARROW_DOWN: 40,
+  ESC: 27
+}

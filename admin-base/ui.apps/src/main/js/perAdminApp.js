@@ -401,14 +401,14 @@ function findActionInTree(component, command, target) {
  */
 function actionImpl(component, command, target) {
     if(component.$options.methods && component.$options.methods[command]) {
-        component.$options.methods[command](component, target)
+        return component.$options.methods[command](component, target)
     } else {
         if(component.$parent === component.$root) {
             if(!findActionInTree(component.$root, command, target)) {
                 logger.error('action', command, 'not found, ignored, traget was', target)
             }
         } else {
-            actionImpl(component.$parent, command, target)
+            return actionImpl(component.$parent, command, target)
         }
     }
 }
@@ -581,6 +581,20 @@ function notifyUserImpl(title, message, options) {
     set(view, '/state/notification/title', title)
     set(view, '/state/notification/message', message)
     $('#notifyUserModal').modal('open', options)
+}
+
+/**
+ * implementation of $perAdminApp.toast()
+ *
+ * @private
+ * @param message
+ * @param className
+ * @param displayLength
+ * @param callback
+ */
+function toastImpl(message, className, displayLength, callback) {
+    const toast = Materialize.toast(message, displayLength, className, callback)
+    toast.el.addEventListener('click', () => toast.remove())
 }
 
 /**
@@ -855,7 +869,7 @@ var PerAdminApp = {
      * @param {Object} target - data to handle the action
      */
     action(component, command, target) {
-        actionImpl(component, command, target)
+        return actionImpl(component, command, target)
     },
 
     /**
@@ -955,6 +969,21 @@ var PerAdminApp = {
      */
     notifyUser(title, message, options) {
         notifyUserImpl(title, message, options)
+    },
+
+    /**
+     * toast with the given title and message to notify the user, calls the callback on close if provided
+     *
+     *
+     * @memberOf PerAdminApp
+     * @method
+     * @param message
+     * @param className
+     * @param displayLength
+     * @param callback
+     */
+    toast(message, className, displayLength=4000, callback=null) {
+        toastImpl(message, className, displayLength, callback)
     },
 
     /**

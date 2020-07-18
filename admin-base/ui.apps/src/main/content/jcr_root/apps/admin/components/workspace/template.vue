@@ -89,10 +89,6 @@
 <script>
     export default {
         props: ['model'],
-        beforeMount(){
-          Vue.set($perAdminApp.getView().state, 'rightPanelFullscreen', false)
-          Vue.set($perAdminApp.getView().state, 'rightPanelVisible', true)
-        },
         computed: {
             state: function() {
                 return $perAdminApp.getView().state
@@ -128,7 +124,11 @@
             showComponentEdit(me, target) {
               // only trigger state action if another component is selected
               if($perAdminApp.getNodeFromView('/state/editor/path') !== target) {
-                $perAdminApp.stateAction('editComponent', target)
+                return $perAdminApp.stateAction('editComponent', target)
+              } else {
+                  return new Promise((resolve) => {
+                      resolve()
+                  })
               }
             },
 

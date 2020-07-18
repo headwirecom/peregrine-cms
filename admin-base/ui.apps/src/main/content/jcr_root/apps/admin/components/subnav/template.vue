@@ -24,11 +24,13 @@
   -->
 <template>
     <div class="nav-content sub-nav" :class="classes">
+        <admin-components-richtoolbar v-if="renderRichToolbar"/>
         <div v-if="showNodeTree" class="page-tree">
             <admin-components-materializedropdown
                 ref="dropdown"
                 :on-focus-out="() => {}"
-                :below-origin="true">
+                :below-origin="true"
+                alignment="right">
                 <template>
                     {{ currentNodeName }}<span class="caret-down"></span>
                 </template>
@@ -43,15 +45,15 @@
                 </template>
             </admin-components-materializedropdown>
         </div>
-        <template v-for="child in model.children">
+        <template v-else v-for="child in model.children">
             <div v-bind:is="child.component" v-bind:model="child" v-bind:key="child.path"></div>
         </template>
-        <span v-if="showNodeTree" class="center-keeper"></span>
     </div>
 </template>
 
 <script>
     import {NodeTree} from '../../../../../../js/constants'
+    import {get} from '../../../../../../js/utils'
 
     export default {
     props: ['model'],
@@ -82,6 +84,9 @@
         showNodeTree() {
             return this.isEditPage && ['pages', 'templates'].indexOf(this.section) >= 0
         },
+        renderRichToolbar() {
+            return this.isEditPage && ['pages', 'templates'].indexOf(this.section) >= 0
+        },
         nodes() {
             return $perAdminApp.getView().admin.nodes
         },
@@ -107,7 +112,7 @@
         },
         currentNodeName() {
             return this.getPath().split('/').pop() || 'loading...'
-        }
+        },
     },
     methods: {
         isEditor() {
@@ -132,6 +137,9 @@
         },
         isSupportedNodeTreeResourceType(resourceType) {
             return resourceType && NodeTree.SUPPORTED_RESOURCE_TYPES.indexOf(resourceType) >= 0
+        },
+        isRich() {
+            return get($perAdminApp.getView(), '/state/inline/rich', false)
         }
     }
 }

@@ -28,6 +28,8 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -162,6 +164,7 @@ public class AdminResourceHandlerService
 
     private static final String NAME_CONSTRAINT_VIOLATION = "The provided name '%s' is not valid.";
 
+    private static final Pattern ANCHOR_SITE_REF_PATTERN = Pattern.compile("(<a .*?href=\"/content/)([a-z]+)/");
 
     static {
         IGNORED_PROPERTIES_FOR_COPY.add(JCR_PRIMARY_TYPE);
@@ -1571,12 +1574,42 @@ public class AdminResourceHandlerService
         }
     }
 
+    private boolean doNotCopy(Resource resource) {
+        boolean doNotCopy = false;
+        if(resource.getValueMap().containsKey("doNotCopy")) {
+            doNotCopy = resource.getValueMap().get("doNotCopy", Boolean.class);
+        }
+        return doNotCopy;
+    }
+
+    private boolean hasDoNotCopyInPath(final Resource resource) {
+        Resource parentResource = resource;
+        while (parentResource != null) {
+            ValueMap props = ResourceUtil.getValueMap(parentResource);
+            Object value = props.get("doNotCopy");
+            if (value != null)  {
+                Boolean hasDoNotCopy = parentResource.getValueMap().get("doNotCopy", Boolean.class);
+                if (hasDoNotCopy) {
+                    logger.trace("Found doNotCopy='{}' on ancestor: '{}'", hasDoNotCopy, parentResource.getPath());
+                    return true;
+                }
+            }
+            parentResource = parentResource.getParent();
+        }
+        return false;
+    }
+
     private Resource copyResources(Resource source, Resource targetParent, String toName, String title) {
         Resource target = getResource(targetParent, toName);
         if (target != null) {
             logger.warn("Target Resource: '{}' already exist -> copy is ignored", target.getPath());
             return null;
         }
+
+        if(doNotCopy(source)) {
+            return null;
+        }
+
         Map<String, Object> newProperties = copyProperties(source.getValueMap());
         logger.trace("Resource Properties: '{}'", newProperties);
         try {
@@ -1699,11 +1732,13 @@ public class AdminResourceHandlerService
             logger.trace("Copy Child Resource from: '{}', to: '{}'", source.getPath(), target.getPath());
             for (Resource child : source.getChildren()) {
                 logger.trace("Child handling started: '{}'", child.getPath());
+                if(!doNotCopy(child)) {
                 try {
-                    copyChild(child, target, depth);
-                } catch (PersistenceException e) {
-                    logger.warn(String.format(COPY_FAILED, source.getName(), source.getPath()), e);
-                    return;
+                        copyChild(child, target, depth);
+                    } catch (PersistenceException e) {
+                        logger.warn(String.format(COPY_FAILED, source.getName(), source.getPath()), e);
+                        return;
+                    }
                 }
                 logger.trace("Child handled: '{}'", child.getPath());
             }
@@ -1712,7 +1747,7 @@ public class AdminResourceHandlerService
         private void copyChild(Resource sourceChild, Resource targetParent, int depth) throws PersistenceException {
             Map<String, Object> newProperties = copyProperties(sourceChild.getValueMap());
             if (patternLength > 0) {
-                updatePaths(newProperties);
+                updatePaths(sourceChild, newProperties);
             }
 
             Resource childTarget = resourceResolver.create(targetParent, sourceChild.getName(), newProperties);
@@ -1723,17 +1758,42 @@ public class AdminResourceHandlerService
             copyChildren(sourceChild, childTarget, depth + 1);
         }
 
-        private void updatePaths(Map<String, Object> properties) {
+        private void updatePaths(final Resource resource, Map<String, Object> properties) {
             for (Entry<String, Object> entry : properties.entrySet()) {
                 final Object temp = entry.getValue();
                 if (temp instanceof String) {
-                    String newValue = updatePath((String) temp);
-                    if (newValue != null) {
-                        entry.setValue(newValue);
-                        logger.trace("Updated Properties: '{}'", properties);
+                    final String curVal = (String) temp;
+                    if (StringUtils.isNotBlank(curVal) && curVal.startsWith("/")) {
+                        // handle replacements at start of line
+                        final Resource referencedResource = resource.getResourceResolver().getResource(curVal);
+                        if (!hasDoNotCopyInPath(referencedResource)) {
+                            String newValue = updatePath((String) temp);
+                            if (newValue != null) {
+                                entry.setValue(newValue);
+                                logger.trace("Updated Properties: '{}'", properties);
+                            }
+                        }
+                    } else if (StringUtils.isNotBlank(curVal)) {
+                        properties.put(entry.getKey(),updatePathsInAnchorTags(curVal));
                     }
+
                 }
             }
+        }
+
+        /**
+         * Updates tenant path in anchor tags to reflect target tenant.
+         * @param htmlIn html to update
+         * @return Rewritten HTML if there are matches, otherwise original html
+         */
+        private String updatePathsInAnchorTags(final String htmlIn) {
+            Matcher matcher = ANCHOR_SITE_REF_PATTERN.matcher(htmlIn);
+            StringBuffer htmlOut = new StringBuffer();
+
+            while (matcher.find()) {
+                matcher.appendReplacement(htmlOut, "$1" + toName + "/");
+            }
+            return matcher.appendTail(htmlOut).toString();
         }
 
         private String updatePath(String value) {

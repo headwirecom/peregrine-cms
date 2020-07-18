@@ -22,7 +22,8 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from './logger.js'
+import {LoggerFactory} from './logger.js'
+
 let log = LoggerFactory.logger('state').setDebugLevel()
 
 function getClickable(node) {
@@ -31,6 +32,18 @@ function getClickable(node) {
         if(!node) return null
     }
     return node
+}
+
+function getContentviewEditorActive() {
+    if (window.parent && window.parent.$perAdminApp) {
+        const view = window.parent.$perAdminApp.getView()
+        if (view && view.state && view.state.contentview
+            && view.state.contentview.editor) {
+            return view.state.contentview.editor.active
+        } else {
+            return false
+        }
+    }
 }
 
 window.onclick = function(ev) {
@@ -45,8 +58,18 @@ window.onclick = function(ev) {
         log.fine("onClick() - "+ toUrl);
         log.fine(toUrl, currentServer)
 
+        if(!(
+            toUrl.startsWith('http') ||
+            toUrl.startsWith('/') ||
+            toUrl.startsWith('#')
+        )) {
+            return true
+        }
+
         if(toUrl.startsWith("#")) {
             // do nothing, it's an internal page reference
+        } else if (getContentviewEditorActive()) {
+            // do nothing, editor is open/active
         } else {
             //Dont' load new content for an href on the same page
             let currentUrl = window.location.href.replace(/\#\w+$/, '')

@@ -88,7 +88,6 @@ export default {
             e.preventDefault()
         },
         drop: function(e) {
-            alert('component drop')
         },
         edit: function(e) {
             alert('edit')
@@ -107,6 +106,15 @@ export default {
         width: calc(100% - 8px);
         white-space: nowrap;
         text-overflow: ellipsis;
+        color: black !important; 
         overflow: hidden;
+        font-size: 0.75em;
+        background: #f8f8f8e0;
+    }
+
+    .per-drop-target-empty {
+        font-size: 1.5em;
+        height: 3em;
+        padding-top: 0.75em;
     }
 </style>

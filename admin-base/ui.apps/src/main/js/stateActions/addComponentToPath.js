@@ -22,10 +22,10 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('addComponentToPath').setLevelFine()
+import {LoggerFactory} from '../logger'
+import {parentPath} from '../utils'
 
-import { parentPath } from '../utils'
+let log = LoggerFactory.logger('addComponentToPath').setLevelDebug()
 
 export default function(me, target) {
 
@@ -72,12 +72,11 @@ export default function(me, target) {
                                 Vue.set(targetNodeUpdate, 'children', data.children)
                             }
                             log.fine(data)
-                            return
                         }
                     })
     }
 
-    // copy/paste? 
+    // copy/paste?
     if(targetNode && target.data) {
         processed = true;
         return me.getApi().insertNodeWithDataAt(target.pagePath+targetNode.path, target.data, target.drop)
@@ -121,7 +120,7 @@ export default function(me, target) {
             })
     }
     // return new Promise( (resolve, reject) => {
-    
+
     //     if(targetNode) {
     //         if(target.component) {
     //             me.getApi().insertNodeAt(target.pagePath+targetNode.path, componentPath, target.drop, variation)
@@ -180,7 +179,7 @@ export default function(me, target) {
     //                 }
     //             })
     //     }
-    
+
     // })
 
 
