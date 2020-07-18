@@ -53,8 +53,8 @@
           <template v-for="theme in themes">
             <label class="theme-name" :key="theme">{{ theme }}</label>
             <div class="theme-preview" :key="`theme-${theme}`" :class="`theme-${theme}`">
-              <div v-for="color in colors"
-                  :key="color"
+              <div v-for="(color, idx) in colors"
+                  :key="idx"
                   :style="{background: `var(--${color.var})`, color: color.text}"
                   :title="color.label"
                   class="palette-col">
