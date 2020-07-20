@@ -17,6 +17,7 @@
     <modules>
         <module>commons</module>
         <module>commons-test</module>
+        <module>per-model</module>
         <module>base</module>
         <module>external</module>
         <module>distribution</module>
