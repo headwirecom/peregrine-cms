@@ -72,6 +72,7 @@ RUN curl -L -O https://dl-ssl.google.com/dl/linux/direct/mod-pagespeed-beta_curr
     && a2enmod proxy_http \
     && a2enmod rewrite \
     && a2dissite 000-default \
+    && a2enconf vhost-template-default \
     && a2ensite peregrine
 
 ENTRYPOINT npx percli server start && /app/apache.sh && tail -qF sling/logs/*
