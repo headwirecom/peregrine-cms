@@ -73,7 +73,7 @@ RUN curl -L -O https://dl-ssl.google.com/dl/linux/direct/mod-pagespeed-beta_curr
     && a2dissite 000-default \
     && a2ensite peregrine
 
-ENTRYPOINT npx percli server start && /app/apache.sh
+ENTRYPOINT npx percli server start && /app/apache.sh && tail -qF sling/logs/*
 
 HEALTHCHECK --interval=15s --retries=20 \
   CMD /app/healthcheck.sh
