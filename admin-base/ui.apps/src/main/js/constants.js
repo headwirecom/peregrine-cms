@@ -61,6 +61,7 @@ export const Icon = {
   INFO: 'info',
   EDIT: 'edit',
   LIST: 'list',
+  REPLICATION: 'public',
   CHECK: 'check',
   CHECKED: 'check_box',
   UNCHECKED: 'check_box_outline_blank',

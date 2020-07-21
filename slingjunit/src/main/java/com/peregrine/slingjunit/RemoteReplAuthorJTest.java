@@ -163,7 +163,7 @@ public class RemoteReplAuthorJTest {
     private void assertStatusOnPublish(String path, int status) {
         HttpUriRequest request = new HttpGet( PUBLISH_DOMAIN+path);
 
-        int retries = 20;
+        int retries = 10;
         int attemptStatus = 0;
         try {
             while (attemptStatus != status && retries-- > 0) {

@@ -23,25 +23,31 @@
               :title="'og-tags'"
               :class="{'active': isTab(Tab.OG_TAGS)}"
               @click="setActiveTab(Tab.OG_TAGS)" />
-
+          
           <admin-components-explorerpreviewnavitem
               v-if="hasReferences"
               :icon="Icon.LIST"
               :title="'references'"
               :class="{'active': isTab(Tab.REFERENCES)}"
               @click="setActiveTab(Tab.REFERENCES)" />
-
-            <admin-components-explorerpreviewnavitem
+          
+          <admin-components-explorerpreviewnavitem
                 :icon="Icon.VERSIONS"
                 :title="`${nodeType}-versions`"
                 :class="{'active': isTab(Tab.VERSIONS)}"
                 @click="setActiveTab(Tab.VERSIONS)" />
 
           <admin-components-explorerpreviewnavitem
+              :icon="Icon.REPLICATION"
+              :title="'Web Publishing'"
+              :class="{'active': isTab(Tab.PUBLISHING)}"
+              @click="setActiveTab(Tab.PUBLISHING)" />   
+
+          <admin-components-explorerpreviewnavitem
               :icon="Icon.MORE_VERT"
               :title="'actions'"
               :class="{'active': isTab(Tab.ACTIONS)}"
-              @click="setActiveTab(Tab.ACTIONS)" />
+              @click="setActiveTab(Tab.ACTIONS)" />              
         </ul>
 
         <ul class="nav-right"></ul>
@@ -149,6 +155,7 @@
               <template v-else>
                   <div v-for="version in versions"
                        class="action"
+                       v-bind:key="version.name"
                        v-on:click="checkoutVersion(version)"
                        v-bind:title="`Version ${version.name}`">
                       <i v-if="version.base" class="material-icons">{{Icon.CHECKED}}</i>
@@ -169,6 +176,29 @@
           </div>
       </template>
 
+      <template v-else-if="isTab(Tab.PUBLISHING)">
+        <admin-components-publishinginfo v-bind:node="node" />
+
+        <div v-if="allowOperations" class="action-list">
+          <div class="action" :title="`Open Web Publishing ${nodeType} Dialog`" @click="openPublishingModal()">
+            <i class="material-icons">publish</i>
+            Publish to Web ({{nodeType}})
+          </div>
+          <div class="action" :title="`Open Web Publishing ${nodeType} Dialog`" @click="unPublishResource()">
+            <i class="material-icons">remove_circle_outline</i>
+            Unpublish ({{nodeType}})
+          </div>
+        </div>
+      </template>
+
+      <admin-components-publishingmodal
+          v-if="isPublishDialogOpen"
+          v-bind:isOpen="isPublishDialogOpen"
+          v-bind:path="currentObject"
+          v-on:complete="closePublishing"
+          v-bind:modalTitle="`Web Publishing: ${nodeName}`">
+      </admin-components-publishingmodal>
+
       <template v-else-if="isTab(Tab.ACTIONS)">
         <div v-if="allowOperations" class="action-list">
           <div class="action" :title="`rename ${nodeType}`" @click="$refs.renameModal.open()">
@@ -183,6 +213,7 @@
             <i class="material-icons">{{Icon.DELETE}}</i>
             Delete {{nodeType}}
           </div>
+
         </div>
       </template>
 
@@ -213,7 +244,7 @@
     </admin-components-materializemodal>
 
     <admin-components-pathbrowser
-        v-if="isOpen"
+        v-if="isOpen"        
         :isOpen="isOpen"
         :header="`Move ${nodeName}`"
         :browserRoot="browserRoot"
@@ -226,6 +257,8 @@
         :onSelect="onMoveSelect">
     </admin-components-pathbrowser>
 
+
+    
   </div>
 </template>
 
@@ -233,6 +266,7 @@
   import {Icon, MimeType, NodeType, SUFFIX_PARAM_SEPARATOR} from '../../../../../../js/constants'
   import {deepClone} from '../../../../../../js/utils'
   import NodeNameValidation from '../../../../../../js/mixins/NodeNameValidation'
+  
 
   const Tab = {
     INFO: 'info',
@@ -240,7 +274,8 @@
     REFERENCES: 'references',
     VERSIONS: 'versions',
     COMPONENTS: 'components',
-    ACTIONS: 'actions'
+    ACTIONS: 'actions',
+    PUBLISHING: 'publishing'
   };
 
   const SchemaKey = {
@@ -288,6 +323,7 @@
           errors: null
         },
         isOpen: false,
+        isPublishDialogOpen: false,
         selectedPath: null,
         options: {
           validateAfterLoad: true,
@@ -547,6 +583,19 @@
             }
             this.setActiveTab(Tab.INFO)
           })
+      },
+      openPublishingModal(){
+        console.log("Open Publishing Modal")
+        // this.$refs.publishingModal.open()
+        this.isPublishDialogOpen = true;
+      },
+      unPublishResource(){
+        $perAdminApp.stateAction('replicate', path)
+
+      },
+      closePublishing(){
+        console.log("Close Publishing Modal")
+        this.isPublishDialogOpen = false;
       },
       moveNode() {
         $perAdminApp.getApi().populateNodesForBrowser(this.path.current, 'pathBrowser')

@@ -26,15 +26,6 @@ import { LoggerFactory } from '../logger'
 let log = LoggerFactory.logger('replicate').setLevelDebug()
 
 export default function(me, target) {
-
-    log.fine(target)
-
-    return new Promise( (resolve, reject) => {
-        me.getApi().replicate(target).then( () => {
-            resolve()
-        }).catch( error => {
-            log.debug('Failed to replicate: ' + error)
-            reject('Unable to publish content due to error. '+ error)
-        })
-    })
+    log.fine(target)    
+    return me.getApi().replicate(target)
 }

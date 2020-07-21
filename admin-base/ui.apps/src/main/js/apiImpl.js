@@ -1075,12 +1075,27 @@ class PerAdminImpl {
     return updateWithForm('/admin/moveNodeTo.json' + path, formData)
   }
 
-  replicate(path) {
-    let formData = new FormData();
-    formData.append('deep', 'false')
-    formData.append('name', 'defaultRepl')
-    return updateWithForm('/admin/repl.json' + path, formData)
+replicate(path, replicationService='defaultRepl', deep='false', deactivate='false') {
+    return new Promise((resolve, reject) => {
+      let formData = new FormData();
+      formData.append('deep', deep)
+      formData.append('name', replicationService)
+      formData.append('deactivate', deactivate)
+      updateWithForm('/admin/repl.json' + path, formData)
+      .then ((data) => {
+        console.log(data)
+        $perAdminApp.notifyUser('Success', `${data.sourcePath} was successfuly published.` )
+      })
+      .then( () => resolve())
+      .catch(error => {
+        if (error.response && error.response.data && error.response.data.message) {
+          reject(error.response.data.message)
+        }
+        reject(error)
+      })
+    })  
   }
+
 
   getPalettes(templateName) {
     return fetch(`/admin/nodes.json/content/${templateName}/pages/css/palettes`)
