@@ -51,7 +51,7 @@
 
           <text2 jcr:primaryType="nt:unstructured"
             sling:resourceType="pagerendervue/components/base"
-            text="Looks like this is the first time you log in with this user to peregrine - sweet - there are a couple of actions you can take from here. But first you need to accept the terms and conditions:">
+            text="It looks like this is the first time you logged in with this user to peregrine - sweet - there are a couple of actions you can take from here. But first you need to accept the terms and conditions:">
           </text2>
 
           <text3 jcr:primaryType="nt:unstructured"

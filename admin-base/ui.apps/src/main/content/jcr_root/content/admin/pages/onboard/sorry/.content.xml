@@ -51,7 +51,7 @@
 
           <text2 jcr:primaryType="nt:unstructured"
             sling:resourceType="pagerendervue/components/base"
-            text="Sorry to hear you can't accept our policies. We really would like to hear from you why.">
+            text="Sorry to hear that you can't accept our policies. We really would like to hear why?">
           </text2>
 
           <decline jcr:primaryType="nt:unstructured"
