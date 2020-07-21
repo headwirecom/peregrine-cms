@@ -123,6 +123,7 @@ public class UserPreferencesServlet extends AbstractBaseServlet {
                 preferences.setProperty("firstLogin", "false");
                 request.getResourceResolver().adaptTo(Session.class).save();
             } catch( RepositoryException re) {
+                logger.error("Error updating user preferences", re);
                 // TODO: handle this
             }
         }
