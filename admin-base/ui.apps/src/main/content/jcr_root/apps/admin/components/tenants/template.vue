@@ -26,6 +26,7 @@
         <div class="tenant-tabs">
             <div v-for="(item, index) in tab.items"
                  class="tab"
+                 :key="item"
                  :class="{active: tab.active === index}"
                  @click="onTabClick(index)">
                 {{ item }}
@@ -42,7 +43,7 @@
                         <div class="card-action">
                             <admin-components-action
                                 v-bind:model="{
-                                    target: child.name,
+                                    target: '/content/admin/pages/welcome.html/pages:/content/'+child.name,
                                     command: 'selectTenant',
                                     tooltipTitle: `${$i18n('edit')} '${child.title || child.name}'`
                                 }">
@@ -123,7 +124,7 @@
         methods: {
             selectTenant(vm, name) {
                 $perAdminApp.stateAction('setTenant', { name }).then( () => {
-                    $perAdminApp.loadContent('/content/admin/pages/welcome.html')
+                    $perAdminApp.loadContent(`/content/admin/pages/welcome.html/path:/content/${name}`)
                 });
             },
 

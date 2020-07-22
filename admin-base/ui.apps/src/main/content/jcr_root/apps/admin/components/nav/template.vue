@@ -208,10 +208,14 @@
     methods: {
       getSectionModel(section) {
         let target = `/content/admin/pages/${section.name}.html`
-        if(section.name !== 'welcome') {
-          target += `/path:${this.state.tenant.roots[section.name]}`
+        if(this.state.tenant) {
+          if(section.name !== 'welcome') {
+            target += `/path:${this.state.tenant.roots[section.name]}`
+          } else {
+            target += `/path:/content/${this.state.tenant.name}`
+          }
         } else {
-          target += `/path:/content/${this.state.tenant.name}`
+          target = '/content/admin/pages/index'
         }
         return {
           command: 'selectPath',
