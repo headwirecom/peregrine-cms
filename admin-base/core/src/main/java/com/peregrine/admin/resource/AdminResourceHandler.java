@@ -266,7 +266,6 @@ public interface AdminResourceHandler {
     Resource rename(Resource fromResource, String newName) throws ManagementException;
 
     /**
-<<<<<<< HEAD
      * Creates a Data Node with the given Byte Input Stream
      *
      * @param parent Parent Source under which the asset is created. It must exist
