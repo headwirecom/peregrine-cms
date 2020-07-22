@@ -107,6 +107,7 @@ class PerApi {
     populateVersions(page) {
         return impl.populateVersions(page)
     }
+
     setInitialPageEditorState() {
         return impl.setInitialPageEditorState()
     }

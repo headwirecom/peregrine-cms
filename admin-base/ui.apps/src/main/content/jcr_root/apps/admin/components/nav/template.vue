@@ -207,10 +207,16 @@
     },
     methods: {
       getSectionModel(section) {
+        let target = `/content/admin/pages/${section.name}.html`
+        if(section.name !== 'welcome') {
+          target += `/path:${this.state.tenant.roots[section.name]}`
+        } else {
+          target += `/path:/content/${this.state.tenant.name}`
+        }
         return {
           command: 'selectPath',
           title: this.$i18n(section.title),
-          target: `/content/admin/pages/${section.name}`
+          target
         }
       },
       onSelectLang({name}) {

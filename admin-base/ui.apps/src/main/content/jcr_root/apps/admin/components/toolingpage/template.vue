@@ -58,7 +58,11 @@
             // $perAdminApp.stateAction('selectToolsNodesPath', payload).then(() => {
             //     $perAdminApp.loadContent(action + '.html')
             // })
-            $perAdminApp.loadContent(target + '.html')
+            if(target.indexOf('.html') >= 0) {
+                $perAdminApp.loadContent(target)
+            } else {
+                $perAdminApp.loadContent(target + '.html')
+            }
         },
         editPreview: function(me, target) {
             $perAdminApp.stateAction('editPreview', target)

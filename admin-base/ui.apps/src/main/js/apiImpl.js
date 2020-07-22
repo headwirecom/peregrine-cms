@@ -442,16 +442,16 @@ class PerAdminImpl {
     return new Promise((resolve, reject) => {
       fetch('/admin/listTenants.json')
           .then((data) => {
-            const state = callbacks.getView().state
-            if (!state.tenant && data.tenants.length > 0) {
-              $perAdminApp.stateAction('setTenant',
-                  data.tenants[data.tenants.length - 1])
-                  .then(() => populateView('/admin', 'tenants', data.tenants))
-                  .then(() => resolve())
-            } else {
+            // const state = callbacks.getView().state
+            // if (!state.tenant && data.tenants.length > 0) {
+            //   $perAdminApp.stateAction('setTenant',
+            //       data.tenants[data.tenants.length - 1])
+            //       .then(() => populateView('/admin', 'tenants', data.tenants))
+            //       .then(() => resolve())
+            // } else {
               populateView('/admin', 'tenants', data.tenants)
                   .then(() => resolve())
-            }
+            // }
           })
     })
   }
@@ -480,6 +480,7 @@ class PerAdminImpl {
     return new Promise((resolve, reject) => {
       axios.get('/i18n/admin/' + language + '.infinity.json')
           .then((response) => {
+            console.log('look at me')
             updateExplorerDialog();
             populateView('/admin/i18n', language, response.data)
                 .then(() => resolve())

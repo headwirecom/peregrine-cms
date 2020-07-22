@@ -176,7 +176,8 @@
                     fromName: this.formmodel.templatePath,
                     toName: this.formmodel.name,
                     title: this.formmodel.title,
-                    tenantUserPwd: this.formmodel.tenantUserPwd
+                    tenantUserPwd: this.formmodel.tenantUserPwd,
+                    editHome: true
                 }
 
                 if (this.formmodel.colorPalette && this.formmodel.colorPalette.length > 0) {

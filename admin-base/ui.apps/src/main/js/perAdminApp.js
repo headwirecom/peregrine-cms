@@ -202,6 +202,7 @@ function initPeregrineApp() {
     Vue.use(experiences)
     const lang = view.state.language
     const i18nData = view.admin.i18n
+    const tenant = view ? (view.state ? view.state.tenant : undefined) : undefined
 
     app = new Vue({
         el: '#peregrine-adminapp',
@@ -211,6 +212,7 @@ function initPeregrineApp() {
     const state = sessionStorage.getItem('perAdminApp.state')
     const admin = sessionStorage.getItem('perAdminApp.admin')
 
+
     if(state && admin) {
         view.state = JSON.parse(state)
         view.admin = JSON.parse(admin)
@@ -218,6 +220,7 @@ function initPeregrineApp() {
         // make i18n and language selection survive session storage
         view.state.language = lang
         view.admin.i18n = i18nData
+        if(tenant) { view.state.tenant = tenant }
     }
 
     app.$watch('state', function(newVal, oldVal) {
@@ -314,6 +317,26 @@ function loadContentImpl(initialPath, firstTime, fromPopState) {
     view.status = undefined;
 
     api.populateUser()
+        .then(function() {
+            if(pathInfo.suffixParams.path) {
+                const segments = pathInfo.suffixParams.path.split('/')
+                if(segments.length >= 3) {
+                    if(view.state.tenant && view.state.tenant.name !== segments[2]) {
+                        logger.error('tenant mismatch')
+                    } else {
+                        logger.fine('tenant missing')
+                        return api.populateTenants().then( () => {
+                            const tenant = view.admin.tenants.filter( (node) => node.name === segments[2] )
+                            if(tenant.length >= 1) {
+                                view.state.tenant = tenant[0]
+                            } else {
+                                logger.error('tenant does not exist or no access to tenant')
+                            }
+                        })
+                    }
+                }
+            }
+        })
         .then(function() {
             api.populateContent(dataUrl)
                 .then( function () {
