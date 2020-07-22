@@ -1,7 +1,7 @@
 <template>
   <div class="toolbar" :class="{disabled: !inlineRich || preview === 'preview'}">
     <template v-for="(btnGroup, groupName) in btns">
-      <div v-if="btnGroup.length > 0" :class="['btn-group', `group-${groupName}`]">
+      <div :key="groupName" v-if="btnGroup.length > 0" :class="['btn-group', `group-${groupName}`]">
         <admin-components-richtoolbarbtn
             v-for="(btn, i) in btnGroup"
             :key="getButtonKey(btn, i)"
@@ -193,8 +193,16 @@
             icon: 'visibility',
             iconLib: 'material-icons',
             cmd: 'preview',
-            class: 'always-active separate',
+            class: 'always-active',
             isActive: () => this.preview === 'preview'
+          })
+          btns.alwaysActives.push({
+            title: 'preview in new tab',
+            icon: 'open_in_new',
+            iconLib: 'material-icons',
+            cmd: 'previewInNewTab',
+            class: 'always-active separate',
+            isActive: () => false
           })
         }
         if (this.showViewportBtn) {
@@ -230,6 +238,10 @@
       preview() {
         return $perAdminApp.getNodeFromViewOrNull('/state/tools/workspace/preview')
       },
+      previewNewWindow() {
+        window.open('')
+        return $perAdminApp.getNodeFromViewOrNull('/state/tools/workspace/preview')
+      },
       roots() {
         return $perAdminApp.getNodeFromViewOrNull('/state/tenant/roots')
       },
@@ -238,7 +250,8 @@
           link: this.link,
           insertImage: this.insertImage,
           editImage: this.editImage,
-          preview: this.togglePreview
+          preview: this.togglePreview,
+          previewInNewTab: this.previewInNewTab
         }
       },
       formattingItems() {
@@ -485,6 +498,11 @@
         const view = $perAdminApp.getView()
         const current = get(view, '/state/tools/workspace/preview', null)
         $perAdminApp.stateAction('editPreview', current ? null : 'preview')
+      },
+      previewInNewTab() {
+        const view = $perAdminApp.getView()
+        const page = get(view, '/state/tools/page', null)
+        window.open(page+'.html', 'viewer')
       },
       getButtonKey(btn, index) {
         let key = `btn-${index}-${btn.title}`

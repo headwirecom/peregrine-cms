@@ -360,14 +360,20 @@ function loadContentImpl(initialPath, firstTime, fromPopState) {
                                 let params = view.adminPage.suffixToParameter
                                 let suffix = ""
                                 if(params) {
+                                    const rendered = []
                                     for(let i = 0; i < params.length; i+=2) {
+                                        if(rendered.indexOf(params[i]) >= 0) {
+                                            continue;
+                                        } else {
+                                            rendered.push(params[i])
+                                        } 
                                         if(i === 0) {
                                             suffix += '/'
                                         } else {
                                             suffix += SUFFIX_PARAM_SEPARATOR
                                         }
 
-                                        suffix += params[0]
+                                        suffix += params[i]
                                         suffix += SUFFIX_PARAM_SEPARATOR
                                         suffix += getNodeFromImpl(view, params[i+1])
                                     }

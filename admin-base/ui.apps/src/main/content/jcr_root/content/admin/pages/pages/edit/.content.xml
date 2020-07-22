@@ -34,7 +34,7 @@
     sling:resourceType="admin/components/toolingpage"
     jcr:title="Page Editor"
     jcr:description="admin base Content Root"
-    suffixToParameter="[path,/pageView/path,path,/state/tools/pages]"
+    suffixToParameter="[path,/pageView/path,path,/state/tools/pages,path,/state/tools/page]"
     dataFrom="/pageView/path"
     dataDefault="/content/admin/pages"
     loaders="[populatePageView:/pageView/path,populateComponents:/pageView/path,populateNodesForBrowser:/state/tools/pages,setInitialPageEditorState:/]">
