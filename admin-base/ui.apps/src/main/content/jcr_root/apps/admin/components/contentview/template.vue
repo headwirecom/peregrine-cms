@@ -90,7 +90,13 @@
 
 <script>
   import {Attribute, Key} from '../../../../../../js/constants'
-  import {get, getCaretCharacterOffsetWithin, set} from '../../../../../../js/utils'
+  import {
+    get,
+    getCaretCharacterOffsetWithin,
+    restoreSelection,
+    saveSelection,
+    set
+  } from '../../../../../../js/utils'
 
   export default {
     props: ['model'],
@@ -132,7 +138,11 @@
           pos: -1,
           counter: 0
         },
-        holdingDown: false
+        holdingDown: false,
+        inlineEdit: {
+          firstTime: [],
+          selection: null
+        }
       }
     },
     computed: {
@@ -432,6 +442,11 @@
       },
 
       onInlineEdit(event) {
+        if (!this.inlineEdit.firstTime.includes(event.target)) {
+          this.inlineEdit.firstTime.push(event.target)
+          this.inlineEdit.selection = saveSelection(event.target, this.iframe.doc)
+        }
+
         this.target = event.target
         const vnode = this.findVnode(this.component.__vue__, event.path)
         const attr = this.isRich ? 'innerHTML' : 'innerText'
@@ -443,6 +458,16 @@
           }
         }
         this.writeInlineToModel()
+
+        if (this.inlineEdit.selection) {
+          this.$nextTick(() => {
+            this.$nextTick(() => {
+              restoreSelection(event.target, this.inlineEdit.selection, this.iframe.doc)
+              this.inlineEdit.selection = null
+            })
+          })
+        }
+
         this.autoSave = true
         this.reWrapEditable()
       },
