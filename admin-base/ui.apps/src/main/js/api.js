@@ -100,6 +100,10 @@ class PerApi {
         return impl.populateTenants()
     }
 
+    populateBackupInfo(backup) {
+        return impl.populateBackupInfo(backup)
+    }
+
     populateRecyclebin(page) {
         return impl.populateRecyclebin(page)
     }
@@ -107,6 +111,7 @@ class PerApi {
     populateVersions(page) {
         return impl.populateVersions(page)
     }
+
     setInitialPageEditorState() {
         return impl.setInitialPageEditorState()
     }
@@ -268,6 +273,22 @@ class PerApi {
 
     tenantSetupReplication(path, withSite) {
         return impl.tenantSetupReplication(path, withSite)
+    }
+
+    backupTenant(path) {
+        return impl.backupTenant(path)
+    }
+
+    downloadBackupTenant(path) {
+        return impl.downloadBackupTenant(path)
+    }
+
+    uploadBackupTenant(path, files, cb) {
+        return impl.uploadBackupTenant(path, files, cb)
+    }
+
+    restoreTenant(path) {
+        return impl.restoreTenant(path)
     }
 
     fetchRecyclables(siteName) {
