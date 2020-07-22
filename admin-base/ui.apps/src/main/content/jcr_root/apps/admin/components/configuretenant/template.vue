@@ -159,7 +159,7 @@
                 } else if(state === 'SUCCEEDED') {
                     state = 'Successfully Built';
                 } else {
-                    state = 'Failed Built';
+                    state = 'Failed Build';
                 }
                 return state;
             }
