@@ -21,7 +21,7 @@ paths:
     get:
       responses:
         200:
-          description: returns the user id and if available the authentication type
+          description: returns the user id, authentication type if available, and a graph of additional profile properties if configured in the AccessServlet
           schema:
             type: object
             required:
@@ -335,6 +335,148 @@ paths:
           description: If the path did not resolve to a resource, the name is null or the template already exists
           schema:
             $ref: "#/definitions/Error"
+  '/listRecyclables.json{path}':
+    get:
+      description: List all deleted items for a given site which may be restored
+      parameters:
+        - name: path
+          type: string
+          in: path
+          description: Root site path (e.g. /content/example)
+          required: true
+      responses:
+        200:
+          description: list of items from the site's recyclebin
+          schema:
+            type: object
+            properties:
+              current:
+                type: integer
+                description: used for pagination
+              more:
+                type: boolean
+                description: used for pagination
+              data:
+                type: array
+                description: array of result objects each containing a recyclable items details
+                items:
+                  type: object
+                  properties:
+                    path:
+                      type: string
+                      description: path of deleted item
+                    deleted_by:
+                      type: string
+                    date_deleted:
+                      type: string
+                    recyclebin:
+                      type: string
+                      description: path of this recyclebin item
+              path:
+                type: string
+                description: Path of the newly created template
+        400:
+          description: If the path did not resolve to a resource, the name is null or the template already exists
+          schema:
+            $ref: "#/definitions/Error"
+        403:
+          description: Forbidden. User does not have sufficient access to get list of site recyclables
+          schema:
+            $ref: "#/definitions/Error"
+  '/restoreRecyclable.json{path}':
+    post:
+      description: Restore a previously deleted page, asset or asset folder
+      parameters:
+        - name: path
+          type: string
+          in: path
+          description: Path of item from site recyclebin
+          required: true
+      responses:
+        200:
+          description: Success. Item was restored.
+          schema:
+            type: object
+        400:
+          description: Bad request. Generic error status code indicating some problem handling the request.
+          schema:
+            $ref: "#/definitions/Error"
+        403:
+          description: Forbidden. User does not have sufficient access to restore an item
+          schema:
+            $ref: "#/definitions/Error"
+        409:
+          description: Conflict. Restore failed because of a conflict. Either an item already exists at the path, or the parents above the item do not exist
+          schema:
+            $ref: "#/definitions/Error"
+  '/listVersions.json{path}':
+    get:
+      description: get list of a resources versions
+      parameters:
+        - name: path
+          type: string
+          in: path
+          description: Path of resource
+          required: true
+      responses:
+        200:
+          description: Lists versions information for the resource
+          schema:
+            type: object
+            properties:
+              has_versions:
+                type: boolean
+                description: Set true when the resource has versions
+              versions:
+                type: array
+                description: Array with each element representing a version of the resource
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: Versions name
+                    created:
+                      type: string
+                      description: Formatted date when the version was created
+                    path:
+                      type: string
+                      description: Frozen node path of the version.
+                    base:
+                      type: boolean
+                      description: If base is true, this is the current version.
+        400:
+          description: Versions could not be listed for the resource
+          schema:
+            $ref: "#/definitions/Error"
+  '/manageVersions.json{path}':
+    post:
+      parameters:
+        - name: path
+          type: string
+          in: path
+          description: Path of resource
+          required: true
+        - name: action
+          type: string
+          in: formData
+          description: createVersion, deleteVersion, or restoreVersion
+          required: true
+        - name: version
+          type: string
+          in: formData
+          description: name of the version to restore
+          required: false
+      description: Endpoint to manage resources versions (create, delete, or restore)
+      responses:
+        200:
+          description: Successful version management operation
+          schema:
+            type: object
+        400:
+          description: Managing versions failed
+          schema:
+            $ref: "#/definitions/Error"
   '/deleteNode.json{path}':
     post:
       description: Delete a node
@@ -618,9 +760,14 @@ paths:
           in: path
           description: the path of the resource which is renamed
           required: true
+        - name: title
+          type: string
+          in: formData
+          description: the new title of the resource getting renamed
+          required: false
         - name: to
           type: string
-          in: path
+          in: formData
           description: the new name of the resource
           required: true
       responses:
@@ -942,7 +1089,7 @@ definitions:
     type: object
     properties:
       code:
-        type: int32
+        type: integer
       message:
         type: string
       path:

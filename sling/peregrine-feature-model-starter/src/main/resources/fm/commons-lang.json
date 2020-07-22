@@ -1,0 +1,11 @@
+{
+  "id":"${project.groupId}:${project.artifactId}:slingfeature:commons-lang:${project.version}",
+  "variables":{
+  },
+  "bundles":[
+    {
+      "id":"commons-lang:commons-lang:2.6",
+      "start-level":"10"
+    }
+  ]
+}

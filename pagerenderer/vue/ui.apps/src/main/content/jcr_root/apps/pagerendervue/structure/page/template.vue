@@ -23,15 +23,43 @@
   #L%
   -->
 <template>
-<div  class="container">
-    <div v-for="child in model.children">
+<div  class="container" v-bind:data-per-path="model.path">
+    <pagerendervue-components-placeholder v-if="renderBefore"
+        v-bind:model="{ path: model.path, component: model.component, location: 'before' }">
+    </pagerendervue-components-placeholder>
+    <pagerendervue-components-placeholder v-if="renderSingle"
+        v-bind:model="{ path: model.path, component: 'page: drop components here', location: 'into' }">
+    </pagerendervue-components-placeholder>
+    <div v-for="child in model.children" v-bind:key="child.path">
         <component v-bind:is="child.component" v-bind:model="child"></component>
     </div>
+    <pagerendervue-components-placeholder v-if="renderAfter"
+        v-bind:model="{ path: model.path, component: model.component, location: 'after' }">
+    </pagerendervue-components-placeholder>
 </div>
 </template>
 
 <script>
 export default {
-    props: [ 'model' ]
+    props: [ 'model' ],
+    computed: {
+        renderAfter() {
+            return(
+                this.model.children.length > 0
+                && this.model.children.children
+                && this.model.children.children.length === 0
+                ) 
+        },
+        renderBefore() {
+            return(
+                this.model.children.length > 0
+                && this.model.children.children
+                && this.model.children.children.length === 0
+                ) 
+        },
+        renderSingle() {
+            return (!this.model.children || this.model.children.length === 0)
+        }
+    }
 }
 </script>

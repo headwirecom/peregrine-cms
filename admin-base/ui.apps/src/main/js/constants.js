@@ -62,8 +62,12 @@ export const Icon = {
   EDIT: 'edit',
   LIST: 'list',
   CHECK: 'check',
+  CHECKED: 'check_box',
+  UNCHECKED: 'check_box_outline_blank',
   CANCEL: 'close',
-  MORE_VERT: 'more_vert'
+  CREATE: 'create',
+  MORE_VERT: 'more_vert',
+  VERSIONS: 'restore_page'
 }
 export const NodeType = {
   PAGE: 'page',
@@ -93,4 +97,24 @@ export const NodeTree ={
   SUPPORTED_RESOURCE_TYPES: [
       'per:Page'
   ]
+}
+
+export const Attribute = {
+  INLINE: 'data-per-inline',
+  PATH: 'data-per-path',
+  DROPTARGET: 'data-per-droptarget',
+  LOCATION: 'data-per-location'
+}
+
+export const Key = {
+  A: 65,
+  BACKSPACE: 8,
+  DELETE: 46,
+  DOT: 190,
+  COMMA: 188,
+  ARROW_LEFT: 37,
+  ARROW_UP: 38,
+  ARROW_RIGHT: 39,
+  ARROW_DOWN: 40,
+  ESC: 27
 }

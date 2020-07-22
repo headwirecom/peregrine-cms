@@ -68,6 +68,16 @@
     </experiences>
   </templates>
 
+  <recyclebin jcr:primaryType="nt:unstructured" jcr:title="Recyclebin"
+    sling:resourceType="admin/components/iconaction"
+    jcr:description="recover deleted pages and assets"
+    action="/content/admin/pages/recyclebin">
+    <experiences jcr:primaryType="nt:unstructured">
+      <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Recyclebin"
+        description="Geloschte daten wieder herstellen"/>
+    </experiences>
+  </recyclebin>
+
   <config jcr:primaryType="nt:unstructured" jcr:title="Tools"
     sling:resourceType="admin/components/iconaction"
     jcr:description="Dig deeper into Peregrine with these tools"

@@ -98,6 +98,12 @@
 				.col-browse {
 					width: 100%;
 					padding: 0 0.75rem;
+
+					#pathBrowserLink,
+					#linkTitle {
+						color: #263238;
+					}
+
 					.modal-content-nav {
 						height: auto;
 						line-height: 35px;
@@ -106,6 +112,8 @@
 						margin: 0 -0.75rem;
 						padding: 0 0.75rem;
 						width: auto;
+						text-align: left;
+
 						.modal-content-section {
 							display: inline-block;
 							vertical-align: top;
@@ -166,6 +174,10 @@
 							position: relative;
 							padding: 0.75rem 0.75rem 0.75rem 3rem;
 							cursor: pointer;
+							color: #455a64;
+							float: unset;
+							text-align: left;
+
 							input[type="radio"] {
 								+ label {
 									position: absolute;
@@ -186,6 +198,10 @@
 								color: color("blue-grey", "darken-2");
 								vertical-align: bottom;
 								margin-right: 0.375rem;
+								display: unset;
+								height: unset;
+								line-height: unset;
+
 								+ label {
 									position: relative;
 									padding-left: 35px;

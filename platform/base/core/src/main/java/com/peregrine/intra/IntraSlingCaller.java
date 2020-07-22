@@ -1,5 +1,6 @@
 package com.peregrine.intra;
 
+import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
 import java.util.Map;
@@ -9,6 +10,8 @@ public interface IntraSlingCaller {
     public byte[] call(CallerContext callerContext) throws CallException;
 
     interface CallerContext {
+        public Resource getResource();
+        public CallerContext setResource(Resource resource);
         public ResourceResolver getResourceResolver();
         public CallerContext setResourceResolver(ResourceResolver resourceResolver);
         public String getPath();

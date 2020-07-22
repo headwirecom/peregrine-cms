@@ -51,7 +51,7 @@ import static com.peregrine.commons.util.PerUtil.POST;
  * Base Class for Peregrine Servlets
  *
  * This class requests a handleRequest() method to the
- * sub classes with one Request and one Reponse object.
+ * sub classes with one Request and one Response object.
  * It will then handle the response and return it back to the
  * caller in a consistent manner including errors.
  *

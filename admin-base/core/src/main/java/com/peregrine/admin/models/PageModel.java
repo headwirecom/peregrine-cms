@@ -99,7 +99,13 @@ public class PageModel extends Container {
         return siteCSS;
     }
 
-    private String[] getInheritedProperty(String propertyName) {
+    /**
+     * Get property values from an ancestor node
+     * Note it does not extract properties from ancestor's jcr:content properties
+     * @param propertyName
+     * @return Returns an ancestor's property value as a String array
+     */
+    public String[] getInheritedProperty(String propertyName) {
         Resource parentContent = getParentContent(getResource());
         while(parentContent != null) {
             ValueMap props = ResourceUtil.getValueMap(parentContent);

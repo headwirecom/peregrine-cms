@@ -1,5 +1,6 @@
 package com.peregrine.intra;
 
+import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.servlets.HttpConstants;
 import org.apache.sling.servlethelpers.MockRequestPathInfo;
@@ -56,6 +57,7 @@ public class IntraSlingCallerService
             logger.trace("Intra Sling Caller Context: '{}'", callerContext);
             MockSlingHttpServletRequest req = new MockSlingHttpServletRequest(callerContext.getResourceResolver());
             req.setMethod(callerContext.getMethod());
+            req.setResource(callerContext.getResource());
             MockRequestPathInfo pathInfo = (MockRequestPathInfo) req.getRequestPathInfo();
             pathInfo.setResourcePath(callerContext.getPath());
             pathInfo.setSelectorString(callerContext.getSelectors());
@@ -82,6 +84,7 @@ public class IntraSlingCallerService
     }
 
     public static class CallerContextImpl implements CallerContext {
+        Resource resource;
         ResourceResolver resourceResolver;
         String method = METHOD_GET,
             path,
@@ -89,6 +92,9 @@ public class IntraSlingCallerService
             extension,
             suffix;
         Map<String,Object> parameterMap = new HashMap<>();
+
+        @Override
+        public Resource getResource() { return resource; }
 
         @Override
         public ResourceResolver getResourceResolver() {
@@ -120,6 +126,12 @@ public class IntraSlingCallerService
 
         @Override
         public Map<String, Object> getParameterMap() { return parameterMap; }
+
+        @Override
+        public CallerContext setResource(Resource resource) {
+            this.resource = resource;
+            return this;
+        }
 
         @Override
         public CallerContext setResourceResolver(ResourceResolver resourceResolver) {

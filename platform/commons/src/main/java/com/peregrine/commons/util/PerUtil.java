@@ -49,7 +49,7 @@ public class PerUtil {
 
     public static final String RENDITIONS = "renditions";
     public static final String METADATA = "metadata";
-    public static final String TEMPLATE = "template";
+//    public static final String TEMPLATE = "template";
 
     public static final String PER_VENDOR = "headwire.com, Inc";
     public static final String PER_PREFIX = "Peregrine: ";
@@ -287,7 +287,7 @@ public class PerUtil {
             if(resourceResolver == null) {
                 LOG.warn("Resource Resolver is null so path: '{}' cannot be resolved", path);
             } else {
-                LOG.warn("Path is null so call with RR is ignored");
+                LOG.warn("Path is null so 'getResource' call is ignored");
             }
         }
         return checkResource(answer);

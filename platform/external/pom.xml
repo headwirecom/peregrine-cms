@@ -69,6 +69,10 @@
             <artifactId>ion-java</artifactId>
             <version>1.0.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.junit.core</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -115,6 +119,11 @@
                                 <embedded>
                                     <groupId>software.amazon.ion</groupId>
                                     <artifactId>ion-java</artifactId>
+                                    <generateFilter>true</generateFilter>
+                                </embedded>
+                                <embedded>
+                                    <groupId>org.apache.sling</groupId>
+                                    <artifactId>org.apache.sling.junit.core</artifactId>
                                     <generateFilter>true</generateFilter>
                                 </embedded>
                             </embeddeds>

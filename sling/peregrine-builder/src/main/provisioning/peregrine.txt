@@ -96,6 +96,7 @@
     create path (sling:Folder) /var/sling
     create path (sling:Folder) /var/sling/distribution
     create path (sling:Folder) /var/sling/distribution/packages
+    create path (sling:OrderedFolder) /var/recyclebin
 
 # Set Permissions for Sling Distribution
 

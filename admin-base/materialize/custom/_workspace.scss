@@ -1,329 +1,396 @@
 .peregrine-workspace {
-	display: flex;
-	position: absolute;
-	top: 104px;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	overflow: hidden;
-	.peregrine-content-view {
-		display: inline-block;
-		width: 100%;
-		// width: calc(100% - 300px);
-		height: 100%;
-		position: relative;
-		z-index: 0;
-		-webkit-transition: width .2s ease-in-out;
-		-moz-transition: width .2s ease-in-out;
-		-ms-transition: width .2s ease-in-out;
-		transition: width .2s ease-in-out;
+  display: flex;
+  position: absolute;
+  top: 104px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: hidden;
 
-		#editviewoverlay {
-			position: absolute;
-			top: 0;
-			bottom: 0;
-			left: 0;
-			right: 0;
-			z-index: 1;
-			overflow-y: auto;
-			.editview-container {
-				position: relative;
-				width: 100%;
-				min-height: 100%;
-				#editable {
-					position: absolute; 
-					z-index: 2;
-					-webkit-tap-highlight-color: rgba(0,0,0,0);
-					-webkit-touch-callout: none;
-					.editable-actions {
-						display: none;
-						position: absolute; 
-						z-index: 1;
-						right: -1px; 
-						bottom: -1px; 
-						background-color: color("blue-grey", "darken-3");
-						height: 25px;
-						text-align: center;
-						box-shadow: 0 10px 10px rgba(0,0,0,.5);
-						ul {
-							display: inline-block;
-							width: 100%;
-							height: 100%;
-							margin: 0;
-							padding: 0;
-							li {
-								display: inline-block;
-								height: 100%;
-								width: 45px;
-								border-right: 1px solid color("blue-grey", "darken-4");
-								border-left: 1px solid color("blue-grey", "darken-2");
-								> a {
-									display: inline-block;
-									height: 100%;
-									width: 100%;
-									text-align: center;
-									color: #fff;
-									padding: 2px 0 0;
-									.svg-icon {
-										width: 21px;
-										height: 21px;
-									}
-									.material-icons {
-										font-size: 21px;
-									}
-								}
-								&:first-child {
-									border-left: none;
-								}
-								&:last-child {
-									border-right: none;
-								}
-							}
-						}
-					}
-					&.drop-top {
-						border-top: 2px solid color("blue-grey", "base");
-					}
-					&.drop-bottom {
-						border-bottom: 2px solid color("blue-grey", "base");
-					}
-					&.selected {
-						border: 2px solid color("blue-grey", "base");
-						.editable-actions {
-							display: flex;
-						}
-					}
+  .peregrine-content-view {
+    display: inline-block;
+    width: 100%;
+    // width: calc(100% - 300px);
+    height: 100%;
+    position: relative;
+    z-index: 0;
+    -webkit-transition: width .2s ease-in-out;
+    -moz-transition: width .2s ease-in-out;
+    -ms-transition: width .2s ease-in-out;
+    transition: width .2s ease-in-out;
+    overflow: hidden;
 
-					&.draggable {
-						border-color: color("blue-grey", "base");
-						border-style: dashed; 
-					}
+    #editable {
+      pointer-events: none;
+      position: absolute;
+      z-index: 2;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      -webkit-touch-callout: none;
+      $editable-actions-height: 25px;
 
-					&.drag-start {
-						border-color: color("blue-grey", "base");
-						cursor: move;
-						.editable-actions {
-							display: flex;
-						}
-					}
-					&.dragging {
-
-					}
-				}
-			}
-		}
-		#editview {
-			display: block;
-			height: 100%;
-			width: 100%;
-			border: 0;
-			overflow: scroll;
-			position: absolute;
-			top: 0;
-			right: 0;
-			left: 0;
-			bottom: 0;
-			z-index: 0;
-		}
-		&.mobile {
-			#editviewoverlay {
-				width: 320px;
-        z-index: 1;
-        left: calc(50% - 160px);
-			}
-			#editview {
-				width: 320px;
-				box-shadow: 0 10px 10px rgba(0,0,0,.75);
-        left: calc(50% - 160px);
+      .drag-handle {
+        pointer-events: all;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #ffffff;
         position: absolute;
-			}
-		}
-		&.mobile-landscape {
-			#editviewoverlay {
-				width: 576px;
-				z-index: 1;
-				left: calc(50% - 288px);
-			}
-			#editview {
-				width: 576px;
-				box-shadow: 0 10px 10px rgba(0,0,0,.75);
-				left: calc(50% - 288px);
-				position: absolute;
-			}
-		}
-		&.tablet {
-			#editviewoverlay {
-				width: 768px;
-        z-index: 1;
-        left: calc(50% - 384px);
-			}
-			#editview {
-				width: 768px;
-				box-shadow: 0 10px 10px rgba(0,0,0,.75);
-        left: calc(50% - 384px);
+        width: 22px;
+        height: 16px;
+        background-color: #37474f;
+        cursor: move;
+
+        &.top-right {
+          top: 0;
+          right: -2px;
+        }
+
+        &.bottom-left {
+          bottom: 0;
+          left: -2px;
+        }
+
+        .material-icons {
+          font-size: 20px;
+        }
+      }
+
+      .editable-actions {
+        pointer-events: all;
+        display: none;
         position: absolute;
-			}
-		}
-		&.tablet-landscape {
-			#editviewoverlay {
-				width: 1024px;
-				z-index: 1;
-				left: calc(50% - 512px);
-			}
+        z-index: 1;
+        right: -1px;
+        bottom: -$editable-actions-height;
+        background-color: color("blue-grey", "darken-3");
+        height: $editable-actions-height;
+        text-align: center;
+        box-shadow: 0 10px 10px rgba(0, 0, 0, .5);
 
-			#editview {
-				width: 1024px;
-				box-shadow: 0 10px 10px rgba(0, 0, 0, .75);
-				left: calc(50% - 512px);
-				position: absolute;
-			}
-		}
-		&.laptop {
-			#editviewoverlay {
-				width: 1366px;
-				z-index: 1;
-				left: calc(50% - 683px);
-			}
+        ul {
+          display: flex;
+          width: 100%;
+          height: 100%;
+          margin: 0;
+          padding: 0;
 
-			#editview {
-				width: 1366px;
-				box-shadow: 0 10px 10px rgba(0, 0, 0, .75);
-				left: calc(50% - 683px);
-				position: absolute;
-			}
-		}
-		&.desktop {
-			#editview {
-				width: 100%;
-			}
-		}
-		&.preview {
-			width: 100% !important;
-			position: fixed;
-			z-index: 0;
-			top: $nav-full-height;
-			bottom: 0;
-			left: 0;
-			right: 0;
-			#editviewoverlay {
-				display: none;
-			}
-			#editview {
-				//width: 100%;
-				position: fixed;
-				top: $nav-full-height;
-				padding-bottom: 112px;
-			}
+          li {
+            display: inline-block;
+            height: 100%;
+            width: 45px;
+            border-right: 1px solid color("blue-grey", "darken-4");
+            border-left: 1px solid color("blue-grey", "darken-2");
 
-		}
+            > a {
+              display: inline-block;
+              height: 100%;
+              width: 100%;
+              text-align: center;
+              color: #fff;
+              padding: 2px 0 0;
 
-		.spinner-wrapper {
-			display: flex;
-			width: 100%;
-			height: 100%;
-			justify-content: center;
-			padding-top: 50px;
-		}
-	}
-	.show-right-panel {
-		background-color: color("blue-grey", "lighten-5");
-		width: 2rem; 
-		height: 40px; 
-		position: absolute;
-		z-index: 1;
-		right: 0;
-		top: 1rem;
-		border: 1px solid color("blue-grey", "lighten-4");
-		border-right: 0;
-		.material-icons {
-			position: relative;
-			left: -.25rem;
-			font-size: 40px;
-		}
-	}
-	.right-panel {
-		vertical-align: top;
-		display: inline-block;
-		height: 100%;
-		position: relative;
-		width: 0;
-		overflow: hidden;
-		-webkit-transition: width .2s ease-in-out;
-		-moz-transition: width .2s ease-in-out;
-		-ms-transition: width .2s ease-in-out;
-		transition: width .2s ease-in-out;
-		background-color: color("blue-grey", "lighten-5");
-		border-left: 1px solid color("blue-grey", "lighten-4");
-		.hide-right-panel {
-			position: absolute;
-			right: 1rem;
-			top: 1rem;
-			opacity: 0;
-			transition: opacity .1s ease-in-out;
-			.material-icons {
-				position: absolute;
-				right: -7px;
-				top: -7px;
-				font-size: 30px;
-				color: color("blue-grey", "lighten-1");
-			}
-		}
-		.toggle-fullscreen {
-			position: absolute;
-			border: 0;
-			background: none;
-			padding: 0;
-			.material-icons {
-				font-size: 30px;
-				color: color("blue-grey", "base");
-				transition: color .1s ease-in-out;
-			}
-			&:hover,
-			&:focus,
-			&:active {
-				.material-icons {
-					color: color("blue-grey", "darken-2");
-				}
-			}
+              .svg-icon {
+                width: 21px;
+                height: 21px;
+              }
+
+              .material-icons {
+                font-size: 21px;
+              }
+            }
+
+            &:first-child {
+              border-left: none;
+            }
+
+            &:last-child {
+              border-right: none;
+            }
+          }
+        }
+      }
+
+      &.drop-top {
+        border-top: 2px dashed color("blue-grey", "base");
+      }
+
+      &.drop-bottom {
+        border-bottom: 2px dashed color("blue-grey", "base");
+      }
+
+      &.selected {
+        border: 2px dashed color("blue-grey", "base");
+
+        .editable-actions {
+          display: flex;
+        }
+      }
+
+      &.draggable {
+        border-color: color("blue-grey", "base");
+        border-style: dashed;
+      }
+
+      &.drag-start {
+        border-color: color("blue-grey", "base");
+        cursor: move;
+
+        .editable-actions {
+          display: flex;
+        }
+      }
+
+      &.dragging {
+
+      }
+
+      &.mouseover-orange {
+        border: 2px dashed var(--pcms-orange);
+      }
+
+      &.mouseover-green {
+        border: 2px dashed green;
+      }
     }
 
-		&.visible {
-			position: relative;
-			width: auto;
-			flex: 1;
-			box-shadow: none !important;
-			height: 100%; 
-			border-left: 1px solid color("blue-grey", "lighten-4");
-			overflow: visible;
-		}
+    #editview {
+      display: block;
+      height: 100%;
+      width: 100%;
+      border: 0;
+      overflow: scroll;
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 0;
+    }
 
-	}
-	&.right-panel-visible {
-		.peregrine-content-view {
-			width: calc(100% - 300px);
-			&.preview {
-				+ .right-panel {
-					display: none;
-				}
-			}
-		}
-		.right-panel {
-			flex-basis: 350px;
-			&.fullscreen {
-				position: absolute;
-				top: 0;
-				left:0;
-				right:0;
-				bottom:0;
-				width: auto;
-			}
-			.hide-right-panel {
-				opacity: 1;
-			}
-		}
-	}
-	/* tablet styles */
-	@media #{$medium-and-up} {
-		top: $nav-full-height;
-	}
+    &.mobile {
+      #editviewoverlay {
+        width: 320px;
+        z-index: 1;
+        left: calc(50% - 160px);
+      }
+
+      #editview {
+        width: 320px;
+        box-shadow: 0 10px 10px rgba(0, 0, 0, .75);
+        left: calc(50% - 160px);
+        position: absolute;
+      }
+    }
+
+    &.mobile-landscape {
+      #editviewoverlay {
+        width: 576px;
+        z-index: 1;
+        left: calc(50% - 288px);
+      }
+
+      #editview {
+        width: 576px;
+        box-shadow: 0 10px 10px rgba(0, 0, 0, .75);
+        left: calc(50% - 288px);
+        position: absolute;
+      }
+    }
+
+    &.tablet {
+      #editviewoverlay {
+        width: 768px;
+        z-index: 1;
+        left: calc(50% - 384px);
+      }
+
+      #editview {
+        width: 768px;
+        box-shadow: 0 10px 10px rgba(0, 0, 0, .75);
+        left: calc(50% - 384px);
+        position: absolute;
+      }
+    }
+
+    &.tablet-landscape {
+      #editviewoverlay {
+        width: 1024px;
+        z-index: 1;
+        left: calc(50% - 512px);
+      }
+
+      #editview {
+        width: 1024px;
+        box-shadow: 0 10px 10px rgba(0, 0, 0, .75);
+        left: calc(50% - 512px);
+        position: absolute;
+      }
+    }
+
+    &.laptop {
+      #editviewoverlay {
+        width: 1366px;
+        z-index: 1;
+        left: calc(50% - 683px);
+      }
+
+      #editview {
+        width: 1366px;
+        box-shadow: 0 10px 10px rgba(0, 0, 0, .75);
+        left: calc(50% - 683px);
+        position: absolute;
+      }
+    }
+
+    &.desktop {
+      #editview {
+        width: 100%;
+      }
+    }
+
+    &.preview {
+      width: 100% !important;
+      position: fixed;
+      z-index: 0;
+      top: $nav-full-height;
+      bottom: 0;
+      left: 0;
+      right: 0;
+
+      #editviewoverlay {
+        display: none;
+      }
+
+      #editview {
+        //width: 100%;
+        position: fixed;
+        top: $nav-full-height;
+        padding-bottom: 112px;
+      }
+
+    }
+
+    .spinner-wrapper {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      justify-content: center;
+      padding-top: 50px;
+    }
+  }
+
+  .show-right-panel {
+    background-color: color("blue-grey", "lighten-5");
+    width: 2rem;
+    height: 40px;
+    position: absolute;
+    z-index: 1;
+    right: 0;
+    top: 1rem;
+    border: 1px solid color("blue-grey", "lighten-4");
+    border-right: 0;
+
+    .material-icons {
+      position: relative;
+      left: -.25rem;
+      font-size: 40px;
+    }
+  }
+
+  .right-panel {
+    vertical-align: top;
+    display: inline-block;
+    height: 100%;
+    position: relative;
+    width: 0;
+    overflow: hidden;
+    -webkit-transition: width .2s ease-in-out;
+    -moz-transition: width .2s ease-in-out;
+    -ms-transition: width .2s ease-in-out;
+    transition: width .2s ease-in-out;
+    background-color: color("blue-grey", "lighten-5");
+    border-left: 1px solid color("blue-grey", "lighten-4");
+
+    .hide-right-panel {
+      position: absolute;
+      right: 1rem;
+      top: 1rem;
+      opacity: 0;
+      transition: opacity .1s ease-in-out;
+
+      .material-icons {
+        position: absolute;
+        right: -7px;
+        top: -7px;
+        font-size: 30px;
+        color: color("blue-grey", "lighten-1");
+      }
+    }
+
+    .toggle-fullscreen {
+      position: absolute;
+      border: 0;
+      background: none;
+      padding: 0;
+
+      .material-icons {
+        font-size: 30px;
+        color: color("blue-grey", "base");
+        transition: color .1s ease-in-out;
+      }
+
+      &:hover,
+      &:focus,
+      &:active {
+        .material-icons {
+          color: color("blue-grey", "darken-2");
+        }
+      }
+    }
+
+    &.visible {
+      position: relative;
+      width: auto;
+      flex: 1;
+      box-shadow: none !important;
+      height: 100%;
+      border-left: 1px solid color("blue-grey", "lighten-4");
+      overflow: visible;
+    }
+
+  }
+
+  &.right-panel-visible {
+    .peregrine-content-view {
+      width: calc(100% - 300px);
+
+      &.preview {
+        + .right-panel {
+          display: none;
+        }
+      }
+    }
+
+    .right-panel {
+      flex-basis: 350px;
+
+      &.fullscreen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: auto;
+      }
+
+      .hide-right-panel {
+        opacity: 1;
+      }
+    }
+  }
+
+  /* tablet styles */
+  @media #{$medium-and-up} {
+    top: $nav-full-height;
+  }
 }

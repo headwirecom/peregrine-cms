@@ -63,6 +63,7 @@ public class PerConstants {
 
     public static final String SLASH = Strings.SLASH;
     public static final String DASH = Strings.DASH;
+    public static final String REGEX_SLASH = "\\/";
 
     public static final String HTML = "html";
     public static final String JSON = "json";
@@ -128,6 +129,7 @@ public class PerConstants {
     public static final String PARENT_PATH = "parentPath";
     public static final String CONTENT = "content";
     public static final String TITLE = "title";
+    public static final String BRAND = "brand";
     public static final String TAGS = "tags";
     public static final String METAPROPERTIES = "metaproperties";
     public static final String UPDATED = "updated";
@@ -150,5 +152,17 @@ public class PerConstants {
     public static final String TENANT_GROUP_HOME = "/home/groups/tenants";
     public static final String TENANT_USER_HOME = "/home/users/tenants";
     public static final String ALL_TENANTS_GROUP_NAME = "all_tenants";
+
+    public static final String VAR = "var";
+    public static final String RECYCLE_BIN = "recyclebin";
+    public static final String RECYCLE_BIN_PATH = SLASH + VAR + SLASH + RECYCLE_BIN;
+    public static final String RECYCLEBIN_RESOURCE_TYPE = "admin/components/recyclable";
+    public static final String SITE_HOME_PATTERN = REGEX_SLASH + CONTENT + REGEX_SLASH + "[^" + REGEX_SLASH + "]+" + REGEX_SLASH ;
+    public static final String SITE_PAGES_PATTERN = SITE_HOME_PATTERN + PAGES + REGEX_SLASH + "?.*";
+    public static final String SITE_ASSETS_PATTERN = SITE_HOME_PATTERN + ASSETS + REGEX_SLASH + "?.*";
+    public static final String SITE_TEMPLATES_PATTERN = SITE_HOME_PATTERN + TEMPLATES + REGEX_SLASH + "?.*";
+    public static final String SITE_OBJECTS_PATTERN = SITE_HOME_PATTERN + OBJECTS + REGEX_SLASH + "?.*";
+    public static final String SITE_RECYCLEBIN_PATTERN
+            = REGEX_SLASH + VAR + REGEX_SLASH + RECYCLE_BIN + SITE_HOME_PATTERN + "?.*";
 }
 

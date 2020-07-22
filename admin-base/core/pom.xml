@@ -54,6 +54,7 @@
                             Private-Package,
                             Include-Resource
                         </_removeheaders>
+                        <Sling-Test-Regexp>.*JTest</Sling-Test-Regexp>
                     </instructions>
                 </configuration>
             </plugin>
@@ -138,8 +139,17 @@
         </dependency>
         <dependency>
             <groupId>org.apache.sling</groupId>
-            <artifactId>org.apache.sling.commons.mime</artifactId>
+            <artifactId>org.apache.sling.jcr.base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.junit.core</artifactId>
+            <version>${org.apache.sling.junit.core.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.commons.mime</artifactId>
         </dependency>
 
         <dependency>
@@ -165,6 +175,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

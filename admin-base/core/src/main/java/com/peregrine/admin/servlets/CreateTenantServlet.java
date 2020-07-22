@@ -29,9 +29,9 @@ import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_CREATION_TEN
 import static com.peregrine.admin.util.AdminConstants.GROUP_NAME_SUFFIX;
 import static com.peregrine.admin.util.AdminConstants.PEREGRINE_SERVICE_NAME;
 import static com.peregrine.admin.util.AdminConstants.USER_NAME_SUFFIX;
-import static com.peregrine.commons.util.PerConstants.ADMIN_USER;
 import static com.peregrine.commons.util.PerConstants.ALL_TENANTS_GROUP_NAME;
 import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
+import static com.peregrine.commons.util.PerConstants.BRAND;
 import static com.peregrine.commons.util.PerConstants.COLOR_PALETTE;
 import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
 import static com.peregrine.commons.util.PerConstants.CREATED;
@@ -40,8 +40,10 @@ import static com.peregrine.commons.util.PerConstants.FROM_TENANT_NAME;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
 import static com.peregrine.commons.util.PerConstants.PACKAGES_PATH;
 import static com.peregrine.commons.util.PerConstants.PATH;
+import static com.peregrine.commons.util.PerConstants.RECYCLE_BIN_PATH;
 import static com.peregrine.commons.util.PerConstants.SITE;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SOURCE_PATH;
@@ -71,8 +73,11 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.commons.util.PerUtil;
+
 import java.io.IOException;
 import java.util.Arrays;
+import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.security.AccessControlManager;
@@ -85,6 +90,7 @@ import org.apache.jackrabbit.api.security.user.AuthorizableExistsException;
 import org.apache.jackrabbit.api.security.user.Group;
 import org.apache.jackrabbit.api.security.user.User;
 import org.apache.jackrabbit.api.security.user.UserManager;
+import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.commons.jackrabbit.authorization.AccessControlUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ModifiableValueMap;
@@ -187,6 +193,17 @@ public class CreateTenantServlet extends AbstractBaseServlet {
                         () -> tenantUserId,
                         TENANT_USER_HOME
                     );
+                    if(tenantUser != null) {
+                        try {
+                            Resource resUser = resourceResolver.getResource(tenantUser.getPath());
+                            Node nodeUser = PerUtil.getNode(resUser);
+                            Node nodeUserPreferences = nodeUser.addNode("preferences");
+                            nodeUserPreferences.setProperty("firstLogin", "true");
+                            adminSession.save();
+                        } catch( RepositoryException re ) {
+                            logger.error("was not able to set firstLogin pereference for user", re);
+                        }
+                    }
                     if(tenantUser != null && !isPwdProvided) {
                         tenantUser.disable(DISABLE_USER_REASON);
                     }
@@ -224,10 +241,27 @@ public class CreateTenantServlet extends AbstractBaseServlet {
                 if(packages != null) {
                     setAccessRights(accessControlManager, packages.getPath(), allTenantsGroup, tenantGroup);
                 }
+
+                JackrabbitAccessControlList policies = AccessControlUtils.getAccessControlList(accessControlManager, site.getPath());
+                Privilege[] privileges = AccessControlUtils.privilegesFromNames(accessControlManager, "jcr:all");
+                policies.addEntry(allTenantsGroup.getPrincipal(), privileges, false, null);
+                policies.addEntry(tenantGroup.getPrincipal(), privileges, true, null);
+                accessControlManager.setPolicy(site.getPath(), policies);
+                Node recycleBin = JcrUtils.getOrCreateByPath(
+                        RECYCLE_BIN_PATH + site.getPath(),
+                        NT_UNSTRUCTURED,
+                        NT_UNSTRUCTURED,
+                        resourceResolver.adaptTo(Session.class),
+                        false);
+                JackrabbitAccessControlList rbPolicies = AccessControlUtils.getAccessControlList(accessControlManager, recycleBin.getPath());
+                rbPolicies.addEntry(allTenantsGroup.getPrincipal(), privileges, false, null);
+                rbPolicies.addEntry(tenantGroup.getPrincipal(), privileges, true, null);
+                accessControlManager.setPolicy(recycleBin.getPath(), rbPolicies);
                 // Done settings permissions
             } catch(RuntimeException e) {
                 logger.warn("Setting Site Permissions failed", e);
             }
+            setBrandOnTemplate(resourceResolver, toTenant, title);
             resourceResolver.commit();
             String colorPalette = request.getParameter(COLOR_PALETTE);
             if (isNotEmpty(colorPalette)) {
@@ -299,6 +333,18 @@ public class CreateTenantServlet extends AbstractBaseServlet {
             modifiableProperties.put("siteCSS", cssReplacements);
         } else {
             logger.error("No siteCSS property found for copied template");
+        }
+    }
+
+    private void setBrandOnTemplate(final ResourceResolver resourceResolver, final String tenant, final String siteName) {
+        final Resource templateContent = getResource(
+                resourceResolver,
+                TEMPLATES_ROOT.replace(TENANT, tenant)
+        ).getChild(JCR_CONTENT);
+
+        if (templateContent != null) {
+            ModifiableValueMap modifiableProperties = getModifiableProperties(templateContent);
+            modifiableProperties.put(BRAND, siteName);
         }
     }
 }

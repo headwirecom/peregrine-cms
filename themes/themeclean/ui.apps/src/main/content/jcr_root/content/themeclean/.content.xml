@@ -4,5 +4,5 @@
   jcr:primaryType="per:Site"
   jcr:title="Themeclean Site"
   sourceSite="pagerendervue"
-  internal="false"
-  template="true"/>
+  internal="true"
+  template="false"/>
