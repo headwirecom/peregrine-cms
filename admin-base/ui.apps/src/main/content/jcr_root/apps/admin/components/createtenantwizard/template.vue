@@ -72,6 +72,16 @@
         <tab-content title="verify">
             Creating Site `{{formmodel.name}}` from existing theme `{{formmodel.templatePath}}`
         </tab-content>
+        <span v-if="isLastStep" slot="custom-buttons-right" role="button">
+            <button type="button" class="wizard-btn outline" @click="onComplete(false)">
+                Create
+           </button>
+        </span>
+        <span slot="finish" role="button" tabindex="0">
+            <button tabindex="-1" type="button" class="wizard-btn finish">
+            Create and Edit!
+            </button>
+        </span>
     </form-wizard>
 </div>
 </template>
@@ -82,6 +92,7 @@
         data:
             function() {
                 return {
+                    isLastStep: false,
                     reloadKey: 0,
                     colorPalettes: [],
                     formErrors: {
@@ -171,13 +182,13 @@
             isSelected: function(target) {
                 return this.formmodel.templatePath === target
             },
-            onComplete: function() {
+            onComplete: function(edit = true) {
                 const payload = {
                     fromName: this.formmodel.templatePath,
                     toName: this.formmodel.name,
                     title: this.formmodel.title,
                     tenantUserPwd: this.formmodel.tenantUserPwd,
-                    editHome: true
+                    editHome: edit
                 }
 
                 if (this.formmodel.colorPalette && this.formmodel.colorPalette.length > 0) {
@@ -222,7 +233,11 @@
                 return [];
             },
             leaveTabTwo: function() {
-                return this.$refs.nameTab.validate()
+                const isValid = this.$refs.nameTab.validate()
+                if (isValid) {
+                    this.isLastStep = true
+                }
+                return isValid
             },
             onColorPaletteSelect(colorPalette) {
                 this.formmodel.colorPalette = colorPalette
