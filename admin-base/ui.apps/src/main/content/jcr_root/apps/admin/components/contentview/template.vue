@@ -263,8 +263,11 @@
         }
       },
       scrollTop() {
-        this.wrapEditableAroundSelected()
-
+        if (this.target) {
+          this.wrapEditableAroundSelected()
+        } else {
+          this.wrapEditableAroundElement(this.iframe.mouseOverCmp)
+        }
       },
       'view.state.tools.workspace.view'() {
         this.$nextTick(() => {
@@ -301,7 +304,7 @@
       },
       'iframe.dimension': {
         deep: true,
-        handler(val) {
+        handler() {
           this.wrapEditableAroundElement(this.iframe.mouseOverCmp)
         }
       }
