@@ -28,10 +28,15 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Stack;
 
 import static com.peregrine.commons.util.PerConstants.ADMIN_USER;
@@ -39,6 +44,8 @@ import static com.peregrine.commons.util.PerConstants.JSON;
 import static com.peregrine.commons.util.PerConstants.JSON_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.TEXT_MIME_TYPE;
+import static com.peregrine.commons.util.PerUtil.GET;
+import static com.peregrine.commons.util.PerUtil.POST;
 
 /**
  * Base Class for Peregrine Servlets
@@ -96,6 +103,22 @@ public abstract class AbstractBaseServlet
             throw e;
         }
         if(!ALREADY_HANDLED.equals(out.getType())) {
+            Map<String, List<Object>> headers = out.getHeaders();
+            if(headers != null) {
+                for(Entry<String, List<Object>> entry: headers.entrySet()) {
+                    String name = entry.getKey();
+                    List<Object> values = entry.getValue();
+                    for(Object value: values) {
+                        if (value instanceof Calendar) {
+                            response.addDateHeader(name, ((Calendar) value).getTimeInMillis());
+                        } else if (value instanceof Integer) {
+                            response.addIntHeader(name, (Integer) value);
+                        } else {
+                            response.addHeader(name, value + "");
+                        }
+                    }
+                }
+            }
             response.setContentType(out.getMimeType());
             String output = out.getContent();
             if(DIRECT.equals(out.getType())) {
@@ -136,6 +159,10 @@ public abstract class AbstractBaseServlet
         public boolean isAdmin() {
             return request.getUserPrincipal().getName().equals(ADMIN_USER);
         }
+
+        public boolean isPost() { return request.getMethod().equals(POST); };
+        public boolean isGet() { return request.getMethod().equals(GET); };
+
         public SlingHttpServletRequest getRequest() {
             return request;
         }
@@ -162,6 +189,15 @@ public abstract class AbstractBaseServlet
             if(StringUtils.isBlank(rawParam)) return rawParam;
             CharsetDetector detector = new CharsetDetector();
             return detector.getString(rawParam.getBytes(), "utf-8");
+        }
+
+        public boolean getBooleanParameter(String name, boolean defaultValue) {
+            boolean answer = defaultValue;
+            String parameter = parameters.get(name);
+            if(parameter != null) {
+                answer = "on".equalsIgnoreCase(parameter) || "true".equalsIgnoreCase(parameter);
+            }
+            return answer;
         }
 
         public int getIntParameter(String name, int defaultValue) {
@@ -198,6 +234,7 @@ public abstract class AbstractBaseServlet
      */
     public static abstract class Response {
         private String type;
+        private Map<String, List<Object>> headers = new HashMap<>();
 
         public Response(String type) {
             this.type = type;
@@ -205,6 +242,21 @@ public abstract class AbstractBaseServlet
 
         /** @return Type of the response **/
         public String getType() { return type; }
+
+        /** @return A Map of Response Headers which can be null or empty **/
+        public Map<String, List<Object>> getHeaders() { return headers; }
+
+        public void addHeader(String name, Object value) {
+            List<Object> values = headers.get(name);
+            if(values == null) {
+                values = new ArrayList<>();
+                headers.put(name, values);
+            }
+            if(!values.contains(value)) {
+                values.add(value);
+            }
+        }
+        public void clearHeaders() { headers.clear(); }
 
         /** @return Response Content as text **/
         public String getContent() throws IOException {

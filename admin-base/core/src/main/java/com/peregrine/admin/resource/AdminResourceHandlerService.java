@@ -87,10 +87,12 @@ public class AdminResourceHandlerService
     public static final String NAME_TO_BE_RENAMED_TO_CANNOT_CONTAIN_A_SLASH = "Name to be renamed to cannot contain a slash";
     private static final String FAILED_TO_RENAME = "Failed to Rename Resource. From: '%s' to: '%s'";
 
-    private static final String PARENT_RESOURCE_MUST_BE_PROVIDED_TO_CREATE_ASSET = "Parent Resource must be provided to create Asset";
-    private static final String ASSET_NAME_MUST_BE_PROVIDED_TO_CREATE_ASSET = "Asset Name must be provided to create Asset";
-    private static final String CONTENT_TYPE_MUST_BE_PROVIDED_TO_CREATE_ASSET = "Content Type must be provided to create Asset";
-    private static final String INPUT_STREAM_MUST_BE_PROVIDED_TO_CREATE_ASSET = "Input Stream must be provided to create Asset";
+    private static final String PARENT_RESOURCE_MUST_BE_PROVIDED_TO_CREATE_DATA_NODE = "Parent Resource must be provided to create %s";
+    private static final String NODE_NAME_MUST_BE_PROVIDED_TO_CREATE_NODE = "%s Name must be provided to create Node";
+    private static final String NODE_TYPE_MUST_BE_PROVIDED_TO_CREATE_DATA_NODE = "Node Type must be provided to create %s";
+    private static final String NODE_CONTENT_TYPE_MUST_BE_PROVIDED_TO_CREATE_DATA_NODE = "Node Content Type must be provided to create %s";
+    private static final String CONTENT_MIME_TYPE_MUST_BE_PROVIDED_TO_CREATE_DATA_NODE = "Content Mime Type must be provided to create %s";
+    private static final String INPUT_STREAM_MUST_BE_PROVIDED_TO_CREATE_DATA_NODE = "Input Stream must be provided to create %s";
     private static final String FAILED_TO_CREATE = "Failed to Create %s in Parent: '%s', name: '%s'";
     private static final String FAILED_TO_CREATE_RENDITION = "Failed to Create %s Rendition in Parent: '%s', name: '%s'";
     private static final String FAILED_TO_COPY = "Failed to copy source: '%s' on target parent: '%s'";
@@ -724,45 +726,66 @@ public class AdminResourceHandlerService
     }
 
     @Override
-    public Resource createAssetFromStream(Resource parent, String assetName, String contentType, InputStream inputStream) throws ManagementException {
-        if(isEmpty(assetName)) {
-            throw new ManagementException(ASSET_NAME_MUST_BE_PROVIDED_TO_CREATE_ASSET);
+    public Resource createDataNodeFromStream(
+        Resource parent, String nodeName, String nodeType, String nodeContentType, String contentMimeType,
+        InputStream inputStream, String nodeTypeName, String...contentMixins
+    ) throws ManagementException {
+        if(isEmpty(nodeName)) {
+            throw new ManagementException(String.format(NODE_NAME_MUST_BE_PROVIDED_TO_CREATE_NODE, nodeTypeName));
         }
-        if(!nodeNameValidation.isValidNodeName(assetName)) {
-            throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, assetName));
+        if(!nodeNameValidation.isValidNodeName(nodeName)) {
+            throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, nodeName));
         }
         if(parent == null) {
-            throw new ManagementException(PARENT_RESOURCE_MUST_BE_PROVIDED_TO_CREATE_ASSET);
+            throw new ManagementException(String.format(PARENT_RESOURCE_MUST_BE_PROVIDED_TO_CREATE_DATA_NODE, nodeTypeName));
         }
-        if (isEmpty(contentType)) {
-            throw new ManagementException(CONTENT_TYPE_MUST_BE_PROVIDED_TO_CREATE_ASSET);
+        if (isEmpty(contentMimeType)) {
+            throw new ManagementException(String.format(CONTENT_MIME_TYPE_MUST_BE_PROVIDED_TO_CREATE_DATA_NODE, nodeTypeName));
         }
         if (inputStream == null) {
-            throw new ManagementException(INPUT_STREAM_MUST_BE_PROVIDED_TO_CREATE_ASSET);
+            throw new ManagementException(String.format(INPUT_STREAM_MUST_BE_PROVIDED_TO_CREATE_DATA_NODE, nodeTypeName));
+        }
+        if (isEmpty(nodeType)) {
+            throw new ManagementException(String.format(NODE_TYPE_MUST_BE_PROVIDED_TO_CREATE_DATA_NODE, nodeTypeName));
+        }
+        if (isEmpty(nodeContentType)) {
+            throw new ManagementException(String.format(NODE_CONTENT_TYPE_MUST_BE_PROVIDED_TO_CREATE_DATA_NODE, nodeTypeName));
         }
 
         final Node parentNode = getNode(parent);
         if (parentNode == null) {
-            throw new ManagementException(PARENT_RESOURCE_MUST_BE_PROVIDED_TO_CREATE_ASSET);
+            throw new ManagementException(PARENT_RESOURCE_MUST_BE_PROVIDED_TO_CREATE_DATA_NODE);
         }
         try {
-            if (parentNode.hasNode(assetName)) {
+            if (parentNode.hasNode(nodeName)) {
                 // Node already exists -> delete it
-                Node existingNode = parentNode.getNode(assetName);
+                Node existingNode = parentNode.getNode(nodeName);
                 existingNode.remove();
             }
-            Node newAsset = parentNode.addNode(assetName, ASSET_PRIMARY_TYPE);
-            Node content = newAsset.addNode(JCR_CONTENT, ASSET_CONTENT_TYPE);
+            Node newDataNode = parentNode.addNode(nodeName, nodeType);
+            Node newDataContentNode = newDataNode.addNode(JCR_CONTENT, nodeContentType);
             Binary data = parentNode.getSession().getValueFactory().createBinary(inputStream);
-            content.setProperty(JCR_DATA, data);
-            content.setProperty(JCR_MIME_TYPE, contentType);
+            newDataContentNode.setProperty(JCR_DATA, data);
+            newDataContentNode.setProperty(JCR_MIME_TYPE, contentMimeType);
+            for(String contentMixin: contentMixins) {
+                newDataContentNode.addMixin(contentMixin);
+            }
             final ResourceResolver resourceResolver = parent.getResourceResolver();
-            baseResourceHandler.updateModification(resourceResolver, newAsset);
-            final Resource answer = adaptNodeToResource(resourceResolver, newAsset);
+            return adaptNodeToResource(resourceResolver, newDataNode);
+        } catch (RepositoryException e) {
+            throw new ManagementException(String.format(FAILED_TO_CREATE, nodeTypeName, parent.getPath(), nodeName), e);
+        }
+    }
+
+    @Override
+    public Resource createAssetFromStream(Resource parent, String assetName, String contentMimeType, InputStream inputStream) throws ManagementException {
+        try {
+            final ResourceResolver resourceResolver = parent.getResourceResolver();
+            Resource answer = createDataNodeFromStream(parent, assetName, ASSET_PRIMARY_TYPE, ASSET_CONTENT_TYPE, contentMimeType, inputStream, "Asset");
+            baseResourceHandler.updateModification(resourceResolver, answer.adaptTo(Node.class));
             if (answer != null) {
                 processNewAsset(answer.adaptTo(PerAsset.class));
             }
-
             return answer;
         } catch (RepositoryException e) {
             throw new ManagementException(String.format(FAILED_TO_CREATE, ASSET, parent.getPath(), assetName), e);
