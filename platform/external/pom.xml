@@ -73,6 +73,10 @@
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.junit.core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.query</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -124,6 +128,11 @@
                                 <embedded>
                                     <groupId>org.apache.sling</groupId>
                                     <artifactId>org.apache.sling.junit.core</artifactId>
+                                    <generateFilter>true</generateFilter>
+                                </embedded>
+                                <embedded>
+                                    <groupId>org.apache.sling</groupId>
+                                    <artifactId>org.apache.sling.query</artifactId>
                                     <generateFilter>true</generateFilter>
                                 </embedded>
                             </embeddeds>
