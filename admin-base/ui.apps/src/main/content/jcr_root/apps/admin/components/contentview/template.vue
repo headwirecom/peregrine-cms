@@ -128,7 +128,10 @@
         iframe: {
           loaded: false,
           win: null, doc: null, html: null, body: null, head: null, app: null,
-          scrollTop: 0
+          scrollTop: 0,
+          timeout: null,
+          delay: 50,
+          dimension: {w: 0, h: 0}
         },
         clipboard: null,
         ctrlDown: false,
@@ -260,6 +263,7 @@
       },
       scrollTop() {
         this.wrapEditableAroundSelected()
+
       },
       'view.state.tools.workspace.view'() {
         this.$nextTick(() => {
@@ -292,6 +296,12 @@
               this.wrapEditableAroundSelected()
             }, this.editable.delay)
           }
+        }
+      },
+      'iframe.dimension': {
+        deep: true,
+        handler(val) {
+          console.log(val)
         }
       }
     },
@@ -589,6 +599,8 @@
         this.iframe.body = this.iframe.doc.querySelector('body')
         this.iframe.head = this.iframe.doc.querySelector('head')
         this.iframe.app = this.iframe.doc.querySelector('#peregrine-app')
+        this.iframe.win.addEventListener('resize', this.updateIframeDimensions);
+        this.updateIframeDimensions()
         this.addIframeExtraStyles()
         this.refreshIframeElements()
         if (this.previewMode !== 'preview') {
@@ -1051,6 +1063,13 @@
         event.target.classList.remove('outline-orange', 'outline-green')
       },
 
+      updateIframeDimensions() {
+        clearTimeout(this.iframe.timeout)
+        this.iframe.timeout = setTimeout(() => {
+          this.iframe.dimension.w = this.iframe.doc.documentElement.clientWidth
+          this.iframe.dimension.h = this.iframe.doc.documentElement.clientHeight
+        }, this.iframe.delay)
+      }
     }
   }
 </script>
