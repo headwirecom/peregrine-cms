@@ -47,7 +47,7 @@
         </admin-components-materializedropdown>
       </div>
       <div class="nav-center">
-        <ul v-if="!model.hideTenants" class="hide-on-small-and-down nav-mobile">
+        <ul v-if="!hideTenants" class="hide-on-small-and-down nav-mobile">
           <admin-components-action
               v-for="section in sections"
               :key="`section-${section.name}`"
@@ -150,6 +150,9 @@
       }
     },
     computed: {
+      hideTenants() {
+        return this.model.hideTenants ? true : $perAdminApp.getView().state.tenant ? false : true
+      },
       language() {
         return {name: $perAdminApp.getView().state.language}
       },
