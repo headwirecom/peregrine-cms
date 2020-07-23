@@ -305,7 +305,11 @@
       'iframe.dimension': {
         deep: true,
         handler() {
-          this.wrapEditableAroundElement(this.iframe.mouseOverCmp)
+          if (this.target) {
+            this.wrapEditableAroundSelected()
+          } else {
+            this.wrapEditableAroundElement(this.iframe.mouseOverCmp)
+          }
         }
       }
     },
