@@ -130,7 +130,7 @@
           win: null, doc: null, html: null, body: null, head: null, app: null,
           scrollTop: 0,
           timeout: null,
-          delay: 50,
+          delay: 0,
           mouseOverCmp: null,
           dimension: {w: 0, h: 0, x: 0, y: 0}
         },
