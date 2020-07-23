@@ -41,7 +41,7 @@
                             v-bind:key="item.name"
                             v-on:click.stop.prevent="selectTheme(null, item.name)"
                             v-bind:class="isSelected(item.name) ? 'active' : ''">
-                            <admin-components-action v-bind:model="{ command: 'selectTheme', target: item.name, title: item.name }"></admin-components-action>
+                            <admin-components-action v-bind:model="{ command: 'selectTheme', target: item.name, title: item.title ? item.title : item.name }"></admin-components-action>
                         </li>
                     </ul>
                     <div v-if="formErrors.unselectedThemeError" class="errors">
@@ -148,10 +148,9 @@
             pageSchema: function() {
             },
             themes: function() {
-                const themes = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, '/content').children
-                const siteRootParts = this.formmodel.path.split('/').slice(0,4)
+                const themes = $perAdminApp.getView().admin.tenants
                 return themes.filter( (item) => {
-                    return item.name.startsWith('theme');
+                    return item.template === true;
                 })
             }
         },

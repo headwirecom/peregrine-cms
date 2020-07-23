@@ -50,6 +50,7 @@
     .login-wrapper {
       width: 85%;
       min-width: 600px;
+      max-width: 1500px;
       border-radius: 15px;
       background-color: #ffffff;
       height: 650px;
@@ -94,6 +95,7 @@
           opacity: 0;
           width: 100%;
           height: 100%;
+          z-index: -1;
         }
       }
 

@@ -1,12 +1,17 @@
 package com.peregrine.intra;
 
+import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+
+import java.util.Map;
 
 public interface IntraSlingCaller {
     public CallerContext createContext();
     public byte[] call(CallerContext callerContext) throws CallException;
 
     interface CallerContext {
+        public Resource getResource();
+        public CallerContext setResource(Resource resource);
         public ResourceResolver getResourceResolver();
         public CallerContext setResourceResolver(ResourceResolver resourceResolver);
         public String getPath();
@@ -17,8 +22,10 @@ public interface IntraSlingCaller {
         public CallerContext setExtension(String extension);
         public String getSuffix();
         public CallerContext setSuffix(String suffix);
-        public String getQueryString();
-        public CallerContext setQueryString(String queryString);
+        public Map<String,Object> getParameterMap();
+        public CallerContext setParameterMap(Map<String, Object> parameterMap);
+        public String getMethod();
+        public CallerContext setMethod(String method);
     }
 
     class CallException extends Exception {

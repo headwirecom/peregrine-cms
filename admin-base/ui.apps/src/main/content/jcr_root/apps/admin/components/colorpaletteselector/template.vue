@@ -35,28 +35,37 @@
             :href="selectedPath"
             type="text/css"/>
     </div>
-    <label>Select Color Palette</label>
-    <ul class="collection">
-      <li class="collection-item"
-          v-for="palette in palettes"
-          :class="{active: selectedPath === palette.path}"
-          @click.stop.prevent="onSelect(palette)">
-        {{ palette.name }}
-      </li>
-    </ul>
-    <div class="palette-previews" id="peregrine-app">
-      <template v-for="theme in themes">
-        <h4 class="theme-name">{{ theme }}</h4>
-        <div class="theme-preview" :class="`theme-${theme}`">
-          <div v-for="color in colors"
-               :style="{backgroundColor: `var(--${color.var})`, color: color.text}"
-               :title="color.label"
-               class="palette-col">
-            {{ color.label }}
-          </div>
+    <div class="row">
+      <div class="col s12 m4 l4">
+        <label>Select Color Palette</label>
+        <ul class="collection">
+          <li class="collection-item"
+              v-for="palette in palettes"
+              v-bind:key="palette.name"
+              :class="{active: selectedPath === palette.path}"
+              @click.stop.prevent="onSelect(palette)">
+            {{ palette.name }}
+          </li>
+        </ul>
+      </div>
+      <div class="col s12 m8 l8">
+        <div class="palette-previews" id="peregrine-app">
+          <template v-for="theme in themes">
+            <label class="theme-name" :key="theme">{{ theme }}</label>
+            <div class="theme-preview" :key="`theme-${theme}`" :class="`theme-${theme}`">
+              <div v-for="(color, idx) in colors"
+                  :key="idx"
+                  :style="{background: `var(--${color.var})`, color: color.text}"
+                  :title="color.label"
+                  class="palette-col">
+                {{ color.label }}
+              </div>
+            </div>
+          </template>
         </div>
-      </template>
+      </div>
     </div>
+
   </div>
 </template>
 
@@ -75,27 +84,27 @@
     data() {
       return {
         selectedPath: null,
-        themes: ['none', 'light', 'dark'],
+        themes: ['light', 'dark', 'none'],
         colors: [
           {
             label: 'primary background color',
-            var: 'bg-primary-color',
+            var: 'bg-primary',
             text: 'var(--text-primary-color)'
           },
           {
             label: 'secondary background color',
-            var: 'bg-secondary-color',
+            var: 'bg-secondary',
             text: 'var(--text-secondary-color)'
           },
           {
             label: 'primary text color',
             var: 'text-primary-color',
-            text: 'var(--bg-primary-color)'
+            text: 'var(--bg-primary)'
           },
           {
             label: 'secondary text color',
             var: 'text-secondary-color',
-            text: 'var(--bg-secondary-color)'
+            text: 'var(--bg-secondary)'
           },
           {
             label: 'primary border color',
@@ -121,7 +130,7 @@
 
 <style scoped>
   .palette-previews .theme-name {
-    text-transform: uppercase;
+    /* text-transform: uppercase; */
     text-align: center;
   }
 
@@ -129,7 +138,7 @@
     display: flex;
     border: 1px solid #000000;
     border-left-width: 0;
-    height: 150px;
+    /* height: 150px; */
     text-align: center;
   }
 
@@ -140,6 +149,6 @@
     justify-content: center;
     align-content: center;
     flex-direction: column;
-    padding: 10px;
+    padding: 1rem;
   }
 </style>

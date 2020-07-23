@@ -296,7 +296,7 @@ class PerAdminImpl {
             let promises = []
             if (data && data.model) {
               if (data.model.groups) {
-                for (let j = 0; j < data.model.groups.lenght; j++) {
+                for (let j = 0; j < data.model.groups.length; j++) {
                   for (let i = 0; i < data.model.groups[j].fields.length; i++) {
                     let from = data.model.groups[j].fields[i].valuesFrom
                     if (from) {
@@ -456,6 +456,15 @@ class PerAdminImpl {
     })
   }
 
+  populateBackupInfo(backup) {
+    let tenantName = backup ? backup.tenant : '';
+    if(tenantName === '' || tenantName === 'undefined') {
+      const tenant = $perAdminApp.getNodeFromViewWithDefault("/state/tenant", {});
+      tenantName = tenant ? tenant.name : '';
+    }
+    fetch('/admin/backupTenant.json/content/' + tenantName)
+        .then((data) => populateView('/state/tools', 'backup', data));
+  }
 
   populatePageView(path) {
     return fetch('/admin/readNode.json' + path)
@@ -1098,6 +1107,45 @@ class PerAdminImpl {
     return updateWithForm('/admin/tenantSetupReplication.json' + path, formData)
   }
 
+  backupTenant(path) {
+    let formData = new FormData();
+    return updateWithForm('/admin/backupTenant.json' + path, formData)
+  }
+
+  downloadBackupTenant(path) {
+    return fetch('/admin/downloadBackupTenant.zip' + path + ".zip")
+  }
+
+  uploadBackupTenant(path, files, cb) {
+    const config = {
+      onUploadProgress: progressEvent => {
+        const percentCompleted = Math.floor(
+            (progressEvent.loaded * 100) / progressEvent.total);
+        cb(percentCompleted)
+      }
+    }
+    const data = new FormData()
+    if(files.length > 0) {
+      const file = files[0]
+      data.append('file', file, file.name)
+      data.append('force', 'true');
+    }
+    if (!data.entries().next().done) {
+      return updateWithFormAndConfig('/admin/uploadBackupTenant.json' + path, data,
+          config)
+          .then(() => this.populateNodesForBrowser(path))
+          .catch(error => {
+//            log.error('Failed to upload: ' + error)
+            reject('Unable to upload due to an error. ' + error)
+          })
+    }
+    return
+  }
+
+  restoreTenant(path) {
+    let formData = new FormData();
+    return updateWithForm('/admin/restoreTenant.json' + path, formData)
+  }
 
 }
 

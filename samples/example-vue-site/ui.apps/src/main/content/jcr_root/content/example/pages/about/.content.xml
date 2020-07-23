@@ -58,7 +58,9 @@
             <slide1 jcr:primaryType="nt:unstructured"
               imagePath="/content/admin/assets/images/tesla.jpg"
               sling:resourceType="example/components/carouselItem"
-              name="slide1"/>
+              name="slide1"
+              heading="ITS A TESLA"
+              text="its not only a car"/>
 
             <slide2 jcr:primaryType="nt:unstructured"
               imagePath="/content/admin/assets/images/tesla1.jpg"

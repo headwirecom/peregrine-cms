@@ -266,6 +266,25 @@ public interface AdminResourceHandler {
     Resource rename(Resource fromResource, String newName) throws ManagementException;
 
     /**
+     * Creates a Data Node with the given Byte Input Stream
+     *
+     * @param parent Parent Source under which the asset is created. It must exist
+     * @param nodeName Name of the Node. There must not be an node with that name already exist
+     *                 in the given parent
+     * @param nodeType Primary Type of the Data Node
+     * @param nodeContentType Primary Type of the Data Content Node
+     * @param contentMimeType Mime Type of the Data Node which must be provided
+     * @param inputStream Input Stream of the Node's Content
+     * @param contentMixins Mixins to be added to the Content Node
+     * @return Created Node
+     * @throws ManagementException If the creation failed
+     */
+    public Resource createDataNodeFromStream(
+        Resource parent, String nodeName, String nodeType, String nodeContentType, String contentMimeType,
+        InputStream inputStream, String nodeTypeName, String...contentMixins
+    ) throws ManagementException;
+
+    /**
      * Updates the jcr:title of a given JCR:CONTENT resource
      * @param resource Resource to get new title. It must exist and be JCR:CONTENT
      * @param jcrTitle as String

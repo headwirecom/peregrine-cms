@@ -11,10 +11,13 @@
       <li v-if="items" v-for="(item, index) in items"
           :key="`item-${index}`"
           class="item"
-          :class="{disabled: item.disabled}"
+          :class="[{disabled: item.disabled}, item.class? item.class() : null]"
           :title="item.title? $i18n(item.title) : false"
           @click="onItemClick(item, index)">
-        <i v-if="item.icon" class="material-icons">{{item.icon}}</i>
+        <template v-if="item.icon">
+          <i v-if="item.iconLib === 'font-awesome'" :class="['fa', `fa-${item.icon}`]"></i>
+          <i v-else class="material-icons">{{ item.icon }}</i>
+        </template>
         {{ $i18n(item.label) }}
         <div v-if="item.icon" class="center-keeper"></div>
       </li>

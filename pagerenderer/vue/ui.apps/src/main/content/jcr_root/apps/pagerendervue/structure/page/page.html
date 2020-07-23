@@ -2,6 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
+
+    <sly data-sly-list="${helper.model.prefetchDNS}"><link rel="preconnect" href="${item}"><link rel="dns-prefetch" href="${item}"></sly>
+    <sly data-sly-list="${helper.model.siteJS}"><link rel="preload" href="${item}" as="script"></sly>
+    <sly data-sly-list="${helper.model.siteCSS}"><link rel="preload" href="${item}" as="style"></sly>
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#c0c0c0">
     <meta name="description" content="${helper.model.description}">
@@ -11,30 +16,37 @@
 
     <link rel="apple-touch-icon" href="/content/example/assets/images/peregrine-logo.png">
 
-    <meta data-sly-test="${(!(resource.useTitle) && resource.ogTitle) || (resource.useTitle && helper.model.title)}" property="og:title" content="${ resource.useTitle ? helper.model.title : resource.ogTitle}"/>
-    <meta data-sly-test="${(!(resource.useDescription) && resource.ogDescription) || (resource.useDescription && helper.model.description)}" property="og:description" content="${ resource.useDescription ? helper.model.description : resource.ogDescription}"/>
+    <meta data-sly-test="${helper.model.metaRobots}" name="robots" content="${helper.model.metaRobots}"/>
+    <meta data-sly-test="${helper.model.ogTitle}" property="og:title" content="${helper.model.ogTitle}"/>
+    <meta data-sly-test="${helper.model.ogDescription}" property="og:description" content="${helper.model.ogDescription}"/>
     <meta data-sly-test="${resource.ogType}" property="og:type" content="${resource.ogType}"/>
-    <meta data-sly-test="${resource.ogImage}" property="og:image" content="${resource.ogImage}"/>
+    <meta data-sly-test="${helper.model.absOgImage}" property="og:image" content="${helper.model.absOgImage}"/>
     <meta data-sly-test="${resource.ogImageAlt}" property="og:image:alt" content="${resource.ogImageAlt}"/>
-    <meta data-sly-test="${resource.ogUrl}" property="og:url" content="${resource.ogUrl}"/>
+    <meta data-sly-test="${resource.ogUrl || helper.model.canonicalUrl}" property="og:url" content="${resource.ogUrl ? resource.ogUrl : helper.model.canonicalUrl}"/>
 
     <title>${resource.jcr:title} | ${helper.model.brand}</title>
+    <link rel="canonical" href="${helper.model.canonicalUrl}"/>
     <sly data-sly-list="${helper.model.prefetchDNS}"><link rel="dns-prefetch" href="${item}"></sly>
 
     <link rel="manifest" href="${helper.siteRootPath}/manifest.json">
     <script>$peregrineSiteRoot = "${helper.siteRootPath @ context='unsafe'}"</script>
-
+    <script data-sly-test="${resource.jsonld}" type="application/ld+json">${resource.jsonld @ context = 'unsafe'} </script>
     <sly data-sly-include="tracker-head.html"></sly>
 
     <sly data-sly-include="styles.html"></sly>
-    <sly data-sly-list="${helper.model.siteCSS}"><link rel="stylesheet" href="${item}" type="text/css"></sly>
     <script type="text/javascript">
-        if(/MSIE \d|Trident.*rv:/.test(navigator.userAgent))
+        if(/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) {
             document.write('<script src="/etc/felibs/pagerendervue/conditional-js/shim.min.js"><\/script>');
+        }
     </script>
 
     <sly data-sly-use.page="com.peregrine.nodetypes.merge.PageMerge" /><script id="perPage" data-per-path="${resource.parent.path @ context='unsafe'}.html" type="application/json">${page.mergedForScript @ context = 'unsafe'}</script>
 
+    <style>
+        #peregrine-app [data-per-inline] {
+            white-space: pre-wrap;
+        }
+    </style>
 </head>
 
 
@@ -45,6 +57,9 @@
     <span v-cloak>
         <component v-bind:is="page.component" v-bind:model="page"></component>
     </span>
+    <span v-cloak class="whilePeregrineLoads">
+        loading: ${resource.jcr:title} ${helper.model.brand ? helper.model.brand : ""}
+    </span>
 </div>
 
 <sly data-sly-list="${helper.model.siteJS}">
@@ -52,6 +67,8 @@
 </sly>
 
 <sly data-sly-include="renderer.html"></sly>
+
+<sly data-sly-list="${helper.model.siteCSS}"><link rel="stylesheet" href="${item}" type="text/css"></sly>
 
 <script>
     var $perView = { view: 'preview' };
