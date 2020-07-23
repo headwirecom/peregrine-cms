@@ -1066,8 +1066,11 @@
       },
 
       updateIframeDimensions() {
-        this.iframe.dimension.w = this.iframe.doc.documentElement.clientWidth
-        this.iframe.dimension.h = this.iframe.doc.documentElement.clientHeight
+        clearTimeout(this.iframe.timeout)
+        this.iframe.timeout = setTimeout(() => {
+          this.iframe.dimension.w = this.iframe.doc.documentElement.clientWidth
+          this.iframe.dimension.h = this.iframe.doc.documentElement.clientHeight
+        }, this.iframe.delay)
       }
     }
   }
