@@ -73,6 +73,7 @@
             $perAdminApp.stateAction('createTenantWizard', '/content')
         },
         configureTenant: function(me, target) {
+            console.log(target)
             $perAdminApp.stateAction('setTenant', target)
                 .then(() => $perAdminApp.stateAction('configureTenant', target))
             

@@ -244,7 +244,7 @@
       },
       onSettingsClick() {
         $perAdminApp.action(this, 'configureTenant', {
-          path: '/content', name: this.state.tenant.name
+          path: '/content/admin/pages/tenants/configure.html/content/'+this.state.tenant.name, name: this.state.tenant.name
         })
       },
       onChangeWebsiteClick() {
