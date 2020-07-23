@@ -131,7 +131,8 @@
           scrollTop: 0,
           timeout: null,
           delay: 50,
-          dimension: {w: 0, h: 0}
+          mouseOverCmp: null,
+          dimension: {w: 0, h: 0, x: 0, y: 0}
         },
         clipboard: null,
         ctrlDown: false,
@@ -301,7 +302,7 @@
       'iframe.dimension': {
         deep: true,
         handler(val) {
-          console.log(val)
+          this.wrapEditableAroundElement(this.iframe.mouseOverCmp)
         }
       }
     },
@@ -716,6 +717,7 @@
           return
         }
 
+        this.iframe.mouseOverCmp = cmpEl
         this.wrapEditableAroundElement(cmpEl)
 
         if (this.isFromTemplate(cmpEl)) {
@@ -1064,11 +1066,8 @@
       },
 
       updateIframeDimensions() {
-        clearTimeout(this.iframe.timeout)
-        this.iframe.timeout = setTimeout(() => {
-          this.iframe.dimension.w = this.iframe.doc.documentElement.clientWidth
-          this.iframe.dimension.h = this.iframe.doc.documentElement.clientHeight
-        }, this.iframe.delay)
+        this.iframe.dimension.w = this.iframe.doc.documentElement.clientWidth
+        this.iframe.dimension.h = this.iframe.doc.documentElement.clientHeight
       }
     }
   }
