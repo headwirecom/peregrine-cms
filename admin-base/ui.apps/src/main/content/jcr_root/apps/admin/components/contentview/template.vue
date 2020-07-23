@@ -90,13 +90,7 @@
 
 <script>
   import {Attribute, Key} from '../../../../../../js/constants'
-  import {
-    get,
-    getCaretCharacterOffsetWithin,
-    restoreSelection,
-    saveSelection,
-    set
-  } from '../../../../../../js/utils'
+  import {get, getCaretCharacterOffsetWithin, set} from '../../../../../../js/utils'
 
   export default {
     props: ['model'],
@@ -250,14 +244,6 @@
       }
     },
     watch: {
-      target(val, oldVal) {
-        this.previousTarget = oldVal
-        if (val) {
-          this.selectComponent(this)
-        } else {
-          this.unselect(this)
-        }
-      },
       scrollTop() {
         this.wrapEditableAroundSelected()
       },
@@ -336,6 +322,7 @@
       },
 
       selectComponent(vm, el = vm.target) {
+        vm.previousTarget = vm.target
         vm.target = el
         if (!vm.target || !vm.component || !vm.path) return
 
@@ -442,14 +429,10 @@
       },
 
       onInlineEdit(event) {
-        if (!this.inlineEdit.firstTime.includes(event.target)) {
-          this.inlineEdit.firstTime.push(event.target)
-          this.inlineEdit.selection = saveSelection(event.target, this.iframe.doc)
-        }
-
-        this.target = event.target
+        this.selectComponent(this, event.target)
         const vnode = this.findVnode(this.component.__vue__, event.path)
         const attr = this.isRich ? 'innerHTML' : 'innerText'
+
         if (vnode.data.domProps) {
           if (this.isRich) {
             vnode.data.domProps.innerHTML = this.target.innerHTML.replace(/(?:\r\n|\r|\n)/g, '<br>')
@@ -457,17 +440,8 @@
             vnode.data.domProps.innerHTML = this.target.innerText
           }
         }
+
         this.writeInlineToModel()
-
-        if (this.inlineEdit.selection) {
-          this.$nextTick(() => {
-            this.$nextTick(() => {
-              restoreSelection(event.target, this.inlineEdit.selection, this.iframe.doc)
-              this.inlineEdit.selection = null
-            })
-          })
-        }
-
         this.autoSave = true
         this.reWrapEditable()
       },
@@ -484,7 +458,7 @@
         this.editing = true
         this.caret.pos = -1
         this.caret.counter = 0
-        this.target = event.target
+        this.selectComponent(this, event.target)
         const dataInline = this.targetInline.split('.').slice(1)
         this.inline = dataInline.join('.')
         set(this.view, '/state/inline/doc', this.iframe.doc)
@@ -600,7 +574,7 @@
 
       onIframeClick(event) {
         if (!this.isContentEditableOrNested(event.target)) {
-          this.target = event.target
+          this.selectComponent(this, event.target)
         }
       },
 
@@ -611,7 +585,7 @@
       onIframeDragOver(event) {
         event.preventDefault()
         this.dragging = true
-        this.target = event.target
+        this.selectComponent(this, event.target)
 
         if (this.component) {
           const isRoot = this.isTemplateNode
@@ -655,7 +629,7 @@
       onIframeDrop(event) {
         event.preventDefault()
         this.dragging = false
-        this.target = event.target
+        this.selectComponent(this, event.target)
         if (this.isTouch) {
           this.selected.draggable = false
         }
@@ -886,7 +860,7 @@
       },
 
       removeEditable() {
-        this.target = null
+        this.unselect(this)
         this.editable.class = null
         if (this.isTouch) {
           this.selected.draggable = false
