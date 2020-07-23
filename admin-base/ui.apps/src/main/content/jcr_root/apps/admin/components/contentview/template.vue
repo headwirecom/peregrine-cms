@@ -598,9 +598,9 @@
         }
       },
 
-      onIframeClick(ev) {
-        if (!this.isContentEditableOrNested(ev.target)) {
-          this.target = ev.target
+      onIframeClick(event) {
+        if (!this.isContentEditableOrNested(event.target)) {
+          this.target = event.target
         }
       },
 
