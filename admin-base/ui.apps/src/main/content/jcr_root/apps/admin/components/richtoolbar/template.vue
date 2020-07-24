@@ -50,7 +50,7 @@
 </template>
 
 <script>
-  import {actionsGroup, alwaysActiveGroup, textFormatGroup} from './groups';
+  import {actionsGroup, alwaysActiveGroup, boldItalicGroup, textFormatGroup} from './groups'
   import {get, restoreSelection, saveSelection, set} from '../../../../../../js/utils'
   import {PathBrowser} from '../../../../../../js/constants'
 
@@ -103,28 +103,14 @@
     computed: {
       groups() {
         return [
-            alwaysActiveGroup(this),
-            actionsGroup(this),
-            textFormatGroup(this)
+          alwaysActiveGroup(this),
+          actionsGroup(this),
+          textFormatGroup(this),
+          boldItalicGroup(this),
         ]
       },
       btns() {
         const btns = {
-          alwaysActives: [],
-          boldItalic: [
-            {
-              title: 'bold',
-              icon: 'bold',
-              cmd: 'bold',
-              isActive: () => this.queryCmdState('bold')
-            },
-            {
-              title: 'italic',
-              icon: 'italic',
-              cmd: 'italic',
-              isActive: () => this.queryCmdState('italic')
-            }
-          ],
           superSub: [
             {
               title: 'superscript',

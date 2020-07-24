@@ -90,9 +90,6 @@
         return items
       }
     },
-    mounted() {
-      console.log(`:class="['btn-group', group-${this.vLabel}]"`)
-    },
     methods: {
       getButtonKey(btn, index) {
         let key = `btn-${index}-${btn.title}`
