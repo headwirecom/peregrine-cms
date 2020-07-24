@@ -15,6 +15,19 @@
             @click="exec(btn.cmd)"/>
       </div>
     </template>
+    <template v-for="(group, groupIndex) in groups">
+      <admin-components-richtoolbargroup
+          v-if="group.items.length > 0 && groupAllowed(group)"
+          :icon="group.icon"
+          :iconLib="group.iconLib"
+          :collapse="!group.noCollapse && (group.collapse || forceCollapse)"
+          :label="group.label"
+          :title="group.title"
+          :active="group.active"
+          :items="group.items"
+          :class="group.class"
+          @click="exec($event.btn.cmd)"/>
+    </template>
 
     <admin-components-pathbrowser
         v-if="browser.open"
@@ -37,17 +50,14 @@
 </template>
 
 <script>
+  import {actionsGroup, alwaysActiveGroup, textFormatGroup} from './groups';
   import {get, restoreSelection, saveSelection, set} from '../../../../../../js/utils'
   import {PathBrowser} from '../../../../../../js/constants'
 
   export default {
     name: 'RichToolbar',
     props: {
-      showViewportBtn: {
-        type: Boolean,
-        default: true
-      },
-      showPreviewBtn: {
+      showAlwaysActive: {
         type: Boolean,
         default: true
       }
@@ -79,25 +89,28 @@
             current: '',
             selected: null
           }
+        },
+        docEl: {
+          dimension: {
+            w: 0
+          }
+        },
+        breakpoint: {
+          w: 815
         }
       }
     },
     computed: {
+      groups() {
+        return [
+            alwaysActiveGroup(this),
+            actionsGroup(this),
+            textFormatGroup(this)
+        ]
+      },
       btns() {
         const btns = {
           alwaysActives: [],
-          actions: [
-            {title: 'undo', icon: 'undo', cmd: 'undo'},
-            {title: 'redo', icon: 'repeat', cmd: 'redo'}
-          ],
-          textFormat: [
-            {
-              title: 'text format',
-              icon: 'paragraph',
-              items: this.formattingItems,
-              isActive: this.formattingIsActive
-            }
-          ],
           boldItalic: [
             {
               title: 'bold',
@@ -186,25 +199,6 @@
               cmd: 'removeFormat'
             }
           ]
-        }
-        if (this.showPreviewBtn) {
-          btns.alwaysActives.push({
-            title: 'preview',
-            icon: 'visibility',
-            iconLib: 'material-icons',
-            cmd: 'preview',
-            class: 'always-active separate',
-            isActive: () => this.preview === 'preview'
-          })
-        }
-        if (this.showViewportBtn) {
-          btns.alwaysActives.push({
-            title: 'change viewport',
-            icon: this.viewportIcon,
-            iconLib: 'material-icons',
-            items: this.viewportItems,
-            class: 'always-active separate'
-          })
         }
         Object.keys(btns).forEach((group) => {
           btns[group].forEach((btn) => {
@@ -331,7 +325,19 @@
             click: () => this.removeLink()
           }
         ]
+      },
+      forceCollapse() {
+        return this.docEl.dimension.w <= this.breakpoint.w
       }
+    },
+    mounted() {
+      this.$nextTick(() => {
+        window.addEventListener('resize', this.updateDocElDimensions)
+        this.updateDocElDimensions()
+      })
+    },
+    beforeDestroy() {
+      window.removeEventListener('resize', this.updateDocElDimensions)
     },
     methods: {
       pingRichToolbar(vm = this) {
@@ -652,6 +658,12 @@
         }
 
         return selection
+      },
+      updateDocElDimensions() {
+        this.docEl.dimension.w = document.documentElement.clientWidth
+      },
+      groupAllowed(group) {
+        return !group.rules || group.rules(this)
       }
     }
   }

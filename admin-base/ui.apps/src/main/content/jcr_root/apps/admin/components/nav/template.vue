@@ -176,7 +176,7 @@
           {label: 'help', icon: 'help', disabled: !this.help, click: this.onHelpClick},
           {label: 'tutorials', icon: 'import_contacts', click: this.onTutorialsClick},
           {label: '--------------------', disabled: true},
-          {label: 'aboutNavBtn', icon: 'info', click: this.onAboutClick},
+          {label: this.$i18n('aboutNavBtn'), icon: 'info', click: this.onAboutClick},
         ]
       },
       tenantDdItems() {

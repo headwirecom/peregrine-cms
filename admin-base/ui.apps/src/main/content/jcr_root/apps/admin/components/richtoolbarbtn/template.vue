@@ -1,69 +1,40 @@
 <template>
-  <!-- IF -->
-  <admin-components-materializedropdown
-      v-if="computedItems && computedItems.length > 0"
-      tag="button"
-      class="btn"
-      :class="{'active': active}"
-      :title="computedTitle"
-      :below-origin="true"
-      :items="computedItems"
-      @mousedown.native.prevent="() => {}">
-    <template v-if="icon">
-      <i v-if="iconLib === 'material-icons'" class="material-icons">{{ computedIcon }}</i>
-      <i v-else-if="iconLib === 'font-awesome'" class="fa" :class="`fa-${computedIcon}`"></i>
-    </template>
-    <span class="caret-down"></span>
-    <div v-if="label" class="label" v-html="label"></div>
-  </admin-components-materializedropdown>
-  <!-- ELSE -->
   <button
-      v-else
       class="btn"
       :class="{'active': active}"
-      :title="computedTitle"
+      :title="vTitle"
       @mousedown.prevent="() => {}"
       @click="$emit('click')">
-    <template v-if="icon">
-      <i v-if="iconLib === 'material-icons'" class="material-icons">{{ computedIcon }}</i>
-      <i v-else-if="iconLib === 'font-awesome'" class="fa" :class="`fa-${computedIcon}`"></i>
-    </template>
-    <div v-if="label" class="label" v-html="label"></div>
+    <admin-components-icon v-if="vIcon" :icon="vIcon" :lib="iconLib"/>
   </button>
 </template>
 
 <script>
+  import {IconLib} from '../../../../../../js/constants'
+
   export default {
     name: 'RichToolbarBtn',
     props: {
       icon: [String, Function],
-      iconLib: {type: String, default: 'font-awesome'},
+      iconLib: {type: String, default: IconLib.FONT_AWESOME},
       label: String,
       title: [String, Function],
-      active: Boolean,
-      items: [Array, Function]
+      active: Boolean
     },
     computed: {
-      computedTitle() {
+      vTitle() {
         let title = this.title
         if (typeof title === 'function') {
           title = title()
         }
         return this.$i18n(title)
       },
-      computedIcon() {
+      vIcon() {
         let icon = this.icon
         if (typeof icon === 'function') {
           icon = icon()
         }
         return icon
-      },
-      computedItems() {
-        let items = this.items
-        if (typeof items === 'function') {
-          items = items()
-        }
-        return items
       }
     }
   }

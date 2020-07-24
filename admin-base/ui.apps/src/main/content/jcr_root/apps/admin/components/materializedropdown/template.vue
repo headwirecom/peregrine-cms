@@ -12,13 +12,10 @@
           :key="`item-${index}`"
           class="item"
           :class="[{disabled: item.disabled}, item.class? item.class() : null]"
-          :title="item.title? $i18n(item.title) : false"
+          :title="item.title? item.title : false"
           @click="onItemClick(item, index)">
-        <template v-if="item.icon">
-          <i v-if="item.iconLib === 'font-awesome'" :class="['fa', `fa-${item.icon}`]"></i>
-          <i v-else class="material-icons">{{ item.icon }}</i>
-        </template>
-        {{ $i18n(item.label) }}
+        <admin-components-icon v-if="item.icon" :icon="item.icon" :lib="item.iconLib"/>
+        {{ item.label }}
         <div v-if="item.icon" class="center-keeper"></div>
       </li>
     </ul>
@@ -26,6 +23,8 @@
 </template>
 
 <script>
+  import {IconLib} from '../../../../../../js/constants'
+
   export default {
     props: {
       items: {
@@ -78,6 +77,7 @@
     },
     data() {
       return {
+        IconLib,
         $dd: null
       }
     },
