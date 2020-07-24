@@ -5,8 +5,8 @@ import {IconLib} from '../../../../../../../../js/constants'
 export default (vm) => {
   return {
     label: 'bold-italic',
-    icon: 'bold',
-    iconLib: IconLib.FONT_AWESOME,
+    icon: 'A<sup>2</sup>',
+    iconLib: IconLib.PLAIN_TEXT,
     items: [
       superscript(vm),
       subscript(vm)
