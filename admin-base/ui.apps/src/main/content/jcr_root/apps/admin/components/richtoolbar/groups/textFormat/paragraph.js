@@ -5,6 +5,6 @@ export default (vm) => {
     label: vm.$i18n('paragraph'),
     icon: 'paragraph',
     iconLib: IconLib.FONT_AWESOME,
-    click: () => this.exec('formatBlock', 'p')
+    click: () => vm.exec('formatBlock', 'p')
   }
 }
