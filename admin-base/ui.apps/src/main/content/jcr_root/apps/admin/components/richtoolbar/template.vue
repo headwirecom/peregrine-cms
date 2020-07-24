@@ -50,7 +50,13 @@
 </template>
 
 <script>
-  import {actionsGroup, alwaysActiveGroup, boldItalicGroup, textFormatGroup} from './groups'
+  import {
+    actionsGroup,
+    alwaysActiveGroup,
+    boldItalicGroup,
+    superSubScriptGroup,
+    textFormatGroup
+  } from './groups'
   import {get, restoreSelection, saveSelection, set} from '../../../../../../js/utils'
   import {PathBrowser} from '../../../../../../js/constants'
 
@@ -107,24 +113,11 @@
           actionsGroup(this),
           textFormatGroup(this),
           boldItalicGroup(this),
+          superSubScriptGroup(this),
         ]
       },
       btns() {
         const btns = {
-          superSub: [
-            {
-              title: 'superscript',
-              label: 'A<sup>2</sup>',
-              cmd: 'superscript',
-              isActive: () => this.itemIsTag('SUP')
-            },
-            {
-              title: 'subscript',
-              label: 'A<sub>2</sub>',
-              cmd: 'subscript',
-              isActive: () => this.itemIsTag('SUB')
-            }
-          ],
           link: [
             {
               title: () => this.itemIsTag('A') ? 'edit/remove link' : 'insert link',
