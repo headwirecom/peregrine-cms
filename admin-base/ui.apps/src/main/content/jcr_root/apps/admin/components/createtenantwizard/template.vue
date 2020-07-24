@@ -28,8 +28,10 @@
       v-bind:title="'create a website'"
       v-bind:subtitle="''"
       @on-complete="onComplete"
+      @on-change="changeTab"
       error-color="#d32f2f"
       color="#546e7a"
+      ref="wizard"
       :key="reloadKey">
         <tab-content title="select theme" :before-change="leaveTabOne">
             <fieldset class="vue-form-generator">
@@ -234,10 +236,11 @@
             },
             leaveTabTwo: function() {
                 const isValid = this.$refs.nameTab.validate()
-                if (isValid) {
-                    this.isLastStep = true
-                }
+                this.isLastStep = isValid
                 return isValid
+            },
+            changeTab: function(prev, next) {
+                if(next < prev) this.isLastStep = false
             },
             onColorPaletteSelect(colorPalette) {
                 this.formmodel.colorPalette = colorPalette
