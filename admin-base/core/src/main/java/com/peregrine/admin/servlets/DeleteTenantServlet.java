@@ -87,6 +87,7 @@ import org.osgi.service.component.annotations.Reference;
 public class DeleteTenantServlet extends AbstractBaseServlet {
 
     private static final String FAILED_TO_DELETE_SITE = "Failed to delete site";
+    private static final String FAILED_TO_REMOVE_TENANT_SECURITY = "Unable to remove Tenant Permissions";
 
     @Reference
     ModelFactory modelFactory;
@@ -103,21 +104,50 @@ public class DeleteTenantServlet extends AbstractBaseServlet {
         boolean isAdmin = request.isAdmin();
         ResourceResolver resourceResolver = null;
         try {
-            logger.info("Deleting site: '{}'", fromTenant);
+            logger.debug("Delete Site form: '{}'", fromTenant);
             resourceResolver = isAdmin ?
                 request.getResourceResolver() :
                 loginService(resourceResolverFactory, PEREGRINE_SERVICE_NAME);
             resourceManagement.deleteTenant(resourceResolver, CONTENT_ROOT, fromTenant);
+            // Remove the Tenant Group with is assigned to that tenant
+            String tenantGroupId = fromTenant + GROUP_NAME_SUFFIX;
+            String tenantUserId = fromTenant + USER_NAME_SUFFIX;
+            Session adminSession = resourceResolver.adaptTo(Session.class);
+            UserManager userManager = AccessControlUtil.getUserManager(adminSession);
+            Group tenantGroup = (Group) userManager.getAuthorizable(tenantGroupId);
+            if(tenantGroup != null) {
+                Iterator<Authorizable> i = tenantGroup.getDeclaredMembers();
+                boolean removeGroup = true;
+                while(i.hasNext()) {
+                    Authorizable member = i.next();
+                    // Tenant User could still be around if it is part of another group that it's tenant (see above)
+                    if(!member.getID().equals(tenantUserId)) {
+                        removeGroup = false;
+                        break;
+                    }
+                }
+                if(removeGroup) {
+                    try {
+                        tenantGroup.remove();
+                    } catch (RepositoryException e) {
+                        // Ignore for now
+                    }
+                }
+            }
             resourceResolver.commit();
             return new JsonResponse()
                 .writeAttribute(TYPE, SITE)
                 .writeAttribute(STATUS, DELETED)
                 .writeAttribute(SOURCE_PATH, CONTENT_ROOT + SLASH + fromTenant);
         } catch(ManagementException | LoginException e) {
-            logger.error("Error deleting site: '{}'", fromTenant, e);
             return new ErrorResponse()
                 .setHttpErrorCode(SC_BAD_REQUEST)
                 .setErrorMessage(FAILED_TO_DELETE_SITE)
+                .setException(e);
+        } catch (RepositoryException e) {
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(FAILED_TO_REMOVE_TENANT_SECURITY)
                 .setException(e);
         } finally {
             if(!isAdmin && resourceResolver != null) {
