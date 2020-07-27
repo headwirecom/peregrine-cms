@@ -23,7 +23,7 @@
           :collapse="!group.noCollapse && (group.collapse || forceCollapse)"
           :label="group.label"
           :title="group.title"
-          :active="group.active"
+          :active="groupIsActive(group)"
           :items="group.items"
           :class="group.class"
           @click="exec($event.btn.cmd)"/>
@@ -54,6 +54,7 @@
     actionsGroup,
     alwaysActiveGroup,
     boldItalicGroup,
+    linkGroup,
     superSubScriptGroup,
     textFormatGroup
   } from './groups'
@@ -108,25 +109,18 @@
     },
     computed: {
       groups() {
+
         return [
           alwaysActiveGroup(this),
           actionsGroup(this),
           textFormatGroup(this),
           boldItalicGroup(this),
           superSubScriptGroup(this),
+          linkGroup(this),
         ]
       },
       btns() {
         const btns = {
-          link: [
-            {
-              title: () => this.itemIsTag('A') ? 'edit/remove link' : 'insert link',
-              icon: 'link',
-              cmd: 'link',
-              items: () => this.itemIsTag('A') ? this.linkItems : null,
-              isActive: () => this.itemIsTag('A')
-            }
-          ],
           image: [
             {title: 'insert image', icon: 'picture-o', cmd: 'insertImage'}
           ],
@@ -288,22 +282,6 @@
           }
         })
         return currentItem.icon || 'desktop_windows'
-      },
-      linkItems() {
-        return [
-          {
-            label: this.$i18n('edit link'),
-            icon: 'pencil',
-            iconLib: 'font-awesome',
-            click: () => this.editLink()
-          },
-          {
-            label: this.$i18n('remove link'),
-            icon: 'chain-broken',
-            iconLib: 'font-awesome',
-            click: () => this.removeLink()
-          }
-        ]
       },
       forceCollapse() {
         return this.docEl.dimension.w <= this.breakpoint.w
@@ -643,6 +621,9 @@
       },
       groupAllowed(group) {
         return !group.rules || group.rules(this)
+      },
+      groupIsActive(group) {
+        return group.items.filter((item) => item.isActive && item.isActive()).length > 0
       }
     }
   }

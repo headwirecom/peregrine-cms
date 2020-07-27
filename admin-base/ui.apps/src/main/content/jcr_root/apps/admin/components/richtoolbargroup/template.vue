@@ -15,7 +15,7 @@
   <div v-else :class="['btn-group', `group-${vLabel}`]">
     <template v-for="(btn, i) in items">
       <admin-components-richtoolbargroup
-          v-if="btn.items && btn.items.length > 0"
+          v-if="btn.items && btn.items.length > 1"
           :icon="btn.icon"
           :iconLib="btn.iconLib"
           :collapse="btn.collapse"
