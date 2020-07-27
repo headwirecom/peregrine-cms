@@ -112,8 +112,8 @@ class PerApi {
         return impl.populateVersions(page)
     }
 
-    setInitialPageEditorState() {
-        return impl.setInitialPageEditorState()
+    setInitialPageEditorState(path) {
+        return impl.setInitialPageEditorState(path)
     }
 
     populateByName(name) {

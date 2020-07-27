@@ -620,6 +620,7 @@
             },
 
             editPage: function(me, target) {
+
                 const view = $perAdminApp.getView()
                 const tenant = view.state.tenant
                 const path = me.pt.path
