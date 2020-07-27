@@ -54,6 +54,7 @@
     actionsGroup,
     alwaysActiveGroup,
     boldItalicGroup,
+    imageGroup,
     linkGroup,
     superSubScriptGroup,
     textFormatGroup
@@ -117,13 +118,11 @@
           boldItalicGroup(this),
           superSubScriptGroup(this),
           linkGroup(this),
+          imageGroup(this),
         ]
       },
       btns() {
         const btns = {
-          image: [
-            {title: 'insert image', icon: 'picture-o', cmd: 'insertImage'}
-          ],
           align: [
             {
               title: 'align left',
