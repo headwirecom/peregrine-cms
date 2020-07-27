@@ -6,6 +6,7 @@ import {IconLib} from '../../../../../../../../js/constants'
 export default (vm) => {
   const link = {
     __enforceUpdate__: vm.key,
+    label: 'link',
     icon: 'link',
     iconLib: IconLib.FONT_AWESOME,
     items: [
