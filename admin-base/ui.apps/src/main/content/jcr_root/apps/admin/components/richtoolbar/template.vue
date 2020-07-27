@@ -58,6 +58,7 @@
     imageGroup,
     linkGroup,
     listGroup,
+    removeFormatGroup,
     superSubScriptGroup,
     textFormatGroup
   } from './groups'
@@ -122,6 +123,7 @@
           imageGroup(this),
           alignGroup(this),
           listGroup(this),
+          removeFormatGroup(this)
         ]
       },
       btns() {

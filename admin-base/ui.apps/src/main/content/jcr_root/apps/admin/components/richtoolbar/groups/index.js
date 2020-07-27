@@ -7,6 +7,7 @@ import link from './link'
 import image from './image'
 import align from './align'
 import list from './list'
+import removeFormat from './removeFormat'
 
 export const alwaysActiveGroup = alwaysActive
 export const actionsGroup = actions
@@ -17,3 +18,4 @@ export const linkGroup = link
 export const imageGroup = image
 export const alignGroup = align
 export const listGroup = list
+export const removeFormatGroup = removeFormat
