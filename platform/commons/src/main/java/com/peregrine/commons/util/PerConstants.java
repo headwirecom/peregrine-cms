@@ -41,6 +41,7 @@ public class PerConstants {
     public static final String PER_REPLICATION = "per:Replication";
     public static final String PER_REPLICATED_BY = "per:ReplicatedBy";
     public static final String PER_REPLICATED = "per:Replicated";
+    public static final String PER_REPLICATION_STATUS = "per:ReplicationStatus";
     public static final String PER_REPLICATION_REF = "per:ReplicationRef";
 
     public static final String SLING_SERVLET_DEFAULT = "sling/servlet/default";

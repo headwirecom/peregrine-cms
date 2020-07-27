@@ -1,7 +1,7 @@
 package com.peregrine.admin.replication;
 
-import org.apache.sling.api.resource.ModifiableValueMap;
-import org.apache.sling.api.resource.Resource;
+import com.peregrine.commons.ResourceUtils;
+import org.apache.sling.api.resource.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,23 +11,18 @@ import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.nodetype.NodeTypeIterator;
 import javax.jcr.nodetype.NodeTypeManager;
+import javax.jcr.query.Query;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATION;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
+import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.isEmpty;
 
 public class ReplicationUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReplicationUtil.class);
-
+    private static String SQL2_STATEMENT = "SELECT * FROM [nt:base] AS s WHERE ISDESCENDANTNODE([%s]) and CONTAINS(s.*, '%s')";
     private static List<String> replicationPrimaryNodeTypes;
 
     /**
@@ -144,6 +139,54 @@ public class ReplicationUtil {
     }
 
 
+
+//    /**
+//     * References under /content for replication
+//     * @param resource traverse the jcr:content of the resource to find replication status of the references
+//     * @return null if resource param is null or that resource does not have a child named jcr:content
+//     *
+//     */
+//    public static List<ReferenceReplicationStatus> getReferencesReplicationStatusList(Resource resource){
+//        return getReferencesReplicationStatusList(resource, CONTENT_ROOT);
+//    }
+//
+//    /**
+//     * References used by the resource having a path that starts with the supplied prefix
+//     * @param resource traverse the jcr:content of the resource to find replication status of the references
+//     * @return null if resource param is null or that resource does not have a child named jcr:content
+//     *
+//     */
+//    public static List<ReferenceReplicationStatus> getReferencesReplicationStatusList(Resource resource, String refPrefix){
+//
+//        if(resource != null && !resource.getName().equals(JCR_CONTENT)){
+//            resource = resource.getChild(JCR_CONTENT);
+//        }
+//        if(resource == null || !resource.getName().equals(JCR_CONTENT)) {
+//            return null;
+//        }
+//
+//        List<ReferenceReplicationStatus> referenceReplicationStatuses = new ArrayList<>();
+//        Iterator<Resource> resourcesWithReferences = queryContainsStringUnderResource(resource, refPrefix);
+//        while (resourcesWithReferences.hasNext()){
+//            Resource res = resourcesWithReferences.next();
+//            ValueMap valueMap = ResourceUtil.getValueMap(res);
+//            for (Map.Entry<String,Object> entry : valueMap.entrySet()){
+//                entry
+//            }
+//
+//        }
+//
+//        return referenceReplicationStatuses;
+//    }
+
+    /**
+     * Query a search term under a resource
+     */
+    public static Iterator<Resource> queryContainsStringUnderResource(Resource resource, String searchTerm){
+        ResourceResolver resourceResolver = resource.getResourceResolver();
+        String statement = String.format(SQL2_STATEMENT, resource.getPath(), searchTerm);
+        return resourceResolver.findResources(statement, Query.JCR_SQL2);
+    }
 
     /**
      * Adds the Replication Mixin to a given resource if not already
