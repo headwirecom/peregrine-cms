@@ -7,7 +7,8 @@
       :title="vLabel"
       :below-origin="true"
       :items="vItems"
-      @mousedown.native.prevent="() => {}">
+      @mousedown.native.prevent="() => {}"
+      @item-click="$emit('click', {btn: $event})">
     <admin-components-icon v-if="icon" :icon="vIcon" :lib="iconLib"/>
     <span class="caret-down"></span>
   </admin-components-materializedropdown>
