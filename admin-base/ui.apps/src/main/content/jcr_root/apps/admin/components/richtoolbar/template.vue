@@ -365,8 +365,8 @@
 
         this.selection.content = range.startContainer.textContent.substr(start, len)
 
-        this.param.cmd = 'createLink'
-        this.browser.header = this.$i18n('Create Link')
+        this.param.cmd = 'insertLink'
+        this.browser.header = this.$i18n('Insert Link')
         this.browser.path.current = this.roots.pages
         this.browser.withLinkTab = true
         this.browser.newWindow = false
@@ -532,7 +532,7 @@
         }
 
         this.$nextTick(() => {
-          if (['editLink', 'createLink'].includes(this.param.cmd)) {
+          if (['editLink', 'insertLink'].includes(this.param.cmd)) {
             this.onLinkSelect()
             return;
           } else if (['insertImage', 'editImage'].includes(this.param.cmd)) {
@@ -555,7 +555,7 @@
         })
       },
       onLinkSelect() {
-        if (this.param.cmd === 'createLink') {
+        if (this.param.cmd === 'insertLink') {
           if (this.browser.path.selected.startsWith('/')) {
             this.browser.path.selected += '.html'
           }
