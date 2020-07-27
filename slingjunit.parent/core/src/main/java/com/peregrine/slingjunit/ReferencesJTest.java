@@ -37,9 +37,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Iterator;
 import java.util.List;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
+import static com.peregrine.admin.replication.ReplicationUtil.queryContainsStringUnderResource;
 
 @RunWith(SlingAnnotationsTestRunner.class)
 public class ReferencesJTest {
@@ -56,17 +59,39 @@ public class ReferencesJTest {
 
     private static String CONTACT_PATH = "/content/example/pages/contact";
     private static String IMAGE_PATH = "/content/example/assets/images/Stella.png";
+    private static String IMAGE_COMPONENT = "/content/example/pages/contact/jcr:content/n3736dc36-9cc3-49d7-a7d4-bf4d94e0ea2f/n8680c077-cc22-40d3-8989-d86d832a85d1";
+
     private static String TEMPLATE_PATH = "/content/example/templates/base";
     private static String LINKS_TO_PATH = "/content/example/pages/about";
+    private static String TEXT_COMPONENT = "/content/example/pages/contact/jcr:content/nfceefd40-b802-4203-8147-9cb2b2c78c6b";
+
 
     @Test
-    public void checkContactPageReferences() {
+    public void checkReferenceList(){
         Resource contactRes = resourceResolver.getResource(CONTACT_PATH);
-        List<Resource> refs = referenceLister.getReferenceList(false, contactRes, false );
-        assertThat(refs, not(IsEmptyCollection.empty()));
-        assertTrue(refs.stream().anyMatch(resource -> resource.getPath().equals(IMAGE_PATH)));
-        assertTrue(refs.stream().anyMatch(resource -> resource.getPath().equals(TEMPLATE_PATH)));
-        assertTrue(refs.stream().anyMatch(resource -> resource.getPath().equals(LINKS_TO_PATH)));
+        List<Resource> resources = referenceLister.getReferenceList(false, contactRes, false);
+        assertTrue(resources.stream().anyMatch(resource -> resource.getPath().equals(IMAGE_PATH)));
+        assertTrue(resources.stream().anyMatch(resource -> resource.getPath().equals(TEMPLATE_PATH)));
+    }
+
+
+    @Test
+    public void checkQueryResults(){
+        Resource contactRes = resourceResolver.getResource(CONTACT_PATH);
+        Iterator<Resource> results = queryContainsStringUnderResource(contactRes, "/content/");
+        boolean hasImageRef = false;
+        boolean hasPageLinkRef = false;
+        boolean textContentFalseRef = false;
+        while (results.hasNext()) {
+            Resource result = results.next();
+            if (result.getPath().equals(IMAGE_COMPONENT)){
+                hasImageRef = true;
+            } else if (result.getPath().equals(TEXT_COMPONENT)) {
+                hasPageLinkRef = true;
+            }
+        }
+        assertTrue(hasImageRef);
+        assertTrue(hasPageLinkRef);
     }
 
     @Before

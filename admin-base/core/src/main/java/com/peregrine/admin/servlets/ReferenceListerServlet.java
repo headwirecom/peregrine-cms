@@ -28,13 +28,12 @@ package com.peregrine.admin.servlets;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_REF;
 import static com.peregrine.admin.util.AdminConstants.SOURCE_NAME;
 import static com.peregrine.admin.util.AdminConstants.SOURCE_PATH;
-import static com.peregrine.commons.util.PerConstants.JSON;
-import static com.peregrine.commons.util.PerConstants.NAME;
-import static com.peregrine.commons.util.PerConstants.PATH;
+import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
+import static javax.jcr.Property.JCR_LAST_MODIFIED;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -48,11 +47,13 @@ import java.io.IOException;
 import java.util.List;
 import javax.servlet.Servlet;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceUtil;
+import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * This servlet provides a list of that are referenced by the given
+ * This servlet provides a list of resources that are referenced by the given
  * resource (to which resources does the given resources points to)
  *
  * The API Definition can be found in the Swagger Editor configuration:
@@ -88,9 +89,13 @@ public class ReferenceListerServlet extends AbstractBaseServlet {
             answer.writeAttribute(SOURCE_PATH, source.getPath());
             answer.writeArray(REFERENCES);
             for(Resource child : references) {
+                Resource contentResource = child.getChild(JCR_CONTENT) != null ? child.getChild(JCR_CONTENT) : child;
+                ValueMap contentValueMap = ResourceUtil.getValueMap(contentResource);
                 answer.writeObject();
                 answer.writeAttribute(NAME, child.getName());
                 answer.writeAttribute(PATH, child.getPath());
+//                answer.writeAttribute(JCR_LAST_MODIFIED, contentValueMap.get(JCR_LAST_MODIFIED));
+
                 answer.writeClose();
             }
             answer.writeClose();
