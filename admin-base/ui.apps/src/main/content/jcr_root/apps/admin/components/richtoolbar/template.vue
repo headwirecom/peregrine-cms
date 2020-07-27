@@ -52,6 +52,7 @@
 <script>
   import {
     actionsGroup,
+    alignGroup,
     alwaysActiveGroup,
     boldItalicGroup,
     imageGroup,
@@ -119,36 +120,11 @@
           superSubScriptGroup(this),
           linkGroup(this),
           imageGroup(this),
+          alignGroup(this),
         ]
       },
       btns() {
         const btns = {
-          align: [
-            {
-              title: 'align left',
-              icon: 'align-left',
-              cmd: 'justifyLeft',
-              isActive: () => this.queryCmdState('justifyLeft')
-            },
-            {
-              title: 'align center',
-              icon: 'align-center',
-              cmd: 'justifyCenter',
-              isActive: () => this.queryCmdState('justifyCenter')
-            },
-            {
-              title: 'align right',
-              icon: 'align-right',
-              cmd: 'justifyRight',
-              isActive: () => this.queryCmdState('justifyRight')
-            },
-            {
-              title: 'justify',
-              icon: 'align-justify',
-              cmd: 'justifyFull',
-              isActive: () => this.queryCmdState('justifyFull')
-            }
-          ],
           list: [
             {
               title: 'numbered list',
