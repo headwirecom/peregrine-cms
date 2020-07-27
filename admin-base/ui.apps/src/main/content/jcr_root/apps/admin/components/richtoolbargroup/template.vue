@@ -1,6 +1,6 @@
 <template>
   <admin-components-materializedropdown
-      v-if="collapse"
+      v-if="collapse && items.length > 1"
       tag="button"
       class="btn"
       :class="{'active': active}"

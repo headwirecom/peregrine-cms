@@ -1,20 +1,5 @@
 <template>
   <div class="toolbar" :class="{disabled: !inlineRich || preview === 'preview'}">
-    <template v-for="(btnGroup, groupName) in btns">
-      <div v-if="btnGroup.length > 0" :class="['btn-group', `group-${groupName}`]">
-        <admin-components-richtoolbarbtn
-            v-for="(btn, i) in btnGroup"
-            :key="getButtonKey(btn, i)"
-            :items="btn.items"
-            :icon="btn.icon"
-            :icon-lib="btn.iconLib"
-            :label="btn.label"
-            :class="btn.class"
-            :title="$i18n(btn.title)"
-            :active="btn.isActive()"
-            @click="exec(btn.cmd)"/>
-      </div>
-    </template>
     <template v-for="(group, groupIndex) in groups">
       <admin-components-richtoolbargroup
           v-if="group.items.length > 0 && groupAllowed(group)"
@@ -125,27 +110,6 @@
           listGroup(this),
           removeFormatGroup(this)
         ]
-      },
-      btns() {
-        const btns = {
-          removeFormat: [
-            {
-              title: 'remove format',
-              icon: 'format_clear',
-              iconLib: 'material-icons',
-              cmd: 'removeFormat'
-            }
-          ]
-        }
-        Object.keys(btns).forEach((group) => {
-          btns[group].forEach((btn) => {
-            if (!btn.isActive) {
-              btn.isActive = () => null
-            }
-          })
-        })
-
-        return btns
       },
       inline() {
         if (!$perAdminApp.getView() || !$perAdminApp.getView().state) return null
