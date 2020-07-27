@@ -57,6 +57,7 @@
     boldItalicGroup,
     imageGroup,
     linkGroup,
+    listGroup,
     superSubScriptGroup,
     textFormatGroup
   } from './groups'
@@ -111,7 +112,6 @@
     },
     computed: {
       groups() {
-
         return [
           alwaysActiveGroup(this),
           actionsGroup(this),
@@ -121,24 +121,11 @@
           linkGroup(this),
           imageGroup(this),
           alignGroup(this),
+          listGroup(this),
         ]
       },
       btns() {
         const btns = {
-          list: [
-            {
-              title: 'numbered list',
-              icon: 'list-ol',
-              cmd: 'insertOrderedList',
-              isActive: () => this.queryCmdState('insertOrderedList')
-            },
-            {
-              title: 'bulleted list',
-              icon: 'list-ul',
-              cmd: 'insertUnorderedList',
-              isActive: () => this.queryCmdState('insertUnorderedList')
-            }
-          ],
           removeFormat: [
             {
               title: 'remove format',
