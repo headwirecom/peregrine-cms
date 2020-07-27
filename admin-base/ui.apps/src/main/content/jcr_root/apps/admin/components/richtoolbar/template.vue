@@ -501,7 +501,7 @@
       },
       previewInNewTab() {
         const view = $perAdminApp.getView()
-        const page = get(view, '/state/tools/page', null)
+        const page = get(view, '/pageView/path', null)
         window.open(page+'.html', 'viewer')
       },
       getButtonKey(btn, index) {
