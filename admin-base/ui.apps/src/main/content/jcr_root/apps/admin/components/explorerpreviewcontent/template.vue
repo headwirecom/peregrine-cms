@@ -110,25 +110,27 @@
           </li>
           <li v-for="item in referencedBy" :key="item.path" class="collection-item">
             <span>
-              <admin-components-action
-                  v-bind:model="{
-                    target: item.path,
-                    command: 'editPage',
-                    tooltipTitle: `edit '${item.name}'`
-                  }">
-                  <admin-components-iconeditpage></admin-components-iconeditpage>
-              </admin-components-action>
-            </span>
-            <span v-if="item.count" class="count">{{item.count}}</span>
-            <span class="right">
-              <admin-components-action
-                  v-bind:model="{
-                    target: item.path,
-                    command: 'editPage',
-                    tooltipTitle: `edit '${item.path}'`
-                  }">
-                  {{item.path}}
-              </admin-components-action>
+              <span v-if="item.count" class="count">{{item.count > 99 ? '99+' : item.count}}</span>
+              <span class="right">
+                <admin-components-action
+                    v-bind:model="{
+                      target: item.path,
+                      command: 'editPage',
+                      tooltipTitle: `edit '${item.name}'`
+                    }">
+                    <bdo>{{item.path}}</bdo>
+                </admin-components-action>
+              </span>
+              <span class="edit-icon">
+                <admin-components-action
+                    v-bind:model="{
+                      target: item.path,
+                      command: 'editPage',
+                      tooltipTitle: `edit '${item.name}'`
+                    }">
+                    <admin-components-iconeditpage></admin-components-iconeditpage>
+                </admin-components-action>
+              </span>
             </span>
           </li>
         </ul>
