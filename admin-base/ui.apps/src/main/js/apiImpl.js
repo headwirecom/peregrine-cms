@@ -974,10 +974,11 @@ class PerAdminImpl {
       try {
         const page = path
         const pagePath = page.split('/')
+        const type = pagePath[3]
         pagePath.pop()
-        if(pagePath[3] === 'pages') {
+        if(type === 'pages') {
           callbacks.getView().state.tools.pages = pagePath.join('/')
-        } else if(pagePath[3] === 'templates') {
+        } else if(type === 'templates') {
           callbacks.getView().state.tools.templates = pagePath.join('/')
         }
         return $perAdminApp.stateAction('showPageInfo', { selected: page }).then( () => {
