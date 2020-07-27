@@ -238,10 +238,6 @@
       preview() {
         return $perAdminApp.getNodeFromViewOrNull('/state/tools/workspace/preview')
       },
-      previewNewWindow() {
-        window.open('')
-        return $perAdminApp.getNodeFromViewOrNull('/state/tools/workspace/preview')
-      },
       roots() {
         return $perAdminApp.getNodeFromViewOrNull('/state/tenant/roots')
       },
