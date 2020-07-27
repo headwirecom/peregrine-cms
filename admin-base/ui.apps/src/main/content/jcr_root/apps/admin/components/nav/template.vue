@@ -213,7 +213,8 @@
         let target = `/content/admin/pages/${section.name}.html`
         if(this.state.tenant) {
           if(section.name !== 'welcome') {
-            target += `/path:${this.state.tenant.roots[section.name]}`
+            const path = this.state.tools[section.name]
+            target += path && path.length > 0 ? `/path:${path}` : `/path:${this.state.tenant.roots[section.name]}`
           } else {
             target += `/path:/content/${this.state.tenant.name}`
           }
