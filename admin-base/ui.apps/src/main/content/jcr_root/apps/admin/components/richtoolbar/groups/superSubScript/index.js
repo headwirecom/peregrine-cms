@@ -4,9 +4,11 @@ import {IconLib} from '../../../../../../../../js/constants'
 
 export default (vm) => {
   return {
+    __enforceUpdate__: vm.key,
     label: 'super-sub-script',
     icon: 'A<sup>2</sup>',
     iconLib: IconLib.PLAIN_TEXT,
+    rules: () => !vm.responsive || !vm.hiddenGroups['super-sub-script'],
     items: [
       superscript(vm),
       subscript(vm)

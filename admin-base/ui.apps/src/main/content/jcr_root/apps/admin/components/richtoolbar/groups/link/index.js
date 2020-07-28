@@ -9,7 +9,8 @@ export default (vm) => {
     label: 'link',
     icon: 'link',
     iconLib: IconLib.FONT_AWESOME,
-    items: [
+    rules: () => !vm.responsive || !vm.hiddenGroups.link,
+        items: [
         insertLink(vm)
     ]
   }

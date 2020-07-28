@@ -7,9 +7,10 @@ export default (vm) => {
     label: 'list',
     icon: 'list',
     iconLib: IconLib.FONT_AWESOME,
+    rules: () => !vm.responsive || !vm.hiddenGroups.list,
     items: [
-        numberedList(vm),
-        bulletedList(vm)
+      numberedList(vm),
+      bulletedList(vm)
     ]
   }
 }

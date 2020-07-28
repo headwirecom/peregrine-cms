@@ -8,6 +8,7 @@ export default (vm) => {
     icon: 'paragraph',
     iconLib: IconLib.FONT_AWESOME,
     collapse: true,
+    rules: () => !vm.responsive || !vm.hiddenGroups['text-format'],
     items: [
       paragraph(vm),
       ...headlines(vm)

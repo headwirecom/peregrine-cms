@@ -7,8 +7,8 @@ export default (vm) => {
     noCollapse: true,
     rules: () => vm.showAlwaysActive,
     items: [
-        preview(vm),
-        viewport(vm)
+      preview(vm),
+      viewport(vm)
     ]
   }
 }

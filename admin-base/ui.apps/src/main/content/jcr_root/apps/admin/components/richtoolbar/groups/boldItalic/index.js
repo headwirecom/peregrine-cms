@@ -7,6 +7,7 @@ export default (vm) => {
     label: 'bold-italic',
     icon: 'bold',
     iconLib: IconLib.FONT_AWESOME,
+    rules: () => !vm.responsive || !vm.hiddenGroups['bold-italic'],
     items: [
       bold(vm),
       italic(vm)

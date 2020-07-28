@@ -3,9 +3,10 @@ import {IconLib} from '../../../../../../../../js/constants'
 
 export default (vm) => {
   return {
-    label: 'insert image',
+    label: 'image',
     icon: 'picture-o',
     iconLib: IconLib.FONT_AWESOME,
+    rules: () => !vm.responsive || !vm.hiddenGroups.image,
     items: [
       insertImage(vm)
     ]

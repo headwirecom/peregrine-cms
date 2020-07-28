@@ -1,5 +1,16 @@
 <template>
   <div class="toolbar" :class="{disabled: !inlineRich || preview === 'preview'}">
+    <admin-components-richtoolbargroup
+        v-if="showAlwaysActive && groupAllowed(alwaysActiveGroup)"
+        :icon="alwaysActiveGroup.icon"
+        :iconLib="alwaysActiveGroup.iconLib"
+        :collapse="!alwaysActiveGroup.noCollapse && (alwaysActiveGroup.collapse)"
+        :label="alwaysActiveGroup.label"
+        :title="alwaysActiveGroup.title"
+        :active="false"
+        :items="alwaysActiveGroup.items"
+        :class="alwaysActiveGroup.class"
+        @click="exec($event.btn.cmd)"/>
     <template v-for="(group, groupIndex) in groups">
       <admin-components-richtoolbargroup
           v-if="group.items.length > 0 && groupAllowed(group)"
@@ -13,6 +24,17 @@
           :class="group.class"
           @click="exec($event.btn.cmd)"/>
     </template>
+    <admin-components-richtoolbargroup
+        v-if="responsive && groupAllowed(responsiveMenuGroup)"
+        :icon="responsiveMenuGroup.icon"
+        :iconLib="responsiveMenuGroup.iconLib"
+        :collapse="!responsiveMenuGroup.noCollapse && (responsiveMenuGroup.collapse)"
+        :label="responsiveMenuGroup.label"
+        :title="responsiveMenuGroup.title"
+        :active="false"
+        :items="responsiveMenuGroup.items"
+        :class="responsiveMenuGroup.class"
+        @click="exec($event.btn.cmd)"/>
 
     <admin-components-pathbrowser
         v-if="browser.open"
@@ -38,13 +60,13 @@
   import {
     actionsGroup,
     alignGroup,
-    allMenuGroup,
     alwaysActiveGroup,
     boldItalicGroup,
     imageGroup,
     linkGroup,
     listGroup,
     removeFormatGroup,
+    responsiveMenuGroup,
     superSubScriptGroup,
     textFormatGroup
   } from './groups'
@@ -55,6 +77,10 @@
     name: 'RichToolbar',
     props: {
       showAlwaysActive: {
+        type: Boolean,
+        default: true
+      },
+      responsive: {
         type: Boolean,
         default: true
       }
@@ -95,13 +121,16 @@
         size: {
           button: 34,
           group: 4
-        }
+        },
+        hiddenGroups: {}
       }
     },
     computed: {
+      alwaysActiveGroup() {
+        return alwaysActiveGroup(this)
+      },
       groups() {
         return [
-          alwaysActiveGroup(this),
           actionsGroup(this),
           textFormatGroup(this),
           boldItalicGroup(this),
@@ -110,9 +139,11 @@
           imageGroup(this),
           alignGroup(this),
           listGroup(this),
-          removeFormatGroup(this),
-          allMenuGroup(this)
+          removeFormatGroup(this)
         ]
+      },
+      responsiveMenuGroup() {
+        return responsiveMenuGroup(this)
       },
       inline() {
         if (!$perAdminApp.getView() || !$perAdminApp.getView().state) return null

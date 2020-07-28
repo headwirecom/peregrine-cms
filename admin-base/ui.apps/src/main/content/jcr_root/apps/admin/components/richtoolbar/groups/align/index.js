@@ -6,14 +6,15 @@ import {IconLib} from '../../../../../../../../js/constants'
 
 export default (vm) => {
   return {
-    label: 'justify',
+    label: 'align',
     icon: 'align-justify',
     iconLib: IconLib.FONT_AWESOME,
+    rules: () => !vm.responsive || !vm.hiddenGroups.align,
     items: [
-        alignLeft(vm),
-        alignCenter(vm),
-        alignRight(vm),
-        alignJustify(vm)
+      alignLeft(vm),
+      alignCenter(vm),
+      alignRight(vm),
+      alignJustify(vm)
     ]
   }
 }
