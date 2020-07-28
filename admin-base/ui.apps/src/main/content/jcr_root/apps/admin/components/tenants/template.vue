@@ -132,7 +132,6 @@
         },
         methods: {
             selectTenant(vm, target) {
-                console.log(target)
                 $perAdminApp.stateAction('setTenant', { name: target.name }).then( () => {
                     $perAdminApp.loadContent(`/content/admin/pages/welcome.html/path:/content/${target.name}`)
                 });
