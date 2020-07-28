@@ -8,16 +8,18 @@
         <slot name="header" class="header"></slot>
       </li>
       <slot name="content"></slot>
-      <li v-if="items" v-for="(item, index) in items"
-          :key="`item-${index}`"
-          class="item"
-          :class="[{disabled: item.disabled}, item.class? item.class() : null]"
-          :title="item.title? item.title : false"
-          @click="onItemClick(item, index)">
-        <admin-components-icon v-if="item.icon" :icon="item.icon" :lib="item.iconLib"/>
-        {{ item.label }}
-        <div v-if="item.icon" class="center-keeper"></div>
-      </li>
+      <template v-if="items">
+        <li v-for="(item, index) in items"
+            :key="`item-${index}`"
+            class="item"
+            :class="[{disabled: item.disabled}, item.class? item.class() : null]"
+            :title="item.title? item.title : false"
+            @click="onItemClick(item, index)">
+          <admin-components-icon v-if="item.icon" :icon="item.icon" :lib="item.iconLib"/>
+          {{ item.label }}
+          <div v-if="item.icon" class="center-keeper"></div>
+        </li>
+      </template>
     </ul>
   </component>
 </template>
