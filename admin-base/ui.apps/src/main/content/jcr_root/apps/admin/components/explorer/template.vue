@@ -633,8 +633,6 @@
                 const tenant = view.state.tenant
                 const path = me.pt.path
 
-                console.log(target, tenant)
-
                 if(target.startsWith(`/content/${tenant.name}/pages`)) {
                     set(view, '/state/tools/page', target)
                 } else if(target.startsWith(`/content/${tenant.name}/templates`)) {
