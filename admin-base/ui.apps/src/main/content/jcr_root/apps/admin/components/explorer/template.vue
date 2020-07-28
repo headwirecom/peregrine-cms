@@ -620,7 +620,11 @@
             },
 
             editReference: function(me, target) {
-                me.editPage(me, target)
+                if(target.load) {
+                    $perAdminApp.loadContent(target.load)
+                } else {
+                    me.editPage(me, target.target)
+                }
             },
 
             editPage: function(me, target) {

@@ -114,7 +114,7 @@
               <span class="right">
                 <admin-components-action
                     v-bind:model="{
-                      target: item.path,
+                      target: itemToTarget(item.path),
                       command: 'editReference',
                       tooltipTitle: `edit '${item.name}'`
                     }">
@@ -124,7 +124,7 @@
               <span class="edit-icon">
                 <admin-components-action
                     v-bind:model="{
-                      target: item.path,
+                      target: itemToTarget(item.path),
                       command: 'editReference',
                       tooltipTitle: `edit '${item.name}'`
                     }">
@@ -151,6 +151,7 @@
               <template v-else>
                   <div v-for="version in versions"
                        class="action"
+                       v-bind:key="version.name"
                        v-on:click="checkoutVersion(version)"
                        v-bind:title="`Version ${version.name}`">
                       <i v-if="version.base" class="material-icons">{{Icon.CHECKED}}</i>
@@ -407,6 +408,30 @@
       this.path.current = this.currentPath
     },
     methods: {
+      itemToTarget(path) {
+        const ret = { path, target: path } 
+        const tenant = $perAdminApp.getNodeFromViewOrNull('/state/tenant')
+        if(path.startsWith(`/content/${tenant.name}/pages`)) {
+          ret.path = `/content/admin/pages/pages/edit.html/path:${path}`
+        } else if (path.startsWith(`/content/${tenant.name}/templates`)) {
+          ret.path = `/content/admin/pages/templates/edit.html/path:${path}`
+        } else {
+          const segments = path.split('/')
+          if(segments.length > 0) {
+            segments.pop()
+          }
+          path = segments.join('/')
+          ret.target = path
+          if (path.startsWith(`/content/${tenant.name}/assets`)) {
+            ret.load = ret.path = `/content/admin/pages/assets.html/path:${path}`
+            ret.type = 'ASSET'
+          } else if (path.startsWith(`/content/${tenant.name}/objects`)) {
+            ret.load = ret.path = `/content/admin/pages/objects.html/path:${path}`
+            ret.type = 'OBJECT'
+          }
+        }
+        return ret
+      },
       getSchema(schemaKey) {
         if (!this.node) {
           return null;
