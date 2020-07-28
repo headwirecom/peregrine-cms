@@ -619,11 +619,17 @@
                 })
             },
 
+            editReference: function(me, target) {
+                me.editPage(me, target)
+            },
+
             editPage: function(me, target) {
 
                 const view = $perAdminApp.getView()
                 const tenant = view.state.tenant
                 const path = me.pt.path
+
+                console.log(target, tenant)
 
                 if(target.startsWith(`/content/${tenant.name}/pages`)) {
                     set(view, '/state/tools/page', target)
@@ -631,11 +637,11 @@
                     set(view, '/state/tools/template', target)
                 }
 
-                if(path.startsWith(`/content/${tenant.name}/objects`)) {
+                if(target.startsWith(`/content/${tenant.name}/objects`)) {
                     const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
                     me.selectedObject = path
                     $perAdminApp.stateAction('editObject', { selected: node.path, path: me.model.dataFrom })
-                } else if (path.startsWith(`/content/${tenant.name}/templates`)) {
+                } else if (target.startsWith(`/content/${tenant.name}/templates`)) {
                     $perAdminApp.stateAction('editTemplate', target )
                 } else {
                     $perAdminApp.stateAction('editPage', target )

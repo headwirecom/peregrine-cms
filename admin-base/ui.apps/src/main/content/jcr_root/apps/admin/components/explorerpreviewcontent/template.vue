@@ -115,7 +115,7 @@
                 <admin-components-action
                     v-bind:model="{
                       target: item.path,
-                      command: 'editPage',
+                      command: 'editReference',
                       tooltipTitle: `edit '${item.name}'`
                     }">
                     <bdo>{{item.path}}</bdo>
@@ -125,7 +125,7 @@
                 <admin-components-action
                     v-bind:model="{
                       target: item.path,
-                      command: 'editPage',
+                      command: 'editReference',
                       tooltipTitle: `edit '${item.name}'`
                     }">
                     <admin-components-iconeditpage></admin-components-iconeditpage>
