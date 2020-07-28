@@ -1,7 +1,6 @@
 import {
   actionsGroup,
   alignGroup,
-  allMenuGroup,
   boldItalicGroup,
   imageGroup,
   linkGroup,
@@ -37,9 +36,7 @@ export default (vm) => {
       DropDown.DIVIDER,
       listGroup(vm),
       DropDown.DIVIDER,
-      removeFormatGroup(vm),
-      DropDown.DIVIDER,
-      allMenuGroup(vm)
+      removeFormatGroup(vm)
     ]
   }
 }
