@@ -1,6 +1,7 @@
 import {
   actionsGroup,
   alignGroup,
+  allMenuGroup,
   boldItalicGroup,
   imageGroup,
   linkGroup,
@@ -20,23 +21,25 @@ export default (vm) => {
     collapse: true,
     isActive: () => false,
     items: [
-      ...actionsGroup(vm).items,
+      actionsGroup(this),
       DropDown.DIVIDER,
-      ...alignGroup(vm).items,
+      textFormatGroup(this),
       DropDown.DIVIDER,
-      ...boldItalicGroup(vm).items,
+      boldItalicGroup(this),
       DropDown.DIVIDER,
-      ...imageGroup(vm).items,
+      superSubScriptGroup(this),
       DropDown.DIVIDER,
-      ...linkGroup(vm).items,
+      linkGroup(this),
       DropDown.DIVIDER,
-      ...listGroup(vm).items,
+      imageGroup(this),
       DropDown.DIVIDER,
-      ...removeFormatGroup(vm).items,
+      alignGroup(this),
       DropDown.DIVIDER,
-      ...superSubScriptGroup(vm).items,
+      listGroup(this),
       DropDown.DIVIDER,
-      ...textFormatGroup(vm).items
+      removeFormatGroup(this),
+      DropDown.DIVIDER,
+      allMenuGroup(this)
     ]
   }
 }
