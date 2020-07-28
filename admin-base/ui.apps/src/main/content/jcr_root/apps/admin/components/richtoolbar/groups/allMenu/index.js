@@ -9,7 +9,7 @@ import {
   superSubScriptGroup,
   textFormatGroup
 } from '../'
-import {DropDown} from '../../../../../../../../js/constants';
+import {DropDown} from '../../../../../../../../js/constants'
 
 export default (vm) => {
 
@@ -20,23 +20,23 @@ export default (vm) => {
     collapse: true,
     isActive: () => false,
     items: [
-      actionsGroup(vm),
+      ...actionsGroup(vm).items,
       DropDown.DIVIDER,
-      textFormatGroup(vm),
+      ...textFormatGroup(vm).items,
       DropDown.DIVIDER,
-      boldItalicGroup(vm),
+      ...boldItalicGroup(vm).items,
       DropDown.DIVIDER,
-      superSubScriptGroup(vm),
+      ...superSubScriptGroup(vm).items,
       DropDown.DIVIDER,
-      linkGroup(vm),
+      ...linkGroup(vm).items,
       DropDown.DIVIDER,
-      imageGroup(vm),
+      ...imageGroup(vm).items,
       DropDown.DIVIDER,
-      alignGroup(vm),
+      ...alignGroup(vm).items,
       DropDown.DIVIDER,
-      listGroup(vm),
+      ...listGroup(vm).items,
       DropDown.DIVIDER,
-      removeFormatGroup(vm)
+      ...removeFormatGroup(vm).items
     ]
   }
 }
