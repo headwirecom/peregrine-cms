@@ -21,25 +21,25 @@ export default (vm) => {
     collapse: true,
     isActive: () => false,
     items: [
-      actionsGroup(this),
+      actionsGroup(vm),
       DropDown.DIVIDER,
-      textFormatGroup(this),
+      textFormatGroup(vm),
       DropDown.DIVIDER,
-      boldItalicGroup(this),
+      boldItalicGroup(vm),
       DropDown.DIVIDER,
-      superSubScriptGroup(this),
+      superSubScriptGroup(vm),
       DropDown.DIVIDER,
-      linkGroup(this),
+      linkGroup(vm),
       DropDown.DIVIDER,
-      imageGroup(this),
+      imageGroup(vm),
       DropDown.DIVIDER,
-      alignGroup(this),
+      alignGroup(vm),
       DropDown.DIVIDER,
-      listGroup(this),
+      listGroup(vm),
       DropDown.DIVIDER,
-      removeFormatGroup(this),
+      removeFormatGroup(vm),
       DropDown.DIVIDER,
-      allMenuGroup(this)
+      allMenuGroup(vm)
     ]
   }
 }
