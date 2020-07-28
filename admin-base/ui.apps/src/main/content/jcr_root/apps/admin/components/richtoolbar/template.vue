@@ -5,7 +5,7 @@
           v-if="group.items.length > 0 && groupAllowed(group)"
           :icon="group.icon"
           :iconLib="group.iconLib"
-          :collapse="!group.noCollapse && (group.collapse || forceCollapse)"
+          :collapse="!group.noCollapse && (group.collapse)"
           :label="group.label"
           :title="group.title"
           :active="groupIsActive(group)"
@@ -38,6 +38,7 @@
   import {
     actionsGroup,
     alignGroup,
+    allMenuGroup,
     alwaysActiveGroup,
     boldItalicGroup,
     imageGroup,
@@ -91,8 +92,9 @@
             w: 0
           }
         },
-        breakpoint: {
-          w: 815
+        size: {
+          button: 34,
+          group: 4
         }
       }
     },
@@ -108,7 +110,8 @@
           imageGroup(this),
           alignGroup(this),
           listGroup(this),
-          removeFormatGroup(this)
+          removeFormatGroup(this),
+          allMenuGroup(this)
         ]
       },
       inline() {
@@ -210,9 +213,6 @@
           }
         })
         return currentItem.icon || 'desktop_windows'
-      },
-      forceCollapse() {
-        return this.docEl.dimension.w <= this.breakpoint.w
       }
     },
     mounted() {
@@ -551,7 +551,11 @@
         return !group.rules || group.rules(this)
       },
       groupIsActive(group) {
-        return group.items.filter((item) => item.isActive && item.isActive()).length > 0
+        if (group.isActive) {
+          return group.isActive()
+        } else {
+          return group.items.filter((item) => item.isActive && item.isActive()).length > 0
+        }
       }
     }
   }

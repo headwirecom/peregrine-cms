@@ -62,6 +62,7 @@
       }
 
       .label {
+        width: 20px !important;
         color: #000000 !important;
         display: flex;
         justify-content: left;
@@ -88,6 +89,10 @@
           }
         }
       }
+    }
+
+    &.scrollable {
+      min-width: 215px;
     }
   }
 }

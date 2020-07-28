@@ -3,7 +3,7 @@
     <a href="#" ref="dd" :data-activates="id">
       <slot></slot>
     </a>
-    <ul :id="id" class="dropdown-content">
+    <ul :id="id" class="dropdown-content" :class="{'scrollable': isScrollable}">
       <li v-if="!!$slots.header" class="header">
         <slot name="header" class="header"></slot>
       </li>
@@ -85,12 +85,16 @@
       return {
         IconLib,
         DropDown,
-        $dd: null
+        $dd: null,
+        maxNoScrollItems: 16
       }
     },
     computed: {
       id() {
         return `materailizedropdown-${this._uid}`
+      },
+      isScrollable() {
+        return this.items && this.items.length > this.maxNoScrollItems
       }
     },
     mounted() {
