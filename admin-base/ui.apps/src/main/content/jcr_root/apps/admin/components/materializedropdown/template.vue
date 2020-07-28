@@ -9,23 +9,26 @@
       </li>
       <slot name="content"></slot>
       <template v-if="items">
-        <li v-for="(item, index) in items"
-            :key="`item-${index}`"
-            class="item"
-            :class="[{disabled: item.disabled}, item.class? item.class() : null]"
-            :title="item.title? item.title : false"
-            @click="onItemClick(item, index)">
-          <admin-components-icon v-if="item.icon" :icon="item.icon" :lib="item.iconLib"/>
-          {{ item.label }}
-          <div v-if="item.icon" class="center-keeper"></div>
-        </li>
+        <template v-for="(item, index) in items">
+          <admin-components-dropdowndivider v-if="item === DropDown.DIVIDER"/>
+          <li v-else
+              :key="`item-${index}`"
+              class="item"
+              :class="[{disabled: item.disabled}, item.class? item.class() : null]"
+              :title="item.title? item.title : false"
+              @click="onItemClick(item, index)">
+            <admin-components-icon v-if="item.icon" :icon="item.icon" :lib="item.iconLib"/>
+            {{ item.label }}
+            <div v-if="item.icon" class="center-keeper"></div>
+          </li>
+        </template>
       </template>
     </ul>
   </component>
 </template>
 
 <script>
-  import {IconLib} from '../../../../../../js/constants'
+  import {DropDown, IconLib} from '../../../../../../js/constants'
 
   export default {
     name: 'MaterializeDropDown',
@@ -81,6 +84,7 @@
     data() {
       return {
         IconLib,
+        DropDown,
         $dd: null
       }
     },

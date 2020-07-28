@@ -124,3 +124,7 @@ export const IconLib = {
   FONT_AWESOME: 'font-awesome',
   PLAIN_TEXT: 'plain-text'
 }
+
+export const DropDown = {
+  DIVIDER: '--------------------------'
+}
