@@ -93,6 +93,7 @@
 
     &.scrollable {
       min-width: 215px;
+      overflow-y: scroll !important;
     }
   }
 }
