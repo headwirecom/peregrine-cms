@@ -28,6 +28,7 @@
   import {IconLib} from '../../../../../../js/constants'
 
   export default {
+    name: 'MaterializeDropDown',
     props: {
       items: {
         type: Array
