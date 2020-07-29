@@ -189,61 +189,6 @@
           },
           ...headlines
         ]
-      },
-      viewportItems() {
-        return [
-          {
-            id: 'mobile',
-            label: this.$i18n('mobile'),
-            icon: 'phone_android',
-            class: () => this.viewport === 'mobile' ? 'active' : null,
-            click: () => this.setViewport('mobile')
-          },
-          {
-            id: 'mobile-landscape',
-            label: this.$i18n('mobile-landscape'),
-            icon: 'stay_current_landscape',
-            class: () => this.viewport === 'mobile-landscape' ? 'active' : null,
-            click: () => this.setViewport('mobile-landscape')
-          },
-          {
-            id: 'tablet',
-            label: this.$i18n('tablet'),
-            icon: 'tablet_android',
-            class: () => this.viewport === 'tablet' ? 'active' : null,
-            click: () => this.setViewport('tablet')
-          },
-          {
-            id: 'tablet-landscape',
-            label: this.$i18n('tablet-landscape'),
-            icon: 'tablet',
-            class: () => this.viewport === 'tablet-landscape' ? 'active' : null,
-            click: () => this.setViewport('tablet-landscape')
-          },
-          {
-            id: 'laptop',
-            label: this.$i18n('laptop'),
-            icon: 'laptop_windows',
-            class: () => this.viewport === 'laptop' ? 'active' : null,
-            click: () => this.setViewport('laptop')
-          },
-          {
-            id: 'desktop',
-            label: this.$i18n('desktop'),
-            icon: 'desktop_windows',
-            class: () => !this.viewport || this.viewport === 'desktop' ? 'active' : null,
-            click: () => this.setViewport('desktop')
-          }
-        ]
-      },
-      viewportIcon() {
-        let currentItem = {}
-        this.viewportItems.some((item) => {
-          if (item.id === this.viewport) {
-            return currentItem = item
-          }
-        })
-        return currentItem.icon || 'desktop_windows'
       }
     },
     mounted() {
@@ -579,7 +524,7 @@
         this.docEl.dimension.w = document.documentElement.clientWidth
       },
       groupAllowed(group) {
-        return !group.rules || group.rules(this)
+        return !group.rules || group.rules()
       },
       groupIsActive(group) {
         if (group.isActive) {

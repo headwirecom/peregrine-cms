@@ -3,7 +3,7 @@ import {DropDown} from '../../../../../../../../js/constants'
 export default (vm) => {
   const buttonSize = vm.size.button
   const groupSize = vm.size.group
-  const items = []
+  let items = []
 
   const breakpoint = () => {
     return 800
@@ -11,13 +11,15 @@ export default (vm) => {
         - (items.filter((i) => i === DropDown.DIVIDER).length + 1) * groupSize
   }
   const hideGroup = (group) => {
-    vm.hiddenGroups[group.label] = true
-    if (items.length >= 1) items.unshift(DropDown.DIVIDER)
-    items.unshift(...group.items)
+    vm.$set(vm.hiddenGroups, group.label, true)
+    if (items.length >= 1) {
+      items = [DropDown.DIVIDER, ...items]
+    }
+    items = [...group.items, ...items]
   }
+
   const showGroup = (group) => {
-    vm.hiddenGroups[group.label] = false
-    console.log(vm.hiddenGroups)
+    vm.$set(vm.hiddenGroups, group.label, false)
   }
 
   const w = vm.docEl.dimension.w
@@ -42,20 +44,6 @@ export default (vm) => {
     }
   }
 
-  /*
-  ...actionsGroup(vm).items,
-        DropDown.DIVIDER,
-        ...textFormatGroup(vm).items,
-        DropDown.DIVIDER,
-        ...boldItalicGroup(vm).items,
-        DropDown.DIVIDER,
-        ...superSubScriptGroup(vm).items,
-        DropDown.DIVIDER,
-        ...linkGroup(vm).items,
-        DropDown.DIVIDER,
-        ...imageGroup(vm).items,
-        DropDown.DIVIDER,
-   */
   return {
     label: 'responsive-menu',
     icon: 'bars',
