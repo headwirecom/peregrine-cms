@@ -54,10 +54,15 @@
             text="Let's get started with your peregrineCMS journey">
           </text2>
 
-          <decline jcr:primaryType="nt:unstructured"
-            sling:resourceType="admin/components/action" title="let's go!"
-            command="selectPath" target="/content/admin/pages/index" icon="folder" classes="btn">
-          </decline>
+          <dash jcr:primaryType="nt:unstructured"
+            sling:resourceType="admin/components/action" title="Home"
+            command="selectPath" target="/content/admin/pages/index" classes="btn">
+          </dash>
+
+          <create jcr:primaryType="nt:unstructured"
+            sling:resourceType="admin/components/action" title="Create a new Site"
+            command="selectPath" target="/content/admin/pages/pages/createtenant.html/path:/content" classes="btn">
+          </create>
 
         </col2>
 
