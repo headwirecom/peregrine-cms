@@ -144,6 +144,7 @@
                                 inputType: "text",
                                 label: "Tenant User Password",
                                 model: "tenantUserPwd",
+                                visible: $perAdminApp.getNodeFromView('/state/user') === 'admin',
                                 required: false,
                                 onChanged: (model, newVal, oldVal, field) => {
                                 }
