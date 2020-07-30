@@ -178,6 +178,17 @@
                     </admin-components-action>
                 </li>
             </ul>
+            <div style="width: inherit; position: absolute; bottom: .5em;" v-if="model.showFilter ==='true'">
+                <div style="padding-left: 3em; padding-right: 1em;">
+                    <div class="switch">
+                        <label>
+                            <input type="checkbox" v-model="filter" style="direction: rtl;">
+                            <span class="lever"></span>
+                            filter secondary items
+                        </label>
+                    </div>
+                </div>
+            </div>
             <div v-if="children && children.length == 0" class="empty-explorer">
                 <div v-if="path.includes('assets')">
                     {{ $i18n('emptyExplorerHintAssets') }}.
@@ -235,7 +246,8 @@
                 isDraggingFile: false,
                 isDraggingUiEl: false,
                 isFileUploadVisible: false,
-                uploadProgress: 0
+                uploadProgress: 0,
+                filter: true
             }
         },
 
@@ -254,7 +266,7 @@
             },
             children: function() {
                 if ( this.pt.children ) {
-                    return this.pt.children.filter( child => this.checkIfAllowed(child.resourceType) )
+                    return this.pt.children.filter( child => this.checkIfAllowed(child) )
                 }
             },
             parentPath: function() {
@@ -488,8 +500,12 @@
                 return 'unknown'
             },
 
-            checkIfAllowed: function(resourceType) {
-                return ['per:Asset', 'nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page', 'sling:OrderedFolder', 'per:Object'].indexOf(resourceType) >= 0
+            checkIfAllowed: function(node) {
+                if(this.model.showFilter && this.model.showFilter === 'true' && this.filter) {
+                    if(node.excludeFromSitemap && node.excludeFromSitemap === 'true') return false
+                    return ['per:Page', 'per:Asset', 'per:Object'].indexOf(node.resourceType) >= 0
+                }
+                return ['per:Asset', 'nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page', 'sling:OrderedFolder', 'per:Object'].indexOf(node.resourceType) >= 0
             },
 
             showInfo: function(me, target) {
