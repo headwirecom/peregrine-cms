@@ -36,7 +36,7 @@
                         <div class="col s6">
                             <div v-if="skeletonPages && skeletonPages.length > 0">
                                 <label class="as-heading">Select a Skeleton-Page</label>
-                                <ul class="collection">
+                                <ul class="collection as-scrollable">
                                     <li class="collection-item"
                                         v-for="skeletonPage in skeletonPages"
                                         v-on:click.stop.prevent="selectSkeletonPage(null, skeletonPage.path)"
@@ -49,7 +49,7 @@
                             <p v-if="skeletonPages && skeletonPages.length > 0">
                             </p>
                             <label class="as-heading">Select a Template</label>
-                            <ul class="collection">
+                            <ul class="collection" v-bind:class="skeletonPages && skeletonPages.length > 0 ? 'as-scrollable-short' : 'as-scrollable'">
                                 <li class="collection-item"
                                     v-for="template in templates"
                                     v-on:click.stop.prevent="selectTemplate(null, template.path)"
@@ -244,6 +244,16 @@
 
 .as-heading {
     font-size: 1.5rem;
+}
+
+.as-scrollable {
+    max-height: 20rem;
+    overflow-y: auto;
+}
+
+.as-scrollable-short {
+    max-height: 9rem;
+    overflow-y: auto;
 }
 
 </style>
