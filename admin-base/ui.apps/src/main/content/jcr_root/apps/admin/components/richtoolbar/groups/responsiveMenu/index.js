@@ -24,23 +24,12 @@ export default (vm) => {
 
   const w = vm.docEl.dimension.w
   const groups = vm.groups
-  groups.pop()
 
-  for (let i = groups.length - 1; i > 0; i--) {
+  for (let i = groups.length - 1; i >= 0; i--) {
     if (w <= breakpoint()) {
       hideGroup(groups[i])
-
-      if (i === groups.length - 1) {
-        i--
-        hideGroup(groups[i])
-      }
     } else {
       showGroup(groups[i])
-
-      if (i === groups.length - 1) {
-        i--
-        showGroup(groups[i])
-      }
     }
   }
 
@@ -49,7 +38,7 @@ export default (vm) => {
     icon: 'bars',
     collapse: true,
     isActive: () => false,
-    rules: () => vm.docEl.dimension.w <= 800,
+    rules: () => vm.responsive && vm.docEl.dimension.w <= 800,
     items
   }
 }
