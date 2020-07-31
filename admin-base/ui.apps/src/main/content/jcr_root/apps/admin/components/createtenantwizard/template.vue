@@ -135,7 +135,8 @@
                                 required: true,
                                 onChanged: (model, newVal, oldVal, field) => {
                                   if(!this.nameChanged) {
-                                      this.formmodel.name = $perAdminApp.normalizeString(newVal, '_');
+                                      model.name = $perAdminApp.normalizeString(newVal, '_');
+                                      this.$refs.nameTab.validate()
                                   }
                                 }
                             },
