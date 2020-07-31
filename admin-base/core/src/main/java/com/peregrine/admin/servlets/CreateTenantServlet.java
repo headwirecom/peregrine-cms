@@ -217,6 +217,7 @@ public class CreateTenantServlet extends AbstractBaseServlet {
                         .setErrorMessage(FAILED_TO_CREATE_TENANT_SECURITY);
                 }
                 tenantGroup.addMember(tenantUser);
+                allTenantsGroup.addMember(tenantUser);
             } else {
                 // We also need to add the current non-admin user to the group so that new site is visible for them
                 Authorizable authorizable = userManager.getAuthorizable(request.getRequest().getUserPrincipal());

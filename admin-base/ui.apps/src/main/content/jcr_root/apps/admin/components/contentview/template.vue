@@ -128,7 +128,11 @@
         iframe: {
           loaded: false,
           win: null, doc: null, html: null, body: null, head: null, app: null,
-          scrollTop: 0
+          scrollTop: 0,
+          timeout: null,
+          delay: 0,
+          mouseOverCmp: null,
+          dimension: {w: 0, h: 0, x: 0, y: 0}
         },
         clipboard: null,
         ctrlDown: false,
@@ -259,7 +263,11 @@
         }
       },
       scrollTop() {
-        this.wrapEditableAroundSelected()
+        if (this.target) {
+          this.wrapEditableAroundSelected()
+        } else {
+          this.wrapEditableAroundElement(this.iframe.mouseOverCmp)
+        }
       },
       'view.state.tools.workspace.view'() {
         this.$nextTick(() => {
@@ -291,6 +299,16 @@
               this.editable.class = 'selected'
               this.wrapEditableAroundSelected()
             }, this.editable.delay)
+          }
+        }
+      },
+      'iframe.dimension': {
+        deep: true,
+        handler() {
+          if (this.target) {
+            this.wrapEditableAroundSelected()
+          } else {
+            this.wrapEditableAroundElement(this.iframe.mouseOverCmp)
           }
         }
       }
@@ -589,6 +607,8 @@
         this.iframe.body = this.iframe.doc.querySelector('body')
         this.iframe.head = this.iframe.doc.querySelector('head')
         this.iframe.app = this.iframe.doc.querySelector('#peregrine-app')
+        this.iframe.win.addEventListener('resize', this.updateIframeDimensions);
+        this.updateIframeDimensions()
         this.addIframeExtraStyles()
         this.refreshIframeElements()
         if (this.previewMode !== 'preview') {
@@ -704,6 +724,7 @@
           return
         }
 
+        this.iframe.mouseOverCmp = cmpEl
         this.wrapEditableAroundElement(cmpEl)
 
         if (this.isFromTemplate(cmpEl)) {
@@ -1051,6 +1072,13 @@
         event.target.classList.remove('outline-orange', 'outline-green')
       },
 
+      updateIframeDimensions() {
+        clearTimeout(this.iframe.timeout)
+        this.iframe.timeout = setTimeout(() => {
+          this.iframe.dimension.w = this.iframe.doc.documentElement.clientWidth
+          this.iframe.dimension.h = this.iframe.doc.documentElement.clientHeight
+        }, this.iframe.delay)
+      }
     }
   }
 </script>
