@@ -139,6 +139,10 @@ public class ReplicationServlet extends AbstractBaseServlet {
         logger.trace("Request URI: '{}'", request.getRequest().getRequestURI());
         logger.trace("Request URL: '{}'", request.getRequest().getRequestURL());
         String sourcePath = request.getParameter(PATH);
+//        Get a list of reference from the post array body...
+//        replicatedReferences=/path-1,
+//        replicatedReferences=/path-2, etc
+
         String replicationName = request.getParameter(NAME);
         if(replicationName == null || replicationName.isEmpty()) {
             return new ErrorResponse()

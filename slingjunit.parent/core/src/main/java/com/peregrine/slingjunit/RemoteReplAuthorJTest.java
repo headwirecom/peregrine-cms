@@ -1,9 +1,9 @@
 package com.peregrine.slingjunit;
 
 
+import com.peregrine.adaption.PerReplicable;
 import com.peregrine.replication.Replication;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -25,14 +25,13 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;;
 import javax.jcr.security.Privilege;
 import java.io.IOException;
-
-import java.util.Arrays;
-import java.util.Dictionary;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
+
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATION;
+import static org.apache.jackrabbit.JcrConstants.JCR_LASTMODIFIED;
 import static org.junit.Assert.*;
 
 @RunWith(SlingAnnotationsTestRunner.class)
@@ -53,6 +52,8 @@ public class RemoteReplAuthorJTest {
     @TestReference(name="remote")
     private Replication remoteReplication;
 
+    private Calendar beforeTime;
+
     private static String MAPPER_DISTRIBUTION_EVENT_PID = "org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended~distributionEventHandler";
     private static String[] DIST_EVENT_VALUES = {
             "com.peregrine-cms.admin.core:peregrine-distribution-sub-service=distribution-agent-user",
@@ -67,15 +68,19 @@ public class RemoteReplAuthorJTest {
     };
     private static String USER_MAPPING = "user.mapping";
     private static String STELLA_PNG = "/content/example/assets/images/Stella.png";
+    private static String CONTACT_PATH = "/content/example/pages/contact";
+    private static String COMPONENT_PATH= "/content/example/pages/contact/jcr:content/n3736dc36-9cc3-49d7-a7d4-bf4d94e0ea2f";
     private Resource stellaImgRes;
     private static String PUBLISH_DOMAIN = "http://localhost:8180";
 
     @Before
     public void setup(){
         try {
+            beforeTime = Calendar.getInstance();
             adminResourceResolver = resolverFactory.getAdministrativeResourceResolver(null);
             assertNotNull(remoteReplication);
             stellaImgRes = adminResourceResolver.getResource(STELLA_PNG);
+
         } catch (LoginException e) {
             fail(e.getMessage());
         }
@@ -93,6 +98,25 @@ public class RemoteReplAuthorJTest {
         assertTrue(runmmodes.contains("author"));
         assertTrue(runmmodes.contains("notshared"));
         assertTrue(runmmodes.contains("oak_tar"));
+    }
+
+    @Test
+    public void replicationMixin(){
+        assertReplicationMixin(CONTACT_PATH);
+        assertReplicationMixin(CONTACT_PATH+"/jcr:content");
+        assertReplicationMixin(STELLA_PNG);
+        assertReplicationMixin(STELLA_PNG+"/jcr:content");
+        assertReplicationMixin(COMPONENT_PATH);
+    }
+
+    private void assertReplicationMixin(String resourcePath){
+        Resource res = adminResourceResolver.getResource(resourcePath);
+        Node node = res.adaptTo(Node.class);
+        try {
+            assertTrue(node.canAddMixin(PER_REPLICATION));
+        } catch (RepositoryException e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
@@ -115,16 +139,28 @@ public class RemoteReplAuthorJTest {
     public void replicateOneAsset() {
         deactivateResource(STELLA_PNG);
         assertStatusOnPublish(STELLA_PNG, 404);
-
+        PerReplicable stellaImgRepl = stellaImgRes.adaptTo(PerReplicable.class);
+        assertFalse(stellaImgRepl.isReplicated());
         try {
             remoteReplication.replicate(stellaImgRes, true);
             assertStatusOnPublish(STELLA_PNG, 200);
+            assertTrue(stellaImgRepl.isReplicated());
+
+            stellaImgRepl.getModifiableProperties().put(JCR_LASTMODIFIED, Calendar.getInstance());
+            assertNotNull(stellaImgRepl.getReplicated());
+            assertTrue(stellaImgRepl.isStale());
+
         } catch (Replication.ReplicationException e) {
             fail(e.getMessage());
         }
         deactivateResource(STELLA_PNG);
         assertStatusOnPublish(STELLA_PNG, 404);
+
+        stellaImgRepl = adminResourceResolver.getResource(STELLA_PNG).adaptTo(PerReplicable.class);
+        assertFalse(stellaImgRepl.isReplicated());
+        assertFalse(stellaImgRepl.isStale());
     }
+
 
 
     private void testListGranted(List<String> list, String privilege, String usedId) {

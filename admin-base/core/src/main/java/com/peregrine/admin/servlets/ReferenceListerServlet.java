@@ -26,6 +26,8 @@ package com.peregrine.admin.servlets;
  */
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_REF;
+import static com.peregrine.admin.servlets.NodesServlet.ACTIVATED;
+import static com.peregrine.admin.servlets.NodesServlet.DATE_FORMATTER;
 import static com.peregrine.admin.util.AdminConstants.SOURCE_NAME;
 import static com.peregrine.admin.util.AdminConstants.SOURCE_PATH;
 import static com.peregrine.commons.util.PerConstants.*;
@@ -33,7 +35,6 @@ import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
-import static javax.jcr.Property.JCR_LAST_MODIFIED;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -41,6 +42,7 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+import com.peregrine.adaption.PerReplicable;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.replication.ReferenceLister;
 import java.io.IOException;
@@ -74,6 +76,7 @@ public class ReferenceListerServlet extends AbstractBaseServlet {
 
     public static final String GIVEN_PATH_DOES_NOT_YIELD_A_RESOURCE = "Given Path does not yield a resource";
     public static final String REFERENCES = "references";
+    public static final String IS_STALE = "is_stale";
 
     @Reference
     private ReferenceLister referenceLister;
@@ -84,18 +87,36 @@ public class ReferenceListerServlet extends AbstractBaseServlet {
         Resource source = request.getResourceResolver().getResource(sourcePath);
         if(source != null) {
             List<Resource> references = referenceLister.getReferenceList(true, source, true);
+            PerReplicable sourceRepl = source.adaptTo(PerReplicable.class);
             JsonResponse answer = new JsonResponse();
-            answer.writeAttribute(SOURCE_NAME, source.getName());
-            answer.writeAttribute(SOURCE_PATH, source.getPath());
+            answer.writeAttribute(SOURCE_NAME, sourceRepl.getName());
+            answer.writeAttribute(SOURCE_PATH, sourceRepl.getPath());
+            answer.writeAttribute(ACTIVATED, sourceRepl.isReplicated());
+            if (sourceRepl.getReplicated() != null) {
+                answer.writeAttribute(PER_REPLICATED, DATE_FORMATTER.format(sourceRepl.getReplicated().getTime().getTime()));
+            }
+            if (sourceRepl.getLastModified()!=null){
+                answer.writeAttribute(JCR_LAST_MODIFIED, DATE_FORMATTER.format(sourceRepl.getLastModified().getTime()));
+            }
+            if (sourceRepl.getLastModified()!=null && sourceRepl.getReplicated()!= null) {
+                answer.writeAttribute(IS_STALE, sourceRepl.isStale());
+            }
             answer.writeArray(REFERENCES);
             for(Resource child : references) {
-                Resource contentResource = child.getChild(JCR_CONTENT) != null ? child.getChild(JCR_CONTENT) : child;
-                ValueMap contentValueMap = ResourceUtil.getValueMap(contentResource);
+                PerReplicable childRepl = child.adaptTo(PerReplicable.class);
                 answer.writeObject();
-                answer.writeAttribute(NAME, child.getName());
-                answer.writeAttribute(PATH, child.getPath());
-//                answer.writeAttribute(JCR_LAST_MODIFIED, contentValueMap.get(JCR_LAST_MODIFIED));
-
+                answer.writeAttribute(NAME, childRepl.getName());
+                answer.writeAttribute(PATH, childRepl.getPath());
+                answer.writeAttribute(ACTIVATED, childRepl.isReplicated());
+                if (childRepl.getLastModified()!=null){
+                    answer.writeAttribute(JCR_LAST_MODIFIED, DATE_FORMATTER.format(childRepl.getLastModified().getTime()));
+                }
+                if (childRepl.getReplicated()!=null){
+                    answer.writeAttribute(PER_REPLICATED, DATE_FORMATTER.format(childRepl.getReplicated().getTime()));
+                }
+                if (childRepl.getLastModified()!=null && childRepl.getReplicated()!= null) {
+                    answer.writeAttribute(IS_STALE, childRepl.isStale());
+                }
                 answer.writeClose();
             }
             answer.writeClose();

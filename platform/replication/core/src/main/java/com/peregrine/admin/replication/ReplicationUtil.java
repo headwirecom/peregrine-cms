@@ -15,6 +15,7 @@ import javax.jcr.query.Query;
 
 import java.util.*;
 
+import static com.peregrine.admin.replication.impl.DistributionReplicationService.DISTRIBUTION_PENDING;
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.isEmpty;
@@ -99,7 +100,12 @@ public class ReplicationUtil {
                 ModifiableValueMap sourceProperties = getModifiableProperties(source, false);
                 if (sourceProperties != null) {
                     Calendar replicated = Calendar.getInstance();
-                    sourceProperties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());
+                    if (DISTRIBUTION_PENDING.equals(targetPath)) {
+                        // updateReplicationProperties will be called twice. The first time will include a resource
+                        // obtained from the user initiating resource publishing. In this case targetPath will be "distribution pending"
+                        // TODO: CR add replication status to the per:Replication mixin such that these inferences are not needed.
+                        sourceProperties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());
+                    }
                     sourceProperties.put(PER_REPLICATED, replicated);
                     LOGGER.trace("Updated Source Replication Properties");
                     if (target == null) {
@@ -115,7 +121,10 @@ public class ReplicationUtil {
                             ModifiableValueMap targetProperties = getModifiableProperties(target, false);
                             String userId = source.getResourceResolver().getUserID();
                             LOGGER.trace("Replication User Id: '{}' for target: '{}'", userId, target.getPath());
-                            targetProperties.put(PER_REPLICATED_BY, userId);
+                            // TODO: Refactor duplicated code
+                            if (DISTRIBUTION_PENDING.equals(targetPath)) {
+                                targetProperties.put(PER_REPLICATED_BY, userId);
+                            }
                             targetProperties.put(PER_REPLICATED, replicated);
                             if (JCR_CONTENT.equals(source.getName())) {
                                 // For jcr:content nodes set the replication ref to its parent

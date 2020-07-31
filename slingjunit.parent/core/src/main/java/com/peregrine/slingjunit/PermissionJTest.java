@@ -72,7 +72,9 @@ public class PermissionJTest {
         }
     }
 
-    @After void cleanup(){
+    @After
+    public void cleanup(){
         resourceResolver.close();
+        resourceResolver = null;
     }
 }

@@ -8,11 +8,11 @@ import java.util.Calendar;
  * It is adaptable from a Sling Resource
  *
  * Provides information about the reference such as:
- * When was it last activated/decatived?
+ * When was it last activated/deacatived?
  * When was it last edited?
  *
  */
-public interface PerReference extends PerBase {
+public interface PerReplicable extends PerBase {
 
     /**
      * @return true if the resource has been replicated

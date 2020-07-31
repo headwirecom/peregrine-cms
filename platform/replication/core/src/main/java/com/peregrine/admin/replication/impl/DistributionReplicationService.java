@@ -196,7 +196,7 @@ public class DistributionReplicationService
                 int i = 0;
                 for(Resource resource : resourceList) {
                     paths[i++] = resource.getPath();
-                    // In order to make it possible to have the correct user set and Replicated By we need to set it here and now
+                    // In order to make it possible to have the correct user set and 'Replicated By' we need to set it here and now
                     updateReplicationProperties(resource, DISTRIBUTION_PENDING, null);
                 }
                 try {

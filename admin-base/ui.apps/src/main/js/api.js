@@ -107,6 +107,11 @@ class PerApi {
     populateVersions(page) {
         return impl.populateVersions(page)
     }
+
+    populateReferences(path) {
+        return impl.populateReferences(path)
+    }
+
     setInitialPageEditorState() {
         return impl.setInitialPageEditorState()
     }
@@ -258,8 +263,8 @@ class PerApi {
         return impl.moveNodeTo(path, component, drop)
     }
 
-    replicate(path) {
-        return impl.replicate(path)
+    replicate(path, replicationService, deep, deactivate) {
+        return impl.replicate(path, replicationService, deep, deactivate)
     }
 
     getPalettes(templateName) {

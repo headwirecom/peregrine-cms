@@ -107,7 +107,7 @@ public class NodesServlet extends AbstractBaseServlet {
 
     private static final String[] OMIT_PREFIXES = new String[] {JCR_PREFIX, PER_PREFIX};
 
-    private static DateFormat formatter = new SimpleDateFormat(ECMA_DATE_FORMAT, ECMA_DATE_FORMAT_LOCALE);
+    public static DateFormat DATE_FORMATTER = new SimpleDateFormat(ECMA_DATE_FORMAT, ECMA_DATE_FORMAT_LOCALE);
 
     @Reference
     ModelFactory modelFactory;
@@ -284,7 +284,7 @@ public class NodesServlet extends AbstractBaseServlet {
         Object value = properties.get(propertyName);
         String data;
         if(value instanceof Calendar) {
-            data = formatter.format(((Calendar) value).getTime());
+            data = DATE_FORMATTER.format(((Calendar) value).getTime());
         } else {
             data = properties.get(propertyName, String.class);
         }

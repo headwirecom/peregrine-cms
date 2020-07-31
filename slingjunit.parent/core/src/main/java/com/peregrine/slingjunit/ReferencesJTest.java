@@ -23,6 +23,7 @@
 
 package com.peregrine.slingjunit;
 
+import com.peregrine.adaption.PerReplicable;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.replication.ReferenceLister;
 import org.apache.sling.api.resource.Resource;
@@ -30,7 +31,6 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.junit.annotations.SlingAnnotationsTestRunner;
 import org.apache.sling.junit.annotations.TestReference;
-import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,10 +38,12 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
+
+import static org.apache.jackrabbit.JcrConstants.JCR_LASTMODIFIED;
 import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
 import static com.peregrine.admin.replication.ReplicationUtil.queryContainsStringUnderResource;
 
 @RunWith(SlingAnnotationsTestRunner.class)
@@ -57,6 +59,8 @@ public class ReferencesJTest {
     @TestReference
     private ReferenceLister referenceLister;
 
+    private Resource contactRes;
+    private Calendar timeBefore;
     private static String CONTACT_PATH = "/content/example/pages/contact";
     private static String IMAGE_PATH = "/content/example/assets/images/Stella.png";
     private static String IMAGE_COMPONENT = "/content/example/pages/contact/jcr:content/n3736dc36-9cc3-49d7-a7d4-bf4d94e0ea2f/n8680c077-cc22-40d3-8989-d86d832a85d1";
@@ -68,12 +72,10 @@ public class ReferencesJTest {
 
     @Test
     public void checkReferenceList(){
-        Resource contactRes = resourceResolver.getResource(CONTACT_PATH);
         List<Resource> resources = referenceLister.getReferenceList(false, contactRes, false);
         assertTrue(resources.stream().anyMatch(resource -> resource.getPath().equals(IMAGE_PATH)));
         assertTrue(resources.stream().anyMatch(resource -> resource.getPath().equals(TEMPLATE_PATH)));
     }
-
 
     @Test
     public void checkQueryResults(){
@@ -97,6 +99,8 @@ public class ReferencesJTest {
     @Before
     public void setUp() throws Exception {
         resourceResolver = resolverFactory.getAdministrativeResourceResolver(null);
+        contactRes = resourceResolver.getResource(CONTACT_PATH);
+        timeBefore = Calendar.getInstance();
     }
 
     @After

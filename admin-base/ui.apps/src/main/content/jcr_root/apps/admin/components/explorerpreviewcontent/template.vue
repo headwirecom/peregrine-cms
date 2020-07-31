@@ -184,9 +184,16 @@
             <i class="material-icons">publish</i>
             Publish to Web ({{nodeType}})
           </div>
-          <div class="action" :title="`Open Web Publishing ${nodeType} Dialog`" @click="unPublishResource()">
-            <i class="material-icons">remove_circle_outline</i>
-            Unpublish ({{nodeType}})
+          <div class="action" :title="`Deactivate ${nodeType}`" >
+            <admin-components-action 
+                v-bind:model="{
+                    target: node.path,
+                    command: 'unPublishResource',
+                    tooltipTitle: `${$i18n('undo publish')} '${node.title || node.name}'`
+                }">
+                <i class="material-icons">remove_circle_outline</i>
+                Unpublish ({{nodeType}})
+            </admin-components-action>
           </div>
         </div>
       </template>
@@ -589,9 +596,8 @@
         // this.$refs.publishingModal.open()
         this.isPublishDialogOpen = true;
       },
-      unPublishResource(){
-        $perAdminApp.stateAction('replicate', path)
-
+      unPublishResource(me, path) {
+        $perAdminApp.stateAction('unreplicate', path)
       },
       closePublishing(){
         console.log("Close Publishing Modal")
@@ -716,7 +722,8 @@
         this.edit = false;
       },
       setActiveTab(clickedTab) {
-        this.activeTab = clickedTab;
+        this.activeTab = clickedTab;     
+        $perAdminApp.action(this, 'setActiveTabName', {activeTab: this.activeTab})
       },
       isTab(arg) {
         if (Array.isArray(arg)) {

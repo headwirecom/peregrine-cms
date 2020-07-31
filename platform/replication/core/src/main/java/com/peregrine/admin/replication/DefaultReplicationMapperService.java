@@ -170,7 +170,8 @@ public class DefaultReplicationMapperService
 
     @Override
     public List<Resource> deactivate(Resource source) throws ReplicationException {
-        return null;
+        Replication defaultService = this.getDefaultReplicationService();
+        return defaultService.deactivate(source);
     }
 
     @Override
@@ -214,6 +215,10 @@ public class DefaultReplicationMapperService
             }
         }
         return answer;
+    }
+
+    private Replication getDefaultReplicationService() {
+        return this.replications.get(this.defaultMapping.getServiceName());
     }
 
     /**

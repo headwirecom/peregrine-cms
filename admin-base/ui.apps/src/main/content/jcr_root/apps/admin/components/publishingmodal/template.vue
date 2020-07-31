@@ -29,7 +29,35 @@
         ref="materializemodal"
         v-on:complete="$emit('complete',$event)"
         v-bind:modalTitle="modalTitle" >
-        <p>Content</p>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Path</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+
+            <tbody v-if="references">
+            <tr>
+                <td>{{references.sourcePath}}</td>
+                <td>{{printStatus(references)}}</td>
+                <td class="switch">
+                    <label> Off <input type="checkbox" checked> <span class="lever"></span> Publish </label>
+                </td>
+            </tr>
+            <tr v-for="ref in references.references" v-bind:key="ref.path">
+                <td>{{ref.path}}</td>
+                <td>{{printStatus(ref)}}</td>
+                <td class="switch">
+                    <label> Off <input type="checkbox" checked> <span class="lever"></span> Publish </label>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+
         <template slot="footer">
             <admin-components-confirmdialog
                 v-on:confirm-dialog="confirmDialog"
@@ -51,10 +79,13 @@ export default {
         }
     },
     computed: {
-        pt: function() {
+        pt() {
             var node = this.path
             return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, node)
-        }
+        },
+        references(){
+            return $perAdminApp.getView().state.references
+        },
     },
     methods: {
         open(){
@@ -62,6 +93,20 @@ export default {
         },
         close(){
             this.$refs.materializemodal.close()
+        },
+        printStatus(ref){
+            if (ref.is_stale) {
+                return "Published (Stale)"
+            } else if (ref.activated === true){
+                return "Published"                
+            } else if(ref.activated === false) {
+                return "Unpublished"
+            } else {
+                return "No Status"
+            }
+        },
+        activateSwitch(ref){            
+            return !ref.activated || ref.is_stale ? "checked" : ""
         },
         confirmDialog($event){
             if($event === "confirm") {
@@ -72,6 +117,7 @@ export default {
         }
     },
     mounted() {
+        $perAdminApp.getApi().populateReferences(this.path);
         this.$refs.materializemodal.open()
     }
 }

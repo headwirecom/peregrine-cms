@@ -4,7 +4,7 @@
   color: color("blue-grey", "darken-4");
   position: relative;
   padding: 45px 0 0 !important;
-  overflow: hidden;
+  overflow-y: scroll;
   height: 100%;
 
   &:before {

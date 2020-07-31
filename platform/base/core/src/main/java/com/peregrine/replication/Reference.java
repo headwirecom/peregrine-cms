@@ -27,6 +27,8 @@ package com.peregrine.replication;
 
 import org.apache.sling.api.resource.Resource;
 
+import java.util.Date;
+
 /**
  * This is a wrapper that contains the resource and property name
  * of a reference to a given resource but also contains the reference

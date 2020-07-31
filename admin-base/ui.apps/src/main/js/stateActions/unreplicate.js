@@ -1,6 +1,6 @@
 /*-
  * #%L
- * peregrine default node types - Core
+ * admin base - UI Apps
  * %%
  * Copyright (C) 2017 headwire inc.
  * %%
@@ -22,13 +22,10 @@
  * under the License.
  * #L%
  */
-<'per'='http://www.peregrine-cms.com/jcr/cms/1.0'>
+import { LoggerFactory } from '../logger'
+let log = LoggerFactory.logger('unreplicate').setLevelDebug()
 
-//-----------------------------------------------------------------------------
-// Mixin node type for replication
-[per:Replication] > sling:Resource
-  mixin
-  - per:Replicated (date)
-  - per:ReplicationStatus (string)
-  - per:ReplicatedBy (string)
-  - per:ReplicationRef (string)
+export default function(me, target) {
+    log.fine(target)    
+    return me.getApi().replicate(target, 'defaultRepl', false, true)
+}

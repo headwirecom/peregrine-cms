@@ -456,12 +456,10 @@ class PerAdminImpl {
     })
   }
 
-
   populatePageView(path) {
     return fetch('/admin/readNode.json' + path)
         .then((data) => populateView('/pageView', 'page', data))
   }
-
 
   populateObject(path, target, name) {
     return this.populateComponentDefinitionFromNode(path)
@@ -474,6 +472,21 @@ class PerAdminImpl {
   populateReferencedBy(path) {
     return fetch('/admin/refBy.json' + path)
         .then((data) => populateView('/state', 'referencedBy', data))
+  }
+
+  populateReferences(path) {
+    return new Promise((resolve, reject) => {
+      fetch(`/admin/ref.json${path}`)
+        .then(function(result) {
+            populateView('/state', 'references', result)
+                .then(() => resolve())
+        })
+        .catch(error => {
+            if (error.response && error.response.data && error.response.data.message) {
+                reject(error.response.data.message)
+            }
+        })
+    })
   }
 
   populateI18N(language) {
@@ -1075,24 +1088,29 @@ class PerAdminImpl {
     return updateWithForm('/admin/moveNodeTo.json' + path, formData)
   }
 
-replicate(path, replicationService='defaultRepl', deep='false', deactivate='false') {
+replicate(path, replicationService='defaultRepl', deep=false, deactivate=false) {
     return new Promise((resolve, reject) => {
       let formData = new FormData();
       formData.append('deep', deep)
       formData.append('name', replicationService)
       formData.append('deactivate', deactivate)
       updateWithForm('/admin/repl.json' + path, formData)
-      .then ((data) => {
-        console.log(data)
-        $perAdminApp.notifyUser('Success', `${data.sourcePath} was successfuly published.` )
-      })
-      .then( () => resolve())
-      .catch(error => {
-        if (error.response && error.response.data && error.response.data.message) {
-          reject(error.response.data.message)
-        }
-        reject(error)
-      })
+          .then ((data) => {
+            $perAdminApp.notifyUser('Success', `${data.sourcePath} was successfuly ${deactivate?'un':''}published.`)
+          })
+          .then(()=>{
+              setTimeout(function(){    
+                const parentPath = path.substring(0, path.lastIndexOf("/"))
+                $perAdminApp.getApi().populateNodesForBrowser(parentPath)
+              }, 3000);
+          })
+          .then(() => resolve())
+          .catch(error => {
+              if (error.response && error.response.data && error.response.data.message) {
+              reject(error.response.data.message)
+              }
+              reject(error)
+          })
     })  
   }
 

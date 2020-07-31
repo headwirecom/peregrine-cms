@@ -124,6 +124,7 @@ public class PerConstants {
     public static final String SOURCE_PATH = "sourcePath";
     public static final String CREATED = "created";
     public static final String DELETED = "deleted";
+    public static final String ADDED = "added";
     public static final String NODE_TYPE = "nodeType";
     public static final String PARENT_PATH = "parentPath";
     public static final String CONTENT = "content";
