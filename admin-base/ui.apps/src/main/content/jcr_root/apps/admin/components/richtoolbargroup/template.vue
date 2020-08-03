@@ -1,6 +1,6 @@
 <template>
   <admin-components-materializedropdown
-      v-if="collapse && items.length > 1"
+      v-if="collapse && items && items.length > 1"
       tag="button"
       class="btn"
       :class="{'active': active}"
@@ -42,9 +42,9 @@
 </template>
 
 <script>
-  import {IconLib} from '../../../../../../js/constants'
+import {IconLib} from '../../../../../../js/constants'
 
-  export default {
+export default {
     name: 'RichToolbarGroup',
     props: {
       icon: {
