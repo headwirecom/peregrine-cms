@@ -177,6 +177,16 @@
                             <i class="material-icons">add_circle</i> {{$i18n('add template')}}
                     </admin-components-action>
                 </li>
+                <li class="collection-item" v-if="isObjectDefinitions(path)">
+                    <admin-components-action
+                        v-bind:model="{
+                            target: '',
+                            command: 'addObjectDefinition',
+                            tooltipTitle: `${$i18n('add object definition')}`
+                        }">
+                            <i class="material-icons">add_circle</i> {{$i18n('add object definition')}}
+                    </admin-components-action>
+                </li>
             </ul>
             <div style="width: inherit; position: absolute; bottom: .5em;" v-if="model.showFilter ==='true'">
                 <div style="padding-left: 3em; padding-right: 1em;">
@@ -301,6 +311,10 @@
 
             isObjects(path) {
                 return path.startsWith(`/content/${this.getTenant().name}/objects`)
+            },
+
+            isObjectDefinitions(path) {
+                return path.startsWith(`/content/${this.getTenant().name}/object-definitions`)
             },
 
             isTemplates(path) {
@@ -493,6 +507,7 @@
             nodeTypeToIcon: function(nodeType) {
                 if(nodeType === 'per:Page')             return 'description'
                 if(nodeType === 'per:Object')           return 'layers'
+                if(nodeType === 'per:ObjectDefinition') return 'insert_drive_file'
                 if(nodeType === 'nt:file')              return 'insert_drive_file'
                 if(nodeType === 'per:Asset')            return 'image'
                 if(nodeType === 'sling:Folder')         return 'folder'
@@ -503,9 +518,9 @@
             checkIfAllowed: function(node) {
                 if(this.model.showFilter && this.model.showFilter === 'true' && this.filter) {
                     if(node.excludeFromSitemap && node.excludeFromSitemap === 'true') return false
-                    return ['per:Page', 'per:Asset', 'per:Object'].indexOf(node.resourceType) >= 0
+                    return ['per:Page', 'per:Asset', 'per:Object', 'per:ObjectDefinition'].indexOf(node.resourceType) >= 0
                 }
-                return ['per:Asset', 'nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page', 'sling:OrderedFolder', 'per:Object'].indexOf(node.resourceType) >= 0
+                return ['per:Asset', 'nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page', 'sling:OrderedFolder', 'per:Object', 'per:ObjectDefinition'].indexOf(resourceType) >= 0
             },
 
             showInfo: function(me, target) {
@@ -581,6 +596,15 @@
                 const path = me.pt.path
                 if(path.startsWith(`/content/${tenant.name}/objects`)) {
                     $perAdminApp.stateAction('createObjectWizard', { path: path, target: target })
+                }
+            },
+
+            addObjectDefinition: function(me, target) {
+                console.log(me)
+                const tenant = $perAdminApp.getView().state.tenant
+                const path = me.pt ? me.pt.path : `/content/${tenant.name}/object-definitions`
+                if(path.startsWith(`/content/${tenant.name}/object-definitions`)) {
+                    $perAdminApp.stateAction('createObjectDefinitionWizard', { path: path, target: target })
                 }
             },
 

@@ -443,6 +443,7 @@
         }
         if (this.nodeType === NodeType.OBJECT) {
           component = this.getObjectComponent();
+          console.log(component)
         }
         const componentDefinitions = view.admin.componentDefinitions
         if (!componentDefinitions) {
@@ -498,6 +499,9 @@
         let resourceType = this.rawCurrentObject.data['component'];
         if (!resourceType) {
           resourceType = this.rawCurrentObject.data['sling:resourceType'];
+          if(!resourceType) {
+            resourceType = this.rawCurrentObject.data['objectPath'];
+          }
         }
         return resourceType.split('/').join('-');
       },
