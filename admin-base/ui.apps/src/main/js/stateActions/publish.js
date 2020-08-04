@@ -23,9 +23,9 @@
  * #L%
  */
 import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('unreplicate').setLevelDebug()
+let log = LoggerFactory.logger('replicate').setLevelDebug()
 
 export default function(me, target) {
     log.fine(target)    
-    return me.getApi().replicate(target, 'defaultRepl', false, true, undefined)
+    return me.getApi().replicate(target.path, 'defaultRepl', false, false, target.references)
 }

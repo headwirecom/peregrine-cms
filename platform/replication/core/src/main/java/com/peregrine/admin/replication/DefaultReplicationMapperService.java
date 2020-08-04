@@ -161,7 +161,7 @@ public class DefaultReplicationMapperService
     public List<Resource> replicate(Resource source, boolean deep) throws ReplicationException {
         logger.trace("Starting Resource: '{}'", source.getPath());
         List<Resource> referenceList = referenceLister.getReferenceList(true, source, true);
-        logger.trace("Reference List: '{}'", referenceList);
+//        logger.trace("Reference List: '{}'", referenceList);
         List<Resource> replicationList = new ArrayList<>();
         replicationList.add(source);
         listMissingResources(source, replicationList, new AddAllResourceChecker(), deep);

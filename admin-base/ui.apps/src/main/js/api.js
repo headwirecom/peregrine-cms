@@ -263,8 +263,8 @@ class PerApi {
         return impl.moveNodeTo(path, component, drop)
     }
 
-    replicate(path, replicationService, deep, deactivate) {
-        return impl.replicate(path, replicationService, deep, deactivate)
+    replicate(path, replicationService, deep, deactivate, references) {
+        return impl.replicate(path, replicationService, deep, deactivate, references)
     }
 
     getPalettes(templateName) {

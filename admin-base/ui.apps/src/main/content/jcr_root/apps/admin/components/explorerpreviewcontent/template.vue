@@ -177,9 +177,9 @@
       </template>
 
       <template v-else-if="isTab(Tab.PUBLISHING)">
-        <admin-components-publishinginfo v-bind:node="node" />
+        <admin-components-publishinginfo v-bind:node="node" v-if="node"/>
 
-        <div v-if="allowOperations" class="action-list">
+        <div v-if="allowOperations && node" class="action-list">
           <div class="action" :title="`Open Web Publishing ${nodeType} Dialog`" @click="openPublishingModal()">
             <i class="material-icons">publish</i>
             Publish to Web ({{nodeType}})

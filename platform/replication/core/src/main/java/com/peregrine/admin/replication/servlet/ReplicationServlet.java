@@ -29,6 +29,7 @@ import com.peregrine.admin.replication.DefaultReplicationMapper;
 import com.peregrine.replication.Replication;
 import com.peregrine.replication.Replication.ReplicationException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -38,20 +39,14 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 import javax.servlet.Servlet;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.peregrine.admin.replication.ReplicationConstants.DEEP;
 import static com.peregrine.admin.replication.ReplicationConstants.RESOURCE_TYPE_DO_REPLICATION;
 import static com.peregrine.admin.replication.ReplicationConstants.SOURCE_NAME;
 import static com.peregrine.admin.replication.ReplicationConstants.SOURCE_PATH;
-import static com.peregrine.commons.util.PerConstants.NAME;
-import static com.peregrine.commons.util.PerConstants.PATH;
-import static com.peregrine.commons.util.PerUtil.EQUALS;
-import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
-import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
-import static com.peregrine.commons.util.PerUtil.POST;
+import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerUtil.*;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -85,6 +80,8 @@ public class ReplicationServlet extends AbstractBaseServlet {
     public static final String REPLICATION_NOT_FOUND_FOR_NAME = "Replication not found for name: ";
     public static final String REPLICATION_FAILED = "Replication Failed";
     public static final String REPLICATES = "replicates";
+    public static final String COMMA = ",";
+    public static final String RESOURCES = "resources";
     public static final String SUFFIX_IS_NOT_RESOURCE = "Suffix: '%s' is not a resource";
 
     private Map<String, Replication> replications = new HashMap<>();
@@ -138,17 +135,17 @@ public class ReplicationServlet extends AbstractBaseServlet {
         logger.trace("Request Path: '{}'", request.getRequestPath());
         logger.trace("Request URI: '{}'", request.getRequest().getRequestURI());
         logger.trace("Request URL: '{}'", request.getRequest().getRequestURL());
-        String sourcePath = request.getParameter(PATH);
-//        Get a list of reference from the post array body...
-//        replicatedReferences=/path-1,
-//        replicatedReferences=/path-2, etc
-
         String replicationName = request.getParameter(NAME);
         if(replicationName == null || replicationName.isEmpty()) {
             return new ErrorResponse()
                 .setHttpErrorCode(SC_BAD_REQUEST)
                 .setErrorMessage(PARAMETER_NAME_FOR_THE_REPLICATION_NAME_IS_NOT_PROVIDED);
         }
+        String sourcePath = request.getParameter(PATH);
+        String[] references = request.getParameterValues(RESOURCES);
+//        Get a list of reference from the post array body...
+//        replicatedReferences=/path-1,
+//        replicatedReferences=/path-2, etc
         String deepParameter = request.getParameter(DEEP);
         boolean deep = deepParameter != null && Boolean.TRUE.toString().equals(deepParameter.toLowerCase());
         String deactivateParameter = request.getParameter(DEACTIVATE);
@@ -161,11 +158,22 @@ public class ReplicationServlet extends AbstractBaseServlet {
         }
         Resource source = request.getResourceResolver().getResource(sourcePath);
         if(source != null) {
+            List<Resource> resourcesToRepl = new ArrayList<>();
+            listMissingResources(source, resourcesToRepl, new AddAllResourceChecker(), deep);
+            if (references != null && references.length != 0 ){
+                Arrays.stream(references).forEach(referencePath -> {
+                    Resource res = request.getResourceResolver().getResource(referencePath);
+                    if (res != null){
+                        listMissingResources(res, resourcesToRepl, new AddAllResourceChecker(), deep);
+                    }
+                });
+            }
             List<Resource> replicates;
             try {
                 if(!deactivate) {
-                    // Replication can be local or remote and so the commit of the changes is done inside the Replication Service
-                    replicates = replication.replicate(source, deep);
+// Replication can be local or remote and so the commit of the changes is done inside the Replication Service
+//                    replicates = replication.replicate(source, deep);
+                    replicates = replication.replicate(resourcesToRepl);
                 } else {
                     replicates = replication.deactivate(source);
                 }

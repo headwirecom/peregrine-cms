@@ -44,14 +44,14 @@
                 <td>{{references.sourcePath}}</td>
                 <td>{{printStatus(references)}}</td>
                 <td class="switch">
-                    <label> Off <input type="checkbox" checked> <span class="lever"></span> Publish </label>
+                    <label> <input type="checkbox" v-model="references.activated"> <span class="lever"></span> </label>
                 </td>
             </tr>
             <tr v-for="ref in references.references" v-bind:key="ref.path">
                 <td>{{ref.path}}</td>
                 <td>{{printStatus(ref)}}</td>
                 <td class="switch">
-                    <label> Off <input type="checkbox" checked> <span class="lever"></span> Publish </label>
+                    <label> <input type="checkbox" v-model="ref.activated"> <span class="lever"></span> </label>
                 </td>
             </tr>
             </tbody>
@@ -72,6 +72,7 @@ export default {
         'isOpen',
         'path',
         'modalTitle',
+        
     ],
     data(){
         return {
@@ -83,7 +84,7 @@ export default {
             var node = this.path
             return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, node)
         },
-        references(){
+        references(){            
             return $perAdminApp.getView().state.references
         },
     },
@@ -105,12 +106,27 @@ export default {
                 return "No Status"
             }
         },
-        activateSwitch(ref){            
-            return !ref.activated || ref.is_stale ? "checked" : ""
-        },
         confirmDialog($event){
             if($event === "confirm") {
                 console.log($event)
+                // get path for items set to publish
+                const deep = false;
+                const deactivate = false;
+                const referencesToRepl = []
+                if (this.references.references !== undefined){
+                    this.references.references.forEach(ref => {
+                        if (ref.activated){
+                            referencesToRepl.push(ref.path)
+                        }
+                    });
+                }
+                const target = {
+                    path: this.path,
+                    references: referencesToRepl
+                }
+                console.log(target)
+                $perAdminApp.stateAction('publish', target)
+
             } else {
                 this.close()
             }

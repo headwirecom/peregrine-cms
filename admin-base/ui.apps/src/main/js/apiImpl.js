@@ -1088,12 +1088,13 @@ class PerAdminImpl {
     return updateWithForm('/admin/moveNodeTo.json' + path, formData)
   }
 
-replicate(path, replicationService='defaultRepl', deep=false, deactivate=false) {
+replicate(path, replicationService='defaultRepl', deep=false, deactivate=false, resources=[]) {
     return new Promise((resolve, reject) => {
       let formData = new FormData();
       formData.append('deep', deep)
       formData.append('name', replicationService)
       formData.append('deactivate', deactivate)
+      resources.forEach((ref) => formData.append('resources', ref))      
       updateWithForm('/admin/repl.json' + path, formData)
           .then ((data) => {
             $perAdminApp.notifyUser('Success', `${data.sourcePath} was successfuly ${deactivate?'un':''}published.`)
