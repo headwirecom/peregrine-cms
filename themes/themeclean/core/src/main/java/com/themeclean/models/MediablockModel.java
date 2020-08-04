@@ -1,5 +1,6 @@
 package com.themeclean.models;
 
+import com.peregrine.model.api.ImageInfo;
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
 import javax.inject.Inject;
@@ -393,6 +394,9 @@ public class MediablockModel extends AbstractComponent {
 	@Inject
 	private String bottompadding;
 
+	@Inject
+	@ImageInfo(name="imagesrc")
+	private String imageinfo;
 
 //GEN]
 
@@ -512,6 +516,9 @@ public class MediablockModel extends AbstractComponent {
 		return bottompadding;
 	}
 
+	public String getImageinfo() {
+		return imageinfo;
+	}
 
 //GEN]
 
