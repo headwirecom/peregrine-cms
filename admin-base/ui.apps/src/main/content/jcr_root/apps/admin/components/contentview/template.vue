@@ -90,7 +90,13 @@
 
 <script>
   import {Attribute, Key} from '../../../../../../js/constants'
-  import {get, getCaretCharacterOffsetWithin, set} from '../../../../../../js/utils'
+  import {
+    get,
+    getCaretCharacterOffsetWithin,
+    restoreSelection,
+    saveSelection,
+    set
+  } from '../../../../../../js/utils'
 
   export default {
     props: ['model'],
@@ -122,7 +128,11 @@
         iframe: {
           loaded: false,
           win: null, doc: null, html: null, body: null, head: null, app: null,
-          scrollTop: 0
+          scrollTop: 0,
+          timeout: null,
+          delay: 0,
+          mouseOverCmp: null,
+          dimension: {w: 0, h: 0, x: 0, y: 0}
         },
         clipboard: null,
         ctrlDown: false,
@@ -132,7 +142,11 @@
           pos: -1,
           counter: 0
         },
-        holdingDown: false
+        holdingDown: false,
+        inlineEdit: {
+          firstTime: [],
+          selection: null
+        }
       }
     },
     computed: {
@@ -249,7 +263,11 @@
         }
       },
       scrollTop() {
-        this.wrapEditableAroundSelected()
+        if (this.target) {
+          this.wrapEditableAroundSelected()
+        } else {
+          this.wrapEditableAroundElement(this.iframe.mouseOverCmp)
+        }
       },
       'view.state.tools.workspace.view'() {
         this.$nextTick(() => {
@@ -281,6 +299,16 @@
               this.editable.class = 'selected'
               this.wrapEditableAroundSelected()
             }, this.editable.delay)
+          }
+        }
+      },
+      'iframe.dimension': {
+        deep: true,
+        handler() {
+          if (this.target) {
+            this.wrapEditableAroundSelected()
+          } else {
+            this.wrapEditableAroundElement(this.iframe.mouseOverCmp)
           }
         }
       }
@@ -432,6 +460,11 @@
       },
 
       onInlineEdit(event) {
+        if (!this.inlineEdit.firstTime.includes(event.target)) {
+          this.inlineEdit.firstTime.push(event.target)
+          this.inlineEdit.selection = saveSelection(event.target, this.iframe.doc)
+        }
+
         this.target = event.target
         const vnode = this.findVnode(this.component.__vue__, event.path)
         const attr = this.isRich ? 'innerHTML' : 'innerText'
@@ -443,6 +476,16 @@
           }
         }
         this.writeInlineToModel()
+
+        if (this.inlineEdit.selection) {
+          this.$nextTick(() => {
+            this.$nextTick(() => {
+              restoreSelection(event.target, this.inlineEdit.selection, this.iframe.doc)
+              this.inlineEdit.selection = null
+            })
+          })
+        }
+
         this.autoSave = true
         this.reWrapEditable()
       },
@@ -564,6 +607,8 @@
         this.iframe.body = this.iframe.doc.querySelector('body')
         this.iframe.head = this.iframe.doc.querySelector('head')
         this.iframe.app = this.iframe.doc.querySelector('#peregrine-app')
+        this.iframe.win.addEventListener('resize', this.updateIframeDimensions);
+        this.updateIframeDimensions()
         this.addIframeExtraStyles()
         this.refreshIframeElements()
         if (this.previewMode !== 'preview') {
@@ -679,6 +724,7 @@
           return
         }
 
+        this.iframe.mouseOverCmp = cmpEl
         this.wrapEditableAroundElement(cmpEl)
 
         if (this.isFromTemplate(cmpEl)) {
@@ -1026,6 +1072,13 @@
         event.target.classList.remove('outline-orange', 'outline-green')
       },
 
+      updateIframeDimensions() {
+        clearTimeout(this.iframe.timeout)
+        this.iframe.timeout = setTimeout(() => {
+          this.iframe.dimension.w = this.iframe.doc.documentElement.clientWidth
+          this.iframe.dimension.h = this.iframe.doc.documentElement.clientHeight
+        }, this.iframe.delay)
+      }
     }
   }
 </script>
