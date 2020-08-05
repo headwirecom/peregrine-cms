@@ -47,7 +47,7 @@
         </admin-components-materializedropdown>
       </div>
       <div class="nav-center">
-        <ul v-if="!hideTenants" class="hide-on-small-and-down nav-mobile">
+        <ul v-if="!hideTenants" class="hide-on-med-and-down nav-mobile">
           <admin-components-action
               v-for="section in sections"
               :key="`section-${section.name}`"
@@ -56,7 +56,7 @@
               :class="{active: getActiveSection() === section.name, 'no-mobile': !section.mobile}"
               class="nav-link"/>
         </ul>
-        <ul v-else class="hide-on-small-and-down nav-mobile">
+        <ul v-else class="hide-on-med-and-down nav-mobile">
           <admin-components-action
               tag="li"
               :model="getSectionModel({title: 'Home', name: 'index'})"
@@ -64,7 +64,7 @@
               class="nav-link"/>
         </ul>
       </div>
-      <ul class="nav-right hide-on-small-and-down nav-mobile">
+      <ul class="nav-right hide-on-med-and-down nav-mobile">
         <admin-components-materializemodal ref="languageModal">
           <template>
             <vue-multiselect
@@ -179,7 +179,7 @@
           {label: 'help', icon: 'help', disabled: !this.help, click: this.onHelpClick},
           {label: 'tutorials', icon: 'import_contacts', click: this.onTutorialsClick},
           {label: '--------------------', disabled: true},
-          {label: 'aboutNavBtn', icon: 'info', click: this.onAboutClick},
+          {label: this.$i18n('aboutNavBtn'), icon: 'info', click: this.onAboutClick},
         ]
       },
       tenantDdItems() {

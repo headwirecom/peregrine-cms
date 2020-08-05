@@ -25,8 +25,7 @@
 <template>
   <div class="text-editor-wrapper">
     <admin-components-richtoolbar
-        :showViewportBtn="false"
-        :showPreviewBtn="false"/>
+        :show-always-active="false"/>
     <p class="text-editor inline-edit"
        :class="['text-editor', 'inline-edit', {'inline-editing': editing}]"
        ref="textEditor"
