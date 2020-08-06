@@ -215,7 +215,22 @@
                 $group.addClass('vfg-group');
             })
         },
-        getFieldAndIndexByModel(fields, model) {
+        getFieldAndIndexByModel(schema, model) {
+
+          const fields = []
+          if(schema.fields) {
+            Array.prototype.push.apply(fields, schema.fields)
+          }
+
+          if(schema.groups) {
+            schema.groups.forEach( (group) => { 
+              if(group.fields) {
+                Array.prototype.push.apply(fields, group.fields)
+              }
+            } )
+          }
+
+
           const formGenerator = this.$refs.formGenerator
           let field
           let index = -1
@@ -242,7 +257,7 @@
 
           model = model.split('.')
           model.reverse()
-          const {field, index} = this.getFieldAndIndexByModel(this.schema.fields, model.pop())
+          const {field, index} = this.getFieldAndIndexByModel(this.schema, model.pop())
           if (!field) return
           if (['input', 'texteditor', 'material-textarea'].indexOf(field.type) >= 0) {
             this.$refs.formGenerator.$children[index].$el.scrollIntoView()
@@ -260,7 +275,7 @@
           fieldCollection.activeItem = parseInt(model.pop())
           this.$nextTick(() => {
             const formGen = fieldCollection.$children[0]
-            const fieldAndIndex = this.getFieldAndIndexByModel(field.fields, model.pop())
+            const fieldAndIndex = this.getFieldAndIndexByModel(field, model.pop())
             set(this.view, '/state/inline/rich', this.isRichEditor(fieldAndIndex.field))
             this.clearFocusStuff()
             this.focus.loop = setInterval(() => {
