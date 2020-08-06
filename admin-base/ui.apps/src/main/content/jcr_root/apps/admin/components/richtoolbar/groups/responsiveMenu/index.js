@@ -1,6 +1,6 @@
 import {DropDown} from '../../../../../../../../js/constants';
 
-const baseBreakpoint = 900
+const baseBreakpoint = 1000
 
 export default (vm) => {
   const w = vm.docEl.dimension.w
