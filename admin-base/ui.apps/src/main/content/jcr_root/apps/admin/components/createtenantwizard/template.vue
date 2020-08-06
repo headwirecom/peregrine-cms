@@ -145,7 +145,7 @@
                                 inputType: "text",
                                 label: "Site Name",
                                 model: "name",
-                                hint: "System name of this website. use lower case letters, 0 through 9, and undersore only.",
+                                hint: "System name of this website. use lower case letters, 0 through 9, and underscore only.",
                                 required: true,
                                 onChanged: (model, newVal, oldVal, field) => {
                                     this.nameChanged = true;
