@@ -9,8 +9,8 @@ export default (vm) => {
     rules: () => vm.showAlwaysActive,
     items: [
       preview(vm),
-      viewport(vm),
-      previewInNewTab(vm)
+      previewInNewTab(vm),
+      viewport(vm)
     ]
   }
 }
