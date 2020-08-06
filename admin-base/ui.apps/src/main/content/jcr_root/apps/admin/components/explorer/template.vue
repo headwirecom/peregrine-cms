@@ -683,7 +683,8 @@ export default {
 
               if (item && item.type.indexOf('image') === 0) {
                 const blob = item.getAsFile()
-                const name = `clipboard-${getCurrentDateTime()}.png`
+                const extension = blob.type.split('/').pop()
+                const name = `clipboard-${getCurrentDateTime()}.${extension}`
                 const file = new File([blob], name, {type: blob.type})
 
                 this.uploadFile([file])
