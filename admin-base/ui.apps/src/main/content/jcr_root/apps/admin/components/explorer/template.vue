@@ -236,9 +236,9 @@
 
 <script>
 
-    import {set} from '../../../../../../js/utils';
+import {getCurrentDateTime, set} from '../../../../../../js/utils'
 
-    export default {
+export default {
         props: ['model'],
 
         data() {
@@ -285,6 +285,12 @@
             hasEdit: function() {
                 return this.model.children && this.model.children[0]
             }
+        },
+        created() {
+          document.addEventListener('paste', this.onDocumentPaste)
+        },
+        beforeDestroy() {
+          document.removeEventListener('paste', this.onDocumentPaste)
         },
         methods: {
             getTenant() {
@@ -668,6 +674,21 @@
 
             editFile: function(me, target) {
                 window.open(`/bin/cpm/edit/code.html${target}`, 'composum')
+            },
+
+            onDocumentPaste(event) {
+              if (!this.path.includes('assets')) return
+
+              const item = event.clipboardData.items[0]
+
+              if (item && item.type.indexOf('image') === 0) {
+                const blob = item.getAsFile()
+                const extension = blob.type.split('/').pop()
+                const name = `clipboard-${getCurrentDateTime()}.${extension}`
+                const file = new File([blob], name, {type: blob.type})
+
+                this.uploadFile([file])
+              }
             }
         }
     }
