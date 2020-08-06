@@ -357,11 +357,11 @@ export default {
       const current = get(view, '/state/tools/workspace/preview', null)
       $perAdminApp.stateAction('editPreview', current ? null : 'preview')
     },
-      previewInNewTab() {
-        const view = $perAdminApp.getView()
-        const page = get(view, '/pageView/path', null)
-        window.open(page+'.html', 'viewer')
-      },
+    previewInNewTab() {
+      const view = $perAdminApp.getView()
+      const page = get(view, '/pageView/path', null)
+      window.open(page + '.html', 'viewer')
+    },
     getButtonKey(btn, index) {
       let key = `btn-${index}-${btn.title}`
       if (btn.isActive() !== null) {
