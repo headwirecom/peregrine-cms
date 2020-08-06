@@ -30,30 +30,43 @@
         v-on:complete="$emit('complete',$event)"
         v-bind:modalTitle="modalTitle" >
 
-        <table>
-            <thead>
-            <tr>
-                <th>Path</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-            </thead>
-
+        <table>           
             <tbody v-if="references">
-            <tr>
-                <td>{{references.sourcePath}}</td>
-                <td>{{printStatus(references)}}</td>
-                <td class="switch">
-                    <label> <input type="checkbox" v-model="references.activated"> <span class="lever"></span> </label>
-                </td>
-            </tr>
-            <tr v-for="ref in references.references" v-bind:key="ref.path">
-                <td>{{ref.path}}</td>
-                <td>{{printStatus(ref)}}</td>
-                <td class="switch">
-                    <label> <input type="checkbox" v-model="ref.activated"> <span class="lever"></span> </label>
-                </td>
-            </tr>
+                <tr>
+                    <th>Publish Item</th>
+                    <th>Action</th>
+                </tr>
+                <tr>
+                    <td>{{references.sourcePath}} <span>({{printStatus(references)}})</span></td>
+                    <td class="switch">
+                        <label> <input type="checkbox" v-model="references.publish" disabled> <span class="lever publishingaction"></span> </label>
+                    </td>
+                    <td class="printaction">{{printAction(references)}}</td>
+                </tr>
+            </tbody>
+            <tbody v-if="references && references.references && references.references.length > 0">
+                <tr>
+                    <th>Uses</th>
+                </tr>
+                <tr v-for="ref in references.references" v-bind:key="ref.path">
+                    <td>{{ref.path}} <span>({{printStatus(ref)}})</span></td>
+                    <td class="switch">
+                        <label> <input type="checkbox" v-model="ref.publish"> <span class="lever publishingaction"></span> </label>
+                    </td>
+                    <td class="printaction">{{printAction(ref)}}</td>              
+                </tr>
+            </tbody>
+            <tbody v-if="referencedBy && referencedBy.length > 0">
+                <tr>
+                    <th>Used by</th>
+                </tr>
+                <tr v-for="refed in referencedBy" v-bind:key="refed.path">
+                    <td>{{refed.path}} <span>({{printStatus(refed)}})</span></td>
+                    <td class="switch">
+                        <label> <input type="checkbox" v-model="refed.publish"> <span class="lever publishingaction"></span> </label>
+                    </td>
+                    <td class="printaction">{{printAction(refed)}}</td>
+                </tr>
             </tbody>
         </table>
 
@@ -67,6 +80,8 @@
 </template>
 
 <script>
+import ReferenceUtil from '../../../../../../js/mixins/ReferenceUtil'
+
 export default {
     props: [
         'isOpen',
@@ -76,7 +91,7 @@ export default {
     ],
     data(){
         return {
-
+            'referencedBy':[]
         }
     },
     computed: {
@@ -87,7 +102,13 @@ export default {
         references(){            
             return $perAdminApp.getView().state.references
         },
+        // referencedBy() {
+        //     if($perAdminApp.getView().state.referencedBy){
+        //         return this.trimReferences($perAdminApp.getView().state.referencedBy.referencedBy);
+        //     }
+        // },
     },
+    mixins: [ReferenceUtil],
     methods: {
         open(){
             this.$refs.materializemodal.open()
@@ -97,13 +118,24 @@ export default {
         },
         printStatus(ref){
             if (ref.is_stale) {
-                return "Published (Stale)"
+                return "Stale"
             } else if (ref.activated === true){
                 return "Published"                
             } else if(ref.activated === false) {
                 return "Unpublished"
             } else {
                 return "No Status"
+            }
+        },
+        printAction(ref){
+            if (ref.is_stale && ref.publish) {
+                return "Publish (Stale)"
+            } else if (ref.activated && ref.publish){
+                return "Publish (Again)"
+            } else if(!ref.activated && ref.publish) {
+                return "Publish (New)"
+            } else if (!ref.publish){
+                return "None"
             }
         },
         confirmDialog($event){
@@ -115,7 +147,7 @@ export default {
                 const referencesToRepl = []
                 if (this.references.references !== undefined){
                     this.references.references.forEach(ref => {
-                        if (ref.activated){
+                        if (ref.publish){
                             referencesToRepl.push(ref.path)
                         }
                     });
@@ -130,11 +162,49 @@ export default {
             } else {
                 this.close()
             }
+        },
+        initializePublishActionFlag(reference){
+            // if the publish is not defined
+            if(reference['publish'] === undefined) {
+                if(reference.activated && !reference.is_stale) {
+                    // If the reference is already published and the lastModified date is before the publish date (i.e. not stale)
+                    // Then there is no need to re-publish this reference and the publish action flag should be false
+                    // It is set as a reactive property, which the user may override by toggling the switch if they choose.
+                    Vue.set(reference, 'publish', false)
+                } else {
+                // otherwise set the reference's publish action flag defaults to true
+                    Vue.set(reference, 'publish', true)
+                }
+            }
         }
     },
     mounted() {
-        $perAdminApp.getApi().populateReferences(this.path);
-        this.$refs.materializemodal.open()
+        const me = this
+        $perAdminApp.getApi().populateReferences(this.path)
+            .then(function(){
+                Vue.set(me.references, 'publish', true)
+                if(me.references.references != undefined){
+                    me.references.references.forEach((ref)=> {
+                        me.initializePublishActionFlag(ref)
+                    })
+                }
+            })        
+        $perAdminApp.getApi().populateReferencedBy(this.path)
+            .then(function(){
+                me.referencedBy = me.trimReferences($perAdminApp.getView().state.referencedBy.referencedBy)
+                if(me.referencedBy){
+                    me.referencedBy.forEach((ref)=> {
+                        me.initializePublishActionFlag(ref)
+                    })
+                }
+            })
+            .then(()=>this.$refs.materializemodal.open())
+        
     }
 }
 </script>
+
+<style>
+    span.lever.publishingaction {margin-left: 3px;}
+    .printaction { width: 150px;}
+</style>

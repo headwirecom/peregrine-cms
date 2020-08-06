@@ -273,8 +273,8 @@
   import {Icon, MimeType, NodeType, SUFFIX_PARAM_SEPARATOR} from '../../../../../../js/constants'
   import {deepClone} from '../../../../../../js/utils'
   import NodeNameValidation from '../../../../../../js/mixins/NodeNameValidation'
+  import ReferenceUtil from '../../../../../../js/mixins/ReferenceUtil'
   
-
   const Tab = {
     INFO: 'info',
     OG_TAGS: 'og-tags',
@@ -353,7 +353,7 @@
         }
       }
     },
-    mixins: [NodeNameValidation],
+    mixins: [NodeNameValidation,ReferenceUtil],
     computed: {
       uNodeType() {
         return this.capFirstLetter(this.nodeType);
@@ -495,20 +495,6 @@
         } else {
           return {};
         }
-      },
-      trimReferences(referenceList) {
-        return referenceList.reduce(
-          (map => (r, a) => (!map.has(a.path) && map.set(a.path, 
-          r[r.push({
-            name: a.name,
-            path: a.path,
-            propertyName: a.propertyName,
-            propertyPath: a.propertyPath,
-            count: 0
-          }) - 1]), 
-          map.get(a.path).count++, r))(new Map),
-          []
-        );
       },
       getObjectComponent() {
         let resourceType = this.rawCurrentObject.data['component'];
