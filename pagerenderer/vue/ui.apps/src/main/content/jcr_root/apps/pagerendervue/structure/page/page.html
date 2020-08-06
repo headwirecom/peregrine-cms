@@ -5,7 +5,7 @@
 
     <sly data-sly-list="${helper.model.prefetchDNS}"><link rel="preconnect" href="${item}"><link rel="dns-prefetch" href="${item}"></sly>
     <sly data-sly-list="${helper.model.siteJS}"><link rel="preload" href="${item}" as="script"></sly>
-    <sly data-sly-list="${helper.model.siteCSS}"><link rel="preload" href="${item}" as="style"></sly>
+    <sly data-sly-list="${helper.model.siteCSS}"><link rel="preload" href="${item}" as="style" onload="this.rel='stylesheet'" type="text/css"></sly>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#c0c0c0">
@@ -67,8 +67,6 @@
 </sly>
 
 <sly data-sly-include="renderer.html"></sly>
-
-<sly data-sly-list="${helper.model.siteCSS}"><link rel="stylesheet" href="${item}" type="text/css"></sly>
 
 <script>
     var $perView = { view: 'preview' };
