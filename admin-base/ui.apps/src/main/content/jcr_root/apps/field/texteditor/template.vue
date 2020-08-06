@@ -25,7 +25,8 @@
 <template>
   <div class="text-editor-wrapper">
     <admin-components-richtoolbar
-        :show-always-active="false"/>
+        :show-always-active="false"
+        :responsive="false"/>
     <p class="text-editor inline-edit"
        :class="['text-editor', 'inline-edit', {'inline-editing': editing}]"
        ref="textEditor"
@@ -43,9 +44,9 @@
 </template>
 
 <script>
-  import {set} from '../../../../../js/utils'
+import {set} from '../../../../../js/utils'
 
-  export default {
+export default {
     mixins: [VueFormGenerator.abstractField],
     data() {
       return {
