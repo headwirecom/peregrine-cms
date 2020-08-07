@@ -59,9 +59,9 @@
 </template>
 
 <script>
-import {set} from '../../../../../../js/utils'
+  import {set} from '../../../../../../js/utils'
 
-export default {
+  export default {
       props: ['model'],
         updated: function() {
             let stateTools = $perAdminApp.getNodeFromViewWithDefault("/state/tools", {});
@@ -173,7 +173,6 @@ export default {
               $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
             })
         },
-
         onCancel(e) {
             var view = $perAdminApp.getView()
             $perAdminApp.action(this, 'onEditorExitFullscreen')
@@ -182,7 +181,6 @@ export default {
                 $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
             })
         },
-
           onDelete(e) {
               const vm = this;
               var view = $perAdminApp.getView()
@@ -200,7 +198,6 @@ export default {
                   }
               })
           },
-
         hideGroups() {
             const $groups = $('.vue-form-generator fieldset');
             $groups.each( function(i) {
@@ -218,23 +215,7 @@ export default {
                 $group.addClass('vfg-group');
             })
         },
-
-        getFieldAndIndexByModel(schema, model) {
-
-          const fields = []
-          if(schema.fields) {
-            Array.prototype.push.apply(fields, schema.fields)
-          }
-
-          if(schema.groups) {
-            schema.groups.forEach( (group) => { 
-              if(group.fields) {
-                Array.prototype.push.apply(fields, group.fields)
-              }
-            } )
-          }
-
-
+        getFieldAndIndexByModel(fields, model) {
           const formGenerator = this.$refs.formGenerator
           let field
           let index = -1
@@ -256,21 +237,16 @@ export default {
           })
           return {field, index}
         },
-
         focusFieldByModel(model) {
           if (!model) return
 
           model = model.split('.')
           model.reverse()
-          const {field, index} = this.getFieldAndIndexByModel(this.schema, model.pop())
+          const {field, index} = this.getFieldAndIndexByModel(this.schema.fields, model.pop())
           if (!field) return
           if (['input', 'texteditor', 'material-textarea'].indexOf(field.type) >= 0) {
-            const $el = this.$refs.formGenerator.$children[index].$el
-            this.openFieldGroup($el)
-            this.$nextTick(() => {
-              $el.scrollIntoView()
-              set(this.view, '/state/inline/rich', this.isRichEditor(field))
-            })
+            this.$refs.formGenerator.$children[index].$el.scrollIntoView()
+            set(this.view, '/state/inline/rich', this.isRichEditor(field))
           } else if (field.type === 'collection') {
             this.focusCollectionField(model, field, index)
           } else {
@@ -279,49 +255,30 @@ export default {
 
           set(this.view, '/state/inline/model', null)
         },
-
         focusCollectionField(model, field, index) {
           const fieldCollection = this.$refs.formGenerator.$children[index].$children[0]
-          this.openFieldGroup(fieldCollection.$el)
+          fieldCollection.activeItem = parseInt(model.pop())
           this.$nextTick(() => {
-            fieldCollection.activeItem = parseInt(model.pop())
-            this.$nextTick(() => {
-              const formGen = fieldCollection.$children[0]
-              const fieldAndIndex = this.getFieldAndIndexByModel(field, model.pop())
-              set(this.view, '/state/inline/rich', this.isRichEditor(fieldAndIndex.field))
+            const formGen = fieldCollection.$children[0]
+            const fieldAndIndex = this.getFieldAndIndexByModel(field.fields, model.pop())
+            set(this.view, '/state/inline/rich', this.isRichEditor(fieldAndIndex.field))
+            this.clearFocusStuff()
+            this.focus.loop = setInterval(() => {
+              formGen.$children[fieldAndIndex.index].$el.scrollIntoView()
+            }, this.focus.interval)
+            this.focus.timeout = setTimeout(() => {
               this.clearFocusStuff()
-              this.focus.loop = setInterval(() => {
-                formGen.$children[fieldAndIndex.index].$el.scrollIntoView()
-              }, this.focus.interval)
-              this.focus.timeout = setTimeout(() => {
-                this.clearFocusStuff()
-              }, this.focus.delay)
-            })
+            }, this.focus.delay)
           })
         },
-
         clearFocusStuff() {
           this.focus.inView = 0
           clearInterval(this.focus.loop)
           clearTimeout(this.focus.timeout)
         },
-
         isRichEditor(field) {
           return ['texteditor'].indexOf(field.type) >= 0
-        },
-
-        openFieldGroup(el) {
-          console.log('openFieldGroup -> el:', el)
-          let group = el.parentNode
-
-          while (group.tagName !== 'FIELDSET') {
-            group = group.parentNode
-          }
-
-          if (!group.classList.contains('active')) {
-            group.querySelector('legend').click()
-          }
-        },
+        }
       }
 //      ,
 //      beforeMount: function() {
