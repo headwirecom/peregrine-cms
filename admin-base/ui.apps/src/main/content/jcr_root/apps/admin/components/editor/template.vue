@@ -311,14 +311,13 @@ export default {
         },
 
         openFieldGroup(el) {
-          console.log('openFieldGroup -> el:', el)
           let group = el.parentNode
 
           while (group.tagName !== 'FIELDSET') {
             group = group.parentNode
           }
 
-          if (!group.classList.contains('active')) {
+          if (group.classList.contains('vfg-group') && !group.classList.contains('active')) {
             group.querySelector('legend').click()
           }
         },
