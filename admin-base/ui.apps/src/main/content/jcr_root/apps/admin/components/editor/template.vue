@@ -223,13 +223,13 @@ export default {
 
           const fields = []
           if(schema.fields) {
-            Array.prototype.push.apply(fields, schema.fields)
+            fields.push(...schema.fields)
           }
 
           if(schema.groups) {
             schema.groups.forEach( (group) => { 
               if(group.fields) {
-                Array.prototype.push.apply(fields, group.fields)
+                fields.push(...group.fields)
               }
             } )
           }
