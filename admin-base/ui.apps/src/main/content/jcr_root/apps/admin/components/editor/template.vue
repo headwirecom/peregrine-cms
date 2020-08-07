@@ -23,13 +23,12 @@
   #L%
   -->
 <template>
-    <div class="editor-panel" ref="editorPanel">
+    <div class="editor-panel" ref="editorPanel" v-if="path">
         <div class="editor-panel-content">
             <template v-if="schema !== undefined && dataModel !== undefined">
                 <span v-if="title" class="panel-title">{{title}}</span>
                 <div v-if="!hasSchema">this component does not have a dialog defined</div>
             <vue-form-generator
-                :key="dataModel.path"
                 ref="formGenerator"
                 v-bind:schema="schema"
                 v-bind:model="dataModel"
@@ -69,9 +68,11 @@
             if(this.schema && this.schema.hasOwnProperty('groups')) {
                 this.hideGroups()
             }
+            this.path = $perAdminApp.getNodeFromViewOrNull('/state/editor/path')
         },
       data() {
         return {
+          path: $perAdminApp.getNodeFromViewOrNull('/state/editor/path'),
           isTouch: false,
           formOptions: {
             validateAfterLoad: true,
@@ -98,9 +99,7 @@
             return schema
         },
         dataModel: function() {
-            var view = $perAdminApp.getView()
-            var path = view.state.editor.path
-            var model = $perAdminApp.findNodeFromPath(view.pageView.page, path)
+            const model = $perAdminApp.findNodeFromPath($perAdminApp.getNodeFromView('/pageView/page'), this.path)
             return model
         },
         hasSchema: function() {
