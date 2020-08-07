@@ -54,6 +54,7 @@
         <org.apache.sling.servlet-helpers.version>1.1.8</org.apache.sling.servlet-helpers.version>
         <distribution.api.version>0.3.0</distribution.api.version>
         <distribution.api.version.latest>0.3.1-SNAPSHOT</distribution.api.version.latest>
+        <org.apache.sling.xss.version>2.2.2</org.apache.sling.xss.version>
 
         <!-- Third Party Dependencies Versions -->
         <jackrabbit.version>2.14.4</jackrabbit.version>
@@ -536,7 +537,6 @@
                 <artifactId>org.apache.sling.servlet-helpers</artifactId>
                 <version>${org.apache.sling.servlet-helpers.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.apache.sling</groupId>
                 <artifactId>org.apache.sling.event</artifactId>
@@ -549,7 +549,12 @@
                 <version>${org.apache.sling.serviceusermapper.version}</version>
                 <scope>provided</scope>
             </dependency>
-
+            <dependency>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.xss</artifactId>
+                <version>${org.apache.sling.xss.version}</version>
+                <scope>provided</scope>
+            </dependency>
 
 
             <!-- Support -->

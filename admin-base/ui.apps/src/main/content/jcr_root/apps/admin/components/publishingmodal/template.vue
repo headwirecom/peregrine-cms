@@ -102,11 +102,6 @@ export default {
         references(){            
             return $perAdminApp.getView().state.references
         },
-        // referencedBy() {
-        //     if($perAdminApp.getView().state.referencedBy){
-        //         return this.trimReferences($perAdminApp.getView().state.referencedBy.referencedBy);
-        //     }
-        // },
     },
     mixins: [ReferenceUtil],
     methods: {
@@ -140,7 +135,6 @@ export default {
         },
         confirmDialog($event){
             if($event === "confirm") {
-                console.log($event)
                 // get path for items set to publish
                 const deep = false;
                 const deactivate = false;
@@ -152,16 +146,20 @@ export default {
                         }
                     });
                 }
+                if (this.referencedBy !== undefined){
+                    this.references.references.forEach(ref => {
+                        if (ref.publish){
+                            referencesToRepl.push(ref.path)
+                        }
+                    });
+                }
                 const target = {
                     path: this.path,
                     references: referencesToRepl
-                }
-                console.log(target)
+                }                
                 $perAdminApp.stateAction('publish', target)
-
-            } else {
-                this.close()
-            }
+            } 
+            this.close()
         },
         initializePublishActionFlag(reference){
             // if the publish is not defined

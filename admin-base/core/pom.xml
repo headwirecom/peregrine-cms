@@ -141,10 +141,13 @@
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.jcr.base</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.commons.mime</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.xss</artifactId>
         </dependency>
 
         <dependency>

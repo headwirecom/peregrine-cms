@@ -25,18 +25,17 @@ package com.peregrine.admin.replication.servlet;
  * #L%
  */
 
+import com.peregrine.adaption.PerReplicable;
 import com.peregrine.admin.replication.DefaultReplicationMapper;
 import com.peregrine.replication.Replication;
 import com.peregrine.replication.Replication.ReplicationException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
-import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.component.annotations.ReferencePolicyOption;
-
 import javax.servlet.Servlet;
 import java.io.IOException;
 import java.util.*;
@@ -80,7 +79,7 @@ public class ReplicationServlet extends AbstractBaseServlet {
     public static final String REPLICATION_NOT_FOUND_FOR_NAME = "Replication not found for name: ";
     public static final String REPLICATION_FAILED = "Replication Failed";
     public static final String REPLICATES = "replicates";
-    public static final String COMMA = ",";
+    public static final String ASYNC_ENDPOINT = "asyncEndpoint";
     public static final String RESOURCES = "resources";
     public static final String SUFFIX_IS_NOT_RESOURCE = "Suffix: '%s' is not a resource";
 
@@ -157,7 +156,8 @@ public class ReplicationServlet extends AbstractBaseServlet {
                 .setErrorMessage(REPLICATION_NOT_FOUND_FOR_NAME + replicationName);
         }
         Resource source = request.getResourceResolver().getResource(sourcePath);
-        if(source != null) {
+        PerReplicable sourceRepl = source.adaptTo(PerReplicable.class);
+        if(source != null && sourceRepl != null) {
             List<Resource> resourcesToRepl = new ArrayList<>();
             listMissingResources(source, resourcesToRepl, new AddAllResourceChecker(), deep);
             if (references != null && references.length != 0 ){
@@ -173,8 +173,10 @@ public class ReplicationServlet extends AbstractBaseServlet {
                 if(!deactivate) {
 // Replication can be local or remote and so the commit of the changes is done inside the Replication Service
 //                    replicates = replication.replicate(source, deep);
+                    sourceRepl.setLastReplicationActionAsActivated();
                     replicates = replication.replicate(resourcesToRepl);
                 } else {
+                    sourceRepl.setLastReplicationActionAsDeactivated();
                     replicates = replication.deactivate(source);
                 }
             } catch(ReplicationException e) {
@@ -195,6 +197,8 @@ public class ReplicationServlet extends AbstractBaseServlet {
                     answer.writeClose();
                 }
             }
+
+//            answer.writeAttribute(ASYNC_ENDPOINT, source.get.getPath());
             answer.writeClose();
         } else {
             return new ErrorResponse()
