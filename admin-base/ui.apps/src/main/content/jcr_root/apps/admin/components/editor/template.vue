@@ -59,9 +59,9 @@
 </template>
 
 <script>
-  import {set} from '../../../../../../js/utils'
+import {set} from '../../../../../../js/utils'
 
-  export default {
+export default {
       props: ['model'],
         updated: function() {
             let stateTools = $perAdminApp.getNodeFromViewWithDefault("/state/tools", {});
@@ -173,6 +173,7 @@
               $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
             })
         },
+
         onCancel(e) {
             var view = $perAdminApp.getView()
             $perAdminApp.action(this, 'onEditorExitFullscreen')
@@ -181,6 +182,7 @@
                 $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
             })
         },
+
           onDelete(e) {
               const vm = this;
               var view = $perAdminApp.getView()
@@ -198,6 +200,7 @@
                   }
               })
           },
+
         hideGroups() {
             const $groups = $('.vue-form-generator fieldset');
             $groups.each( function(i) {
@@ -215,6 +218,7 @@
                 $group.addClass('vfg-group');
             })
         },
+
         getFieldAndIndexByModel(schema, model) {
 
           const fields = []
@@ -252,6 +256,7 @@
           })
           return {field, index}
         },
+
         focusFieldByModel(model) {
           if (!model) return
 
@@ -270,6 +275,7 @@
 
           set(this.view, '/state/inline/model', null)
         },
+
         focusCollectionField(model, field, index) {
           const fieldCollection = this.$refs.formGenerator.$children[index].$children[0]
           fieldCollection.activeItem = parseInt(model.pop())
@@ -286,11 +292,13 @@
             }, this.focus.delay)
           })
         },
+
         clearFocusStuff() {
           this.focus.inView = 0
           clearInterval(this.focus.loop)
           clearTimeout(this.focus.timeout)
         },
+
         isRichEditor(field) {
           return ['texteditor'].indexOf(field.type) >= 0
         }
