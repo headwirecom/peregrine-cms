@@ -62,17 +62,19 @@
 
   export default {
       props: ['model'],
-        updated: function() {
-            let stateTools = $perAdminApp.getNodeFromViewWithDefault("/state/tools", {});
-            stateTools._deleted = {}; // reset to empty?
-            if(this.schema && this.schema.hasOwnProperty('groups')) {
-                this.hideGroups()
-            }
-            this.path = $perAdminApp.getNodeFromViewOrNull('/state/editor/path')
-        },
+      updated: function() {
+          let stateTools = $perAdminApp.getNodeFromViewWithDefault("/state/tools", {});
+          stateTools._deleted = {}; // reset to empty?
+          if(this.schema && this.schema.hasOwnProperty('groups')) {
+              this.hideGroups()
+          }
+          setTimeout(() => {
+            this.path = $perAdminApp.getNodeFromViewOrNull('/state/editor').path
+          }, 0)
+      },
       data() {
         return {
-          path: $perAdminApp.getNodeFromViewOrNull('/state/editor/path'),
+          path: $perAdminApp.getNodeFromViewOrNull('/state/editor').path,
           isTouch: false,
           formOptions: {
             validateAfterLoad: true,
