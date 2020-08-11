@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication.servlet;
+package com.peregrine.admin.servlets;
 
 /*-
  * #%L
@@ -41,9 +41,8 @@ import java.util.List;
 import static com.peregrine.admin.replication.ReplicationConstants.RESOURCE_TYPE_TENANT_SETUP_REPLICATION;
 import static com.peregrine.admin.replication.ReplicationConstants.SOURCE_NAME;
 import static com.peregrine.admin.replication.ReplicationConstants.SOURCE_PATH;
-import static com.peregrine.admin.replication.servlet.ReplicationServlet.REPLICATES;
-import static com.peregrine.admin.replication.servlet.ReplicationServlet.REPLICATION_FAILED;
-import static com.peregrine.admin.replication.servlet.ReplicationServlet.SUFFIX_IS_NOT_RESOURCE;
+
+import static com.peregrine.admin.servlets.ReplicationServlet.*;
 import static com.peregrine.commons.util.PerConstants.FELIBS_ROOT;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.NAME;

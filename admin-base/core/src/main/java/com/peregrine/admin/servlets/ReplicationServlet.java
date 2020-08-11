@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication.servlet;
+package com.peregrine.admin.servlets;
 
 /*-
  * #%L
@@ -27,6 +27,8 @@ package com.peregrine.admin.replication.servlet;
 
 import com.peregrine.adaption.PerReplicable;
 import com.peregrine.admin.replication.DefaultReplicationMapper;
+import com.peregrine.admin.replication.ReplicationConstants;
+import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.replication.Replication;
 import com.peregrine.replication.Replication.ReplicationException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
@@ -39,11 +41,6 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 import javax.servlet.Servlet;
 import java.io.IOException;
 import java.util.*;
-
-import static com.peregrine.admin.replication.ReplicationConstants.DEEP;
-import static com.peregrine.admin.replication.ReplicationConstants.RESOURCE_TYPE_DO_REPLICATION;
-import static com.peregrine.admin.replication.ReplicationConstants.SOURCE_NAME;
-import static com.peregrine.admin.replication.ReplicationConstants.SOURCE_PATH;
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.*;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
@@ -68,7 +65,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
         SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Replication Servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
         SLING_SERVLET_METHODS + EQUALS + POST,
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_DO_REPLICATION
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + ReplicationConstants.RESOURCE_TYPE_DO_REPLICATION
     }
 )
 @SuppressWarnings("serial")
@@ -84,6 +81,9 @@ public class ReplicationServlet extends AbstractBaseServlet {
     public static final String SUFFIX_IS_NOT_RESOURCE = "Suffix: '%s' is not a resource";
 
     private Map<String, Replication> replications = new HashMap<>();
+
+    @Reference
+    AdminResourceHandler resourceManagement;
 
     @Reference(
         cardinality = ReferenceCardinality.MULTIPLE,
@@ -145,7 +145,8 @@ public class ReplicationServlet extends AbstractBaseServlet {
 //        Get a list of reference from the post array body...
 //        replicatedReferences=/path-1,
 //        replicatedReferences=/path-2, etc
-        String deepParameter = request.getParameter(DEEP);
+
+        String deepParameter = request.getParameter(ReplicationConstants.DEEP);
         boolean deep = deepParameter != null && Boolean.TRUE.toString().equals(deepParameter.toLowerCase());
         String deactivateParameter = request.getParameter(DEACTIVATE);
         boolean deactivate = deactivateParameter != null && Boolean.TRUE.toString().equals(deactivateParameter.toLowerCase());
@@ -173,21 +174,24 @@ public class ReplicationServlet extends AbstractBaseServlet {
                 if(!deactivate) {
 // Replication can be local or remote and so the commit of the changes is done inside the Replication Service
 //                    replicates = replication.replicate(source, deep);
+                    if ( sourceRepl != null && sourceRepl.getContentResource() != null) {
+                        resourceManagement.createVersion(request.getResourceResolver(), sourceRepl.getContentResource().getPath(), ACTIVATED);
+                    }
                     sourceRepl.setLastReplicationActionAsActivated();
                     replicates = replication.replicate(resourcesToRepl);
                 } else {
                     sourceRepl.setLastReplicationActionAsDeactivated();
                     replicates = replication.deactivate(source);
                 }
-            } catch(ReplicationException e) {
+            } catch(ReplicationException | AdminResourceHandler.ManagementException e) {
                 return new ErrorResponse()
                     .setHttpErrorCode(SC_BAD_REQUEST)
                     .setErrorMessage(REPLICATION_FAILED)
                     .setException(e);
             }
             answer = new JsonResponse();
-            answer.writeAttribute(SOURCE_NAME, source.getName());
-            answer.writeAttribute(SOURCE_PATH, source.getPath());
+            answer.writeAttribute(ReplicationConstants.SOURCE_NAME, source.getName());
+            answer.writeAttribute(ReplicationConstants.SOURCE_PATH, source.getPath());
             answer.writeArray(REPLICATES);
             if(replicates != null) {
                 for(Resource child : replicates) {
