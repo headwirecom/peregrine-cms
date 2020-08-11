@@ -77,6 +77,7 @@ public class ReplicationServlet extends AbstractBaseServlet {
     public static final String REPLICATION_FAILED = "Replication Failed";
     public static final String REPLICATES = "replicates";
     public static final String ASYNC_ENDPOINT = "asyncEndpoint";
+    public static final String PUBLISHED = "Published";
     public static final String RESOURCES = "resources";
     public static final String SUFFIX_IS_NOT_RESOURCE = "Suffix: '%s' is not a resource";
 
@@ -175,7 +176,7 @@ public class ReplicationServlet extends AbstractBaseServlet {
 // Replication can be local or remote and so the commit of the changes is done inside the Replication Service
 //                    replicates = replication.replicate(source, deep);
                     if ( sourceRepl != null && sourceRepl.getContentResource() != null) {
-                        resourceManagement.createVersion(request.getResourceResolver(), sourceRepl.getContentResource().getPath(), ACTIVATED);
+                        resourceManagement.createVersion(request.getResourceResolver(), sourceRepl.getContentResource().getPath(), PUBLISHED);
                     }
                     sourceRepl.setLastReplicationActionAsActivated();
                     replicates = replication.replicate(resourcesToRepl);

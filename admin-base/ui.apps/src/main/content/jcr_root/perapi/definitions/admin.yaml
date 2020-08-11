@@ -442,6 +442,12 @@ paths:
                     path:
                       type: string
                       description: Frozen node path of the version.
+                    labels:
+                      type: array
+                      description: Array of labels (Strings) applied to the version
+                      items:
+                        type: string
+                       
                     base:
                       type: boolean
                       description: If base is true, this is the current version.

@@ -159,8 +159,10 @@
                        v-on:click="checkoutVersion(version)"
                        v-bind:title="`Version ${version.name}`">
                       <i v-if="version.base" class="material-icons">{{Icon.CHECKED}}</i>
-                      <i v-else-if="!version.base" class="material-icons">{{Icon.UNCHECKED}}</i>
-                      {{version.name}} -{{version.created}} {{version.base ? '(current)':''}}
+                      <i v-else-if="!version.base" class="material-icons">{{Icon.UNCHECKED}}</i> {{version.name}} {{version.created}}
+                      <div v-if="version.labels">                        
+                        <span v-for="label in version.labels" class="chip labelChip" v-bind:key="label">{{label}}</span>
+                      </div>
                       <span v-if="!version.base" class="deleteVersionWrapper">
                           <admin-components-action
                             v-bind:model="{
@@ -722,7 +724,10 @@
 </script>
 
 <style>
-.deleteVersionWrapper{
+.deleteVersionWrapper {
     margin-left: auto;
+}
+.labelChip {
+  display: block;
 }
 </style>
