@@ -40,6 +40,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.api.resource.ValueMap;
@@ -134,6 +136,29 @@ public class PageModel extends Container {
     @Optional
     private String brand;
 
+    @Inject
+    @Optional
+    private String ogTitle;
+
+    @Inject
+    @Optional
+    private String ogDescription;
+
+    @Inject
+    @Optional
+    private String ogImage;
+
+    private String absOgImage;
+
+    @Inject
+    @Optional
+    private Boolean noIndex = false;
+
+    @Inject
+    @Optional
+    private Boolean noFollow = false;
+
+
     public String getSiteRoot() {
         String path = getPagePath();
         String[] segments = path.split(SLASH);
@@ -172,6 +197,19 @@ public class PageModel extends Container {
         return siteCSS;
     }
 
+    /**
+     * Retrieves the primary public-facing domain for the site if it exists. The primary domain is considered the
+     * first domain listed.
+     *
+     * @return The primary domain on success, and an empty string otherwise.
+     */
+    public String getPrimaryDomain() {
+
+        return getDomains() != null && getDomains().length > 0
+                ? getDomains()[0]
+                : "";
+    }
+
     public String[] getDomains() {
         if(domains == null) {
             String[] value = (String[]) getInheritedProperty(DOMAINS);
@@ -184,6 +222,36 @@ public class PageModel extends Container {
             }
         }
         return domains;
+    }
+
+    /**
+     * Attempts to determine a fallback domain based on the request. A fallback domain is formatted as:
+     * [scheme]://[domain]:[port]. If the remote port is 80, then the port is not included.
+     *
+     * @return A prefix URL on success, and an empty string otherwise.
+     */
+    public String getFallbackDomain() {
+
+        // TODO: get SlingHttpServletRequest
+        /*
+        String domain = "";
+
+        if (request != null) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(request.getScheme()).append("://").append(request.getServerName());
+
+            if (request.getServerPort() != 80)
+            {
+                sb.append(":").append(request.getServerPort());
+            }
+            domain = sb.toString();
+        } else {
+            System.out.println("request is null");
+        }
+
+        return domain;
+         */
+        return "http://localhost:8080";
     }
 
     private PageModel getTemplatePageModel() {
@@ -317,6 +385,70 @@ public class PageModel extends Container {
             }
         }
         return brand;
+    }
+
+    public String getOgTitle() {
+        return StringUtils.isBlank(ogTitle) ? title : ogTitle;
+    }
+
+    public String getOgDescription() {
+        return StringUtils.isBlank(ogDescription) ? description: ogDescription;
+    }
+
+    /**
+     * Constructs an absolute og:image URL, if and only if, a primary domain is set and and og:image is set. The
+     * og:image may be set on the page, an ancestor page, or the page template.
+     *
+     * @return An absolute og:image URL on success and an empty string otherwise.
+     */
+    public String getAbsOgImage() {
+
+        String absOgImagePath = "";
+
+        // 1. try current page
+        String ogImagePath = getResource().getValueMap().get("ogImage", String.class);
+
+        // 2. try to fallback to closest parent or ancestor page
+        if (StringUtils.isBlank(ogImagePath)) {
+            ogImagePath  = (String) getInheritedProperty("ogImage");
+
+            // 3. try to fallback to template
+            if (StringUtils.isBlank(ogImagePath) && getTemplate() != null) {
+                PageModel templatePageModel = getTemplatePageModel();
+                if (templatePageModel != null) {
+                    ogImagePath = templatePageModel.ogImage;
+                }
+            }
+        }
+
+        final String domain = StringUtils.isNotBlank(getPrimaryDomain())
+                ? getPrimaryDomain()
+                : getFallbackDomain();
+
+        if (StringUtils.isNotBlank(domain) & StringUtils.isNotBlank(ogImagePath)) {
+            absOgImagePath = domain + ogImagePath;
+        }
+
+        return absOgImagePath;
+    }
+
+    public String getCanonicalUrl() {
+        final String primaryDomain = getPrimaryDomain();
+
+        return StringUtils.isNotBlank(primaryDomain)
+                ? getPrimaryDomain() + getPagePath().replace(getSiteRoot(), "") + ".html"
+                : getPagePath() + ".html";
+    }
+
+    public String getMetaRobots() {
+
+        StringBuilder metaRobots = new StringBuilder();
+
+        if (noIndex) metaRobots.append("noindex");
+        if (noIndex && noFollow) metaRobots.append(",");
+        if (noFollow) metaRobots.append("nofollow");
+
+        return metaRobots.toString();
     }
 
     class Tag {

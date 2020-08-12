@@ -89,6 +89,10 @@ import setTenant from './stateActions/setTenant'
 import recycleItem from './stateActions/recycleItem'
 import deleteRecyclable from './stateActions/deleteRecyclable'
 import tenantSetupReplication from './stateActions/tenantSetupReplication'
+import backupTenant from "./stateActions/backupTenant";
+import downloadBackupTenant from "./stateActions/downloadBackupTenant";
+import uploadBackupTenant from "./stateActions/uploadBackupTenant";
+import restoreTenant from "./stateActions/restoreTenant";
 
 let log = LoggerFactory.logger('actions').setLevelDebug()
 
@@ -161,6 +165,10 @@ actions['createVersion'] = createVersion
 actions['restoreVersion'] = restoreVersion
 actions['setTenant'] = setTenant
 actions['tenantSetupReplication'] = tenantSetupReplication
+actions['backupTenant'] = backupTenant
+actions['downloadBackupTenant'] = downloadBackupTenant
+actions['uploadBackupTenant'] = uploadBackupTenant
+actions['restoreTenant'] = restoreTenant
 
 
 function noopAction(me, target) {

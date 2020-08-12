@@ -29,7 +29,33 @@ import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_CREATION_TEN
 import static com.peregrine.admin.util.AdminConstants.GROUP_NAME_SUFFIX;
 import static com.peregrine.admin.util.AdminConstants.PEREGRINE_SERVICE_NAME;
 import static com.peregrine.admin.util.AdminConstants.USER_NAME_SUFFIX;
-import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerConstants.ALL_TENANTS_GROUP_NAME;
+import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
+import static com.peregrine.commons.util.PerConstants.BRAND;
+import static com.peregrine.commons.util.PerConstants.COLOR_PALETTE;
+import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
+import static com.peregrine.commons.util.PerConstants.CREATED;
+import static com.peregrine.commons.util.PerConstants.FELIBS_ROOT;
+import static com.peregrine.commons.util.PerConstants.FROM_TENANT_NAME;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
+import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
+import static com.peregrine.commons.util.PerConstants.PACKAGES_PATH;
+import static com.peregrine.commons.util.PerConstants.PATH;
+import static com.peregrine.commons.util.PerConstants.RECYCLE_BIN_PATH;
+import static com.peregrine.commons.util.PerConstants.SITE;
+import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.commons.util.PerConstants.SOURCE_PATH;
+import static com.peregrine.commons.util.PerConstants.STATUS;
+import static com.peregrine.commons.util.PerConstants.TEMPLATES_ROOT;
+import static com.peregrine.commons.util.PerConstants.TENANT;
+import static com.peregrine.commons.util.PerConstants.TENANT_GROUP_HOME;
+import static com.peregrine.commons.util.PerConstants.TENANT_USER_HOME;
+import static com.peregrine.commons.util.PerConstants.TENANT_USER_PWD;
+import static com.peregrine.commons.util.PerConstants.TO_TENANT_NAME;
+import static com.peregrine.commons.util.PerConstants.TO_TENANT_TITLE;
+import static com.peregrine.commons.util.PerConstants.TYPE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -47,6 +73,8 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.commons.util.PerUtil;
+
 import java.io.IOException;
 import java.util.Arrays;
 import javax.jcr.Node;
@@ -165,6 +193,17 @@ public class CreateTenantServlet extends AbstractBaseServlet {
                         () -> tenantUserId,
                         TENANT_USER_HOME
                     );
+                    if(tenantUser != null) {
+                        try {
+                            Resource resUser = resourceResolver.getResource(tenantUser.getPath());
+                            Node nodeUser = PerUtil.getNode(resUser);
+                            Node nodeUserPreferences = nodeUser.addNode("preferences");
+                            nodeUserPreferences.setProperty("firstLogin", "true");
+                            adminSession.save();
+                        } catch( RepositoryException re ) {
+                            logger.error("was not able to set firstLogin pereference for user", re);
+                        }
+                    }
                     if(tenantUser != null && !isPwdProvided) {
                         tenantUser.disable(DISABLE_USER_REASON);
                     }
@@ -178,6 +217,7 @@ public class CreateTenantServlet extends AbstractBaseServlet {
                         .setErrorMessage(FAILED_TO_CREATE_TENANT_SECURITY);
                 }
                 tenantGroup.addMember(tenantUser);
+                allTenantsGroup.addMember(tenantUser);
             } else {
                 // We also need to add the current non-admin user to the group so that new site is visible for them
                 Authorizable authorizable = userManager.getAuthorizable(request.getRequest().getUserPrincipal());
@@ -188,6 +228,21 @@ public class CreateTenantServlet extends AbstractBaseServlet {
             // Finally set permissions on site
             try {
                 AccessControlManager accessControlManager = adminSession.getAccessControlManager();
+                setAccessRights(accessControlManager, site.getPath(), allTenantsGroup, tenantGroup);
+                // Set permission on apps, etc/felibs and etc/packages
+                Resource apps = resourceResolver.getResource(APPS_ROOT + SLASH + toTenant);
+                if(apps != null) {
+                    setAccessRights(accessControlManager, apps.getPath(), allTenantsGroup, tenantGroup);
+                }
+                Resource felibs = resourceResolver.getResource(FELIBS_ROOT + SLASH  + toTenant);
+                if(felibs != null) {
+                    setAccessRights(accessControlManager, felibs.getPath(), allTenantsGroup, tenantGroup);
+                }
+                Resource packages = resourceResolver.getResource(PACKAGES_PATH + SLASH  + toTenant);
+                if(packages != null) {
+                    setAccessRights(accessControlManager, packages.getPath(), allTenantsGroup, tenantGroup);
+                }
+
                 JackrabbitAccessControlList policies = AccessControlUtils.getAccessControlList(accessControlManager, site.getPath());
                 Privilege[] privileges = AccessControlUtils.privilegesFromNames(accessControlManager, "jcr:all");
                 policies.addEntry(allTenantsGroup.getPrincipal(), privileges, false, null);
@@ -207,6 +262,7 @@ public class CreateTenantServlet extends AbstractBaseServlet {
             } catch(RuntimeException e) {
                 logger.warn("Setting Site Permissions failed", e);
             }
+            setBrandOnTemplate(resourceResolver, toTenant, title);
             resourceResolver.commit();
             String colorPalette = request.getParameter(COLOR_PALETTE);
             if (isNotEmpty(colorPalette)) {
@@ -241,6 +297,16 @@ public class CreateTenantServlet extends AbstractBaseServlet {
         }
     }
 
+    private void setAccessRights(AccessControlManager accessControlManager, String path, Group allTenantsGroup, Group tenantGroup)
+        throws RepositoryException
+    {
+        JackrabbitAccessControlList policies = AccessControlUtils.getAccessControlList(accessControlManager, path);
+        Privilege[] privileges = AccessControlUtils.privilegesFromNames(accessControlManager, "jcr:all");
+        policies.addEntry(allTenantsGroup.getPrincipal(), privileges, false, null);
+        policies.addEntry(tenantGroup.getPrincipal(), privileges, true, null);
+        accessControlManager.setPolicy(path, policies);
+
+    }
     private void setColorPalette(ResourceResolver resourceResolver, String colorPalette, String fromTenant, String toTenant) throws PersistenceException {
         final Resource templateContent = getResource(
             resourceResolver,
@@ -268,6 +334,18 @@ public class CreateTenantServlet extends AbstractBaseServlet {
             modifiableProperties.put("siteCSS", cssReplacements);
         } else {
             logger.error("No siteCSS property found for copied template");
+        }
+    }
+
+    private void setBrandOnTemplate(final ResourceResolver resourceResolver, final String tenant, final String siteName) {
+        final Resource templateContent = getResource(
+                resourceResolver,
+                TEMPLATES_ROOT.replace(TENANT, tenant)
+        ).getChild(JCR_CONTENT);
+
+        if (templateContent != null) {
+            ModifiableValueMap modifiableProperties = getModifiableProperties(templateContent);
+            modifiableProperties.put(BRAND, siteName);
         }
     }
 }

@@ -1,6 +1,8 @@
 package com.peregrine.intra;
 
+import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.servlets.HttpConstants;
 import org.apache.sling.servlethelpers.MockRequestPathInfo;
 import org.apache.sling.servlethelpers.MockSlingHttpServletRequest;
 import org.apache.sling.servlethelpers.MockSlingHttpServletResponse;
@@ -13,10 +15,13 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
+import static org.apache.sling.api.servlets.HttpConstants.METHOD_GET;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
@@ -51,11 +56,14 @@ public class IntraSlingCallerService
         try {
             logger.trace("Intra Sling Caller Context: '{}'", callerContext);
             MockSlingHttpServletRequest req = new MockSlingHttpServletRequest(callerContext.getResourceResolver());
+            req.setMethod(callerContext.getMethod());
+            req.setResource(callerContext.getResource());
             MockRequestPathInfo pathInfo = (MockRequestPathInfo) req.getRequestPathInfo();
             pathInfo.setResourcePath(callerContext.getPath());
             pathInfo.setSelectorString(callerContext.getSelectors());
             pathInfo.setExtension(callerContext.getExtension());
             pathInfo.setSuffix(callerContext.getSuffix());
+            req.setParameterMap(callerContext.getParameterMap());
             MockSlingHttpServletResponse resp = new MockSlingHttpServletResponse();
             resp.setCharacterEncoding("utf-8");
             requestProcessor.processRequest(req, resp, callerContext.getResourceResolver());
@@ -76,17 +84,25 @@ public class IntraSlingCallerService
     }
 
     public static class CallerContextImpl implements CallerContext {
+        Resource resource;
         ResourceResolver resourceResolver;
-        String path,
+        String method = METHOD_GET,
+            path,
             selectors,
             extension,
-            suffix,
-            queryString;
+            suffix;
+        Map<String,Object> parameterMap = new HashMap<>();
+
+        @Override
+        public Resource getResource() { return resource; }
 
         @Override
         public ResourceResolver getResourceResolver() {
             return resourceResolver;
         }
+
+        @Override
+        public String getMethod() { return method; }
 
         @Override
         public String getPath() {
@@ -109,13 +125,23 @@ public class IntraSlingCallerService
         }
 
         @Override
-        public String getQueryString() {
-            return queryString;
+        public Map<String, Object> getParameterMap() { return parameterMap; }
+
+        @Override
+        public CallerContext setResource(Resource resource) {
+            this.resource = resource;
+            return this;
         }
 
         @Override
         public CallerContext setResourceResolver(ResourceResolver resourceResolver) {
             this.resourceResolver = resourceResolver;
+            return this;
+        }
+
+        @Override
+        public CallerContext setMethod(String method) {
+            this.method = method;
             return this;
         }
 
@@ -144,19 +170,21 @@ public class IntraSlingCallerService
         }
 
         @Override
-        public CallerContext setQueryString(String queryString) {
-            this.queryString = queryString;
+        public CallerContext setParameterMap(Map<String, Object> parameterMap) {
+            if(parameterMap == null) { parameterMap = new HashMap<>(); }
+            this.parameterMap = parameterMap;
             return this;
         }
 
         @Override
         public String toString() {
             return "CallerContextImpl{" +
-                "path='" + path + '\'' +
+                "method='" + method + '\'' +
+                ", path='" + path + '\'' +
                 ", selectors='" + selectors + '\'' +
                 ", extension='" + extension + '\'' +
                 ", suffix='" + suffix + '\'' +
-                ", queryString='" + queryString + '\'' +
+                ", parameterMap='" + parameterMap + '\'' +
                 '}';
         }
     }

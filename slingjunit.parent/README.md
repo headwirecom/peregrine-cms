@@ -16,3 +16,7 @@ Run all the tests if you are using `remote` distribution and have both author pu
 
 Otherwise run specific tests
 * /system/sling/junit/com.peregrine.slingjunit.VersionsJTest.html
+
+Note: org.apache.sling.junit.core does need to be in the "allow" list for Login Administrative.
+Deploying the bundle directly from peregrine-cms/slingjunit.parent/core will provide that configuration.  
+* mvn clean install -PautoDeployBundle
