@@ -44,6 +44,12 @@
       background-color: color("blue-grey", "lighten-3");
     }
   }
+  
+  & > span {
+    position: absolute;
+    right: 12px;
+  }
+
 
   .explorer-preview-content {
     display: flex;
