@@ -106,11 +106,6 @@ public class ModPageSpeedCacheInvalidationService
 
         cacheInvalidationUrl = configuration.cacheInvalidationUrl();
 
-        if(StringUtils.isBlank(cacheInvalidationUrl))
-        {
-            throw new IllegalArgumentException("Invalid PageSpeed cache invalidation URL: " + cacheInvalidationUrl);
-        }
-
         log.trace("PageSpeed Invalidation Service Name: '{}' created", getName());
         log.trace("PageSpeed cache invalidation URL: '{}'", cacheInvalidationUrl);
     }
@@ -232,18 +227,6 @@ public class ModPageSpeedCacheInvalidationService
         }
 
         return domains;
-    }
-
-    /**
-     * Formats a JCR path as suitable mod_pagespeed cache key.
-     *
-     * @param path the JCR path to format.
-     *
-     * @return An absolute URL for the cache invalidation request on success, and <code>null</code> otherwise.
-     */
-    protected String formatCacheKeyRequest(final String path)
-    {
-        return cacheInvalidationUrl + "/*";
     }
 
     /**
