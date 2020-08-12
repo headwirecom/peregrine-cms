@@ -58,6 +58,7 @@
       </template>
 
       <template v-else-if="isTab([Tab.INFO, Tab.OG_TAGS])">
+        <span class="panel-title">{{getActiveTabName}}</span>
         <div v-if="hasInfoView && !edit"
              :class="`${nodeType}-info-view`">
           <img v-if="isImage"
@@ -110,6 +111,7 @@
       </template>
 
       <template v-else-if="isTab(Tab.REFERENCES)">
+        <span class="panel-title">{{getActiveTabName}}</span>
         <ul :class="['collection', 'with-header', `explorer-${nodeType}-referenced-by`]">
           <li class="collection-header">
             referenced in {{referencedBy.length}} location<span v-if="referencedBy.length !== 1 ">s</span>
@@ -140,7 +142,8 @@
         </ul>
       </template>
 
-      <template v-else-if="isTab(Tab.VERSIONS)" >
+      <template v-else-if="isTab(Tab.VERSIONS)">
+          <span class="panel-title">{{getActiveTabName}}</span>
           <div v-if="allowOperations" class="action-list">
               <div class="action"
                    v-on:click.stop.prevent="createVersion"
@@ -179,6 +182,7 @@
       </template>
 
       <template v-else-if="isTab(Tab.PUBLISHING)">
+        <span class="panel-title">{{getActiveTabName}}</span>
         <admin-components-publishinginfo v-bind:node="node" v-if="node"/>
 
         <div v-if="allowOperations && node" class="action-list">
@@ -209,6 +213,7 @@
       </admin-components-publishingmodal>
 
       <template v-else-if="isTab(Tab.ACTIONS)">
+        <span class="panel-title">Actions</span>
         <div v-if="allowOperations" class="action-list">
           <div class="action" :title="`rename ${nodeType}`" @click="$refs.renameModal.open()">
             <i class="material-icons">{{Icon.TEXT_FORMAT}}</i>
@@ -326,6 +331,7 @@
         SchemaKey: SchemaKey,
         NodeType: NodeType,
         activeTab: null,
+        activeTabName: "info",
         edit: false,
         valid: {
           state: true,
@@ -425,6 +431,22 @@
           nodeName = this.node.path.split('/').slice(-1).pop()
         }
         return nodeName
+      },
+      getActiveTabName(){
+        switch(this.activeTabName) {
+          case 'info':
+            return "Properties & Information"
+          case 'og-tags':
+            return "Open Graph Tags"
+          case 'versions':
+            return "Versioning"
+          case 'publishing':
+            return "Web Publishing"
+          case 'actions':
+            return "Actions"
+          case 'references':
+            return "References"
+        }
       }
     },
     watch: {
@@ -712,6 +734,9 @@
       setActiveTab(clickedTab) {
         this.activeTab = clickedTab;     
         $perAdminApp.action(this, 'setActiveTabName', {activeTab: this.activeTab})
+      },
+      setActiveTabName(me, target){
+        me.activeTabName = target.activeTab
       },
       isTab(arg) {
         if (Array.isArray(arg)) {

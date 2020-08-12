@@ -47,10 +47,14 @@
 
   .explorer-preview-content {
     display: flex;
-    flex-direction: column;
+    flex-direction: column;    
+    height: 100%;
 
     .panel-title {
       position: initial;
+      align-items: initial;
+      border-bottom: 1px solid #b0bec5;
+      padding-top: 12px;
     }
 
     .vue-form-generator {
@@ -237,10 +241,16 @@
   .explorer-preview-nav {
     display: flex;
     justify-content: flex-end;
+    position: absolute;
     text-align: right;
+    top: 0;	
+    left: 0;	
+    right: 45px;
     overflow: hidden;
     margin: 0;
     padding: 0;
+    height: 45px;
+    width: 100%;
     border-right: 1px solid color("blue-grey", "lighten-5");
     border-bottom: 1px solid color("blue-grey", "lighten-3");
 
@@ -287,6 +297,8 @@
       > li {
         border-left: 1px solid #eceff1;
         border-right: 1px solid #b0bec5;
+        height: 100%;	
+        line-height: 45px;
         cursor: pointer;
 
         &:first-child {
@@ -337,6 +349,11 @@
       background-color: #37474f;
       color: #cfd8dc;
     }
+  }
+
+  span.hideRightPaneStyle  {
+    position: absolute;
+    right: 12px;
   }
 
   /* tablet styles */

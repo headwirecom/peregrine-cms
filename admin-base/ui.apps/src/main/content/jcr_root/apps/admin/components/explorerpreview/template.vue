@@ -1,6 +1,5 @@
 <template>
 	<div :class="explorerPreviewClasses">
-	  <span class="active_tab_title">{{$i18n(getActiveTabName)}}</span>
 	  <button 
 	    type="button" 
 	    class="toggle-fullscreen waves-effect waves-light"  
@@ -18,7 +17,6 @@ export default {
 	data() {
 		return {
 			isFullscreen: false,
-			activeTabName: "info"
 		}
 	},
 
@@ -30,22 +28,6 @@ export default {
 				return 'col s12 m4 explorer-preview'
 			}
 		},
-		getActiveTabName(){
-			switch(this.activeTabName) {
-				case 'info':
-					return "Properties & Information"
-				case 'og-tags':
-					return "Open Graph Tags"
-				case 'versions':
-					return "Versioning"
-				case 'publishing':
-					return "Web Publishing"
-				case 'actions':
-					return "Actions"
-				case 'references':
-					return "References"
-			}
-		}
 	},
 
 	methods: {
@@ -55,9 +37,6 @@ export default {
 		onPreviewFullscreen(){
 			console.log(this)
 			this.isFullscreen = true
-		},
-		setActiveTabName(me, target){
-			me.activeTabName = target.activeTab
 		},
 	}
 }
