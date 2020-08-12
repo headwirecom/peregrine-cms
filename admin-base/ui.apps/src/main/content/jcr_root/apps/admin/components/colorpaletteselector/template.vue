@@ -44,7 +44,7 @@
               v-bind:key="palette.name"
               :class="{active: selectedPath === palette.path}"
               @click.stop.prevent="onSelect(palette)">
-            {{ palette.name }}
+            <a href="#" @click.stop.prevent="onSelect(palette)">{{ palette.name }}</a>
           </li>
         </ul>
       </div>
