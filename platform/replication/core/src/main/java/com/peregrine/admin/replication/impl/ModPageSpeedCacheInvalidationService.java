@@ -172,7 +172,7 @@ public class ModPageSpeedCacheInvalidationService
                 for (String domain: domains)
                 {
                     // construct site-wide pagespeed invalidation request URL
-                    siteInvalidationUls.add(domain + "/*");
+                    siteInvalidationUls.add(domain + "/pagespeed_admin/cache?purge=*");
                 }
 
             }
