@@ -84,7 +84,7 @@ public class ListResourceVersionsServlet extends AbstractBaseServlet {
                 }
                 resourceContent = resource.getChild(JCR_CONTENT);
                 if (resourceContent == null) {
-                    return new ErrorResponse().setHttpErrorCode(SC_NOT_FOUND).setErrorMessage(RESOURCE_NOT_FOUND);
+                    resourceContent = resource;
                 }
                 vi = resourceManagement.getVersionIterator(request.getResourceResolver(), resourceContent);
             } else {
