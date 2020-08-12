@@ -28,8 +28,6 @@ package com.peregrine.admin.replication.impl;
 import com.peregrine.admin.replication.AbstractionReplicationService;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
-import org.apache.commons.codec.EncoderException;
-import org.apache.commons.codec.net.URLCodec;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.config.RequestConfig;
@@ -40,6 +38,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.*;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
@@ -47,7 +46,11 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This class is responsible for issuing cache flush requests to mod_pagespeed on replication events.
@@ -62,6 +65,7 @@ public class ModPageSpeedCacheInvalidationService
         extends AbstractionReplicationService
 {
     private static final int HTTP_CLIENT_TIMEOUT_SECONDS = 5;
+    private static final Pattern ROOT_SITE_PATH_PATTERN = Pattern.compile("^(/content/[a-zA-Z0-9_]+)/.*$");
     
     @ObjectClassDefinition(
             name = "Peregrine: PageSpeed Cache Invalidation Service",
@@ -122,18 +126,7 @@ public class ModPageSpeedCacheInvalidationService
     public List<Resource> replicate(final Resource resource, boolean deep)
             throws ReplicationException
     {
-        final String path = resource.getPath();
-
-        // only issue a request for the top-level page. we don't care about jcr:content nodes as far as mod_pagespeed is concerned.
-        if (StringUtils.isNotBlank(path) && !path.contains("jcr:content"))
-        {
-            final String cacheRequest = formatCacheKeyRequest(resource.getPath());
-            if (StringUtils.isNoneBlank(cacheRequest))
-            {
-                invalidateCacheKey(cacheRequest);
-            }
-        }
-
+        // nooop
         return Collections.emptyList();
     }
 
@@ -141,15 +134,95 @@ public class ModPageSpeedCacheInvalidationService
     public List<Resource> deactivate(Resource startingResource)
             throws ReplicationException
     {
-        // TODO: call invalidateCacheKey()
         return Collections.emptyList();
     }
 
     @Override
     public List<Resource> replicate(List<Resource> resourceList) throws ReplicationException
     {
-        // noop
+        for (String siteInvalidationUrl: getSitesInvalidationUrls(resourceList))
+        {
+            invalidateCacheKey(siteInvalidationUrl);
+        }
+
         return Collections.emptyList();
+    }
+
+    private Set<String> getSitesInvalidationUrls(final List<Resource> resources)
+    {
+        Set<String> siteInvalidationUls = new HashSet<>();
+        Set<String> sites = new HashSet<String>();
+        if (resources != null)
+        {
+            for (final Resource resource: resources)
+            {
+                final String sitePath = getSitePath(resource);
+                if (sites.contains(sitePath))
+                {
+                    log.trace("Skipping... unique site already processed");
+                    continue;
+                }
+                sites.add(sitePath);
+
+                Set<String> domains = getDomains(sitePath, resource);
+                for (String domain: domains)
+                {
+                    // construct site-wide pagespeed invalidation request URL
+                    siteInvalidationUls.add(domain + "/*");
+                }
+
+            }
+        }
+        return siteInvalidationUls;
+    }
+
+    /**
+     * Extracts the root site path for a given resource.
+     *
+     * @param resource
+     * @return A site path (i.e. /content/site) on success, and <code>null</code> otherwise.
+     */
+    private String getSitePath(final Resource resource)
+    {
+        String sitePath = null;
+
+        Matcher matcher = ROOT_SITE_PATH_PATTERN.matcher(resource.getPath());
+        if (matcher.matches() && matcher.groupCount() == 1)
+        {
+            sitePath = matcher.group(1);
+        }
+
+        return sitePath;
+    }
+
+    /**
+     * Find domains associated to the given site.
+     *
+     * @param sitePath Site path (i.e. /content/site)
+     * @param resource Any valid, non-null resource
+     * @return A set of domains if they exist for the site, otherwise and empty set.
+     */
+    private Set<String> getDomains(final String sitePath, final Resource resource)
+    {
+        Set<String> domains = new HashSet<>();
+
+        final String rootTemplate = sitePath + "/templates/jcr:content";
+        final Resource rootTemplateNode = resource.getResourceResolver().getResource(rootTemplate);
+        final ValueMap properties = rootTemplateNode.getValueMap();
+
+        if (properties.containsKey("domains"))
+        {
+            String[] vals = properties.get("domains", String[].class);
+            if (vals != null && vals.length > 0 )
+            {
+                for (int i = 0; i < vals.length; i++)
+                {
+                    domains.add(vals[i]);
+                }
+            }
+        }
+
+        return domains;
     }
 
     /**
@@ -157,21 +230,11 @@ public class ModPageSpeedCacheInvalidationService
      *
      * @param path the JCR path to format.
      *
-     * @return An absolute URL for the cache invalidatio request on success, and <code>null</code> otherwise.
+     * @return An absolute URL for the cache invalidation request on success, and <code>null</code> otherwise.
      */
     protected String formatCacheKeyRequest(final String path)
     {
-        String cacheKey = null;
-        try
-        {
-            String encodePath = new URLCodec().encode(path);
-            return cacheInvalidationUrl + "?purge=" + encodePath + ".html";
-        } catch (EncoderException e)
-        {
-            log.error("Error encoding JCR path: '{}'", path, e);
-        }
-
-        return cacheKey;
+        return cacheInvalidationUrl + "/*";
     }
 
     /**
