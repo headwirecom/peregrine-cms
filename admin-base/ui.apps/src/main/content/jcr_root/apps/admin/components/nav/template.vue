@@ -177,7 +177,7 @@
       moreDdItems() {
         return [
           {label: 'help', icon: 'help', disabled: !this.help, click: this.onHelpClick},
-          {label: 'tutorials', icon: 'import_contacts', click: this.onTutorialsClick},
+          {label: 'tutorials', icon: 'import_contacts', disabled: true, click: this.onTutorialsClick},
           {label: '--------------------', disabled: true},
           {label: this.$i18n('aboutNavBtn'), icon: 'info', click: this.onAboutClick},
         ]
