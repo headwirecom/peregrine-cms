@@ -230,7 +230,12 @@ class PerAdminImpl {
               // alert('please login to continue')
               window.location = '/'
             }
-            return populateView('/state', 'userPreferences', data.preferences)
+            return populateView('/state', 'userPreferences', data.preferences )
+              .then( () => { 
+                if(data.profile) {
+                  return populateView('/state/userPreferences', 'profile', data.profile )}
+              }
+            )
           })
         })
   }
