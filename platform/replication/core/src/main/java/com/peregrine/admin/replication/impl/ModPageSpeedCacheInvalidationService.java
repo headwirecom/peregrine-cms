@@ -140,9 +140,18 @@ public class ModPageSpeedCacheInvalidationService
     @Override
     public List<Resource> replicate(List<Resource> resourceList) throws ReplicationException
     {
-        for (String siteInvalidationUrl: getSitesInvalidationUrls(resourceList))
+        if (StringUtils.isNotBlank(cacheInvalidationUrl))
         {
-            invalidateCacheKey(siteInvalidationUrl);
+            // If an invalidation URL is specified in the OSGi config, use that URL for invalidation. This will
+            // preserve backwards compatibility.
+            invalidateCacheKey(cacheInvalidationUrl);
+        } else {
+            // If an invalidation URL is not specified in the OSGi config, attempt to lookup all the domains
+            // associated with the replicated node/site.
+            for (String siteInvalidationUrl : getSitesInvalidationUrls(resourceList))
+            {
+                invalidateCacheKey(siteInvalidationUrl);
+            }
         }
 
         return Collections.emptyList();
