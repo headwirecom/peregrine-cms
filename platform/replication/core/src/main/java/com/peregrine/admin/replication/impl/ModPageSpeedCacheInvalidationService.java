@@ -213,9 +213,16 @@ public class ModPageSpeedCacheInvalidationService
 
         final String rootTemplate = sitePath + "/templates/jcr:content";
         final Resource rootTemplateNode = resource.getResourceResolver().getResource(rootTemplate);
+
+        if (null == rootTemplateNode)
+        {
+            log.warn("Root template is null. Can't get domains for site: '{}'", sitePath);
+            return domains;
+        }
+
         final ValueMap properties = rootTemplateNode.getValueMap();
 
-        if (properties.containsKey("domains"))
+        if ( properties != null && properties.containsKey("domains"))
         {
             String[] vals = properties.get("domains", String[].class);
             if (vals != null && vals.length > 0 )
