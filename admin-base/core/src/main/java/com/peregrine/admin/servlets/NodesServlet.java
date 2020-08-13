@@ -26,6 +26,7 @@ package com.peregrine.admin.servlets;
  */
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_NODES;
+import static com.peregrine.admin.servlets.ReferenceListerServlet.IS_STALE;
 import static com.peregrine.commons.util.PerConstants.ALLOWED_OBJECTS;
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.COMPONENT;
@@ -60,6 +61,7 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+import com.peregrine.adaption.PerReplicable;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.commons.util.PerUtil;
 import java.io.IOException;
@@ -273,6 +275,12 @@ public class NodesServlet extends AbstractBaseServlet {
                 status = DEACTIVATED;
             }
             json.writeAttribute(REPLICATION_STATUS, status);
+        }
+        // TODO refactor code above to use PerReplicable when writing replication properties
+        PerReplicable sourceRepl = resource.adaptTo(PerReplicable.class);
+        json.writeAttribute(ACTIVATED, sourceRepl.isReplicated());
+        if (sourceRepl.getLastModified()!=null && sourceRepl.getReplicated()!= null) {
+            json.writeAttribute(IS_STALE, sourceRepl.isStale());
         }
     }
 

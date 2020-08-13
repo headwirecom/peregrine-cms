@@ -30,7 +30,7 @@
         <tbody>
           <tr>
             <th>Status</th>
-            <td>{{node.ReplicationStatus}}</td>            
+            <td>{{printStatus(node)}}</td>            
           </tr>
           <tr>
             <th>Date</th>
@@ -55,6 +55,8 @@
 </template>
 
 <script>
+import ReferenceUtil from '../../../../../../js/mixins/ReferenceUtil'
+
 export default {
     props: [
         'isOpen',
@@ -66,6 +68,7 @@ export default {
 
         }
     },
+    mixins: [ReferenceUtil],
     computed: {
         publishActionDate(){
             // new Date(this.node.Replicated);
@@ -74,7 +77,8 @@ export default {
         modificationDate(){
             // new Date(this.node.lastModified);
             return this.node.lastModified
-        }
+        },
+
     },
     methods: {
 

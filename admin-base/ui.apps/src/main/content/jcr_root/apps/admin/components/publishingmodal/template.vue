@@ -111,17 +111,6 @@ export default {
         close(){
             this.$refs.materializemodal.close()
         },
-        printStatus(ref){
-            if (ref.is_stale) {
-                return "Stale"
-            } else if (ref.activated === true){
-                return "Published"                
-            } else if(ref.activated === false) {
-                return "Unpublished"
-            } else {
-                return "No Status"
-            }
-        },
         printAction(ref){
             if (ref.is_stale && ref.publish) {
                 return "Publish (Stale)"
