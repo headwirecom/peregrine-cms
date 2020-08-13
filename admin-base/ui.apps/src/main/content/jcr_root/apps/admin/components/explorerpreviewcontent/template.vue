@@ -112,7 +112,7 @@
 
       <template v-else-if="isTab(Tab.REFERENCES)">
         <span class="panel-title">{{getActiveTabName}}</span>
-        <ul :class="['collection', 'with-header', `explorer-${nodeType}-referenced-by`]">
+        <ul :class="['collection', 'with-header', `explorer-${nodeType}-referenced-by`]" v-if="referencedBy">
           <li class="collection-header">
             referenced in {{referencedBy.length}} location<span v-if="referencedBy.length !== 1 ">s</span>
           </li>
@@ -404,8 +404,11 @@
       hasMultipleTabs() {
         return this.hasOgTags || this.hasReferences;
       },
-      referencedBy() {
-        return this.trimReferences($perAdminApp.getView().state.referencedBy.referencedBy);
+      referencedBy() {     
+        if ($perAdminApp.getView().state.referencedBy) {
+          return this.trimReferences($perAdminApp.getView().state.referencedBy.referencedBy);
+        }   
+        return []
       },
       versions() {
         return this.hasVersions ? $perAdminApp.getView().state.versions.versions : []
@@ -456,11 +459,15 @@
       activeTab : function(tab) {
         if (tab === 'versions'){
             this.showVersions()
+        } else if (tab === 'references'){
+            this.showReferencedBy()
         }
       },
       currentObject : function(path) {
         if (this.activeTab === 'versions'){
             this.showVersions()
+        } else if (this.activeTab === 'references'){
+            this.showReferencedBy()
         }
       }
     },
@@ -642,6 +649,9 @@
       },
       showVersions() {
         $perAdminApp.getApi().populateVersions(this.currentObject);
+      },
+      showReferencedBy() {
+        $perAdminApp.getApi().populateReferencedBy(this.currentObject);
       },
       deleteVersion(me, target) {
         $perAdminApp.stateAction('deleteVersion', { path: target.path, version: target.version.name });

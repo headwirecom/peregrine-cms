@@ -35,11 +35,10 @@ export default function(me, target) {
 
     return new Promise( (resolve, reject) => {
         Vue.set(me.getNodeFromView('/state/tools'), 'edit', false)
-        me.getApi().populateObject(target.selected, '/state/tools/object', 'data').then( () => {
-            me.getApi().populateReferencedBy(target.selected).then( () => {
-                set(view, '/state/tools/object/show', target.selected);
-                resolve()
-            })
+        me.getApi().populateObject(target.selected, '/state/tools/object', 'data')
+        .then( () => {
+            set(view, '/state/tools/object/show', target.selected);
+            resolve()
         })
     })
 }
