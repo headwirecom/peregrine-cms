@@ -17,6 +17,7 @@
     <template v-for="(btn, i) in items">
       <admin-components-richtoolbargroup
           v-if="btn.items && btn.items.length > 1"
+          :key="`rich-toolbar-sub-group-${i}`"
           :icon="btn.icon"
           :iconLib="btn.iconLib"
           :collapse="btn.collapse"
@@ -95,7 +96,7 @@ export default {
       getButtonKey(btn, index) {
         let key = `btn-${index}-${btn.title}`
         if (!btn.isActive || btn.isActive() !== null) {
-          key += `-${this.key}`
+          key += `-${this.$vnode.key}`
         }
         return key
       }

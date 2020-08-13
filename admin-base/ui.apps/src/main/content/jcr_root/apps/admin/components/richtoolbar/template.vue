@@ -13,6 +13,7 @@
         @click="exec($event.btn.cmd)"/>
     <template v-for="(group, groupIndex) in filteredGroups">
       <admin-components-richtoolbargroup
+          :key="getKey(group, groupIndex)"
           v-if="group.items.length > 0"
           :icon="group.icon"
           :iconLib="group.iconLib"
@@ -209,6 +210,13 @@ export default {
       vm.key = vm.key === 1 ? 0 : 1
       $perAdminApp.action(vm, 'reWrapEditable')
     },
+    getKey(group, index) {
+      let key = `rich-toolbar-group-${index}-${group.label}`
+      if (this.groupIsActive(group)) {
+        key += `-${this.key}`
+      }
+      return key
+    },
     getInlineDoc() {
       if (!this.inline) return null
       return this.inline.doc
@@ -361,13 +369,6 @@ export default {
       const view = $perAdminApp.getView()
       const page = get(view, '/pageView/path', null)
       window.open(page + '.html', 'viewer')
-    },
-    getButtonKey(btn, index) {
-      let key = `btn-${index}-${btn.title}`
-      if (btn.isActive() !== null) {
-        key += `-${this.key}`
-      }
-      return key
     },
     itemIsTag(tagName) {
       const selection = this.getSelection(0)

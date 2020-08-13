@@ -523,6 +523,22 @@
                         background-color: #ffffff;
 
 
+                        &.disabled {
+                            .btn:not(.always-active) {
+                                pointer-events: none;
+                                background-color: #fff !important;
+                                box-shadow: none !important;
+
+                                .label,
+                                .material-icons,
+                                .fa,
+                                .caret-down:before {
+                                    color: var(--pcms-blue-grey-darken-3);
+                                }
+                            }
+                        }
+
+
                         .btn-group {
                             .btn {
                                 &:first-child {

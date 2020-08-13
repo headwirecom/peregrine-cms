@@ -61,10 +61,12 @@ export default {
     },
     methods: {
       onFocusIn(event) {
+        set(this.view, '/state/inline/rich', true)
         set(this.view, '/state/inline/doc', this.doc)
         this.editing = true
       },
       onFocusOut() {
+        set(this.view, '/state/inline/rich', true)
         set(this.view, '/state/inline/doc', null)
         this.editing = false
       },
