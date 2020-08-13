@@ -32,7 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
@@ -45,6 +45,7 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -171,8 +172,8 @@ public class ModPageSpeedCacheInvalidationService
                 Set<String> domains = getDomains(sitePath, resource);
                 for (String domain: domains)
                 {
-                    // construct site-wide pagespeed invalidation request URL
-                    siteInvalidationUls.add(domain + "/pagespeed_admin/cache?purge=*");
+                    // construct site-wide pagespeed invalidation request URL for a given vhost
+                    siteInvalidationUls.add(domain + "/*");
                 }
 
             }
@@ -243,10 +244,10 @@ public class ModPageSpeedCacheInvalidationService
         CloseableHttpClient httpClient =
                 HttpClientBuilder.create().setDefaultRequestConfig(config).build();
 
-        HttpGet httpGet = new HttpGet(url);
+        HttpPurge httpPurge = new HttpPurge(url);
         try
         {
-            CloseableHttpResponse response = httpClient.execute(httpGet);
+            CloseableHttpResponse response = httpClient.execute(httpPurge);
             try {
                 log.info("PageSpeed cache invalidation request '{}' returned an '{}' response",
                         url, response.getStatusLine());
@@ -259,6 +260,26 @@ public class ModPageSpeedCacheInvalidationService
         } catch (IOException e)
         {
             log.error("Error performing PageSpeed invalidation request: '{}'", url, e);
+        }
+    }
+
+    public class HttpPurge extends HttpRequestBase
+    {
+        public HttpPurge()
+        {
+            super();
+        }
+
+        public HttpPurge(final String url)
+        {
+            super();
+            setURI(URI.create(url));
+        }
+
+        @Override
+        public String getMethod()
+        {
+            return "PURGE";
         }
     }
 }
