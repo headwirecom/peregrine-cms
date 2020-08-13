@@ -29,7 +29,7 @@
                 <span v-if="title" class="panel-title">{{title}}</span>
                 <div v-if="!hasSchema">this component does not have a dialog defined</div>
             <vue-form-generator
-                ref="formGenerator"
+                ref="vfg"
                 v-bind:schema="schema"
                 v-bind:model="dataModel"
                 v-bind:options="formOptions"/>
@@ -221,22 +221,8 @@ export default {
         },
 
         getFieldAndIndexByModel(schema, model) {
-
-          const fields = []
-          if(schema.fields) {
-            fields.push(...schema.fields)
-          }
-
-          if(schema.groups) {
-            schema.groups.forEach( (group) => { 
-              if(group.fields) {
-                fields.push(...group.fields)
-              }
-            } )
-          }
-
-
           const formGenerator = this.$refs.formGenerator
+          const fields = schema.fields
           let field
           let index = -1
           fields.some((f) => {
@@ -258,46 +244,55 @@ export default {
           return {field, index}
         },
 
+        getFieldComponent($vfg, model) {
+          return $vfg.$children.find(($c) => $c.field.model === model)
+        },
+
         focusFieldByModel(model) {
           if (!model) return
 
-          model = model.split('.')
-          model.reverse()
-          const {field, index} = this.getFieldAndIndexByModel(this.schema, model.pop())
-          if (!field) return
-          if (['input', 'texteditor', 'material-textarea'].indexOf(field.type) >= 0) {
-            const $el = this.$refs.formGenerator.$children[index].$el
-            this.openFieldGroup($el)
+          setTimeout(() => {
+            model = model.split('.')
+            model.reverse()
+            const $field = this.getFieldComponent(this.$refs.vfg, model.pop())
+            const fieldType = $field.field.type
+            this.openFieldGroup($field.$el)
             this.$nextTick(() => {
-              $el.scrollIntoView()
-              set(this.view, '/state/inline/rich', this.isRichEditor(field))
+              $field.$el.scrollIntoView()
+              if (['input', 'texteditor', 'material-textarea'].indexOf(fieldType) >= 0) {
+                this.$nextTick(() => {
+                  set(this.view, '/state/inline/rich', this.isRichEditor($field.field))
+                })
+              } else if (fieldType === 'collection') {
+                this.focusCollectionField(model, $field)
+              } else {
+                console.warn('Unsupported field type: ', field.type)
+              }
             })
-          } else if (field.type === 'collection') {
-            this.focusCollectionField(model, field, index)
-          } else {
-            console.warn('Unsupported field type: ', field.type)
-          }
 
-          set(this.view, '/state/inline/model', null)
+            set(this.view, '/state/inline/model', null)
+          }, 0)
         },
 
-        focusCollectionField(model, field, index) {
-          const fieldCollection = this.$refs.formGenerator.$children[index].$children[0]
-          this.openFieldGroup(fieldCollection.$el)
+        focusCollectionField(model, $field) {
           this.$nextTick(() => {
-            fieldCollection.activeItem = parseInt(model.pop())
-            this.$nextTick(() => {
-              const formGen = fieldCollection.$children[0]
-              const fieldAndIndex = this.getFieldAndIndexByModel(field, model.pop())
-              set(this.view, '/state/inline/rich', this.isRichEditor(fieldAndIndex.field))
+            const $collection = $field.$children[0]
+            const activeItemIndex = parseInt(model.pop())
+            if ($collection.activeItem !== activeItemIndex) {
+              $collection.onSetActiveItem(activeItemIndex)
+            }
+            setTimeout(() => {
+              const $collectionVfg = $collection.$children[0]
+              const $collectionField = this.getFieldComponent($collectionVfg, model.pop())
+              set(this.view, '/state/inline/rich', this.isRichEditor($collectionField.field))
               this.clearFocusStuff()
               this.focus.loop = setInterval(() => {
-                formGen.$children[fieldAndIndex.index].$el.scrollIntoView()
+                $collectionField.$el.scrollIntoView()
               }, this.focus.interval)
               this.focus.timeout = setTimeout(() => {
                 this.clearFocusStuff()
               }, this.focus.delay)
-            })
+            }, 0)
           })
         },
 
