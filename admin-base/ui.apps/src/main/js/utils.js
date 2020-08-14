@@ -258,3 +258,8 @@ export const getCurrentDateTime= () => {
 
   return `${year}-${month}-${day}_${hour}-${minute}-${second}-${milli}`
 }
+
+export function isChromeBrowser() {
+  return /Chrome/.test(navigator.userAgent)
+      && /Google Inc/.test(navigator.vendor)
+}

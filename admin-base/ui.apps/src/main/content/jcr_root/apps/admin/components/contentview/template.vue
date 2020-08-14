@@ -93,6 +93,7 @@ import {Attribute, Key} from '../../../../../../js/constants'
 import {
   get,
   getCaretCharacterOffsetWithin,
+  isChromeBrowser,
   restoreSelection,
   saveSelection,
   set
@@ -573,8 +574,7 @@ export default {
       },
 
       onInlineArrowKey(event, isKeyUp = false) {
-        const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor)
-        if (isChrome) return
+        if (isChromeBrowser()) return
 
         const key = event.which
         const newCaretPos = getCaretCharacterOffsetWithin(event.target)
