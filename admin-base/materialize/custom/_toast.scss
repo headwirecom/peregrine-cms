@@ -8,19 +8,41 @@
   flex-direction: column;
 
   .toast {
-    padding-left: 0;
+    $before-width: 5rem;
+    $progress-bar-height: 7px;
+
+    position: relative;
+    padding-left: $before-width;
+    padding-bottom: calc(10px  + #{$progress-bar-height});
     word-break: break-word;
     opacity: 0;
     transition: opacity .1s ease-out;
 
     &:before {
+      position: absolute;
+      left: 0;
       font-family: "Material Icons", sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 5rem;
+      width: $before-width;
       font-size: 2rem;
       content: 'notifications'
+    }
+
+    .progress-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: $progress-bar-height;
+      font-family: "Material Icons", sans-serif;
+      display: flex;
+      font-size: 2rem;
+      background-color: rgba(255, 255, 255, .8);
+      border-top-right-radius: 5px;
+      border-bottom-right-radius: 5px;
+      content: '';
     }
 
     &.warn {
