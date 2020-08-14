@@ -110,6 +110,15 @@ let OSBrowser = null
 const extensions = []
 
 /**
+ * the default enricher function
+ * 
+ * @param {*} who 
+ * @param {*} where 
+ * @param {*} what 
+ */
+let enricher = function(a, b, what) { return what }
+
+/**
  * dynamic component initializer\ - this function takes a name of a component and tries to
  * find the matching variable in the global scope if the component has not been registered
  * with vuejs yet.
@@ -290,6 +299,12 @@ function processLoaders(loaders) {
     })
 }
 
+
+function loadTenantEnrichment(tenant) {
+    const enrichTag = document.getElementById('perAdminAppTenantEnrichment')
+    enrichTag.setAttribute('src', `/content/${tenant.name}/pages/js/enrich.js`)
+}
+
 /**
  * Implementation of the loadContent function of the $perAdminApp interface.
  *
@@ -326,9 +341,10 @@ function loadContentImpl(initialPath, firstTime, fromPopState) {
                     } else {
                         logger.fine('tenant missing')
                         return api.populateTenants().then( () => {
-                            const tenant = view.admin.tenants.filter( (node) => node.name === segments[2] )
+                            const tenant = view.admin.tenants.filter( (node) => node.name === segments[2] )                            
                             if(tenant.length >= 1) {
                                 view.state.tenant = tenant[0]
+                                loadTenantEnrichment(view.state.tenant)
                             } else {
                                 logger.error('tenant does not exist or no access to tenant')
                             }
@@ -497,6 +513,9 @@ function exitWaitState() {
  * @param target
  */
 function stateActionImpl(name, target) {
+    if(enricher('stateAction', name,  target) === 'abort') {
+        return Promise.reject()
+    }
     enterWaitState()
     return new Promise( (resolve, reject) => {
         runBeforeStateActions(name).then( () => {
@@ -735,6 +754,10 @@ function registerExtensionImpl(id, name) {
     }
 }
 
+function registerEnricherImpl(func) {
+    enricher = func
+}
+
 /**
  * implementation of $perAdminApp.getExtension()
  *
@@ -831,6 +854,10 @@ var PerAdminApp = {
      */
     getView() {
         return view
+    },
+
+    getEnricher() {
+        return enricher
     },
 
     /**
@@ -1072,6 +1099,10 @@ var PerAdminApp = {
      */
     registerExtension(id, name) {
         registerExtensionImpl(id, name)
+    },
+
+    registerEnricher(func) {
+        registerEnricherImpl(func)
     },
 
     /**

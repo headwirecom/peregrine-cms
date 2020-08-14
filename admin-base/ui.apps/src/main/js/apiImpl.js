@@ -126,6 +126,7 @@ function getOrCreate(obj, path) {
 
 function populateView(path, name, data) {
 
+  data = enrich('populateView', { path, name}, data)
   return new Promise((resolve) => {
     var obj = getOrCreate(callbacks.getView(), path)
     let vue = callbacks.getApp()
@@ -201,6 +202,15 @@ function translateFields(fields) {
     }
   }
 }
+
+function enrich(source, callInfo, what) {
+  try {
+    return callbacks.getEnricher()(source, callInfo, what)
+  } catch (error) {
+    logger.error('error while running tenant enrichment', error)
+  }
+} 
+
 
 class PerAdminImpl {
 
@@ -279,7 +289,7 @@ class PerAdminImpl {
   populateComponentDefinitionFor(component) {
     return fetch('/admin/components/' + component)
         .then((data) => populateView('/admin/componentDefinitions', component,
-            data))
+            enrich('populateComponentDefinitionFor', {}, data)))
   }
 
   populateComponentDefinitionFromNode(path) {
@@ -287,6 +297,7 @@ class PerAdminImpl {
       var name;
       fetch('/admin/componentDefinition.json' + path)
           .then((data) => {
+            data = enrich('populateComponentDefinitionFromNode', { path }, data)
             name = data.name
             let component = callbacks.getComponentByName(name)
             if (component && component.methods
