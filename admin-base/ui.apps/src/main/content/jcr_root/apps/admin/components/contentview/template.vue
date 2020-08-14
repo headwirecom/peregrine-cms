@@ -497,7 +497,7 @@ export default {
 
       onInlineFocus(event) {
         event.target.classList.add('inline-editing')
-        if (event.target.innerHTML) {
+        if (isChromeBrowser() && event.target.innerHTML) {
           event.target.innerHTML = event.target.innerHTML.trim()
         }
         this.editing = true
@@ -513,6 +513,9 @@ export default {
         event.target.classList.remove('inline-editing')
         this.editing = false
         set(this.view, '/state/inline/doc', null)
+        if (!isChromeBrowser() && event.target.innerHTML) {
+          event.target.innerHTML = event.target.innerHTML.trim()
+        }
       },
 
       onInlineKeyDown(event) {
