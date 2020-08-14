@@ -1016,7 +1016,7 @@ var PerAdminApp = {
      * @param displayLength
      * @param callback
      */
-    toast(message, className, displayLength=40000, callback=null) {
+    toast(message, className, displayLength=4000, callback=null) {
         return toastImpl(message, className, displayLength, callback)
     },
 
