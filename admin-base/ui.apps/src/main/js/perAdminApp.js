@@ -620,6 +620,15 @@ function notifyUserImpl(title, message, options) {
 function toastImpl(message, className, displayLength, callback) {
     const toast = Materialize.toast(message, displayLength, className, callback)
     toast.el.addEventListener('click', () => toast.remove())
+
+    const progressBar = document.createElement('div')
+    progressBar.setAttribute('class', 'progress-bar')
+    progressBar.style.transition = `width ${displayLength - 100}ms linear`
+    toast.el.appendChild(progressBar)
+    setTimeout(() => {
+        progressBar.style.width = '0%'
+    }, 100)
+    return toast
 }
 
 /**
@@ -1008,7 +1017,7 @@ var PerAdminApp = {
      * @param callback
      */
     toast(message, className, displayLength=4000, callback=null) {
-        toastImpl(message, className, displayLength, callback)
+        return toastImpl(message, className, displayLength, callback)
     },
 
     /**
