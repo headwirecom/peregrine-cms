@@ -17,6 +17,7 @@
     word-break: break-word;
     opacity: 0;
     transition: opacity .1s ease-out;
+    font-weight: 400;
 
     &:before {
       position: absolute;
