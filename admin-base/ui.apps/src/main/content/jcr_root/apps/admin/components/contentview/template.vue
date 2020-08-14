@@ -89,16 +89,16 @@
 </template>
 
 <script>
-  import {Attribute, Key} from '../../../../../../js/constants'
-  import {
-    get,
-    getCaretCharacterOffsetWithin,
-    restoreSelection,
-    saveSelection,
-    set
-  } from '../../../../../../js/utils'
+import {Attribute, Key} from '../../../../../../js/constants'
+import {
+  get,
+  getCaretCharacterOffsetWithin,
+  restoreSelection,
+  saveSelection,
+  set
+} from '../../../../../../js/utils'
 
-  export default {
+export default {
     props: ['model'],
     data() {
       return {
@@ -574,7 +574,7 @@
 
       onInlineArrowKey(event, isKeyUp = false) {
         const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor)
-        if (chrome) return
+        if (isChrome) return
 
         const key = event.which
         const newCaretPos = getCaretCharacterOffsetWithin(event.target)
