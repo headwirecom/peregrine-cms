@@ -89,7 +89,8 @@
 </template>
 
 <script>
-import {Attribute, Key} from '../../../../../../js/constants'
+import {Attribute, Key, Toast} from '../../../../../../js/constants'
+import {Error} from '../../../../../../js/messages'
 import {
   get,
   getCaretCharacterOffsetWithin,
@@ -147,6 +148,10 @@ export default {
         inlineEdit: {
           firstTime: [],
           selection: null
+        },
+        toast: {
+          templateComponent: null,
+          missingEventPath: null
         }
       }
     },
@@ -312,6 +317,16 @@ export default {
             this.wrapEditableAroundElement(this.iframe.mouseOverCmp)
           }
         }
+      },
+      'toast.templateComponent'(val, old) {
+        if (old) {
+          old.remove()
+        }
+      },
+      'toast.missingEventPath'(val, old) {
+        if (old) {
+          old.remove()
+        }
       }
     },
     mounted() {
@@ -360,7 +375,7 @@ export default {
 
         if (!vm.dragging && vm.isTemplateNode) {
           vm.unselect(vm)
-          $perAdminApp.toast(vm.$i18n('fromTemplateNotifyMsg'), 'warn')
+          this.toast.templateComponent = $perAdminApp.toast(vm.$i18n('fromTemplateNotifyMsg'), Toast.Level.WARNING)
         } else {
           if (vm.dragging || vm.path !== '/jcr:content') {
             vm.wrapEditableAroundSelected()
@@ -467,7 +482,14 @@ export default {
         }
 
         this.target = event.target
-        const vnode = this.findVnode(this.component.__vue__, event.path)
+        const eventPath = event.path || (event.composedPath && event.composedPath())
+
+        if (!eventPath) {
+          this.toast.missingEventPath = $perAdminApp.toast(Error.MISSING_EVENT_PATH, Toast.Level.ERROR)
+          throw Error.MISSING_EVENT_PATH
+        }
+
+        const vnode = this.findVnode(this.component.__vue__, eventPath)
         const attr = this.isRich ? 'innerHTML' : 'innerText'
         if (vnode.data.domProps) {
           if (this.isRich) {

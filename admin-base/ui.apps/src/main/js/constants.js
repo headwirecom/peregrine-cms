@@ -128,3 +128,10 @@ export const IconLib = {
 export const DropDown = {
   DIVIDER: '--------------------------'
 }
+
+export const Toast = {
+  Level: {
+    WARNING: 'warn',
+    ERROR: 'error'
+  }
+}
