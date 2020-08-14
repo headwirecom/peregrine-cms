@@ -628,6 +628,7 @@ function toastImpl(message, className, displayLength, callback) {
     setTimeout(() => {
         progressBar.style.width = '0%'
     }, 100)
+    return toast
 }
 
 /**
@@ -1016,7 +1017,7 @@ var PerAdminApp = {
      * @param callback
      */
     toast(message, className, displayLength=40000, callback=null) {
-        toastImpl(message, className, displayLength, callback)
+        return toastImpl(message, className, displayLength, callback)
     },
 
     /**
