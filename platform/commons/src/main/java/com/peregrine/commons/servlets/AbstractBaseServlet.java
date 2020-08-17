@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.request.RequestDispatcherOptions;
+import org.apache.sling.api.resource.NonExistingResource;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
@@ -245,7 +246,13 @@ public abstract class AbstractBaseServlet
 
         public Resource getResource() { return request.getResource(); }
 
-        public Resource getResourceByPath(String path) { return request.getResourceResolver().getResource(path); }
+        public Resource getResourceByPath(String path) {
+            Resource resource = request.getResourceResolver().resolve(path);
+            if(resource instanceof NonExistingResource) {
+                return request.getResourceResolver().getResource(path);
+            }
+            return resource;
+        }
 
         public String getSelector() { return request.getRequestPathInfo().getSelectorString(); }
 
