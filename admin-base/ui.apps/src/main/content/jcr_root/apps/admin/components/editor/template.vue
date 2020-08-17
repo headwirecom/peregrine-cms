@@ -23,14 +23,13 @@
   #L%
   -->
 <template>
-    <div class="editor-panel" ref="editorPanel">
+    <div class="editor-panel" ref="editorPanel" v-if="path">
         <div class="editor-panel-content">
             <template v-if="schema !== undefined && dataModel !== undefined">
                 <span v-if="title" class="panel-title">{{title}}</span>
                 <div v-if="!hasSchema">this component does not have a dialog defined</div>
             <vue-form-generator
-                :key="dataModel.path"
-                ref="formGenerator"
+                ref="vfg"
                 v-bind:schema="schema"
                 v-bind:model="dataModel"
                 v-bind:options="formOptions"/>
@@ -59,19 +58,23 @@
 </template>
 
 <script>
-  import {set} from '../../../../../../js/utils'
+import {set} from '../../../../../../js/utils'
 
-  export default {
+export default {
       props: ['model'],
-        updated: function() {
-            let stateTools = $perAdminApp.getNodeFromViewWithDefault("/state/tools", {});
-            stateTools._deleted = {}; // reset to empty?
-            if(this.schema && this.schema.hasOwnProperty('groups')) {
-                this.hideGroups()
-            }
-        },
+      updated: function() {
+          let stateTools = $perAdminApp.getNodeFromViewWithDefault("/state/tools", {});
+          stateTools._deleted = {}; // reset to empty?
+          if(this.schema && this.schema.hasOwnProperty('groups')) {
+              this.hideGroups()
+          }
+          setTimeout(() => {
+            this.path = $perAdminApp.getNodeFromViewOrNull('/state/editor').path
+          }, 0)
+      },
       data() {
         return {
+          path: $perAdminApp.getNodeFromViewOrNull('/state/editor').path,
           isTouch: false,
           formOptions: {
             validateAfterLoad: true,
@@ -98,9 +101,7 @@
             return schema
         },
         dataModel: function() {
-            var view = $perAdminApp.getView()
-            var path = view.state.editor.path
-            var model = $perAdminApp.findNodeFromPath(view.pageView.page, path)
+            const model = $perAdminApp.findNodeFromPath($perAdminApp.getNodeFromView('/pageView/page'), this.path)
             return model
         },
         hasSchema: function() {
@@ -173,6 +174,7 @@
               $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
             })
         },
+
         onCancel(e) {
             var view = $perAdminApp.getView()
             $perAdminApp.action(this, 'onEditorExitFullscreen')
@@ -181,6 +183,7 @@
                 $perAdminApp.getNodeFromView("/state/tools")._deleted = {}
             })
         },
+
           onDelete(e) {
               const vm = this;
               var view = $perAdminApp.getView()
@@ -198,6 +201,7 @@
                   }
               })
           },
+
         hideGroups() {
             const $groups = $('.vue-form-generator fieldset');
             $groups.each( function(i) {
@@ -215,8 +219,10 @@
                 $group.addClass('vfg-group');
             })
         },
-        getFieldAndIndexByModel(fields, model) {
+
+        getFieldAndIndexByModel(schema, model) {
           const formGenerator = this.$refs.formGenerator
+          const fields = schema.fields
           let field
           let index = -1
           fields.some((f) => {
@@ -237,48 +243,80 @@
           })
           return {field, index}
         },
+
+        getFieldComponent($vfg, model) {
+          return $vfg.$children.find(($c) => $c.field.model === model)
+        },
+
         focusFieldByModel(model) {
           if (!model) return
 
-          model = model.split('.')
-          model.reverse()
-          const {field, index} = this.getFieldAndIndexByModel(this.schema.fields, model.pop())
-          if (!field) return
-          if (['input', 'texteditor', 'material-textarea'].indexOf(field.type) >= 0) {
-            this.$refs.formGenerator.$children[index].$el.scrollIntoView()
-            set(this.view, '/state/inline/rich', this.isRichEditor(field))
-          } else if (field.type === 'collection') {
-            this.focusCollectionField(model, field, index)
-          } else {
-            console.warn('Unsupported field type: ', field.type)
-          }
+          setTimeout(() => {
+            model = model.split('.')
+            model.reverse()
+            const $field = this.getFieldComponent(this.$refs.vfg, model.pop())
+            const fieldType = $field.field.type
+            this.openFieldGroup($field.$el)
+            this.$nextTick(() => {
+              $field.$el.scrollIntoView()
+              if (['input', 'texteditor', 'material-textarea'].indexOf(fieldType) >= 0) {
+                this.$nextTick(() => {
+                  set(this.view, '/state/inline/rich', this.isRichEditor($field.field))
+                })
+              } else if (fieldType === 'collection') {
+                this.focusCollectionField(model, $field)
+              } else {
+                console.warn('Unsupported field type: ', field.type)
+              }
+            })
 
-          set(this.view, '/state/inline/model', null)
+            set(this.view, '/state/inline/model', null)
+          }, 0)
         },
-        focusCollectionField(model, field, index) {
-          const fieldCollection = this.$refs.formGenerator.$children[index].$children[0]
-          fieldCollection.activeItem = parseInt(model.pop())
+
+        focusCollectionField(model, $field) {
           this.$nextTick(() => {
-            const formGen = fieldCollection.$children[0]
-            const fieldAndIndex = this.getFieldAndIndexByModel(field.fields, model.pop())
-            set(this.view, '/state/inline/rich', this.isRichEditor(fieldAndIndex.field))
-            this.clearFocusStuff()
-            this.focus.loop = setInterval(() => {
-              formGen.$children[fieldAndIndex.index].$el.scrollIntoView()
-            }, this.focus.interval)
-            this.focus.timeout = setTimeout(() => {
+            const $collection = $field.$children[0]
+            const activeItemIndex = parseInt(model.pop())
+            if ($collection.activeItem !== activeItemIndex) {
+              $collection.onSetActiveItem(activeItemIndex)
+            }
+            setTimeout(() => {
+              const $collectionVfg = $collection.$children[0]
+              const $collectionField = this.getFieldComponent($collectionVfg, model.pop())
+              set(this.view, '/state/inline/rich', this.isRichEditor($collectionField.field))
               this.clearFocusStuff()
-            }, this.focus.delay)
+              this.focus.loop = setInterval(() => {
+                $collectionField.$el.scrollIntoView()
+              }, this.focus.interval)
+              this.focus.timeout = setTimeout(() => {
+                this.clearFocusStuff()
+              }, this.focus.delay)
+            }, 0)
           })
         },
+
         clearFocusStuff() {
           this.focus.inView = 0
           clearInterval(this.focus.loop)
           clearTimeout(this.focus.timeout)
         },
+
         isRichEditor(field) {
           return ['texteditor'].indexOf(field.type) >= 0
-        }
+        },
+
+        openFieldGroup(el) {
+          let group = el.parentNode
+
+          while (group.tagName !== 'FIELDSET') {
+            group = group.parentNode
+          }
+
+          if (group.classList.contains('vfg-group') && !group.classList.contains('active')) {
+            group.querySelector('legend').click()
+          }
+        },
       }
 //      ,
 //      beforeMount: function() {

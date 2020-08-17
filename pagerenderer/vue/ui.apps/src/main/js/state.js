@@ -70,6 +70,7 @@ window.onclick = function(ev) {
             // do nothing, it's an internal page reference
         } else if (getContentviewEditorActive()) {
             // do nothing, editor is open/active
+            return false
         } else {
             //Dont' load new content for an href on the same page
             let currentUrl = window.location.href.replace(/\#\w+$/, '')

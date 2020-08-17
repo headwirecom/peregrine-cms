@@ -26,6 +26,7 @@
         <div class="tenant-tabs">
             <div v-for="(item, index) in tab.items"
                  class="tab"
+                 :key="item"
                  :class="{active: tab.active === index}"
                  @click="onTabClick(index)">
                 {{ item }}
@@ -42,7 +43,10 @@
                         <div class="card-action">
                             <admin-components-action
                                 v-bind:model="{
-                                    target: child.name,
+                                    target: { 
+                                        path: '/content/admin/pages/welcome.html/pages:/content/' + child.name, 
+                                        name: child.name 
+                                    },
                                     command: 'selectTenant',
                                     tooltipTitle: `${$i18n('edit')} '${child.title || child.name}'`
                                 }">
@@ -51,7 +55,10 @@
 
                             <admin-components-action
                                 v-bind:model="{
-                                    target: { path: '/content', name: child.name },
+                                    target: { 
+                                        path: '/content/admin/pages/tenants/configure.html/path:/content/' + child.name,
+                                        name: child.name 
+                                    },
                                     command: 'configureTenant',
                                     tooltipTitle: `${$i18n('configure')} '${child.title || child.name}'`
                                 }">
@@ -61,7 +68,10 @@
 
                             <admin-components-action
                                 v-bind:model="{
-                                    target: { path: '/content', name: child.name },
+                                    target: { 
+                                        path: '/content/admin/pages/index.html',
+                                        name: child.name 
+                                    },
                                     command: 'deleteTenant',
                                     tooltipTitle: `${$i18n('delete')} '${child.title || child.name}'`
                                 }">
@@ -121,9 +131,9 @@
         created() {
         },
         methods: {
-            selectTenant(vm, name) {
-                $perAdminApp.stateAction('setTenant', { name }).then( () => {
-                    $perAdminApp.loadContent('/content/admin/pages/welcome.html')
+            selectTenant(vm, target) {
+                $perAdminApp.stateAction('setTenant', { name: target.name }).then( () => {
+                    $perAdminApp.loadContent(`/content/admin/pages/welcome.html/path:/content/${target.name}`)
                 });
             },
 
@@ -136,7 +146,7 @@
             },
 
             onCardContentClick(name) {
-                this.selectTenant(this, name)
+                this.selectTenant(this, { name })
             },
 
             onCreateNewSiteClick() {

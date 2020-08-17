@@ -28,10 +28,15 @@
       v-bind:title="'create a website'"
       v-bind:subtitle="''"
       @on-complete="onComplete"
+      @on-change="changeTab"
       error-color="#d32f2f"
       color="#546e7a"
+      ref="wizard"
       :key="reloadKey">
         <tab-content title="select theme" :before-change="leaveTabOne">
+            <p>
+                This wizard allows you to create a website from an existing theme and color palette.
+            </p>
             <fieldset class="vue-form-generator">
                 <div class="form-group required">
                     <label>Select Theme</label>
@@ -49,11 +54,6 @@
                     </div>
                 </div>
             </fieldset>
-            <p>
-                This wizard allows you to create a website from an existing theme. If you'd like to create a more complex
-                website please use the commandline tool `percli create project &lt;name&gt;` to create a website managed as a
-                full project.
-            </p>
         </tab-content>
         <tab-content v-if="colorPalettes && colorPalettes.length > 0" title="choose color palette">
             <admin-components-colorpaletteselector
@@ -70,8 +70,30 @@
             </vue-form-generator>
         </tab-content>
         <tab-content title="verify">
-            Creating Site `{{formmodel.name}}` from existing theme `{{formmodel.templatePath}}`
+            <h2>Almost there - ready to launch {{formmodel.title}}?</h2>
+            <p>
+            We are ready to create the Site <b>{{formmodel.name}}</b> with the site name <b>{{formmodel.title}}</b> 
+            from the theme <b>{{formmodel.templatePath}}</b> for you.
+            </p>
+            <p v-if="formmodel.colorPalette && formmodel.colorPalette.length > 0">
+            The website will use the color palette <b>{{colorPaletteName(formmodel.colorPalette)}}</b>.
+            </p>
+            <p>
+            Click the <b>Back</b> button to change your choice.
+            Click <b>Create and Edit!</b> to create and start editing the home page of your website or
+            click <b>Create</b> to create the website and go to the dashboard.
+            </p>
         </tab-content>
+        <span v-if="isLastStep" slot="custom-buttons-right" role="button">
+            <button type="button" class="wizard-btn outline" @click="onComplete(false)">
+                Create
+           </button>
+        </span>
+        <span slot="finish" role="button" tabindex="0">
+            <button tabindex="-1" type="button" class="wizard-btn finish">
+            Create and Edit!
+            </button>
+        </span>
     </form-wizard>
 </div>
 </template>
@@ -82,6 +104,7 @@
         data:
             function() {
                 return {
+                    isLastStep: false,
                     reloadKey: 0,
                     colorPalettes: [],
                     formErrors: {
@@ -108,10 +131,12 @@
                                 inputType: "text",
                                 label: "Site Title",
                                 model: "title",
+                                hint: "The brand name for your website. This field will be used in all your title tags on your website (your browser tabs will read 'page name | brand name').",
                                 required: true,
                                 onChanged: (model, newVal, oldVal, field) => {
                                   if(!this.nameChanged) {
-                                      this.formmodel.name = $perAdminApp.normalizeString(newVal, '_');
+                                      model.name = $perAdminApp.normalizeString(newVal, '_');
+                                      this.$refs.nameTab.validate()
                                   }
                                 }
                             },
@@ -120,6 +145,7 @@
                                 inputType: "text",
                                 label: "Site Name",
                                 model: "name",
+                                hint: "System name of this website. use lower case letters, 0 through 9, and underscore only.",
                                 required: true,
                                 onChanged: (model, newVal, oldVal, field) => {
                                     this.nameChanged = true;
@@ -130,7 +156,9 @@
                                 type: "input",
                                 inputType: "text",
                                 label: "Tenant User Password",
+                                hint: "If a website is created as admin a user sitename_user with the password provided in this field automatically. If no password is provided the user is disabled.",
                                 model: "tenantUserPwd",
+                                visible: $perAdminApp.getNodeFromView('/state/user') === 'admin',
                                 required: false,
                                 onChanged: (model, newVal, oldVal, field) => {
                                 }
@@ -155,6 +183,15 @@
             }
         },
         methods: {
+            colorPaletteName(path) {
+                try {
+                    const fullName = path.split('/').pop()
+                    return fullName.substring(0, fullName.indexOf('.'))
+                } catch( error ){
+                    console.error(error)
+                }
+                return 'unknown'
+            },
             selectTheme: function(me, target){
                 if(me === null) me = this;
                 me.formmodel.templatePath = target;
@@ -171,12 +208,13 @@
             isSelected: function(target) {
                 return this.formmodel.templatePath === target
             },
-            onComplete: function() {
+            onComplete: function(edit = true) {
                 const payload = {
                     fromName: this.formmodel.templatePath,
                     toName: this.formmodel.name,
                     title: this.formmodel.title,
-                    tenantUserPwd: this.formmodel.tenantUserPwd
+                    tenantUserPwd: this.formmodel.tenantUserPwd,
+                    editHome: edit
                 }
 
                 if (this.formmodel.colorPalette && this.formmodel.colorPalette.length > 0) {
@@ -221,7 +259,12 @@
                 return [];
             },
             leaveTabTwo: function() {
-                return this.$refs.nameTab.validate()
+                const isValid = this.$refs.nameTab.validate()
+                this.isLastStep = isValid
+                return isValid
+            },
+            changeTab: function(prev, next) {
+                if(next < prev) this.isLastStep = false
             },
             onColorPaletteSelect(colorPalette) {
                 this.formmodel.colorPalette = colorPalette

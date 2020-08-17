@@ -93,6 +93,7 @@ import backupTenant from "./stateActions/backupTenant";
 import downloadBackupTenant from "./stateActions/downloadBackupTenant";
 import uploadBackupTenant from "./stateActions/uploadBackupTenant";
 import restoreTenant from "./stateActions/restoreTenant";
+import acceptTermsAndConditions from './stateActions/acceptTermsAndConditions'
 
 let log = LoggerFactory.logger('actions').setLevelDebug()
 
@@ -169,6 +170,7 @@ actions['backupTenant'] = backupTenant
 actions['downloadBackupTenant'] = downloadBackupTenant
 actions['uploadBackupTenant'] = uploadBackupTenant
 actions['restoreTenant'] = restoreTenant
+actions['acceptTermsAndConditions'] = acceptTermsAndConditions
 
 
 function noopAction(me, target) {

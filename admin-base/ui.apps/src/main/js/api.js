@@ -112,13 +112,12 @@ class PerApi {
         return impl.populateVersions(page)
     }
 
-
     populateReferences(path) {
         return impl.populateReferences(path)
     }
-    
-    setInitialPageEditorState() {
-        return impl.setInitialPageEditorState()
+
+    setInitialPageEditorState(path) {
+        return impl.setInitialPageEditorState(path)
     }
 
     populateByName(name) {
@@ -298,6 +297,10 @@ class PerApi {
 
     fetchRecyclables(siteName) {
         return impl.fetchRecyclables(siteName)
+    }
+
+    acceptTermsAndConditions() {
+        return impl.acceptTermsAndConditions()
     }
 }
 

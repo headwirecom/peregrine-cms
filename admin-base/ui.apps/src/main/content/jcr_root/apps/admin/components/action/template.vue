@@ -147,9 +147,13 @@
             if(this.model.target && typeof this.model.target === 'string') {
                 return this.model.target
             }
+            if(this.model.target && typeof this.model.target.path) {
+                return this.model.target.path
+            }
             return '#'
         },
         targetHtml() {
+            if(this.target.indexOf('.html') >= 0) return this.target
             return this.target !== '#' ? this.target + '.html' : '#'
         },
         visible() {
