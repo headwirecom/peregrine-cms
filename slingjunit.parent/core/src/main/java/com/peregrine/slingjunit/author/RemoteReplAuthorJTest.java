@@ -1,4 +1,4 @@
-package com.peregrine.slingjunit;
+package com.peregrine.slingjunit.author;
 
 
 import com.peregrine.adaption.PerReplicable;

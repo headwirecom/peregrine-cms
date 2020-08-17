@@ -73,7 +73,7 @@ public class VersionsJTest {
     private ResourceResolver resourceResolver;
     private Session jcrSession;
 
-    static final String EXAMPLE_SITE_ROOT = "/content/example";
+    static final public String EXAMPLE_SITE_ROOT = "/content/example";
     static final String EXAMPLE_PAGES = EXAMPLE_SITE_ROOT +"/pages";
     static final String EXAMPLE_INDEX = "/pages/index";
     static final String EXAMPLE_ABOUT = "/pages/about";

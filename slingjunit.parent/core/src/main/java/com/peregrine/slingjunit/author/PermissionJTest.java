@@ -21,7 +21,7 @@
  * Contributed by Cris Rockwell, University of Michigan
  */
 
-package com.peregrine.slingjunit;
+package com.peregrine.slingjunit.author;
 
 import com.peregrine.admin.resource.AdminResourceHandler;
 import org.apache.sling.api.resource.LoginException;
@@ -66,7 +66,7 @@ public class PermissionJTest {
             resourceResolver = resolverFactory.getResourceResolver(null);
             assertEquals("anonymous", resourceResolver.getUserID());
             assertFalse(resourceManagement.hasPermission(resourceResolver, "ALL" , EXAMPLE_SITE_ROOT));
-            assertTrue(resourceManagement.hasPermission(resourceResolver, "READ_NODE,READ_PROPERTY", EXAMPLE_SITE_ROOT));
+            assertFalse(resourceManagement.hasPermission(resourceResolver, "READ_NODE,READ_PROPERTY", EXAMPLE_SITE_ROOT));
         } catch (LoginException e) {
             fail("No login");
         }
