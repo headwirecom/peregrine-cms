@@ -166,7 +166,7 @@ public class NodesServlet extends AbstractBaseServlet {
             path += "/" + segments[i];
         }
         logger.debug("looking up {}", path);
-        Resource res = rs.getResource(path);
+        Resource res = rs.resolve(path);
         json.writeAttribute(NAME,res.getName());
         json.writeAttribute(PATH,res.getPath());
         json.writeAttribute(HAS_CHILDREN, hasNonJcrContentChild(res));
