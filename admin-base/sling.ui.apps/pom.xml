@@ -64,6 +64,7 @@
 
             <resource>
                 <directory>${basedir}/src/main/content/jcr_root</directory>
+                
                 <excludes>
                     <!-- exclude .vlt control files in the package -->
                     <exclude>**/.vlt</exclude>
