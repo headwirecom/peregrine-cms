@@ -4,4 +4,4 @@
     xmlns:jcr="http://www.jcp.org/jcr/1.0"
     jcr:primaryType="sling:OrderedFolder"
     sling:resourceType="sling:redirect"
-    sling:target="/content/admin/pages/index.html"/>
+    sling:target="/admin/pages/index.html"/>
