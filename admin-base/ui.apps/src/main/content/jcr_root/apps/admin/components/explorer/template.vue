@@ -66,7 +66,8 @@
                                 command: 'selectPath',
                                 tooltipTitle: `${$i18n('select')} '${child.title || child.name}'`
                             }">
-                        <i class="material-icons">folder</i>
+                        <i v-if="child.hasChildren" class="material-icons">folder</i>
+                        <i v-else class="material-icons">folder_open</i>
                     </admin-components-action>
 
                     <admin-components-action v-if="editable(child)"
