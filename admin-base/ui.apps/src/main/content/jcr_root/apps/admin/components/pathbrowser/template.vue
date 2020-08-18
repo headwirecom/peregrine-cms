@@ -324,7 +324,7 @@
                                @click="$emit('toggle-rel')"
                                @keyup.space="$emit('toggle-rel')">
                             <input type="checkbox" id="rel" v-model="rel"/>
-                            <label for="rel"> Add rel="noopener" and rel="noreferrer" to link? </label>
+                            <label for="rel"> Add rel="noopener" to link? </label>
                           </div>
                         </div>
                     </template>
