@@ -279,7 +279,7 @@ export default {
             const $collection = $field.$children[0]
             const activeItemIndex = parseInt(model.pop())
             if ($collection.activeItem !== activeItemIndex) {
-              $collection.onSetActiveItem(activeItemIndex)
+              $collection.activeItem = activeItemIndex
             }
             setTimeout(() => {
               const $collectionVfg = $collection.$children[0]
