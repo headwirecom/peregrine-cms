@@ -459,7 +459,7 @@ export default {
         link.setAttribute('href', this.browser.path.selected)
         link.setAttribute('title', this.browser.linkTitle)
         link.setAttribute('target', this.browser.newWindow ? '_blank' : '_self')
-        link.setAttribute('rel', this.browser.rel ? 'noopener' : '')
+        link.setAttribute('rel', this.browser.rel ? 'noopener noreferrer' : '')
         link.textContent = this.selection.content
         this.restoreSelection()
         this.$nextTick(() => {
@@ -480,7 +480,7 @@ export default {
           link.setAttribute('href', this.browser.path.selected)
           link.setAttribute('title', this.browser.linkTitle)
           link.setAttribute('target', this.browser.newWindow ? '_blank' : '_self')
-          link.setAttribute('rel', this.browser.rel ? 'noopener' : '')
+          link.setAttribute('rel', this.browser.rel ? 'noopener noreferrer' : '')
           link.textContent = this.selection.content
           $perAdminApp.action(this, 'reWrapEditable')
           $perAdminApp.action(this, 'writeInlineToModel')
