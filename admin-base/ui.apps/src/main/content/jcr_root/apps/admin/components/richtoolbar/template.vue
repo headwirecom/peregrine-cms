@@ -52,6 +52,8 @@
         :setCurrentPath="setBrowserPathCurrent"
         :selectedPath="browser.path.selected"
         :setSelectedPath="setBrowserPathSelected"
+        :rel="browser.rel"
+        @toggle-rel="browser.rel = !browser.rel"
         :onCancel="onBrowserCancel"
         :onSelect="onBrowserSelect"/>
   </div>
@@ -112,7 +114,8 @@ export default {
         path: {
           current: '',
           selected: null
-        }
+        },
+        rel: true
       },
       docEl: {
         dimension: {
@@ -456,6 +459,7 @@ export default {
         link.setAttribute('href', this.browser.path.selected)
         link.setAttribute('title', this.browser.linkTitle)
         link.setAttribute('target', this.browser.newWindow ? '_blank' : '_self')
+        link.setAttribute('rel', this.browser.rel ? 'noopener' : '')
         link.textContent = this.selection.content
         this.restoreSelection()
         this.$nextTick(() => {
@@ -476,6 +480,7 @@ export default {
           link.setAttribute('href', this.browser.path.selected)
           link.setAttribute('title', this.browser.linkTitle)
           link.setAttribute('target', this.browser.newWindow ? '_blank' : '_self')
+          link.setAttribute('rel', this.browser.rel ? 'noopener' : '')
           link.textContent = this.selection.content
           $perAdminApp.action(this, 'reWrapEditable')
           $perAdminApp.action(this, 'writeInlineToModel')

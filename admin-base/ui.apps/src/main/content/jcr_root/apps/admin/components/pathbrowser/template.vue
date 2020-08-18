@@ -311,11 +311,21 @@
                                 :value="linkTitle"
                                 @input="setLinkTitle" />
                         </div>
-                        <div class="pathbrowser-newwindow" v-if="newWindow !== undefined"
-                            @click="toggleNewWindow"
-                            @keyup.space="toggleNewWindow">
+                        <div class="checkboxes-group">
+                          <div class="pathbrowser-newwindow" v-if="newWindow !== undefined"
+                               @click="toggleNewWindow"
+                               @keyup.space="toggleNewWindow">
                             <input type="checkbox" id="newWindow" :checked="newWindow"/>
                             <label for="newWindow">Open in new window?</label>
+                          </div>
+                          <div class="pathbrowser-rel"
+                               v-if="showRel"
+                               :title="$i18n('pathbrowserRelTitle')"
+                               @click="$emit('toggle-rel')"
+                               @keyup.space="$emit('toggle-rel')">
+                            <input type="checkbox" id="rel" v-model="rel"/>
+                            <label for="rel"> Add rel="noopener" and rel="noreferrer" to link? </label>
+                          </div>
                         </div>
                     </template>
                 </div>
@@ -368,28 +378,33 @@
 </template>
 
 <script>
-    import {PathBrowser} from '../../../../../../js/constants';
+import {IconLib, PathBrowser} from '../../../../../../js/constants';
 
-    export default {
-        props: [
-            'isOpen',
-            'header',
-            'browserRoot',
-            'browserType',
-            'currentPath',
-            'selectedPath',
-            'withLinkTab',
-            'newWindow',
-            'toggleNewWindow',
-            'setCurrentPath',
-            'setSelectedPath',
-            'linkTitle',
-            'setLinkTitle',
-            'altText',
-            'setAltText',
-            'onCancel',
-            'onSelect',
-        ],
+export default {
+        name: 'Pathbrowser',
+        props: {
+          isOpen: Boolean,
+          header: String,
+          browserRoot: String,
+          browserType: String,
+          currentPath: String,
+          selectedPath: String,
+          withLinkTab: Boolean,
+          newWindow: Boolean,
+          toggleNewWindow: Function,
+          setCurrentPath: Function,
+          setSelectedPath: Function,
+          linkTitle: String,
+          setLinkTitle: Function,
+          altText: String,
+          setAltText: Function,
+          rel: {
+            type: Boolean,
+            default: true
+          },
+          onCancel: Function,
+          onSelect: Function,
+        },
         watch: {
             cardSize: function (newCardSize) {
                 this.updateIsotopeLayout('masonry')
@@ -412,6 +427,7 @@
         },
         data: function() {
             return {
+                IconLib,
                 tab: null,
                 cardSize: 120,
                 search: '',
@@ -473,6 +489,12 @@
             },
             isBrowserTypeImage() {
               return this.isType(PathBrowser.Type.IMAGE)
+            },
+            showRel() {
+              return !this.selectedPath || (
+                      this.selectedPath.startsWith('http://')
+                  || this.selectedPath.startsWith('https://')
+              )
             }
         },
         methods: {
