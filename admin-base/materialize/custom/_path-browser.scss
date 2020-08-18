@@ -173,11 +173,13 @@
 						margin: 0 -0.75rem;
 						> li {
 							position: relative;
-							padding: 0.75rem 0.75rem 0.75rem 3rem;
+							padding: .5rem .5rem .5rem 3rem;
 							cursor: pointer;
 							color: #455a64;
 							float: unset;
-							text-align: left;
+							display: flex;
+							justify-content: flex-start;
+							align-items: center;
 
 							input[type="radio"] {
 								+ label {
