@@ -7,7 +7,7 @@ services:
 - docker
 
 jdk:
-  - openjdk8
+  - openjdk11
 
 env:
   global:
