@@ -2,6 +2,8 @@ FROM adoptopenjdk/openjdk11:latest
 
 ARG PEREGRINECMS_BRANCH=develop
 ARG THEMECLEANFLEX_BRANCH=develop
+ARG SLING_REPO=https://github.com/apache/sling-org-apache-sling-starter.git
+ARG SLING_BRANCH=master
 
 ENV APP_VERSION 2.0.0
 
@@ -39,6 +41,8 @@ RUN mkdir -p /usr/local/lib/nodejs \
     && echo npx: $(npx -v) \
     && apt-get purge -y --auto-remove && rm -rf /var/lib/apt/lists/* && rm -rf /etc/apt/sources.list.d/temp.list;
 
+RUN scripts/install-sling.sh $SLING_REPO $SLING_BRANCH
+
 #RUN npm install percli @peregrinecms/slingpackager \
 #    && npx percli \
 #    && npx percli check java \
@@ -55,7 +59,7 @@ RUN mkdir -p /usr/local/lib/nodejs \
 #    && rm -rf binaries
 
 #ENTRYPOINT npx percli server start && tail -qF sling/logs/*
-ENTRYPOINT /bin/bash
+ENTRYPOINT java -jar /app/sling/org.apache.sling.feature.launcher.jar -f /app/sling/feature-oak_tar.json
 
 #HEALTHCHECK --interval=15s --retries=20 \
 #  CMD /app/healthcheck.sh
