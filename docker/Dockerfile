@@ -1,7 +1,7 @@
 FROM adoptopenjdk/openjdk11:latest
 
-ARG PEREGRINECMS_BRANCH=develop
-ARG THEMECLEANFLEX_BRANCH=develop
+ARG PEREGRINECMS_REPO=https://github.com/GastonGonzalez/peregrine-cms.git
+ARG PEREGRINECMS_BRANCH=upgrade/sling12-PM-Java11-CI
 ARG SLING_REPO=https://github.com/apache/sling-org-apache-sling-starter.git
 ARG SLING_BRANCH=master
 
@@ -41,8 +41,8 @@ RUN mkdir -p /usr/local/lib/nodejs \
     && echo npx: $(npx -v) \
     && apt-get purge -y --auto-remove && rm -rf /var/lib/apt/lists/* && rm -rf /etc/apt/sources.list.d/temp.list;
 
-RUN echo "hack to build where i need it 4"
 RUN scripts/install-sling.sh $SLING_REPO $SLING_BRANCH
+RUN scripts/install-peregrine.sh $PEREGRINECMS_REPO $PEREGRINECMS_BRANCH
 
 ENTRYPOINT /app/scripts/start.sh && tail -qF /app/sling/logs/error.log
 
