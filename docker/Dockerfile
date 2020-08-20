@@ -41,25 +41,10 @@ RUN mkdir -p /usr/local/lib/nodejs \
     && echo npx: $(npx -v) \
     && apt-get purge -y --auto-remove && rm -rf /var/lib/apt/lists/* && rm -rf /etc/apt/sources.list.d/temp.list;
 
+RUN echo "hack to build where i need it 4"
 RUN scripts/install-sling.sh $SLING_REPO $SLING_BRANCH
 
-#RUN npm install percli @peregrinecms/slingpackager \
-#    && npx percli \
-#    && npx percli check java \
-#    && npx @peregrinecms/slingpackager --version \
-#    && mkdir out \
-#    && cp binaries/*.jar out \
-#    && chmod a+x node_modules/percli/bin/*
-#RUN mv /app/tasks.js /app/node_modules/percli/lib/tasks.js
-#RUN npx percli server register author
-#RUN npx percli server start author \
-#    && ./installpackages.sh $PEREGRINECMS_BRANCH $THEMECLEANFLEX_BRANCH \
-#    && sleep 10 \
-#    && npx percli server stop author \
-#    && rm -rf binaries
-
-#ENTRYPOINT npx percli server start && tail -qF sling/logs/*
-ENTRYPOINT java -jar /app/sling/org.apache.sling.feature.launcher.jar -f /app/sling/feature-oak_tar.json
+ENTRYPOINT /app/scripts/start.sh && tail -qF /app/sling/logs/error.log
 
 #HEALTHCHECK --interval=15s --retries=20 \
 #  CMD /app/healthcheck.sh
