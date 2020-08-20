@@ -311,6 +311,20 @@
 						}
 					}
 
+					.img-group {
+						display: flex;
+						justify-content: space-between;
+
+						.form-group {
+							width: 48%;
+							margin: 0;
+
+							> input {
+								color: #000;
+							}
+						}
+					}
+
 					.checkboxes-group {
 						margin-left: 25%;
 						text-align: left;
