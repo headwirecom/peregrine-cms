@@ -65,6 +65,7 @@ import {
   alignGroup,
   alwaysActiveGroup,
   boldItalicGroup,
+  iconsGroup,
   imageGroup,
   linkGroup,
   listGroup,
@@ -143,6 +144,7 @@ export default {
         imageGroup(this),
         alignGroup(this),
         listGroup(this),
+        iconsGroup(this),
         removeFormatGroup(this)
       ]
     },

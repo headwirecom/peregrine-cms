@@ -25,7 +25,7 @@
 // var axios = require('axios')
 
 import {LoggerFactory} from './logger'
-import {get, stripNulls} from './utils'
+import {stripNulls} from './utils'
 import {Field} from './constants';
 
 let logger = LoggerFactory.logger('apiImpl').setLevelDebug()
@@ -1117,6 +1117,16 @@ class PerAdminImpl {
               `/content/${templateName}/pages/css/palettes`)
         }).catch((err) => {
           logger.warn(`template ${templateName} does not support palettes`)
+        })
+  }
+
+  getIcons(tenant) {
+    return fetch(`/admin/nodes.json/content/${tenant.name}/assets/icons`)
+        .then((data) => {
+          return $perAdminApp.findNodeFromPath(data,
+              `/content/${tenant.name}/assets/icons`)
+        }).catch((err) => {
+          logger.warn(`tenant ${tenant.name} does not have any icons`)
         })
   }
 
