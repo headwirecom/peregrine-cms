@@ -23,13 +23,13 @@ ENV PATH "/usr/local/lib/nodejs/node-v10.16.0-linux-x64/bin:$PATH"
 COPY files/* /app/binaries/
 COPY scripts/*.sh /app/scripts/
 
-## Start - Use repository/package pinning to upgrade libvips from version 8.4 to 8.6
-#COPY peregrine.pref /etc/apt/preferences.d/
-#RUN echo "deb http://archive.ubuntu.com/ubuntu/ eoan main restricted" >> /etc/apt/sources.list \
-#    && echo "deb http://archive.ubuntu.com/ubuntu/ eoan universe" >> /etc/apt/sources.list \
-#    && apt update \
-#    && apt --only-upgrade install -y libvips libvips-tools
-## End 
+# Start - Use repository/package pinning to upgrade libvips from version 8.4 to 8.6
+COPY overlay/etc/apt/preferences.d/* /etc/apt/preferences.d/
+RUN echo "deb http://archive.ubuntu.com/ubuntu/ eoan main restricted" >> /etc/apt/sources.list \
+    && echo "deb http://archive.ubuntu.com/ubuntu/ eoan universe" >> /etc/apt/sources.list \
+    && apt update \
+    && apt --only-upgrade install -y libvips libvips-tools
+# End 
 
 #RUN mkdir -p /usr/local/lib/nodejs \
 #    && tar -xf /app/binaries/node-v10.16.0-linux-x64.tar.xz -C /usr/local/lib/nodejs \
