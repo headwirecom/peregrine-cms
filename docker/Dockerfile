@@ -31,16 +31,13 @@ RUN echo "deb http://archive.ubuntu.com/ubuntu/ eoan main restricted" >> /etc/ap
     && apt --only-upgrade install -y libvips libvips-tools
 # End 
 
-#RUN mkdir -p /usr/local/lib/nodejs \
-#    && tar -xf /app/binaries/node-v10.16.0-linux-x64.tar.xz -C /usr/local/lib/nodejs \
-#    && echo "peregrine-cms branch: $PEREGRINECMS_BRANCH" \
-#    && echo "themeclean-flex branch: $THEMECLEANFLEX_BRANCH" \
-#    && java -version \
-#    && echo $PATH \
-#    && echo node: $(node -v) \
-#    && echo npm: $(npm -v) \
-#    && echo npx: $(npx -v) \
-#    && apt-get purge -y --auto-remove && rm -rf /var/lib/apt/lists/* && rm -rf /etc/apt/sources.list.d/temp.list;
+RUN mkdir -p /usr/local/lib/nodejs \
+    && tar -xf /app/binaries/node-v10.16.0-linux-x64.tar.xz -C /usr/local/lib/nodejs \
+    && echo $PATH \
+    && echo node: $(node -v) \
+    && echo npm: $(npm -v) \
+    && echo npx: $(npx -v) \
+    && apt-get purge -y --auto-remove && rm -rf /var/lib/apt/lists/* && rm -rf /etc/apt/sources.list.d/temp.list;
 
 #RUN npm install percli @peregrinecms/slingpackager \
 #    && npx percli \
