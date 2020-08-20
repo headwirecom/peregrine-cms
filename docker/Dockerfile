@@ -3,7 +3,7 @@ FROM adoptopenjdk/openjdk11:latest
 ARG PEREGRINECMS_BRANCH=develop
 ARG THEMECLEANFLEX_BRANCH=develop
 
-ENV APP_VERSION 1.0.0-snapshot
+ENV APP_VERSION 2.0.0
 
 WORKDIR /app
 
@@ -21,10 +21,7 @@ RUN apt update -q \
 ENV PATH "/usr/local/lib/nodejs/node-v10.16.0-linux-x64/bin:$PATH"
 
 COPY files/* /app/binaries/
-COPY healthcheck.sh .
-COPY scripts/*.sh .
-COPY installpackages.sh .
-COPY patchfiles/tasks.js .
+COPY scripts/*.sh /app/scripts/
 
 ## Start - Use repository/package pinning to upgrade libvips from version 8.4 to 8.6
 #COPY peregrine.pref /etc/apt/preferences.d/
