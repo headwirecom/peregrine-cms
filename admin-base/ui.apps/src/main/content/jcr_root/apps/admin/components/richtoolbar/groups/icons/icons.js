@@ -1,26 +1,9 @@
 import {IconLib} from '../../../../../../../../js/constants'
-import {LoggerFactory} from '../../../../../../../../js/logger';
+import {LoggerFactory} from '../../../../../../../../js/logger'
+import {get} from '../../../../../../../../js/utils'
 
 const FILE_NAME = 'richtoolbar.groups.icons.icon'
 const log = LoggerFactory.logger(FILE_NAME).setLevelDebug()
-const children = []
-
-function populateIcons(vm) {
-  if (children.length > 0) return
-
-  const tenant = $perAdminApp.getView().state.tenant
-
-  return $perAdminApp
-      .getApi()
-      .getIcons(tenant)
-      .then((data) => {
-        children.push(...data.children)
-        vm.pingRichToolbar()
-      })
-      .catch((err) => {
-        log.error(`failed loading icons node for ${FILE_NAME}`, err)
-      })
-}
 
 function getChildName(child) {
   let arr = child.name.split('.')
@@ -35,11 +18,10 @@ function getChildImage(child) {
 }
 
 export default (vm) => {
-  populateIcons(vm)
-
+  const tenantIcons = get($perAdminApp.getView(), '/state/tenant/icons', [])
   const icons = []
 
-  children.forEach((child) => {
+  tenantIcons.forEach((child) => {
     const name = getChildName(child)
     const img = getChildImage(child)
 

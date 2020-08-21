@@ -1120,11 +1120,14 @@ class PerAdminImpl {
         })
   }
 
-  getIcons(tenant) {
+  populateIcons(tenant) {
     return fetch(`/admin/nodes.json/content/${tenant.name}/assets/icons`)
         .then((data) => {
-          return $perAdminApp.findNodeFromPath(data,
+          const iconsNode = $perAdminApp.findNodeFromPath(data,
               `/content/${tenant.name}/assets/icons`)
+          const icons = iconsNode.children
+          Vue.set($perAdminApp.getView().state.tenant, 'icons', icons)
+          logger.debug(`populated icons for tenant ${tenant.name}:`, icons)
         }).catch((err) => {
           logger.warn(`tenant ${tenant.name} does not have any icons`)
         })

@@ -271,8 +271,8 @@ class PerApi {
         return impl.getPalettes(templateName)
     }
 
-    getIcons(tenant) {
-        return impl.getIcons(tenant)
+    populateIcons(tenant) {
+        return impl.populateIcons(tenant)
     }
 
     tenantSetupReplication(path, withSite) {
