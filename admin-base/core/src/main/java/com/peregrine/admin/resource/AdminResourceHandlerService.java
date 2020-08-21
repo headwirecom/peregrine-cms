@@ -1660,6 +1660,17 @@ public class AdminResourceHandlerService
         return answer;
     }
 
+    private void removePropertiesForCopy(ModifiableValueMap valueMap) {
+        if (valueMap != null) {
+            for (String ignore : IGNORED_RESOURCE_PROPERTIES_FOR_COPY) {
+                if (valueMap.containsKey(ignore)) {
+                    logger.trace("Removing property '{}' as part of copy", ignore);
+                    valueMap.remove(ignore);
+                }
+            }
+        }
+    }
+
     public void updateTitle(Resource resource, String title) {
         if (JCR_CONTENT.equals(resource.getName())) {
             ValueMap properties = getModifiableProperties(resource, false);
@@ -2292,22 +2303,17 @@ public class AdminResourceHandlerService
             throw new ManagementException((String.format(NO_COPIED_RESOURCE, newPath)));
         }
 
-        //Handle retitling
+        //Handle retitling and removing replication state
         Resource copiedContent = copiedResource.getChild(JCR_CONTENT);
         if(copiedContent != null) {
-            ValueMap modifiableProperties = getModifiableProperties(copiedContent);
+            ModifiableValueMap modifiableProperties = getModifiableProperties(copiedContent);
             if(modifiableProperties.containsKey(NAME)) {
                 modifiableProperties.put(NAME, newName);
             }
             if(StringUtils.isNotBlank(newTitle)) {
                 modifiableProperties.put(JCR_TITLE, newTitle);
             }
-
-            for (String ignore : IGNORED_RESOURCE_PROPERTIES_FOR_COPY) {
-                if (modifiableProperties.containsKey(ignore)) {
-                    modifiableProperties.remove(ignore);
-                }
-            }
+            removePropertiesForCopy(modifiableProperties);
         }
 
         //Handle reordering
