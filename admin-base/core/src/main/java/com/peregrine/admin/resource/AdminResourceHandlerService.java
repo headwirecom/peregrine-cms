@@ -2302,6 +2302,12 @@ public class AdminResourceHandlerService
             if(StringUtils.isNotBlank(newTitle)) {
                 modifiableProperties.put(JCR_TITLE, newTitle);
             }
+
+            for (String ignore : IGNORED_RESOURCE_PROPERTIES_FOR_COPY) {
+                if (modifiableProperties.containsKey(ignore)) {
+                    modifiableProperties.remove(ignore);
+                }
+            }
         }
 
         //Handle reordering
