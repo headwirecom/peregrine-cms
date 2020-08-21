@@ -32,6 +32,7 @@
   <jcr:content jcr:primaryType="per:PageContent"
     sling:resourceType="admin/components/toolingpage"
     jcr:title="Documentation"
+    suffixToParameter="[path,/state/tools/dashboard]"
     jcr:description="admin base docs page">
 
     <nav jcr:primaryType="nt:unstructured"

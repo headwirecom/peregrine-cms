@@ -2,6 +2,7 @@ branches:
   only:
   - master
   - develop
+  - feature/tenantstate
 
 services:
 - docker

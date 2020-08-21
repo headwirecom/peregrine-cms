@@ -89,16 +89,18 @@
 </template>
 
 <script>
-  import {Attribute, Key} from '../../../../../../js/constants'
-  import {
-    get,
-    getCaretCharacterOffsetWithin,
-    restoreSelection,
-    saveSelection,
-    set
-  } from '../../../../../../js/utils'
+import {Attribute, Key, Toast} from '../../../../../../js/constants'
+import {Error} from '../../../../../../js/messages'
+import {
+  get,
+  getCaretCharacterOffsetWithin,
+  isChromeBrowser,
+  restoreSelection,
+  saveSelection,
+  set
+} from '../../../../../../js/utils'
 
-  export default {
+export default {
     props: ['model'],
     data() {
       return {
@@ -146,6 +148,10 @@
         inlineEdit: {
           firstTime: [],
           selection: null
+        },
+        toast: {
+          templateComponent: null,
+          missingEventPath: null
         }
       }
     },
@@ -311,6 +317,16 @@
             this.wrapEditableAroundElement(this.iframe.mouseOverCmp)
           }
         }
+      },
+      'toast.templateComponent'(val, old) {
+        if (old) {
+          old.remove()
+        }
+      },
+      'toast.missingEventPath'(val, old) {
+        if (old) {
+          old.remove()
+        }
       }
     },
     mounted() {
@@ -359,7 +375,7 @@
 
         if (!vm.dragging && vm.isTemplateNode) {
           vm.unselect(vm)
-          $perAdminApp.toast(vm.$i18n('fromTemplateNotifyMsg'), 'warn')
+          this.toast.templateComponent = $perAdminApp.toast(vm.$i18n('fromTemplateNotifyMsg'), Toast.Level.WARNING)
         } else {
           if (vm.dragging || vm.path !== '/jcr:content') {
             vm.wrapEditableAroundSelected()
@@ -466,7 +482,14 @@
         }
 
         this.target = event.target
-        const vnode = this.findVnode(this.component.__vue__, event.path)
+        const eventPath = event.path || (event.composedPath && event.composedPath())
+
+        if (!eventPath) {
+          this.toast.missingEventPath = $perAdminApp.toast(Error.MISSING_EVENT_PATH, Toast.Level.ERROR)
+          throw Error.MISSING_EVENT_PATH
+        }
+
+        const vnode = this.findVnode(this.component.__vue__, eventPath)
         const attr = this.isRich ? 'innerHTML' : 'innerText'
         if (vnode.data.domProps) {
           if (this.isRich) {
@@ -496,7 +519,7 @@
 
       onInlineFocus(event) {
         event.target.classList.add('inline-editing')
-        if (event.target.innerHTML) {
+        if (isChromeBrowser() && event.target.innerHTML) {
           event.target.innerHTML = event.target.innerHTML.trim()
         }
         this.editing = true
@@ -512,6 +535,9 @@
         event.target.classList.remove('inline-editing')
         this.editing = false
         set(this.view, '/state/inline/doc', null)
+        if (!isChromeBrowser() && event.target.innerHTML) {
+          event.target.innerHTML = event.target.innerHTML.trim()
+        }
       },
 
       onInlineKeyDown(event) {
@@ -573,8 +599,7 @@
       },
 
       onInlineArrowKey(event, isKeyUp = false) {
-        const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor)
-        if (chrome) return
+        if (isChromeBrowser()) return
 
         const key = event.which
         const newCaretPos = getCaretCharacterOffsetWithin(event.target)
