@@ -179,8 +179,10 @@
             $(this.$refs.collapsible).collapsible('open', index)
             this.activeItem = index
             // focus first field of expanded item
-            let firstField = this.$refs.collapsible.querySelector('li.active input')
-            if(firstField) firstField.focus()
+            this.$nextTick(() => {
+              let firstField = this.$refs.collapsible.querySelector('li.active input')
+              if(firstField) firstField.focus()
+            })
           })
         }
       },

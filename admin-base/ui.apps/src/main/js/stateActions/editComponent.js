@@ -60,7 +60,7 @@ function bringUpEditor(me, view, target) {
     })
 
     return new Promise( (resolve, reject) => {
-        me.getApi().populateComponentDefinitionFromNode(view.pageView.path+target).then( (name) => {
+        return me.getApi().populateComponentDefinitionFromNode(view.pageView.path+target).then( (name) => {
                 log.fine('component name is', name)
                 set(view, '/state/editor/component', name)
                 set(view, '/state/editor/path', target)

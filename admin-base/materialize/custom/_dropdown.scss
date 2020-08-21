@@ -54,10 +54,20 @@
       }
 
       .material-icons,
+      .label,
       .fa {
         margin-left: .5rem;
         margin-right: auto;
         transition: margin .3s ease-out;
+      }
+
+      .label {
+        width: 20px !important;
+        color: #000000 !important;
+        display: flex;
+        justify-content: left;
+        align-items: center;
+        font-size: 1.15rem !important;
       }
 
       .center-keeper {
@@ -79,6 +89,11 @@
           }
         }
       }
+    }
+
+    &.scrollable {
+      min-width: 215px;
+      overflow-y: scroll !important;
     }
   }
 }

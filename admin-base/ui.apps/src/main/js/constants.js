@@ -118,3 +118,20 @@ export const Key = {
   ARROW_DOWN: 40,
   ESC: 27
 }
+
+export const IconLib = {
+  MATERIAL_ICONS: 'material-icons',
+  FONT_AWESOME: 'font-awesome',
+  PLAIN_TEXT: 'plain-text'
+}
+
+export const DropDown = {
+  DIVIDER: '--------------------------'
+}
+
+export const Toast = {
+  Level: {
+    WARNING: 'warn',
+    ERROR: 'error'
+  }
+}

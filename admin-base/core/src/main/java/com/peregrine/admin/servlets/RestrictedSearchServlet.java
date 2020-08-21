@@ -46,6 +46,7 @@ import static com.peregrine.commons.util.PerConstants.TYPE;
 import static com.peregrine.commons.util.PerConstants.VARIATION;
 import static com.peregrine.commons.util.PerConstants.VARIATIONS;
 import static com.peregrine.commons.util.PerConstants.VARIATION_PATH;
+import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -135,7 +136,8 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
     }
 
     private Response findTemplates(Request request) throws IOException {
-        String query = "select * from per:Page where jcr:path like '/content/%/templates%' order by jcr:path";
+//        String query = "select * from per:Page where jcr:path like '/content/%/templates%' order by jcr:path";
+        String query = "select * from per:Page where jcr:path like '/content/%/templates%'";
         return findAndOutputToWriterAsJSON(request, query);
     }
 
@@ -190,7 +192,13 @@ public class RestrictedSearchServlet extends AbstractBaseServlet {
                         } else {
                             answer.writeObject();
                             answer.writeAttribute(NAME, node.getName());
-                            if(node.hasProperty(JCR_TITLE)) {
+                            if(node.getPrimaryNodeType().toString().equals(PAGE_PRIMARY_TYPE)) {
+                                NodeIterator nit = node.getNodes(new String[] { JCR_CONTENT });
+                                Node jcrcontent = nit.hasNext() ? nit.nextNode() : null;
+                                if(jcrcontent != null && jcrcontent.hasProperty(JCR_TITLE)) {
+                                    answer.writeAttribute(TITLE, jcrcontent.getProperty(JCR_TITLE).getString());
+                                }
+                            } else if(node.hasProperty(JCR_TITLE)) {
                                 answer.writeAttribute(TITLE, node.getProperty(JCR_TITLE).getString());
                             }
                             answer.writeAttribute(PATH, node.getPath());

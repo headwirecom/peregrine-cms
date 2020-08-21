@@ -47,7 +47,7 @@
         </admin-components-materializedropdown>
       </div>
       <div class="nav-center">
-        <ul v-if="!model.hideTenants" class="hide-on-small-and-down nav-mobile">
+        <ul v-if="!hideTenants" class="hide-on-med-and-down nav-mobile">
           <admin-components-action
               v-for="section in sections"
               :key="`section-${section.name}`"
@@ -56,7 +56,7 @@
               :class="{active: getActiveSection() === section.name, 'no-mobile': !section.mobile}"
               class="nav-link"/>
         </ul>
-        <ul v-else class="hide-on-small-and-down nav-mobile">
+        <ul v-else class="hide-on-med-and-down nav-mobile">
           <admin-components-action
               tag="li"
               :model="getSectionModel({title: 'Home', name: 'index'})"
@@ -64,7 +64,7 @@
               class="nav-link"/>
         </ul>
       </div>
-      <ul class="nav-right hide-on-small-and-down nav-mobile">
+      <ul class="nav-right hide-on-med-and-down nav-mobile">
         <admin-components-materializemodal ref="languageModal">
           <template>
             <vue-multiselect
@@ -150,6 +150,9 @@
       }
     },
     computed: {
+      hideTenants() {
+        return this.model.hideTenants ? true : $perAdminApp.getView().state.tenant ? false : true
+      },
       language() {
         return {name: $perAdminApp.getView().state.language}
       },
@@ -174,9 +177,9 @@
       moreDdItems() {
         return [
           {label: 'help', icon: 'help', disabled: !this.help, click: this.onHelpClick},
-          {label: 'tutorials', icon: 'import_contacts', click: this.onTutorialsClick},
+          {label: 'tutorials', icon: 'import_contacts', disabled: true, click: this.onTutorialsClick},
           {label: '--------------------', disabled: true},
-          {label: 'aboutNavBtn', icon: 'info', click: this.onAboutClick},
+          {label: this.$i18n('aboutNavBtn'), icon: 'info', click: this.onAboutClick},
         ]
       },
       tenantDdItems() {
@@ -207,10 +210,21 @@
     },
     methods: {
       getSectionModel(section) {
+        let target = `/content/admin/pages/${section.name}.html`
+        if(this.state.tenant) {
+          if(section.name !== 'welcome') {
+            const path = this.state.tools[section.name]
+            target += path && path.length > 0 ? `/path:${path}` : `/path:${this.state.tenant.roots[section.name]}`
+          } else {
+            target += `/path:/content/${this.state.tenant.name}`
+          }
+        } else {
+          target = '/content/admin/pages/index'
+        }
         return {
           command: 'selectPath',
           title: this.$i18n(section.title),
-          target: `/content/admin/pages/${section.name}`
+          target
         }
       },
       onSelectLang({name}) {
@@ -231,7 +245,7 @@
       },
       onSettingsClick() {
         $perAdminApp.action(this, 'configureTenant', {
-          path: '/content', name: this.state.tenant.name
+          path: '/content/admin/pages/tenants/configure.html/content/'+this.state.tenant.name, name: this.state.tenant.name
         })
       },
       onChangeWebsiteClick() {

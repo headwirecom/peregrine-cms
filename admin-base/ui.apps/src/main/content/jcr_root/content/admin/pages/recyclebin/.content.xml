@@ -34,6 +34,8 @@
     sling:resourceType="admin/components/toolingpage"
     jcr:title="Recyclebin"
     jcr:description="admin base Content Root"
+    suffixToParameter="[path,/state/tools/dashboard]"
+    
     loaders="[populateRecyclebin:/state]">
 
     <nav jcr:primaryType="nt:unstructured"

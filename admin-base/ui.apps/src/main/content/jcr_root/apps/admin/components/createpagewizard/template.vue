@@ -34,8 +34,22 @@
                 <div class="form-group required">
                     <div class="row">
                         <div class="col s6">
-                            <label>Select Template</label>
-                            <ul class="collection">
+                            <div v-if="skeletonPages && skeletonPages.length > 0">
+                                <label class="as-heading">Select a Skeleton-Page</label>
+                                <ul class="collection as-scrollable">
+                                    <li class="collection-item"
+                                        v-for="skeletonPage in skeletonPages"
+                                        v-on:click.stop.prevent="selectSkeletonPage(null, skeletonPage.path)"
+                                        v-bind:class="isSelected(skeletonPage.path) ? 'active' : ''"
+                                        v-bind:key="skeletonPage.path">
+                                        <admin-components-action v-bind:model="{ command: 'selectSkeletonPage', target: skeletonPage.path, title: skeletonPage.title ? skeletonPage.title : skeletonPage.name }"></admin-components-action>
+                                    </li>
+                                </ul>
+                            </div>
+                            <p v-if="skeletonPages && skeletonPages.length > 0">
+                            </p>
+                            <label class="as-heading">Select a Template</label>
+                            <ul class="collection" v-bind:class="skeletonPages && skeletonPages.length > 0 ? 'as-scrollable-short' : 'as-scrollable'">
                                 <li class="collection-item"
                                     v-for="template in templates"
                                     v-on:click.stop.prevent="selectTemplate(null, template.path)"
@@ -44,25 +58,15 @@
                                     <admin-components-action v-bind:model="{ command: 'selectTemplate', target: template.path, title: template.title ? template.title : template.name }"></admin-components-action>
                                 </li>
                             </ul>
-                            <div v-if="skeletonPages && skeletonPages.length > 0">
-                                OR<br/>
-                                <label>Select Skeleton-Page</label>
-                                <ul class="collection">
-                                    <li class="collection-item"
-                                        v-for="skeletonPage in skeletonPages"
-                                        v-on:click.stop.prevent="selectSkeletonPage(null, skeletonPage.path)"
-                                        v-bind:class="isSelected(skeletonPage.path) ? 'active' : ''"
-                                        v-bind:key="skeletonPage.path">
-                                        <admin-components-action v-bind:model="{ command: 'selectSkeletonPage', target: skeletonPage.path, title: skeletonPage.name }"></admin-components-action>
-                                    </li>
-                                </ul>
-                            </div>
                             <div v-if="formErrors.unselectedTemplateError" class="errors">
                                 <span track-by="index">selection required</span>
                             </div>
                         </div>
                         <div class="col s6">
-                            <label>Preview</label>
+                            <label class="as-heading">Preview</label>
+                            <p>
+                                The area below shows a preview of the selected page type.
+                            </p>
                             <div class="iframe-container">
                                 <iframe v-if="formmodel.skeletonPagePath"
                                         v-bind:src="formmodel.skeletonPagePath + '.html'" data-per-mode="preview">
@@ -118,7 +122,9 @@
         },
         created() {
             //By default select the first item in the list;
-            if(this.templates && this.templates.length > 0) {
+            if(this.skeletonPages && this.skeletonPages.length > 0) {
+                this.selectSkeletonPage(this, this.skeletonPages[0].path);
+            } else if(this.templates && this.templates.length > 0) {
                 this.selectTemplate(this, this.templates[0].path);
             }
         },
@@ -139,6 +145,7 @@
                 const templates = $perAdminApp.getNodeFromViewOrNull('/admin/templates/data')
                 const siteRootParts = this.formmodel.path.split('/').slice(0,4)
                 siteRootParts[3] = 'templates'
+                siteRootParts.push('')
                 const siteRoot = siteRootParts.join('/')
                 return templates.filter( (item) => item.path.startsWith(siteRoot))
             },
@@ -222,6 +229,7 @@
     overflow: hidden;
     padding-top: 56.25%;
     position: relative;
+    box-shadow: 5px 5px 10px lightgray;
 }
 
 .iframe-container iframe {
@@ -234,5 +242,18 @@
     transform: scale(0.5) translate(-50%, -50%);
 }
 
+.as-heading {
+    font-size: 1.5rem;
+}
+
+.as-scrollable {
+    max-height: 20rem;
+    overflow-y: auto;
+}
+
+.as-scrollable-short {
+    max-height: 9rem;
+    overflow-y: auto;
+}
 
 </style>

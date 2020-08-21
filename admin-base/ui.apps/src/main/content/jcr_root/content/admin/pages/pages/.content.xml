@@ -71,6 +71,7 @@
 
     <explorer jcr:primaryType="nt:unstructured"
       sling:resourceType="admin/components/explorer"
+      showFilter="true"
       dataFrom="/state/tools/pages">
       <!--
       <actions jcr:primaryType="nt:unstructured" sling:resourceType="pagerendervue/structure/container">
