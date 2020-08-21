@@ -68,6 +68,10 @@
         justify-content: left;
         align-items: center;
         font-size: 1.15rem !important;
+
+        > img {
+          width: 17px;
+        }
       }
 
       .center-keeper {
