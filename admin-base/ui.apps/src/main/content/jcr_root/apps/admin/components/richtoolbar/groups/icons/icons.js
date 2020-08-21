@@ -18,7 +18,7 @@ function getChildImage(child) {
 }
 
 export default (vm) => {
-  const tenantIcons = get($perAdminApp.getView(), '/state/tenant/icons', [])
+  const tenantIcons = get($perAdminApp.getView(), '/admin/icons', [])
   const icons = []
 
   tenantIcons.forEach((child) => {
