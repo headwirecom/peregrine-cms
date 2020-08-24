@@ -54,6 +54,10 @@
         :setSelectedPath="setBrowserPathSelected"
         :rel="browser.rel"
         @toggle-rel="browser.rel = !browser.rel"
+        :img-width="browser.img.width"
+        @update-img-width="browser.img.width = $event"
+        :img-height="browser.img.height"
+        @update-img-height="browser.img.height = $event"
         :onCancel="onBrowserCancel"
         :onSelect="onBrowserSelect"/>
   </div>
@@ -65,6 +69,7 @@ import {
   alignGroup,
   alwaysActiveGroup,
   boldItalicGroup,
+  iconsGroup,
   imageGroup,
   linkGroup,
   listGroup,
@@ -115,7 +120,11 @@ export default {
           current: '',
           selected: null
         },
-        rel: true
+        rel: true,
+        img: {
+          width: null,
+          height: null
+        }
       },
       docEl: {
         dimension: {
@@ -143,6 +152,7 @@ export default {
         imageGroup(this),
         alignGroup(this),
         listGroup(this),
+        iconsGroup(this),
         removeFormatGroup(this)
       ]
     },
@@ -348,6 +358,10 @@ export default {
       const title = target.getAttribute('title')
       const src = target.getAttribute('src')
       const srcArr = src.split('/')
+      const img = {
+        width: target.style.width? parseInt(target.style.width) : null,
+        height: target.style.height? parseInt(target.style.height) : null
+      }
       vm.param.cmd = 'editImage'
       vm.browser.header = vm.$i18n('Edit Image')
       vm.browser.path.selected = srcArr.join('/')
@@ -358,6 +372,8 @@ export default {
       vm.browser.type = PathBrowser.Type.ASSET
       vm.browser.linkTitle = title
       vm.browser.element = target
+      vm.browser.img.width = img.width
+      vm.browser.img.height = img.height
       vm.startBrowsing()
     },
     setViewport(viewport) {
@@ -439,6 +455,8 @@ export default {
         this.param.value = null
         this.browser.path.selected = null
         this.browser.linkTitle = null
+        this.browser.img.width = null
+        this.browser.img.height = null
         this.pingRichToolbar()
 
         if (this.selection.restore) {
@@ -494,9 +512,17 @@ export default {
       if (this.param.cmd === 'editImage') {
         const imgEl = this.browser.element
         const linkTitle = this.browser.linkTitle
+        const styles = []
+        if (this.browser.img.width) {
+          styles.push(`width: ${this.browser.img.width}px`)
+        }
+        if (this.browser.img.height) {
+          styles.push(`height: ${this.browser.img.height}px`)
+        }
         imgEl.setAttribute('src', this.browser.path.selected)
         imgEl.setAttribute('alt', linkTitle ? linkTitle : '')
         imgEl.setAttribute('title', linkTitle ? linkTitle : '')
+        imgEl.setAttribute('style', styles.join(';'))
         $perAdminApp.action(this, 'reWrapEditable')
         $perAdminApp.action(this, 'writeInlineToModel')
         this.$nextTick(() => {
@@ -504,11 +530,19 @@ export default {
         })
         this.browser.element = null
       } else {
+        const styles = []
+        if (this.browser.img.width) {
+          styles.push(`width: ${this.browser.img.width}px`)
+        }
+        if (this.browser.img.height) {
+          styles.push(`height: ${this.browser.img.height}px`)
+        }
         this.param.cmd = 'insertHTML'
         this.param.value =
             `<img src="${this.browser.path.selected}"
                   alt="${this.browser.linkTitle}"
-                  title="${this.browser.linkTitle}"/>`
+                  title="${this.browser.linkTitle}"
+                  style="${styles.join(';')}"/>`
       }
     },
     setBrowserPathCurrent(path) {

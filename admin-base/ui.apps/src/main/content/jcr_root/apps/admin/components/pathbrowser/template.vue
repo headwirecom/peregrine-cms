@@ -311,6 +311,26 @@
                                 :value="linkTitle"
                                 @input="setLinkTitle" />
                         </div>
+                        <div v-if="isImageExtension({path: selectedPath})" class="img-group">
+                          <div class="form-group">
+                            <label for="linkTitle">Image Width (px)</label>
+                            <input
+                                id="imgWidth"
+                                type="number"
+                                placeholder="leave blank to keep original size"
+                                :value="imgWidth"
+                                @input="onUpdateImgDimension('width', $event)"/>
+                          </div>
+                          <div class="form-group">
+                            <label for="linkTitle">Image Height (px)</label>
+                            <input
+                                id="imgHeight"
+                                type="number"
+                                placeholder="leave blank to keep original size"
+                                :value="imgHeight"
+                                @input="onUpdateImgDimension('height', $event)"/>
+                          </div>
+                        </div>
                         <div class="checkboxes-group">
                           <div class="pathbrowser-newwindow" v-if="newWindow !== undefined"
                                @click="toggleNewWindow"
@@ -401,6 +421,12 @@ export default {
           rel: {
             type: Boolean,
             default: true
+          },
+          imgWidth: {
+            type: Number
+          },
+          imgHeight: {
+            type: Number
           },
           onCancel: Function,
           onSelect: Function,
@@ -627,6 +653,10 @@ export default {
                   return true
                 }
                 return false
+            },
+            onUpdateImgDimension(name, event) {
+              const payload = event.target.value? parseInt(event.target.value) : null
+              this.$emit(`update-img-${name}`, payload)
             }
         }
     }
