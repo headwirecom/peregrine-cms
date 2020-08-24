@@ -45,6 +45,8 @@
                     res.action += `.html/path:/content/${tenant.name}/objects`
                 } else if(res.action.startsWith('/content/admin/pages/templates')) {
                     res.action += `.html/path:/content/${tenant.name}/templates`
+                } else if(res.action.startsWith('/content/admin/pages/object-definitions')) {
+                    res.action += `.html/path:/content/${tenant.name}/object-definitions`
                 } else if(res.action.startsWith('/content/admin/pages/recyclebin')) {
                     res.action += `.html/path:/content/${tenant.name}`
                 }
