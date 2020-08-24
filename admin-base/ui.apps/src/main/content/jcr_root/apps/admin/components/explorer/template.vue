@@ -148,6 +148,16 @@
                         </admin-components-action>
                     </div>
                 </li>
+                <li class="collection-item" v-if="isAssets(path)">
+                    <admin-components-action
+                        v-bind:model="{
+                            target: '',
+                            command: 'addFolder',
+                            tooltipTitle: `${$i18n('add folder')}`
+                        }">
+                            <i class="material-icons">add_circle</i> {{$i18n('add folder')}}
+                    </admin-components-action>
+                </li>
                 <li class="collection-item" v-if="isPages(path)">
                     <admin-components-action
                         v-bind:model="{
@@ -527,7 +537,7 @@ export default {
                     if(node.excludeFromSitemap && node.excludeFromSitemap === 'true') return false
                     return ['per:Page', 'per:Asset', 'per:Object', 'per:ObjectDefinition'].indexOf(node.resourceType) >= 0
                 }
-                return ['per:Asset', 'nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page', 'sling:OrderedFolder', 'per:Object', 'per:ObjectDefinition'].indexOf(resourceType) >= 0
+                return ['per:Asset', 'nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page', 'sling:OrderedFolder', 'per:Object', 'per:ObjectDefinition'].indexOf(node.resourceType) >= 0
             },
 
             showInfo: function(me, target) {
