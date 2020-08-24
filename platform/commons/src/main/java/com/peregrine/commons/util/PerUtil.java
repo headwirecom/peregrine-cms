@@ -38,6 +38,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
 
 import static com.peregrine.commons.util.PerConstants.*;
 import static org.apache.commons.lang3.StringUtils.*;
@@ -913,5 +914,69 @@ public class PerUtil {
         }
         @Override
         public boolean doAddChildren(Resource resource) { return true; }
+    }
+
+    /**
+     * Extracts the tenant name from the resource
+     * @param resource a resource
+     * @return tenant name on success, and <code>null</code> otherwise
+     */
+    public static String getTenantNameFromResource(final Resource resource) {
+        return (resource != null)
+                ? getTenantNameFromPath(resource.getPath())
+                : null;
+    }
+
+    /**
+     * Extracts the tenant name for the path
+     * @param path a path
+     * @return tenant name on success, and <code>null</code> otherwise
+     */
+    public static String getTenantNameFromPath(final String path) {
+        String tenantName = null;
+
+        if (StringUtils.isNotBlank(path)) {
+            Matcher matcher = TENANT_PATH_PATTERN.matcher(path);
+            if (matcher.matches() && matcher.groupCount() == 1) {
+                tenantName = matcher.group(1);
+            }
+        }
+
+        return tenantName;
+    }
+
+    /**
+     * Obtains the /var path for a given tenant by resource.
+     * @param resource this can be any resource under the tenant.
+     * @return the /var path for the tenant on succss, and <code>null</code> otherwise.
+     */
+    public static String getTenantVarPath(final Resource resource) {
+        String path = null;
+
+        final String tenantName = getTenantNameFromResource(resource);
+        if (StringUtils.isNotBlank(tenantName)) {
+           path = TENANT_VAR_PATH_TEMPLATE.replace("{TENANT}", tenantName);
+        }
+
+        return path;
+    }
+
+    /**
+     * Obtains the tenant root resource
+     * @param resource this can be any resource under the tenant
+     * @return tenant root resource on success, and <code>null</code> otherwise.
+     */
+    public static Resource getTenantRootResource(final Resource resource) {
+       Resource tenantRoot = null;
+
+       if (resource != null) {
+           final String tenantName = getTenantNameFromResource(resource);
+           if (StringUtils.isNotBlank(tenantName)) {
+               tenantRoot = resource.getResourceResolver().getResource(TENANT_ROOT_PATH_TEMPLATE.replace("{TENANT}", tenantName));
+           }
+
+       }
+
+       return tenantRoot;
     }
 }
