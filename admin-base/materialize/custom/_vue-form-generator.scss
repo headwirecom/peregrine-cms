@@ -38,6 +38,7 @@
 
     .field-wrap {
         margin: 5px 0px;
+
     }
 
     .field-wrap > * {
@@ -556,6 +557,8 @@
                             padding: 0;
                             border-left: 1px solid transparent;
                             border-right: 1px solid transparent;
+                            border-top: none;
+                            border-bottom: none;
                             color: #222222;
                             box-shadow: unset;
                             background-color: unset;
@@ -940,6 +943,49 @@
                     }
                 }
             }
+        }
+    }
+
+    .range-field {
+        display: flex;
+        flex-direction: row;
+
+        &.is-empty {
+            .thumb {
+                display: none;
+            }
+        }
+
+        .range {
+            border: none;
+        }
+
+        .range-value {
+            width: 4.3rem;
+            margin-left: 5px !important;
+        }
+
+        .empty-range {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+
+            .rail {
+                width: 100%;
+                height: 3px;
+                background-color: #c2c2c2;
+            }
+        }
+
+        .range-numbers {
+            position: absolute;
+            right: calc(4.3rem + 5px - 3px);
+            bottom: -5px;
+            left: -3px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
         }
     }
 }

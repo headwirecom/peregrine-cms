@@ -323,6 +323,10 @@ nav {
           /*border-left: 2px solid var(--pcms-gray);*/
           padding: 0 2px;
         }
+
+        &.separate {
+          margin-right: 10px;
+        }
       }
 
       .btn {
