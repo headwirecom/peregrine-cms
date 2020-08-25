@@ -131,6 +131,7 @@ export const DropDown = {
 
 export const Toast = {
   Level: {
+    INFO: 'info',
     WARNING: 'warn',
     ERROR: 'error'
   }
