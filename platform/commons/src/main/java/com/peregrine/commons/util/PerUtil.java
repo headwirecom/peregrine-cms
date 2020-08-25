@@ -921,10 +921,24 @@ public class PerUtil {
      * @param resource a resource
      * @return tenant name on success, and <code>null</code> otherwise
      */
-    public static String getTenantNameFromResource(final Resource resource) {
-        return (resource != null)
-                ? getTenantNameFromPath(resource.getPath())
-                : null;
+    public static String getTenantNameFromResource(Resource resource) {
+        String tenantName = null;
+
+        while (resource != null) {
+            try {
+                Node node = resource.adaptTo(Node.class);
+                if (node.getDepth() == 2) {
+                    tenantName = node.getName();
+                }
+                if (node.getDepth() == 1 && !"content".equals(node.getName())) {
+                    return null;
+                }
+                resource = resource.getParent();
+            } catch (RepositoryException e) {
+                LOG.error("Error getting tenant name from resource: '{}'", resource);
+            }
+        }
+        return tenantName;
     }
 
     /**
