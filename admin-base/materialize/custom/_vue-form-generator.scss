@@ -956,13 +956,59 @@
             }
         }
 
+        .range-btn {
+            background: transparent;
+            color: var(--pcms-blue-grey);
+            border: 0;
+            padding: 0;
+            margin: 0 5px 0 0;
+            width: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            > i {
+                width: 24px;
+            }
+
+            .strike {
+                position: absolute;
+                left: -1px;
+                width: 22px;
+                height:2px;
+                background-color: var(--pcms-blue-grey);
+                transform: rotate(45deg);
+                box-shadow: 0px -2px 0px #eceff1
+            }
+        }
+
         .range {
             border: none;
+
+            &.hidden {
+                position: absolute;
+                left: calc(23px + 5px);
+                right: 0;
+                height: 100%;
+                width: 235px;
+                opacity: 0;
+            }
+        }
+
+        .thumb {
+            margin-left: calc(1rem + 7px) !important;
         }
 
         .range-value {
-            width: 4.3rem;
+            width: 2rem;
+            height: 2.3rem;
             margin-left: 5px !important;
+            background-color: rgba(255,255,255,.4);
+            padding: 0 2px;
+            border: 0;
+            border-bottom: 1px solid transparent;
+            box-shadow: 0 1px 0 0 transparent;
+            text-align: center;
         }
 
         .empty-range {
