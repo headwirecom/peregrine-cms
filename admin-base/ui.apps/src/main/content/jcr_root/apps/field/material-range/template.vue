@@ -33,7 +33,8 @@
         :step="schema.step"
         :name="`${getFieldID(schema)}-input`"
         :required="schema.required"
-        @keypress="onKeyPress"/>
+        @keypress="onRangeValueKeyPress"
+        @paste="onRangeValuePaste"/>
     <!--div class="range-numbers">
       <div class="min">{{ min }}</div>
       <div class="max">{{ max }}</div>
@@ -50,7 +51,7 @@ export default {
   data() {
     return {
       IconLib,
-      oldValue: 0,
+      oldValue: null,
       delay: 10,
       timeout: null,
       toast: {
@@ -91,18 +92,23 @@ export default {
         this.oldValue = this.value
         this.value = null
       } else {
-        this.value = this.oldValue
+        this.value = this.oldValue ? this.oldValue : this.min
       }
     },
-    onKeyPress(event) {
-      const num = Number(event.key)
+    onRangeValueKeyPress(event) {
+      const pos = event.target.selectionStart
+      const allowNegative = this.min < 0 && event.key === '-' && pos === 0
+      let num = Number(event.key)
 
-      if (isNaN(num) || event.key === null || event.key === ' ') {
+      if ((!allowNegative && isNaN(num)) || event.key === null || event.key === ' ') {
         event.preventDefault()
         this.toast.numeric = $perAdminApp.toast('Only numeric values allowed', Toast.Level.INFO)
       } else {
+        if (allowNegative) {
+          num = event.key
+        }
+
         let value = event.target.value
-        const pos = event.target.selectionStart
         const valueArr = value.split('')
 
         valueArr.splice(pos, 0, num)
@@ -116,6 +122,9 @@ export default {
           this.toast.max = $perAdminApp.toast(`Number too high (<= ${this.max})`, Toast.Level.INFO)
         }
       }
+    },
+    onRangeValuePaste(event) {
+      console.log('onpaste:', event.clipboardData.getData('text'), event)
     }
   }
 }
