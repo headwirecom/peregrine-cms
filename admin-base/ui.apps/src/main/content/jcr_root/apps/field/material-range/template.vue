@@ -93,7 +93,6 @@ export default {
       } else {
         this.value = this.oldValue
       }
-      console.log(this.model)
     },
     onKeyPress(event) {
       const num = Number(event.key)
