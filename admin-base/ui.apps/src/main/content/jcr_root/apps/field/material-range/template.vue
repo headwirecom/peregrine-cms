@@ -124,7 +124,27 @@ export default {
       }
     },
     onRangeValuePaste(event) {
-      console.log('onpaste:', event.clipboardData.getData('text'), event)
+      const pos = event.target.selectionStart
+      const num = Number(event.clipboardData.getData('text'))
+
+      if (isNaN(num)) {
+        event.preventDefault()
+        this.toast.numeric = $perAdminApp.toast('Only numeric values allowed', Toast.Level.INFO)
+      }
+
+      let value = event.target.value
+      const valueArr = value.split('')
+
+      valueArr.splice(pos, 0, num)
+      value = valueArr.join('')
+
+      if (value < this.min) {
+        event.preventDefault()
+        this.toast.min = $perAdminApp.toast(`Number too low (>= ${this.min})`, Toast.Level.INFO)
+      } else if (value > this.max) {
+        event.preventDefault()
+        this.toast.max = $perAdminApp.toast(`Number too high (<= ${this.max})`, Toast.Level.INFO)
+      }
     }
   }
 }
