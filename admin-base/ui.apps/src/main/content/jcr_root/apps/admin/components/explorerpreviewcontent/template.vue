@@ -182,6 +182,10 @@
             <i class="material-icons">{{Icon.COMPARE_ARROWS}}</i>
             Move {{nodeType}}
           </div>
+          <div class="action" :title="`copy ${nodeType}`" @click="copyNode()">
+            <i class="material-icons">{{Icon.COPY}}</i>
+            Copy {{nodeType}}
+          </div>
           <div class="action" :title="`delete ${nodeType}`" @click="deleteNode()">
             <i class="material-icons">{{Icon.DELETE}}</i>
             Delete {{nodeType}}
@@ -582,6 +586,9 @@
             }).catch(() => {
           $perAdminApp.getApi().populateNodesForBrowser(`/content/${site.tenant}`, 'pathBrowser');
         });
+      },
+      copyNode() {
+         alert("TODO: Implement me")
       },
       deleteNode() {
         const really = confirm(`Are you sure you want to delete this ${this.nodeType}?`);

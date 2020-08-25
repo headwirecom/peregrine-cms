@@ -57,6 +57,7 @@ export const Icon = {
   SETTINGS: 'settings',
   TEXT_FORMAT: 'text_format',
   COMPARE_ARROWS: 'compare_arrows',
+  COPY: 'content_copy',
   DELETE: 'delete',
   INFO: 'info',
   EDIT: 'edit',
