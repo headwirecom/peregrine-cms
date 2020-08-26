@@ -20,20 +20,14 @@
         <relativePath />
     </parent>
 
-    <artifactId>org.apache.sling.starter</artifactId>
+    <groupId>com.peregrine-cms</groupId>
+    <artifactId>com.peregrine-cms.sling.launchpad</artifactId>
     <version>12-SNAPSHOT</version>
 
     <name>Apache Sling Starter Application for Peregrine CMS</name>
     <description>
-        The Sling Starter demo application.
+        The Sling Starter demo application for Peregrine CMS
     </description>
-
-    <scm>
-        <connection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-starter.git</connection>
-        <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-starter.git</developerConnection>
-        <url>https://gitbox.apache.org/repos/asf?p=sling-org-apache-sling-starter.git</url>
-      <tag>HEAD</tag>
-  </scm>
 
     <properties>
         <sling.java.version>8</sling.java.version>
@@ -93,7 +87,8 @@
                             <filesInclude>*.json</filesInclude>
                             <filesInclude>oak/*.json</filesInclude>
                             <filesInclude>oak/persistence/oak_persistence_sns.json</filesInclude>
-                            <filesInclude>app/*.json</filesInclude>
+                            <filesInclude>app/composum.json</filesInclude>
+                            <filesInclude>app/distribution.json</filesInclude>
                             <title>Sling With Oak Segment NS Persistence</title>
                         </aggregate>
                         <aggregate>
@@ -101,16 +96,9 @@
                             <filesInclude>*.json</filesInclude>
                             <filesInclude>oak/*.json</filesInclude>
                             <filesInclude>oak/persistence/oak_persistence_sns_fds.json</filesInclude>
-                            <filesInclude>app/*.json</filesInclude>
+                            <filesInclude>app/composum.json</filesInclude>
+                            <filesInclude>app/distribution.json</filesInclude>
                             <title>Sling with Oak Segment NodeStore (sns) and File Datastore (fds)</title>
-                        </aggregate>
-                        <aggregate>
-                            <classifier>oak_mongo</classifier>
-                            <filesInclude>*.json</filesInclude>
-                            <filesInclude>oak/*.json</filesInclude>
-                            <filesInclude>oak/persistence/oak_persistence_mongods.json</filesInclude>
-                            <filesInclude>app/*.json</filesInclude>
-                            <title>Sling With Oak Document NS Mongo Persistence</title>
                         </aggregate>
                         <aggregate>
                             <classifier>nosample_base</classifier>
