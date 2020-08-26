@@ -35,7 +35,7 @@ export default function(me, copy) {
     let srcPath = copy.srcPath
     let targetPath  = copy.targetPath
 
-    api.copyPage(srcPath, targetPath)
-    // TODO return a promise
-    console.log("copyPage() complete")
+    api.copyPage(srcPath, targetPath).then( () => {
+      log.fine(`copy from ${srcPath} to ${targetPath} complete`)
+    })
 }
