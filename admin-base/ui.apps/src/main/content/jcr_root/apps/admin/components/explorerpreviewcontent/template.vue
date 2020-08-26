@@ -588,7 +588,13 @@
         });
       },
       copyNode() {
-         alert("TODO: Implement me")
+        const srcNode = this.currentObject
+        const targetNode = 'TODO'   // TODO: get target path from path browser
+
+        $perAdminApp.stateAction('copyPage', {
+          srcPath: srcNode,
+          targetPath: targetNode
+        });
       },
       deleteNode() {
         const really = confirm(`Are you sure you want to delete this ${this.nodeType}?`);

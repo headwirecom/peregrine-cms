@@ -788,6 +788,10 @@ class PerAdminImpl {
     })
   }
 
+  copyPage(srcPath, targetPath) {
+    console.log("implement me")
+  }
+
   movePage(path, to, type) {
     let data = new FormData()
     data.append('to', to)
