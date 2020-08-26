@@ -3,6 +3,7 @@ package com.peregrine.commons.util;
 import com.peregrine.commons.Strings;
 
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 /**
  * Commonly used Constants in Peregrine
@@ -171,5 +172,9 @@ public class PerConstants {
 
     public static final String DIALOG_JSON = "dialog.json";
     public static final String OBJECT_PATH = "objectPath";
+    public static final String TENANT_ROOT_PATH_TEMPLATE = "/content/{TENANT}";
+    public static final String TENANT_VAR_PATH_TEMPLATE = "/content/{TENANT}/var";
+    public static final Pattern TENANT_PATH_PATTERN = Pattern.compile("^/content/([a-z0-9_]+)/?.*$");
+
 }
 

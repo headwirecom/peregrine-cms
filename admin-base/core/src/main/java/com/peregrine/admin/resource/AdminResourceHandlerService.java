@@ -240,7 +240,6 @@ public class AdminResourceHandlerService
     private static final String NO_NEW_PARENT_RESOURCE_PROVIDED = "No new parent resource provided.";
     private static final String NO_JCR_CONTENT_FOR_COPY = "Resource being copied '%s' does not have a jcr:content resource child";
     private static final String COPY_GENERIC_EXCEPTION = "Exception occurred copying '%s' to '%s'";
-    private static final String VAR = "/var";
     private static final String NO_VAR_RESOURCE = "No resource exists at /var so temp resource could not be created";
     private static final String TEMP = "temp";
     private static final String NO_COPIED_RESOURCE = "Resource copy should've yielded a resource at '%s' but our resource is null";
@@ -2389,14 +2388,19 @@ public class AdminResourceHandlerService
         else {
             //For deep copies, we're actually copying the resource to a temp location and then moving it to its destination
             //to get around renaming and cyclical reference issues
-            Resource etc = resourceResolver.getResource(VAR);
-            if(etc == null) {
-                throw new ManagementException(NO_VAR_RESOURCE);
-            }
-            String tempResourceName = TEMP + System.currentTimeMillis() + new Random().nextInt(Integer.MAX_VALUE);
+            final String tenantVarPath = getTenantVarPath(resourceToCopy);
+            Resource tenantVarResource = resourceResolver.getResource(tenantVarPath);
+
             try {
+                if(tenantVarResource == null) {
+                    logger.debug("Tenant var path does not exist, creating: '{}'", tenantVarPath);
+                    tenantVarResource = resourceResolver.create(getTenantRootResource(resourceToCopy), "var",
+                            Collections.singletonMap("jcr:primaryType", (Object) "sling:Folder"));
+                }
+
                 //Create a temp location with a random (enough) path
-                Resource tempResource = resourceResolver.create(etc, tempResourceName, new HashMap<>());
+                String tempResourceName = TEMP + System.currentTimeMillis() + new Random().nextInt(Integer.MAX_VALUE);
+                Resource tempResource = resourceResolver.create(tenantVarResource, tempResourceName, new HashMap<>());
                 //Make a resource with the new name under the temp location
                 Resource tempCopy = resourceResolver.create(tempResource, newName, copyProps);
                 //Copy all the children of the original resource to the temp copy
