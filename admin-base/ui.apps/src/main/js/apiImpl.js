@@ -789,7 +789,7 @@ class PerAdminImpl {
   }
 
   copyPage(srcPath, targetPath) {
-    console.log("implement me")
+    console.log(`src=${srcPath}, taget=${targetPath}`)
   }
 
   movePage(path, to, type) {

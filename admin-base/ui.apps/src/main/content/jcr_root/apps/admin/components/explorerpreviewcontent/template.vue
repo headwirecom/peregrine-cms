@@ -233,6 +233,20 @@
         :onSelect="onMoveSelect">
     </admin-components-pathbrowser>
 
+    <admin-components-pathbrowser
+        v-if="isCopyOpen"
+        :isOpen="isCopyOpen"
+        :header="`Copy ${nodeName}`"
+        :browserRoot="browserRoot"
+        :browserType="nodeType"
+        :currentPath="path.current"
+        :selectedPath="path.selected"
+        :setCurrentPath="setCurrentPath"
+        :setSelectedPath="setSelectedPath"
+        :onCancel="onCopyCancel"
+        :onSelect="onCopySelect">
+    </admin-components-pathbrowser>
+
   </div>
 </template>
 
@@ -295,6 +309,7 @@
           errors: null
         },
         isOpen: false,
+        isCopyOpen: false,
         selectedPath: null,
         options: {
           validateAfterLoad: true,
@@ -588,13 +603,13 @@
         });
       },
       copyNode() {
-        const srcNode = this.currentObject
-        const targetNode = 'TODO'   // TODO: get target path from path browser
-
-        $perAdminApp.stateAction('copyPage', {
-          srcPath: srcNode,
-          targetPath: targetNode
+        $perAdminApp.getApi().populateNodesForBrowser(this.path.current, 'pathBrowser')
+            .then(() => {
+              this.isCopyOpen = true;
+            }).catch(() => {
+          $perAdminApp.getApi().populateNodesForBrowser(`/content/${site.tenant}`, 'pathBrowser');
         });
+
       },
       deleteNode() {
         const really = confirm(`Are you sure you want to delete this ${this.nodeType}?`);
@@ -641,6 +656,16 @@
                 console.log('no')
               }
           })
+      },
+      onCopySelect() {
+        $perAdminApp.stateAction('copyPage', {
+          srcPath: this.currentObject,
+          targetPath: this.path.selected
+        });
+        this.isCopyOpen = false;
+      },
+      onCopyCancel() {
+        this.isCopyOpen = false;
       },
       onMoveCancel() {
         this.isOpen = false;
