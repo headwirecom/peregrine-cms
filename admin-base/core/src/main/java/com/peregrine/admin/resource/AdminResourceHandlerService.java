@@ -82,6 +82,8 @@ import static com.peregrine.commons.util.PerUtil.isPrimaryType;
 import static com.peregrine.commons.util.PerUtil.isPropertyPresentAndEqualsTrue;
 import static com.peregrine.commons.util.PerUtil.toStringOrNull;
 import static com.peregrine.commons.util.PerUtil.checkResource;
+import static com.peregrine.commons.util.PerUtil.getTenantVarPath;
+import static com.peregrine.commons.util.PerUtil.getTenantRootResource;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isAnyBlank;
