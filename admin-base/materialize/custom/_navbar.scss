@@ -327,6 +327,16 @@ nav {
         &.separate {
           margin-right: 10px;
         }
+
+        &.group-special-characters {
+          .materialize-drop-down {
+            .dropdown-content {
+              &.scrollable {
+                min-width: 75px;
+              }
+            }
+          }
+        }
       }
 
       .btn {

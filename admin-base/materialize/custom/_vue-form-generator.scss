@@ -548,6 +548,16 @@
                                     border-left-color: var(--pcms-gray);
                                 }
                             }
+
+                            &.group-special-characters {
+                                .materialize-drop-down {
+                                    .dropdown-content {
+                                        &.scrollable {
+                                            min-width: 75px;
+                                        }
+                                    }
+                                }
+                            }
                         }
 
                         .btn {
