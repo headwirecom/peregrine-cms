@@ -110,7 +110,7 @@
                     <scans>
                         <scan>
                             <includeClassifier>oak_tar</includeClassifier>
-                            <includeClassifier>oak_mongo</includeClassifier>
+                            <includeClassifier>oak_tar_fds</includeClassifier>
                             <includeClassifier>nosample_base</includeClassifier>
                         </scan>
                     </scans>
@@ -120,8 +120,8 @@
                             <includeClassifier>oak_tar</includeClassifier>
                         </archive>
                         <archive>
-                            <classifier>oak_mongo_far</classifier>
-                            <includeClassifier>oak_mongo</includeClassifier>
+                            <classifier>oak_tar_fds_far</classifier>
+                            <includeClassifier>oak_tar_fds</includeClassifier>
                         </archive>
                     </archives>
                 </configuration>
