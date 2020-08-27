@@ -1,22 +1,18 @@
-import {IconLib} from '../../../../../../../../js/constants'
+import htmlEncoder from '../../../../../../../../js/utils/htmlEncoder'
 
 export default (vm) => {
-  return [
-    {
-      label: '&',
-      icon: '&',
-      iconLib: IconLib.PLAIN_TEXT,
+  const specialChars = []
+
+  htmlEncoder.arr2.forEach((encoded) => {
+    const decoded = htmlEncoder.htmlDecode(encoded)
+
+    specialChars.push({
+      label: decoded,
       click: () => {
-        vm.insertSpecialCharacter('&')
+        vm.execCmd('insertHTML', `${encoded}`)
       }
-    },
-    {
-      label: '€',
-      icon: '€',
-      iconLib: IconLib.PLAIN_TEXT,
-      click: () => {
-        vm.insertSpecialCharacter('€')
-      }
-    }
-  ]
+    },)
+  })
+
+  return specialChars
 }

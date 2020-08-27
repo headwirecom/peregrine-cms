@@ -75,6 +75,7 @@ import {
   listGroup,
   removeFormatGroup,
   responsiveMenuGroup,
+  specialCharactersGroup,
   superSubScriptGroup,
   textFormatGroup
 } from './groups'
@@ -153,6 +154,7 @@ export default {
         alignGroup(this),
         listGroup(this),
         iconsGroup(this),
+        specialCharactersGroup(this),
         removeFormatGroup(this)
       ]
     },
@@ -359,8 +361,8 @@ export default {
       const src = target.getAttribute('src')
       const srcArr = src.split('/')
       const img = {
-        width: target.style.width? parseInt(target.style.width) : null,
-        height: target.style.height? parseInt(target.style.height) : null
+        width: target.style.width ? parseInt(target.style.width) : null,
+        height: target.style.height ? parseInt(target.style.height) : null
       }
       vm.param.cmd = 'editImage'
       vm.browser.header = vm.$i18n('Edit Image')
@@ -384,9 +386,6 @@ export default {
       //this.execCmd('insertHTML', `<div><svg class="fill-current" viewBox="0 0 24 24" style="width: 24px; height: 24px;"><use xlink:href="#${name}" href="#${name}"></use></svg></div>`)
 
       this.execCmd('insertHTML', `&nbsp;[icon:${name}]&nbsp;`)
-    },
-    insertSpecialCharacter(original) {
-      console.log(HtmlEncoder.htmlEncode(original))
     },
     setViewport(viewport) {
       set($perAdminApp.getView(), '/state/tools/workspace/view', viewport)
