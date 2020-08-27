@@ -377,7 +377,13 @@ export default {
       vm.startBrowsing()
     },
     insertIcon(name) {
-      this.execCmd('insertHTML', `<div><svg class="fill-current" viewBox="0 0 24 24" style="width: 24px; height: 24px;"><use xlink:href="#${name}" href="#${name}"></use></svg></div>`)
+      /**
+       * original disabled for now
+       * due to issues with css property "white-space: pre-wrap"
+       */
+      //this.execCmd('insertHTML', `<div><svg class="fill-current" viewBox="0 0 24 24" style="width: 24px; height: 24px;"><use xlink:href="#${name}" href="#${name}"></use></svg></div>`)
+
+      this.execCmd('insertHTML', `&nbsp;[#${name}]&nbsp;`)
     },
     setViewport(viewport) {
       set($perAdminApp.getView(), '/state/tools/workspace/view', viewport)
