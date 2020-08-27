@@ -385,6 +385,9 @@ export default {
 
       this.execCmd('insertHTML', `&nbsp;[icon:${name}]&nbsp;`)
     },
+    insertSpecialCharacter(original) {
+      console.log(HtmlEncoder.htmlEncode(original))
+    },
     setViewport(viewport) {
       set($perAdminApp.getView(), '/state/tools/workspace/view', viewport)
     },
