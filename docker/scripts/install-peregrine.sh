@@ -20,4 +20,7 @@ echo "Building peregrine using branch: ${BRANCH}"
 git clone ${REPO}
 cd ${DIR}
 git checkout ${BRANCH}
+
+/app/scripts/start.sh
+
 mvn clean install -PautoInstallPackage

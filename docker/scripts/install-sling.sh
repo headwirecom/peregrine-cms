@@ -30,24 +30,26 @@ mvn clean install
 # Move Sling assets to target installation dir
 mkdir -v -p /app/sling
 mv -v target/dependency/org.apache.sling.feature.launcher.jar /app/sling
-mv -v target/slingfeature-tmp/feature-oak_tar_fds.json /app/sling
-cd ..
+mv -v target/slingfeature-tmp/feature-oak_tar.json /app/sling
+cd ../..
 
 rm -rf ${DIR1}
 
 echo "Starting Sling for the first time..."
-cd /app/sling && java -jar /app/sling/org.apache.sling.feature.launcher.jar \
-    -f /app/sling/feature-oak_tar_fds.json \
-    -p /app/sling \
-    -c /app/sling/launcher/cache &
 
-# Wait for Sling to fully start up
-STATUS=$(curl -u admin:admin -s --fail  http://localhost:8080/system/console/bundles.json | jq '.s[3:5]' -c)
-if [ "$STATUS" != "[0,0]" ]; then
-  while [ "$STATUS" != "[0,0]" ]
-  do
-    echo "Sling still starting. Waiting for all bundles to be ready.."
-    STATUS=$(curl -u admin:admin -s --fail  http://localhost:8080/system/console/bundles.json | jq '.s[3:5]' -c)
-    sleep 5
-  done
-fi
+/app/scripts/start.sh
+# cd /app/sling && java -jar /app/sling/org.apache.sling.feature.launcher.jar \
+#     -f /app/sling/feature-oak_tar.json \
+#     -p /app/sling  \
+#     -c /app/sling/launcher/cache &&
+
+# # Wait for Sling to fully start up
+# STATUS=$(curl -u admin:admin -s --fail  http://localhost:8080/system/console/bundles.json | jq '.s[3:5]' -c)
+# if [ "$STATUS" != "[0,0]" ]; then
+#   while [ "$STATUS" != "[0,0]" ]
+#   do    
+#     echo "Sling still starting. Waiting for all bundles to be ready.."
+#     STATUS=$(curl -u admin:admin -s --fail  http://localhost:8080/system/console/bundles.json | jq '.s[3:5]' -c)
+#     sleep 5
+#   done
+# fi
