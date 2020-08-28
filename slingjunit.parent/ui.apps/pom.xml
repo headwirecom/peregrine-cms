@@ -42,7 +42,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>slingjunit</artifactId>
+            <artifactId>slingjunit.core</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
@@ -98,7 +98,7 @@
                             <embeddeds>
                                 <embedded>
                                     <groupId>${project.groupId}</groupId>
-                                    <artifactId>slingjunit</artifactId>
+                                    <artifactId>slingjunit.core</artifactId>
                                     <generateFilter>true</generateFilter>
                                 </embedded>
                             </embeddeds>

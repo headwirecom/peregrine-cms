@@ -32,6 +32,7 @@
   <artifactId>slingjunit.parent</artifactId>
   <packaging>pom</packaging>
   <name>Peregrine Sling-JUnit Parent</name>
+  <version>1.0-SNAPSHOT</version>
   <description>Parent for Sling JUnit Tests</description>
 
 
