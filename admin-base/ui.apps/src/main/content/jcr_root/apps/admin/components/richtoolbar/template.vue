@@ -1,5 +1,5 @@
 <template>
-  <div class="toolbar" :class="{disabled: !inlineRich || preview === 'preview'}">
+  <div class="richtoolbar" :class="{disabled: !inlineRich || preview === 'preview'}">
     <admin-components-richtoolbargroup
         v-if="groupAllowed(alwaysActiveGroup)"
         :icon="alwaysActiveGroup.icon"
