@@ -25,7 +25,7 @@ git clone ${REPO}
 cd ${DIR1}
 git checkout ${BRANCH}
 cd ${DIR2}
-mvn clean install
+mvn clean install --quiet
 
 # Move Sling assets to target installation dir
 mkdir -v -p /app/sling

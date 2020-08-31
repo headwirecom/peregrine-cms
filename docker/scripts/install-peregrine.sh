@@ -23,4 +23,4 @@ git checkout ${BRANCH}
 
 /app/scripts/start.sh
 
-mvn clean install -PautoInstallPackage
+mvn clean install -PautoInstallPackage --quiet
