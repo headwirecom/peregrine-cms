@@ -7,6 +7,7 @@ export default (vm) => {
     icon: 'copyright',
     iconLib: IconLib.FONT_AWESOME,
     collapse: true,
+    searchable: true,
     rules: () => !vm.responsive || !vm.hiddenGroups['special-characters'],
     items: [
       ...specialCharacters(vm)

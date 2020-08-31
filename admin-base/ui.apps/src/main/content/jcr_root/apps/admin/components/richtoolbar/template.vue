@@ -22,6 +22,7 @@
           :title="group.title"
           :active="groupIsActive(group)"
           :items="group.items"
+          :searchable="group.searchable"
           :class="group.class"
           @click="exec($event.btn.cmd)"/>
     </template>

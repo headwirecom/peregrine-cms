@@ -8,6 +8,7 @@ export default (vm) => {
     specialChars.push({
       label: HtmlEncoder.htmlDecode(`&#${char.code};`),
       title: char.name,
+      name: char.name,
       click: () => {
         vm.execCmd('insertHTML', `&#${char.code};`)
       }
