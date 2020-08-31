@@ -76,6 +76,10 @@
       }
     }
 
+    .btn-group {
+      border-left: 1px solid var(--pcms-gray);
+    }
+
     .btn {
       width: 2rem;
       height: 2rem;
@@ -86,10 +90,6 @@
       color: #222222;
       box-shadow: unset;
       background-color: unset;
-
-      &:first-child {
-        border-left-color: var(--pcms-gray);
-      }
 
       .label {
         color: #222;
@@ -205,7 +205,8 @@
     }
 
     &:hover:not(.active) {
-      background-color: var(--pcms-orange-hover)
+      background-color: var(--pcms-orange-hover);
+      border: none;
     }
 
     .label {
