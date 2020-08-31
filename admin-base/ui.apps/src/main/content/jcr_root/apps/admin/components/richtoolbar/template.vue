@@ -24,6 +24,7 @@
           :items="group.items"
           :searchable="group.searchable"
           :class="group.class"
+          @toggle-click="group.toggleClick? group.toggleClick() : () => {}"
           @click="exec($event.btn.cmd)"/>
     </template>
     <admin-components-richtoolbargroup
@@ -97,6 +98,7 @@ export default {
   },
   data() {
     return {
+      console,
       key: 0,
       selection: {
         restore: false,

@@ -10,6 +10,7 @@
         :items="vItems"
         :searchable="searchable"
         @mousedown.native.prevent="() => {}"
+        @toggle-click="$emit('toggle-click')"
         @item-click="$emit('click', {btn: $event})">
       <admin-components-icon v-if="icon" :icon="vIcon" :lib="iconLib"/>
       <span class="caret-down"></span>

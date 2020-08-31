@@ -1,5 +1,10 @@
 <template>
-  <component :is="tag" tabindex="-1" @focusout="onFocusOut" class="materialize-drop-down">
+  <component
+      :is="tag"
+      tabindex="-1"
+      @focusout="onFocusOut"
+      class="materialize-drop-down"
+      @click="$emit('toggle-click')">
     <a href="#" ref="dd" :data-activates="id">
       <slot></slot>
     </a>

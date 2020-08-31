@@ -10,7 +10,10 @@ export default (vm) => {
       title: char.name,
       name: char.name,
       click: () => {
-        vm.execCmd('insertHTML', `&#${char.code};`)
+        vm.restoreSelection()
+        vm.$nextTick(() => {
+          vm.execCmd('insertHTML', `&#${char.code};`)
+        })
       }
     },)
   })

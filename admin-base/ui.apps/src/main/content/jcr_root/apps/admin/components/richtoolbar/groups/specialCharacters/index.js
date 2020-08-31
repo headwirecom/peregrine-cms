@@ -11,6 +11,9 @@ export default (vm) => {
     rules: () => !vm.responsive || !vm.hiddenGroups['special-characters'],
     items: [
       ...specialCharacters(vm)
-    ]
+    ],
+    toggleClick() {
+      vm.saveSelection()
+    }
   }
 }
