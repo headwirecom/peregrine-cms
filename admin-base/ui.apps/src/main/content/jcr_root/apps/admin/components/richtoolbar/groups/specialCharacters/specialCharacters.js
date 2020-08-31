@@ -1,15 +1,15 @@
-import htmlEncoder from '../../../../../../../../js/utils/htmlEncoder'
+import {simpleCharMap} from '../../../../../../../../js/utils/charMap'
+import HtmlEncoder from '../../../../../../../../js/utils/htmlEncoder'
 
 export default (vm) => {
   const specialChars = []
 
-  htmlEncoder.arr2.forEach((encoded) => {
-    const decoded = htmlEncoder.htmlDecode(encoded)
-
+  simpleCharMap.forEach((char) => {
     specialChars.push({
-      label: decoded,
+      label: HtmlEncoder.htmlDecode(`&#${char.code};`),
+      title: char.name,
       click: () => {
-        vm.execCmd('insertHTML', `${encoded}`)
+        vm.execCmd('insertHTML', `&#${char.code};`)
       }
     },)
   })
