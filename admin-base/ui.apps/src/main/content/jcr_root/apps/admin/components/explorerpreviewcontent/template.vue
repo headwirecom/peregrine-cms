@@ -517,6 +517,9 @@
         let resourceType = this.rawCurrentObject.data['component'];
         if (!resourceType) {
           resourceType = this.rawCurrentObject.data['sling:resourceType'];
+          if(!resourceType) {
+            resourceType = this.rawCurrentObject.data['objectPath'];
+          }
         }
         return resourceType.split('/').join('-');
       },
