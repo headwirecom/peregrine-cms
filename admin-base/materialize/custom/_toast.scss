@@ -46,6 +46,15 @@
       content: '';
     }
 
+    &.info {
+      background-color: var(--info-bg);
+      color: var(--info-color);
+
+      &:before {
+        content: 'info'
+      }
+    }
+
     &.warn {
       background-color: var(--warn-bg);
       color: var(--warn-color);

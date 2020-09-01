@@ -1,5 +1,5 @@
 <template>
-  <div class="toolbar" :class="{disabled: !inlineRich || preview === 'preview'}">
+  <div class="richtoolbar" :class="{disabled: !inlineRich || preview === 'preview'}">
     <admin-components-richtoolbargroup
         v-if="groupAllowed(alwaysActiveGroup)"
         :icon="alwaysActiveGroup.icon"
@@ -22,7 +22,9 @@
           :title="group.title"
           :active="groupIsActive(group)"
           :items="group.items"
+          :searchable="group.searchable"
           :class="group.class"
+          @toggle-click="group.toggleClick? group.toggleClick() : () => {}"
           @click="exec($event.btn.cmd)"/>
     </template>
     <admin-components-richtoolbargroup
@@ -75,6 +77,7 @@ import {
   listGroup,
   removeFormatGroup,
   responsiveMenuGroup,
+  specialCharactersGroup,
   superSubScriptGroup,
   textFormatGroup
 } from './groups'
@@ -95,6 +98,7 @@ export default {
   },
   data() {
     return {
+      console,
       key: 0,
       selection: {
         restore: false,
@@ -153,6 +157,7 @@ export default {
         alignGroup(this),
         listGroup(this),
         iconsGroup(this),
+        specialCharactersGroup(this),
         removeFormatGroup(this)
       ]
     },
@@ -359,8 +364,8 @@ export default {
       const src = target.getAttribute('src')
       const srcArr = src.split('/')
       const img = {
-        width: target.style.width? parseInt(target.style.width) : null,
-        height: target.style.height? parseInt(target.style.height) : null
+        width: target.style.width ? parseInt(target.style.width) : null,
+        height: target.style.height ? parseInt(target.style.height) : null
       }
       vm.param.cmd = 'editImage'
       vm.browser.header = vm.$i18n('Edit Image')
@@ -375,6 +380,15 @@ export default {
       vm.browser.img.width = img.width
       vm.browser.img.height = img.height
       vm.startBrowsing()
+    },
+    insertIcon(name) {
+      /**
+       * original disabled for now
+       * due to issues with css property "white-space: pre-wrap"
+       */
+      //this.execCmd('insertHTML', `<div><svg class="fill-current" viewBox="0 0 24 24" style="width: 24px; height: 24px;"><use xlink:href="#${name}" href="#${name}"></use></svg></div>`)
+
+      this.execCmd('insertHTML', `&nbsp;[icon:${name}]&nbsp;`)
     },
     setViewport(viewport) {
       set($perAdminApp.getView(), '/state/tools/workspace/view', viewport)

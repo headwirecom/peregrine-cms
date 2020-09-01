@@ -788,6 +788,21 @@ class PerAdminImpl {
     })
   }
 
+  copyPage(srcPath, targetPath) {
+    return new Promise((resolve, reject) => {
+      let data = new FormData()
+      data.append('path', srcPath)
+      data.append('to', targetPath)
+      data.append('deep', 'true')
+      data.append('newName', name)
+      data.append('newTitle', name)
+      data.append('type', 'child')
+      updateWithForm('/admin/createPageFromSkeletonPage.json', data)
+          .then((data) => this.populateNodesForBrowser(srcPath))
+          .then(() => resolve())
+    })
+  }
+
   movePage(path, to, type) {
     let data = new FormData()
     data.append('to', to)

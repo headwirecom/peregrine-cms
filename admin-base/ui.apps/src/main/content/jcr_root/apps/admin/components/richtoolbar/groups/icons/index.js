@@ -7,7 +7,7 @@ export default (vm) => {
     icon: 'flag',
     iconLib: IconLib.FONT_AWESOME,
     collapse: true,
-    rules: () => !vm.responsive || !vm.hiddenGroups['bold-italic'],
+    rules: () => !vm.responsive || !vm.hiddenGroups['icons'],
     items: [
       ...icons(vm)
     ]

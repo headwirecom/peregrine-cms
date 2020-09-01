@@ -57,6 +57,7 @@ export const Icon = {
   SETTINGS: 'settings',
   TEXT_FORMAT: 'text_format',
   COMPARE_ARROWS: 'compare_arrows',
+  COPY: 'content_copy',
   DELETE: 'delete',
   INFO: 'info',
   EDIT: 'edit',
@@ -131,6 +132,7 @@ export const DropDown = {
 
 export const Toast = {
   Level: {
+    INFO: 'info',
     WARNING: 'warn',
     ERROR: 'error'
   }

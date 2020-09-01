@@ -957,7 +957,8 @@ export default {
       },
 
       isFromTemplate(el) {
-        return $perAdminApp.findNodeFromPath(this.pageView.page, this.getPath(el)).fromTemplate
+        const node = $perAdminApp.findNodeFromPath(this.pageView.page, this.getPath(el))
+        return node? node.fromTemplate : false
       },
 
       /* Drag and Drop ===========================

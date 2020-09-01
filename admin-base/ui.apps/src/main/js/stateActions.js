@@ -35,6 +35,7 @@ import deletePage from './stateActions/deletePage'
 import deleteTenant from './stateActions/deleteTenant'
 import configureTenant from './stateActions/configureTenant'
 import renamePage from './stateActions/renamePage'
+import copyPage from './stateActions/copyPage'
 import movePage from './stateActions/movePage'
 import createTemplate from './stateActions/createTemplate'
 import createTemplateWizard from './stateActions/createTemplateWizard'
@@ -110,6 +111,7 @@ actions['deletePage'] = deletePage
 actions['deleteTenant'] = deleteTenant
 actions['configureTenant'] = configureTenant
 actions['renamePage'] = renamePage
+actions['copyPage'] = copyPage
 actions['movePage'] = movePage
 actions['createTemplate'] = createTemplate
 actions['createTemplateWizard'] = createTemplateWizard
