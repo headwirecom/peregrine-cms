@@ -617,7 +617,6 @@ export default {
             },
 
             addObjectDefinition: function(me, target) {
-                console.log(me)
                 const tenant = $perAdminApp.getView().state.tenant
                 const path = me.pt ? me.pt.path : `/content/${tenant.name}/object-definitions`
                 if(path.startsWith(`/content/${tenant.name}/object-definitions`)) {

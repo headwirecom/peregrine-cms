@@ -462,7 +462,6 @@
         }
         if (this.nodeType === NodeType.OBJECT) {
           component = this.getObjectComponent();
-          console.log(component)
         }
         const componentDefinitions = view.admin.componentDefinitions
         if (!componentDefinitions) {
