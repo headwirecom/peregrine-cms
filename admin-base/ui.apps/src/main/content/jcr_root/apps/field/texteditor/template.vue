@@ -25,6 +25,7 @@
 <template>
   <div class="text-editor-wrapper">
     <admin-components-richtoolbar
+        class="on-right-panel"
         :show-always-active="false"
         :responsive="false"/>
     <p class="text-editor inline-edit"

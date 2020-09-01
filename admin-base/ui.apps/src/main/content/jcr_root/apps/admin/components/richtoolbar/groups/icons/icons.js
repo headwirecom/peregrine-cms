@@ -30,10 +30,7 @@ export default (vm) => {
       icon: img,
       iconLib: IconLib.PLAIN_TEXT,
       click: () => {
-        vm.param.cmd = 'insertImage'
-        vm.browser.path.selected = child.path
-        vm.browser.linkTitle = child.name
-        vm.onBrowserSelect()
+        vm.insertIcon(name)
       },
     })
   })
