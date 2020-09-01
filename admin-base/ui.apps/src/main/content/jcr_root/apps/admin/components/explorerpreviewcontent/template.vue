@@ -182,6 +182,10 @@
             <i class="material-icons">{{Icon.COMPARE_ARROWS}}</i>
             Move {{nodeType}}
           </div>
+          <div class="action" :title="`copy ${nodeType}`" @click="copyNode()">
+            <i class="material-icons">{{Icon.COPY}}</i>
+            Copy {{nodeType}}
+          </div>
           <div class="action" :title="`delete ${nodeType}`" @click="deleteNode()">
             <i class="material-icons">{{Icon.DELETE}}</i>
             Delete {{nodeType}}
@@ -227,6 +231,20 @@
         :setSelectedPath="setSelectedPath"
         :onCancel="onMoveCancel"
         :onSelect="onMoveSelect">
+    </admin-components-pathbrowser>
+
+    <admin-components-pathbrowser
+        v-if="isCopyOpen"
+        :isOpen="isCopyOpen"
+        :header="`Copy ${nodeName}`"
+        :browserRoot="browserRoot"
+        :browserType="nodeType"
+        :currentPath="path.current"
+        :selectedPath="path.selected"
+        :setCurrentPath="setCurrentPath"
+        :setSelectedPath="setSelectedPath"
+        :onCancel="onCopyCancel"
+        :onSelect="onCopySelect">
     </admin-components-pathbrowser>
 
   </div>
@@ -291,6 +309,7 @@
           errors: null
         },
         isOpen: false,
+        isCopyOpen: false,
         selectedPath: null,
         options: {
           validateAfterLoad: true,
@@ -583,6 +602,15 @@
           $perAdminApp.getApi().populateNodesForBrowser(`/content/${site.tenant}`, 'pathBrowser');
         });
       },
+      copyNode() {
+        $perAdminApp.getApi().populateNodesForBrowser(this.path.current, 'pathBrowser')
+            .then(() => {
+              this.isCopyOpen = true;
+            }).catch(() => {
+          $perAdminApp.getApi().populateNodesForBrowser(`/content/${site.tenant}`, 'pathBrowser');
+        });
+
+      },
       deleteNode() {
         const really = confirm(`Are you sure you want to delete this ${this.nodeType}?`);
         if (really) {
@@ -628,6 +656,16 @@
                 console.log('no')
               }
           })
+      },
+      onCopySelect() {
+        $perAdminApp.stateAction('copyPage', {
+          srcPath: this.currentObject,
+          targetPath: this.path.selected
+        });
+        this.isCopyOpen = false;
+      },
+      onCopyCancel() {
+        this.isCopyOpen = false;
       },
       onMoveCancel() {
         this.isOpen = false;
