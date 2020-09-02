@@ -17,7 +17,7 @@ export default {
       },
       lib: {
         type: String,
-        required: true,
+        required: false,
         default: IconLib.MATERIAL_ICONS,
         validator: libValidator
       }

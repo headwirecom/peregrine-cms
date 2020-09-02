@@ -58,7 +58,7 @@ export default {
     },
     iconLib: {
       type: String,
-      default: IconLib.FONT_AWESOME,
+      default: IconLib.MATERIAL_ICONS,
       validator: iconLibValidator
     },
     collapse: {

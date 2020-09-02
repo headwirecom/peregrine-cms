@@ -19,7 +19,7 @@ export default {
       icon: [String, Function],
       iconLib: {
         type: String,
-        default: IconLib.FONT_AWESOME,
+        default: IconLib.MATERIAL_ICONS,
         validator: iconLibValidator
       },
       label: String,
