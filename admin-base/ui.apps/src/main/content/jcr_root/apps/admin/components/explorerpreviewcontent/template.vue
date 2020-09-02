@@ -251,11 +251,24 @@
 </template>
 
 <script>
-  import {Icon, MimeType, NodeType, SUFFIX_PARAM_SEPARATOR} from '../../../../../../js/constants'
-  import {deepClone} from '../../../../../../js/utils'
-  import NodeNameValidation from '../../../../../../js/mixins/NodeNameValidation'
+import {
+  Icon,
+  IconLib,
+  MimeType,
+  NodeType,
+  SUFFIX_PARAM_SEPARATOR
+} from '../../../../../../js/constants'
+import {deepClone} from '../../../../../../js/utils'
+import NodeNameValidation from '../../../../../../js/mixins/NodeNameValidation'
+import IconCmp from '../icon/template.vue'
+import PathBrowser from '../pathbrowser/template.vue'
+import MaterializeModal from '../materializemodal/template.vue'
+import ConfirmDialog from '../confirmdialog/template.vue'
+import Action from '../action/template.vue'
+import ExplorerPreviewNavItem from '../explorerpreviewnavitem/template.vue'
+import IconEditPage from '../iconeditpage/template.vue'
 
-  const Tab = {
+const Tab = {
     INFO: 'info',
     OG_TAGS: 'og-tags',
     REFERENCES: 'references',
@@ -270,6 +283,16 @@
   };
 
   export default {
+    name: 'ExplorerPreviewContent',
+    components: {
+      Icon: IconCmp,
+      PathBrowser,
+      MaterializeModal,
+      ConfirmDialog,
+      Action,
+      ExplorerPreviewNavItem,
+      IconEditPage
+    },
     props: {
       model: {
         type: Object,
