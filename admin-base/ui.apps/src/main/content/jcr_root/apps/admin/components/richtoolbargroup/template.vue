@@ -48,6 +48,7 @@
 
 <script>
 import {IconLib} from '../../../../../../js/constants'
+import iconLibValidator from '../../../../../../js/validators/iconLib'
 
 export default {
   name: 'RichToolbarGroup',
@@ -57,7 +58,8 @@ export default {
     },
     iconLib: {
       type: String,
-      default: IconLib.FONT_AWESOME
+      default: IconLib.FONT_AWESOME,
+      validator: iconLibValidator
     },
     collapse: {
       type: Boolean,

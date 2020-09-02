@@ -6,6 +6,7 @@
 
 <script>
 import {IconLib} from '../../../../../../js/constants'
+import libValidator from '../../../../../../js/validators/iconLib'
 
 export default {
     name: 'Icon',
@@ -17,7 +18,8 @@ export default {
       lib: {
         type: String,
         required: true,
-        default: IconLib.MATERIAL_ICONS
+        default: IconLib.MATERIAL_ICONS,
+        validator: libValidator
       }
     },
     computed: {

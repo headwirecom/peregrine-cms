@@ -8,7 +8,9 @@
 </template>
 
 <script>
-  export default {
+import iconLibValidator from '../../../../../../js/validators/iconLib'
+
+export default {
     name: 'ExplorerPreviewNavItem',
     props: {
       title: {
@@ -18,6 +20,11 @@
       icon: {
         type: String,
         required: true
+      },
+      iconLib: {
+        type: String,
+        required: false,
+        validator: iconLibValidator
       }
     },
     data: function () {
