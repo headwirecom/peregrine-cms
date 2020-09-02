@@ -180,7 +180,7 @@
           <div v-if="nodeType === NodeType.PAGE"
                class="action"
                title="open live version"
-               @click="$refs.renameModal.open()">
+               @click="openLiveVersion">
             <icon icon="external-link" :lib="IconLib.FONT_AWESOME"/>
             Open live version
           </div>
@@ -772,6 +772,9 @@ export default {
         return arg.indexOf(this.activeTab) > -1;
       }
       return this.activeTab === arg;
+    },
+    openLiveVersion() {
+      alert('not implemented yet')
     }
   }
 }
