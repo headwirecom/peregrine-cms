@@ -775,9 +775,9 @@ export default {
     },
     openLiveVersion() {
       const view = $perAdminApp.getView()
-      const page = get(view, '/pageView/path', null)
+      const domains = get(view, '/pageView/page/domains', null)
 
-      window.open(page + '.html', 'viewer')
+      console.log('openLiveVersion:', domains)
     }
   }
 }
