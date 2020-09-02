@@ -38,6 +38,7 @@
 
 <script>
   export default {
+    name: 'MaterializeModal',
     props: {
       dismissible: {
         type: Boolean,

@@ -9,6 +9,7 @@
 
 <script>
   export default {
+    name: 'ExplorerPreviewNavItem',
     props: {
       title: {
         type: String,
