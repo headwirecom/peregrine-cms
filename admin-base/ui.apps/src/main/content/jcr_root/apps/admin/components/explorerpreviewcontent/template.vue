@@ -178,7 +178,7 @@
       <template v-else-if="isTab(Tab.ACTIONS)">
         <div v-if="allowOperations" class="action-list">
           <div v-if="nodeType === NodeType.PAGE"
-               class="action"
+               class="action disabled"
                title="open live version"
                @click="openLiveVersion">
             <icon icon="external-link" :lib="IconLib.FONT_AWESOME"/>
@@ -262,7 +262,7 @@
 
 <script>
 import {IconLib, MimeType, NodeType, SUFFIX_PARAM_SEPARATOR} from '../../../../../../js/constants'
-import {deepClone} from '../../../../../../js/utils'
+import {deepClone, get} from '../../../../../../js/utils'
 import NodeNameValidation from '../../../../../../js/mixins/NodeNameValidation'
 import Icon from '../icon/template.vue'
 import PathBrowser from '../pathbrowser/template.vue'
@@ -774,7 +774,10 @@ export default {
       return this.activeTab === arg;
     },
     openLiveVersion() {
-      alert('not implemented yet')
+      const view = $perAdminApp.getView()
+      const page = get(view, '/pageView/path', null)
+
+      window.open(page + '.html', 'viewer')
     }
   }
 }
