@@ -77,6 +77,14 @@
         transition: background-color 0.25s ease-out;
         cursor: pointer;
 
+        &.disabled {
+          color: var(--pcms-gray);
+
+          &:hover {
+            background-color: inherit;
+          }
+        }
+
         &:hover {
           background-color: rgba(0, 0, 0, .1)
         }
