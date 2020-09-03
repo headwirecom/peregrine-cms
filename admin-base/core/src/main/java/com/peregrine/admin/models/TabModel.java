@@ -25,7 +25,7 @@ package com.peregrine.admin.models;
  * #L%
  */
 
-import static com.peregrine.admin.util.AdminConstants.EXPLORER_COMPONENT_PATH;
+import static com.peregrine.admin.util.AdminConstants.TAB_COMPONENT_PATH;
 import static com.peregrine.commons.util.PerConstants.JACKSON;
 import static com.peregrine.commons.util.PerConstants.JSON;
 
@@ -38,7 +38,7 @@ import org.apache.sling.models.annotations.Model;
 
 
 @Model(adaptables = Resource.class,
-    resourceType = EXPLORER_COMPONENT_PATH,
+    resourceType = TAB_COMPONENT_PATH,
     defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL,
     adapters = IComponent.class)
 @Exporter(name = JACKSON, extensions = JSON)
