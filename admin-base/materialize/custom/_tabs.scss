@@ -1,0 +1,20 @@
+.tabs-wrapper {
+
+}
+
+.tab-component {
+  position: relative;
+  float:left;
+  z-index: 50;
+
+  .toggle {
+    min-width: 80px;
+    min-height: 30px;
+    border: 1px solid #000000;
+    background-color: var(--pcms-orange);
+  }
+
+  .content {
+
+  }
+}

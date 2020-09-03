@@ -161,19 +161,24 @@
 
     </nav>
 
-    <workspace jcr:primaryType="nt:unstructured"
-      sling:resourceType="admin/components/workspace">
 
-      <contentview jcr:primaryType="nt:unstructured"
-        sling:resourceType="admin/components/contentview" text="content"/>
+    <tabs jcr:primaryType="nt:unstructured" sling:resourceType="admin/components/tabswrapper">
+      <tab jcr:primaryType="nt:unstructured" sling:resourceType="admin/components/tab">
+          <workspace jcr:primaryType="nt:unstructured"
+            sling:resourceType="admin/components/workspace">
 
-      <editor jcr:primaryType="nt:unstructured"
-        sling:resourceType="admin/components/editor" text="content"/>
+            <contentview jcr:primaryType="nt:unstructured"
+              sling:resourceType="admin/components/contentview" text="content"/>
 
-      <right-panel jcr:primaryType="nt:unstructured"
-        sling:resourceType="admin/components/pageview"/>
+            <editor jcr:primaryType="nt:unstructured"
+              sling:resourceType="admin/components/editor" text="content"/>
 
-    </workspace>
+            <right-panel jcr:primaryType="nt:unstructured"
+              sling:resourceType="admin/components/pageview"/>
+
+          </workspace>
+      </tab>
+    </tabs>
 
     <jsonview jcr:primaryType="nt:unstructured"
       sling:resourceType="admin/components/debugger" dataFrom="/"/>
