@@ -239,11 +239,9 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
     }
 
     private void notifyCacheRefreshed(final Resource rootPage, final List<SiteMapEntry> entries) {
-        new Thread(() -> {
-            for (final RefreshListener listener : refreshListeners) {
-                listener.onCacheRefreshed(rootPage, entries);
-            }
-        }).start();
+        for (final RefreshListener listener : refreshListeners) {
+            listener.onCacheRefreshed(rootPage, entries);
+        }
     }
 
     private void removeCachedItemsStartingAtIndex(final Resource target, final int startItemIndex) throws PersistenceException {
