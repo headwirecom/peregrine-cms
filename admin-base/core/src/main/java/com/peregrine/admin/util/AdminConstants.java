@@ -1,6 +1,7 @@
 package com.peregrine.admin.util;
 
 public class AdminConstants {
+    public static final String COMPONENT_PATH = "admin/components";
 
     // Component Paths use for Admin Models
     public static final String TAG_OBJECT_PATH = "admin/objects/tag";
@@ -20,6 +21,10 @@ public class AdminConstants {
     public static final String PATH_FIELD_COMPONENT_PATH = "admin/components/pathfield";
     public static final String SUB_NAV_COMPONENT_PATH = "admin/components/subnav";
     public static final String TOUR_COMPONENT_PATH = "admin/components/tour";
+    public static final String TABS_WRAPPER_COMPONENT_PATH = COMPONENT_PATH + "/tabswrapper";
+    public static final String TAB_COMPONENT_PATH = COMPONENT_PATH + "/tab";
+
+
     public static final String SEARCH_PATH = "/bin/search";
 
     public static final String MODEL_JSON = ".model.json";
