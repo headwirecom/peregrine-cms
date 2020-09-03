@@ -178,7 +178,7 @@
       <template v-else-if="isTab(Tab.ACTIONS)">
         <div v-if="allowOperations" class="action-list">
           <div v-if="nodeType === NodeType.PAGE"
-               class="action disabled"
+               class="action"
                title="open live version"
                @click="openLiveVersion">
             <icon icon="external-link" :lib="IconLib.FONT_AWESOME"/>
@@ -775,9 +775,20 @@ export default {
     },
     openLiveVersion() {
       const view = $perAdminApp.getView()
-      const domains = get(view, '/pageView/page/domains', null)
+      const page = get(view, '/pageView/page', null)
 
-      console.log('openLiveVersion:', domains)
+      if (!page) return;
+
+      const {
+        primaryDomain,
+        pagePath
+      } = page
+
+      if (primaryDomain && pagePath) {
+        const tenant = pagePath.split('/')[1]
+
+        window.open(`${primaryDomain}${pagePath}.html`, `${tenant}-live-version`)
+      }
     }
   }
 }
