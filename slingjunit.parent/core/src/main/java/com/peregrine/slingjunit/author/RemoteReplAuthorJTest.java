@@ -97,7 +97,6 @@ public class RemoteReplAuthorJTest {
         Set<String> runmmodes = settingsService.getRunModes();
         assertTrue(runmmodes.contains("author"));
         assertTrue(runmmodes.contains("notshared"));
-        assertTrue(runmmodes.contains("oak_tar"));
     }
 
     @Test
@@ -207,7 +206,7 @@ public class RemoteReplAuthorJTest {
                 HttpResponse httpResponse = HttpClientBuilder.create().build().execute( request );
                 attemptStatus = httpResponse.getStatusLine().getStatusCode();
             }
-            assertEquals(attemptStatus, status);
+            assertEquals(status, attemptStatus );
         } catch (IOException | InterruptedException e) {
             fail(e.getMessage());
         }
