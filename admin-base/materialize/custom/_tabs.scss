@@ -1,6 +1,4 @@
 .tabs-wrapper {
-
-
   .handles-wrapper {
     display: flex;
     flex-direction: row;
@@ -14,12 +12,11 @@
       border: 1px solid #000000;
       border-bottom-color: transparent;
       background-color: var(--pcms-orange);
+      white-space: nowrap;
 
       &:not(:first-child) {
         margin-left: 3px;
       }
-
-      .icon
     }
 
     .content {
