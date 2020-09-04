@@ -6,6 +6,7 @@
             :is="child.component"
             :key="child.path"
             :model="child"
+            :class="{active: activeTabIndex === index}"
             @click.native="setActiveTabIndex(index)"/>
       </template>
     </div>

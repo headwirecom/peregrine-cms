@@ -6,7 +6,7 @@
 
 <script>
 import {IconLib} from '../../../../../../js/constants'
-import libValidator from '../../../../../../js/validators/iconLib'
+import {libValidator} from '../../../../../../js/validators/icon'
 
 export default {
     name: 'Icon',
