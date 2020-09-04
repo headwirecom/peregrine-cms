@@ -1,5 +1,4 @@
 export function modelValidator(model) {
-  console.log('tabswrapper.model: ', model)
   if (!model.children || model.children.length <= 0) {
     console.warn('tabs-wrapper needs tab-component children!', model.children)
     return false
