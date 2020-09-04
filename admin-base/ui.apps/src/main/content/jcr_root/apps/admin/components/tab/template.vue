@@ -1,6 +1,10 @@
 <template>
-  <button class="handle" :title="title">
-    <icon v-if="model.icon" :icon="model.icon" :lib="model.iconLib"/>
+  <button :class="['handle', model.classes]" :title="title">
+    <icon
+        v-if="model.icon"
+        :icon="model.icon"
+        :lib="model.iconLib"
+        :class="{'with-label': !!(model.label)}"/>
     {{ model.label }}
   </button>
   <!-- content is rendered in TabsWrapper-->
@@ -22,7 +26,7 @@ export default {
   },
   computed: {
     title() {
-      return this.model.title? this.model.title : this.model.label
+      return this.model.title ? this.model.title : this.model.label
     }
   }
 }

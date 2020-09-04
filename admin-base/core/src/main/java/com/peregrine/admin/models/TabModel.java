@@ -59,6 +59,9 @@ public class TabModel extends Container {
   @Default(values="material-icons")
   private String iconLib;
 
+  @Inject
+  private String classes;
+
   public TabModel(Resource r) {
     super(r);
   }
@@ -77,5 +80,9 @@ public class TabModel extends Container {
 
   public String getIconLib() {
     return iconLib;
+  }
+
+  public String getClasses() {
+    return classes;
   }
 }

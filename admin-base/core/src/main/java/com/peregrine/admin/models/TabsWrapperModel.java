@@ -50,11 +50,18 @@ public class TabsWrapperModel extends Container {
   @Default(values = "horizontal")
   private String direction;
 
+  @Inject
+  private String classes;
+
   public TabsWrapperModel(Resource r) {
     super(r);
   }
 
   public String getDirection() {
     return direction;
+  }
+
+  public String getClasses() {
+    return classes;
   }
 }
