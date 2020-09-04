@@ -136,7 +136,8 @@
             icon="table"
             iconLib="font-awesome"
             label="tab-01"
-            title="Welcome to tab 1">
+            title="Welcome to tab 1"
+            classes="this-custom-class">
             <text-01 jcr:primaryType="nt:unstructured"
               sling:resourceType="pagerendervue/components/base"
               text="&lt;h5&gt;EXAMPLE TAB-01&lt;/h5&gt;&lt;p&gt;&lt;/p&gt;">
