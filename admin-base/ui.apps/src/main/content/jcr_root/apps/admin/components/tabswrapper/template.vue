@@ -10,7 +10,7 @@
             @click.native="setActiveTabIndex(index)"/>
       </template>
     </div>
-    <div :class="`content active-tab-${activeTab}`">
+    <div :class="`content active-tab-index-${activeTabIndex}`">
       <template v-for="activeTabChild in activeTab.children">
         <component
             :is="activeTabChild.component"
