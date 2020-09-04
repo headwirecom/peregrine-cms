@@ -121,7 +121,7 @@
               label="tab-05">
               <text1 jcr:primaryType="nt:unstructured"
                 sling:resourceType="pagerendervue/components/base"
-                text="&lt;h5&gt;EXAMPLE TAB-04&lt;/h5&gt;&lt;p&gt;&lt;/p&gt;">
+                text="&lt;h5&gt;EXAMPLE TAB-05&lt;/h5&gt;&lt;p&gt;&lt;/p&gt;">
               </text1>
             </tab-05>
 
@@ -133,7 +133,7 @@
               label="tab-06">
               <text1 jcr:primaryType="nt:unstructured"
                 sling:resourceType="pagerendervue/components/base"
-                text="&lt;h5&gt;EXAMPLE TAB-04&lt;/h5&gt;&lt;p&gt;&lt;/p&gt;">
+                text="&lt;h5&gt;EXAMPLE TAB-06&lt;/h5&gt;&lt;p&gt;&lt;/p&gt;">
               </text1>
             </tab-06>
 
