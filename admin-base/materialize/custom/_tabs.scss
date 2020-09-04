@@ -15,7 +15,7 @@
       border: 1px solid silver;
       background-color: #eeeeee;
       white-space: nowrap;
-      transition: background-color, border .35s ease-out;
+      transition: background-color, border-color .35s ease-out;
 
       &:not(:last-child) {
         border-right-width: 0;
