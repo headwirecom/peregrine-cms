@@ -28,7 +28,8 @@
       &.active {
         background-color: #d6d6d6;
         border-bottom-color: #d6d6d6;
-        border-top-color: #000;
+        border-top: 2px solid #000;
+        padding-top: 0.4rem;
       }
 
       .icon {
