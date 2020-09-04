@@ -10,13 +10,18 @@
 </template>
 
 <script>
-  import {IconLib} from '../../../../../../js/constants'
+import {IconLib} from '../../../../../../js/constants'
+import iconLibValidator from '../../../../../../js/validators/iconLib'
 
-  export default {
+export default {
     name: 'RichToolbarBtn',
     props: {
       icon: [String, Function],
-      iconLib: {type: String, default: IconLib.FONT_AWESOME},
+      iconLib: {
+        type: String,
+        default: IconLib.MATERIAL_ICONS,
+        validator: iconLibValidator
+      },
       label: String,
       title: [String, Function],
       active: Boolean

@@ -79,6 +79,7 @@
      *
      */
     export default {
+      name: 'Action',
     props: {
         model: Object,
         tag: {

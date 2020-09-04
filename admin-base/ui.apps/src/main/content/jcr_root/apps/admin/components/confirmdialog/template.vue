@@ -14,6 +14,7 @@
 <script>
 
 export default {
+  name: 'ConfirmDialog',
     props: {
         cancelText: {type: String, default: "cancel"},
         submitText: String

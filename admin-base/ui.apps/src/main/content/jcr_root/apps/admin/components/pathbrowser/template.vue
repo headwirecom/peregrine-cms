@@ -401,7 +401,7 @@
 import {IconLib, PathBrowser} from '../../../../../../js/constants';
 
 export default {
-        name: 'Pathbrowser',
+        name: 'PathBrowser',
         props: {
           isOpen: Boolean,
           header: String,
