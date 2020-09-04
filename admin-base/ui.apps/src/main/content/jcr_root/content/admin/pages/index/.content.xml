@@ -128,7 +128,7 @@
             <tab-06
               jcr:primaryType="nt:unstructured"
               sling:resourceType="admin/components/tab"
-              icon="phone_enabled"
+              icon="phone"
               iconLib="material-icons"
               label="tab-06">
               <text1 jcr:primaryType="nt:unstructured"
