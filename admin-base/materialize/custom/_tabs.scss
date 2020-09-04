@@ -1,20 +1,29 @@
 .tabs-wrapper {
 
-}
 
-.tab-component {
-  position: relative;
-  float:left;
-  z-index: 50;
+  .handles-wrapper {
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid #000;
 
-  .toggle {
-    min-width: 80px;
-    min-height: 30px;
-    border: 1px solid #000000;
-    background-color: var(--pcms-orange);
-  }
+    .handle {
+      margin-bottom: -1px;
+      position: relative;
+      padding: 0 .5rem;
+      height: 30px;
+      border: 1px solid #000000;
+      border-bottom-color: transparent;
+      background-color: var(--pcms-orange);
 
-  .content {
+      &:not(:first-child) {
+        margin-left: 3px;
+      }
 
+      .icon
+    }
+
+    .content {
+
+    }
   }
 }

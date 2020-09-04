@@ -1,30 +1,40 @@
 <template>
   <div class="tabs-wrapper" :class="[model.classes, direction]">
-    <template v-for="child in model.children">
-      <component
-          :is="child.component"
-          :key="child.path"
-          :model="child"/>
-    </template>
+    <div class="handles-wrapper">
+      <template v-for="(child, index) in model.children">
+        <component
+            :is="child.component"
+            :key="child.path"
+            :model="child"
+            @click.native="setActiveTabIndex(index)"/>
+      </template>
+    </div>
+    <div :class="`content active-tab-${activeTab}`">
+      <template v-for="activeTabChild in activeTab.children">
+        <component
+            :is="activeTabChild.component"
+            :key="activeTabChild.path"
+            :model="activeTabChild"/>
+      </template>
+    </div>
   </div>
 </template>
 
 <script>
+import {modelValidator} from '../../../../../../js/validators/tabsWrapper'
+
 export default {
+  name: 'TabsWrapper',
   props: {
-    name: 'TabsWrapper',
     model: {
       type: Object,
       required: true,
-      validator: (model) => {
-        console.log(model)
-        return true
-      }
+      validator: modelValidator
     }
   },
   data() {
     return {
-      show: false
+      activeTabIndex: 0
     }
   },
   computed: {
@@ -33,18 +43,16 @@ export default {
         return this.model.direction
       }
 
-      return Direction.HORIZONTAL
+      return 'horizontal'
+    },
+    activeTab(){
+      return this.model.children[this.activeTabIndex]
     }
   },
-  beforeMount() {
-    if (this.model.show) {
-      this.show = this.model.show //set initial show
+  methods: {
+    setActiveTabIndex(index) {
+      this.activeTabIndex = index
     }
   }
-}
-
-const Direction = {
-  HORIZONTAL: 'horizontal',
-  VERTICAL: 'vertical'
 }
 </script>

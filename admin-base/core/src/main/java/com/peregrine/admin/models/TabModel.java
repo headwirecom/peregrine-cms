@@ -31,7 +31,9 @@ import static com.peregrine.commons.util.PerConstants.JSON;
 
 import com.peregrine.nodetypes.models.Container;
 import com.peregrine.nodetypes.models.IComponent;
+import javax.inject.Inject;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
@@ -44,7 +46,36 @@ import org.apache.sling.models.annotations.Model;
 @Exporter(name = JACKSON, extensions = JSON)
 public class TabModel extends Container {
 
+  @Inject
+  private String label;
+
+  @Inject
+  private String title;
+
+  @Inject
+  private String icon;
+
+  @Inject
+  @Default(values="material-icons")
+  private String iconLib;
+
   public TabModel(Resource r) {
     super(r);
+  }
+
+  public String getLabel() {
+    return label;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public String getIcon() {
+    return icon;
+  }
+
+  public String getIconLib() {
+    return iconLib;
   }
 }

@@ -1,24 +1,28 @@
 <template>
-  <div class="tab-component" :class="[model.classes]">
-    <button class="toggle" @click="show = !show">{{ model.label }}</button>
-    <div v-if="show" class="content">
-      <template v-for="child in model.children">
-        <component
-            :is="child.component"
-            :key="child.path"
-            :model="child"/>
-      </template>
-    </div>
-  </div>
+  <button class="handle" :title="title">
+    <icon v-if="model.icon" :icon="model.icon" :lib="model.iconLib"/>
+    {{ model.label }}
+  </button>
+  <!-- content is rendered in TabsWrapper-->
 </template>
 
 <script>
+import Icon from '../icon/template.vue'
+
 export default {
+  name: 'Tab',
+  components: {
+    Icon
+  },
   props: {
-    name: 'Tab',
     model: {
       type: Object,
       required: true
+    }
+  },
+  computed: {
+    title() {
+      return this.model.title? this.model.title : this.model.label
     }
   }
 }
