@@ -123,7 +123,8 @@
         </col3>
 
       </row>
-      <row jcr:primaryType="nt:unstructured"
+
+      <row-tabs-example jcr:primaryType="nt:unstructured"
         sling:resourceType="admin/components/row">
         <tabs-wrapper-example
           jcr:primaryType="nt:unstructured"
@@ -198,7 +199,7 @@
           </tab-06>
 
         </tabs-wrapper-example>
-      </row>
+      </row-tabs-example>
 
     </content>
 
