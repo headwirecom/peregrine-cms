@@ -2,31 +2,43 @@
   <li>
     <a :title="title"
        v-on:click.stop.prevent="onClick">
-      <i class="editor-icon material-icons">{{ icon }}</i>
+      <icon :lib="iconLib" :icon="icon" class="editor-icon"/>
     </a>
   </li>
 </template>
 
 <script>
-  export default {
-    props: {
-      title: {
-        type: String,
-        required: false
-      },
-      icon: {
-        type: String,
-        required: true
-      }
+import {libValidator as iconLibValidator} from '../../../../../../js/validators/icon'
+import {IconLib} from '../../../../../../js/constants'
+import Icon from '../icon/template.vue'
+
+export default {
+  name: 'ExplorerPreviewNavItem',
+  components: {Icon},
+  props: {
+    title: {
+      type: String,
+      required: false
     },
-    data: function () {
-      return {};
+    icon: {
+      type: String,
+      required: true
     },
-    computed: {},
-    methods: {
-      onClick() {
-        this.$emit('click');
-      }
+    iconLib: {
+      type: String,
+      default: IconLib.MATERIAL_ICONS,
+      required: false,
+      validator: iconLibValidator
+    }
+  },
+  data: function () {
+    return {};
+  },
+  computed: {},
+  methods: {
+    onClick() {
+      this.$emit('click');
     }
   }
+}
 </script>

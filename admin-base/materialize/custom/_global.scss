@@ -76,3 +76,15 @@ dl {
 a[title='ignore-containers'] {
 	display: none;
 }
+
+.icon {
+	display: inline-flex !important;
+	justify-content: center;
+	align-items: center;
+	width: 24px;
+	height: 24px;
+
+	&.fa {
+		font-size: 16px;
+	}
+}
