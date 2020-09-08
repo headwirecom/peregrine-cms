@@ -37,7 +37,7 @@
     dataFrom="/pageView/path"
     dataDefault="/content/admin/pages"
     suffixToParameter="[path,/pageView/path,path,/state/tools/page]"
-    loaders="[populatePageView:/pageView/path,setInitialPageEditorState:/pageView/path,populateNodesForBrowser:/state/tools/pages,populateComponents:/pageView/path,populateIcons:/state/tenant]">
+    loaders="[populatePageView:/pageView/path,setInitialPageEditorState:/pageView/path,populateNodesForBrowser:/state/tools/pages,populateComponents:/pageView/path]">
 
     <nav jcr:primaryType="nt:unstructured"
       sling:resourceType="admin/components/nav">

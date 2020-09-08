@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import iconLibValidator from '../../../../../../js/validators/iconLib'
+import {libValidator as iconLibValidator} from '../../../../../../js/validators/icon'
 import {IconLib} from '../../../../../../js/constants'
 import Icon from '../icon/template.vue'
 

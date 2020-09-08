@@ -11,7 +11,7 @@
 
 <script>
 import {IconLib} from '../../../../../../js/constants'
-import iconLibValidator from '../../../../../../js/validators/iconLib'
+import {libValidator as iconLibValidator} from '../../../../../../js/validators/icon'
 
 export default {
     name: 'RichToolbarBtn',
