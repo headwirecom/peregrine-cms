@@ -153,13 +153,13 @@ public final class SiteMapFilesCacheImplTest extends SlingResourcesTest {
         model.onCacheRefreshed(page, entries);
         when(resourceResolverFactory.getServiceResourceResolver()).thenThrow(LoginException.class);
         model.onCacheRefreshed(page, entries);
-        verify(resourceResolver, times(2)).commit();
+        verify(resourceResolver, times(1)).commit();
     }
 
     @Test
     public void onCacheRefreshed() throws PersistenceException {
         model.onCacheRefreshed(page, entries);
-        verify(resourceResolver, times(2)).commit();
+        verify(resourceResolver, times(1)).commit();
     }
 
 }
