@@ -86,11 +86,22 @@ public abstract class CacheBuilderBase implements CacheBuilder {
     }
 
     protected final String getCachePath(final Resource rootPage) {
-        return getCachePath(rootPage.getPath());
+        return Optional.ofNullable(rootPage)
+                .map(Resource::getPath)
+                .map(this::getCachePath)
+                .orElse(null);
     }
 
-    protected String getCachePath(final String rootPagePath) {
+    private String getCacheContainerPath(final String rootPagePath) {
         return isRepositoryRoot(rootPagePath) ? location : location + rootPagePath;
+    }
+
+    private String getCachePath(final String rootPagePath) {
+        return isRepositoryRoot(rootPagePath) ? location : getCachePathImpl(location + rootPagePath);
+    }
+
+    protected String getCachePathImpl(final String cachePath) {
+        return cachePath;
     }
 
     protected static boolean isRepositoryRoot(final String path) {
@@ -101,12 +112,16 @@ public abstract class CacheBuilderBase implements CacheBuilder {
         return getOriginalPath(cache.getPath());
     }
 
-    protected String getOriginalPath(final String cachePath) {
+    public final String getOriginalPath(final String cachePath) {
         if (!StringUtils.startsWith(cachePath, locationWithSlash)) {
             return null;
         }
 
-        return StringUtils.substringAfter(cachePath, location);
+        return getOriginalPathImpl(StringUtils.substringAfter(cachePath, location));
+    }
+
+    protected String getOriginalPathImpl(final String originalPath) {
+        return originalPath;
     }
 
     protected boolean containsCacheAlready(final Resource cache) {
@@ -114,6 +129,10 @@ public abstract class CacheBuilderBase implements CacheBuilder {
     }
 
     protected final Resource buildCache(final ResourceResolver resourceResolver, final Resource rootPage) {
+        if (isNull(rootPage)) {
+            return null;
+        }
+
         try {
             final Resource cache = getOrCreateCacheResource(resourceResolver, rootPage);
             return buildCache(rootPage, cache);

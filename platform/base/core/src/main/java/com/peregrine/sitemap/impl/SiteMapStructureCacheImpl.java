@@ -152,19 +152,13 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
     }
 
     @Override
-    protected String getCachePath(final String rootPagePath) {
-        final String cachePath = super.getCachePath(rootPagePath);
-        return isRepositoryRoot(rootPagePath) ? cachePath : cachePath + SLASH_JCR_CONTENT;
+    protected String getCachePathImpl(final String cachePath) {
+        return cachePath + SLASH_JCR_CONTENT;
     }
 
     @Override
-    protected String getOriginalPath(final String cachePath) {
-        final String superOriginalPath = super.getOriginalPath(cachePath);
-        if (!endsWith(superOriginalPath, SLASH_JCR_CONTENT)) {
-            return null;
-        }
-
-        return substringBeforeLast(superOriginalPath, SLASH_JCR_CONTENT);
+    protected String getOriginalPathImpl(final String originalPath) {
+        return substringBeforeLast(originalPath, SLASH_JCR_CONTENT);
     }
 
     @Override
@@ -180,7 +174,6 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
         final List<SiteMapEntry> entries = extractor.extract(rootPage);
         putSiteMapsInCache(entries, cache);
         notifyCacheRefreshed(rootPage, entries);
-
         return cache;
     }
 

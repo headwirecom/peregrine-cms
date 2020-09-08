@@ -43,6 +43,10 @@ public final class ResourceUtils {
             final String path,
             final String resourceTypes)
             throws PersistenceException {
+        if (isBlank(path)) {
+            return null;
+        }
+
         Resource resource = getFirstExistingAncestorOnPath(resourceResolver, path);
         final String missingPath;
         if (isNull(resource)) {
