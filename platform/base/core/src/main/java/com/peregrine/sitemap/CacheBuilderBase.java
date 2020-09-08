@@ -41,8 +41,7 @@ import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.StringUtils.substringBeforeLast;
+import static org.apache.commons.lang3.StringUtils.*;
 
 public abstract class CacheBuilderBase implements CacheBuilder {
 
@@ -78,9 +77,9 @@ public abstract class CacheBuilderBase implements CacheBuilder {
     protected abstract ResourceResolver getServiceResourceResolver() throws LoginException;
 
     protected final boolean isCached(final ResourceResolver resourceResolver, final String path) {
-        final String cachePath = getCachePath(path);
-        return Optional.of(resourceResolver)
-                .map(rr -> rr.getResource(cachePath))
+        return Optional.of(path)
+                .map(this::getCacheContainerPath)
+                .map(p -> resourceResolver.getResource(p))
                 .map(r -> containsCacheAlready(r))
                 .orElse(false);
     }
@@ -152,7 +151,6 @@ public abstract class CacheBuilderBase implements CacheBuilder {
     @Override
     public final void rebuild(final String rootPagePath) {
         try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
-            cleanRemovedChildren(resourceResolver, rootPagePath);
             String path = rootPagePath;
             while (isNotBlank(path)) {
                 if (isCached(resourceResolver, path)) {
@@ -172,7 +170,8 @@ public abstract class CacheBuilderBase implements CacheBuilder {
 
     protected final void cleanRemovedChildren(final ResourceResolver resourceResolver, final String rootPagePath)
             throws PersistenceException {
-        final Resource cache = resourceResolver.getResource(getCachePath(rootPagePath));
+        final String cacheContainerPath = getCacheContainerPath(rootPagePath);
+        final Resource cache = resourceResolver.getResource(cacheContainerPath);
         final Resource rootPage = resourceResolver.getResource(rootPagePath);
         cleanRemovedChildren(cache, rootPage);
     }
@@ -198,7 +197,9 @@ public abstract class CacheBuilderBase implements CacheBuilder {
 
     protected final Resource buildCache(final String rootPagePath) {
         try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
-            final Resource result = buildCache(resourceResolver, rootPagePath);
+            cleanRemovedChildren(resourceResolver, rootPagePath);
+            final Resource rootPage = resourceResolver.getResource(rootPagePath);
+            final Resource result = buildCache(resourceResolver, rootPage);
             resourceResolver.commit();
             return result;
         } catch (final LoginException e) {
@@ -210,28 +211,20 @@ public abstract class CacheBuilderBase implements CacheBuilder {
         return null;
     }
 
-    private Resource buildCache(final ResourceResolver resourceResolver, final String rootPagePath) {
-        return buildCache(resourceResolver, resourceResolver.getResource(rootPagePath));
-    }
-
     @Override
     public void rebuildAll() {
         try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
-            cleanRemovedChildren(resourceResolver, SLASH);
             rebuildMandatoryContent();
             rebuildExistingCache(resourceResolver);
-            resourceResolver.commit();
         } catch (final LoginException e) {
             logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
-        } catch (final PersistenceException e) {
-            logger.error(COULD_NOT_SAVE_CHANGES_TO_REPOSITORY, e);
         }
     }
 
     protected void rebuildMandatoryContent() { }
 
     private void rebuildExistingCache(final ResourceResolver resourceResolver) {
-        final String cacheRoot = getCachePath(StringUtils.EMPTY);
+        final String cacheRoot = getCacheContainerPath(SLASH);
         final Resource root = resourceResolver.getResource(cacheRoot);
         if (nonNull(root)) {
             rebuildCacheInTree(root);
@@ -239,16 +232,16 @@ public abstract class CacheBuilderBase implements CacheBuilder {
     }
 
     private void rebuildCacheInTree(final Resource cache) {
+        final Iterator<Resource> iterator = cache.listChildren();
+        while (iterator.hasNext()) {
+            rebuildCacheInTree(iterator.next());
+        }
+
         if (containsCacheAlready(cache)) {
             final String rootPagePath = getOriginalPath(cache);
             if (isNotBlank(rootPagePath)) {
                 rebuildImpl(rootPagePath);
             }
-        }
-
-        final Iterator<Resource> iterator = cache.listChildren();
-        while (iterator.hasNext()) {
-            rebuildCacheInTree(iterator.next());
         }
     }
 

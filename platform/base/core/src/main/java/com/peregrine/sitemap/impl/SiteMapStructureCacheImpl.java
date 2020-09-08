@@ -151,6 +151,13 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
         return resourceResolverFactory.getServiceResourceResolver();
     }
 
+    protected boolean containsCacheAlready(final Resource cache) {
+        return Optional.ofNullable(cache)
+                .map(r -> r.getChild(JCR_CONTENT))
+                .map(Objects::nonNull)
+                .orElse(false);
+    }
+
     @Override
     protected String getCachePathImpl(final String cachePath) {
         return cachePath + SLASH_JCR_CONTENT;
