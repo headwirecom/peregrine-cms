@@ -128,6 +128,10 @@ public abstract class CacheBuilderBase implements CacheBuilder {
         return nonNull(cache);
     }
 
+    protected boolean isCacheNode(final Resource cache) {
+        return containsCacheAlready(cache);
+    }
+
     protected final Resource buildCache(final ResourceResolver resourceResolver, final Resource rootPage) {
         if (isNull(rootPage)) {
             return null;
@@ -186,14 +190,12 @@ public abstract class CacheBuilderBase implements CacheBuilder {
             return;
         }
 
-        if (containsCacheAlready(cache)) {
-            return;
-        }
-
         final Iterator<Resource> iterator = cache.listChildren();
         while (iterator.hasNext()) {
             final Resource child = iterator.next();
-            cleanRemovedChildren(child, rootPage.getChild(child.getName()));
+            if (!isCacheNode(child)) {
+                cleanRemovedChildren(child, rootPage.getChild(child.getName()));
+            }
         }
     }
 

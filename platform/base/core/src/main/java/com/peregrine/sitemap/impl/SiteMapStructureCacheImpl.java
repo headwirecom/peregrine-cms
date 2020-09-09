@@ -155,6 +155,13 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
     protected boolean containsCacheAlready(final Resource cache) {
         return Optional.ofNullable(cache)
                 .map(r -> r.getChild(JCR_CONTENT))
+                .map(this::isCacheNode)
+                .orElse(false);
+    }
+
+    protected boolean isCacheNode(final Resource cache) {
+        return Optional.ofNullable(cache)
+                .filter(r -> JCR_CONTENT.equals(r.getName()))
                 .map(r -> r.getChild(NN_FIRST_CACHE_NODE))
                 .map(Objects::nonNull)
                 .orElse(false);
