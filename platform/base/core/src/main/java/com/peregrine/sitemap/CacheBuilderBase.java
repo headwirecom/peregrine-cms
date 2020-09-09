@@ -220,32 +220,41 @@ public abstract class CacheBuilderBase implements CacheBuilder {
     @Override
     public void rebuildAll() {
         try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
-            final String cacheRootPath = getCacheContainerPath(SLASH);
-            final Resource cacheRoot = resourceResolver.getResource(cacheRootPath);
-            if (nonNull(cacheRoot)) {
-                rebuildCacheInTree(cacheRoot);
-            }
-
+            Optional.ofNullable(getCacheContainerPath(SLASH))
+                    .map(resourceResolver::getResource)
+                    .ifPresent(this::rebuildCacheInTree);
+            resourceResolver.commit();
             rebuildMandatoryContent();
         } catch (final LoginException e) {
             logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
+        } catch (final PersistenceException e) {
+            logger.error(COULD_NOT_SAVE_CHANGES_TO_REPOSITORY, e);
         }
     }
 
     protected void rebuildMandatoryContent() { }
 
-    private void rebuildCacheInTree(final Resource cache) {
-        if (containsCacheAlready(cache)) {
-            final String rootPagePath = getOriginalPath(cache);
-            if (isNotBlank(rootPagePath)) {
-                rebuildImpl(rootPagePath);
+    private boolean rebuildCacheInTree(final Resource cache) {
+        final Optional<String> rootPage = Optional.of(cache)
+                .filter(this::containsCacheAlready)
+                .map(this::getOriginalPath)
+                .filter(StringUtils::isNotBlank);
+        rootPage.ifPresent(this::rebuildImpl);
+        boolean result = rootPage.isPresent();
+        final Iterator<Resource> iterator = cache.listChildren();
+        while (iterator.hasNext()) {
+            result = rebuildCacheInTree(iterator.next()) && result;
+        }
+
+        if (!result) {
+            try {
+                cache.getResourceResolver().delete(cache);
+            } catch (final PersistenceException e) {
+                logger.error(COULD_NOT_SAVE_CHANGES_TO_REPOSITORY, e);
             }
         }
 
-        final Iterator<Resource> iterator = cache.listChildren();
-        while (iterator.hasNext()) {
-            rebuildCacheInTree(iterator.next());
-        }
+        return result;
     }
 
 }
