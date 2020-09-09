@@ -109,13 +109,13 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
         verifyCommits(invocationsCount++);
 
         model.rebuild(StringUtils.EMPTY);
-        verifyCommits(invocationsCount++);
+        verifyCommits(invocationsCount);
 
         model.rebuildAll();
-        verifyCommits(invocationsCount++);
+        verifyCommits(invocationsCount);
 
         model.buildCache(pageCache.getPath());
-        verifyCommits(invocationsCount++);
+        verifyCommits(++invocationsCount);
     }
 
     @Test
@@ -191,14 +191,14 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
     public void rebuildAll_nothingCachedYet() {
         disableResolution(var);
         model.rebuildAll();
-        verifyCommits(1);
+        verifyCommits(0);
         assertTrue(rebuildImplCalled.isEmpty());
     }
 
     @Test
     public void rebuildAll() {
         model.rebuildAll();
-        verifyCommits(1);
+        verifyCommits(0);
         assertTrue(rebuildImplCalled.contains(resource.getPath()));
         assertTrue(rebuildImplCalled.contains(jcrContent.getPath()));
         assertTrue(rebuildImplCalled.contains(page.getPath()));

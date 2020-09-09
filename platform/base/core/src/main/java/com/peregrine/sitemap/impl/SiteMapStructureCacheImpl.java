@@ -52,6 +52,7 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
         implements SiteMapStructureCache, Callback<String>, SiteMapEntry.Visitor<Resource> {
 
     private static final String SLASH_JCR_CONTENT = SLASH + JCR_CONTENT;
+    public static final String NN_FIRST_CACHE_NODE = "0";
 
     private final Set<RefreshListener> refreshListeners = new HashSet<>();
 
@@ -154,6 +155,7 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
     protected boolean containsCacheAlready(final Resource cache) {
         return Optional.ofNullable(cache)
                 .map(r -> r.getChild(JCR_CONTENT))
+                .map(r -> r.getChild(NN_FIRST_CACHE_NODE))
                 .map(Objects::nonNull)
                 .orElse(false);
     }

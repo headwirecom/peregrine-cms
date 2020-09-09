@@ -41,7 +41,8 @@ import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.*;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.substringBeforeLast;
 
 public abstract class CacheBuilderBase implements CacheBuilder {
 
@@ -141,7 +142,7 @@ public abstract class CacheBuilderBase implements CacheBuilder {
         }
     }
 
-    protected final Resource getOrCreateCacheResource(ResourceResolver resourceResolver, Resource rootPage) throws PersistenceException {
+    protected final Resource getOrCreateCacheResource(final ResourceResolver resourceResolver, final Resource rootPage) throws PersistenceException {
         final String cachePath = getCachePath(rootPage);
         return ResourceUtils.getOrCreateResource(resourceResolver, cachePath, SLING_ORDERED_FOLDER);
     }
@@ -173,23 +174,26 @@ public abstract class CacheBuilderBase implements CacheBuilder {
         final String cacheContainerPath = getCacheContainerPath(rootPagePath);
         final Resource cache = resourceResolver.getResource(cacheContainerPath);
         final Resource rootPage = resourceResolver.getResource(rootPagePath);
-        cleanRemovedChildren(cache, rootPage);
+        if (nonNull(cache)) {
+            cleanRemovedChildren(cache, rootPage);
+        }
     }
 
     private void cleanRemovedChildren(final Resource cache, final Resource rootPage)
             throws PersistenceException {
-        if (isNull(cache)) {
+        if (isNull(rootPage)) {
+            cache.getResourceResolver().delete(cache);
             return;
         }
 
-        if (isNull(rootPage)) {
-            cache.getResourceResolver().delete(cache);
-        } else {
-            final Iterator<Resource> iterator = cache.listChildren();
-            while (iterator.hasNext()) {
-                final Resource child = iterator.next();
-                cleanRemovedChildren(child, rootPage.getChild(child.getName()));
-            }
+        if (containsCacheAlready(cache)) {
+            return;
+        }
+
+        final Iterator<Resource> iterator = cache.listChildren();
+        while (iterator.hasNext()) {
+            final Resource child = iterator.next();
+            cleanRemovedChildren(child, rootPage.getChild(child.getName()));
         }
     }
 
@@ -214,8 +218,13 @@ public abstract class CacheBuilderBase implements CacheBuilder {
     @Override
     public void rebuildAll() {
         try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
+            final String cacheRootPath = getCacheContainerPath(SLASH);
+            final Resource cacheRoot = resourceResolver.getResource(cacheRootPath);
+            if (nonNull(cacheRoot)) {
+                rebuildCacheInTree(cacheRoot);
+            }
+
             rebuildMandatoryContent();
-            rebuildExistingCache(resourceResolver);
         } catch (final LoginException e) {
             logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
         }
@@ -223,25 +232,17 @@ public abstract class CacheBuilderBase implements CacheBuilder {
 
     protected void rebuildMandatoryContent() { }
 
-    private void rebuildExistingCache(final ResourceResolver resourceResolver) {
-        final String cacheRoot = getCacheContainerPath(SLASH);
-        final Resource root = resourceResolver.getResource(cacheRoot);
-        if (nonNull(root)) {
-            rebuildCacheInTree(root);
-        }
-    }
-
     private void rebuildCacheInTree(final Resource cache) {
-        final Iterator<Resource> iterator = cache.listChildren();
-        while (iterator.hasNext()) {
-            rebuildCacheInTree(iterator.next());
-        }
-
         if (containsCacheAlready(cache)) {
             final String rootPagePath = getOriginalPath(cache);
             if (isNotBlank(rootPagePath)) {
                 rebuildImpl(rootPagePath);
             }
+        }
+
+        final Iterator<Resource> iterator = cache.listChildren();
+        while (iterator.hasNext()) {
+            rebuildCacheInTree(iterator.next());
         }
     }
 
