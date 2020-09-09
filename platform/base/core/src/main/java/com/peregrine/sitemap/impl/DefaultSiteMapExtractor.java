@@ -88,7 +88,8 @@ public final class DefaultSiteMapExtractor extends SiteMapExtractorBase implemen
     public boolean appliesTo(final Resource root) {
         return super.appliesTo(root) && Optional.ofNullable(root)
                 .map(Resource::getPath)
-                .map(p -> StringUtils.isNotBlank(urlExternalizer.getPrefix(root.getResourceResolver(), p)))
+                .map(p -> urlExternalizer.getPrefix(root.getResourceResolver(), p))
+                .map(StringUtils::isNotBlank)
                 .orElse(false);
     }
 
