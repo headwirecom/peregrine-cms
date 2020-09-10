@@ -65,7 +65,7 @@
             </button>
 
             <component
-              v-if         = "state.editorVisible"
+              v-if         = "state.editorVisible && getChildByPath('editor')"
               v-bind:is    = "getChildByPath('editor').component"
               v-bind:model = "getChildByPath('editor')">
             </component>
@@ -77,10 +77,12 @@
             </component>
 
             <component
-                v-else
+                v-else-if    = "getChildByPath('components')"
                 v-bind:is    = "getChildByPath('components').component"
                 v-bind:model = "getChildByPath('components')">
             </component>
+
+            <div v-else>missing panel</div>
 
         </aside>
     </div>
