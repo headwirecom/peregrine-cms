@@ -171,8 +171,11 @@ public class PageMerge implements Use {
             if(val instanceof Map) {
                 Map map = (Map) val;
 
-                // Localize content using experiences.
-                localizeContent(map);
+                String xPerExperiences = request.getHeader("x-per-experiences");
+                if (!"off".equalsIgnoreCase(xPerExperiences)) {
+                    // Localize content using experiences.
+                    localizeContent(map);
+                }
 
                 String path = (String) map.get(PATH);
                 if(path != null) {
