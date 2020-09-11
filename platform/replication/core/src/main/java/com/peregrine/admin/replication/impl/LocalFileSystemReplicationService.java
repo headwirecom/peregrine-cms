@@ -25,23 +25,18 @@ package com.peregrine.admin.replication.impl;
  * #L%
  */
 
+import com.peregrine.render.RenderService;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
-import com.peregrine.render.RenderService;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.osgi.framework.BundleContext;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
-import org.osgi.service.component.annotations.Modified;
-import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.*;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -52,10 +47,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
-import static com.peregrine.commons.util.PerUtil.intoList;
-import static com.peregrine.commons.util.PerUtil.isNotEmpty;
-import static com.peregrine.commons.util.PerUtil.splitIntoMap;
-import static com.peregrine.commons.util.PerUtil.splitIntoProperties;
+import static com.peregrine.commons.util.PerUtil.*;
+import static java.util.Objects.isNull;
 
 /**
  * This class replicates resources to a local file system folder
@@ -302,37 +295,34 @@ public class LocalFileSystemReplicationService
     @Override
     void removeReplica(Resource resource, final List<Pattern> namePattern, final boolean isFolder) throws ReplicationException {
         final String resourceName = resource.getName();
-        File directory = new File(targetFolder, resource.getParent().getPath());
+        final File directory = new File(targetFolder, resource.getParent().getPath());
         if(!directory.exists() || !directory.isDirectory()) {
             throw new ReplicationException(String.format(FAILED_STORE_RENDERING_MISSING_PARENT_FOLDER, directory.getAbsolutePath()));
         }
-        final List<Pattern> patterns = new ArrayList<>();
-        File[] filesToBeDeletedFiles = directory.listFiles(
-            new FileFilter() {
-                @Override
-                public boolean accept(File file) {
-                    if(isFolder) {
-                        if(file.isDirectory() && file.getName().equals(resourceName)) {
+
+        final File[] filesToBeDeletedFiles = directory.listFiles(
+                file -> {
+                    if (isFolder && file.isDirectory() && file.getName().equals(resourceName)) {
+                        return true;
+                    }
+
+                    if (isNull(namePattern)) {
+                        return file.getName().startsWith(resourceName);
+                    }
+
+                    for (final Pattern pattern : namePattern) {
+                        if (pattern.matcher(file.getName()).matches()) {
                             return true;
                         }
                     }
-                    if(namePattern == null) {
-                        return file.getName().startsWith(resourceName);
-                    } else {
-                        for(Pattern pattern : namePattern) {
-                            if(pattern.matcher(file.getName()).matches()) {
-                                return true;
-                            }
-                        }
-                    }
+
                     return false;
                 }
-            }
         );
         if(filesToBeDeletedFiles != null) {
             for(File toBeDeleted : filesToBeDeletedFiles) {
                 log.trace("Delete File: '{}'", toBeDeleted.getAbsolutePath());
-                if(!deleteFile(toBeDeleted)) {
+                if (!deleteFile(toBeDeleted)) {
                     throw new ReplicationException(String.format(FAILED_TO_DELETE_FILE, toBeDeleted.getAbsolutePath()));
                 }
 

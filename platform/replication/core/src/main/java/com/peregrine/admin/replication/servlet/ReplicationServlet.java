@@ -26,33 +26,27 @@ package com.peregrine.admin.replication.servlet;
  */
 
 import com.peregrine.admin.replication.DefaultReplicationMapper;
+import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.replication.Replication;
 import com.peregrine.replication.Replication.ReplicationException;
-import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.apache.sling.api.resource.Resource;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
+import org.osgi.service.component.annotations.*;
 
 import javax.servlet.Servlet;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static com.peregrine.admin.replication.ReplicationConstants.DEEP;
-import static com.peregrine.admin.replication.ReplicationConstants.RESOURCE_TYPE_DO_REPLICATION;
-import static com.peregrine.admin.replication.ReplicationConstants.SOURCE_NAME;
-import static com.peregrine.admin.replication.ReplicationConstants.SOURCE_PATH;
+import static com.peregrine.admin.replication.ReplicationConstants.*;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.PATH;
-import static com.peregrine.commons.util.PerUtil.EQUALS;
-import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
-import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
-import static com.peregrine.commons.util.PerUtil.POST;
+import static com.peregrine.commons.util.PerUtil.*;
+import static java.lang.Boolean.parseBoolean;
+import static java.util.Objects.isNull;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -90,15 +84,15 @@ public class ReplicationServlet extends AbstractBaseServlet {
     private Map<String, Replication> replications = new HashMap<>();
 
     @Reference(
-        cardinality = ReferenceCardinality.MULTIPLE,
-        policy = ReferencePolicy.DYNAMIC,
-        policyOption = ReferencePolicyOption.GREEDY
+            cardinality = ReferenceCardinality.MULTIPLE,
+            policy = ReferencePolicy.DYNAMIC,
+            policyOption = ReferencePolicyOption.GREEDY
     )
     @SuppressWarnings("unused")
     public void bindReplication(Replication replication) {
         String replicationName = replication.getName();
         logger.trace("Register replication with name: '{}': {}", replicationName, replication);
-        if(replicationName != null && !replicationName.isEmpty()) {
+        if (replicationName != null && !replicationName.isEmpty()) {
             replications.put(replicationName, replication);
         } else {
             logger.error("Replication: '{}' does not provide an operation name -> binding is ignored", replication);
@@ -108,7 +102,7 @@ public class ReplicationServlet extends AbstractBaseServlet {
     @SuppressWarnings("unused")
     public void unbindReplication(Replication replication) {
         String replicationName = replication.getName();
-        if(replications.containsKey(replicationName)) {
+        if (replications.containsKey(replicationName)) {
             replications.remove(replicationName);
         } else {
             logger.error("Replication: '{}' is not register with operation name: '{}' -> unbinding is ignored", replication, replicationName);
@@ -116,9 +110,9 @@ public class ReplicationServlet extends AbstractBaseServlet {
     }
 
     @Reference(
-        cardinality = ReferenceCardinality.MULTIPLE,
-        policy = ReferencePolicy.DYNAMIC,
-        policyOption = ReferencePolicyOption.GREEDY
+            cardinality = ReferenceCardinality.MULTIPLE,
+            policy = ReferencePolicy.DYNAMIC,
+            policyOption = ReferencePolicyOption.GREEDY
     )
     @SuppressWarnings("unused")
     public void bindDefaultReplicationMapper(DefaultReplicationMapper defaultReplicationMapper) {
@@ -133,62 +127,59 @@ public class ReplicationServlet extends AbstractBaseServlet {
     }
 
     @Override
-    protected Response handleRequest(Request request) throws IOException {
-        JsonResponse answer;
+    protected Response handleRequest(final Request request) throws IOException {
         logger.trace("Request Path: '{}'", request.getRequestPath());
         logger.trace("Request URI: '{}'", request.getRequest().getRequestURI());
         logger.trace("Request URL: '{}'", request.getRequest().getRequestURL());
-        String sourcePath = request.getParameter(PATH);
-        String replicationName = request.getParameter(NAME);
-        if(replicationName == null || replicationName.isEmpty()) {
+        final String replicationName = request.getParameter(NAME);
+        if (isBlank(replicationName)) {
             return new ErrorResponse()
-                .setHttpErrorCode(SC_BAD_REQUEST)
-                .setErrorMessage(PARAMETER_NAME_FOR_THE_REPLICATION_NAME_IS_NOT_PROVIDED);
+                    .setHttpErrorCode(SC_BAD_REQUEST)
+                    .setErrorMessage(PARAMETER_NAME_FOR_THE_REPLICATION_NAME_IS_NOT_PROVIDED);
         }
-        String deepParameter = request.getParameter(DEEP);
-        boolean deep = deepParameter != null && Boolean.TRUE.toString().equals(deepParameter.toLowerCase());
-        String deactivateParameter = request.getParameter(DEACTIVATE);
-        boolean deactivate = deactivateParameter != null && Boolean.TRUE.toString().equals(deactivateParameter.toLowerCase());
-        Replication replication = replications.get(replicationName);
-        if(replication == null) {
+
+        final Replication replication = replications.get(replicationName);
+        if (isNull(replication)) {
             return new ErrorResponse()
-                .setHttpErrorCode(SC_BAD_REQUEST)
-                .setErrorMessage(REPLICATION_NOT_FOUND_FOR_NAME + replicationName);
+                    .setHttpErrorCode(SC_BAD_REQUEST)
+                    .setErrorMessage(REPLICATION_NOT_FOUND_FOR_NAME + replicationName);
         }
-        Resource source = request.getResourceResolver().getResource(sourcePath);
-        if(source != null) {
-            List<Resource> replicates;
-            try {
-                if(!deactivate) {
-                    // Replication can be local or remote and so the commit of the changes is done inside the Replication Service
-                    replicates = replication.replicate(source, deep);
-                } else {
-                    replicates = replication.deactivate(source);
-                }
-            } catch(ReplicationException e) {
-                return new ErrorResponse()
+
+        final String sourcePath = request.getParameter(PATH);
+        final Resource source = request.getResourceResolver().getResource(sourcePath);
+        if (isNull(source)) {
+            return new ErrorResponse()
+                    .setHttpErrorCode(SC_BAD_REQUEST)
+                    .setErrorMessage(String.format(SUFFIX_IS_NOT_RESOURCE, sourcePath));
+        }
+
+        final List<Resource> replicates = new LinkedList<>();
+        try {
+            replicates.addAll(
+                    parseBoolean(request.getParameter(DEACTIVATE))
+                            ? replication.deactivate(source)
+                            // Replication can be local or remote and so the commit of the changes is done inside the Replication Service
+                            : replication.replicate(source, parseBoolean(request.getParameter(DEEP)))
+            );
+        } catch (final ReplicationException e) {
+            return new ErrorResponse()
                     .setHttpErrorCode(SC_BAD_REQUEST)
                     .setErrorMessage(REPLICATION_FAILED)
                     .setException(e);
-            }
-            answer = new JsonResponse();
-            answer.writeAttribute(SOURCE_NAME, source.getName());
-            answer.writeAttribute(SOURCE_PATH, source.getPath());
-            answer.writeArray(REPLICATES);
-            if(replicates != null) {
-                for(Resource child : replicates) {
-                    answer.writeObject();
-                    answer.writeAttribute(NAME, child.getName());
-                    answer.writeAttribute(PATH, child.getPath());
-                    answer.writeClose();
-                }
-            }
-            answer.writeClose();
-        } else {
-            return new ErrorResponse()
-                .setHttpErrorCode(SC_BAD_REQUEST)
-                .setErrorMessage(String.format(SUFFIX_IS_NOT_RESOURCE, sourcePath));
         }
+
+        final JsonResponse answer = new JsonResponse();
+        answer.writeAttribute(SOURCE_NAME, source.getName());
+        answer.writeAttribute(SOURCE_PATH, source.getPath());
+        answer.writeArray(REPLICATES);
+        for (final Resource child : replicates) {
+            answer.writeObject();
+            answer.writeAttribute(NAME, child.getName());
+            answer.writeAttribute(PATH, child.getPath());
+            answer.writeClose();
+        }
+
+        answer.writeClose();
         return answer;
     }
 }

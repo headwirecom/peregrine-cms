@@ -31,6 +31,7 @@ import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
 import com.peregrine.render.RenderService;
 import com.peregrine.render.RenderService.RenderException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
@@ -100,7 +101,7 @@ public abstract class BaseFileReplicationService
             }
         }
         // This only returns the referenced resources. Now we need to check if there are any JCR Content nodes to be added as well
-        for(Resource reference: new ArrayList<Resource>(replicationList)) {
+        for(Resource reference: replicationList) {
             PerUtil.listMissingResources(reference, replicationList, resourceChecker, false);
         }
         PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, deep);
@@ -331,11 +332,11 @@ public abstract class BaseFileReplicationService
 
     public static class ExportExtension {
         private String name;
-        private List<String> types = new ArrayList<>();
+        private List<String> types;
         private boolean exportFolders = false;
 
         public ExportExtension(String name, List<String> types) {
-            if(PerUtil.isEmpty(name)) {
+            if(StringUtils.isEmpty(name)) {
                 throw new IllegalArgumentException(EXTENSION_NAME_MUST_BE_PROVIDED);
             }
             if(types == null || types.isEmpty()) {
