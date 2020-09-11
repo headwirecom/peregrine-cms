@@ -40,6 +40,7 @@ import javax.jcr.Session;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -117,7 +118,7 @@ public abstract class BaseFileReplicationService
     }
 
     @Override
-    public List<Resource> replicate(List<Resource> resourceList) throws ReplicationException {
+    public List<Resource> replicate(Collection<Resource> resourceList) throws ReplicationException {
         List<Resource> answer = new ArrayList<>();
         log.trace("Replicate Resource List: '{}'", resourceList);
         // Replicate the resources

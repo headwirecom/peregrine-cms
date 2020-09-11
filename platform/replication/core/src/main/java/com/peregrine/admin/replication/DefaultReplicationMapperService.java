@@ -20,11 +20,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import static com.peregrine.commons.util.PerUtil.isEmpty;
@@ -171,12 +167,12 @@ public class DefaultReplicationMapperService
     }
 
     @Override
-    public List<Resource> deactivate(Resource source) throws ReplicationException {
+    public List<Resource> deactivate(Resource source) {
         return null;
     }
 
     @Override
-    public List<Resource> replicate(List<Resource> resourceList) throws ReplicationException {
+    public List<Resource> replicate(Collection<Resource> resourceList) throws ReplicationException {
         List<Resource> answer = new ArrayList<>();
         Map<DefaultReplicationConfig, List<Resource>> resourceByReplication = new HashMap<>();
         resourceByReplication.put(defaultMapping, new ArrayList<Resource>());
