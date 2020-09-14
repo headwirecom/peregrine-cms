@@ -52,23 +52,7 @@ export const Field = {
   SELECT: 'material-select',
   MULTI_SELECT: 'material-multiselect'
 }
-export const Icon = {
-  LABEL: 'label',
-  SETTINGS: 'settings',
-  TEXT_FORMAT: 'text_format',
-  COMPARE_ARROWS: 'compare_arrows',
-  DELETE: 'delete',
-  INFO: 'info',
-  EDIT: 'edit',
-  LIST: 'list',
-  CHECK: 'check',
-  CHECKED: 'check_box',
-  UNCHECKED: 'check_box_outline_blank',
-  CANCEL: 'close',
-  CREATE: 'create',
-  MORE_VERT: 'more_vert',
-  VERSIONS: 'restore_page'
-}
+
 export const NodeType = {
   PAGE: 'page',
   TEMPLATE: 'template',
@@ -117,4 +101,22 @@ export const Key = {
   ARROW_RIGHT: 39,
   ARROW_DOWN: 40,
   ESC: 27
+}
+
+export const IconLib = {
+  MATERIAL_ICONS: 'material-icons',
+  FONT_AWESOME: 'font-awesome',
+  PLAIN_TEXT: 'plain-text'
+}
+
+export const DropDown = {
+  DIVIDER: '--------------------------'
+}
+
+export const Toast = {
+  Level: {
+    INFO: 'info',
+    WARNING: 'warn',
+    ERROR: 'error'
+  }
 }

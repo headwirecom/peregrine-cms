@@ -77,11 +77,19 @@
         transition: background-color 0.25s ease-out;
         cursor: pointer;
 
+        &.disabled {
+          color: var(--pcms-gray);
+
+          &:hover {
+            background-color: inherit;
+          }
+        }
+
         &:hover {
           background-color: rgba(0, 0, 0, .1)
         }
 
-        .material-icons {
+        .icon {
           margin-right: 1rem;
         }
       }
@@ -115,7 +123,7 @@
 
     [class$="referenced-by"] {
       color: $primary-color-dark;
-      overflow-y: scroll;
+      overflow-y: auto;
       .svg-icon {
         .svg-content {
           fill: color("blue-grey", "darken-2");
@@ -129,15 +137,29 @@
         }	        
       }	      
       .collection-item {
-        display: flex;
-        align-items: center;
+        >span {
+          display: inline-flex;
+          align-items: center;
+          position: relative;
+          width: 100%;
+          justify-content: space-between;
+        }
+
+
 
         .count {
-          padding: 1px 10px;
-          margin: 0 5px;
+          padding: 1px 5px;
           border-radius: 10px;
           background-color: #37474f;
           color: #fff;
+          position: absolute;
+          bottom: -7px;
+          left: -20px;
+          font-size: 10px;
+          line-height: 1rem;
+        }
+        .edit-icon {
+          align-self: flex-end;
         }
         .right {
           display: block;
@@ -147,6 +169,11 @@
           text-align: right;
           direction: rtl;
           margin-right:5px;
+          max-width: 92%;
+
+          bdo {
+            direction: ltr;
+          }
         }
       }
     }

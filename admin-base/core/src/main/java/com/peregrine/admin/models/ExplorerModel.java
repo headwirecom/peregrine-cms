@@ -32,6 +32,7 @@ import static com.peregrine.commons.util.PerConstants.JSON;
 import com.peregrine.nodetypes.models.Container;
 import com.peregrine.nodetypes.models.IComponent;
 import javax.inject.Inject;
+import org.apache.sling.models.annotations.Default;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
@@ -98,6 +99,9 @@ public class ExplorerModel
 
 
     //GEN]
+    @Inject 
+    @Default(values = "false") 
+    private String showFilter;
 
     //GEN[:GETTERS
     /* {"type":"string","source":"inject"} */
@@ -112,5 +116,9 @@ public class ExplorerModel
 
 
     //GEN]
+
+    public String getShowFilter() {
+      return showFilter;
+  }
 
 }

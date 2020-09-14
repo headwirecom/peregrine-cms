@@ -9,10 +9,9 @@ import org.apache.sling.api.resource.ResourceUtil;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.Strings.COLON;
 import static com.peregrine.commons.Strings._SCORE;
+import static com.peregrine.commons.util.PerConstants.*;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -21,6 +20,10 @@ public final class ResourceUtils {
 
     private ResourceUtils() {
         throw new UnsupportedOperationException();
+    }
+
+    public static Resource getJcrContent(final Resource resource) {
+        return resource.getChild(JCR_CONTENT);
     }
 
     public static Resource getFirstExistingAncestorOnPath(final ResourceResolver resourceResolver, final String path) {
@@ -43,6 +46,10 @@ public final class ResourceUtils {
             final String path,
             final String resourceTypes)
             throws PersistenceException {
+        if (isBlank(path)) {
+            return null;
+        }
+
         Resource resource = getFirstExistingAncestorOnPath(resourceResolver, path);
         final String missingPath;
         if (isNull(resource)) {

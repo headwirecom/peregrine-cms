@@ -35,8 +35,11 @@ export default function(me, target) {
     return api.createTenant(target.fromName, target.toName, target.title, target.tenantUserPwd, target.colorPalette).then( () => {
         return api.populateTenants().then( () => {
             return setTenant(me, { name : target.toName }).then( () => {
-                me.loadContent('/content/admin/pages/welcome.html');
-                // path' + SUFFIX_PARAM_SEPARATOR + '/content/'+target.toName)
+                if(target.editHome) {
+                    me.loadContent('/content/admin/pages/pages/edit.html/path' + SUFFIX_PARAM_SEPARATOR + '/content/'+target.toName + '/pages/index')
+                } else {
+                    me.loadContent('/content/admin/pages/welcome.html/path' + SUFFIX_PARAM_SEPARATOR + '/content/'+target.toName)
+                }
             })
         })        
     })

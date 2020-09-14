@@ -25,8 +25,9 @@
 <template>
   <div class="text-editor-wrapper">
     <admin-components-richtoolbar
-        :showViewportBtn="false"
-        :showPreviewBtn="false"/>
+        class="on-right-panel"
+        :show-always-active="false"
+        :responsive="false"/>
     <p class="text-editor inline-edit"
        :class="['text-editor', 'inline-edit', {'inline-editing': editing}]"
        ref="textEditor"
@@ -44,9 +45,9 @@
 </template>
 
 <script>
-  import {set} from '../../../../../js/utils'
+import {set} from '../../../../../js/utils'
 
-  export default {
+export default {
     mixins: [VueFormGenerator.abstractField],
     data() {
       return {
@@ -61,10 +62,12 @@
     },
     methods: {
       onFocusIn(event) {
+        set(this.view, '/state/inline/rich', true)
         set(this.view, '/state/inline/doc', this.doc)
         this.editing = true
       },
       onFocusOut() {
+        set(this.view, '/state/inline/rich', true)
         set(this.view, '/state/inline/doc', null)
         this.editing = false
       },

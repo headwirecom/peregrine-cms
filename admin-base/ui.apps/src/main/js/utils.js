@@ -245,3 +245,21 @@ export const restoreSelection = (containerEl, savedSel, doc = document) => {
     textRange.select()
   }
 }
+
+export const getCurrentDateTime= () => {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = now.getMonth() + 1
+  const day = now.getDate()
+  const hour = now.getHours()
+  const minute = now.getMinutes()
+  const second = now.getSeconds()
+  const milli = now.getMilliseconds()
+
+  return `${year}-${month}-${day}_${hour}-${minute}-${second}-${milli}`
+}
+
+export function isChromeBrowser() {
+  return /Chrome/.test(navigator.userAgent)
+      && /Google Inc/.test(navigator.vendor)
+}
