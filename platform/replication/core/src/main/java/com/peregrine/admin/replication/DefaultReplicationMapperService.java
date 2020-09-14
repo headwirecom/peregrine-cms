@@ -160,9 +160,9 @@ public class DefaultReplicationMapperService
         logger.trace("Starting Resource: '{}'", source.getPath());
         final List<Resource> referenceList = referenceLister.getReferenceList(true, source, deep);
         logger.trace("Reference List: '{}'", referenceList);
-        final Set<Resource> replicationList = listMissingResources(source, new HashSet<>(), new AddAllResourceChecker(), deep);
-        replicationList.add(source);
-        replicationList.addAll(referenceList);
+        final List<Resource> replicationList = listMissingResources(source, new ArrayList<>(), new AddAllResourceChecker(), deep);
+        replicationList.add(0, source);
+        replicationList.addAll(0, referenceList);
         return replicate(replicationList);
     }
 
