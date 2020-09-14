@@ -6,8 +6,7 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceUtil;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static com.peregrine.commons.Strings.COLON;
 import static com.peregrine.commons.Strings._SCORE;
@@ -99,4 +98,17 @@ public final class ResourceUtils {
                 && !ResourceUtil.isSyntheticResource(resource);
     }
 
+    public static <L extends List<Resource>> L removeDuplicates(final L list) {
+        final Set<String> paths = new HashSet<>();
+        for (int i = 0; i < list.size(); i++) {
+            final String path = list.get(i).getPath();
+            if (paths.contains(path)) {
+                list.remove(i--);
+            } else {
+                paths.add(path);
+            }
+        }
+
+        return list;
+    }
 }

@@ -1,5 +1,6 @@
 package com.peregrine.admin.replication;
 
+import com.peregrine.commons.ResourceUtils;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
 import org.apache.sling.api.resource.Resource;
@@ -152,6 +153,7 @@ public class DefaultReplicationMapperService
         final List<Resource> replicationList = listMissingResources(source, new ArrayList<>(), new AddAllResourceChecker(), deep);
         replicationList.add(0, source);
         replicationList.addAll(0, referenceList);
+        ResourceUtils.removeDuplicates(replicationList);
         return replicate(replicationList);
     }
 
