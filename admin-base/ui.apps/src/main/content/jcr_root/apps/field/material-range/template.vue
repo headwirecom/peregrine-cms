@@ -13,6 +13,16 @@
 			:required="schema.required"
 			:step="schema.step"
 		/>
+		<!-- <input 
+			type="checkbox" 
+			:disabled="schema.disabled || schema.preview"
+			:id="getFieldID(schema)+'-enabled'" />
+		<label :for="getFieldID(schema)+'-enabled'">enabled</label>
+		<input 	
+			type="text" 
+			v-model="value" 
+			:disabled="schema.disabled || schema.preview"
+		/> -->
 	</p>
 	<div v-else>{{value}}</div>
 </template>
