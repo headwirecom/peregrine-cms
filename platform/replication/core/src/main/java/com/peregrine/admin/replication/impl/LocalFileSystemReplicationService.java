@@ -25,9 +25,11 @@ package com.peregrine.admin.replication.impl;
  * #L%
  */
 
+import com.peregrine.commons.util.PerUtil;
 import com.peregrine.render.RenderService;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.osgi.framework.BundleContext;
@@ -47,6 +49,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
+import static com.peregrine.commons.ResourceUtils.jcrNameToFileName;
+import static com.peregrine.commons.Strings.SLASH;
+import static com.peregrine.commons.Strings._SCORE;
 import static com.peregrine.commons.util.PerUtil.*;
 import static java.util.Objects.isNull;
 
@@ -232,30 +237,29 @@ public class LocalFileSystemReplicationService
     }
 
     @Override
-    File createTargetFolder(String path) throws ReplicationException {
-        File directory = targetFolder;
-        String[] folders = path.split("/");
-        for(String folder: folders) {
-            if(folder != null && !folder.isEmpty()) {
-                File newDirectory = new File(directory, folder);
-                if(!newDirectory.exists()) {
-                    if(!newDirectory.mkdir()) {
-                        throw new ReplicationException(String.format(FAILED_TO_CREATED_FOLDER, newDirectory.getAbsolutePath()));
-                    }
-                } else if(!newDirectory.isDirectory()) {
-                    // File exists but is not a folder (like an image or so) -> create a folder with '_' at the end
-                    String addendum = folder + "_";
-                    newDirectory = new File(directory, addendum);
-                    if(!newDirectory.exists()) {
-                        if (!newDirectory.mkdir()) {
-                            throw new ReplicationException(String.format(FAILED_TO_CREATED_FOLDER, newDirectory.getAbsolutePath()));
-                        }
-                    }
-                }
-                directory = newDirectory;
+    File createTargetFolder(final String path) throws ReplicationException {
+        File answer = targetFolder;
+        for (final String name: path.split(SLASH)) {
+            if (StringUtils.isNotEmpty(name)) {
+                answer = createTargetFolder(answer, jcrNameToFileName(name));
             }
         }
-        return directory;
+
+        return answer;
+    }
+
+    private File createTargetFolder(final File parent, final String name) throws ReplicationException {
+        File answer = new File(parent, name);
+        if (answer.exists() && !answer.isDirectory()) {
+            // File exists but is not a folder (like an image or so) -> create a folder with '_' at the end
+            answer = new File(parent, name + _SCORE);
+        }
+
+        if ((answer.exists() && answer.isDirectory()) || answer.mkdir()) {
+            return answer;
+        }
+
+        throw new ReplicationException(String.format(FAILED_TO_CREATED_FOLDER, answer.getAbsolutePath()));
     }
 
     @Override
