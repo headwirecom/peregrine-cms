@@ -1,19 +1,10 @@
 package com.peregrine.admin.replication;
 
-import com.peregrine.commons.util.PerUtil.AddAllResourceChecker;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.framework.BundleContext;
-import org.osgi.service.component.ComponentContext;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
-import org.osgi.service.component.annotations.Modified;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
+import org.osgi.service.component.annotations.*;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
@@ -23,9 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.Map.Entry;
 
-import static com.peregrine.commons.util.PerUtil.isEmpty;
-import static com.peregrine.commons.util.PerUtil.listMissingResources;
-import static com.peregrine.commons.util.PerUtil.splitIntoParameterMap;
+import static com.peregrine.commons.util.PerUtil.*;
 
 /**
  * This class provides the implementation of the Default Replication Mapper
