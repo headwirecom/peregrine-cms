@@ -41,6 +41,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 
 import static com.peregrine.commons.util.PerConstants.*;
+import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.*;
 
 /**
@@ -332,13 +333,17 @@ public class PerUtil {
                 .orElse(null);
     }
 
+    public static boolean isJcrContent(final Resource resource) {
+        return PerConstants.JCR_CONTENT.equals(resource.getName());
+    }
+
     public static Resource getJcrContent(final Resource resource) {
-        if (PerConstants.JCR_CONTENT.equals(resource.getName())) {
+        if (isJcrContent(resource)) {
             return resource;
         }
 
         return resource.getChild(PerConstants.JCR_CONTENT);
-        }
+    }
 
     public static Resource getJcrContentOrSelf(final Resource resource) {
         return Optional.ofNullable(getJcrContent(resource))
@@ -412,45 +417,47 @@ public class PerUtil {
      *                         if children resources are traversed
      * @param deep If true this goes down recursively any children
      */
-    public static void listMissingResources(
+    public static <C extends Collection<Resource>> C listMissingResources(
             final Resource startingResource,
-            final List<Resource> response,
+            final C response,
             final ResourceChecker resourceChecker,
             final boolean deep) {
         ResourceChecker childResourceChecker = resourceChecker;
-        if (startingResource == null || resourceChecker == null || response == null) {
-            return;
+        if (isNull(startingResource) || isNull(resourceChecker) || isNull(response)) {
+            return response;
         }
 
-            if(resourceChecker.doAdd(startingResource)) {
-                if(!containsResource(response, startingResource)) {
-                    response.add(startingResource);
-                }
-                // If this is JCR Content we need to add all children
-            if (PerConstants.JCR_CONTENT.equals(startingResource.getName())) {
-                    childResourceChecker = new AddAllResourceChecker();
-                }
+        if (resourceChecker.doAdd(startingResource)) {
+            if (!containsResource(response, startingResource)) {
+                response.add(startingResource);
             }
+            // If this is JCR Content we need to add all children
+            if (isJcrContent(startingResource)) {
+                childResourceChecker = new AddAllResourceChecker();
+            }
+        }
 
         if (!resourceChecker.doAddChildren(startingResource)) {
-            return;
+            return response;
         }
 
         for (final Resource child : startingResource.getChildren()) {
-            if (deep || PerConstants.JCR_CONTENT.equals(child.getName())) {
-                        listMissingResources(child, response, childResourceChecker, true);
-                    }
-                }
+            if (deep || isJcrContent(child)) {
+                listMissingResources(child, response, childResourceChecker, true);
             }
+        }
 
-    public static boolean containsResource(final List<Resource> resources, final Resource check) {
-        if (check == null) {
-            return true;
+        return response;
     }
+
+    public static boolean containsResource(final Collection<Resource> resources, final Resource check) {
+        if (isNull(check)) {
+            return true;
+        }
 
         final String path = check.getPath();
         for (final Resource item : resources) {
-                if(path.equals(item.getPath())) {
+            if (path.equals(item.getPath())) {
                 return true;
             }
         }
