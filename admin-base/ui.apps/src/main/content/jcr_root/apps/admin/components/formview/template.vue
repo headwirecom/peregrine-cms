@@ -93,6 +93,13 @@ export default {
         },
         selectField() {
 
+        },
+        addField(me, command) {
+            const name = "field-"+me.fields.length;
+            me.fields.push(`#/properties/${name}`);
+            me.schema.properties[name] = {
+                "type": "string"
+            };            
         }
     }
 }
