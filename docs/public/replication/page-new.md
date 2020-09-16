@@ -1,4 +1,4 @@
-# Replicate New Page
+# Replicate new Page
 
 **Actor(s)**: Peregrine CMS Author  
 **Description**: Author creates a new page and replicates it after initial editing.
