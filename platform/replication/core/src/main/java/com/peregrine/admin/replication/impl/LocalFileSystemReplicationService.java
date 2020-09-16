@@ -50,11 +50,15 @@ import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
+import static com.peregrine.commons.Chars._SCORE;
+import static com.peregrine.commons.ResourceUtils.jcrNameToFileName;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerUtil.intoList;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static com.peregrine.commons.util.PerUtil.splitIntoMap;
 import static com.peregrine.commons.util.PerUtil.splitIntoProperties;
+import static java.util.Objects.isNull;
 
 /**
  * This class replicates resources to a local file system folder
