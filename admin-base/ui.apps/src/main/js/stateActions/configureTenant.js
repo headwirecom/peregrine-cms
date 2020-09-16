@@ -38,7 +38,7 @@ export default function(me, target) {
     log.fine('configureTenant',target)
     var api = me.getApi()
     return new Promise( (resolve, reject) => {
-        me.loadContent('/content/admin/pages/tenants/configure.html/path' + SUFFIX_PARAM_SEPARATOR +target)
+        me.loadContent('/content/admin/pages/tenants/configure.html/path' + SUFFIX_PARAM_SEPARATOR +'/content/'+target.name)
         resolve()
     })
 

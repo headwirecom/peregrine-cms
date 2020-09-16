@@ -24,7 +24,7 @@
   -->
 <template>
     <div class="nav-content sub-nav" :class="classes">
-        <admin-components-richtoolbar v-if="renderRichToolbar"/>
+        <admin-components-richtoolbar v-if="renderRichToolbar" class="on-sub-nav"/>
         <div v-if="showNodeTree" class="page-tree">
             <admin-components-materializedropdown
                 ref="dropdown"
@@ -52,10 +52,10 @@
 </template>
 
 <script>
-    import {NodeTree} from '../../../../../../js/constants'
-    import {get} from '../../../../../../js/utils'
+import {NodeTree} from '../../../../../../js/constants'
+import {get} from '../../../../../../js/utils'
 
-    export default {
+export default {
     props: ['model'],
     data() {
         return {

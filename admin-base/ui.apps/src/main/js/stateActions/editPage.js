@@ -44,8 +44,10 @@ export default function(me, target) {
     set(view, '/state/contentview/editor/type', EditorTypes.PAGE)
 
     return new Promise( (resolve, reject) => {
-        me.loadContent('/content/admin/pages/pages/edit.html/path'+SUFFIX_PARAM_SEPARATOR+target)
-        resolve()
+        return me.stateAction('showPageInfo', { selected: target}).then( () => {
+            me.loadContent('/content/admin/pages/pages/edit.html/path'+SUFFIX_PARAM_SEPARATOR+target)
+            resolve()
+        })
     })
 
 }

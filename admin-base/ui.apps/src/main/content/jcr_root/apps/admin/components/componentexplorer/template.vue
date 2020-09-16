@@ -36,7 +36,7 @@
                     <div>
                         <ul class="collection">
                             <li
-                                class="collection-item"
+                                class="collection-item" style="cursor: move;"
                                 v-for="component in group"
                                 v-bind:key="componentKey(component)"
                                 v-on:dragstart="onDragStart(component, $event)"

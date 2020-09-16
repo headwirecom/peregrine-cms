@@ -97,7 +97,6 @@
                     const path = this.formmodel.objectPath.split('/')
                     const componentName = path.slice(2).join('-')
                     const definitions = $perAdminApp.getNodeFromView('/admin/componentDefinitions')
-                    console.log(componentName, definitions)
                     if(definitions &&  definitions[componentName]) {
                         return definitions[componentName].model
                     }
@@ -119,7 +118,9 @@
                 }
                 const tenant = $perAdminApp.getView().state.tenant;
                 return objects.filter( object => { 
-                    return object.path.startsWith('/apps/admin/') || (tenant && object.path.startsWith(`/apps/${tenant.name}/`))
+                    return object.path.startsWith('/apps/admin/') 
+                        || (tenant && object.path.startsWith(`/apps/${tenant.name}/`)) 
+                        || (tenant && object.path.startsWith(`/content/${tenant.name}/object-definitions/`))
                 })
             }
         },

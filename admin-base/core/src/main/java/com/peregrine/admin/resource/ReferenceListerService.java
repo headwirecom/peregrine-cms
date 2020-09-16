@@ -30,16 +30,17 @@ import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerUtil.isEmpty;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static com.peregrine.commons.util.PerUtil.listMissingParents;
+import static java.util.Objects.isNull;
 
+import com.google.common.collect.Lists;
 import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
 import com.peregrine.replication.Reference;
 import com.peregrine.replication.ReferenceLister;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+
+import java.util.*;
+
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -103,16 +104,18 @@ public class ReferenceListerService
     }
 
     @Override
-    public List<Reference> getReferencedByList(Resource resource) {
-        List<Reference> answer = new ArrayList<>();
-        if(resource != null) {
-            for(String root : referencedByRootList) {
-                Resource rootResource = resource != null ? resource.getResourceResolver().getResource(root) : null;
-                if(rootResource != null) {
-                    traverseTreeReverse(rootResource, resource.getPath(), answer);
-                }
-            }
+    public List<Reference> getReferencedByList(final Resource resource) {
+        if (isNull(resource)) {
+            return Collections.emptyList();
         }
+
+        final List<Reference> answer = new ArrayList<>();
+        final ResourceResolver resourceResolver = resource.getResourceResolver();
+        final String path = resource.getPath();
+        referencedByRootList.stream()
+                .map(resourceResolver::getResource)
+                .filter(Objects::nonNull)
+                .forEach(r -> traverseTreeReverse(r, path, answer));
         return answer;
     }
 
