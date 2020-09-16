@@ -33,7 +33,11 @@
     jcr:primaryType="per:PageContent"
     sling:resourceType="admin/components/toolingpage"
     jcr:title="Object Definition Editor"
-    jcr:description="admin base Content Root">
+    jcr:description="an editor to define object types"
+    dataFrom="/state/tools/objectdefinitioneditor"
+    dataDefault="/content/admin/pages"
+    suffixToParameter="[path,/pageView/path,path,/state/tools/objectdefinitioneditor]"
+    loaders="[populateNodesForBrowser:/state/tools/objectdefinitioneditor]">
 
     <nav jcr:primaryType="nt:unstructured"
       sling:resourceType="admin/components/nav">
@@ -50,15 +54,21 @@
       sling:resourceType="admin/components/workspace">
 
       <contentview jcr:primaryType="nt:unstructured"
-      sling:resourceType="admin/components/formview"/>
+        sling:resourceType="admin/components/formview"
+        text="content view">
+      </contentview>
+
 
       <editor jcr:primaryType="nt:unstructured"
-      sling:resourceType="pagerendervue/components/base"
-      text="peregrine-cms is a head optional, api first cms built on top of vuejs, apache sling and apache jackrabbit"/>
+        sling:resourceType="pagerendervue/components/base"
+        text="editor">
+      </editor>
+
 
       <right-panel jcr:primaryType="nt:unstructured"
-      sling:resourceType="pagerendervue/components/base"
-      text="peregrine-cms is a head optional, api first cms built on top of vuejs, apache sling and apache jackrabbit"/>
+        sling:resourceType="admin/components/forminfoview"
+        text="right panel">
+      </right-panel>
 
     </workspace>
 
