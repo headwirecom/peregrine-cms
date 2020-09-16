@@ -120,9 +120,7 @@ public class RemoteReplAuthorJTest {
 
     @Test
     public void authorDistributionServiceUserAccess() {
-        List<String> readList = Arrays.asList("/var/sling/distribution", "/content");
-        List<String> allList = Arrays.asList("/var/sling/distribution/packages");
-        testListGranted(readList, "jcr:read", "distribution-agent-user");
+        List<String> allList = Arrays.asList("/var/sling/distribution", "/content", "/etc/distribution","/libs/sling/distribution");
         testListGranted(allList, "jcr:all", "distribution-agent-user");
     }
 
