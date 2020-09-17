@@ -19,5 +19,9 @@
 ## Alternate Course:
 1. Author may choose to exclude some resources from replication cleansing.
 1. Author may cancel the operation.
-1. Author may access replication cache explorer to clean remaining resources.
-1. Author may purge replication cache in another console.
+1. Author may access [replication cache explorer](./replication-explorer.md)
+   to clean remaining resources.
+1. Author may purge replication cache in [another console](./replication-explorer.md).
+
+## Exceptions:
+1. Site was not yet replicated. Nothing will happen in this case.

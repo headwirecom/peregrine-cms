@@ -7,11 +7,11 @@
 1. Page does not exist in the system.
 
 ## Postconditions:
-1. The replication status icon gets updated.
 1. The assets referenced by the Page get replicated.
 1. Other pages referenced by the Page get replicated.
 1. The Page template and its super types get replicated.
 1. The objects associated with the Page get replicated.
+1. The replication status icon gets updated.
 
 
 ## Main Course:
