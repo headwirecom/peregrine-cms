@@ -1,4 +1,5 @@
 # Peregrine Replication Use Cases
+* [Replication Explorer](./replication-explorer.md)
 * [Replicate new Root Site](./root-site-new.md)
 * [Replicate updated Root Site](./root-site-updated.md)
 * [Replicate deleted Root Site](./root-site-deleted.md)
