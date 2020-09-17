@@ -11,7 +11,7 @@
 1. The replication status icon gets updated.
 
 ## Main Course:
-1. Author edits the Site or its associated resources.
+1. Author edits the Page or its associated resources.
 1. Author replicates the Page.
 1. System presents the author with a list of associated resources that
    will get replicated or updated along. The list presents the status change:

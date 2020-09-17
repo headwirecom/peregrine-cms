@@ -1,7 +1,7 @@
 # Replicate deleted Page
 
 **Actor(s)**: Peregrine CMS Author  
-**Description**: Author deletes a Website.
+**Description**: Author deletes a Page.
 
 ## Preconditions:
 1. Page already exists in the system.
