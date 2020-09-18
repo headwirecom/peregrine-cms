@@ -101,8 +101,9 @@ public class ReplicationUtil {
                 if (sourceProperties != null) {
                     Calendar replicated = Calendar.getInstance();
                     if (DISTRIBUTION_PENDING.equals(targetPath)) {
+                        // Note for remote replication use-case
                         // updateReplicationProperties will be called twice. The first time will include a resource
-                        // obtained from the user initiating resource publishing. In this case targetPath will be "distribution pending"
+                        //   obtained from the user initiating resource publishing. In this case targetPath will be "distribution pending"
                         // TODO: CR add replication status to the per:Replication mixin such that these inferences are not needed.
                         sourceProperties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());
                     }
@@ -140,6 +141,7 @@ public class ReplicationUtil {
                             throw e;
                         }
                     }
+                    commitChanges(source);
                 } else {
                     LOGGER.debug("Source: '{}' is not writable -> ignored", source);
                 }
@@ -147,7 +149,14 @@ public class ReplicationUtil {
         }
     }
 
-
+    private static void commitChanges(Resource resource) {
+        resource.getResourceResolver().refresh();
+        try {
+            resource.getResourceResolver().commit();
+        } catch (PersistenceException e) {
+            LOGGER.error("could not commit replication property changes", e);
+        }
+    }
 
 //    /**
 //     * References under /content for replication

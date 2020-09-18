@@ -52,6 +52,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
+import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerUtil.intoList;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static com.peregrine.commons.util.PerUtil.splitIntoMap;
@@ -283,6 +285,8 @@ public class LocalFileSystemReplicationService
         } catch(IOException e) {
             throw new ReplicationException(String.format(FAILED_TO_STORE_RENDERING, renderingFile.getAbsolutePath()), e);
         }
+        Resource propertiesRes = resource.getName().equals(JCR_CONTENT) ? resource : resource.getChild(JCR_CONTENT);
+        updateReplicationProperties(propertiesRes, LOCAL_FILE_SYSTEM + renderingFile.getAbsolutePath(), null);
         return LOCAL_FILE_SYSTEM + renderingFile.getAbsolutePath();
     }
 
@@ -296,6 +300,8 @@ public class LocalFileSystemReplicationService
         } catch(IOException e) {
             throw new ReplicationException(String.format(CANNOT_WRITE_RENDERING, renderingFile.getAbsolutePath()), e);
         }
+        Resource propertiesRes = resource.getName().equals(JCR_CONTENT) ? resource : resource.getChild(JCR_CONTENT);
+        updateReplicationProperties(propertiesRes, LOCAL_FILE_SYSTEM + renderingFile.getAbsolutePath(), null);
         return LOCAL_FILE_SYSTEM + renderingFile.getAbsolutePath();
     }
 
@@ -335,7 +341,8 @@ public class LocalFileSystemReplicationService
                 if(!deleteFile(toBeDeleted)) {
                     throw new ReplicationException(String.format(FAILED_TO_DELETE_FILE, toBeDeleted.getAbsolutePath()));
                 }
-
+                Resource propertiesRes = resource.getName().equals(JCR_CONTENT) ? resource : resource.getChild(JCR_CONTENT);
+                updateReplicationProperties(propertiesRes, "", null);
             }
         }
     }
