@@ -70,6 +70,7 @@ export const Icon = {
   MORE_VERT: 'more_vert',
   VERSIONS: 'restore_page'
 }
+
 export const NodeType = {
   PAGE: 'page',
   TEMPLATE: 'template',
@@ -132,6 +133,7 @@ export const DropDown = {
 
 export const Toast = {
   Level: {
+    INFO: 'info',
     WARNING: 'warn',
     ERROR: 'error'
   }

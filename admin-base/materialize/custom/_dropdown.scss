@@ -18,6 +18,7 @@
       margin-bottom: 1rem;
       background-color: rgba(0, 0, 0, .025);
       border-bottom: 1px solid rgba(0, 0, 0, .3);
+      color: #000;
 
       &:hover {
         background-color: rgba(0, 0, 0, .025);
@@ -28,7 +29,7 @@
 
         tr {
           td {
-            padding: .33rem;
+            padding: 0;
 
             &:first-child {
               &:after {
@@ -68,6 +69,10 @@
         justify-content: left;
         align-items: center;
         font-size: 1.15rem !important;
+
+        > img {
+          width: 17px;
+        }
       }
 
       .center-keeper {

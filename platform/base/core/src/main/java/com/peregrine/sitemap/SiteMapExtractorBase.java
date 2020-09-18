@@ -38,7 +38,7 @@ import static java.util.Objects.isNull;
 public abstract class SiteMapExtractorBase implements SiteMapExtractor {
 
     @Override
-    public boolean appliesTo(final Resource root) {
+    public final boolean appliesTo(final Resource root) {
         if (isNull(root)) {
             return false;
         }
@@ -47,7 +47,11 @@ public abstract class SiteMapExtractorBase implements SiteMapExtractor {
                 .map(SiteMapConfiguration::getPagePathPattern)
                 .map(p -> p.matcher(root.getPath()))
                 .map(Matcher::matches)
-                .orElse(true);
+                .orElse(true) && appliesToImpl(root);
+    }
+
+    protected boolean appliesToImpl(final Resource root) {
+        return true;
     }
 
     @Override
@@ -57,11 +61,10 @@ public abstract class SiteMapExtractorBase implements SiteMapExtractor {
 
     private List<SiteMapEntry> extract(final Page root) {
         final List<SiteMapEntry> result = new LinkedList<>();
-        if (!isPage(root)) {
-            return result;
+        if (isPage(root)) {
+            result.add(createEntry(root));
         }
 
-        result.add(createEntry(root));
         for (final Resource child: root.getChildren()) {
             final Page childPage = new Page(child);
             if (isPage(childPage)) {

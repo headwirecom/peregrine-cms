@@ -2,6 +2,7 @@ branches:
   only:
   - develop-sling12
   - develop
+  - feature/tenantstate
 
 services:
 - docker

@@ -24,13 +24,13 @@
 
     <div class="row" style="border: solid silver 2px; box-shadow: 3px 3px 4px lightgray; margin-right: 10px;">
         <div class="tenant-tabs">
-            <div v-for="(item, index) in tab.items"
+            <button v-for="(item, index) in tab.items"
                  class="tab"
                  :key="item"
                  :class="{active: tab.active === index}"
                  @click="onTabClick(index)">
                 {{ item }}
-            </div>
+            </button>
         </div>
         <div class="tenant-collection">
             <template v-if="children && children.length > 0">
@@ -197,6 +197,7 @@
         display: flex;
         cursor: pointer;
         transition: background-color .35s ease-out;
+        border: none;
     }
 
     .tenant-tabs .tab:hover,

@@ -78,6 +78,16 @@
     </experiences>
   </recyclebin>
 
+  <object-definitions jcr:primaryType="nt:unstructured" jcr:title="Object Definitions"
+    sling:resourceType="admin/components/iconaction"
+    jcr:description="edit and manage object definitions"
+    action="/content/admin/pages/object-definitions">
+    <experiences jcr:primaryType="nt:unstructured">
+      <de jcr:primaryType="nt:unstructured" experiences="[lang:de]" title="Objekt Definitionen"
+        description="Objekt Definitionen bearbeiten und verwalten"/>
+    </experiences>
+  </object-definitions>
+
   <config jcr:primaryType="nt:unstructured" jcr:title="Tools"
     sling:resourceType="admin/components/iconaction"
     jcr:description="Dig deeper into Peregrine with these tools"

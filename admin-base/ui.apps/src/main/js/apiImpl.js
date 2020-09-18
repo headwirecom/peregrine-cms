@@ -25,7 +25,7 @@
 // var axios = require('axios')
 
 import {LoggerFactory} from './logger'
-import {get, stripNulls} from './utils'
+import {stripNulls} from './utils'
 import {Field} from './constants';
 
 let logger = LoggerFactory.logger('apiImpl').setLevelDebug()
@@ -802,6 +802,21 @@ class PerAdminImpl {
     })
   }
 
+  copyPage(srcPath, targetPath) {
+    return new Promise((resolve, reject) => {
+      let data = new FormData()
+      data.append('path', srcPath)
+      data.append('to', targetPath)
+      data.append('deep', 'true')
+      data.append('newName', name)
+      data.append('newTitle', name)
+      data.append('type', 'child')
+      updateWithForm('/admin/createPageFromSkeletonPage.json', data)
+          .then((data) => this.populateNodesForBrowser(srcPath))
+          .then(() => resolve())
+    })
+  }
+
   movePage(path, to, type) {
     let data = new FormData()
     data.append('to', to)
@@ -823,6 +838,13 @@ class PerAdminImpl {
     data.append('title', title)
     return updateWithForm('/admin/createTemplate.json' + parentPath, data)
         .then(() => this.populateNodesForBrowser(parentPath))
+  }
+
+  createObjectDefinition(parentPath, name) {
+    let data = new FormData()
+    data.append('name', name)
+    return updateWithForm('/admin/createObjectDefinition.json' + parentPath, data)
+    .then(() => this.populateNodesForBrowser(parentPath))
   }
 
   moveTemplate(path, to, type) {
@@ -1179,6 +1201,19 @@ replicate(path, replicationService='defaultRepl', deep=false, deactivate=false, 
               `/content/${templateName}/pages/css/palettes`)
         }).catch((err) => {
           logger.warn(`template ${templateName} does not support palettes`)
+        })
+  }
+
+  populateIcons(tenant) {
+    return fetch(`/admin/nodes.json/content/${tenant.name}/assets/icons`)
+        .then((data) => {
+          const iconsNode = $perAdminApp.findNodeFromPath(data,
+              `/content/${tenant.name}/assets/icons`)
+          const icons = iconsNode.children
+          Vue.set($perAdminApp.getView().admin, 'icons', icons)
+          logger.debug(`populated icons for tenant ${tenant.name}:`, icons)
+        }).catch((err) => {
+          logger.warn(`tenant ${tenant.name} does not have any icons`)
         })
   }
 

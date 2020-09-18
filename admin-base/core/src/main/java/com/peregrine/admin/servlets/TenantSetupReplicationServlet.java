@@ -52,6 +52,7 @@ import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.commons.util.PerUtil.POST;
+import static java.util.Objects.isNull;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -95,19 +96,17 @@ public class TenantSetupReplicationServlet extends AbstractBaseServlet {
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        JsonResponse answer = null;
         logger.trace("Request Path: '{}'", request.getRequestPath());
         logger.trace("Request URI: '{}'", request.getRequest().getRequestURI());
         logger.trace("Request URL: '{}'", request.getRequest().getRequestURL());
-        String sourcePath = request.getParameter(PATH);
 //        String replicationName = request.getPa
 //        if(replicationName == null || replicationName.isEmpty()) {
 //            return new ErrorResponse()
 //                .setHttpErrorCode(SC_BAD_REQUEST)
 //                .setErrorMessage(PARAMETER_NAME_FOR_THE_REPLICATION_NAME_IS_NOT_PROVIDED);
 //        }
-        String withSiteParameter = request.getParameter(WITH_SITE);
-        boolean withSite = withSiteParameter != null && Boolean.TRUE.toString().equals(withSiteParameter.toLowerCase());
+//        String withSiteParameter = request.getParameter(WITH_SITE);
+//        boolean withSite = withSiteParameter != null && Boolean.TRUE.toString().equals(withSiteParameter.toLowerCase());
 //        String deactivateParameter = request.getParameter(DEACTIVATE);
 //        boolean deactivate = deactivateParameter != null && Boolean.TRUE.toString().equals(deactivateParameter.toLowerCase());
 //        Replication replication = replications.get(replicationName);
@@ -116,63 +115,64 @@ public class TenantSetupReplicationServlet extends AbstractBaseServlet {
 //                .setHttpErrorCode(SC_BAD_REQUEST)
 //                .setErrorMessage(REPLICATION_NOT_FOUND_FOR_NAME + replicationName);
 //        }
+        String sourcePath = request.getParameter(PATH);
         Resource source = request.getResourceResolver().getResource(sourcePath);
-        if(source != null) {
-            // Make sure that the Resource is a Site
-            if(!source.getResourceType().equals(SITE_PRIMARY_TYPE)) {
-                return new ErrorResponse()
+        if (isNull(source)) {
+            return new ErrorResponse()
+                    .setHttpErrorCode(SC_BAD_REQUEST)
+                    .setErrorMessage(String.format(SUFFIX_IS_NOT_RESOURCE, sourcePath));
+        }
+
+        // Make sure that the Resource is a Site
+        if (!SITE_PRIMARY_TYPE.equals(source.getResourceType())) {
+            return new ErrorResponse()
                     .setHttpErrorCode(SC_BAD_REQUEST)
                     .setErrorMessage(String.format(SUFFIX_IS_NOT_SITE, sourcePath));
-            }
-            List<Resource> replicationList = new ArrayList<>();
-            // Thinks to search for
-            // - /content/<site>/pages/css
-            // - /etc/felibs/<theme>.css / .js
-            // - /etc/felibs/<site>.css / .js
-            // - /etc/felibs/<theme dependencies>.css / .js
+        }
+        List<Resource> replicationList = new ArrayList<>();
+        // Thinks to search for
+        // - /content/<site>/pages/css
+        // - /etc/felibs/<theme>.css / .js
+        // - /etc/felibs/<site>.css / .js
+        // - /etc/felibs/<theme dependencies>.css / .js
 //            if(withSite) {
-                replicationList.add(source);
+        replicationList.add(source);
 //            } else {
 //                Resource css = source.getChild("pages/css");
 //                if (css != null) {
 //                    replicationList.add(css);
 //                }
 //            }
-            Resource felibs = request.getResourceResolver().getResource(FELIBS_ROOT);
-            handleSourceSites(source, replicationList, felibs);
-            logger.info("List of Resource to be replicated: '{}'", replicationList);
-            List<Resource> allReplicatedResource = new ArrayList<>();
-            for(Resource resource: replicationList) {
-                try {
-                    logger.info("Replication Resource: '{}'", resource);
-                    List<Resource> replicatedItems = defaultReplicationMapper.replicate(resource, true);
-                    allReplicatedResource.addAll(replicatedItems);
-                } catch (ReplicationException e) {
-                    logger.warn("Replication Failed", e);
-                    return new ErrorResponse()
+        final Resource felibs = request.getResourceResolver().getResource(FELIBS_ROOT);
+        handleSourceSites(source, replicationList, felibs);
+        logger.info("List of Resource to be replicated: '{}'", replicationList);
+        final List<Resource> allReplicatedResource = new ArrayList<>();
+        for (final Resource resource : replicationList) {
+            try {
+                logger.info("Replication Resource: '{}'", resource);
+                List<Resource> replicatedItems = defaultReplicationMapper.replicate(resource, true);
+                allReplicatedResource.addAll(replicatedItems);
+            } catch (ReplicationException e) {
+                logger.warn("Replication Failed", e);
+                return new ErrorResponse()
                         .setHttpErrorCode(SC_BAD_REQUEST)
                         .setErrorMessage(REPLICATION_FAILED)
                         .setException(e);
-                }
             }
-            answer = new JsonResponse();
-            answer.writeAttribute(SOURCE_NAME, source.getName());
-            answer.writeAttribute(SOURCE_PATH, source.getPath());
-            answer.writeArray(REPLICATES);
-            if(allReplicatedResource != null) {
-                for(Resource child : allReplicatedResource) {
-                    answer.writeObject();
-                    answer.writeAttribute(NAME, child.getName());
-                    answer.writeAttribute(PATH, child.getPath());
-                    answer.writeClose();
-                }
-            }
-            answer.writeClose();
-        } else {
-            return new ErrorResponse()
-                .setHttpErrorCode(SC_BAD_REQUEST)
-                .setErrorMessage(String.format(SUFFIX_IS_NOT_RESOURCE, sourcePath));
         }
+
+        final JsonResponse answer = new JsonResponse();
+        answer.writeAttribute(SOURCE_NAME, source.getName());
+        answer.writeAttribute(SOURCE_PATH, source.getPath());
+        answer.writeArray(REPLICATES);
+        for (final Resource child : allReplicatedResource) {
+            answer.writeObject();
+            answer.writeAttribute(NAME, child.getName());
+            answer.writeAttribute(PATH, child.getPath());
+            answer.writeClose();
+        }
+
+        answer.writeClose();
         return answer;
     }
 

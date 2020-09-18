@@ -159,6 +159,10 @@ class PerApi {
         return impl.movePage(path, to, type)
     }
 
+    copyPage(srcPath, targetPath) {
+        return impl.copyPage(srcPath, targetPath)
+    }
+
     deletePageNode(path, nodePath) {
         return impl.deletePageNode(path, nodePath)
     }
@@ -177,6 +181,10 @@ class PerApi {
 
     createObject(parentPath, name, templatePath) {
         return impl.createObject(parentPath, name, templatePath)
+    }
+
+    createObjectDefinition(parentPath, name) {
+        return impl.createObjectDefinition(parentPath, name)
     }
 
     deleteObject(path) {
@@ -273,6 +281,10 @@ class PerApi {
 
     getPalettes(templateName) {
         return impl.getPalettes(templateName)
+    }
+
+    populateIcons(tenant) {
+        return impl.populateIcons(tenant)
     }
 
     tenantSetupReplication(path, withSite) {

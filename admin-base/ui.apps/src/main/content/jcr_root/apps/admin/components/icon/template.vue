@@ -1,13 +1,15 @@
 <template>
-  <i v-if="isFontAwesome" :class="['fa', `fa-${icon}`]"></i>
-  <i v-else-if="isMaterialIcons" class="material-icons">{{ icon }}</i>
-  <div v-else-if="isPlainText" class="label" v-html="icon"></div>
+  <i v-if="isFontAwesome" :class="['icon', 'fa', `fa-${icon}`]"></i>
+  <i v-else-if="isMaterialIcons" class="icon material-icons">{{ icon }}</i>
+  <div v-else-if="isPlainText" class="icon label" v-html="icon"></div>
 </template>
 
 <script>
-  import {IconLib} from '../../../../../../js/constants'
+import {IconLib} from '../../../../../../js/constants'
+import {libValidator} from '../../../../../../js/validators/icon'
 
-  export default {
+export default {
+    name: 'Icon',
     props: {
       icon: {
         type: String,
@@ -15,8 +17,9 @@
       },
       lib: {
         type: String,
-        required: true,
-        default: IconLib.MATERIAL_ICONS
+        required: false,
+        default: IconLib.MATERIAL_ICONS,
+        validator: libValidator
       }
     },
     computed: {

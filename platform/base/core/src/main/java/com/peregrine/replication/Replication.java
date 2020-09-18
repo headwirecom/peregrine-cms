@@ -27,6 +27,7 @@ package com.peregrine.replication;
 
 import org.apache.sling.api.resource.Resource;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -79,7 +80,7 @@ public interface Replication {
      *
      * @throws ReplicationException If the replication failed
      */
-    List<Resource> replicate(List<Resource> resourceList)
+    List<Resource> replicate(Collection<Resource> resourceList)
         throws ReplicationException;
 
     class ReplicationException

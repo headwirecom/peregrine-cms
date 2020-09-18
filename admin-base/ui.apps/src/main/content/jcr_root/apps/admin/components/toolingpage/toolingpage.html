@@ -113,7 +113,9 @@
 </sly>
 
 <sly data-sly-include="renderer.html"></sly>
+<script src="https://unpkg.com/vue-codemirror-lite/dist/vuecodemirror.min.js"></script>
 <script>
+    Vue.use(VueCodeMirror)
     // switch between old and new implementation
     var newImpl = true
     var $perAdminView = { state: {}, adminPage: {}, adminPageStaged: {}, admin: {}, pageView: { view: 'desktop'}, nodes: {} }
@@ -149,6 +151,10 @@
         $perAdminApp.loadComponent('admin-components-richtoolbarbtn')
         $perAdminApp.loadComponent('admin-components-addcomponentmodal')
         $perAdminApp.loadComponent('admin-components-icon')
+        $perAdminApp.loadComponent('admin-components-tabswrapper')
+        $perAdminApp.loadComponent('admin-components-tab')
+
+
         $perAdminApp.loadComponent('admin-components-materializedropdown')
         $perAdminApp.loadComponent('admin-components-dropdowndivider')
         $perAdminApp.loadComponent('admin-components-materializemodal')
