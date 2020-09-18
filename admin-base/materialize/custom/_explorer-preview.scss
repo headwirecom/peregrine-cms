@@ -4,7 +4,7 @@
   color: color("blue-grey", "darken-4");
   position: relative;
   padding: 45px 0 0 !important;
-  overflow: hidden;
+  overflow-y: scroll;
   height: 100%;
 
   &:before {
@@ -44,14 +44,23 @@
       background-color: color("blue-grey", "lighten-3");
     }
   }
+  
+  & > span {
+    position: absolute;
+    right: 12px;
+  }
+
 
   .explorer-preview-content {
     display: flex;
-    flex-direction: column;
+    flex-direction: column;    
     height: 100%;
 
     .panel-title {
       position: initial;
+      align-items: initial;
+      border-bottom: 1px solid #b0bec5;
+      padding-top: 12px;
     }
 
     .vue-form-generator {
@@ -115,7 +124,7 @@
 
     [class$="referenced-by"] {
       color: $primary-color-dark;
-      overflow-y: scroll;
+      overflow-y: auto;
       .svg-icon {
         .svg-content {
           fill: color("blue-grey", "darken-2");
@@ -129,15 +138,29 @@
         }	        
       }	      
       .collection-item {
-        display: flex;
-        align-items: center;
+        >span {
+          display: inline-flex;
+          align-items: center;
+          position: relative;
+          width: 100%;
+          justify-content: space-between;
+        }
+
+
 
         .count {
-          padding: 1px 10px;
-          margin: 0 5px;
+          padding: 1px 5px;
           border-radius: 10px;
           background-color: #37474f;
           color: #fff;
+          position: absolute;
+          bottom: -7px;
+          left: -20px;
+          font-size: 10px;
+          line-height: 1rem;
+        }
+        .edit-icon {
+          align-self: flex-end;
         }
         .right {
           display: block;
@@ -147,6 +170,11 @@
           text-align: right;
           direction: rtl;
           margin-right:5px;
+          max-width: 92%;
+
+          bdo {
+            direction: ltr;
+          }
         }
       }
     }
@@ -238,16 +266,18 @@
   .explorer-preview-nav {
     display: flex;
     justify-content: flex-end;
-    text-align: right;
     position: absolute;
-    overflow: hidden;
-    top: 0;
-    left: 0;
+    text-align: right;
+    top: 0;	
+    left: 0;	
     right: 45px;
+    overflow: hidden;
     margin: 0;
     padding: 0;
     height: 45px;
+    width: 100%;
     border-right: 1px solid color("blue-grey", "lighten-5");
+    border-bottom: 1px solid color("blue-grey", "lighten-3");
 
     > li {
       border-left: 1px solid color("blue-grey", "lighten-5");
@@ -287,11 +317,12 @@
     .nav-right {
       padding: 0;
       display: flex;
+      flex-wrap: wrap;
 
       > li {
         border-left: 1px solid #eceff1;
         border-right: 1px solid #b0bec5;
-        height: 100%;
+        height: 100%;	
         line-height: 45px;
         cursor: pointer;
 
@@ -343,6 +374,11 @@
       background-color: #37474f;
       color: #cfd8dc;
     }
+  }
+
+  span.hideRightPaneStyle  {
+    position: absolute;
+    right: 12px;
   }
 
   /* tablet styles */

@@ -15,6 +15,7 @@ public interface AdminPaths {
     public static final String RESOURCE_TYPE_DELETE_NODE = API_PREFIX + "deleteNode";
     public static final String RESOURCE_TYPE_DELETE_PAGE = API_PREFIX + "deletePage";
     public static final String RESOURCE_TYPE_GET_OBJECT = API_PREFIX + "getObject";
+    public static final String RESOURCE_TYPE_LIST_REPLICATION_STATUS = API_PREFIX + "listReplicationStatus";
     public static final String RESOURCE_TYPE_INSERT_NODE = API_PREFIX + "insertNodeAt";
     public static final String RESOURCE_TYPE_LIST = API_PREFIX + "list";
     public static final String RESOURCE_TYPE_MOVE_NODE = API_PREFIX + "moveNodeTo";
@@ -37,4 +38,5 @@ public interface AdminPaths {
     public static final String RESOURCE_TYPE_LIST_RECYCLABLES = API_PREFIX + "listRecyclables";
     public static final String RESOURCE_TYPE_LIST_VERSIONS = API_PREFIX + "listVersions";
     public static final String RESOURCE_TYPE_RESTORE_RECYCLABLE = API_PREFIX + "restoreRecyclable";
+    public static final String RESOURCE_TYPE_USER_PREFERENCES = API_PREFIX + "userPreferences";
 }

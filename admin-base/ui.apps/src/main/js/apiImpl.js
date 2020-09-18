@@ -139,20 +139,21 @@ function populateView(path, name, data) {
 
 }
 
-function updateExplorerDialog() {
-  const view = callbacks.getView()
-  const page = get(view, '/state/tools/page', '')
-  const template = get(view, '/state/tools/template', '')
-  if (page) {
-    $perAdminApp.stateAction('showPageInfo', {selected: page})
-  }
-  if (template) {
-    $perAdminApp.stateAction('showPageInfo', {selected: template})
-  }
-}
+// function updateExplorerDialog() {
+//   const view = callbacks.getView()
+//   const page = get(view, '/state/tools/page', '')
+//   const template = get(view, '/state/tools/template', '')
+//   if (page) {
+//     $perAdminApp.stateAction('showPageInfo', {selected: page})
+//   }
+//   if (template) {
+//     $perAdminApp.stateAction('showPageInfo', {selected: template})
+//   }
+// }
 
 function translateFields(fields) {
   const $i18n = Vue.prototype.$i18n
+  if(!$i18n) return fields
   if (!fields || fields.length <= 0) {
     return
   }
@@ -226,9 +227,10 @@ class PerAdminImpl {
         .then((data) => {
           return populateView('/state', 'user', data.userID).then(() => {
             if (data.userID === 'anonymous') {
-              alert('please login to continue')
+              // alert('please login to continue')
               window.location = '/'
             }
+            return populateView('/state', 'userPreferences', data.preferences)
           })
         })
   }
@@ -442,16 +444,16 @@ class PerAdminImpl {
     return new Promise((resolve, reject) => {
       fetch('/admin/listTenants.json')
           .then((data) => {
-            const state = callbacks.getView().state
-            if (!state.tenant && data.tenants.length > 0) {
-              $perAdminApp.stateAction('setTenant',
-                  data.tenants[data.tenants.length - 1])
-                  .then(() => populateView('/admin', 'tenants', data.tenants))
-                  .then(() => resolve())
-            } else {
+            // const state = callbacks.getView().state
+            // if (!state.tenant && data.tenants.length > 0) {
+            //   $perAdminApp.stateAction('setTenant',
+            //       data.tenants[data.tenants.length - 1])
+            //       .then(() => populateView('/admin', 'tenants', data.tenants))
+            //       .then(() => resolve())
+            // } else {
               populateView('/admin', 'tenants', data.tenants)
                   .then(() => resolve())
-            }
+            // }
           })
     })
   }
@@ -471,7 +473,6 @@ class PerAdminImpl {
         .then((data) => populateView('/pageView', 'page', data))
   }
 
-
   populateObject(path, target, name) {
     return this.populateComponentDefinitionFromNode(path)
         .then(() => {
@@ -485,11 +486,25 @@ class PerAdminImpl {
         .then((data) => populateView('/state', 'referencedBy', data))
   }
 
+  populateReferences(path) {
+    return new Promise((resolve, reject) => {
+      fetch(`/admin/ref.json${path}`)
+        .then(function(result) {
+            populateView('/state', 'references', result)
+                .then(() => resolve())
+        })
+        .catch(error => {
+            if (error.response && error.response.data && error.response.data.message) {
+                reject(error.response.data.message)
+            }
+        })
+    })
+  }
+
   populateI18N(language) {
     return new Promise((resolve, reject) => {
       axios.get('/i18n/admin/' + language + '.infinity.json')
           .then((response) => {
-            updateExplorerDialog();
             populateView('/admin/i18n', language, response.data)
                 .then(() => resolve())
           })
@@ -965,12 +980,30 @@ class PerAdminImpl {
         })
   }
 
-  setInitialPageEditorState() {
-    return new Promise((resolve) => {
+  setInitialPageEditorState(path) {
+    return new Promise((resolve, reject) => {
       populateView('/state', 'editorVisible', false)
       populateView('/state', 'rightPanelVisible', true)
       populateView('/state', 'editor', {})
-      resolve()
+
+      try {
+        const page = path
+        const pagePath = page.split('/')
+        const type = pagePath[3]
+        pagePath.pop()
+        if(type === 'pages') {
+          callbacks.getView().state.tools.pages = pagePath.join('/')
+        } else if(type === 'templates') {
+          callbacks.getView().state.tools.templates = pagePath.join('/')
+        }
+        return $perAdminApp.stateAction('showPageInfo', { selected: page }).then( () => {
+          resolve()
+        })
+      } catch(error) {
+        logger.error('setting of path in initial page editor state failed')
+        logger.error(error)
+        reject()
+      }
     })
   }
 
@@ -1084,12 +1117,60 @@ class PerAdminImpl {
     return updateWithForm('/admin/moveNodeTo.json' + path, formData)
   }
 
-  replicate(path) {
-    let formData = new FormData();
-    formData.append('deep', 'false')
-    formData.append('name', 'defaultRepl')
-    return updateWithForm('/admin/repl.json' + path, formData)
+replicate(path, replicationService='defaultRepl', deep=false, deactivate=false, resources=[]) {
+  const timeNow = Date.now() - 1000
+  let noticeFunction = undefined
+  let count = 0
+  console.log(`time now = ${timeNow}`)
+    return new Promise((resolve, reject) => {
+      let formData = new FormData();
+      formData.append('deep', deep)
+      formData.append('name', replicationService)
+      formData.append('deactivate', deactivate)
+      resources.forEach((ref) => formData.append('resources', ref))      
+      updateWithForm('/admin/repl.json' + path, formData)
+          .then((respData)=>{
+            count = 0
+            noticeFunction = setInterval(function(){    
+                return fetch(`/admin/listReplicationStatus.json${respData.sourcePath}`)
+                  .then((data) => {
+                    let stopPolling = false
+                    if (count++ >= 25) {
+                      stopPolling = true
+                      clearInterval(noticeFunction)
+                      $perAdminApp.notifyUser('Error', `Action timed out when ${deactivate?'un':''}publishing ${data.sourcePath}.`)
+                      reject()
+                      return                      
+                    }
+                    if (data['per:ReplicationLastAction'] === "deactivated" && data['activated'] === false && !data['per:ReplicationRef']) {
+                      stopPolling = true
+                    } else if (data['per:ReplicationLastAction'] === "activated" 
+                        && data['activated'] === true  && data['per:Replicated'] && timeNow < Date.parse(data['per:Replicated'])
+                        && data['per:ReplicationRef'] && data['per:ReplicationRef'].indexOf("pending") < 0) {
+                          stopPolling = true
+                    }
+
+                    if (stopPolling) {
+                        const parentPath = path.substring(0, path.lastIndexOf("/"))
+                        $perAdminApp.getApi().populateNodesForBrowser(parentPath)
+                        clearInterval(noticeFunction)
+                        $perAdminApp.notifyUser('Success', `${data.sourcePath} was successfuly ${deactivate?'un':''}published.`)
+                      }
+                  })
+              }, 500);
+          })
+          .then(() => resolve())
+          .catch(error => {            
+              clearInterval(noticeFunction)
+              $perAdminApp.notifyUser('Errors', `were encountered when ${deactivate?'un':''}publishing ${data.sourcePath}. Please check with your admin.`)
+              if (error.response && error.response.data && error.response.data.message) {
+                reject(error.response.data.message)
+              }
+              reject(error)
+          })
+    })  
   }
+
 
   getPalettes(templateName) {
     return fetch(`/admin/nodes.json/content/${templateName}/pages/css/palettes`)
@@ -1145,6 +1226,13 @@ class PerAdminImpl {
   restoreTenant(path) {
     let formData = new FormData();
     return updateWithForm('/admin/restoreTenant.json' + path, formData)
+  }
+  
+  acceptTermsAndConditions() {
+    let formData = new FormData();
+    return updateWithForm('/admin/acceptTermsAndConditions.json', formData).then( ()=> {
+      return this.populateUser()
+    })
   }
 
 }

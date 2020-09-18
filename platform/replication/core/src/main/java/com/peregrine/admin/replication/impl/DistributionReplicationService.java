@@ -26,6 +26,7 @@ package com.peregrine.admin.replication.impl;
  */
 
 import com.peregrine.admin.replication.AbstractionReplicationService;
+import com.peregrine.commons.util.PerConstants;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
 import com.peregrine.commons.util.PerUtil;
@@ -47,8 +48,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
 import static org.apache.sling.distribution.DistributionRequestState.ACCEPTED;
@@ -196,7 +196,7 @@ public class DistributionReplicationService
                 int i = 0;
                 for(Resource resource : resourceList) {
                     paths[i++] = resource.getPath();
-                    // In order to make it possible to have the correct user set and Replicated By we need to set it here and now
+                    // In order to make it possible to have the correct user set and 'Replicated By' we need to set it here and now
                     updateReplicationProperties(resource, DISTRIBUTION_PENDING, null);
                 }
                 try {
@@ -205,19 +205,38 @@ public class DistributionReplicationService
                     throw new ReplicationException("Could not set Replication User before distribution", e);
                 }
                 if(distributor != null) {
-                    DistributionResponse response = distributor.distribute(
-                        agentName,
-                        resourceResolver,
-                        new SimpleDistributionRequest(
-                            activate ?
-                                DistributionRequestType.ADD :
+                    if (activate) {
+                        // first deactivate page content so deleted or moved content is cleared
+                        String[] jcrPaths = Arrays.stream(paths)
+                                .filter(path -> path.endsWith(PerConstants.JCR_CONTENT))
+                                .toArray(String[]::new);
+                        SimpleDistributionRequest sdrDeactivate = new SimpleDistributionRequest(
                                 DistributionRequestType.DELETE,
-                            paths)
-                    );
+                                jcrPaths);
+                        DistributionResponse deactivateResp = distributor.distribute(
+                            agentName,
+                            resourceResolver,
+                            sdrDeactivate
+                        );
+
+                        log.trace("Distributor Response: '{}'", deactivateResp);
+                        if(!deactivateResp.isSuccessful() || !(deactivateResp.getState() == ACCEPTED || deactivateResp.getState() != DISTRIBUTED)) {
+                            throw new ReplicationException(String.format(DISTRIBUTION_FAILED, deactivateResp));
+                        }
+                    }
+
+                    // then activate/deactivate the nodes
+                    DistributionResponse response = distributor.distribute(
+                            agentName,
+                            resourceResolver,
+                            new SimpleDistributionRequest(
+                                    activate ? DistributionRequestType.ADD : DistributionRequestType.DELETE,
+                                    paths));
                     log.trace("Distributor Response: '{}'", response);
                     if(!response.isSuccessful() || !(response.getState() == ACCEPTED || response.getState() != DISTRIBUTED)) {
                         throw new ReplicationException(String.format(DISTRIBUTION_FAILED, response));
                     }
+
                     answer.addAll(resourceList);
                 } else {
                     throw new ReplicationException(NO_DISTRIBUTOR_AVAILABLE);

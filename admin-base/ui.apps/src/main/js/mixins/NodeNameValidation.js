@@ -69,8 +69,8 @@ export default {
             if(!value || value.length === 0) {
                 return [this.$i18n('Name is required')]
             }
-            if (this.node) {
-                const parent = this.node.path.replace("/"+this.node.name, "")
+            if (this.node) {                
+                const parent = this.node.path.replace(new RegExp("/"+this.node.name + '$'), '');
                 if ($perAdminApp.getApi().nameAvailable(value, parent)) {
                     return []
                 } else {

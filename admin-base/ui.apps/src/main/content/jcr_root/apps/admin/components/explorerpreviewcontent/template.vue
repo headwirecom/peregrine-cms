@@ -23,25 +23,31 @@
               :title="'og-tags'"
               :class="{'active': isTab(Tab.OG_TAGS)}"
               @click="setActiveTab(Tab.OG_TAGS)" />
-
+          
           <admin-components-explorerpreviewnavitem
               v-if="hasReferences"
               :icon="Icon.LIST"
               :title="'references'"
               :class="{'active': isTab(Tab.REFERENCES)}"
               @click="setActiveTab(Tab.REFERENCES)" />
-
-            <admin-components-explorerpreviewnavitem
+          
+          <admin-components-explorerpreviewnavitem
                 :icon="Icon.VERSIONS"
                 :title="`${nodeType}-versions`"
                 :class="{'active': isTab(Tab.VERSIONS)}"
                 @click="setActiveTab(Tab.VERSIONS)" />
 
           <admin-components-explorerpreviewnavitem
+              :icon="Icon.REPLICATION"
+              :title="'Web Publishing'"
+              :class="{'active': isTab(Tab.PUBLISHING)}"
+              @click="setActiveTab(Tab.PUBLISHING)" />   
+
+          <admin-components-explorerpreviewnavitem
               :icon="Icon.MORE_VERT"
               :title="'actions'"
               :class="{'active': isTab(Tab.ACTIONS)}"
-              @click="setActiveTab(Tab.ACTIONS)" />
+              @click="setActiveTab(Tab.ACTIONS)" />              
         </ul>
 
         <ul class="nav-right"></ul>
@@ -52,6 +58,7 @@
       </template>
 
       <template v-else-if="isTab([Tab.INFO, Tab.OG_TAGS])">
+        <span class="panel-title">{{getActiveTabName}}</span>
         <div v-if="hasInfoView && !edit"
              :class="`${nodeType}-info-view`">
           <img v-if="isImage"
@@ -104,37 +111,41 @@
       </template>
 
       <template v-else-if="isTab(Tab.REFERENCES)">
-        <ul :class="['collection', 'with-header', `explorer-${nodeType}-referenced-by`]">
+        <span class="panel-title">{{getActiveTabName}}</span>
+        <ul :class="['collection', 'with-header', `explorer-${nodeType}-referenced-by`]" v-if="referencedBy">
           <li class="collection-header">
             referenced in {{referencedBy.length}} location<span v-if="referencedBy.length !== 1 ">s</span>
           </li>
           <li v-for="item in referencedBy" :key="item.path" class="collection-item">
             <span>
-              <admin-components-action
-                  v-bind:model="{
-                    target: item.path,
-                    command: 'editPage',
-                    tooltipTitle: `edit '${item.name}'`
-                  }">
-                  <admin-components-iconeditpage></admin-components-iconeditpage>
-              </admin-components-action>
-            </span>
-            <span v-if="item.count" class="count">{{item.count}}</span>
-            <span class="right">
-              <admin-components-action
-                  v-bind:model="{
-                    target: item.path,
-                    command: 'editPage',
-                    tooltipTitle: `edit '${item.path}'`
-                  }">
-                  {{item.path}}
-              </admin-components-action>
+              <span v-if="item.count" class="count">{{item.count > 99 ? '99+' : item.count}}</span>
+              <span class="right">
+                <admin-components-action
+                    v-bind:model="{
+                      target: itemToTarget(item.path),
+                      command: 'editReference',
+                      tooltipTitle: `edit '${item.name}'`
+                    }">
+                    <bdo>{{item.path}}</bdo>
+                </admin-components-action>
+              </span>
+              <span class="edit-icon">
+                <admin-components-action
+                    v-bind:model="{
+                      target: itemToTarget(item.path),
+                      command: 'editReference',
+                      tooltipTitle: `edit '${item.name}'`
+                    }">
+                    <admin-components-iconeditpage></admin-components-iconeditpage>
+                </admin-components-action>
+              </span>
             </span>
           </li>
         </ul>
       </template>
 
-      <template v-else-if="isTab(Tab.VERSIONS)" >
+      <template v-else-if="isTab(Tab.VERSIONS)">
+          <span class="panel-title">{{getActiveTabName}}</span>
           <div v-if="allowOperations" class="action-list">
               <div class="action"
                    v-on:click.stop.prevent="createVersion"
@@ -149,11 +160,14 @@
               <template v-else>
                   <div v-for="version in versions"
                        class="action"
+                       v-bind:key="version.name"
                        v-on:click="checkoutVersion(version)"
                        v-bind:title="`Version ${version.name}`">
                       <i v-if="version.base" class="material-icons">{{Icon.CHECKED}}</i>
-                      <i v-else-if="!version.base" class="material-icons">{{Icon.UNCHECKED}}</i>
-                      {{version.name}} -{{version.created}} {{version.base ? '(current)':''}}
+                      <i v-else-if="!version.base" class="material-icons">{{Icon.UNCHECKED}}</i> {{version.name}} {{version.created}}
+                      <div v-if="version.labels">                        
+                        <span v-for="label in version.labels" class="chip labelChip" v-bind:key="label">{{label}}</span>
+                      </div>
                       <span v-if="!version.base" class="deleteVersionWrapper">
                           <admin-components-action
                             v-bind:model="{
@@ -169,7 +183,39 @@
           </div>
       </template>
 
+      <template v-else-if="isTab(Tab.PUBLISHING)">
+        <span class="panel-title">{{getActiveTabName}}</span>
+        <admin-components-publishinginfo v-bind:node="node" v-if="node"/>
+
+        <div v-if="allowOperations && node" class="action-list">
+          <div class="action" :title="`Open Web Publishing ${nodeType} Dialog`" @click="openPublishingModal()">
+            <i class="material-icons">publish</i>
+            Publish to Web ({{nodeType}})
+          </div>
+          <div class="action" :title="`Deactivate ${nodeType}`" >
+            <admin-components-action 
+                v-bind:model="{
+                    target: node.path,
+                    command: 'unPublishResource',
+                    tooltipTitle: `${$i18n('undo publish')} '${node.title || node.name}'`
+                }">
+                <i class="material-icons">remove_circle_outline</i>
+                Unpublish ({{nodeType}})
+            </admin-components-action>
+          </div>
+        </div>
+      </template>
+
+      <admin-components-publishingmodal
+          v-if="isPublishDialogOpen"
+          v-bind:isOpen="isPublishDialogOpen"
+          v-bind:path="currentObject"
+          v-on:complete="closePublishing"
+          v-bind:modalTitle="`Web Publishing: ${nodeName}`">
+      </admin-components-publishingmodal>
+
       <template v-else-if="isTab(Tab.ACTIONS)">
+        <span class="panel-title">Actions</span>
         <div v-if="allowOperations" class="action-list">
           <div class="action" :title="`rename ${nodeType}`" @click="$refs.renameModal.open()">
             <i class="material-icons">{{Icon.TEXT_FORMAT}}</i>
@@ -183,6 +229,7 @@
             <i class="material-icons">{{Icon.DELETE}}</i>
             Delete {{nodeType}}
           </div>
+
         </div>
       </template>
 
@@ -213,7 +260,7 @@
     </admin-components-materializemodal>
 
     <admin-components-pathbrowser
-        v-if="isOpen"
+        v-if="isOpen"        
         :isOpen="isOpen"
         :header="`Move ${nodeName}`"
         :browserRoot="browserRoot"
@@ -226,6 +273,8 @@
         :onSelect="onMoveSelect">
     </admin-components-pathbrowser>
 
+
+    
   </div>
 </template>
 
@@ -233,14 +282,16 @@
   import {Icon, MimeType, NodeType, SUFFIX_PARAM_SEPARATOR} from '../../../../../../js/constants'
   import {deepClone} from '../../../../../../js/utils'
   import NodeNameValidation from '../../../../../../js/mixins/NodeNameValidation'
-
+  import ReferenceUtil from '../../../../../../js/mixins/ReferenceUtil'
+  
   const Tab = {
     INFO: 'info',
     OG_TAGS: 'og-tags',
     REFERENCES: 'references',
     VERSIONS: 'versions',
     COMPONENTS: 'components',
-    ACTIONS: 'actions'
+    ACTIONS: 'actions',
+    PUBLISHING: 'publishing'
   };
 
   const SchemaKey = {
@@ -282,12 +333,14 @@
         SchemaKey: SchemaKey,
         NodeType: NodeType,
         activeTab: null,
+        activeTabName: "info",
         edit: false,
         valid: {
           state: true,
           errors: null
         },
         isOpen: false,
+        isPublishDialogOpen: false,
         selectedPath: null,
         options: {
           validateAfterLoad: true,
@@ -310,7 +363,7 @@
         }
       }
     },
-    mixins: [NodeNameValidation],
+    mixins: [NodeNameValidation,ReferenceUtil],
     computed: {
       uNodeType() {
         return this.capFirstLetter(this.nodeType);
@@ -353,8 +406,11 @@
       hasMultipleTabs() {
         return this.hasOgTags || this.hasReferences;
       },
-      referencedBy() {
-        return this.trimReferences($perAdminApp.getView().state.referencedBy.referencedBy);
+      referencedBy() {     
+        if ($perAdminApp.getView().state.referencedBy) {
+          return this.trimReferences($perAdminApp.getView().state.referencedBy.referencedBy);
+        }   
+        return []
       },
       versions() {
         return this.hasVersions ? $perAdminApp.getView().state.versions.versions : []
@@ -380,6 +436,22 @@
           nodeName = this.node.path.split('/').slice(-1).pop()
         }
         return nodeName
+      },
+      getActiveTabName(){
+        switch(this.activeTabName) {
+          case 'info':
+            return "Properties & Information"
+          case 'og-tags':
+            return "Open Graph Tags"
+          case 'versions':
+            return "Versioning"
+          case 'publishing':
+            return "Web Publishing"
+          case 'actions':
+            return "Actions"
+          case 'references':
+            return "References"
+        }
       }
     },
     watch: {
@@ -389,11 +461,15 @@
       activeTab : function(tab) {
         if (tab === 'versions'){
             this.showVersions()
+        } else if (tab === 'references'){
+            this.showReferencedBy()
         }
       },
       currentObject : function(path) {
         if (this.activeTab === 'versions'){
             this.showVersions()
+        } else if (this.activeTab === 'references'){
+            this.showReferencedBy()
         }
       }
     },
@@ -405,6 +481,30 @@
       this.path.current = this.currentPath
     },
     methods: {
+      itemToTarget(path) {
+        const ret = { path, target: path } 
+        const tenant = $perAdminApp.getNodeFromViewOrNull('/state/tenant')
+        if(path.startsWith(`/content/${tenant.name}/pages`)) {
+          ret.path = `/content/admin/pages/pages/edit.html/path:${path}`
+        } else if (path.startsWith(`/content/${tenant.name}/templates`)) {
+          ret.path = `/content/admin/pages/templates/edit.html/path:${path}`
+        } else {
+          const segments = path.split('/')
+          if(segments.length > 0) {
+            segments.pop()
+          }
+          path = segments.join('/')
+          ret.target = path
+          if (path.startsWith(`/content/${tenant.name}/assets`)) {
+            ret.load = ret.path = `/content/admin/pages/assets.html/path:${path}`
+            ret.type = 'ASSET'
+          } else if (path.startsWith(`/content/${tenant.name}/objects`)) {
+            ret.load = ret.path = `/content/admin/pages/objects.html/path:${path}`
+            ret.type = 'OBJECT'
+          }
+        }
+        return ret
+      },
       getSchema(schemaKey) {
         if (!this.node) {
           return null;
@@ -452,20 +552,6 @@
         } else {
           return {};
         }
-      },
-      trimReferences(referenceList) {
-        return referenceList.reduce(
-          (map => (r, a) => (!map.has(a.path) && map.set(a.path, 
-          r[r.push({
-            name: a.name,
-            path: a.path,
-            propertyName: a.propertyName,
-            propertyPath: a.propertyPath,
-            count: 0
-          }) - 1]), 
-          map.get(a.path).count++, r))(new Map),
-          []
-        );
       },
       getObjectComponent() {
         let resourceType = this.rawCurrentObject.data['component'];
@@ -548,6 +634,18 @@
             this.setActiveTab(Tab.INFO)
           })
       },
+      openPublishingModal(){
+        console.log("Open Publishing Modal")
+        // this.$refs.publishingModal.open()
+        this.isPublishDialogOpen = true;
+      },
+      unPublishResource(me, path) {
+        $perAdminApp.stateAction('unreplicate', path)
+      },
+      closePublishing(){
+        console.log("Close Publishing Modal")
+        this.isPublishDialogOpen = false;
+      },
       moveNode() {
         $perAdminApp.getApi().populateNodesForBrowser(this.path.current, 'pathBrowser')
             .then(() => {
@@ -577,6 +675,9 @@
       },
       showVersions() {
         $perAdminApp.getApi().populateVersions(this.currentObject);
+      },
+      showReferencedBy() {
+        $perAdminApp.getApi().populateReferencedBy(this.currentObject);
       },
       deleteVersion(me, target) {
         $perAdminApp.stateAction('deleteVersion', { path: target.path, version: target.version.name });
@@ -667,7 +768,11 @@
         this.edit = false;
       },
       setActiveTab(clickedTab) {
-        this.activeTab = clickedTab;
+        this.activeTab = clickedTab;     
+        $perAdminApp.action(this, 'setActiveTabName', {activeTab: this.activeTab})
+      },
+      setActiveTabName(me, target){
+        me.activeTabName = target.activeTab
       },
       isTab(arg) {
         if (Array.isArray(arg)) {
@@ -680,7 +785,10 @@
 </script>
 
 <style>
-.deleteVersionWrapper{
+.deleteVersionWrapper {
     margin-left: auto;
+}
+.labelChip {
+  display: block;
 }
 </style>

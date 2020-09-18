@@ -52,8 +52,19 @@
 
     <build>
         <resources>
+
+            <resource>
+                <!--
+                    we want to keep some of the META-INF files and not configure
+                    everything in the plugin.
+                -->
+                <directory>${basedir}/src/main/content/META-INF</directory>
+                <targetPath>../vault-work/META-INF</targetPath>
+            </resource>
+
             <resource>
                 <directory>${basedir}/src/main/content/jcr_root</directory>
+                
                 <excludes>
                     <!-- exclude .vlt control files in the package -->
                     <exclude>**/.vlt</exclude>

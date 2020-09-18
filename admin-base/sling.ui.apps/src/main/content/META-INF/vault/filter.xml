@@ -26,4 +26,7 @@
 <workspaceFilter version="1.0">
     <filter root="/index.html"/>
     <filter root="/robots.txt"/>
+    <filter root="/content" mode="merge">
+      <exclude pattern="/content/.*"/>
+    </filter>
 </workspaceFilter>

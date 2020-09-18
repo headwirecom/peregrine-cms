@@ -26,6 +26,7 @@ package com.peregrine.admin.servlets;
  */
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_NODES;
+import static com.peregrine.admin.servlets.ReferenceListerServlet.IS_STALE;
 import static com.peregrine.commons.util.PerConstants.ALLOWED_OBJECTS;
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.COMPONENT;
@@ -60,6 +61,7 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+import com.peregrine.adaption.PerReplicable;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.commons.util.PerUtil;
 import java.io.IOException;
@@ -107,7 +109,7 @@ public class NodesServlet extends AbstractBaseServlet {
 
     private static final String[] OMIT_PREFIXES = new String[] {JCR_PREFIX, PER_PREFIX};
 
-    private static DateFormat formatter = new SimpleDateFormat(ECMA_DATE_FORMAT, ECMA_DATE_FORMAT_LOCALE);
+    public static DateFormat DATE_FORMATTER = new SimpleDateFormat(ECMA_DATE_FORMAT, ECMA_DATE_FORMAT_LOCALE);
 
     @Reference
     ModelFactory modelFactory;
@@ -164,7 +166,7 @@ public class NodesServlet extends AbstractBaseServlet {
             path += "/" + segments[i];
         }
         logger.debug("looking up {}", path);
-        Resource res = rs.getResource(path);
+        Resource res = rs.resolve(path);
         json.writeAttribute(NAME,res.getName());
         json.writeAttribute(PATH,res.getPath());
         json.writeAttribute(HAS_CHILDREN, hasNonJcrContentChild(res));
@@ -274,6 +276,12 @@ public class NodesServlet extends AbstractBaseServlet {
             }
             json.writeAttribute(REPLICATION_STATUS, status);
         }
+        // TODO refactor code above to use PerReplicable when writing replication properties
+        PerReplicable sourceRepl = resource.adaptTo(PerReplicable.class);
+        json.writeAttribute(ACTIVATED, sourceRepl.isReplicated());
+        if (sourceRepl.getLastModified()!=null && sourceRepl.getReplicated()!= null) {
+            json.writeAttribute(IS_STALE, sourceRepl.isStale());
+        }
     }
 
     private String writeIfFound(JsonResponse json, String propertyName, ValueMap properties) throws IOException {
@@ -284,7 +292,7 @@ public class NodesServlet extends AbstractBaseServlet {
         Object value = properties.get(propertyName);
         String data;
         if(value instanceof Calendar) {
-            data = formatter.format(((Calendar) value).getTime());
+            data = DATE_FORMATTER.format(((Calendar) value).getTime());
         } else {
             data = properties.get(propertyName, String.class);
         }

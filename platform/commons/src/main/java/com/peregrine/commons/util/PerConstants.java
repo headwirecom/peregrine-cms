@@ -41,7 +41,11 @@ public class PerConstants {
     public static final String PER_REPLICATION = "per:Replication";
     public static final String PER_REPLICATED_BY = "per:ReplicatedBy";
     public static final String PER_REPLICATED = "per:Replicated";
+    public static final String PER_REPLICATION_STATUS = "per:ReplicationStatus";
     public static final String PER_REPLICATION_REF = "per:ReplicationRef";
+    public static final String PER_REPLICATION_LASTACTION = "per:ReplicationLastAction";
+    public static final String ACTIVATED = "activated";
+    public static final String DEACTIVATED = "deactivated";
 
     public static final String SLING_SERVLET_DEFAULT = "sling/servlet/default";
 
@@ -125,6 +129,7 @@ public class PerConstants {
     public static final String SOURCE_PATH = "sourcePath";
     public static final String CREATED = "created";
     public static final String DELETED = "deleted";
+    public static final String ADDED = "added";
     public static final String NODE_TYPE = "nodeType";
     public static final String PARENT_PATH = "parentPath";
     public static final String CONTENT = "content";

@@ -27,7 +27,7 @@ package com.peregrine.commons.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.CaseFormat;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -421,15 +421,15 @@ public class PerUtil {
             return;
         }
 
-            if(resourceChecker.doAdd(startingResource)) {
-                if(!containsResource(response, startingResource)) {
-                    response.add(startingResource);
-                }
-                // If this is JCR Content we need to add all children
+        if(resourceChecker.doAdd(startingResource)) {
+            if(!containsResource(response, startingResource)) {
+                response.add(startingResource);
+            }
+            // If this is JCR Content we need to add all children
             if (PerConstants.JCR_CONTENT.equals(startingResource.getName())) {
                     childResourceChecker = new AddAllResourceChecker();
-                }
             }
+        }
 
         if (!resourceChecker.doAddChildren(startingResource)) {
             return;
@@ -437,10 +437,10 @@ public class PerUtil {
 
         for (final Resource child : startingResource.getChildren()) {
             if (deep || PerConstants.JCR_CONTENT.equals(child.getName())) {
-                        listMissingResources(child, response, childResourceChecker, true);
-                    }
-                }
+                listMissingResources(child, response, childResourceChecker, true);
             }
+        }
+    }
 
     public static boolean containsResource(final List<Resource> resources, final Resource check) {
         if (check == null) {
@@ -457,37 +457,7 @@ public class PerUtil {
         return false;
     }
 
-    //AS TODO: This seems to be a duplicate of the method above?
-//    public static void listMatchingResources(Resource startingResource, List<Resource> response, ResourceChecker resourceChecker, boolean deep) {
-//        ResourceChecker childResourceChecker = resourceChecker;
-//        if(startingResource != null && resourceChecker != null && response != null) {
-//            if(resourceChecker.doAdd(startingResource)) {
-//                response.add(startingResource);
-//                // If this is JCR Content we need to add all children
-//                if(startingResource.getName().equals(PerConstants.JCR_CONTENT)) {
-//                    childResourceChecker = new AddAllResourceChecker();
-//                }
-//            }
-//            if(resourceChecker.doAddChildren(startingResource)) {
-//                for(Resource child : startingResource.getChildren()) {
-//                    if(child.getName().equals(PerConstants.JCR_CONTENT)) {
-//                        listMatchingResources(child, response, childResourceChecker, true);
-//                    } else if(deep) {
-//                        listMatchingResources(child, response, childResourceChecker, true);
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    public static boolean containsResource(List<Resource> resourceList, Resource resource) {
-//        for(Resource item: resourceList) {
-//            if(item.getPath().equals(resource.getPath())) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
+
 
     /**
      * Lists all the missing parents compared to the parents on the source

@@ -115,7 +115,9 @@
                     display: inline-block;
                     vertical-align: top;
                     content: '*';
-                    padding-left: 0.375rem;
+                    margin-left: -2px;
+                    margin-top: -1px;
+                    color: var(--error-bg);
                 }
             }
             &.error {
@@ -521,6 +523,22 @@
                         padding: 1px;
                         border-bottom: 2px solid var(--pcms-blue-grey);
                         background-color: #ffffff;
+
+
+                        &.disabled {
+                            .btn:not(.always-active) {
+                                pointer-events: none;
+                                background-color: #fff !important;
+                                box-shadow: none !important;
+
+                                .label,
+                                .material-icons,
+                                .fa,
+                                .caret-down:before {
+                                    color: var(--pcms-blue-grey-darken-3);
+                                }
+                            }
+                        }
 
 
                         .btn-group {

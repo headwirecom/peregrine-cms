@@ -45,6 +45,7 @@ export default function(me, tenant) {
 
     // prepopulate tree viewers
     set(me.getView(), '/state/tools', {
+      dashboard: `/content/${tenant.name}`,
       pages: `/content/${tenant.name}/pages`,
       assets: `/content/${tenant.name}/assets`,
       objects: `/content/${tenant.name}/objects`,

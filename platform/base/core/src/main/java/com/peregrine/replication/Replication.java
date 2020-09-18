@@ -63,7 +63,7 @@ public interface Replication {
      * @param source Starting Resource to be removed from the Replication Target
      * @return List of removed resources (most likely just the given resource)
      *
-     * @throws ReplicationException If there was an error preveting the deactivation
+     * @throws ReplicationException If there was an error preventing the deactivation
      */
     List<Resource> deactivate(Resource source)
         throws ReplicationException;

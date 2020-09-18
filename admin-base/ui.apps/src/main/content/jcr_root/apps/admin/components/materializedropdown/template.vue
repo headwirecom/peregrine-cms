@@ -3,30 +3,35 @@
     <a href="#" ref="dd" :data-activates="id">
       <slot></slot>
     </a>
-    <ul :id="id" class="dropdown-content">
+    <ul :id="id" class="dropdown-content" :class="{'scrollable': isScrollable}">
       <li v-if="!!$slots.header" class="header">
         <slot name="header" class="header"></slot>
       </li>
       <slot name="content"></slot>
-      <li v-if="items" v-for="(item, index) in items"
-          :key="`item-${index}`"
-          class="item"
-          :class="[{disabled: item.disabled}, item.class? item.class() : null]"
-          :title="item.title? $i18n(item.title) : false"
-          @click="onItemClick(item, index)">
-        <template v-if="item.icon">
-          <i v-if="item.iconLib === 'font-awesome'" :class="['fa', `fa-${item.icon}`]"></i>
-          <i v-else class="material-icons">{{ item.icon }}</i>
+      <template v-if="items">
+        <template v-for="(item, index) in items">
+          <admin-components-dropdowndivider v-if="item === DropDown.DIVIDER"/>
+          <li v-else
+              :key="`item-${index}`"
+              class="item"
+              :class="[{disabled: item.disabled}, item.class? item.class() : null]"
+              :title="item.title? item.title : false"
+              @click="onItemClick(item, index)">
+            <admin-components-icon v-if="item.icon" :icon="item.icon" :lib="item.iconLib"/>
+            {{ item.label }}
+            <div v-if="item.icon" class="center-keeper"></div>
+          </li>
         </template>
-        {{ $i18n(item.label) }}
-        <div v-if="item.icon" class="center-keeper"></div>
-      </li>
+      </template>
     </ul>
   </component>
 </template>
 
 <script>
+  import {DropDown, IconLib} from '../../../../../../js/constants'
+
   export default {
+    name: 'MaterializeDropDown',
     props: {
       items: {
         type: Array
@@ -78,12 +83,18 @@
     },
     data() {
       return {
-        $dd: null
+        IconLib,
+        DropDown,
+        $dd: null,
+        maxNoScrollItems: 16
       }
     },
     computed: {
       id() {
         return `materailizedropdown-${this._uid}`
+      },
+      isScrollable() {
+        return this.items && this.items.length > this.maxNoScrollItems
       }
     },
     mounted() {

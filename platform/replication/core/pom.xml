@@ -131,6 +131,11 @@
             <version>3.5</version>
             <scope>provided</scope>
         </dependency>
+        <!-- <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.query</artifactId>
+            <scope>provided</scope>
+        </dependency> -->
     </dependencies>
 
     <build>

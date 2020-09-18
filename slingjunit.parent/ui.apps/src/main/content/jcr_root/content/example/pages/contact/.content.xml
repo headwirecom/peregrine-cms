@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  #%L
+  example site - UI Apps
+  %%
+  Copyright (C) 2017 headwire inc.
+  %%
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+  #L%
+  -->
+<jcr:root
+  xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+  xmlns:jcr="http://www.jcp.org/jcr/1.0"
+  jcr:primaryType="per:Page">
+
+  <jcr:content
+    jcr:primaryType="per:PageContent"
+    sling:resourceType="example/components/page"
+    jcr:title="contact"
+    template="/content/example/templates/base">
+      <nfceefd40-b802-4203-8147-9cb2b2c78c6b
+              jcr:lastModified="{Date}2020-07-22T09:43:36.634-04:00"
+              jcr:lastModifiedBy="admin"
+              jcr:primaryType="nt:unstructured"
+              sling:resourceType="example/components/text"
+              text="&lt;p>Integer vel ornare mauris, a volutpat quam. Nunc ullamcorper in sapien vel elementum. Ut porttitor semper dolor, sit amet gravida nulla maximus quis. Vivamus accumsan aliquet ligula sit amet tristique. Morbi porta, est nec egestas eleifend, lacus justo cursus lorem, ut venenatis quam neque quis massa. Proin pellentesque tincidunt sagittis. Nam eget libero nec nibh laoreet pharetra eu vitae purus. Integer lacinia viverra sollicitudin. Etiam eget mauris et purus pharetra lacinia a vitae nulla. Nulla mattis metus lacus, iaculis bibendum velit interdum nec.&lt;/p>&lt;br>&lt;p>&lt;a href=&quot;/content/example/pages/about.html&quot; target=&quot;_self&quot;>Link to About Page&lt;/a>&lt;/p>"/>
+      <n3736dc36-9cc3-49d7-a7d4-bf4d94e0ea2f
+              jcr:lastModified="{Date}2020-07-21T14:54:38.805-04:00"
+              jcr:lastModifiedBy="admin"
+              jcr:primaryType="nt:unstructured"
+              sling:resourceType="example/components/container">
+        <n8680c077-cc22-40d3-8989-d86d832a85d1
+                jcr:lastModified="{Date}2020-07-21T14:55:13.830-04:00"
+                jcr:lastModifiedBy="admin"
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="example/components/image"
+                imagePath="/content/example/assets/images/Stella.png"/>
+      </n3736dc36-9cc3-49d7-a7d4-bf4d94e0ea2f>
+  </jcr:content>
+</jcr:root>

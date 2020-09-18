@@ -442,6 +442,12 @@ paths:
                     path:
                       type: string
                       description: Frozen node path of the version.
+                    labels:
+                      type: array
+                      description: Array of labels (Strings) applied to the version
+                      items:
+                        type: string
+                       
                     base:
                       type: boolean
                       description: If base is true, this is the current version.
@@ -862,6 +868,13 @@ paths:
           in: formData
           description: flag indicating if the target nodes are removed aka deactivated
           required: false
+        - name: resources
+          in: formData
+          description: Resources to replicate allow with the path; such as references assets, templates and pages.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ReplResource'
       responses:
         200:
           description: returns the root node name / path and the list of the nodes referenced
@@ -1109,6 +1122,15 @@ definitions:
         type: string
       targetPath:
         type: string
+  ReplResource:
+    type: object
+    properties:
+      path:
+        type: string
+        description: path of a reference
+      deactivate:
+        type: boolean
+        description: true to deactivate
   OperationResponse:
     type: object
     properties:

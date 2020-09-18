@@ -103,9 +103,9 @@
             <component v-bind:is="adminPage.component" v-bind:model="adminPage"></component>
         </span>
     </div>
-    <div class="peregrine-tutorial">
+    <!-- <div class="peregrine-tutorial">
         <iframe src="/content/admin/pages/tutorials.html" style="height: 100%; width: 100%; background: white;" data-per-mode="tutorial"></iframe>
-    </div>
+    </div> -->
 </div>
 
 <sly data-sly-list="${helper.model.siteJS}">
@@ -142,15 +142,17 @@
         $perAdminApp.loadComponent('admin-components-materializeswitch')
         $perAdminApp.loadComponent('admin-components-componentexplorer')
         $perAdminApp.loadComponent('admin-components-nodetreeitem')
+        $perAdminApp.loadComponent('admin-components-publishingmodal')
+        $perAdminApp.loadComponent('admin-components-publishinginfo')
         $perAdminApp.loadComponent('admin-components-richtoolbar')
+        $perAdminApp.loadComponent('admin-components-richtoolbargroup')
         $perAdminApp.loadComponent('admin-components-richtoolbarbtn')
         $perAdminApp.loadComponent('admin-components-addcomponentmodal')
-
-
+        $perAdminApp.loadComponent('admin-components-icon')
         $perAdminApp.loadComponent('admin-components-materializedropdown')
+        $perAdminApp.loadComponent('admin-components-dropdowndivider')
         $perAdminApp.loadComponent('admin-components-materializemodal')
         $perAdminApp.loadComponent('admin-components-materializespinner')
-
 
         $perAdminApp.loadComponent('field-pathbrowser')
         $perAdminApp.loadComponent('field-texteditor')

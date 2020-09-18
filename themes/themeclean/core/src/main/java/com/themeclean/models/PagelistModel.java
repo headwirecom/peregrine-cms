@@ -175,7 +175,6 @@ public class PagelistModel extends AbstractComponent {
 
 	public List<Page> getChildrenPages() {
 		List<Page> childPages = new ArrayList<Page>();
-		System.out.println();
 		if(page != null) {
 			for (PerPage child: page.listChildren()) {
 				if(!child.getPath().equals(page.getPath())) {

@@ -24,13 +24,33 @@
   -->
 <template>
 <div class="row">
-    <admin-components-iconaction v-for="(action) in fromSource" v-bind:key="action.path" v-bind:model="action"></admin-components-iconaction>
+    <admin-components-iconaction v-for="(action) in fromSource" v-bind:key="action.path" v-bind:model="toTenant(action)"></admin-components-iconaction>
 </div>
 </template>
 
 <script>
     export default {
         props: ['model'],
+        methods: {
+            toTenant: function(action) {
+                // need to switch /content/admin in action to actual tenant path
+                const res = JSON.parse(JSON.stringify(action, true, 2))
+                const segments = res.action.split('/')
+                const tenant = $perAdminApp.getNodeFromViewOrNull('/state/tenant')
+                if(res.action.startsWith('/content/admin/pages/pages')) {
+                    res.action += `.html/path:/content/${tenant.name}/pages`
+                } else if(res.action.startsWith('/content/admin/pages/assets')) {
+                    res.action += `.html/path:/content/${tenant.name}/assets`
+                } else if(res.action.startsWith('/content/admin/pages/objects')) {
+                    res.action += `.html/path:/content/${tenant.name}/objects`
+                } else if(res.action.startsWith('/content/admin/pages/templates')) {
+                    res.action += `.html/path:/content/${tenant.name}/templates`
+                } else if(res.action.startsWith('/content/admin/pages/recyclebin')) {
+                    res.action += `.html/path:/content/${tenant.name}`
+                }
+                return res
+            }
+        },
         computed: {
             fromSource: function() {
                 var segments = this.model.source.split('/').slice(1)

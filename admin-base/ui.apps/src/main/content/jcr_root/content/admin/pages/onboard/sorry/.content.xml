@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  #%L
+  admin base - UI Apps
+  %%
+  Copyright (C) 2017 headwire inc.
+  %%
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+  #L%
+  -->
+<jcr:root
+  xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+  xmlns:jcr="http://www.jcp.org/jcr/1.0"
+  xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+  jcr:primaryType="per:Page">
+
+  <jcr:content
+    jcr:primaryType="per:PageContent"
+    sling:resourceType="admin/components/toolingpage"
+    jcr:title="onboard - sorry"
+    jcr:description="admin base welcome page">
+
+    <content jcr:primaryType="nt:unstructured"
+      sling:resourceType="pagerendervue/structure/container">
+
+      <row jcr:primaryType="nt:unstructured"
+        sling:resourceType="admin/components/row">
+
+        <col2 jcr:primaryType="nt:unstructured"
+          sling:resourceType="admin/components/col" classes="col s12 m12 l12 xl7">
+
+          <text1 jcr:primaryType="nt:unstructured"
+            sling:resourceType="pagerendervue/components/base"
+            text="&lt;h2&gt;Sorry :-(&lt;/h2&gt;&lt;p&gt;&lt;/p&gt;">
+          </text1>
+
+          <text2 jcr:primaryType="nt:unstructured"
+            sling:resourceType="pagerendervue/components/base"
+            text="Sorry to hear that you can't accept our policies. We really would like to hear why?">
+          </text2>
+
+          <decline jcr:primaryType="nt:unstructured"
+            sling:resourceType="admin/components/action" title="reconsider"
+            command="selectPath" target="/content/admin/pages/onboard" icon="folder" classes="btn">
+          </decline>
+
+        </col2>
+
+      </row>
+
+    </content>
+
+    <jsonview jcr:primaryType="nt:unstructured"
+      sling:resourceType="admin/components/debugger" dataFrom="/"/>
+
+    <!-- <tour jcr:primaryType="nt:unstructured"
+      sling:resourceType="admin/components/tour">
+
+      <item1 jcr:primaryType="nt:unstructured"
+        locator="/jcr:content"
+        text="Welcome to the Peregrine Administrator dashboard!">
+        <experiences jcr:primaryType="nt:unstructured">
+          <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+            text="Wilkommen im Peregrine Administrator Dashboard!"/>
+        </experiences>
+      </item1>
+
+    </tour> -->
+
+  </jcr:content>
+
+</jcr:root>
