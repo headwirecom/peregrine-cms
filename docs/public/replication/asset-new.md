@@ -1,6 +1,6 @@
 # Replicate new Asset
 
-**Actor(s)**: Peregrine CMS Author  
+**Actor**: Peregrine CMS Author  
 **Description**: Author creates a new Asset and replicates it after initial editing.
 
 ## Preconditions:

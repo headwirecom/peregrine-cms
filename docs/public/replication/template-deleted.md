@@ -1,6 +1,6 @@
 # Replicate deleted template
 
-**Actor(s)**: Peregrine CMS Author  
+**Actor**: Peregrine CMS Author  
 **Description**: Author deletes a Template.
 
 ## Preconditions:

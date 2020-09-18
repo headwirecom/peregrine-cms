@@ -1,6 +1,6 @@
 # Replicate deleted Object
 
-**Actor(s)**: Peregrine CMS Author  
+**Actor**: Peregrine CMS Author  
 **Description**: Author deletes a Object.
 
 ## Preconditions:

@@ -1,6 +1,6 @@
 # Replicate new Object
 
-**Actor(s)**: Peregrine CMS Author  
+**Actor**: Peregrine CMS Author  
 **Description**: Author creates a new Object and replicates it after initial editing.
 
 ## Preconditions:

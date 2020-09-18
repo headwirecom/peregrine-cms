@@ -1,6 +1,6 @@
 # Replicate updated Root Site
 
-**Actor(s)**: Peregrine CMS Author  
+**Actor**: Peregrine CMS Author  
 **Description**: Author updates a website and replicates it.
 
 ## Preconditions:

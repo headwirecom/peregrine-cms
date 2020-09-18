@@ -1,6 +1,6 @@
 # Replicate new Root Site
 
-**Actor(s)**: Peregrine CMS Author  
+**Actor**: Peregrine CMS Author  
 **Description**: Author creates a new Website and replicates it after initial preparations.
 
 ## Preconditions:

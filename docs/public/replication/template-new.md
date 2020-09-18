@@ -1,6 +1,6 @@
 # Replicate new template
 
-**Actor(s)**: Peregrine CMS Author  
+**Actor**: Peregrine CMS Author  
 **Description**: Author creates a new Template and replicates it after initial editing.
 
 ## Preconditions:

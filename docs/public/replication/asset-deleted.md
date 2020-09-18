@@ -1,6 +1,6 @@
 # Replicate deleted Asset
 
-**Actor(s)**: Peregrine CMS Author  
+**Actor**: Peregrine CMS Author  
 **Description**: Author deletes an Asset.
 
 ## Preconditions:

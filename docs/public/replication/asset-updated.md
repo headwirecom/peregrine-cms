@@ -1,6 +1,6 @@
 # Replicate updated Asset
 
-**Actor(s)**: Peregrine CMS Author  
+**Actor**: Peregrine CMS Author  
 **Description**: Author updates an Asset and replicates it.
 
 ## Preconditions:

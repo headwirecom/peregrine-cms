@@ -1,6 +1,6 @@
 # Replicate updated template
 
-**Actor(s)**: Peregrine CMS Author  
+**Actor**: Peregrine CMS Author  
 **Description**: Author updates a Template and replicates it.
 
 ## Preconditions:

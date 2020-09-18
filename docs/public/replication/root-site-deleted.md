@@ -1,6 +1,6 @@
 # Replicate deleted Root Site
 
-**Actor(s)**: Peregrine CMS Author  
+**Actor**: Peregrine CMS Author  
 **Description**: Author deletes a Website.
 
 ## Preconditions:

@@ -1,6 +1,6 @@
 # Replicate updated Object
 
-**Actor(s)**: Peregrine CMS Author  
+**Actor**: Peregrine CMS Author  
 **Description**: Author updates an Object and replicates it.
 
 ## Preconditions:
