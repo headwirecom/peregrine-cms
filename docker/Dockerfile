@@ -1,14 +1,9 @@
 FROM adoptopenjdk/openjdk11:latest
 
-# ARG PEREGRINECMS_REPO=https://github.com/GastonGonzalez/peregrine-cms.git
-ARG PEREGRINECMS_REPO=https://github.com/cmrockwell/peregrine-cms.git
-# ARG PEREGRINECMS_BRANCH=upgrade/sling12-PM-Java11-CI
-ARG PEREGRINECMS_BRANCH=upgrade/sling12-PM-Java11
-# ARG SLING_REPO=https://github.com/apache/sling-org-apache-sling-starter.git
-ARG SLING_REPO=https://github.com/cmrockwell/peregrine-cms.git
-# ARG SLING_BRANCH=master
-ARG SLING_BRANCH=upgrade/sling12-PM-Java11
-ARG SLING_DIR=peregrine-cms/sling
+ARG PEREGRINECMS_REPO=https://github.com/headwirecom/peregrine-cms.git
+ARG PEREGRINECMS_BRANCH=develop-sling12
+ARG THEMECLEANFLEX_REPO=https://github.com/headwirecom/themeclean-flex.git
+ARG THEMECLEANFLEX_BRANCH=develop
 ENV APP_VERSION 2.0.0
 
 WORKDIR /app
@@ -45,8 +40,10 @@ RUN mkdir -p /usr/local/lib/nodejs \
     && echo npx: $(npx -v) \
     && apt-get purge -y --auto-remove && rm -rf /var/lib/apt/lists/* && rm -rf /etc/apt/sources.list.d/temp.list;
 
-RUN scripts/install-sling.sh $SLING_REPO $SLING_BRANCH $SLING_DIR
-RUN scripts/install-peregrine.sh $PEREGRINECMS_REPO $PEREGRINECMS_BRANCH
+RUN scripts/checkout-projects.sh $PEREGRINECMS_REPO $PEREGRINECMS_BRANCH \
+    $THEMECLEANFLEX_REPO $THEMECLEANFLEX_BRANCH
+RUN scripts/install-sling.sh
+RUN scripts/install-peregrine.sh
 
 ENTRYPOINT /app/scripts/start.sh && tail -qF /app/sling/logs/error.log
 
