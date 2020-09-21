@@ -1,33 +1,20 @@
 package com.peregrine.admin.replication;
 
-import com.peregrine.commons.util.PerUtil.AddAllResourceChecker;
+import com.peregrine.commons.ResourceUtils;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.framework.BundleContext;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
-import org.osgi.service.component.annotations.Modified;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
+import org.osgi.service.component.annotations.*;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
-import static com.peregrine.commons.util.PerUtil.isEmpty;
-import static com.peregrine.commons.util.PerUtil.listMissingResources;
-import static com.peregrine.commons.util.PerUtil.splitIntoParameterMap;
+import static com.peregrine.commons.util.PerUtil.*;
 
 /**
  * This class provides the implementation of the Default Replication Mapper
@@ -160,22 +147,22 @@ public class DefaultReplicationMapperService
     @Override
     public List<Resource> replicate(Resource source, boolean deep) throws ReplicationException {
         logger.trace("Starting Resource: '{}'", source.getPath());
-        List<Resource> referenceList = referenceLister.getReferenceList(true, source, true);
+        final List<Resource> referenceList = referenceLister.getReferenceList(true, source, deep);
 //        logger.trace("Reference List: '{}'", referenceList);
-        List<Resource> replicationList = new ArrayList<>();
-        replicationList.add(source);
-        listMissingResources(source, replicationList, new AddAllResourceChecker(), deep);
+        final List<Resource> replicationList = listMissingResources(source, new ArrayList<>(), new AddAllResourceChecker(), deep);
+        replicationList.add(0, source);
+        replicationList.addAll(0, referenceList);
+        ResourceUtils.removeDuplicates(replicationList);
         return replicate(replicationList);
     }
 
     @Override
-    public List<Resource> deactivate(Resource source) throws ReplicationException {
-        Replication defaultService = this.getDefaultReplicationService();
-        return defaultService.deactivate(source);
+    public List<Resource> deactivate(final Resource source) throws ReplicationException {
+        return getDefaultReplicationService().deactivate(source);
     }
 
     @Override
-    public List<Resource> replicate(List<Resource> resourceList) throws ReplicationException {
+    public List<Resource> replicate(Collection<Resource> resourceList) throws ReplicationException {
         List<Resource> answer = new ArrayList<>();
         Map<DefaultReplicationConfig, List<Resource>> resourceByReplication = new HashMap<>();
         resourceByReplication.put(defaultMapping, new ArrayList<Resource>());

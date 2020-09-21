@@ -27,10 +27,10 @@ package com.peregrine.admin.replication.impl;
 
 import com.peregrine.admin.replication.AbstractionReplicationService;
 import com.peregrine.commons.util.PerConstants;
-import com.peregrine.replication.ReferenceLister;
-import com.peregrine.replication.Replication;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
+import com.peregrine.replication.ReferenceLister;
+import com.peregrine.replication.Replication;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -48,7 +48,10 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
 import static org.apache.sling.distribution.DistributionRequestState.ACCEPTED;
@@ -173,15 +176,15 @@ public class DistributionReplicationService
     }
 
     @Override
-    public List<Resource> replicate(List<Resource> resourceList) throws ReplicationException {
+    public List<Resource> replicate(Collection<Resource> resourceList) throws ReplicationException {
         return replicate(resourceList, true);
     }
 
-    public List<Resource> deactivate(List<Resource> resourceList) throws ReplicationException {
+    public List<Resource> deactivate(Collection<Resource> resourceList) throws ReplicationException {
         return replicate(resourceList, false);
     }
 
-    public List<Resource> replicate(List<Resource> resourceList, boolean activate) throws ReplicationException {
+    public List<Resource> replicate(Collection<Resource> resourceList, boolean activate) throws ReplicationException {
         List<Resource> answer = new ArrayList<>();
         if(distributor != null) {
             ResourceResolver resourceResolver = null;
