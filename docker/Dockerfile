@@ -2,7 +2,8 @@ FROM adoptopenjdk/openjdk11:latest
 
 ARG PEREGRINECMS_REPO=https://github.com/headwirecom/peregrine-cms.git
 ARG PEREGRINECMS_BRANCH=develop-sling12
-ARG SLING_DIR=develop-sling12
+ARG THEMECLEANFLEX_REPO=https://github.com/headwirecom/themeclean-flex.git
+ARG THEMECLEANFLEX_BRANCH=develop
 ENV APP_VERSION 2.0.0
 
 WORKDIR /app
@@ -39,7 +40,8 @@ RUN mkdir -p /usr/local/lib/nodejs \
     && echo npx: $(npx -v) \
     && apt-get purge -y --auto-remove && rm -rf /var/lib/apt/lists/* && rm -rf /etc/apt/sources.list.d/temp.list;
 
-RUN scripts/checkout-projects.sh $PEREGRINECMS_REPO $PEREGRINECMS_BRANCH
+RUN scripts/checkout-projects.sh $PEREGRINECMS_REPO $PEREGRINECMS_BRANCH \
+    $THEMECLEANFLEX_REPO $THEMECLEANFLEX_BRANCH
 RUN scripts/install-sling.sh
 RUN scripts/install-peregrine.sh
 
