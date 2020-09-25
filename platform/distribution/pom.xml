@@ -59,7 +59,7 @@
                         <version>1.5.2</version>
                     </dependency>
                 </dependencies>
-                <executions>
+                <!-- <executions>
                     <execution>
                         <id>generate-scr-scrdescriptor</id>
                         <goals>
@@ -72,7 +72,7 @@
                             </properties>
                         </configuration>
                     </execution>
-                </executions>
+                </executions> -->
             </plugin>
             <plugin>
                 <groupId>org.apache.sling</groupId>

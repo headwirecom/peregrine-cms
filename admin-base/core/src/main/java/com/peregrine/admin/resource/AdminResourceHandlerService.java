@@ -553,7 +553,7 @@ public class AdminResourceHandlerService
     }
 
     public boolean hasPermission(ResourceResolver resourceResolver, String jcrActions, String path) {
-        Session session = resourceResolver.adaptTo(Session.class);
+        final Session session = resourceResolver.adaptTo(Session.class);
         try {
             return session.hasPermission(path, jcrActions);
         } catch (RepositoryException e) {
@@ -604,12 +604,18 @@ public class AdminResourceHandlerService
         vh.removeVersion(versionName);
     }
 
+
+    @Override
+    public Version createVersion(ResourceResolver resourceResolver, String path) throws ManagementException {
+        return createVersion(resourceResolver, path, null);
+    }
+
     // jcr 2.0 Chapter 3
     // https://docs.adobe.com/docs/en/spec/jcr/2.0/3_Repository_Model.html
     // jcr 2.0 Chapter 15
     // https://docs.adobe.com/content/docs/en/spec/jcr/2.0/15_Versioning.html#15.2.1%20Version%20Object
     @Override
-    public Version createVersion(ResourceResolver resourceResolver, String path) throws ManagementException {
+    public Version createVersion(ResourceResolver resourceResolver, String path, String label) throws ManagementException {
         Resource resource = getResource(resourceResolver, path);
         if (resource == null) {
             throw new ManagementException("Could not find resource for versioning "+ path);
@@ -636,7 +642,9 @@ public class AdminResourceHandlerService
                 if (vm.isCheckedOut(path)){
                     Version v = vm.checkin(path);
                     vm.checkout(path);
-                    vh.addVersionLabel(v.getName(), "recyclableItem", true);
+                    if (label != null) {
+                        vh.addVersionLabel(v.getName(), label, true);
+                    }
                     logger.warn("Version created for {} at {}", path, v.getFrozenNode().getPath());
                     return v;
                 }
@@ -648,6 +656,7 @@ public class AdminResourceHandlerService
             throw new ManagementException("Create Version FAILED", e);
         }
     }
+
 
     @Override
     public Resource restoreVersion(ResourceResolver resourceResolver, String path, String frozenNodepath, boolean force)

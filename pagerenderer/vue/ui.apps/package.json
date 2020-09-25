@@ -12,7 +12,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "rollup": "node ./node_modules/rollup/bin/rollup -c",
     "buildvue": "node ../../../buildscripts/buildvue.js pagerendervue",
-    "build": "which node && node ./node_modules/rollup/bin/rollup -c && node ../../../buildscripts/buildvue.js pagerendervue",
+    "build": "node ./node_modules/rollup/bin/rollup -c && node ../../../buildscripts/buildvue.js pagerendervue",
     "site": "node ./node_modules/jsdoc/jsdoc.js -c jsdoc.config.json -P package.json"
   },
   "author": "",

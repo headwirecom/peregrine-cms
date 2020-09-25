@@ -473,7 +473,6 @@ class PerAdminImpl {
         .then((data) => populateView('/pageView', 'page', data))
   }
 
-
   populateObject(path, target, name) {
     return this.populateComponentDefinitionFromNode(path)
         .then(() => {
@@ -485,6 +484,21 @@ class PerAdminImpl {
   populateReferencedBy(path) {
     return fetch('/admin/refBy.json' + path)
         .then((data) => populateView('/state', 'referencedBy', data))
+  }
+
+  populateReferences(path) {
+    return new Promise((resolve, reject) => {
+      fetch(`/admin/ref.json${path}`)
+        .then(function(result) {
+            populateView('/state', 'references', result)
+                .then(() => resolve())
+        })
+        .catch(error => {
+            if (error.response && error.response.data && error.response.data.message) {
+                reject(error.response.data.message)
+            }
+        })
+    })
   }
 
   populateI18N(language) {
@@ -1125,12 +1139,60 @@ class PerAdminImpl {
     return updateWithForm('/admin/moveNodeTo.json' + path, formData)
   }
 
-  replicate(path) {
-    let formData = new FormData();
-    formData.append('deep', 'false')
-    formData.append('name', 'defaultRepl')
-    return updateWithForm('/admin/repl.json' + path, formData)
+replicate(path, replicationService='defaultRepl', deep=false, deactivate=false, resources=[]) {
+  const timeNow = Date.now() - 1000
+  let noticeFunction = undefined
+  let count = 0
+  console.log(`time now = ${timeNow}`)
+    return new Promise((resolve, reject) => {
+      let formData = new FormData();
+      formData.append('deep', deep)
+      formData.append('name', replicationService)
+      formData.append('deactivate', deactivate)
+      resources.forEach((ref) => formData.append('resources', ref))      
+      updateWithForm('/admin/repl.json' + path, formData)
+          .then((respData)=>{
+            count = 0
+            noticeFunction = setInterval(function(){    
+                return fetch(`/admin/listReplicationStatus.json${respData.sourcePath}`)
+                  .then((data) => {
+                    let stopPolling = false
+                    if (count++ >= 25) {
+                      stopPolling = true
+                      clearInterval(noticeFunction)
+                      $perAdminApp.notifyUser('Error', `Action timed out when ${deactivate?'un':''}publishing ${data.sourcePath}.`)
+                      reject()
+                      return                      
+                    }
+                    if (data['per:ReplicationLastAction'] === "deactivated" && data['activated'] === false && !data['per:ReplicationRef']) {
+                      stopPolling = true
+                    } else if (data['per:ReplicationLastAction'] === "activated" 
+                        && data['activated'] === true  && data['per:Replicated'] && timeNow < Date.parse(data['per:Replicated'])
+                        && data['per:ReplicationRef'] && data['per:ReplicationRef'].indexOf("pending") < 0) {
+                          stopPolling = true
+                    }
+
+                    if (stopPolling) {
+                        const parentPath = path.substring(0, path.lastIndexOf("/"))
+                        $perAdminApp.getApi().populateNodesForBrowser(parentPath)
+                        clearInterval(noticeFunction)
+                        $perAdminApp.notifyUser('Success', `${data.sourcePath} was successfuly ${deactivate?'un':''}published.`)
+                      }
+                  })
+              }, 500);
+          })
+          .then(() => resolve())
+          .catch(error => {            
+              clearInterval(noticeFunction)
+              $perAdminApp.notifyUser('Errors', `were encountered when ${deactivate?'un':''}publishing ${data.sourcePath}. Please check with your admin.`)
+              if (error.response && error.response.data && error.response.data.message) {
+                reject(error.response.data.message)
+              }
+              reject(error)
+          })
+    })  
   }
+
 
   getPalettes(templateName) {
     return fetch(`/admin/nodes.json/content/${templateName}/pages/css/palettes`)

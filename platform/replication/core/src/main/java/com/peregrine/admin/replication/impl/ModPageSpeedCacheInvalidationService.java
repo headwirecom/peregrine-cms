@@ -117,9 +117,8 @@ public class ModPageSpeedCacheInvalidationService
 
     @Override
     public List<Resource> replicate(final Resource resource, boolean deep)
-            throws ReplicationException
     {
-        // nooop
+        // no op
         return Collections.emptyList();
     }
 

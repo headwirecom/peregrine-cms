@@ -15,8 +15,8 @@
 export default {
 
 	data() {
-		return {
-			isFullscreen: false
+		return{ 
+			isFullscreen: false,
 		}
 	},
 
@@ -27,16 +27,32 @@ export default {
 			} else {
 				return 'col s12 m4 explorer-preview'
 			}
-		}
+		},
 	},
 
 	methods: {
 		onPreviewExitFullscreen(){
-      this.isFullscreen = false
-    },
-    onPreviewFullscreen(){
-      this.isFullscreen = true
-    }
+			this.isFullscreen = false
+		},
+		onPreviewFullscreen(){
+			console.log(this)
+			this.isFullscreen = true
+		},
 	}
 }
 </script>
+
+<style>
+	.active_tab_title { 
+		display: inline-block;
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 45px;
+		background-color: #cfd8dc;
+		border-bottom: 1px solid #b0bec5;
+		padding-top: 13px;
+    	padding-left: 15px;
+	}
+</style>

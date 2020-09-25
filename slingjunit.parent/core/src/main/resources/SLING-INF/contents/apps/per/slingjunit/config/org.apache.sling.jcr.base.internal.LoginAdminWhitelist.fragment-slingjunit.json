@@ -1,0 +1,5 @@
+{
+  "jcr:primaryType": "sling:OsgiConfig",
+  "whitelist.name": "slingjunit",
+  "whitelist.bundles": ["org.apache.sling.junit.core"]
+}

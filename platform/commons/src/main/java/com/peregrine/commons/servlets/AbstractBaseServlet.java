@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.request.RequestDispatcherOptions;
+import org.apache.sling.api.resource.NonExistingResource;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
@@ -179,6 +180,33 @@ public abstract class AbstractBaseServlet
             return getParameter(name, null);
         }
 
+        /**
+         *
+         * @param name Name of array in request
+         * @param delimiter If the array has one element in request body and the values joined with a delimiter such as ','
+         *  Otherwise set to null if array in request body is transported in the standard way (e.g. name[0], name[1], etc).
+         * @return returns a string array from the request body, or null.
+         */
+        public String[] getParameterValues(String name, String delimiter){
+            if(delimiter == null){
+                return request.getParameterValues(name);
+            }
+            String[] valueToParse = request.getParameterValues(name);
+            if (valueToParse != null && valueToParse.length == 1){
+                return valueToParse[0].split(delimiter);
+            }
+            return null;
+        }
+
+        /**
+         *
+         * @param name Name of array in request
+         * @return returns a string array from the request body, or null.
+         */
+        public String[] getParameterValues(String name){
+            return request.getParameterValues(name);
+        }
+
         public String getParameter(String name, String defaultValue) {
             String answer = parameters.get(name);
             return answer == null ? defaultValue : answer;
@@ -218,7 +246,13 @@ public abstract class AbstractBaseServlet
 
         public Resource getResource() { return request.getResource(); }
 
-        public Resource getResourceByPath(String path) { return request.getResourceResolver().getResource(path); }
+        public Resource getResourceByPath(String path) {
+            Resource resource = request.getResourceResolver().resolve(path);
+            if(resource instanceof NonExistingResource) {
+                return request.getResourceResolver().getResource(path);
+            }
+            return resource;
+        }
 
         public String getSelector() { return request.getRequestPathInfo().getSelectorString(); }
 

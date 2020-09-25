@@ -11,7 +11,6 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -149,7 +148,7 @@ public class DefaultReplicationMapperService
     public List<Resource> replicate(Resource source, boolean deep) throws ReplicationException {
         logger.trace("Starting Resource: '{}'", source.getPath());
         final List<Resource> referenceList = referenceLister.getReferenceList(true, source, deep);
-        logger.trace("Reference List: '{}'", referenceList);
+//        logger.trace("Reference List: '{}'", referenceList);
         final List<Resource> replicationList = listMissingResources(source, new ArrayList<>(), new AddAllResourceChecker(), deep);
         replicationList.add(0, source);
         replicationList.addAll(0, referenceList);
@@ -158,8 +157,8 @@ public class DefaultReplicationMapperService
     }
 
     @Override
-    public List<Resource> deactivate(Resource source) {
-        return null;
+    public List<Resource> deactivate(final Resource source) throws ReplicationException {
+        return getDefaultReplicationService().deactivate(source);
     }
 
     @Override
@@ -203,6 +202,10 @@ public class DefaultReplicationMapperService
             }
         }
         return answer;
+    }
+
+    private Replication getDefaultReplicationService() {
+        return this.replications.get(this.defaultMapping.getServiceName());
     }
 
     /**

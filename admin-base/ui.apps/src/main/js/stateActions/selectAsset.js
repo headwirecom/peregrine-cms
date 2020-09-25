@@ -33,11 +33,10 @@ export default function(me, target) {
 
     let view = me.getView()
     return new Promise( (resolve, reject) => {
-        me.getApi().populateComponentDefinitionFromNode('/apps/admin/components/assetview').then( () => {
-            me.getApi().populateReferencedBy(target.selected).then( () => {
-                set(view, '/state/tools/asset/show', target.selected)
-                resolve()
-            })
+        me.getApi().populateComponentDefinitionFromNode('/apps/admin/components/assetview')
+        .then( () => {
+            set(view, '/state/tools/asset/show', target.selected)
+            resolve()
         })
     })
 }

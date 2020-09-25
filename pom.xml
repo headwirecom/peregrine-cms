@@ -54,10 +54,10 @@
         <org.apache.sling.servlet-helpers.version>1.1.8</org.apache.sling.servlet-helpers.version>
         <distribution.api.version>0.3.0</distribution.api.version>
         <distribution.api.version.latest>0.3.1-SNAPSHOT</distribution.api.version.latest>
+        <org.apache.sling.xss.version>2.2.2</org.apache.sling.xss.version>
 
         <!-- Third Party Dependencies Versions -->
         <jackrabbit.version>2.14.4</jackrabbit.version>
-        <commons-lang.version>2.6</commons-lang.version>
         <commons-lang3.version>3.5</commons-lang3.version>
         <commons-io.version>2.6</commons-io.version>
         <commons-collections.version>3.2.2</commons-collections.version>
@@ -327,7 +327,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>4.2.1</version>
                     <inherited>true</inherited>
                 </plugin>
                 <!-- Maven Dependency Plugin -->
@@ -549,7 +549,6 @@
                 <artifactId>org.apache.sling.servlet-helpers</artifactId>
                 <version>${org.apache.sling.servlet-helpers.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.apache.sling</groupId>
                 <artifactId>org.apache.sling.event</artifactId>
@@ -562,16 +561,15 @@
                 <version>${org.apache.sling.serviceusermapper.version}</version>
                 <scope>provided</scope>
             </dependency>
-
+            <dependency>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.xss</artifactId>
+                <version>${org.apache.sling.xss.version}</version>
+                <scope>provided</scope>
+            </dependency>
 
 
             <!-- Support -->
-            <dependency>
-                <groupId>commons-lang</groupId>
-                <artifactId>commons-lang</artifactId>
-                <version>${commons-lang.version}</version>
-                <scope>provided</scope>
-            </dependency>
             <dependency>
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons-lang3.version}</version>
@@ -710,6 +708,7 @@
                 <version>16.0.2</version>
                 <scope>provided</scope>
             </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -1008,6 +1007,7 @@
         <module>admin-base</module>
         <module>samples/example-vue-site</module>
         <module>themes/themeclean</module>
+        <module>slingjunit.parent</module>
         <!--AS TODO: This module causes 'mvn site' to deploy an undeployable package and for now it is taken out -->
         <!--<module>autodocs</module>-->
 <!--        <module>tooling/maven/archetypes/project</module>-->

@@ -52,6 +52,24 @@ export const Field = {
   SELECT: 'material-select',
   MULTI_SELECT: 'material-multiselect'
 }
+export const Icon = {
+  LABEL: 'label',
+  SETTINGS: 'settings',
+  TEXT_FORMAT: 'text_format',
+  COMPARE_ARROWS: 'compare_arrows',
+  DELETE: 'delete',
+  INFO: 'info',
+  EDIT: 'edit',
+  LIST: 'list',
+  REPLICATION: 'public',
+  CHECK: 'check',
+  CHECKED: 'check_box',
+  UNCHECKED: 'check_box_outline_blank',
+  CANCEL: 'close',
+  CREATE: 'create',
+  MORE_VERT: 'more_vert',
+  VERSIONS: 'restore_page'
+}
 
 export const NodeType = {
   PAGE: 'page',
