@@ -24,7 +24,6 @@ ENV PATH "/usr/local/lib/nodejs/node-v10.16.0-linux-x64/bin:$PATH"
 COPY files/* /app/binaries/
 COPY scripts/*.sh /app/scripts/
 
-# Initialize Maven settings to support repo.adobe.com
 RUN mkdir -p /root/.m2
 COPY overlay/root/.m2/settings.xml /root/.m2/
 
