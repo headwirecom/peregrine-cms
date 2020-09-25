@@ -6,7 +6,7 @@ SAVE_PWD=`pwd`
 
 # Build Sling
 cd peregrine-cms/sling/peregrine-builder-sling-12
-mvn clean install
+mvn clean install --quiet
 
 # Move Sling assets to target installation dir
 mkdir -v -p /app/sling
