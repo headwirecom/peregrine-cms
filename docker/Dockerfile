@@ -24,6 +24,10 @@ ENV PATH "/usr/local/lib/nodejs/node-v10.16.0-linux-x64/bin:$PATH"
 COPY files/* /app/binaries/
 COPY scripts/*.sh /app/scripts/
 
+# Initialize Maven settings to support repo.adobe.com
+RUN mkdir -p /root/.m2
+COPY overlay/root/.m2/settings.xml /root/.m2/
+
 # Start - Use repository/package pinning to upgrade libvips from version 8.4 to 8.6
 COPY overlay/etc/apt/preferences.d/* /etc/apt/preferences.d/
 RUN echo "deb http://archive.ubuntu.com/ubuntu/ eoan main restricted" >> /etc/apt/sources.list \
