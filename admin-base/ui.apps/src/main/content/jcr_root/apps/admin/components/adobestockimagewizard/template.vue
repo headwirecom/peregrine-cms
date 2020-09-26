@@ -238,6 +238,7 @@
         methods: {
 
             requestImages() {
+                // Get the API key from Adobe Stock site. https://stock.adobe.com/
                 const API_KEY = 'ENTER-YOUR-KEY-HERE';
                 const URL = `https://stock.adobe.io/Rest/Media/1/Search/Files?locale=en_US&search_parameters[words]=`+
                             `${ encodeURIComponent(this.state.input) }`+
