@@ -638,6 +638,10 @@ export default {
                 $perAdminApp.stateAction('sourceImageWizard', me.pt.path)
             },
 
+            adobeStockImage: function(me, target) {
+                $perAdminApp.stateAction('adobeStockImageWizard', me.pt.path )
+            },
+
             deleteTenantOrPage: function(me, target) {
                 if(me.path === '/content') {
                     me.deleteTenant(me, target)

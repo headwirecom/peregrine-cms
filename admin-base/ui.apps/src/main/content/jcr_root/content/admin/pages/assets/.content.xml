@@ -77,6 +77,19 @@
           </experiences>
         </sourceFile>
 
+        <adobeFile jcr:primaryType="nt:unstructured"
+          sling:resourceType="admin/components/action"
+          target=""
+          type="icon"
+          title="get asset from Adobe Stock"
+          command="adobeStockImage"
+          icon="archive">
+          <experiences jcr:primaryType="nt:unstructured">
+            <de jcr:primaryType="nt:unstructured" experiences="[lang:de]"
+              title="Asset von Adobe Stock laden"/>
+          </experiences>
+        </adobeFile>
+
       </subnav>
 
     </nav>
