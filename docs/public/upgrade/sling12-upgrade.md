@@ -13,7 +13,36 @@ This section is geared towards:
   release of Peregrine, and
 * site administrators that need to upgrade their existing sites 
 
-## Upgrade Development Toolchain
+## Backup your current site(s)
+
+If you're currently running Sling 9 and wish to migrate your content to Sling
+12, perform the steps in this section. If you're not interested in migrating
+your sites, feel free to skip this section.
+
+1. Start your Sling 9/Peregrine instance if it's not already running.
+
+2. Log into Peregrine as admin.
+
+3. Visit [Composum](http://localhost:8080/bin/browser.html) and navigate to
+   _Packages_.
+
+4. Navigate to your site, then select the package ZIP file. It should be of 
+   the form: yoursite-`full-package-1.0.zip`.
+
+5. Click the _rebuild_ icon. This will ensure that all of your sites pages
+   and assets are included and up-to-date in the current package backup.
+
+6. Click the _download_ icon and save the package ZIP file to a safe location.
+
+7. Repeat this procedure for your other sites if desired.
+
+8. If you are performing this upgrade on the same system, you should stop your
+   Peregrine service.
+
+9. Continue to the next section.
+
+
+## Upgrade development toolchain
 
 The toolchain has changed a bit between Sling 9 and Sling 12. The major
 changes are the supported versions of Node.js and Java. Please install
@@ -28,12 +57,19 @@ At the time of this writing, there are two main development branches:
 
 Please switch to the `develop-sling12` branch.
 
-TODO
-
-## Upgrade Repository
+## Install Sling 12
 
 TODO
 
-## Other Changes in Sling 12
+
+## Install Peregrine
+
+TODO
+
+## Restore your site(s)
+
+TODO
+
+## Peregrine changes in Sling 12
 
 TODO
