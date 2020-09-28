@@ -2,7 +2,7 @@
 
 cd /app/sling && java -jar /app/sling/org.apache.sling.feature.launcher.jar \
     -D sling.runmodes=author,notshared,oak_tar_fds \
-    -f /app/sling/com.peregrine-cms.sling.launchpad-12-SNAPSHOT-oak_tar_far.far \
+    -f /app/sling/com.peregrine-cms.sling.launchpad-12-SNAPSHOT-oak_tar_fds_far.far \
     -p /app/sling \
     -c /app/sling/launcher/cache &
 
