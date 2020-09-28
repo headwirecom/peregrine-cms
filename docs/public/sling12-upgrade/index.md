@@ -78,17 +78,32 @@ Please switch to the `develop-sling12` branch.
         $ cd pagerenderer/vue && npm i && cd ../..
         $ cd buildscripts && npm i && cd ..
 
-3. Build Peregrine.
-
-        $ mvn clean install
-
-4. Create a target installation directory for Sling 12 and Peregrine.  For 
+3. Create a target installation directory for Sling 12 and Peregrine.  For 
    demonstration, we'll create a directory in our home folder, but feel free
    to create your installation anywhere you like. 
 
-        $ mkdir -p ~/opt/sling12
-        
+       $ mkdir -p ~/opt/sling12
 
+4. Build the Sling 12 Feature Launcher. Then, copy the Feature Launcher and
+   Feature Model Archive (FAR) file to your Sling 12 installation directory.
+
+       $ cd sling/peregrine-builder-sling-12
+       $ mvn clean install
+       $ cp target/dependency/org.apache.sling.feature.launcher.jar ~/opt/sling12/
+       $ cp target/com.peregrine-cms.sling.launchpad-12-SNAPSHOT-oak_tar_fds_far.far ~/opt/sling12/
+
+5. Change into your Sling 12 installation directory and start Sling for the first time.
+
+       $ cd ~/opt/sling12
+
+6. Start Sling for the first time.
+
+       $ java -jar org.apache.sling.feature.launcher.jar \
+         -D sling.runmodes=author,notshared,oak_tar_fds \
+         -f com.peregrine-cms.sling.launchpad-12-SNAPSHOT-oak_tar_fds_far.far \
+         -p ~/opt/sling12 \
+         -c ~/opt/sling12/launcher/cache &
+ 
 ## Install Peregrine
 
 TODO
