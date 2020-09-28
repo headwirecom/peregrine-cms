@@ -102,15 +102,46 @@ Please switch to the `develop-sling12` branch.
          -D sling.runmodes=author,notshared,oak_tar_fds \
          -f com.peregrine-cms.sling.launchpad-12-SNAPSHOT-oak_tar_fds_far.far \
          -p ~/opt/sling12 \
-         -c ~/opt/sling12/launcher/cache &
- 
+         -c ~/opt/sling12/launcher/cache
+
+7. Continue to the next section.
+
 ## Install Peregrine
 
-TODO
+1. In another terminal window, change into your peregrine-cms Git workspace and
+   deploy Peregrine.
+
+       $ mvn clean install -PautoInstallPackage
+
+2. Stop Sling 12 by entering `<CTRL>+C` in the terminal where it was started.
+
+3. Start Sling 12 again.
+
+       $ java -jar org.apache.sling.feature.launcher.jar \
+         -D sling.runmodes=author,notshared,oak_tar_fds \
+         -f com.peregrine-cms.sling.launchpad-12-SNAPSHOT-oak_tar_fds_far.far \
+         -p ~/opt/sling12 \
+         -c ~/opt/sling12/launcher/cache
+
+4. Deploy themeclean-flex.
+
+        $ git clone https://github.com/headwirecom/themeclean-flex.git
+        $ git checkout develop
+        $ mvn clean install -PautoInstallPackage
+       
+5. Open a browser a log into [Peregrine](http://localhost:8080/) as admin / admin. 
 
 ## Restore your site(s)
 
-TODO
+1. Visit [Composum](http://localhost:8080/bin/browser.html) and navigate to
+   _Packages_.
+
+2. Click the _Upload_ icon. Then, upload the site package backup you created earlier.
+
+3. Click the _(Re)install package_ icon to restore your site.
+
+4. Repeat for other sites.
+
 
 ## Peregrine changes in Sling 12
 
