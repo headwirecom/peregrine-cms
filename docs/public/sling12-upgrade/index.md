@@ -59,8 +59,35 @@ Please switch to the `develop-sling12` branch.
 
 ## Install Sling 12
 
-TODO
+**Make sure you're running Java JDK 11 and Node 12.18 before continuing.**
 
+1. Change into your peregrine-cms Git workspace and checkout the 
+   `develop-sling12` branch.
+
+        $ cd peregrine-cms
+        $ git fetch
+        $ git checkout develop-sling12
+        $ git pull --rebase
+
+2. If you previously were developing/deploying an older version of Peregrine,
+   you will need to perform a one-time task, to clean the Node modules.
+
+        $ mvn clean -PcleanNodeModules
+        $ rm -rf node
+        $ cd admin-base/ui.apps && npm i && cd ../..
+        $ cd pagerenderer/vue && npm i && cd ../..
+        $ cd buildscripts && npm i && cd ..
+
+3. Build Peregrine.
+
+        $ mvn clean install
+
+4. Create a target installation directory for Sling 12 and Peregrine.  For 
+   demonstration, we'll create a directory in our home folder, but feel free
+   to create your installation anywhere you like. 
+
+        $ mkdir -p ~/opt/sling12
+        
 
 ## Install Peregrine
 
