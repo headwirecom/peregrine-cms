@@ -6,12 +6,12 @@ toolchain and upgrading your repository.
 
 ## Who is this document for?
 
-This section is geared towards:
+This document is geared towards:
 * developers that have been working with Peregrine on Sling 9 and would
-  like to move Sling 12, 
+  like to move to Sling 12, 
 * developers that are new to Peregrine and want to start using the latest
   release of Peregrine, and
-* site administrators that need to upgrade their existing sites 
+* site administrators that need to upgrade their existing sites.
 
 ## Backup your current site(s)
 
@@ -27,9 +27,9 @@ your sites, feel free to skip this section.
    _Packages_.
 
 4. Navigate to your site, then select the package ZIP file. It should be of 
-   the form: yoursite-`full-package-1.0.zip`.
+   the form: _yoursite_-`full-package-1.0.zip`.
 
-5. Click the _rebuild_ icon. This will ensure that all of your sites pages
+5. Click the _rebuild_ icon. This will ensure that all of your site's pages
    and assets are included and up-to-date in the current package backup.
 
 6. Click the _download_ icon and save the package ZIP file to a safe location.
@@ -129,7 +129,7 @@ Please switch to the `develop-sling12` branch.
         $ git checkout develop
         $ mvn clean install -PautoInstallPackage
        
-5. Open a browser a log into [Peregrine](http://localhost:8080/) as admin / admin. 
+5. Open a browser and log into [Peregrine](http://localhost:8080/) as admin / admin. 
 
 ## Restore your site(s)
 
