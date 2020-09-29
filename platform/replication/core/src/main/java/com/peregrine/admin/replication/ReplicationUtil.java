@@ -1,6 +1,5 @@
 package com.peregrine.admin.replication;
 
-import com.peregrine.commons.ResourceUtils;
 import org.apache.sling.api.resource.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,11 +99,13 @@ public class ReplicationUtil {
                 ModifiableValueMap sourceProperties = getModifiableProperties(source, false);
                 if (sourceProperties != null) {
                     Calendar replicated = Calendar.getInstance();
+                    final ResourceResolver resourceResolver = source.getResourceResolver();
                     if (DISTRIBUTION_PENDING.equals(targetPath)) {
+                        // Note for remote replication use-case
                         // updateReplicationProperties will be called twice. The first time will include a resource
-                        // obtained from the user initiating resource publishing. In this case targetPath will be "distribution pending"
+                        //   obtained from the user initiating resource publishing. In this case targetPath will be "distribution pending"
                         // TODO: CR add replication status to the per:Replication mixin such that these inferences are not needed.
-                        sourceProperties.put(PER_REPLICATED_BY, source.getResourceResolver().getUserID());
+                        sourceProperties.put(PER_REPLICATED_BY, resourceResolver.getUserID());
                     }
                     sourceProperties.put(PER_REPLICATED, replicated);
                     LOGGER.trace("Updated Source Replication Properties");
@@ -119,7 +120,7 @@ public class ReplicationUtil {
                         ensureMixin(target);
                         try {
                             ModifiableValueMap targetProperties = getModifiableProperties(target, false);
-                            String userId = source.getResourceResolver().getUserID();
+                            String userId = resourceResolver.getUserID();
                             LOGGER.trace("Replication User Id: '{}' for target: '{}'", userId, target.getPath());
                             // TODO: Refactor duplicated code
                             if (DISTRIBUTION_PENDING.equals(targetPath)) {
@@ -140,6 +141,8 @@ public class ReplicationUtil {
                             throw e;
                         }
                     }
+
+                    refreshAndCommit(resourceResolver);
                 } else {
                     LOGGER.debug("Source: '{}' is not writable -> ignored", source);
                 }
@@ -147,7 +150,14 @@ public class ReplicationUtil {
         }
     }
 
-
+    private static void refreshAndCommit(final ResourceResolver resourceResolver) {
+        resourceResolver.refresh();
+        try {
+            resourceResolver.commit();
+        } catch (final PersistenceException e) {
+            LOGGER.error("could not commit replication property changes", e);
+        }
+    }
 
 //    /**
 //     * References under /content for replication

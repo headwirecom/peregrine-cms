@@ -86,13 +86,8 @@ public class DistributionEventHandlerService implements EventHandler {
                 log.info("properties for {} were updated by dist event handler.",path);
                 updateReplicationProperties(resource, replicationRef, null);
             }
-
-            resourceResolver.commit();
-
-        } catch (LoginException | PersistenceException e) {
+        } catch (LoginException e) {
             log.error("Failed to update per:Replication properties", e);
-        } finally {
-            resourceResolver.close();
         }
     }
 
