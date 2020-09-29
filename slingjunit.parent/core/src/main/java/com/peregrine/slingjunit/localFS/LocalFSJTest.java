@@ -35,8 +35,14 @@ public class LocalFSJTest extends ReplicationTestBase {
 //    Otherwise, since the following line is non-deterministic, it could inject any of the replication services configured.
     @TestReference
     private Replication replication;
+    public static String INDEX = "/content/example/pages/index";
+    public static String CONTACT = "/content/example/pages/contact";
+    public static String JSON_DATA = ".data.json";
+    public static String HTML = ".html";
 
     private Resource stellaImgRes;
+    private Resource indexPageRes;
+    private Resource contactPageRes;
     private static String STATIC_HOME = "./sling/staticreplication";
 
     @Before
@@ -45,6 +51,8 @@ public class LocalFSJTest extends ReplicationTestBase {
             beforeTime = Calendar.getInstance();
             adminResourceResolver = resolverFactory.getAdministrativeResourceResolver(null);
             stellaImgRes = adminResourceResolver.getResource(STELLA_PNG);
+            indexPageRes = this.adminResourceResolver.getResource(INDEX);
+            contactPageRes = this.adminResourceResolver.getResource(CONTACT);
         } catch (LoginException e) {
             fail(e.getMessage());
         }
@@ -52,6 +60,9 @@ public class LocalFSJTest extends ReplicationTestBase {
 
     @After
     public void cleanup(){
+        deactivateResource(STELLA_PNG, stellaImgRes, replication);
+        deactivateResource(INDEX, indexPageRes, replication);
+        deactivateResource(INDEX, contactPageRes, replication);
         adminResourceResolver.close();
         adminResourceResolver = null;
     }
@@ -97,6 +108,42 @@ public class LocalFSJTest extends ReplicationTestBase {
         stellaImgRepl = adminResourceResolver.getResource(STELLA_PNG).adaptTo(PerReplicable.class);
         assertFalse(stellaImgRepl.isReplicated());
         assertFalse(stellaImgRepl.isStale());
+    }
+
+    @Test
+    public void replicatePage(){
+        assertFileDoesNotExist(STATIC_HOME+ INDEX + HTML);
+        assertFileDoesNotExist(STATIC_HOME+ CONTACT + HTML);
+        assertFileDoesNotExist(STATIC_HOME+ INDEX + JSON_DATA);
+        assertFileDoesNotExist(STATIC_HOME+ CONTACT + JSON_DATA);
+
+        assertNotNull(indexPageRes);
+        assertNotNull(contactPageRes);
+
+        PerReplicable indexRepl = indexPageRes.adaptTo(PerReplicable.class);
+        PerReplicable contactRepl = contactPageRes.adaptTo(PerReplicable.class);
+        assertNotNull(indexRepl);
+        assertNotNull(contactRepl);
+
+        try {
+            replication.replicate(indexPageRes, true);
+            replication.replicate(contactPageRes, true);
+        } catch (Replication.ReplicationException e) {
+            fail(e.getMessage());
+        }
+        // make published pages exist
+        assertFileExists(STATIC_HOME+ INDEX + HTML);
+        assertFileExists(STATIC_HOME+ INDEX + JSON_DATA);
+        assertFileExists(STATIC_HOME+ CONTACT + HTML);
+        assertFileExists(STATIC_HOME+ CONTACT + JSON_DATA);
+
+        // make sure deactivation does not remove published sibling
+        deactivateResource(CONTACT, contactPageRes, replication);
+        assertFileDoesNotExist(STATIC_HOME+ CONTACT + JSON_DATA);
+        assertFileDoesNotExist(STATIC_HOME+ CONTACT + HTML);
+        assertFileExists(STATIC_HOME+ INDEX + HTML);
+        assertFileExists(STATIC_HOME+ INDEX + JSON_DATA);
+        
     }
 
     private void assertFileExists(String filePath){

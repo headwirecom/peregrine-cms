@@ -324,9 +324,7 @@ public class LocalFileSystemReplicationService
                     }
 
                     for (final Pattern pattern : namePattern) {
-                        if (pattern.matcher(file.getName()).matches()) {
-                            return true;
-                        }
+                        return pattern.matcher(file.getName()).matches() && file.getName().startsWith(resourceName);
                     }
 
                     return false;

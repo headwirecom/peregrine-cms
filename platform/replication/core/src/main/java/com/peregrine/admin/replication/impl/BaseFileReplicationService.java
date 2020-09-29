@@ -66,13 +66,15 @@ public abstract class BaseFileReplicationService
     private static final List<Pattern> NAME_PATTERNS = new ArrayList<>();
     // List of all resources that are excluded from handling
     static final List<String> EXCLUDED_RESOURCES = new ArrayList<>();
+    public static String DATA_PATTERN = ".*(\\.data\\.json|\\.html)";
 
     private static final String EXTENSION_NAME_MUST_BE_PROVIDED = "Extension Name must be provided";
     private static final String EXTENSION_TYPES_MUST_BE_PROVIDED = "Extension Types must be provided";
     public static final String RENDERING_OF_ASSET_FAILED = "Rendering of Asset failed";
 
     static {
-        NAME_PATTERNS.add(Pattern.compile(".*\\.data\\.json"));
+        NAME_PATTERNS.add(Pattern.compile(DATA_PATTERN));
+//        NAME_PATTERNS.add(Pattern.compile(HTML_PATTERN));
         EXCLUDED_RESOURCES.add(JCR_CONTENT);
         EXCLUDED_RESOURCES.add(RENDITIONS);
     }
