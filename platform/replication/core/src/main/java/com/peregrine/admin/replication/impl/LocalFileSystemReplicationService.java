@@ -42,11 +42,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
@@ -59,6 +57,8 @@ import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static com.peregrine.commons.util.PerUtil.splitIntoMap;
 import static com.peregrine.commons.util.PerUtil.splitIntoProperties;
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * This class replicates resources to a local file system folder
@@ -277,32 +277,42 @@ public class LocalFileSystemReplicationService
 
     @Override
     String storeRendering(Resource resource, String extension, String content) throws ReplicationException {
-        File renderingFile = createRenderingFile(resource, extension);
-        try {
-            FileWriter fileWriter = new FileWriter(renderingFile);
-            fileWriter.append(content);
-            fileWriter.close();
-        } catch(IOException e) {
-            throw new ReplicationException(String.format(FAILED_TO_STORE_RENDERING, renderingFile.getAbsolutePath()), e);
+        return storeRendering(resource, extension, file -> {
+            try (final FileWriter fileWriter = new FileWriter(file)) {
+                fileWriter.append(content);
+            } catch (final IOException e) {
+                return new ReplicationException(String.format(FAILED_TO_STORE_RENDERING, file.getAbsolutePath()), e);
+            }
+
+            return null;
+        });
+    }
+
+    private String storeRendering(final Resource resource, final String extension, final Function<File, ReplicationException> fileConsumer)
+            throws ReplicationException {
+        final File renderingFile = createRenderingFile(resource, extension);
+        final ReplicationException exception = fileConsumer.apply(renderingFile);
+        if (nonNull(exception)) {
+            throw exception;
         }
-        Resource propertiesRes = resource.getName().equals(JCR_CONTENT) ? resource : resource.getChild(JCR_CONTENT);
-        updateReplicationProperties(propertiesRes, LOCAL_FILE_SYSTEM + renderingFile.getAbsolutePath(), null);
-        return LOCAL_FILE_SYSTEM + renderingFile.getAbsolutePath();
+
+        final Resource propertiesRes = PerUtil.getJcrContent(resource);
+        final String localFileSystemPath = LOCAL_FILE_SYSTEM + renderingFile.getAbsolutePath();
+        updateReplicationProperties(propertiesRes, localFileSystemPath, null);
+        return localFileSystemPath;
     }
 
     @Override
     String storeRendering(Resource resource, String extension, byte[] content) throws ReplicationException {
-        File renderingFile = createRenderingFile(resource, extension);
-        try {
-            FileOutputStream fileOutputStream = new FileOutputStream(renderingFile);
-            fileOutputStream.write(content);
-            fileOutputStream.close();
-        } catch(IOException e) {
-            throw new ReplicationException(String.format(CANNOT_WRITE_RENDERING, renderingFile.getAbsolutePath()), e);
-        }
-        Resource propertiesRes = resource.getName().equals(JCR_CONTENT) ? resource : resource.getChild(JCR_CONTENT);
-        updateReplicationProperties(propertiesRes, LOCAL_FILE_SYSTEM + renderingFile.getAbsolutePath(), null);
-        return LOCAL_FILE_SYSTEM + renderingFile.getAbsolutePath();
+        return storeRendering(resource, extension, file -> {
+            try (final FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+                fileOutputStream.write(content);
+            } catch (final IOException e) {
+                return new ReplicationException(String.format(CANNOT_WRITE_RENDERING, file.getAbsolutePath()), e);
+            }
+
+            return null;
+        });
     }
 
     @Override
