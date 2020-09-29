@@ -25,7 +25,6 @@ package com.peregrine.admin.replication.impl;
  * #L%
  */
 
-import com.peregrine.commons.util.PerUtil;
 import com.peregrine.render.RenderService;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
@@ -52,12 +51,10 @@ import static com.peregrine.commons.Chars._SCORE;
 import static com.peregrine.commons.ResourceUtils.jcrNameToFileName;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerUtil.intoList;
-import static com.peregrine.commons.util.PerUtil.isNotEmpty;
-import static com.peregrine.commons.util.PerUtil.splitIntoMap;
-import static com.peregrine.commons.util.PerUtil.splitIntoProperties;
+import static com.peregrine.commons.util.PerUtil.*;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
@@ -296,9 +293,8 @@ public class LocalFileSystemReplicationService
             throw exception;
         }
 
-        final Resource propertiesRes = PerUtil.getJcrContent(resource);
         final String localFileSystemPath = LOCAL_FILE_SYSTEM + renderingFile.getAbsolutePath();
-        updateReplicationProperties(propertiesRes, localFileSystemPath, null);
+        updateReplicationProperties(getJcrContent(resource), localFileSystemPath, null);
         return localFileSystemPath;
     }
 
@@ -325,16 +321,17 @@ public class LocalFileSystemReplicationService
 
         final File[] filesToBeDeletedFiles = directory.listFiles(
                 file -> {
-                    if (isFolder && file.isDirectory() && file.getName().equals(resourceName)) {
+                    final String name = file.getName();
+                    if (isFolder && file.isDirectory() && name.equals(resourceName)) {
                         return true;
                     }
 
                     if (isNull(namePattern)) {
-                        return file.getName().startsWith(resourceName);
+                        return name.startsWith(resourceName);
                     }
 
                     for (final Pattern pattern : namePattern) {
-                        if (pattern.matcher(file.getName()).matches()) {
+                        if (pattern.matcher(name).matches()) {
                             return true;
                         }
                     }
@@ -342,15 +339,17 @@ public class LocalFileSystemReplicationService
                     return false;
                 }
         );
-        if(filesToBeDeletedFiles != null) {
-            for(File toBeDeleted : filesToBeDeletedFiles) {
-                log.trace("Delete File: '{}'", toBeDeleted.getAbsolutePath());
-                if (!deleteFile(toBeDeleted)) {
-                    throw new ReplicationException(String.format(FAILED_TO_DELETE_FILE, toBeDeleted.getAbsolutePath()));
-                }
-                Resource propertiesRes = resource.getName().equals(JCR_CONTENT) ? resource : resource.getChild(JCR_CONTENT);
-                updateReplicationProperties(propertiesRes, "", null);
+        if (isNull(filesToBeDeletedFiles)) {
+            return;
+        }
+
+        for (final File toBeDeleted : filesToBeDeletedFiles) {
+            log.trace("Delete File: '{}'", toBeDeleted.getAbsolutePath());
+            if (!deleteFile(toBeDeleted)) {
+                throw new ReplicationException(String.format(FAILED_TO_DELETE_FILE, toBeDeleted.getAbsolutePath()));
             }
+
+            updateReplicationProperties(getJcrContent(resource), EMPTY, null);
         }
     }
 
