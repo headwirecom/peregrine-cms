@@ -143,7 +143,7 @@ public class LocalFSJTest extends ReplicationTestBase {
         assertFileDoesNotExist(STATIC_HOME+ CONTACT + HTML);
         assertFileExists(STATIC_HOME+ INDEX + HTML);
         assertFileExists(STATIC_HOME+ INDEX + JSON_DATA);
-        
+
     }
 
     private void assertFileExists(String filePath){

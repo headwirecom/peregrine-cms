@@ -95,7 +95,6 @@ public class PerPageManagerImpl
             try {
                 resourceResolver.commit();
             } catch(PersistenceException e) {
-                //AS TODO: Log exception
                 logger.error("could not clear replication properties", e);
             }
             if(!shallow) {
