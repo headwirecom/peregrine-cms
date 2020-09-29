@@ -96,7 +96,9 @@ Please switch to the `develop-sling12` branch.
 
        $ cd ~/opt/sling12
 
-6. Start Sling for the first time.
+6. Start Sling for the first time. Note: If you prefer to use local filesystem replication,
+   you should remove _author_ from the list of runmodes below, otherwise remote
+   replication is assumed.
 
        $ java -jar org.apache.sling.feature.launcher.jar \
          -D sling.runmodes=author,notshared,oak_tar_fds \
