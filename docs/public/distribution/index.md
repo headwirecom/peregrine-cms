@@ -232,3 +232,25 @@ appropriately otherwise the UI will not be able to distribute.
 
 That said there can be many more default distribution created and set up as a convenient
 way to manage contribution.
+
+# Sling Junit Tests
+Sling Junit tests are used for executing tests in running Sling instances.   
+Deploy the tests.  
+cd peregrine-cms/slingjunit.parent  
+mvn clean install -PautoDeployPackage`
+
+Before running the tests, decide what replication scheme your project uses. 
+Replication Services can be non-deterministic. If you're project uses localFS removing configurations 
+for the other replication services ensures the localFS tests run with the proper replication service for your project. 
+
+* Replication style: remote
+   * verify that the only Remote Replication Service is configured. 
+      * /system/console/configMgr
+      ![Only Remote Replication OSGi Configuration](remote-service-config.png)   
+   * Execute the tests
+      * /system/sling/junit/com.peregrine.slingjunit.author.RemoteReplAuthorJTest.html
+* Replication style: localFS
+   * verify that the only localFS Replication Service is configured.
+     * /system/console/configMgr
+     ![Only LocalFS Replication OSGi Configuration](local-fs-replication-config.png)
+   * /system/sling/junit/com.peregrine.slingjunit.localFS.LocalFSJTest.html
