@@ -202,11 +202,7 @@ public class DistributionReplicationService
                     // In order to make it possible to have the correct user set and 'Replicated By' we need to set it here and now
                     updateReplicationProperties(resource, DISTRIBUTION_PENDING, null);
                 }
-                try {
-                    resourceResolver.commit();
-                } catch(PersistenceException e) {
-                    throw new ReplicationException("Could not set Replication User before distribution", e);
-                }
+
                 if(distributor != null) {
                     if (activate) {
                         // first deactivate page content so deleted or moved content is cleared
