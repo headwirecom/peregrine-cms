@@ -1,10 +1,11 @@
 # Replicate new Root Site
 
 **Actor**: Peregrine CMS Author  
-**Description**: Author creates a new Website and replicates it after initial preparations.
+**Description**: Author creates a new Website
+                 and replicates it after the initial preparations.
 
 ## Preconditions:
-1. Site does not exist in the system.
+1. Site does not exist in the system under **your websites > Websites**.
 1. There is a theme to use already in the system.
 
 ## Postconditions:
