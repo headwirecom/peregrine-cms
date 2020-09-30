@@ -22,5 +22,3 @@
 1. Author may choose to exclude some resources from replication cleansing.
 1. Author may cancel the operation.
 1. Author may choose to delete the site from the system, but leave it in replication cache.
-1. Author may access [replication cache explorer](replication-explorer.md)
-   to clean remaining resources later.
