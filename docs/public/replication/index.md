@@ -2,6 +2,7 @@
 * [Replication Explorer](replication-explorer.md)
 * [Replicate new Root Site](root-site-new.md)
 * [Replicate updated Root Site](root-site-updated.md)
+* [Un-publish Root Site](root-site-unpublished.md)
 * [Replicate deleted Root Site](root-site-deleted.md)
 * [Replicate new Page](page-new.md)
 * [Replicate updated Page](page-updated.md)
