@@ -9,7 +9,7 @@ Let's look at the Peregrine Site content structure and the dependencies inside o
 
 ![Site](root-site.jpg)
 
-We have to realize one thing that should simplify things significantly. Namely - it actually
+We have to realize one thing that should simplify things significantly. Namely, it actually
 should not matter to us exactly what type of resource we are discussing in terms of
 distribution / replication / publishing / un-publishing. In this regard they are more or less the same.
 They're just resources in the system. We render those resources somehow. Each resource can reference
@@ -80,5 +80,5 @@ properly.
 
 ## Versioning Role
 We should version the published resources and use those versions to render published resources that depend on them.
-Let's not though, that it will be much more feasible to simply keep an up-to-date published tree of resources
+Let's note though, that it will be much more feasible to simply keep an up-to-date published tree of resources
 than to use the versions directly.
