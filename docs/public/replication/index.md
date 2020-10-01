@@ -56,25 +56,29 @@ where we use a placeholder for the above:
 
 Whenever we speak of associated resources in the above scenarios, there are many combinations of the state
 of base resource, action and referenced / referencing resource that have to be considered for activation
-to keep the published version in good shape. We have the following combinations to consider:
-
-![Combinations = Edge Cases](combinations.png)
-
-**TO DO**: finish [combinations listing](https://docs.google.com/spreadsheets/d/1IYNtmZCszbP1S9TZV4ZzlinLnh7zlsnzsSlnYpwC3Bc/edit?usp=sharing)
-and propose solutions for those cases.
+to keep the published version in good shape. We have the following
+[combinations listing](https://docs.google.com/spreadsheets/d/1IYNtmZCszbP1S9TZV4ZzlinLnh7zlsnzsSlnYpwC3Bc) to consider:
+### Referenced Resource
+![Combinations = Edge Cases: Referenced Resources](referenced-resources.png)
+### Referencing Resource
+![Combinations = Edge Cases: Referencing Resources](referencing-resources.png)
 
 ## Page Tree
+* Do we want to publish parents of a page when we publish the page? Or just mock the path from the root to it?
 
-**TO DO**: How do we handle the page replication when it has parents and children
-that might also need to be published?
+# Implementation Notes
 
-# Implementation Note: Replication Types
-
+## Replication Types
 We have to note that there are two basic replication strategies in Peregrine:
 
 ![Replication Strategies](replication-types.jpg)
 
-Repository is quite safe in most cases since the pages can be rendered on the fly.
+Repository is quite safe in most cases since the pages can be rendered on the fly.  
 Much more attention has to come to the cache-like replication options, i.e. those, where we store
 final renderings of the replicated resources. A lot can go wrong if we don't handle the references
-properly...
+properly.
+
+## Versioning Role
+We should version the published resources and use those versions to render published resources that depend on them.
+Let's not though, that it will be much more feasible to simply keep an up-to-date published tree of resources
+than to use the versions directly.
