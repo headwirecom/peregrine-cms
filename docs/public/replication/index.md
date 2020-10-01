@@ -59,8 +59,12 @@ of base resource, action and referenced / referencing resource that have to be c
 to keep the published version in good shape. We have the following
 [combinations listing](https://docs.google.com/spreadsheets/d/1IYNtmZCszbP1S9TZV4ZzlinLnh7zlsnzsSlnYpwC3Bc) to consider:
 ### Referenced Resource
+![Definition: Referenced Resource](referenced-definition.png)
+
 ![Combinations = Edge Cases: Referenced Resources](referenced-resources.png)
 ### Referencing Resource
+![Definition: Referencing Resource](referencing-definition.png)
+
 ![Combinations = Edge Cases: Referencing Resources](referencing-resources.png)
 
 ## Page Tree
