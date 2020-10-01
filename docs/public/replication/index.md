@@ -66,6 +66,11 @@ to keep the published version in good shape. We have the following
 ## Page Tree
 * Do we want to publish parents of a page when we publish the page? Or just mock the path from the root to it?
 
+## Specific Resource Type Use Cases
+* [Replicate new Sitemap](sitemap-new.md)
+* [Replicate updated Sitemap](sitemap-updated.md)
+* [Replicate deleted Sitemap](sitemap-deleted.md)
+
 # Implementation Notes
 
 ## Replication Types
@@ -82,3 +87,4 @@ properly.
 We should version the published resources and use those versions to render published resources that depend on them.
 Let's note though, that it will be much more feasible to simply keep an up-to-date published tree of resources
 than to use the versions directly.
+
