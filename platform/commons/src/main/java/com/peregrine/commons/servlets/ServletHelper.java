@@ -32,8 +32,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.peregrine.commons.util.PerConstants.DASH;
-import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.commons.util.PerConstants.*;
 
 /**
  * Helper Methods for Servlets
@@ -51,11 +50,11 @@ public class ServletHelper {
      * @return A map of parameters
      */
     public static Map<String,String> obtainParameters(SlingHttpServletRequest request) {
-        HashMap<String, String> answer = new HashMap<String, String>();
+        HashMap<String, String> answer = new HashMap<>();
 
         String suffix = request.getRequestPathInfo().getSuffix();
         if(suffix != null && !suffix.isEmpty()) {
-            answer.put("path", suffix);
+            answer.put(PATH, suffix);
         }
         Enumeration<String> e = request.getParameterNames();
         while(e.hasMoreElements()) {
