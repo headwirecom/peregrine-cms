@@ -144,7 +144,7 @@
                                 command: 'deleteTenantOrPage',
                                 tooltipTitle: `${$i18n('delete')} '${label(child)}'`
                             }">
-                            <i class="material-icons">delete</i>
+                            <i class="material-icons">{{canBeDeleted(child) ? 'delete_outline' : 'delete_forever'}}</i>
                         </admin-components-action>
                     </div>
                 </li>
@@ -643,8 +643,15 @@ export default {
                 $perAdminApp.stateAction('sourceImageWizard', me.pt.path)
             },
 
+            canBeDeleted: function(obj) {
+                return false;
+            },
+
             deleteTenantOrPage: function(me, target) {
-                if(me.path === '/content') {
+                if (!me.canBeDeleted(target)) {
+                    $perAdminApp.notifyUser('Operation not allowed',
+                        "You cannot delete a resource if it's still published. Please unpublish it with its children first.")
+                } else if (me.path === '/content') {
                     me.deleteTenant(me, target)
                 } else {
                     me.deletePage(me, target)
@@ -665,7 +672,7 @@ export default {
                             $perAdminApp.stateAction('deletePage', target.path)
                         } else if(resourceType === 'nt:file') {
                             $perAdminApp.stateAction('deleteFile', target.path)
-                        }else {
+                        } else {
                             $perAdminApp.stateAction('deleteFolder', target.path)
                         }
                     }
