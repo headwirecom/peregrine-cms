@@ -144,7 +144,7 @@
                                 command: 'deleteTenantOrPage',
                                 tooltipTitle: `${$i18n('delete')} '${label(child)}'`
                             }">
-                            <i class="material-icons">{{canBeDeleted(child) ? 'delete_outline' : 'delete_forever'}}</i>
+                            <i class="material-icons">{{canBeDeleted(child) ? 'delete' : 'delete_forever'}}</i>
                         </admin-components-action>
                     </div>
                 </li>
@@ -644,7 +644,7 @@ export default {
             },
 
             canBeDeleted: function(obj) {
-                return false;
+                return !obj.activated;
             },
 
             deleteTenantOrPage: function(me, target) {
