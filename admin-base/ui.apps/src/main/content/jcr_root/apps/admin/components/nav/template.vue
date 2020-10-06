@@ -43,7 +43,7 @@
             :class="{active: getActiveSection() === 'tenants'}"
             :below-origin="true"
             :items="tenantDdItems">
-          {{ state.tenant.name }}
+          {{ state.tenant.title }}
         </admin-components-materializedropdown>
       </div>
       <div class="nav-center">
