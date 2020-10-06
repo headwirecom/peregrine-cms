@@ -65,9 +65,6 @@ export default {
       }
     },
     watch: {
-      'item.title'(newVal, oldVal) {
-        console.log('item.title:', newVal, oldVal)
-      },
       currentPath(newVal, oldVal) {
         this.initIsOpen()
       },
