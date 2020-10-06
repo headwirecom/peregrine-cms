@@ -32,7 +32,7 @@
                 :below-origin="true"
                 alignment="right">
                 <template>
-                    {{ vTitle }}<span class="caret-down"></span>
+                    {{ vCurrentNodeTitle }}<span class="caret-down"></span>
                 </template>
                 <template slot="content" v-if="filteredChildren.length > 0">
                     <admin-components-nodetreeitem
@@ -114,7 +114,7 @@ export default {
           return $perAdminApp.findNodeFromPath(this.nodes, this.getPath())
               || {title: 'loading...'}
         },
-      vTitle() {
+      vCurrentNodeTitle() {
           return this.currentNode.title || this.currentNode.name
       }
     },
