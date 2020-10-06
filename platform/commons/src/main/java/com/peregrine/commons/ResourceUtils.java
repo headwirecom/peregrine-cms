@@ -107,6 +107,17 @@ public final class ResourceUtils {
         return list;
     }
 
+    public static Resource getDeepestExistingResource(final ResourceResolver resourceResolver, final String path) {
+        String parentPath = path;
+        Resource resource = null;
+        while (isNull(resource) && isNotBlank(parentPath)) {
+            resource = resourceResolver.getResource(parentPath);
+            parentPath = substringBeforeLast(parentPath, SLASH);
+        }
+
+        return resource;
+    }
+
     public static int getLevel(final Resource resource) {
         return countMatches(resource.getPath(), SLASH) - 1;
     }

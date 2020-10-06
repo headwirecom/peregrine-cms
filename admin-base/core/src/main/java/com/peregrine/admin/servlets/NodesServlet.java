@@ -26,6 +26,7 @@ package com.peregrine.admin.servlets;
  */
 
 import com.peregrine.adaption.PerReplicable;
+import com.peregrine.commons.ResourceUtils;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.commons.util.PerUtil;
 import org.apache.sling.api.resource.Resource;
@@ -48,8 +49,7 @@ import java.util.stream.StreamSupport;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_NODES;
 import static com.peregrine.admin.servlets.ReferenceListerServlet.IS_STALE;
 import static com.peregrine.commons.Chars.COLON;
-import static com.peregrine.commons.ResourceUtils.getAbsoluteParent;
-import static com.peregrine.commons.ResourceUtils.isAncestorOrEqual;
+import static com.peregrine.commons.ResourceUtils.*;
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.*;
 import static java.util.Objects.isNull;
@@ -97,17 +97,13 @@ public class NodesServlet extends AbstractBaseServlet {
 
     @Override
     protected Response handleRequest(final Request request) throws IOException {
-        final ResourceResolver resourceResolver = request.getResourceResolver();
-        final Optional<Resource> optionalResource = Optional.of(PATH)
-                .map(request::getParameter)
-                .map(resourceResolver::getResource);
-        if (optionalResource.isEmpty()) {
+        final Resource resource = getDeepestExistingResource(request.getResourceResolver(), request.getParameter(PATH));
+        if (isNull(resource)) {
             return new ErrorResponse()
                     .setHttpErrorCode(SC_BAD_REQUEST)
                     .setErrorMessage(NO_PATH_PROVIDED);
         }
 
-        final Resource resource = optionalResource.get();
         return convertResource(resource, 0, new JsonResponse());
     }
 
@@ -136,7 +132,7 @@ public class NodesServlet extends AbstractBaseServlet {
                             .map(Resource::getChildren)
                             .map(Iterable::spliterator)
                             .map(s -> StreamSupport.stream(s, false))
-                            .orElse(Stream.empty())
+                            .orElseGet(() -> Stream.empty())
                             .map(Tag::new)
                             .collect(Collectors.toList());
                     if (tags.size() > 0) {
@@ -200,7 +196,7 @@ public class NodesServlet extends AbstractBaseServlet {
         if (isNotBlank(replicationDate)) {
             String status = ACTIVATED;
             final String replicationLocationRef = writeIfFound(replicationProperties, PER_REPLICATION_REF, json);
-            if (isNotBlank(replicationLocationRef)) {
+            if (isBlank(replicationLocationRef)) {
                 status = DEACTIVATED;
             }
 
