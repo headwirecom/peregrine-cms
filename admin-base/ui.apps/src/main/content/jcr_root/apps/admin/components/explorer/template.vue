@@ -524,7 +524,7 @@ export default {
                 return path + '.json'
             },
 
-            nodeToIcon: function(node) {console.log(node)
+            nodeToIcon: function(node) {
                 switch (node.resourceType) {
                     case 'per:Page': return 'description';
                     case 'per:Object': return 'layers';
