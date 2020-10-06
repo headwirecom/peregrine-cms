@@ -21,10 +21,6 @@ public final class ResourceUtils {
         throw new UnsupportedOperationException();
     }
 
-    public static Resource getJcrContent(final Resource resource) {
-        return resource.getChild(JCR_CONTENT);
-    }
-
     public static Resource getFirstExistingAncestorOnPath(final ResourceResolver resourceResolver, final String path) {
         String existingPath = path;
         Resource resource = null;
