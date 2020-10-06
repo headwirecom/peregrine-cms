@@ -77,7 +77,7 @@
                             dblClickTarget: child,
                             dblClickCommand: 'selectPath',
                             tooltipTitle: `${$i18n('edit')} '${label(child)}'`
-                        }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{label(child)}}
+                        }"><i class="material-icons">{{nodeToIcon(child)}}</i> {{label(child)}}
                     </admin-components-action>
 
                     <admin-components-action v-if="!editable(child)"
@@ -85,7 +85,7 @@
                             target: child,
                             command: 'selectPath',
                             tooltipTitle: `${$i18n('select')} '${label(child)}'`
-                        }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{label(child)}}
+                        }"><i class="material-icons">{{nodeToIcon(child)}}</i> {{label(child)}}
                     </admin-components-action>
 
                     <admin-components-extensions v-bind:model="{id: 'admin.components.explorer', item: child}"></admin-components-extensions>
@@ -524,15 +524,17 @@ export default {
                 return path + '.json'
             },
 
-            nodeTypeToIcon: function(nodeType) {
-                if(nodeType === 'per:Page')             return 'description'
-                if(nodeType === 'per:Object')           return 'layers'
-                if(nodeType === 'per:ObjectDefinition') return 'insert_drive_file'
-                if(nodeType === 'nt:file')              return 'insert_drive_file'
-                if(nodeType === 'per:Asset')            return 'image'
-                if(nodeType === 'sling:Folder')         return 'folder'
-                if(nodeType === 'sling:OrderedFolder')  return 'folder'
-                return 'unknown'
+            nodeToIcon: function(node) {console.log(node)
+                switch (node.resourceType) {
+                    case 'per:Page': return 'description';
+                    case 'per:Object': return 'layers';
+                    case 'per:ObjectDefinition':
+                    case 'nt:file': return 'insert_drive_file';
+                    case 'per:Asset': return 'image';
+                    case 'sling:Folder':
+                    case 'sling:OrderedFolder': return 'folder';
+                    default: return 'unknown';
+                }
             },
 
             checkIfAllowed: function(node) {
