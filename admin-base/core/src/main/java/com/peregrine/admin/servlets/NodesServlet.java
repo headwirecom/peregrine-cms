@@ -26,6 +26,7 @@ package com.peregrine.admin.servlets;
  */
 
 import com.peregrine.adaption.PerReplicable;
+import com.peregrine.admin.replication.ReplicationUtil;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.commons.util.PerUtil;
 import org.apache.sling.api.resource.Resource;
@@ -164,7 +165,7 @@ public class NodesServlet extends AbstractBaseServlet {
                     }
                 }
 
-                json.writeAttribute(ANY_DESCENDANT_ACTIVATED, isAnyDescendantActivated(child));
+                json.writeAttribute(ANY_DESCENDANT_ACTIVATED, ReplicationUtil.isAnyDescendantReplicated(child));
                 json.writeClose();
             }
         }
@@ -281,19 +282,6 @@ public class NodesServlet extends AbstractBaseServlet {
 
             json.writeClose();
         }
-    }
-
-    private boolean isAnyDescendantActivated(final Resource resource) {
-        for (final Resource child : resource.getChildren()) {
-            if (!isJcrContent(child)) {
-                final PerReplicable replicable = child.adaptTo(PerReplicable.class);
-                if (replicable.isReplicated() || isAnyDescendantActivated(child)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     private final class Tag extends ResourceWrapper {
