@@ -32,7 +32,7 @@
                 :below-origin="true"
                 alignment="right">
                 <template>
-                    {{ currentNodeName }}<span class="caret-down"></span>
+                    {{ vCurrentNodeTitle }}<span class="caret-down"></span>
                 </template>
                 <template slot="content" v-if="filteredChildren.length > 0">
                     <admin-components-nodetreeitem
@@ -110,9 +110,13 @@ export default {
                 return []
             }
         },
-        currentNodeName() {
-            return this.getPath().split('/').pop() || 'loading...'
+        currentNode() {
+          return $perAdminApp.findNodeFromPath(this.nodes, this.getPath())
+              || {title: 'loading...'}
         },
+      vCurrentNodeTitle() {
+          return this.currentNode.title || this.currentNode.name
+      }
     },
     methods: {
         isEditor() {

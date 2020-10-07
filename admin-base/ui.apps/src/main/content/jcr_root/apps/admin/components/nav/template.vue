@@ -43,7 +43,7 @@
             :class="{active: getActiveSection() === 'tenants'}"
             :below-origin="true"
             :items="tenantDdItems">
-          {{ state.tenant.name }}
+          {{ vTenantTitle }}
         </admin-components-materializedropdown>
       </div>
       <div class="nav-center">
@@ -201,6 +201,9 @@
         const offset = offsetInMinutes / 60 * -1
         const algebraicSign = offset >= 0 ? '+' : '-'
         return `GMT${algebraicSign}${offset}`
+      },
+      vTenantTitle() {
+        return this.state.tenant.title || this.state.tenant.name
       }
     },
     beforeCreate() {
