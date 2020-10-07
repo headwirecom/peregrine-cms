@@ -111,7 +111,8 @@ public class NodesServlet extends AbstractBaseServlet {
             return json;
         }
 
-        writeProperties(parent, json);
+        writeBasicProperties(parent, json);
+        writeReplicationProperties(resource, json);
         json.writeArray(CHILDREN);
         for (final Resource child : parent.getChildren()) {
             if (isAncestorOrEqual(resource, child)) {
@@ -120,7 +121,8 @@ public class NodesServlet extends AbstractBaseServlet {
                 json.writeClose();
             } else if (!isJcrContent(child)) {
                 json.writeObject();
-                writeProperties(child, json);
+                writeBasicProperties(child, json);
+                writeReplicationProperties(resource, json);
                 if (isPrimaryType(child, ASSET_PRIMARY_TYPE)) {
                     final ValueMap props = child.getChild(JCR_CONTENT).getValueMap();
                     json.writeAttribute(MIME_TYPE, props.get(JCR_MIME_TYPE, String.class));
@@ -137,7 +139,7 @@ public class NodesServlet extends AbstractBaseServlet {
                         json.writeArray("tags");
                         for (final Tag tag : tags) {
                             json.writeObject();
-                            writeBasicProperties(tag, json);
+                            writePathProperties(tag, json);
                             json.writeAttribute("value", tag.getValue());
                             json.writeClose();
                         }
@@ -172,9 +174,8 @@ public class NodesServlet extends AbstractBaseServlet {
         return json;
     }
 
-    private void writeProperties(final Resource resource, final JsonResponse json) throws IOException {
-        writeBasicProperties(resource, json);
-        json.writeAttribute(HAS_CHILDREN, hasNonJcrContentChild(resource));
+    private void writeBasicProperties(final Resource resource, final JsonResponse json) throws IOException {
+        writePathProperties(resource, json);
         final ValueMap properties = resource.getValueMap();
         writeIfFound(properties, JCR_PRIMARY_TYPE, json, RESOURCE_TYPE);
         writeIfFound(properties, JCR_CREATED, json);
@@ -182,18 +183,26 @@ public class NodesServlet extends AbstractBaseServlet {
         writeIfFound(properties, JCR_LAST_MODIFIED, json);
         writeIfFound(properties, JCR_LAST_MODIFIED_BY, json);
         writeIfFound(properties, JCR_LAST_MODIFIED_BY, json);
+        json.writeAttribute(HAS_CHILDREN, hasNonJcrContentChild(resource));
         writeIfFound(properties, ALLOWED_OBJECTS, json);
+    }
 
+    private void writePathProperties(final Resource resource, final JsonResponse json) throws IOException {
+        json.writeAttribute(NAME, resource.getName());
+        json.writeAttribute(PATH, resource.getPath());
+    }
+
+    private void writeReplicationProperties(final Resource resource, final JsonResponse json) throws IOException {
         // For the Replication data we need to obtain the content properties. If not found
         // then we try with the resource's properties for non jcr:content nodes
-        final ValueMap replicationProperties = Optional.ofNullable(resource)
+        final ValueMap properties = Optional.ofNullable(resource)
                 .map(PerUtil::getProperties)
-                .orElse(properties);
-        writeIfFound(replicationProperties, PER_REPLICATED_BY, json);
-        final String replicationDate = writeIfFound(replicationProperties, PER_REPLICATED, json);
+                .orElseGet(resource::getValueMap);
+        writeIfFound(properties, PER_REPLICATED_BY, json);
+        final String replicationDate = writeIfFound(properties, PER_REPLICATED, json);
         if (isNotBlank(replicationDate)) {
             String status = ACTIVATED;
-            final String replicationLocationRef = writeIfFound(replicationProperties, PER_REPLICATION_REF, json);
+            final String replicationLocationRef = writeIfFound(properties, PER_REPLICATION_REF, json);
             if (isBlank(replicationLocationRef)) {
                 status = DEACTIVATED;
             }
@@ -202,16 +211,11 @@ public class NodesServlet extends AbstractBaseServlet {
         }
 
         // TODO refactor code above to use PerReplicable when writing replication properties
-        final PerReplicable sourceRepl = resource.adaptTo(PerReplicable.class);
-        json.writeAttribute(ACTIVATED, sourceRepl.isReplicated());
-        if (sourceRepl.getLastModified() != null && sourceRepl.getReplicated() != null) {
-            json.writeAttribute(IS_STALE, sourceRepl.isStale());
+        final PerReplicable replicable = resource.adaptTo(PerReplicable.class);
+        json.writeAttribute(ACTIVATED, replicable.isReplicated());
+        if (nonNull(replicable.getLastModified()) && nonNull(replicable.getReplicated())) {
+            json.writeAttribute(IS_STALE, replicable.isStale());
         }
-    }
-
-    private void writeBasicProperties(final Resource resource, final JsonResponse json) throws IOException {
-        json.writeAttribute(NAME, resource.getName());
-        json.writeAttribute(PATH, resource.getPath());
     }
 
     private boolean hasNonJcrContentChild(final Resource res) {
@@ -264,7 +268,7 @@ public class NodesServlet extends AbstractBaseServlet {
     private void convertResource(final Resource resource, final JsonResponse json) throws IOException {
         for (final Resource child : resource.getChildren()) {
             json.writeObject();
-            writeBasicProperties(child, json);
+            writePathProperties(child, json);
             final ValueMap valueMap = child.getValueMap();
             for (final String key : valueMap.keySet()) {
                 if (key.indexOf(COLON) < 0) {
