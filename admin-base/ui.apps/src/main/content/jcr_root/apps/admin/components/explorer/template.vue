@@ -357,9 +357,9 @@ export default {
                     const modified = item.lastModified ? item.lastModified : created
                     const replicated = item.Replicated
                     if(replicated > modified) {
-                        return 'item-'+item.ReplicationStatus
+                        return `item-${item.ReplicationStatus}`
                     } else {
-                        return 'item-'+item.ReplicationStatus+'-modified'
+                        return `item-${item.ReplicationStatus}-modified`
                     }
                 }
                 return 'item-replication-unknown'
@@ -644,13 +644,13 @@ export default {
             },
 
             canBeDeleted: function(obj) {
-                return !obj.activated;
+                return !(obj.activated || obj.anyDescendantActivated);
             },
 
             deleteTenantOrPage: function(me, target) {
                 if (!me.canBeDeleted(target)) {
-                    $perAdminApp.notifyUser('Operation not allowed',
-                        "You cannot delete a resource if it's still published. Please unpublish it with its children first.")
+                    $perAdminApp.toast("You cannot delete this yet. The resource or one of its children is still published." +
+                    " Please unpublish all of them first.", "warn", 7500)
                 } else if (me.path === '/content') {
                     me.deleteTenant(me, target)
                 } else {

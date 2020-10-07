@@ -82,7 +82,7 @@ public class NodesServlet extends AbstractBaseServlet {
     public static final String HAS_CHILDREN = "hasChildren";
     public static final String MIME_TYPE = "mimeType";
     public static final String ACTIVATED = "activated";
-    public static final String ACTIVATED_SELF_OR_DESCENDANT = "activatedSelfOrDescendant";
+    public static final String ANY_DESCENDANT_ACTIVATED = "anyDescendantActivated";
     public static final String DEACTIVATED = "deactivated";
     public static final String REPLICATION_STATUS = "ReplicationStatus";
     public static final String RESOURCE_TYPE = "resourceType";
@@ -112,7 +112,6 @@ public class NodesServlet extends AbstractBaseServlet {
         }
 
         writeBasicProperties(parent, json);
-        writeReplicationProperties(resource, json);
         json.writeArray(CHILDREN);
         for (final Resource child : parent.getChildren()) {
             if (isAncestorOrEqual(resource, child)) {
@@ -122,7 +121,6 @@ public class NodesServlet extends AbstractBaseServlet {
             } else if (!isJcrContent(child)) {
                 json.writeObject();
                 writeBasicProperties(child, json);
-                writeReplicationProperties(child, json);
                 if (isPrimaryType(child, ASSET_PRIMARY_TYPE)) {
                     final ValueMap props = child.getChild(JCR_CONTENT).getValueMap();
                     json.writeAttribute(MIME_TYPE, props.get(JCR_MIME_TYPE, String.class));
@@ -166,6 +164,7 @@ public class NodesServlet extends AbstractBaseServlet {
                     }
                 }
 
+                json.writeAttribute(ANY_DESCENDANT_ACTIVATED, isAnyDescendantActivated(child));
                 json.writeClose();
             }
         }
@@ -185,6 +184,7 @@ public class NodesServlet extends AbstractBaseServlet {
         writeIfFound(properties, JCR_LAST_MODIFIED_BY, json);
         json.writeAttribute(HAS_CHILDREN, hasNonJcrContentChild(resource));
         writeIfFound(properties, ALLOWED_OBJECTS, json);
+        writeReplicationProperties(resource, json);
     }
 
     private void writePathProperties(final Resource resource, final JsonResponse json) throws IOException {
@@ -192,7 +192,7 @@ public class NodesServlet extends AbstractBaseServlet {
         json.writeAttribute(PATH, resource.getPath());
     }
 
-    private void writeReplicationProperties(final Resource resource, final JsonResponse json) throws IOException {
+    private boolean writeReplicationProperties(final Resource resource, final JsonResponse json) throws IOException {
         // For the Replication data we need to obtain the content properties. If not found
         // then we try with the resource's properties for non jcr:content nodes
         final ValueMap properties = Optional.ofNullable(resource)
@@ -212,10 +212,13 @@ public class NodesServlet extends AbstractBaseServlet {
 
         // TODO refactor code above to use PerReplicable when writing replication properties
         final PerReplicable replicable = resource.adaptTo(PerReplicable.class);
-        json.writeAttribute(ACTIVATED, replicable.isReplicated());
+        final boolean isReplicated = replicable.isReplicated();
+        json.writeAttribute(ACTIVATED, isReplicated);
         if (nonNull(replicable.getLastModified()) && nonNull(replicable.getReplicated())) {
             json.writeAttribute(IS_STALE, replicable.isStale());
         }
+
+        return isReplicated;
     }
 
     private boolean hasNonJcrContentChild(final Resource res) {
@@ -278,6 +281,19 @@ public class NodesServlet extends AbstractBaseServlet {
 
             json.writeClose();
         }
+    }
+
+    private boolean isAnyDescendantActivated(final Resource resource) {
+        for (final Resource child : resource.getChildren()) {
+            if (!isJcrContent(child)) {
+                final PerReplicable replicable = child.adaptTo(PerReplicable.class);
+                if (replicable.isReplicated() || isAnyDescendantActivated(child)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private final class Tag extends ResourceWrapper {
