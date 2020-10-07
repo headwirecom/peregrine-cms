@@ -122,7 +122,7 @@ public class NodesServlet extends AbstractBaseServlet {
             } else if (!isJcrContent(child)) {
                 json.writeObject();
                 writeBasicProperties(child, json);
-                writeReplicationProperties(resource, json);
+                writeReplicationProperties(child, json);
                 if (isPrimaryType(child, ASSET_PRIMARY_TYPE)) {
                     final ValueMap props = child.getChild(JCR_CONTENT).getValueMap();
                     json.writeAttribute(MIME_TYPE, props.get(JCR_MIME_TYPE, String.class));
