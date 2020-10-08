@@ -6,13 +6,23 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceUtil;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static com.peregrine.commons.Strings.COLON;
 import static com.peregrine.commons.Strings._SCORE;
-import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.SLASH;
 import static java.util.Objects.isNull;
-import static org.apache.commons.lang3.StringUtils.*;
+import static org.apache.commons.lang3.StringUtils.contains;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.startsWith;
+import static org.apache.commons.lang3.StringUtils.substringAfter;
+import static org.apache.commons.lang3.StringUtils.substringBefore;
 
 public final class ResourceUtils {
 
@@ -105,46 +115,6 @@ public final class ResourceUtils {
         }
 
         return list;
-    }
-
-    public static Resource getDeepestExistingResource(final ResourceResolver resourceResolver, final String path) {
-        String parentPath = path;
-        Resource resource = null;
-        while (isNull(resource) && isNotBlank(parentPath)) {
-            resource = resourceResolver.getResource(parentPath);
-            parentPath = substringBeforeLast(parentPath, SLASH);
-        }
-
-        return resource;
-    }
-
-    public static int getLevel(final Resource resource) {
-        return countMatches(resource.getPath(), SLASH) - 1;
-    }
-
-    public static Resource getAbsoluteParent(final Resource resource, int level) {
-        if (getLevel(resource) < level) {
-            return null;
-        }
-
-        Resource parent = resource;
-        while (getLevel(parent) > level) {
-            parent = parent.getParent();
-        }
-
-        return parent;
-    }
-
-    public static boolean isAncestor(final Resource resource, final Resource ancestor) {
-        return resource.getPath().startsWith(ancestor.getPath() + SLASH);
-    }
-
-    public static boolean equals(final Resource x, final Resource y) {
-        return x.getPath().equals(y.getPath());
-    }
-
-    public static boolean isAncestorOrEqual(final Resource resource, final Resource ancestor) {
-        return isAncestor(resource, ancestor) || equals(resource, ancestor);
     }
 
 }
