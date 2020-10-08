@@ -25,6 +25,7 @@
 const fs = require('fs-extra')
 const marked = require('marked')
 const xmlescape = require('xml-escape');
+const p = require('path')
 
 var path = '../../docs/public'
 
@@ -112,7 +113,7 @@ function makeContent(root, path) {
   var relPath = 'target/classes/content/docs/pages/public' + path.slice(root.length)
   console.log(`${relPath}`)
   fs.mkdirsSync(`${relPath}/..`)
-  fs.writeFileSync(isIndex ? `${relPath}/../.content.xml` : relPath.replace(".md", ".xml"), res)
+  fs.writeFileSync(isIndex ? p.join(`${relPath}`, '../.content.xml') : relPath.replace(".md", ".xml"), res)
 }
 
 function copyImage(root, path) {
