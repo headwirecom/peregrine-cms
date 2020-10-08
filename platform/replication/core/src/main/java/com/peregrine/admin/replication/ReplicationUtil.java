@@ -1,5 +1,6 @@
 package com.peregrine.admin.replication;
 
+import com.peregrine.adaption.PerReplicable;
 import org.apache.sling.api.resource.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,12 +13,21 @@ import javax.jcr.nodetype.NodeTypeIterator;
 import javax.jcr.nodetype.NodeTypeManager;
 import javax.jcr.query.Query;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 
 import static com.peregrine.admin.replication.impl.DistributionReplicationService.DISTRIBUTION_PENDING;
-import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATION;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
 import static com.peregrine.commons.util.PerUtil.isEmpty;
+import static com.peregrine.commons.util.PerUtil.isJcrContent;
 
 public class ReplicationUtil {
 
@@ -232,4 +242,27 @@ public class ReplicationUtil {
         }
         return answer;
     }
+
+    public static boolean isReplicated(final Resource resource) {
+        return Optional.ofNullable(resource)
+                .map(r -> r.adaptTo(PerReplicable.class))
+                .map(PerReplicable::isReplicated)
+                .orElse(false);
+    }
+
+    public static boolean isAnyDescendantReplicated(final Resource resource) {
+        for (final Resource child : resource.getChildren()) {
+            if (!isJcrContent(child) &&
+                    (isReplicated(child) || isAnyDescendantReplicated(child))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean isSelfOrAnyDescendantReplicated(final Resource resource) {
+        return isReplicated(resource) || isAnyDescendantReplicated(resource);
+    }
+
 }

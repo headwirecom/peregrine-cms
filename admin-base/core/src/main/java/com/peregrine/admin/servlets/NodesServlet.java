@@ -62,6 +62,7 @@ import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 import com.peregrine.adaption.PerReplicable;
+import com.peregrine.admin.replication.ReplicationUtil;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.commons.util.PerUtil;
 import java.io.IOException;
@@ -74,9 +75,7 @@ import javax.servlet.Servlet;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
-import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * List all the resources part of the given Path
@@ -103,6 +102,7 @@ public class NodesServlet extends AbstractBaseServlet {
     public static final String ACTIVATED = "activated";
     public static final String DEACTIVATED = "deactivated";
     public static final String REPLICATION_STATUS = "ReplicationStatus";
+    public static final String ANY_DESCENDANT_ACTIVATED = "anyDescendantActivated";
     public static final String RESOURCE_TYPE = "resourceType";
     public static final String JCR_PREFIX = "jcr:";
     public static final String PER_PREFIX = "per:";
@@ -110,9 +110,6 @@ public class NodesServlet extends AbstractBaseServlet {
     private static final String[] OMIT_PREFIXES = new String[] {JCR_PREFIX, PER_PREFIX};
 
     public static DateFormat DATE_FORMATTER = new SimpleDateFormat(ECMA_DATE_FORMAT, ECMA_DATE_FORMAT_LOCALE);
-
-    @Reference
-    ModelFactory modelFactory;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
@@ -145,10 +142,6 @@ public class NodesServlet extends AbstractBaseServlet {
             }
             json.writeClose();
         }
-    }
-
-    private void convertResource(JsonResponse json, Resource resource) throws IOException {
-        convertResource(json, resource, false);
     }
 
     private boolean hasNonJcrContentChild(Resource res) {
@@ -236,6 +229,8 @@ public class NodesServlet extends AbstractBaseServlet {
                             logger.debug("No Content Child found for: '{}'", child.getPath());
                         }
                     }
+
+                    json.writeAttribute(ANY_DESCENDANT_ACTIVATED, ReplicationUtil.isAnyDescendantReplicated(child));
                     json.writeClose();
                 }
             }

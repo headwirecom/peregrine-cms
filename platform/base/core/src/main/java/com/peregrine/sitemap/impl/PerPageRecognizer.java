@@ -26,7 +26,7 @@ package com.peregrine.sitemap.impl;
  */
 
 import com.peregrine.commons.Page;
-import com.peregrine.commons.ResourceUtils;
+import com.peregrine.commons.util.PerUtil;
 import com.peregrine.sitemap.PageRecognizer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
@@ -41,7 +41,7 @@ public final class PerPageRecognizer extends PerPageRecognizerBase {
 
     protected boolean isPageImpl(final Page candidate) {
         return Optional.ofNullable(candidate)
-                .map(ResourceUtils::getJcrContent)
+                .map(PerUtil::getProperJcrContent)
                 .map(Resource::getValueMap)
                 .map(m -> m.get(PER_REPLICATED, String.class))
                 .map(StringUtils::isNotBlank)

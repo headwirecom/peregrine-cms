@@ -13,16 +13,11 @@ import static com.peregrine.commons.Strings._SCORE;
 import static com.peregrine.commons.util.PerConstants.*;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.*;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public final class ResourceUtils {
 
     private ResourceUtils() {
         throw new UnsupportedOperationException();
-    }
-
-    public static Resource getJcrContent(final Resource resource) {
-        return resource.getChild(JCR_CONTENT);
     }
 
     public static Resource getFirstExistingAncestorOnPath(final ResourceResolver resourceResolver, final String path) {
@@ -111,4 +106,45 @@ public final class ResourceUtils {
 
         return list;
     }
+
+    public static Resource getDeepestExistingResource(final ResourceResolver resourceResolver, final String path) {
+        String parentPath = path;
+        Resource resource = null;
+        while (isNull(resource) && isNotBlank(parentPath)) {
+            resource = resourceResolver.getResource(parentPath);
+            parentPath = substringBeforeLast(parentPath, SLASH);
+        }
+
+        return resource;
+    }
+
+    public static int getLevel(final Resource resource) {
+        return countMatches(resource.getPath(), SLASH) - 1;
+    }
+
+    public static Resource getAbsoluteParent(final Resource resource, int level) {
+        if (getLevel(resource) < level) {
+            return null;
+        }
+
+        Resource parent = resource;
+        while (getLevel(parent) > level) {
+            parent = parent.getParent();
+        }
+
+        return parent;
+    }
+
+    public static boolean isAncestor(final Resource resource, final Resource ancestor) {
+        return resource.getPath().startsWith(ancestor.getPath() + SLASH);
+    }
+
+    public static boolean equals(final Resource x, final Resource y) {
+        return x.getPath().equals(y.getPath());
+    }
+
+    public static boolean isAncestorOrEqual(final Resource resource, final Resource ancestor) {
+        return isAncestor(resource, ancestor) || equals(resource, ancestor);
+    }
+
 }

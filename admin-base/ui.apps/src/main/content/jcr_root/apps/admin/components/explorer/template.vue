@@ -144,7 +144,7 @@
                                 command: 'deleteTenantOrPage',
                                 tooltipTitle: `${$i18n('delete')} '${child.title || child.name}'`
                             }">
-                            <i class="material-icons">delete</i>
+                            <i class="material-icons">{{canBeDeleted(child) ? 'delete' : 'delete_forever'}}</i>
                         </admin-components-action>
                     </div>
                 </li>
@@ -638,8 +638,15 @@ export default {
                 $perAdminApp.stateAction('sourceImageWizard', me.pt.path)
             },
 
+            canBeDeleted: function(obj) {
+                return !(obj.activated || obj.anyDescendantActivated);
+            },
+
             deleteTenantOrPage: function(me, target) {
-                if(me.path === '/content') {
+                if (!me.canBeDeleted(target)) {
+                    $perAdminApp.toast("You cannot delete this yet. The resource or one of its children is still published." +
+                                       " Please unpublish all of them first.", "warn", 7500)
+                } else if(me.path === '/content') {
                     me.deleteTenant(me, target)
                 } else {
                     me.deletePage(me, target)
