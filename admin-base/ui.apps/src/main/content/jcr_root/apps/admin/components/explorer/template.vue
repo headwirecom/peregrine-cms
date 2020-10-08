@@ -64,7 +64,7 @@
                                              v-bind:model="{
                                 target: child,
                                 command: 'selectPath',
-                                tooltipTitle: `${$i18n('select')} '${label(child)}'`
+                                tooltipTitle: `${$i18n('select')} '${child.title || child.name}'`
                             }">
                         <i v-if="child.hasChildren" class="material-icons">folder</i>
                         <i v-else class="material-icons">folder_open</i>
@@ -76,16 +76,16 @@
                             command: 'editPage',
                             dblClickTarget: child,
                             dblClickCommand: 'selectPath',
-                            tooltipTitle: `${$i18n('edit')} '${label(child)}'`
-                        }"><i class="material-icons">{{nodeToIcon(child)}}</i> {{label(child)}}
+                            tooltipTitle: `${$i18n('edit')} '${child.title || child.name}'`
+                        }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.title ? child.title : child.name}}
                     </admin-components-action>
 
                     <admin-components-action v-if="!editable(child)"
                         v-bind:model="{
                             target: child,
                             command: 'selectPath',
-                            tooltipTitle: `${$i18n('select')} '${label(child)}'`
-                        }"><i class="material-icons">{{nodeToIcon(child)}}</i> {{label(child)}}
+                            tooltipTitle: `${$i18n('select')} '${child.title || child.name}'`
+                        }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.title ? child.title : child.name}}
                     </admin-components-action>
 
                     <admin-components-extensions v-bind:model="{id: 'admin.components.explorer', item: child}"></admin-components-extensions>
@@ -95,7 +95,7 @@
                             v-bind:model="{
                                 target: child.path,
                                 command: 'editPage',
-                                tooltipTitle: `${$i18n('edit')} '${label(child)}'`
+                                tooltipTitle: `${$i18n('edit')} '${child.title || child.name}'`
                             }">
                             <admin-components-iconeditpage></admin-components-iconeditpage>
                         </admin-components-action>
@@ -104,7 +104,7 @@
                             v-bind:model="{
                                 target: child.path,
                                 command: 'editFile',
-                                tooltipTitle: `${$i18n('editFile')} '${label(child)}'`
+                                tooltipTitle: `${$i18n('editFile')} '${child.title || child.name}'`
                             }">
                             <admin-components-iconeditpage></admin-components-iconeditpage>
                         </admin-components-action>
@@ -113,7 +113,7 @@
                             v-bind:model="{
                                 target: child.path,
                                 command: 'replicate',
-                                tooltipTitle: `${$i18n('replicate')} '${label(child)}'`
+                                tooltipTitle: `${$i18n('replicate')} '${child.title || child.name}'`
                             }">
                             <i class="material-icons" v-bind:class="replicatedClass(child)">public</i>
                         </admin-components-action>
@@ -122,7 +122,7 @@
                             v-bind:model="{
                                 target: child.path,
                                 command: 'showInfo',
-                                tooltipTitle: `'${label(child)}' ${$i18n('info')}`
+                                tooltipTitle: `'${child.title || child.name}' ${$i18n('info')}`
                             }">
                             <i class="material-icons">info</i>
                         </admin-components-action>
@@ -132,7 +132,7 @@
                                 target      ="viewer"
                                 v-bind:href ="viewUrl(child)"
                                 v-on:click.stop  =""
-                                v-bind:title="`${$i18n('view')} '${label(child)}' ${$i18n('inNewTab')}`"
+                                v-bind:title="`${$i18n('view')} '${child.title || child.name}' ${$i18n('inNewTab')}`"
                                 >
                                 <i class="material-icons">visibility</i>
                             </a>
@@ -142,7 +142,7 @@
                             v-bind:model="{
                                 target: child,
                                 command: 'deleteTenantOrPage',
-                                tooltipTitle: `${$i18n('delete')} '${label(child)}'`
+                                tooltipTitle: `${$i18n('delete')} '${child.title || child.name}'`
                             }">
                             <i class="material-icons">{{canBeDeleted(child) ? 'delete' : 'delete_forever'}}</i>
                         </admin-components-action>
@@ -257,7 +257,7 @@
 
 <script>
 
-import {getCurrentDateTime, set} from '../../../../../../js/utils';
+import {getCurrentDateTime, set} from '../../../../../../js/utils'
 
 export default {
         props: ['model'],
@@ -304,7 +304,7 @@ export default {
                 return ret;
             },
             hasEdit: function() {
-                return this.model.children &&  this.model.children.length && this.model.children[0]
+                return this.model.children && this.model.children[0]
             }
         },
         created() {
@@ -335,6 +335,7 @@ export default {
             },
 
             isTemplates(path) {
+
                 return path.startsWith(`/content/${this.getTenant().name}/templates`)
             },
 
@@ -357,9 +358,9 @@ export default {
                     const modified = item.lastModified ? item.lastModified : created
                     const replicated = item.Replicated
                     if(replicated > modified) {
-                        return `item-${item.ReplicationStatus}`
+                        return 'item-'+item.ReplicationStatus
                     } else {
-                        return `item-${item.ReplicationStatus}-modified`
+                        return 'item-'+item.ReplicationStatus+'-modified'
                     }
                 }
                 return 'item-replication-unknown'
@@ -371,10 +372,6 @@ export default {
 
             replicable(item) {
                 return true
-            },
-
-            label(obj) {
-                return obj.title || obj.name;
             },
 
             onDragRowStart(item, ev) {
@@ -524,17 +521,15 @@ export default {
                 return path + '.json'
             },
 
-            nodeToIcon: function(node) {
-                switch (node.resourceType) {
-                    case 'per:Page': return 'description';
-                    case 'per:Object': return 'layers';
-                    case 'per:ObjectDefinition':
-                    case 'nt:file': return 'insert_drive_file';
-                    case 'per:Asset': return 'image';
-                    case 'sling:Folder':
-                    case 'sling:OrderedFolder': return 'folder';
-                    default: return 'unknown';
-                }
+            nodeTypeToIcon: function(nodeType) {
+                if(nodeType === 'per:Page')             return 'description'
+                if(nodeType === 'per:Object')           return 'layers'
+                if(nodeType === 'per:ObjectDefinition') return 'insert_drive_file'
+                if(nodeType === 'nt:file')              return 'insert_drive_file'
+                if(nodeType === 'per:Asset')            return 'image'
+                if(nodeType === 'sling:Folder')         return 'folder'
+                if(nodeType === 'sling:OrderedFolder')  return 'folder'
+                return 'unknown'
             },
 
             checkIfAllowed: function(node) {
@@ -650,8 +645,8 @@ export default {
             deleteTenantOrPage: function(me, target) {
                 if (!me.canBeDeleted(target)) {
                     $perAdminApp.toast("You cannot delete this yet. The resource or one of its children is still published." +
-                    " Please unpublish all of them first.", "warn", 7500)
-                } else if (me.path === '/content') {
+                                       " Please unpublish all of them first.", "warn", 7500)
+                } else if(me.path === '/content') {
                     me.deleteTenant(me, target)
                 } else {
                     me.deletePage(me, target)
@@ -672,7 +667,7 @@ export default {
                             $perAdminApp.stateAction('deletePage', target.path)
                         } else if(resourceType === 'nt:file') {
                             $perAdminApp.stateAction('deleteFile', target.path)
-                        } else {
+                        }else {
                             $perAdminApp.stateAction('deleteFolder', target.path)
                         }
                     }

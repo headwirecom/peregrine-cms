@@ -25,40 +25,57 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.adaption.PerReplicable;
-import com.peregrine.admin.replication.ReplicationUtil;
-import com.peregrine.commons.servlets.AbstractBaseServlet;
-import com.peregrine.commons.util.PerUtil;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceWrapper;
-import org.apache.sling.api.resource.ValueMap;
-import org.osgi.service.component.annotations.Component;
-
-import javax.servlet.Servlet;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_NODES;
 import static com.peregrine.admin.servlets.ReferenceListerServlet.IS_STALE;
-import static com.peregrine.commons.Chars.COLON;
-import static com.peregrine.commons.ResourceUtils.*;
-import static com.peregrine.commons.util.PerConstants.*;
-import static com.peregrine.commons.util.PerUtil.*;
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
+import static com.peregrine.commons.util.PerConstants.ALLOWED_OBJECTS;
+import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.COMPONENT;
+import static com.peregrine.commons.util.PerConstants.ECMA_DATE_FORMAT;
+import static com.peregrine.commons.util.PerConstants.ECMA_DATE_FORMAT_LOCALE;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JCR_CREATED;
+import static com.peregrine.commons.util.PerConstants.JCR_CREATED_BY;
+import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED;
+import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED_BY;
+import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
+import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
+import static com.peregrine.commons.util.PerConstants.METAPROPERTIES;
+import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.PATH;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
+import static com.peregrine.commons.util.PerConstants.TAGS;
+import static com.peregrine.commons.util.PerConstants.TITLE;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.GET;
+import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
+import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
+import static com.peregrine.commons.util.PerUtil.getProperties;
+import static com.peregrine.commons.util.PerUtil.isPrimaryType;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-import static org.apache.commons.lang3.StringUtils.*;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
+
+import com.peregrine.adaption.PerReplicable;
+import com.peregrine.admin.replication.ReplicationUtil;
+import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.commons.util.PerUtil;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import javax.servlet.Servlet;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ValueMap;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * List all the resources part of the given Path
@@ -83,232 +100,228 @@ public class NodesServlet extends AbstractBaseServlet {
     public static final String HAS_CHILDREN = "hasChildren";
     public static final String MIME_TYPE = "mimeType";
     public static final String ACTIVATED = "activated";
-    public static final String ANY_DESCENDANT_ACTIVATED = "anyDescendantActivated";
     public static final String DEACTIVATED = "deactivated";
     public static final String REPLICATION_STATUS = "ReplicationStatus";
+    public static final String ANY_DESCENDANT_ACTIVATED = "anyDescendantActivated";
     public static final String RESOURCE_TYPE = "resourceType";
     public static final String JCR_PREFIX = "jcr:";
     public static final String PER_PREFIX = "per:";
 
-    private static final String[] OMIT_PREFIXES = new String[]{JCR_PREFIX, PER_PREFIX};
+    private static final String[] OMIT_PREFIXES = new String[] {JCR_PREFIX, PER_PREFIX};
 
     public static DateFormat DATE_FORMATTER = new SimpleDateFormat(ECMA_DATE_FORMAT, ECMA_DATE_FORMAT_LOCALE);
 
     @Override
-    protected Response handleRequest(final Request request) throws IOException {
-        final Resource resource = getDeepestExistingResource(request.getResourceResolver(), request.getParameter(PATH));
-        if (isNull(resource)) {
+    protected Response handleRequest(Request request) throws IOException {
+        String path = request.getParameter(PATH);
+        if(path == null || path.isEmpty()) {
             return new ErrorResponse()
-                    .setHttpErrorCode(SC_BAD_REQUEST)
-                    .setErrorMessage(NO_PATH_PROVIDED);
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(NO_PATH_PROVIDED)
+                .setRequestPath(path);
         }
-
-        return convertResource(resource, 0, new JsonResponse());
+        String[] segments = path.split("/");
+        logger.debug("lookup path {}, {}", path, segments.length);
+        JsonResponse answer = new JsonResponse();
+        convertResource(answer, request.getResourceResolver(), segments, 1, path);
+        return answer;
     }
 
-    private JsonResponse convertResource(final Resource resource, final int level, final JsonResponse json) throws IOException {
-        final Resource parent = getAbsoluteParent(resource, level);
-        if (isNull(parent)) {
-            return json;
-        }
-
-        writeBasicProperties(parent, json);
-        json.writeArray(CHILDREN);
-        for (final Resource child : parent.getChildren()) {
-            if (isAncestorOrEqual(resource, child)) {
-                json.writeObject();
-                convertResource(resource, level + 1, json);
-                json.writeClose();
-            } else if (!isJcrContent(child)) {
-                json.writeObject();
-                writeBasicProperties(child, json);
-                if (isPrimaryType(child, ASSET_PRIMARY_TYPE)) {
-                    final ValueMap props = child.getChild(JCR_CONTENT).getValueMap();
-                    json.writeAttribute(MIME_TYPE, props.get(JCR_MIME_TYPE, String.class));
-                    json.writeAttribute(TITLE, props.get(TITLE, String.class));
-                    json.writeAttribute("description", props.get("description", String.class));
-                    final List<Tag> tags = Optional.ofNullable(child.getChild("jcr:content/tags"))
-                            .map(Resource::getChildren)
-                            .map(Iterable::spliterator)
-                            .map(s -> StreamSupport.stream(s, false))
-                            .orElseGet(() -> Stream.empty())
-                            .map(Tag::new)
-                            .collect(Collectors.toList());
-                    if (tags.size() > 0) {
-                        json.writeArray("tags");
-                        for (final Tag tag : tags) {
-                            json.writeObject();
-                            writePathProperties(tag, json);
-                            json.writeAttribute("value", tag.getValue());
-                            json.writeClose();
-                        }
-
-                        json.writeClose();
-                    }
-                } else if (isPrimaryType(child, PAGE_PRIMARY_TYPE)) {
-                    final Resource content = getJcrContent(child);
-                    if (nonNull(content)) {
-                        final ValueMap valueMap = content.getValueMap();
-                        for (final String key : valueMap.keySet()) {
-                            if (key.equals(JCR_TITLE)) {
-                                json.writeAttribute(TITLE, valueMap.get(key, String.class));
-                            } else if (key.indexOf(COLON) < 0) {
-                                json.writeAttribute(key, valueMap.get(key, String.class));
-                            }
-                        }
-
-                        json.writeAttribute(COMPONENT, getComponentNameFromResource(content));
-                        convertNamedChild(content, TAGS, json);
-                        convertNamedChild(content, METAPROPERTIES, json);
-                    } else {
-                        logger.debug("No Content Child found for: '{}'", child.getPath());
-                    }
+    private void convertResource(JsonResponse json, Resource resource, boolean path) throws IOException {
+        Iterable<Resource> children = resource.getChildren();
+        for(Resource child : children) {
+            json.writeObject();
+            json.writeAttribute(NAME, child.getName());
+            if(path) {
+                json.writeAttribute(PATH, child.getPath());
+            }
+            for (String key: child.getValueMap().keySet()) {
+                if(key.indexOf(":") < 0) {
+                    json.writeAttribute(key, child.getValueMap().get(key, String.class));
                 }
-
-                json.writeAttribute(ANY_DESCENDANT_ACTIVATED, ReplicationUtil.isAnyDescendantReplicated(child));
-                json.writeClose();
             }
+            json.writeClose();
         }
-
-        json.writeClose();
-        return json;
     }
 
-    private void writeBasicProperties(final Resource resource, final JsonResponse json) throws IOException {
-        writePathProperties(resource, json);
-        final ValueMap properties = resource.getValueMap();
-        writeIfFound(properties, JCR_PRIMARY_TYPE, json, RESOURCE_TYPE);
-        writeIfFound(properties, JCR_CREATED, json);
-        writeIfFound(properties, JCR_CREATED_BY, json);
-        writeIfFound(properties, JCR_LAST_MODIFIED, json);
-        writeIfFound(properties, JCR_LAST_MODIFIED_BY, json);
-        writeIfFound(properties, JCR_LAST_MODIFIED_BY, json);
-        json.writeAttribute(HAS_CHILDREN, hasNonJcrContentChild(resource));
-        writeIfFound(properties, ALLOWED_OBJECTS, json);
-        writeReplicationProperties(resource, json);
-    }
-
-    private void writePathProperties(final Resource resource, final JsonResponse json) throws IOException {
-        json.writeAttribute(NAME, resource.getName());
-        json.writeAttribute(PATH, resource.getPath());
-    }
-
-    private boolean writeReplicationProperties(final Resource resource, final JsonResponse json) throws IOException {
-        // For the Replication data we need to obtain the content properties. If not found
-        // then we try with the resource's properties for non jcr:content nodes
-        final ValueMap properties = Optional.ofNullable(resource)
-                .map(PerUtil::getProperties)
-                .orElseGet(resource::getValueMap);
-        writeIfFound(properties, PER_REPLICATED_BY, json);
-        final String replicationDate = writeIfFound(properties, PER_REPLICATED, json);
-        if (isNotBlank(replicationDate)) {
-            String status = ACTIVATED;
-            final String replicationLocationRef = writeIfFound(properties, PER_REPLICATION_REF, json);
-            if (isBlank(replicationLocationRef)) {
-                status = DEACTIVATED;
-            }
-
-            json.writeAttribute(REPLICATION_STATUS, status);
-        }
-
-        // TODO refactor code above to use PerReplicable when writing replication properties
-        final PerReplicable replicable = resource.adaptTo(PerReplicable.class);
-        final boolean isReplicated = replicable.isReplicated();
-        json.writeAttribute(ACTIVATED, isReplicated);
-        if (nonNull(replicable.getLastModified()) && nonNull(replicable.getReplicated())) {
-            json.writeAttribute(IS_STALE, replicable.isStale());
-        }
-
-        return isReplicated;
-    }
-
-    private boolean hasNonJcrContentChild(final Resource res) {
-        for (final Resource child : res.getChildren()) {
-            if (!isJcrContent(child)) {
+    private boolean hasNonJcrContentChild(Resource res) {
+        for (Resource child : res.getChildren()) {
+            if(!JCR_CONTENT.equals(child.getName())) {
                 return true;
-            }
+            }            
         }
-
         return false;
     }
 
-    private String writeIfFound(final ValueMap properties, final String propertyName, final JsonResponse json) throws IOException {
-        return writeIfFound(properties, propertyName, json, propertyName);
+    private void convertResource(JsonResponse json, ResourceResolver rs, String[] segments, int pos, String fullPath) throws IOException {
+        String path = "";
+        for(int i = 1; i <= pos; i++) {
+            path += "/" + segments[i];
+        }
+        logger.debug("looking up {}", path);
+        Resource res = rs.resolve(path);
+        json.writeAttribute(NAME,res.getName());
+        json.writeAttribute(PATH,res.getPath());
+        json.writeAttribute(HAS_CHILDREN, hasNonJcrContentChild(res));
+        writeProperties(res, json);
+        json.writeArray(CHILDREN);
+        Iterable<Resource> children = res.getChildren();
+        for(Resource child : children) {
+            String childPath = child.getPath();
+            if(fullPath.startsWith(childPath+'/') || fullPath.equals(childPath)) {
+                json.writeObject();
+                convertResource(json, rs, segments, pos+1, fullPath);
+                json.writeClose();
+            } else {
+                if(!JCR_CONTENT.equals(child.getName())) {
+                    json.writeObject();
+                    json.writeAttribute(NAME,child.getName());
+                    json.writeAttribute(PATH,child.getPath());
+                    json.writeAttribute(HAS_CHILDREN, hasNonJcrContentChild(child));
+                    writeProperties(child, json);
+                    if(isPrimaryType(child, ASSET_PRIMARY_TYPE)) {
+                        ValueMap props = child.getChild(JCR_CONTENT).getValueMap();
+                        String mimeType = props.get(JCR_MIME_TYPE, String.class);
+                        String title = props.get(TITLE, String.class);
+                        String description = props.get("description", String.class);
+                        json.writeAttribute(MIME_TYPE, mimeType);
+                        json.writeAttribute(TITLE, title);
+                        json.writeAttribute("description", description);
+
+                        Resource tags = child.getChild("jcr:content/tags");
+                        List<Tag> answer = new ArrayList<Tag>();
+                        if(tags != null) {
+                            for(Resource tag: tags.getChildren()) {
+                                answer.add(new Tag(tag));
+                            }
+                        }
+                        if(answer.size() > 0) {
+                            json.writeArray("tags");
+                            for (Tag tag : answer) {
+                                json.writeObject();
+                                json.writeAttribute(PATH, tag.getPath());
+                                json.writeAttribute(NAME, tag.getName());
+                                json.writeAttribute("value", tag.getValue());
+                                json.writeClose();
+                            }
+                            json.writeClose();
+                        }
+                    
+                    }
+                    if(isPrimaryType(child, PAGE_PRIMARY_TYPE)) {
+                        Resource content = child.getChild(JCR_CONTENT);
+                        if(content != null) {
+                            for (String key: content.getValueMap().keySet()) {
+                                if(key.equals(JCR_TITLE)) {
+                                    String title = content.getValueMap().get(JCR_TITLE, String.class);
+                                    json.writeAttribute(TITLE, title);
+                                } else {
+                                    if(key.indexOf(":") < 0) {
+                                        json.writeAttribute(key, content.getValueMap().get(key, String.class));
+                                    }
+                                }
+                            }
+                            String component = PerUtil.getComponentNameFromResource(content);
+                            json.writeAttribute(COMPONENT, component);
+                            convertNamedChild(json, content, TAGS);
+                            convertNamedChild(json, content, METAPROPERTIES);
+                        } else {
+                            logger.debug("No Content Child found for: '{}'", child.getPath());
+                        }
+                    }
+
+                    json.writeAttribute(ANY_DESCENDANT_ACTIVATED, ReplicationUtil.isAnyDescendantReplicated(child));
+                    json.writeClose();
+                }
+            }
+        }
+        json.writeClose();
     }
 
-    private String writeIfFound(final ValueMap properties, final String propertyName, final JsonResponse json, final String responseName) throws IOException {
-        final Object value = properties.get(propertyName);
-        final String data;
-        if (value instanceof Calendar) {
+    private void convertNamedChild(JsonResponse json, Resource content, String name) throws IOException {
+        Resource res = content.getChild(name);
+        if (res != null) {
+            json.writeArray(name);
+            convertResource(json, res, true);
+            json.writeClose();
+        }
+    }
+
+    private void writeProperties(Resource resource, JsonResponse json) throws IOException {
+        ValueMap properties = resource.getValueMap();
+        writeIfFound(json, JCR_PRIMARY_TYPE, properties, RESOURCE_TYPE);
+        writeIfFound(json, JCR_CREATED, properties);
+        writeIfFound(json, JCR_CREATED_BY, properties);
+        writeIfFound(json, JCR_LAST_MODIFIED, properties);
+        writeIfFound(json, JCR_LAST_MODIFIED_BY, properties);
+        writeIfFound(json, JCR_LAST_MODIFIED_BY, properties);
+        writeIfFound(json, ALLOWED_OBJECTS, properties);
+
+        // For the Replication data we need to obtain the content properties. If not found
+        // then we try with the resource's properties for non jcr:content nodes
+        ValueMap replicationProperties = getProperties(resource);
+        if(replicationProperties == null) { replicationProperties = properties; }
+        String replicationDate = writeIfFound(json, PER_REPLICATED, replicationProperties);
+        writeIfFound(json, PER_REPLICATED_BY, replicationProperties);
+        String replicationLocationRef = writeIfFound(json, PER_REPLICATION_REF, replicationProperties);
+        if(replicationDate != null && !replicationDate.isEmpty()) {
+            String status = ACTIVATED;
+            if(replicationLocationRef == null || replicationLocationRef.isEmpty()) {
+                status = DEACTIVATED;
+            }
+            json.writeAttribute(REPLICATION_STATUS, status);
+        }
+        // TODO refactor code above to use PerReplicable when writing replication properties
+        PerReplicable sourceRepl = resource.adaptTo(PerReplicable.class);
+        json.writeAttribute(ACTIVATED, sourceRepl.isReplicated());
+        if (sourceRepl.getLastModified()!=null && sourceRepl.getReplicated()!= null) {
+            json.writeAttribute(IS_STALE, sourceRepl.isStale());
+        }
+    }
+
+    private String writeIfFound(JsonResponse json, String propertyName, ValueMap properties) throws IOException {
+        return writeIfFound(json, propertyName, properties, propertyName);
+    }
+
+    private String writeIfFound(JsonResponse json, String propertyName, ValueMap properties, String responseName) throws IOException {
+        Object value = properties.get(propertyName);
+        String data;
+        if(value instanceof Calendar) {
             data = DATE_FORMATTER.format(((Calendar) value).getTime());
         } else {
             data = properties.get(propertyName, String.class);
         }
-
-        if (nonNull(data)) {
+        if(data != null) {
             String name = responseName;
-            for (final String prefix : OMIT_PREFIXES) {
-                if (startsWith(name, prefix)) {
-                    name = substringAfter(name, prefix);
+            for(String omitPrefix: OMIT_PREFIXES) {
+                if(name.startsWith(omitPrefix)) {
+                    name = name.substring(omitPrefix.length());
                     break;
                 }
             }
-
             json.writeAttribute(name, data);
         }
-
         return data;
     }
 
-    private void convertNamedChild(final Resource content, final String name, final JsonResponse json) throws IOException {
-        final Resource res = content.getChild(name);
-        if (nonNull(res)) {
-            json.writeArray(name);
-            convertResource(res, json);
-            json.writeClose();
-        }
-    }
+    class Tag {
+        private String path;
+        private String name;
+        private String value;
 
-    private void convertResource(final Resource resource, final JsonResponse json) throws IOException {
-        for (final Resource child : resource.getChildren()) {
-            json.writeObject();
-            writePathProperties(child, json);
-            final ValueMap valueMap = child.getValueMap();
-            for (final String key : valueMap.keySet()) {
-                if (key.indexOf(COLON) < 0) {
-                    json.writeAttribute(key, valueMap.get(key, String.class));
-                }
-            }
-
-            json.writeClose();
-        }
-    }
-
-    private final class Tag extends ResourceWrapper {
-
-        private final String path;
-        private final String value;
-
-        public Tag(final Resource r) {
-            super(r);
-            final String path = r.getPath();
-            this.path = substringAfter(path, substringBefore(path, "/jcr:content"));
-            this.value = getValueMap().get("value", String.class);
+        public Tag(Resource r) {
+            this.path = r.getPath();
+            this.path = path.substring(path.indexOf("/jcr:content"));
+            this.name = r.getName();
+            this.value = r.getValueMap().get("value", String.class);
         }
 
+        public String getName() { return name; }
+        public String getValue() { return value; }
+        public String getPath() { return path; }
         @Override
-        public String getPath() {
-            return path;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        @Override
-        public String toString() {
-            return getName();
-        }
+        public String toString() { return name; }
     }
 
 }
+

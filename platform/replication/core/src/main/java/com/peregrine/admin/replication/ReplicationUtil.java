@@ -13,11 +13,21 @@ import javax.jcr.nodetype.NodeTypeIterator;
 import javax.jcr.nodetype.NodeTypeManager;
 import javax.jcr.query.Query;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 
 import static com.peregrine.admin.replication.impl.DistributionReplicationService.DISTRIBUTION_PENDING;
-import static com.peregrine.commons.util.PerConstants.*;
-import static com.peregrine.commons.util.PerUtil.*;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATION;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
+import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
+import static com.peregrine.commons.util.PerUtil.isEmpty;
+import static com.peregrine.commons.util.PerUtil.isJcrContent;
 
 public class ReplicationUtil {
 
