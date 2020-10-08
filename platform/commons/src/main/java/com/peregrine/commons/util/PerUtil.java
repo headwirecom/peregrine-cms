@@ -342,6 +342,10 @@ public class PerUtil {
             return resource;
         }
 
+        return getProperJcrContent(resource);
+    }
+
+    public static Resource getProperJcrContent(final Resource resource) {
         return resource.getChild(PerConstants.JCR_CONTENT);
     }
 

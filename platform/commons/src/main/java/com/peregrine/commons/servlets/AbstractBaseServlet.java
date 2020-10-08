@@ -147,9 +147,9 @@ public abstract class AbstractBaseServlet
      * as well as parameters
      */
     public static class Request {
-        private SlingHttpServletRequest request;
-        private SlingHttpServletResponse response;
-        private Map<String, String> parameters = new HashMap<>();
+        private final SlingHttpServletRequest request;
+        private final SlingHttpServletResponse response;
+        private final Map<String, String> parameters;
 
         public Request(SlingHttpServletRequest request, SlingHttpServletResponse response) {
             this.request = request;

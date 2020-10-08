@@ -6,23 +6,28 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceUtil;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static com.peregrine.commons.Strings.COLON;
 import static com.peregrine.commons.Strings._SCORE;
-import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.SLASH;
 import static java.util.Objects.isNull;
-import static org.apache.commons.lang3.StringUtils.*;
+import static org.apache.commons.lang3.StringUtils.contains;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.startsWith;
+import static org.apache.commons.lang3.StringUtils.substringAfter;
+import static org.apache.commons.lang3.StringUtils.substringBefore;
 
 public final class ResourceUtils {
 
     private ResourceUtils() {
         throw new UnsupportedOperationException();
-    }
-
-    public static Resource getJcrContent(final Resource resource) {
-        return resource.getChild(JCR_CONTENT);
     }
 
     public static Resource getFirstExistingAncestorOnPath(final ResourceResolver resourceResolver, final String path) {
@@ -111,4 +116,5 @@ public final class ResourceUtils {
 
         return list;
     }
+
 }
