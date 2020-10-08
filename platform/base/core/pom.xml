@@ -56,6 +56,7 @@
                             com.peregrine.render,
                             com.peregrine.rendition,
                             com.peregrine.replication,
+                            com.peregrine.sitemap,
                             com.peregrine.transform,
                             com.peregrine.transform.*,
                             com.peregrine.commons.util

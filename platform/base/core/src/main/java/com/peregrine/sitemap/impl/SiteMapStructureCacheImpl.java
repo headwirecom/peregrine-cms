@@ -48,13 +48,11 @@ import static org.apache.commons.lang3.StringUtils.substringBeforeLast;
 
 @Component(service = SiteMapStructureCache.class, immediate = true)
 @Designate(ocd = SiteMapStructureCacheImplConfig.class)
-public final class SiteMapStructureCacheImpl extends CacheBuilderBase
+public final class SiteMapStructureCacheImpl extends CacheBuilderBase<List<SiteMapEntry>, SiteMapStructureCache.RefreshListener>
         implements SiteMapStructureCache, Callback<String>, SiteMapEntry.Visitor<Resource> {
 
     private static final String SLASH_JCR_CONTENT = SLASH + JCR_CONTENT;
     public static final String NN_FIRST_CACHE_NODE = "0";
-
-    private final Set<RefreshListener> refreshListeners = new HashSet<>();
 
     @Reference
     private ResourceResolverFactoryProxy resourceResolverFactory;
@@ -247,12 +245,6 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
         return resource.getParent();
     }
 
-    private void notifyCacheRefreshed(final Resource rootPage, final List<SiteMapEntry> entries) {
-        for (final RefreshListener listener : refreshListeners) {
-            listener.onCacheRefreshed(rootPage, entries);
-        }
-    }
-
     private void removeCachedItemsStartingAtIndex(final Resource target, final int startItemIndex) throws PersistenceException {
         final ResourceResolver resourceResolver = target.getResourceResolver();
         int i = startItemIndex;
@@ -279,17 +271,4 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
         }
     }
 
-    @Override
-    public void addRefreshListener(final RefreshListener listener) {
-        synchronized (refreshListeners) {
-            refreshListeners.add(listener);
-        }
-    }
-
-    @Override
-    public void removeRefreshListener(final RefreshListener listener) {
-        synchronized (refreshListeners) {
-            refreshListeners.remove(listener);
-        }
-    }
 }

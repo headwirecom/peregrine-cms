@@ -34,8 +34,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Iterator;
-import java.util.Optional;
+import java.util.*;
 
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
@@ -44,13 +43,15 @@ import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.substringBeforeLast;
 
-public abstract class CacheBuilderBase implements CacheBuilder {
+public abstract class CacheBuilderBase<V, L extends CacheBuilder.RefreshListener<V>> implements CacheBuilder<V, L> {
 
     protected static final String COULD_NOT_SAVE_SITE_MAP_CACHE = "Could not save Site Map Cache.";
     protected static final String COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER = "Could not get Service Resource Resolver.";
     protected static final String COULD_NOT_SAVE_CHANGES_TO_REPOSITORY = "Could not save changes to repository.";
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final Set<L> refreshListeners = new HashSet<>();
 
     protected String location;
     protected String locationWithSlash;
@@ -255,6 +256,25 @@ public abstract class CacheBuilderBase implements CacheBuilder {
         }
 
         return result;
+    }
+
+    @Override
+    public void addRefreshListener(final L listener) {
+        synchronized (refreshListeners) {
+            refreshListeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeRefreshListener(final L listener) {
+        synchronized (refreshListeners) {
+            refreshListeners.remove(listener);
+        }
+    }
+
+    protected void notifyCacheRefreshed(final Resource rootPage, final V value) {
+        refreshListeners.stream()
+                .forEach(l -> l.onCacheRefreshed(rootPage, value));
     }
 
 }

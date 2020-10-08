@@ -25,10 +25,22 @@ package com.peregrine.sitemap;
  * #L%
  */
 
-public interface CacheBuilder {
+import org.apache.sling.api.resource.Resource;
+
+public interface CacheBuilder<V, L extends CacheBuilder.RefreshListener<V>> {
 
     void rebuild(String path);
 
     void rebuildAll();
+
+    void addRefreshListener(L listener);
+
+    void removeRefreshListener(L listener);
+
+    interface RefreshListener<V> {
+
+        void onCacheRefreshed(Resource rootPage, V value);
+
+    }
 
 }
