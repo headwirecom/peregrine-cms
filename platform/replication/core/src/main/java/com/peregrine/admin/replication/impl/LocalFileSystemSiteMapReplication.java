@@ -38,6 +38,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.peregrine.commons.Chars.DOT;
 import static java.util.Objects.isNull;
 
 @Component(immediate = true)
@@ -71,11 +72,13 @@ public final class LocalFileSystemSiteMapReplication implements SiteMapFilesCach
             return;
         }
 
+        final Resource parent = rootPage.getParent();
+        final String prefix = rootPage.getName() + DOT;
         for (int index = 0; index < contents.length; index++) {
-            final String name = urlBuilder.getFileName(index);
+            final String name = prefix + urlBuilder.getFileName(index);
             final String content = contents[index];
             try {
-                replication.storeFile(rootPage, name, content);
+                replication.storeFile(parent, name, content);
             } catch (final ReplicationException e) {
                 logger.warn(String.format("Could not replicate %s @ %s", name, rootPage.getPath()), e);
             }
