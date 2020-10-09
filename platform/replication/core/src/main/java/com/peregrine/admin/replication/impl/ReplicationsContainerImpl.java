@@ -107,10 +107,15 @@ public final class ReplicationsContainerImpl implements ReplicationsContainer {
     }
 
     @Override
+    public Replication getDefault() {
+        return get(DEFAULT_REPL);
+    }
+
+    @Override
     public Replication getOrDefault(final String name) {
         return Optional.ofNullable(name)
                 .map(this::get)
-                .orElseGet(() -> get(DEFAULT_REPL));
+                .orElseGet(this::getDefault);
     }
 
 }

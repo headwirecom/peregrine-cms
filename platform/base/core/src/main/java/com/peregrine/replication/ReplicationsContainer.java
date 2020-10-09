@@ -29,6 +29,8 @@ public interface ReplicationsContainer {
 
     Replication get(String name);
 
+    Replication getDefault();
+
     Replication getOrDefault(String name);
 
 }

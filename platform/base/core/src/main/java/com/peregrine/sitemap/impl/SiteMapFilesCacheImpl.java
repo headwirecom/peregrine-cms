@@ -123,8 +123,8 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase<String[], Site
         final SiteMapExtractor extractor = siteMapExtractorsContainer.findFirstFor(rootPage);
         if (isNull(entries) || isNull(extractor)) {
             final ModifiableValueMap modifiableValueMap = cache.adaptTo(ModifiableValueMap.class);
-            removeCachedItemsAboveIndex(modifiableValueMap, 0);
-            notifyCacheRefreshed(rootPage, null);
+            final int previousItemsCount = removeCachedItemsAboveIndex(modifiableValueMap, 0);
+            notifyCacheRefreshed(rootPage, new String[previousItemsCount]);
             return null;
         }
 
