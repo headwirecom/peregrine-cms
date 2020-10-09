@@ -101,26 +101,26 @@ public class DefaultReplicationMapperService
 
     @Activate
     @SuppressWarnings("unused")
-    void activate(BundleContext context, Configuration configuration) {
-        setup(context, configuration);
+    void activate(Configuration configuration) {
+        setup(configuration);
     }
 
     @Modified
     @SuppressWarnings("unused")
-    void modified(BundleContext context, Configuration configuration) {
-        setup(context, configuration);
+    void modified(Configuration configuration) {
+        setup(configuration);
     }
 
     private DefaultReplicationConfig defaultMapping;
     private List<DefaultReplicationConfig> pathMapping = new ArrayList<>();
 
-    private void setup(BundleContext context, final Configuration configuration) {
+    private void setup(final Configuration configuration) {
         init(configuration.name(), configuration.description());
         // Register this service as Replication instance
         logger.trace("Default Mapping: '{}'", configuration.defaultMapping());
         Map<String, Map<String, String>> temp = splitIntoParameterMap(new String[] {configuration.defaultMapping()}, ":", "\\|", "=");
         logger.trace("Mapped Default Mapping: '{}'", temp);
-        if(temp.keySet().isEmpty()) {
+        if(temp.isEmpty()) {
             throw new IllegalArgumentException(NO_DEFAULT_MAPPING);
         }
         Entry<String, Map<String, String>> entry = temp.entrySet().iterator().next();
@@ -165,9 +165,9 @@ public class DefaultReplicationMapperService
     public List<Resource> replicate(Collection<Resource> resourceList) throws ReplicationException {
         List<Resource> answer = new ArrayList<>();
         Map<DefaultReplicationConfig, List<Resource>> resourceByReplication = new HashMap<>();
-        resourceByReplication.put(defaultMapping, new ArrayList<Resource>());
+        resourceByReplication.put(defaultMapping, new ArrayList<>());
         for(DefaultReplicationConfig config: pathMapping) {
-            resourceByReplication.put(config, new ArrayList<Resource>());
+            resourceByReplication.put(config, new ArrayList<>());
         }
         // Now we loop over the all resources, separate them into pods of Replication Services
         for(Resource resource: resourceList) {
