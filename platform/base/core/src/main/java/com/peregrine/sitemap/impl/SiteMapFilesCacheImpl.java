@@ -114,7 +114,7 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase<String[], Site
     }
 
     @Override
-    protected Resource buildCache(final Resource rootPage, final Resource cache) {
+    protected Resource build(final Resource rootPage, final Resource cache) {
         final List<SiteMapEntry> entries = structureCache.get(rootPage);
         return buildCache(rootPage, entries, cache);
     }
@@ -193,7 +193,7 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase<String[], Site
 
     @Override
     protected void rebuildImpl(final String rootPagePath) {
-        buildCache(rootPagePath);
+        build(rootPagePath);
     }
 
     @Override

@@ -64,7 +64,7 @@ public abstract class CacheBuilderBase<V, L extends CacheBuilder.RefreshListener
     protected final Resource getCache(final ResourceResolver resourceResolver, final Resource rootPage) {
         if (!isCached(resourceResolver, rootPage.getPath())) {
             try {
-                final Resource cache = buildCache(resourceResolver, rootPage);
+                final Resource cache = build(resourceResolver, rootPage);
                 resourceResolver.commit();
                 return cache;
             } catch (final PersistenceException e) {
@@ -133,14 +133,14 @@ public abstract class CacheBuilderBase<V, L extends CacheBuilder.RefreshListener
         return containsCacheAlready(cache);
     }
 
-    protected final Resource buildCache(final ResourceResolver resourceResolver, final Resource rootPage) {
+    protected final Resource build(final ResourceResolver resourceResolver, final Resource rootPage) {
         if (isNull(rootPage)) {
             return null;
         }
 
         try {
             final Resource cache = getOrCreateCacheResource(resourceResolver, rootPage);
-            return buildCache(rootPage, cache);
+            return build(rootPage, cache);
         } catch (final PersistenceException e) {
             logger.error(COULD_NOT_SAVE_SITE_MAP_CACHE, e);
             return null;
@@ -152,7 +152,7 @@ public abstract class CacheBuilderBase<V, L extends CacheBuilder.RefreshListener
         return ResourceUtils.getOrCreateResource(resourceResolver, cachePath, SLING_ORDERED_FOLDER);
     }
 
-    protected abstract Resource buildCache(Resource rootPage, Resource cache) throws PersistenceException;
+    protected abstract Resource build(Resource rootPage, Resource cache) throws PersistenceException;
 
     @Override
     public final void rebuild(final String rootPagePath) {
@@ -202,20 +202,16 @@ public abstract class CacheBuilderBase<V, L extends CacheBuilder.RefreshListener
 
     protected abstract void rebuildImpl(final String rootPagePath);
 
-    protected final Resource buildCache(final String rootPagePath) {
+    public final void build(final String path) {
         try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
-            cleanRemovedChildren(resourceResolver, rootPagePath);
-            final Resource rootPage = resourceResolver.getResource(rootPagePath);
-            final Resource result = buildCache(resourceResolver, rootPage);
+            cleanRemovedChildren(resourceResolver, path);
+            build(resourceResolver, resourceResolver.getResource(path));
             resourceResolver.commit();
-            return result;
         } catch (final LoginException e) {
             logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
         } catch (final PersistenceException e) {
             logger.error(COULD_NOT_SAVE_CHANGES_TO_REPOSITORY, e);
         }
-
-        return null;
     }
 
     @Override
@@ -223,7 +219,7 @@ public abstract class CacheBuilderBase<V, L extends CacheBuilder.RefreshListener
         try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
             Optional.ofNullable(getCacheContainerPath(SLASH))
                     .map(resourceResolver::getResource)
-                    .ifPresent(this::rebuildCacheInTree);
+                    .ifPresent(this::rebuildInTree);
             resourceResolver.commit();
             rebuildMandatoryContent();
         } catch (final LoginException e) {
@@ -235,7 +231,7 @@ public abstract class CacheBuilderBase<V, L extends CacheBuilder.RefreshListener
 
     protected void rebuildMandatoryContent() { }
 
-    private boolean rebuildCacheInTree(final Resource cache) {
+    private boolean rebuildInTree(final Resource cache) {
         final Optional<String> rootPage = Optional.of(cache)
                 .filter(this::containsCacheAlready)
                 .map(this::getOriginalPath)
@@ -244,7 +240,7 @@ public abstract class CacheBuilderBase<V, L extends CacheBuilder.RefreshListener
         boolean result = rootPage.isPresent();
         final Iterator<Resource> iterator = cache.listChildren();
         while (iterator.hasNext()) {
-            result = rebuildCacheInTree(iterator.next()) && result;
+            result = rebuildInTree(iterator.next()) && result;
         }
 
         if (!result) {

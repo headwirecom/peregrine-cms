@@ -43,7 +43,6 @@ import static com.peregrine.commons.ResourceUtils.jcrNameToFileName;
 import static com.peregrine.commons.util.PerConstants.*;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.endsWith;
 import static org.apache.commons.lang3.StringUtils.substringBeforeLast;
 
 @Component(service = SiteMapStructureCache.class, immediate = true)
@@ -142,7 +141,7 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase<List<SiteM
 
     @Override
     public void call(final String rootPagePath) {
-        buildCache(rootPagePath);
+        build(rootPagePath);
     }
 
     @Override
@@ -176,7 +175,7 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase<List<SiteM
     }
 
     @Override
-    protected Resource buildCache(final Resource rootPage, final Resource cache) throws PersistenceException {
+    protected Resource build(final Resource rootPage, final Resource cache) throws PersistenceException {
         final SiteMapExtractor extractor = siteMapExtractorsContainer.findFirstFor(rootPage);
         if (isNull(extractor)) {
             removeCachedItemsStartingAtIndex(cache, 0);

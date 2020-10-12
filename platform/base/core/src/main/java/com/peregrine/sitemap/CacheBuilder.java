@@ -29,6 +29,8 @@ import org.apache.sling.api.resource.Resource;
 
 public interface CacheBuilder<V, L extends CacheBuilder.RefreshListener<V>> {
 
+    void build(String path);
+
     void rebuild(String path);
 
     void rebuildAll();
