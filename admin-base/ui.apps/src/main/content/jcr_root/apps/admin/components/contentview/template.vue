@@ -685,12 +685,8 @@ export default {
               this.editable.class = 'drop-bottom'
             }
           } else {
-            this.editable.class = 'selected'
-            if (relMousePos.yPercentage <= 43.5) {
-              this.dropPosition = 'into-before'
-            } else {
-              this.dropPosition = 'into-after'
-            }
+            this.editable.class = ''
+            this.dropPosition = 'none'
           }
         } else {
           this.dropPosition = 'none'
