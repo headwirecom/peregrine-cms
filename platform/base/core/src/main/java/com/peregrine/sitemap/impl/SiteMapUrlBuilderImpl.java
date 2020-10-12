@@ -31,8 +31,6 @@ import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 
 import static com.peregrine.commons.Strings.DOT;
-import static com.peregrine.sitemap.SiteMapConstants.SITE_MAP;
-import static com.peregrine.sitemap.SiteMapConstants.XML;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
@@ -42,12 +40,7 @@ public final class SiteMapUrlBuilderImpl implements SiteMapUrlBuilder {
 
     @Override
     public String buildSiteMapUrl(final Resource root, final int index) {
-        final String path = root.getPath();
-        if (index > 0) {
-            return path + DOT + SITE_MAP + DOT + index + DOT + XML;
-        }
-
-        return path + DOT + SITE_MAP + DOT + XML;
+        return root.getPath() + DOT + getFileName(index);
     }
 
     @Override

@@ -28,7 +28,19 @@ package com.peregrine.sitemap;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 
+import static com.peregrine.commons.Strings.DOT;
+import static com.peregrine.sitemap.SiteMapConstants.SITE_MAP;
+import static com.peregrine.sitemap.SiteMapConstants.XML;
+
 public interface SiteMapUrlBuilder {
+
+    default String getFileName(int index) {
+        if (index > 0) {
+            return SITE_MAP + DOT + index + DOT + XML;
+        }
+
+        return SITE_MAP + DOT + XML;
+    }
 
     String buildSiteMapUrl(Resource siteMapRoot, int index);
 

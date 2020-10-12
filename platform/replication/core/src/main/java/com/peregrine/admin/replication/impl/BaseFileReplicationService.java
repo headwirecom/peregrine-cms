@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
+import static com.peregrine.commons.Chars.DOT;
 import static com.peregrine.commons.util.PerConstants.RENDITION_ACTION;
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
@@ -54,6 +55,8 @@ import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
 import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
 import static com.peregrine.commons.util.PerUtil.RENDITIONS;
+import static com.peregrine.commons.util.PerUtil.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
  * Base Class for External File System / Storage Replications
@@ -215,6 +218,10 @@ public abstract class BaseFileReplicationService
     /** @return A list of all mandatory renditions which are created during the replication if not already there **/
     abstract List<String> getMandatoryRenditions();
 
+    protected String renderingName(final Resource resource, final String extension) {
+        return resource.getName() + (isNotEmpty(extension) ? DOT + extension : EMPTY);
+    }
+
     private void replicateAsset(Resource resource) throws ReplicationException {
         try {
             // Get the image data of the resource and write to the target
@@ -269,7 +276,9 @@ public abstract class BaseFileReplicationService
      * @return Path to the Stored Rendition used for the Rendition Ref property
      * @throws ReplicationException if the writing of the content failed
      */
-    abstract String storeRendering(Resource resource, String extension, String content) throws ReplicationException;
+    String storeRendering(Resource resource, String extension, String content) throws ReplicationException {
+        return storeFile(resource.getParent(), renderingName(resource, extension), content);
+    }
     /**
      * Store the given Asset Rendering on the target
      * @param resource Resource that is exported
@@ -278,7 +287,9 @@ public abstract class BaseFileReplicationService
      * @return Path to the Stored Rendition used for the Rendition Ref property
      * @throws ReplicationException if the writing of the content failed
      */
-    abstract String storeRendering(Resource resource, String extension, byte[] content) throws ReplicationException;
+    String storeRendering(Resource resource, String extension, byte[] content) throws ReplicationException {
+        return storeFile(resource.getParent(), renderingName(resource, extension), content);
+    }
 
     /**
      * Removes a given resource from the target

@@ -28,7 +28,10 @@ package com.peregrine.admin.servlets;
 import com.peregrine.admin.replication.DefaultReplicationMapper;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.replication.Replication.ReplicationException;
+import com.peregrine.sitemap.SiteMapFilesCache;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -42,12 +45,16 @@ import static com.peregrine.admin.replication.ReplicationConstants.RESOURCE_TYPE
 import static com.peregrine.admin.replication.ReplicationConstants.SOURCE_NAME;
 import static com.peregrine.admin.replication.ReplicationConstants.SOURCE_PATH;
 
-import static com.peregrine.admin.servlets.ReplicationServlet.*;
+import static com.peregrine.admin.servlets.ReplicationServlet.REPLICATES;
+import static com.peregrine.admin.servlets.ReplicationServlet.REPLICATION_FAILED;
+import static com.peregrine.admin.servlets.ReplicationServlet.SUFFIX_IS_NOT_RESOURCE;
 import static com.peregrine.commons.util.PerConstants.FELIBS_ROOT;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.NAME;
+import static com.peregrine.commons.util.PerConstants.PAGES;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.SITE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -92,13 +99,17 @@ public class TenantSetupReplicationServlet extends AbstractBaseServlet {
     }
 
     @Reference
-    DefaultReplicationMapper defaultReplicationMapper;
+    private DefaultReplicationMapper defaultReplicationMapper;
+
+    @Reference
+    private SiteMapFilesCache siteMapFilesCache;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
+        final SlingHttpServletRequest servletRequest = request.getRequest();
         logger.trace("Request Path: '{}'", request.getRequestPath());
-        logger.trace("Request URI: '{}'", request.getRequest().getRequestURI());
-        logger.trace("Request URL: '{}'", request.getRequest().getRequestURL());
+        logger.trace("Request URI: '{}'", servletRequest.getRequestURI());
+        logger.trace("Request URL: '{}'", servletRequest.getRequestURL());
 //        String replicationName = request.getPa
 //        if(replicationName == null || replicationName.isEmpty()) {
 //            return new ErrorResponse()
@@ -116,7 +127,8 @@ public class TenantSetupReplicationServlet extends AbstractBaseServlet {
 //                .setErrorMessage(REPLICATION_NOT_FOUND_FOR_NAME + replicationName);
 //        }
         String sourcePath = request.getParameter(PATH);
-        Resource source = request.getResourceResolver().getResource(sourcePath);
+        final ResourceResolver resourceResolver = request.getResourceResolver();
+        Resource source = resourceResolver.getResource(sourcePath);
         if (isNull(source)) {
             return new ErrorResponse()
                     .setHttpErrorCode(SC_BAD_REQUEST)
@@ -143,7 +155,7 @@ public class TenantSetupReplicationServlet extends AbstractBaseServlet {
 //                    replicationList.add(css);
 //                }
 //            }
-        final Resource felibs = request.getResourceResolver().getResource(FELIBS_ROOT);
+        final Resource felibs = resourceResolver.getResource(FELIBS_ROOT);
         handleSourceSites(source, replicationList, felibs);
         logger.info("List of Resource to be replicated: '{}'", replicationList);
         final List<Resource> allReplicatedResource = new ArrayList<>();
@@ -160,6 +172,8 @@ public class TenantSetupReplicationServlet extends AbstractBaseServlet {
                         .setException(e);
             }
         }
+
+        siteMapFilesCache.build(sourcePath + SLASH + PAGES);
 
         final JsonResponse answer = new JsonResponse();
         answer.writeAttribute(SOURCE_NAME, source.getName());

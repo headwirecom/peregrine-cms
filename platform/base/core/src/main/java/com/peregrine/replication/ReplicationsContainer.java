@@ -1,8 +1,8 @@
-package com.peregrine.sitemap;
+package com.peregrine.replication;
 
 /*-
  * #%L
- * platform base - Core
+ * admin base - Core
  * %%
  * Copyright (C) 2017 headwire inc.
  * %%
@@ -25,14 +25,12 @@ package com.peregrine.sitemap;
  * #L%
  */
 
-import org.apache.sling.api.resource.Resource;
+public interface ReplicationsContainer {
 
-import java.util.List;
+    Replication get(String name);
 
-public interface SiteMapStructureCache extends CacheBuilder<List<SiteMapEntry>, SiteMapStructureCache.RefreshListener> {
+    Replication getDefault();
 
-    List<SiteMapEntry> get(Resource rootPage);
-
-    interface RefreshListener extends CacheBuilder.RefreshListener<List<SiteMapEntry>> { }
+    Replication getOrDefault(String name);
 
 }

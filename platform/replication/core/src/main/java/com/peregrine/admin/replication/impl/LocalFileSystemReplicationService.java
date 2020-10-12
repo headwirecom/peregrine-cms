@@ -32,7 +32,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.osgi.framework.BundleContext;
-import org.osgi.service.component.annotations.*;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
@@ -41,7 +45,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -49,13 +56,15 @@ import java.util.regex.Pattern;
 import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
 import static com.peregrine.commons.Chars._SCORE;
 import static com.peregrine.commons.ResourceUtils.jcrNameToFileName;
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerUtil.*;
+import static com.peregrine.commons.util.PerUtil.getJcrContent;
+import static com.peregrine.commons.util.PerUtil.intoList;
+import static com.peregrine.commons.util.PerUtil.isNotEmpty;
+import static com.peregrine.commons.util.PerUtil.splitIntoMap;
+import static com.peregrine.commons.util.PerUtil.splitIntoProperties;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * This class replicates resources to a local file system folder
@@ -273,8 +282,8 @@ public class LocalFileSystemReplicationService
     }
 
     @Override
-    String storeRendering(Resource resource, String extension, String content) throws ReplicationException {
-        return storeRendering(resource, extension, file -> {
+    public String storeFile(final Resource parent, final String name, final String content) throws ReplicationException {
+        return storeFile(parent, name, isNull(content) ? null : file -> {
             try (final FileWriter fileWriter = new FileWriter(file)) {
                 fileWriter.append(content);
             } catch (final IOException e) {
@@ -285,22 +294,9 @@ public class LocalFileSystemReplicationService
         });
     }
 
-    private String storeRendering(final Resource resource, final String extension, final Function<File, ReplicationException> fileConsumer)
-            throws ReplicationException {
-        final File renderingFile = createRenderingFile(resource, extension);
-        final ReplicationException exception = fileConsumer.apply(renderingFile);
-        if (nonNull(exception)) {
-            throw exception;
-        }
-
-        final String localFileSystemPath = LOCAL_FILE_SYSTEM + renderingFile.getAbsolutePath();
-        updateReplicationProperties(getJcrContent(resource), localFileSystemPath, null);
-        return localFileSystemPath;
-    }
-
     @Override
-    String storeRendering(Resource resource, String extension, byte[] content) throws ReplicationException {
-        return storeRendering(resource, extension, file -> {
+    public String storeFile(final Resource parent, final String name, final byte[] content) throws ReplicationException {
+        return storeFile(parent, name, isNull(content) ? null : file -> {
             try (final FileOutputStream fileOutputStream = new FileOutputStream(file)) {
                 fileOutputStream.write(content);
             } catch (final IOException e) {
@@ -311,6 +307,28 @@ public class LocalFileSystemReplicationService
         });
     }
 
+    private String storeFile(final Resource parent, final String name, final Function<File, ReplicationException> fileConsumer)
+            throws ReplicationException {
+        if (isNull(fileConsumer)) {
+            final File file = new File(targetFolder, parent.getPath() + SLASH + name);
+            if (file.exists() && file.isFile()) {
+                file.delete();
+            }
+
+            return null;
+        }
+
+        final File file = createFileWithParentAndName(parent, name);
+        final ReplicationException exception = fileConsumer.apply(file);
+        if (nonNull(exception)) {
+            throw exception;
+        }
+
+        final String localFileSystemPath = LOCAL_FILE_SYSTEM + file.getAbsolutePath();
+        updateReplicationProperties(getJcrContent(parent), localFileSystemPath, null);
+        return localFileSystemPath;
+    }
+
     @Override
     void removeReplica(Resource resource, final List<Pattern> namePattern, final boolean isFolder) throws ReplicationException {
         final String resourceName = resource.getName();
@@ -319,8 +337,7 @@ public class LocalFileSystemReplicationService
             throw new ReplicationException(String.format(FAILED_STORE_RENDERING_MISSING_PARENT_FOLDER, directory.getAbsolutePath()));
         }
 
-        final File[] filesToBeDeletedFiles = directory.listFiles(
-                file -> {
+        final File[] filesToBeDeletedFiles = directory.listFiles(file -> {
                     final String name = file.getName();
                     if (isFolder && file.isDirectory() && name.equals(resourceName)) {
                         return true;
@@ -354,32 +371,35 @@ public class LocalFileSystemReplicationService
     private boolean deleteFile(File file) {
         if(file.isDirectory()) {
             for(File child: file.listFiles()) {
-                boolean answer = deleteFile(child);
-                if(!answer) {
+                if(!deleteFile(child)) {
                     log.warn(String.format(FAILED_TO_DELETE_FILE, file.getAbsolutePath()));
-                    return answer;
+                    return false;
                 }
             }
         }
+
         return file.delete();
     }
 
-    private File createRenderingFile(Resource resource, String extension) throws ReplicationException {
-        File directory = createTargetFolder(resource.getParent().getPath());
-        if(!directory.exists() || !directory.isDirectory()) {
+    private File createFileWithParentAndName(final Resource parent, final String name) throws ReplicationException {
+        final File directory = createTargetFolder(parent.getPath());
+        if (!(directory.exists() && directory.isDirectory())) {
             throw new ReplicationException(String.format(FAILED_STORE_RENDERING_MISSING_PARENT_FOLDER, directory.getAbsolutePath()));
         }
-        String fileName = resource.getName() + (isNotEmpty(extension) ? "." + extension : "");
-        File renderingFile = new File(directory, fileName);
-        if(renderingFile.exists()) {
-            if(renderingFile.isDirectory()) {
-                throw new ReplicationException(String.format(FAILED_STORE_RENDERING_FILE_IS_DIRECTORY, renderingFile.getAbsolutePath()));
-            } else {
-                log.trace("Delete existing Rendering File: '{}'", renderingFile.getAbsolutePath());
-                renderingFile.delete();
-            }
+
+        final File file = new File(directory, name);
+        if (!file.exists()) {
+            return file;
         }
-        return renderingFile;
+
+        if (file.isDirectory()) {
+            throw new ReplicationException(String.format(FAILED_STORE_RENDERING_FILE_IS_DIRECTORY, file.getAbsolutePath()));
+        } else {
+            log.trace("Delete existing Rendering File: '{}'", file.getAbsolutePath());
+            file.delete();
+        }
+
+        return file;
     }
 
     public static final String PLACEHOLDER_START_TOKEN = "${";

@@ -11,7 +11,7 @@ public class PerPageRecognizerTest extends PageRecognizerBaseTest {
 
     public PerPageRecognizerTest() {
         super(new PerPageRecognizer());
-        jcrContent.putProperty(PerConstants.PER_REPLICATED, "2020-09-10 13:19:26");
+        jcrContent.putProperty(PerConstants.PER_REPLICATION_REF, "some-ref");
     }
 
     @Test

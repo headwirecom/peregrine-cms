@@ -58,7 +58,7 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
         }
 
         @Override
-        protected Resource buildCache(final Resource rootPage, final Resource cache) {
+        protected Resource build(final Resource rootPage, final Resource cache) {
             buildCacheCalled.put(rootPage, cache);
             return cache;
         }
@@ -95,7 +95,7 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
         model.rebuildAll();
         verifyCommits(0);
 
-        model.buildCache(StringUtils.EMPTY);
+        model.build(StringUtils.EMPTY);
         verifyCommits(0);
     }
 
@@ -114,7 +114,7 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
         model.rebuildAll();
         verifyCommits(++invocationsCount);
 
-        model.buildCache(pageCache.getPath());
+        model.build(pageCache.getPath());
         verifyCommits(++invocationsCount);
     }
 
@@ -181,9 +181,8 @@ public final class CacheBuilderBaseTest extends SlingResourcesTest {
 
     @Test
     public void buildCache() {
-        final Resource cache = model.buildCache(jcrContent.getPath());
+        model.build(jcrContent.getPath());
         verifyCommits(1);
-        assertEquals(contentCache, cache);
         assertEquals(contentCache, buildCacheCalled.get(jcrContent));
     }
 
