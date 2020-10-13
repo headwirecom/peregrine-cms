@@ -83,7 +83,7 @@
         <archetype.java.version>7</archetype.java.version>
 
         <!-- dependency versions to use in generated archetypes -->
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
         <scrannotations.version>1.9.12</scrannotations.version>
         <slingapi.version>2.9.0</slingapi.version>
         <slf4japi.version>1.7.6</slf4japi.version>
