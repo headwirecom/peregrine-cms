@@ -647,7 +647,7 @@ export default {
       if (event === 'confirm') {
         const isValid = this.$refs.renameForm.validate()
         if (isValid) {
-          this.renameNode(this.formmodel.name, this.formmodel.title)
+          this.performRenameNode(this.formmodel.name, this.formmodel.title)
         } else {
           return
         }
@@ -662,7 +662,7 @@ export default {
       this.formmodel.name = this.node.name
       this.formmodel.title = this.node.title
     },
-    renameNode(newName, newTitle) {
+    performRenameNode(newName, newTitle) {
       const that = this;
       $perAdminApp.stateAction(`rename${this.uNodeType}`, {
         path: this.currentObject,
