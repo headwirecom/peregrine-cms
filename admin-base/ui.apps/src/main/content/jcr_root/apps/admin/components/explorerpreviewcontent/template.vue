@@ -227,7 +227,7 @@
             <icon icon="external-link" :lib="IconLib.FONT_AWESOME"/>
             Open live version
           </div>
-          <div class="action" :title="`rename ${nodeType}`" @click="$refs.renameModal.open()">
+          <div class="action" :title="`rename ${nodeType}`" @click="renameNode()">
             <icon :lib="IconLib.MATERIAL_ICONS" icon="text_format"/>
             <span :class="activationSensitiveClass">Rename {{ nodeType }}</span>
           </div>
@@ -697,12 +697,27 @@ export default {
       console.log("Close Publishing Modal")
       this.isPublishDialogOpen = false;
     },
+    checkActivationStatusAndPerform(action) {
+      if (this.selfOrAnyDescendantActivated) {
+        $perAdminApp.toast("You cannot perform this operation yet. The resource or one of its children is still published." +
+                    " Please unpublish all of them first.", "warn", 7500);
+      } else {
+        action();
+      }
+    },
+    renameNode() {
+      this.checkActivationStatusAndPerform(() => {
+        this.$refs.renameModal.open();
+      });
+    },
     moveNode() {
-      $perAdminApp.getApi().populateNodesForBrowser(this.path.current, 'pathBrowser')
-          .then(() => {
-            this.isOpen = true;
-          }).catch(() => {
-        $perAdminApp.getApi().populateNodesForBrowser(`/content/${site.tenant}`, 'pathBrowser');
+      this.checkActivationStatusAndPerform(() => {
+        $perAdminApp.getApi().populateNodesForBrowser(this.path.current, 'pathBrowser')
+            .then(() => {
+              this.isOpen = true;
+            }).catch(() => {
+          $perAdminApp.getApi().populateNodesForBrowser(`/content/${site.tenant}`, 'pathBrowser');
+        });
       });
     },
     copyNode() {
@@ -715,17 +730,19 @@ export default {
 
     },
     deleteNode() {
-      const really = confirm(`Are you sure you want to delete this ${this.nodeType}?`);
-      if (really) {
-        $perAdminApp.stateAction(`delete${this.uNodeType}`, this.node.path).then(() => {
-          $perAdminApp.stateAction(`unselect${this.uNodeType}`, {})
-        }).then(() => {
-          const path = $perAdminApp.getNodeFromView('/state/tools/pages')
-          $perAdminApp.loadContent(
-              '/content/admin/pages/pages.html/path' + SUFFIX_PARAM_SEPARATOR + path)
-        })
-        this.isOpen = false;
-      }
+      this.checkActivationStatusAndPerform(() => {
+        const really = confirm(`Are you sure you want to delete this ${this.nodeType}?`);
+        if (really) {
+          $perAdminApp.stateAction(`delete${this.uNodeType}`, this.node.path).then(() => {
+            $perAdminApp.stateAction(`unselect${this.uNodeType}`, {})
+          }).then(() => {
+            const path = $perAdminApp.getNodeFromView('/state/tools/pages')
+            $perAdminApp.loadContent(
+                '/content/admin/pages/pages.html/path' + SUFFIX_PARAM_SEPARATOR + path)
+          })
+          this.isOpen = false;
+        }
+      });
     },
     setCurrentPath(path) {
       this.path.current = path;
