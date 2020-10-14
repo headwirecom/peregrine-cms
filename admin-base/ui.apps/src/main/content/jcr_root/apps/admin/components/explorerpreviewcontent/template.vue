@@ -229,19 +229,19 @@
           </div>
           <div class="action" :title="`rename ${nodeType}`" @click="$refs.renameModal.open()">
             <icon :lib="IconLib.MATERIAL_ICONS" icon="text_format"/>
-            Rename {{ nodeType }}
+            <span :class="activationSensitiveClass">Rename {{ nodeType }}</span>
           </div>
           <div class="action" :title="`move ${nodeType}`" @click="moveNode()">
             <icon icon="compare_arrows"/>
-            Move {{ nodeType }}
+            <span :class="activationSensitiveClass">Move {{ nodeType }}</span>
           </div>
           <div class="action" :title="`copy ${nodeType}`" @click="copyNode()">
             <icon icon="content_copy"/>
             Copy {{ nodeType }}
           </div>
           <div class="action" :title="`delete ${nodeType}`" @click="deleteNode()">
-            <icon icon="delete"/>
-            Delete {{ nodeType }}
+            <icon :icon="selfOrAnyDescendantActivated ? 'delete_forever' : 'delete'" />
+            <span :class="activationSensitiveClass">Delete {{ nodeType }}</span>
           </div>
         </div>
       </template>
@@ -496,6 +496,13 @@ export default {
         case 'references':
           return "References"
       }
+    },
+    selfOrAnyDescendantActivated() {
+      const node = this.node;
+      return node.activated || node.selfOrAnyDescendantActivated;
+    },
+    activationSensitiveClass() {
+      return this.selfOrAnyDescendantActivated ? 'operationDisabledOnActivatedItem' : null;
     }
   },
   watch: {
@@ -870,5 +877,8 @@ export default {
 }
 .labelChip {
   display: block;
+}
+.operationDisabledOnActivatedItem {
+  text-decoration: line-through;
 }
 </style>
