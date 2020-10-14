@@ -41,13 +41,18 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+import com.peregrine.admin.replication.ReplicationUtil;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.commons.util.PerUtil;
 import java.io.IOException;
+import java.util.Optional;
 import javax.servlet.Servlet;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -82,14 +87,27 @@ public class MoveServlet extends AbstractBaseServlet {
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
+        final ResourceResolver resourceResolver = request.getResourceResolver();
         final String fromPath = request.getParameter(PATH);
+        if (Optional.ofNullable(fromPath)
+                .map(resourceResolver::getResource)
+                .map(ReplicationUtil::isSelfOrAnyDescendantReplicated)
+                .orElse(false)
+        ) {
+            return new ErrorResponse()
+                    .setHttpErrorCode(SC_BAD_REQUEST)
+                    .setErrorMessage("Failed to update a replicated node.")
+                    .setRequestPath(fromPath);
+        }
+
         final String newTitle = request.getParameter(TITLE);
         final String toPath = request.getParameter(TO);
-        Resource from = PerUtil.getResource(request.getResourceResolver(), fromPath);
+        Resource from = PerUtil.getResource(resourceResolver, fromPath);
         Resource newResource;
-        if(request.getResource().getName().equals(MOVE)) {
+        final String name = request.getResource().getName();
+        if (name.equals(MOVE)) {
             String type = request.getParameter(TYPE);
-            Resource to = PerUtil.getResource(request.getResourceResolver(), toPath);
+            Resource to = PerUtil.getResource(resourceResolver, toPath);
             boolean addAsChild = ORDER_CHILD_TYPE.equals(type);
             boolean addBefore = ORDER_BEFORE_TYPE.equals(type);
             try {
@@ -101,10 +119,10 @@ public class MoveServlet extends AbstractBaseServlet {
                     .setRequestPath(fromPath)
                     .setException(e);
             }
-        } else if(request.getResource().getName().equals(RENAME)) {
+        } else if(name.equals(RENAME)) {
             try {
                 newResource = resourceManagement.rename(from, toPath);
-                if (newTitle != null && !newTitle.isEmpty()) {
+                if (StringUtils.isNotEmpty(newTitle)) {
                     if (newResource.getResourceType().equals("per:Asset")){
                         resourceManagement.updateOrCreateAssetTitle(newResource.getChild(JCR_CONTENT), newTitle);
                     } else {
@@ -121,9 +139,10 @@ public class MoveServlet extends AbstractBaseServlet {
         } else {
             return new ErrorResponse()
                 .setHttpErrorCode(SC_BAD_REQUEST)
-                .setErrorMessage("Unknown request: " + request.getResource().getName());
+                .setErrorMessage("Unknown request: " + name);
         }
-        request.getResourceResolver().commit();
+
+        resourceResolver.commit();
         JsonResponse answer = new JsonResponse();
         answer.writeAttribute(SOURCE_NAME, from.getName());
         answer.writeAttribute(SOURCE_PATH, from.getPath());
