@@ -227,21 +227,21 @@
             <icon icon="external-link" :lib="IconLib.FONT_AWESOME"/>
             Open live version
           </div>
-          <div class="action" :title="`rename ${nodeType}`" @click="$refs.renameModal.open()">
+          <div class="action" :title="`rename ${nodeType}`" @click="renameNode()">
             <icon :lib="IconLib.MATERIAL_ICONS" icon="text_format"/>
-            Rename {{ nodeType }}
+            <span :class="activationSensitiveClass">Rename {{ nodeType }}</span>
           </div>
           <div class="action" :title="`move ${nodeType}`" @click="moveNode()">
             <icon icon="compare_arrows"/>
-            Move {{ nodeType }}
+            <span :class="activationSensitiveClass">Move {{ nodeType }}</span>
           </div>
           <div class="action" :title="`copy ${nodeType}`" @click="copyNode()">
             <icon icon="content_copy"/>
             Copy {{ nodeType }}
           </div>
           <div class="action" :title="`delete ${nodeType}`" @click="deleteNode()">
-            <icon icon="delete"/>
-            Delete {{ nodeType }}
+            <icon :icon="selfOrAnyDescendantActivated ? 'delete_forever' : 'delete'" />
+            <span :class="activationSensitiveClass">Delete {{ nodeType }}</span>
           </div>
         </div>
       </template>
@@ -496,6 +496,13 @@ export default {
         case 'references':
           return "References"
       }
+    },
+    selfOrAnyDescendantActivated() {
+      const node = this.node;
+      return node.activated || node.selfOrAnyDescendantActivated;
+    },
+    activationSensitiveClass() {
+      return this.selfOrAnyDescendantActivated ? 'operationDisabledOnActivatedItem' : null;
     }
   },
   watch: {
@@ -640,7 +647,7 @@ export default {
       if (event === 'confirm') {
         const isValid = this.$refs.renameForm.validate()
         if (isValid) {
-          this.renameNode(this.formmodel.name, this.formmodel.title)
+          this.performRenameNode(this.formmodel.name, this.formmodel.title)
         } else {
           return
         }
@@ -655,7 +662,7 @@ export default {
       this.formmodel.name = this.node.name
       this.formmodel.title = this.node.title
     },
-    renameNode(newName, newTitle) {
+    performRenameNode(newName, newTitle) {
       const that = this;
       $perAdminApp.stateAction(`rename${this.uNodeType}`, {
         path: this.currentObject,
@@ -690,12 +697,27 @@ export default {
       console.log("Close Publishing Modal")
       this.isPublishDialogOpen = false;
     },
+    checkActivationStatusAndPerform(action) {
+      if (this.selfOrAnyDescendantActivated) {
+        $perAdminApp.toast("You cannot perform this operation yet. The resource or one of its children is still published." +
+                    " Please unpublish all of them first.", "warn", 7500);
+      } else {
+        action();
+      }
+    },
+    renameNode() {
+      this.checkActivationStatusAndPerform(() => {
+        this.$refs.renameModal.open();
+      });
+    },
     moveNode() {
-      $perAdminApp.getApi().populateNodesForBrowser(this.path.current, 'pathBrowser')
-          .then(() => {
-            this.isOpen = true;
-          }).catch(() => {
-        $perAdminApp.getApi().populateNodesForBrowser(`/content/${site.tenant}`, 'pathBrowser');
+      this.checkActivationStatusAndPerform(() => {
+        $perAdminApp.getApi().populateNodesForBrowser(this.path.current, 'pathBrowser')
+            .then(() => {
+              this.isOpen = true;
+            }).catch(() => {
+          $perAdminApp.getApi().populateNodesForBrowser(`/content/${site.tenant}`, 'pathBrowser');
+        });
       });
     },
     copyNode() {
@@ -708,17 +730,19 @@ export default {
 
     },
     deleteNode() {
-      const really = confirm(`Are you sure you want to delete this ${this.nodeType}?`);
-      if (really) {
-        $perAdminApp.stateAction(`delete${this.uNodeType}`, this.node.path).then(() => {
-          $perAdminApp.stateAction(`unselect${this.uNodeType}`, {})
-        }).then(() => {
-          const path = $perAdminApp.getNodeFromView('/state/tools/pages')
-          $perAdminApp.loadContent(
-              '/content/admin/pages/pages.html/path' + SUFFIX_PARAM_SEPARATOR + path)
-        })
-        this.isOpen = false;
-      }
+      this.checkActivationStatusAndPerform(() => {
+        const really = confirm(`Are you sure you want to delete this ${this.nodeType}?`);
+        if (really) {
+          $perAdminApp.stateAction(`delete${this.uNodeType}`, this.node.path).then(() => {
+            $perAdminApp.stateAction(`unselect${this.uNodeType}`, {})
+          }).then(() => {
+            const path = $perAdminApp.getNodeFromView('/state/tools/pages')
+            $perAdminApp.loadContent(
+                '/content/admin/pages/pages.html/path' + SUFFIX_PARAM_SEPARATOR + path)
+          })
+          this.isOpen = false;
+        }
+      });
     },
     setCurrentPath(path) {
       this.path.current = path;
@@ -870,5 +894,8 @@ export default {
 }
 .labelChip {
   display: block;
+}
+.operationDisabledOnActivatedItem {
+  text-decoration: line-through;
 }
 </style>
