@@ -64,7 +64,8 @@ public abstract class PageRecognizerBase implements PageRecognizer {
             return false;
         }
 
-        if (Optional.ofNullable(candidate.getProperty(excludeFromSiteMapPropertyName, String.class))
+        if (Optional.ofNullable(candidate.getProperty(excludeFromSiteMapPropertyName))
+                .map(String::valueOf)
                 .map(Boolean::parseBoolean)
                 .orElse(false)) {
             return false;
