@@ -29,6 +29,7 @@ import com.peregrine.adaption.PerReplicable;
 import com.peregrine.admin.replication.ReplicationConstants;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.commons.util.PerConstants;
 import com.peregrine.replication.Replication;
 import com.peregrine.replication.Replication.ReplicationException;
 import com.peregrine.replication.ReplicationsContainer;
@@ -85,7 +86,6 @@ public final class ReplicationServlet extends AbstractBaseServlet {
     public static final String REPLICATION_NOT_FOUND_FOR_NAME = "Replication not found for name: ";
     public static final String REPLICATION_FAILED = "Replication Failed";
     public static final String REPLICATES = "replicates";
-    public static final String PUBLISHED = "Published";
     public static final String RESOURCES = "resources";
     public static final String SUFFIX_IS_NOT_RESOURCE = "Suffix: '%s' is not a resource";
     public static final AddAllResourceChecker ADD_ALL_RESOURCE_CHECKER = new AddAllResourceChecker();
@@ -141,7 +141,7 @@ public final class ReplicationServlet extends AbstractBaseServlet {
                     final Optional<String> path = Optional.ofNullable(sourceReplicable.getContentResource())
                             .map(Resource::getPath);
                     if (path.isPresent()) {
-                        resourceManagement.createVersion(resourceResolver, path.get(), PUBLISHED);
+                        resourceManagement.createVersion(resourceResolver, path.get(), PerConstants.PUBLISHED_LABEL);
                     }
 
                     sourceReplicable.setLastReplicationActionAsActivated();
