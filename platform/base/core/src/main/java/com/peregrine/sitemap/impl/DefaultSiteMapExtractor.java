@@ -36,6 +36,8 @@ import org.apache.sling.api.resource.ResourceWrapper;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -55,6 +57,7 @@ import static java.util.Objects.isNull;
 @Component(service = { DefaultSiteMapExtractor.class })
 public final class DefaultSiteMapExtractor extends SiteMapExtractorBase implements SiteMapConfiguration {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Pattern pattern = Pattern.compile(CONTENT_ROOT + "/[^/]+/" + PAGES + "(/[^/]+)*");
     private final Map<String, String> xmlNamespaces = Collections.emptyMap();
     private final List<PropertyProvider> propertyProviders = new LinkedList<>();
@@ -158,13 +161,14 @@ public final class DefaultSiteMapExtractor extends SiteMapExtractorBase implemen
 
     @Override
     protected Page getProxy(final Resource page) {
+        final String path = page.getPath();
         try {
             final ResourceResolver resourceResolver = page.getResourceResolver();
             final Version version = resourceResolver
                     .adaptTo(Session.class)
                     .getWorkspace()
                     .getVersionManager()
-                    .getVersionHistory(PerUtil.getJcrContent(page.getPath()))
+                    .getVersionHistory(PerUtil.getJcrContent(path))
                     .getVersionByLabel(PUBLISHED_LABEL);
             if (isNull(version)) {
                 return null;
@@ -173,6 +177,7 @@ public final class DefaultSiteMapExtractor extends SiteMapExtractorBase implemen
             final Node node = version.getFrozenNode();
             return new Page(page, resourceResolver.getResource(node.getPath()));
         } catch (final RepositoryException e) {
+            logger.trace("Unable to grab the published version of " + path, e);
             return null;
         }
     }
