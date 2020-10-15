@@ -32,6 +32,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 
 import java.util.*;
 import java.util.regex.Matcher;
+import java.util.stream.StreamSupport;
 
 import static java.util.Objects.isNull;
 
@@ -55,24 +56,21 @@ public abstract class SiteMapExtractorBase implements SiteMapExtractor {
     }
 
     @Override
-    public List<SiteMapEntry> extract(final Resource root) {
-        return extract(new Page(root));
+    public List<SiteMapEntry> extract(final Resource resource) {
+        final Page page = getProxy(resource);
+        final List<SiteMapEntry> result = new LinkedList<>();
+        Optional.ofNullable(page)
+                .filter(this::isPage)
+                .map(this::createEntry)
+                .ifPresent(result::add);
+        StreamSupport.stream(resource.getChildren().spliterator(), false)
+                .map(this::extract)
+                .forEach(result::addAll);
+        return result;
     }
 
-    private List<SiteMapEntry> extract(final Page root) {
-        final List<SiteMapEntry> result = new LinkedList<>();
-        if (isPage(root)) {
-            result.add(createEntry(root));
-        }
-
-        for (final Resource child: root.getChildren()) {
-            final Page childPage = new Page(child);
-            if (isPage(childPage)) {
-                result.addAll(extract(childPage));
-            }
-        }
-
-        return result;
+    protected Page getProxy(final Resource page) {
+        return new Page(page);
     }
 
     private boolean isPage(final Page page) {

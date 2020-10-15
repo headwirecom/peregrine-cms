@@ -25,21 +25,30 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
+import com.peregrine.commons.Page;
+import com.peregrine.commons.util.PerUtil;
 import com.peregrine.sitemap.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceWrapper;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.version.Version;
+import javax.jcr.version.VersionManager;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerUtil.getResource;
 import static com.peregrine.commons.util.PerUtil.isPrimaryType;
 import static java.util.Objects.isNull;
 
@@ -145,6 +154,27 @@ public final class DefaultSiteMapExtractor extends SiteMapExtractorBase implemen
     @Override
     protected SiteMapUrlBuilder getUrlBuilder() {
         return urlBuilder;
+    }
+
+    @Override
+    protected Page getProxy(final Resource page) {
+        try {
+            final ResourceResolver resourceResolver = page.getResourceResolver();
+            final Version version = resourceResolver
+                    .adaptTo(Session.class)
+                    .getWorkspace()
+                    .getVersionManager()
+                    .getVersionHistory(PerUtil.getJcrContent(page.getPath()))
+                    .getVersionByLabel(PUBLISHED_LABEL);
+            if (isNull(version)) {
+                return null;
+            }
+
+            final Node node = version.getFrozenNode();
+            return new Page(page, resourceResolver.getResource(node.getPath()));
+        } catch (final RepositoryException e) {
+            return null;
+        }
     }
 
 }

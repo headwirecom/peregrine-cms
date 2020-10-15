@@ -28,6 +28,7 @@ package com.peregrine.commons.util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.CaseFormat;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -570,6 +571,15 @@ public class PerUtil {
      */
     public static boolean isPrimaryType(final Resource resource, final String primaryType) {
         return isPropertyEqual(resource, JCR_PRIMARY_TYPE, primaryType);
+    }
+
+    public static boolean isUnfrozenPrimaryType(final Resource resource, final String primaryType) {
+        if (isPrimaryType(resource, primaryType)) {
+            return true;
+        }
+
+        return isPrimaryType(resource, JcrConstants.NT_FROZENNODE)
+                && isPropertyEqual(resource, JcrConstants.JCR_FROZENPRIMARYTYPE, primaryType);
     }
 
     /**
