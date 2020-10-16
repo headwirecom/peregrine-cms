@@ -678,7 +678,8 @@ export default {
 
       if (this.component) {
         if (!this.dropTarget && this.isTemplateNode) {
-          if (!(this.isFromTemplate(previousSibling) && this.isFromTemplate(nextSibling))) {
+          if (!((this.isFromTemplate(previousSibling) || previousSibling === null)
+              && this.isFromTemplate(nextSibling))) {
             this.target = this.component.parentNode
           } else {
             locked = true
