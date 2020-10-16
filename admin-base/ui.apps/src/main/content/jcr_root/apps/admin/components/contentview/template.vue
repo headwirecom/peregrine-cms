@@ -669,7 +669,7 @@ export default {
           const isRoot = this.path === '/jcr:content'
           const relMousePos = this.getRelativeMousePosition(event)
 
-          if (this.dropTarget) {
+          if (this.dropTarget && !isRoot) {
             let dropLocation = this.dropLocation
 
             if (relMousePos.yPercentage <= 10 && dropLocation === 'before' && !isRoot) {
@@ -709,6 +709,7 @@ export default {
           this.selected.draggable = false
         }
         if (typeof this.component === 'undefined' || this.component === null) return false
+        if (this.dropPosition === 'none') return false
 
         const componentPath = event.dataTransfer.getData('text')
         if (this.path === componentPath) {
