@@ -379,7 +379,6 @@ export default {
         } else {
           if (vm.dragging || vm.path !== '/jcr:content') {
             vm.wrapEditableAroundSelected()
-            vm.editable.class = 'selected'
           }
           if (!vm.dragging) {
             if (vm.component !== vm.previousComponent) {
@@ -659,7 +658,7 @@ export default {
         this.target = event.target
 
         if (this.component) {
-          const isRoot = this.isTemplateNode
+          const isRoot = this.path === '/jcr:content'
           const relMousePos = this.getRelativeMousePosition(event)
 
           if (this.dropTarget) {
