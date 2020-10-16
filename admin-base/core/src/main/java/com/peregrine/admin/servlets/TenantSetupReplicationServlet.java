@@ -25,8 +25,11 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
+import com.peregrine.adaption.PerReplicable;
 import com.peregrine.admin.replication.DefaultReplicationMapper;
+import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.commons.util.PerConstants;
 import com.peregrine.replication.Replication.ReplicationException;
 import com.peregrine.sitemap.SiteMapFilesCache;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -34,12 +37,17 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.Servlet;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import static com.peregrine.admin.replication.ReplicationConstants.RESOURCE_TYPE_TENANT_SETUP_REPLICATION;
 import static com.peregrine.admin.replication.ReplicationConstants.SOURCE_NAME;
@@ -60,6 +68,7 @@ import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.commons.util.PerUtil.POST;
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -98,14 +107,20 @@ public class TenantSetupReplicationServlet extends AbstractBaseServlet {
         EXCLUDED_RESOURCES.add(JCR_CONTENT);
     }
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final SimpleDateFormat dateLabelFormat = new SimpleDateFormat("yyyy-MM-dd@HH.mm.ss");
+
     @Reference
     private DefaultReplicationMapper defaultReplicationMapper;
+
+    @Reference
+    private AdminResourceHandler resourceManagement;
 
     @Reference
     private SiteMapFilesCache siteMapFilesCache;
 
     @Override
-    protected Response handleRequest(Request request) throws IOException {
+    protected Response handleRequest(final Request request) throws IOException {
         final SlingHttpServletRequest servletRequest = request.getRequest();
         logger.trace("Request Path: '{}'", request.getRequestPath());
         logger.trace("Request URI: '{}'", servletRequest.getRequestURI());
@@ -126,7 +141,7 @@ public class TenantSetupReplicationServlet extends AbstractBaseServlet {
 //                .setHttpErrorCode(SC_BAD_REQUEST)
 //                .setErrorMessage(REPLICATION_NOT_FOUND_FOR_NAME + replicationName);
 //        }
-        String sourcePath = request.getParameter(PATH);
+        final String sourcePath = request.getParameter(PATH);
         final ResourceResolver resourceResolver = request.getResourceResolver();
         Resource source = resourceResolver.getResource(sourcePath);
         if (isNull(source)) {
@@ -164,7 +179,7 @@ public class TenantSetupReplicationServlet extends AbstractBaseServlet {
                 logger.info("Replication Resource: '{}'", resource);
                 List<Resource> replicatedItems = defaultReplicationMapper.replicate(resource, true);
                 allReplicatedResource.addAll(replicatedItems);
-            } catch (ReplicationException e) {
+            } catch (final ReplicationException e) {
                 logger.warn("Replication Failed", e);
                 return new ErrorResponse()
                         .setHttpErrorCode(SC_BAD_REQUEST)
@@ -173,6 +188,21 @@ public class TenantSetupReplicationServlet extends AbstractBaseServlet {
             }
         }
 
+        final String dateLabel = source.getName() + "_" + dateLabelFormat.format(new Date(System.currentTimeMillis()));
+        allReplicatedResource.stream()
+                .map(r -> r.adaptTo(PerReplicable.class))
+                .filter(Objects::nonNull)
+                .map(PerReplicable::getContentResource)
+                .filter(Objects::nonNull)
+                .map(Resource::getPath)
+                .filter(Objects::nonNull)
+                .forEach(path -> {
+                    try {
+                        resourceManagement.createVersion(resourceResolver, path, dateLabel, PerConstants.PUBLISHED_LABEL);
+                    } catch (final AdminResourceHandler.ManagementException e) {
+                        logger.trace("Unable to create a version for path: {} ", path, e);
+                    }
+                });
         siteMapFilesCache.build(sourcePath + SLASH + PAGES);
 
         final JsonResponse answer = new JsonResponse();
@@ -195,15 +225,16 @@ public class TenantSetupReplicationServlet extends AbstractBaseServlet {
         String siteName = sourceSite.getName();
         Resource siteFeLibs = felibs.getChild(siteName);
         logger.info("Source FeLibs: '{}', Site Name: '{}'", siteFeLibs, siteName);
-        if (siteFeLibs != null) {
+        if (nonNull(siteFeLibs)) {
             logger.info("Add Site Felibs: '{}'", siteFeLibs);
             replicationList.add(siteFeLibs);
         }
+
         String parentSourceSiteName = sourceSite.getValueMap().get(SOURCE_SITE, String.class);
         logger.info("Parent Source Site Name: '{}'", parentSourceSiteName);
         Resource parentSourceSite = sourceSite.getParent().getChild(parentSourceSiteName);
         logger.info("Parent Source Resource: '{}'", parentSourceSite);
-        if(parentSourceSite != null) {
+        if(nonNull(parentSourceSite)) {
             logger.info("Add Site Parent: '{}'", parentSourceSite);
             replicationList.add(parentSourceSite);
             handleSourceSites(parentSourceSite, replicationList, felibs);
