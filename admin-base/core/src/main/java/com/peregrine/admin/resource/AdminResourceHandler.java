@@ -107,11 +107,11 @@ public interface AdminResourceHandler {
      * Creates a resource version
      * @param resourceResolver Resource Resolver to manage resources and cannot be null
      * @param path Absolute Path of the resource to be versioned and this resource must exist
-     * @param label Label to apply to the version. Labels within a version graph need to be unique.
+     * @param labels Labels to apply to the version. Labels within a version graph need to be unique.
      * @return The Version which was created from the Resource
      * @throws ManagementException If creating the version failed
      */
-    Version createVersion(ResourceResolver resourceResolver, String path, String label) throws ManagementException;
+    Version createVersion(ResourceResolver resourceResolver, String path, String... labels) throws ManagementException;
 
     /**
      * Creates a resource version
