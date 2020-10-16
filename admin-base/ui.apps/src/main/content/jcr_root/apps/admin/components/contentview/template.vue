@@ -179,7 +179,7 @@ export default {
       },
       dropTarget() {
         if (!this.target) return
-        return this.target.getAttribute(Attribute.DROPTARGET) === 'true'
+        return !!$perAdminApp.findNodeFromPath(this.pageView.page, this.path).children
       },
       dropLocation() {
         return this.target.getAttribute(Attribute.LOCATION)
@@ -663,10 +663,10 @@ export default {
 
           if (this.dropTarget) {
             const dropLocation = this.dropLocation
-            if (relMousePos.yPercentage <= 30 && dropLocation === 'before' && !isRoot) {
+            if (relMousePos.yPercentage <= 10 && dropLocation === 'before' && !isRoot) {
               this.dropPosition = 'before'
               this.editable.class = 'drop-top'
-            } else if (relMousePos.yPercentage >= 70 && dropLocation === 'after' && !isRoot) {
+            } else if (relMousePos.yPercentage >= 90 && dropLocation === 'after' && !isRoot) {
               this.dropPosition = 'after'
               this.editable.class = 'drop-bottom'
             } else if (dropLocation) {
