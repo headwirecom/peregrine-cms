@@ -894,6 +894,8 @@ export default {
 }
 .labelChip {
   display: block;
+  width: fit-content;
+  white-space: nowrap;
 }
 .operationDisabledOnActivatedItem {
   text-decoration: line-through;
