@@ -44,7 +44,7 @@ public class PerConstants {
     public static final String PER_REPLICATED = "per:Replicated";
     public static final String PER_REPLICATION_STATUS = "per:ReplicationStatus";
     public static final String PER_REPLICATION_REF = "per:ReplicationRef";
-    public static final String PER_REPLICATION_LASTACTION = "per:ReplicationLastAction";
+    public static final String PER_REPLICATION_LAST_ACTION = "per:ReplicationLastAction";
     public static final String ACTIVATED = "activated";
     public static final String DEACTIVATED = "deactivated";
 

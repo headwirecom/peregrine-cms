@@ -28,16 +28,12 @@ package com.peregrine.admin.servlets;
 
 import com.peregrine.adaption.PerReplicable;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
-import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 import javax.servlet.Servlet;
 import java.io.IOException;
 
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_GET_OBJECT;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_LIST_REPLICATION_STATUS;
 import static com.peregrine.admin.servlets.NodesServlet.ACTIVATED;
 import static com.peregrine.admin.servlets.NodesServlet.DATE_FORMATTER;
@@ -49,7 +45,6 @@ import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
-import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 /**
  * Provides the Replicable Status in a JSON representation
@@ -92,7 +87,7 @@ public class ListReplicationStatusServlet extends AbstractBaseServlet {
         answer.writeAttribute(ACTIVATED, replicable.isReplicated());
         answer.writeAttribute(PER_REPLICATION_REF, replicable.getReplicationRef());
         answer.writeAttribute(PER_REPLICATED, DATE_FORMATTER.format(replicable.getReplicated().getTime().getTime()));
-        answer.writeAttribute(PER_REPLICATION_LASTACTION, replicable.getLastReplicationAction());
+        answer.writeAttribute(PER_REPLICATION_LAST_ACTION, replicable.getLastReplicationAction());
         answer.writeClose();
         return answer;
     }

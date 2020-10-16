@@ -83,6 +83,16 @@ public interface Replication {
     List<Resource> replicate(Collection<Resource> resourceList)
         throws ReplicationException;
 
+    default String storeFile(Resource parent, String name, String content)
+            throws ReplicationException {
+        return null;
+    }
+
+    default String storeFile(Resource parent, String name, byte[] content)
+            throws ReplicationException {
+        return null;
+    }
+
     class ReplicationException
         extends Exception
     {

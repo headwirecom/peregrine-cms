@@ -69,17 +69,17 @@ public class PerReplicableImpl extends PerBaseImpl implements PerReplicable {
 
     @Override
     public void setLastReplicationActionAsActivated() {
-        writeStringProperty(PER_REPLICATION_LASTACTION, ACTIVATED);
+        writeStringProperty(PER_REPLICATION_LAST_ACTION, ACTIVATED);
     }
 
     @Override
     public void setLastReplicationActionAsDeactivated(){
-        writeStringProperty(PER_REPLICATION_LASTACTION, DEACTIVATED);
+        writeStringProperty(PER_REPLICATION_LAST_ACTION, DEACTIVATED);
     }
 
     @Override
     public String getLastReplicationAction(){
-        return this.vm.get(PER_REPLICATION_LASTACTION, String.class);
+        return this.vm.get(PER_REPLICATION_LAST_ACTION, String.class);
     }
 
     private void writeStringProperty(String name, String value){

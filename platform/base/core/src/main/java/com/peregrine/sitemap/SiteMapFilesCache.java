@@ -27,8 +27,10 @@ package com.peregrine.sitemap;
 
 import org.apache.sling.api.resource.Resource;
 
-public interface SiteMapFilesCache extends CacheBuilder {
+public interface SiteMapFilesCache extends CacheBuilder<String[], SiteMapFilesCache.RefreshListener> {
 
     String get(Resource rootPage, int index);
+
+    interface RefreshListener extends CacheBuilder.RefreshListener<String[]> { }
 
 }

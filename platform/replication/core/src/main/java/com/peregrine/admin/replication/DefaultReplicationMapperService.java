@@ -4,17 +4,36 @@ import com.peregrine.commons.ResourceUtils;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
 import org.apache.sling.api.resource.Resource;
-import org.osgi.framework.BundleContext;
-import org.osgi.service.component.annotations.*;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.*;
-import java.util.Map.Entry;
 
-import static com.peregrine.commons.util.PerUtil.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.Function;
+
+import static com.peregrine.commons.util.PerUtil.AddAllResourceChecker;
+import static com.peregrine.commons.util.PerUtil.isEmpty;
+import static com.peregrine.commons.util.PerUtil.listMissingResources;
+import static com.peregrine.commons.util.PerUtil.splitIntoParameterMap;
+import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * This class provides the implementation of the Default Replication Mapper
@@ -101,26 +120,26 @@ public class DefaultReplicationMapperService
 
     @Activate
     @SuppressWarnings("unused")
-    void activate(BundleContext context, Configuration configuration) {
-        setup(context, configuration);
+    void activate(Configuration configuration) {
+        setup(configuration);
     }
 
     @Modified
     @SuppressWarnings("unused")
-    void modified(BundleContext context, Configuration configuration) {
-        setup(context, configuration);
+    void modified(Configuration configuration) {
+        setup(configuration);
     }
 
     private DefaultReplicationConfig defaultMapping;
     private List<DefaultReplicationConfig> pathMapping = new ArrayList<>();
 
-    private void setup(BundleContext context, final Configuration configuration) {
+    private void setup(final Configuration configuration) {
         init(configuration.name(), configuration.description());
         // Register this service as Replication instance
         logger.trace("Default Mapping: '{}'", configuration.defaultMapping());
         Map<String, Map<String, String>> temp = splitIntoParameterMap(new String[] {configuration.defaultMapping()}, ":", "\\|", "=");
         logger.trace("Mapped Default Mapping: '{}'", temp);
-        if(temp.keySet().isEmpty()) {
+        if(temp.isEmpty()) {
             throw new IllegalArgumentException(NO_DEFAULT_MAPPING);
         }
         Entry<String, Map<String, String>> entry = temp.entrySet().iterator().next();
@@ -165,47 +184,100 @@ public class DefaultReplicationMapperService
     public List<Resource> replicate(Collection<Resource> resourceList) throws ReplicationException {
         List<Resource> answer = new ArrayList<>();
         Map<DefaultReplicationConfig, List<Resource>> resourceByReplication = new HashMap<>();
-        resourceByReplication.put(defaultMapping, new ArrayList<Resource>());
+        resourceByReplication.put(defaultMapping, new ArrayList<>());
         for(DefaultReplicationConfig config: pathMapping) {
-            resourceByReplication.put(config, new ArrayList<Resource>());
+            resourceByReplication.put(config, new ArrayList<>());
         }
         // Now we loop over the all resources, separate them into pods of Replication Services
-        for(Resource resource: resourceList) {
-            boolean handled = false;
-            for(DefaultReplicationConfig config: pathMapping) {
-                if(config.isHandled(resource)) {
-                    logger.trace("Replicate Resource: '{}' using DRC: '{}'", resource.getPath(), config);
-                    resourceByReplication.get(config).add(resource);
-                    // Resource is handled if the service name here is the same as for the default
-                    if(!handled) {
-                        handled = !config.serviceName.equals(defaultMapping.serviceName);
-                    }
+        for (final Resource resource : resourceList) {
+            getReplications(resource).stream()
+                    .map(resourceByReplication::get)
+                    .forEach(l -> l.add(resource));
+        }
+
+        for (Entry<DefaultReplicationConfig, List<Resource>> pot: resourceByReplication.entrySet()) {
+            final String serviceName = pot.getKey().getServiceName();
+            final Replication replication = replications.get(serviceName);
+            if (isNull(replication)) {
+                throw new ReplicationException("Could not find replication with name: " + serviceName);
+            }
+
+            final String replicationName = replication.getName();
+            final List<Resource> resources = pot.getValue();
+            logger.trace("Replicate with Replication: '{}' these resources: '{}'", replicationName, resources);
+            logger.trace("DRH Replication: '{}', Replicates: '{}'", replicationName, resources);
+            answer.addAll(replication.replicate(resources));
+        }
+
+        return answer;
+    }
+
+    private List<DefaultReplicationConfig> getReplications(final Resource resource) {
+        final List<DefaultReplicationConfig> result = new LinkedList<>();
+        boolean handled = false;
+        for (final DefaultReplicationConfig config: pathMapping) {
+            if (config.isHandled(resource)) {
+                logger.trace("Replicate Resource: '{}' using DRC: '{}'", resource.getPath(), config);
+                result.add(config);
+                // Resource is handled if the service name here is the same as for the default
+                if (!handled) {
+                    handled = !config.serviceName.equals(defaultMapping.serviceName);
                 }
             }
-            if(!handled) {
-                // Resource was not added to default mapping so add it here
-                logger.trace("Replicate Resource: '{}' using default DRC: '{}'", resource.getPath(), defaultMapping);
-                resourceByReplication.get(defaultMapping).add(resource);
-            }
         }
-        for(Entry<DefaultReplicationConfig, List<Resource>> pot: resourceByReplication.entrySet()) {
-            Replication replication = replications.get(pot.getKey().getServiceName());
-            if(replication == null) {
-                throw new ReplicationException("Could not find replication with name: " + pot.getKey().getServiceName());
-            }
-            logger.trace("Replicate with Replication: '{}' these resources: '{}'", replication.getName(), pot.getValue());
-            List<Resource> resources = new ArrayList<>(pot.getValue());
-            logger.trace("DRH Replication: '{}', Replicates: '{}'", replication.getName(), resources);
-            List<Resource> replicatedResources = replication.replicate(resources);
-            if(!replicatedResources.isEmpty()) {
-                answer.addAll(replicatedResources);
-            }
+
+        if (!handled) {
+            // Resource was not added to default mapping so add it here
+            logger.trace("Replicate Resource: '{}' using default DRC: '{}'", resource.getPath(), defaultMapping);
+            result.add(defaultMapping);
         }
-        return answer;
+
+        return result;
     }
 
     private Replication getDefaultReplicationService() {
         return this.replications.get(this.defaultMapping.getServiceName());
+    }
+
+    public String storeFile(final Resource parent, final String name, final String content)
+            throws ReplicationException {
+        return storeFile(parent, r -> {
+            try {
+                return r.storeFile(parent, name, content);
+            } catch (final ReplicationException e) {
+                return null;
+            }
+        });
+    }
+
+    public String storeFile(final Resource parent, final String name, final byte[] content)
+            throws ReplicationException {
+        return storeFile(parent, r -> {
+            try {
+                return r.storeFile(parent, name, content);
+            } catch (final ReplicationException e) {
+                return null;
+            }
+        });
+    }
+
+    public String storeFile(final Resource parent, final Function<Replication, String> fileConsumer)
+            throws ReplicationException {
+        final StringBuilder answer = new StringBuilder("[");
+        for (final DefaultReplicationConfig config: getReplications(parent)) {
+            final String serviceName = config.getServiceName();
+            final Replication replication = replications.get(serviceName);
+            if (isNull(replication)) {
+                throw new ReplicationException("Could not find replication with name: " + serviceName);
+            }
+
+            final String location = fileConsumer.apply(replication);
+            if (isNotBlank(location)) {
+                answer.append(location).append(",");
+            }
+        }
+
+        return answer.append("]").toString();
     }
 
     /**
@@ -283,4 +355,5 @@ public class DefaultReplicationMapperService
             return "DefaultReplicationConfig{" + "serviceName='" + serviceName + '\'' + ", path='" + path + '\'' + ", parameters=" + parameters + '}';
         }
     }
+
 }

@@ -1139,7 +1139,7 @@ class PerAdminImpl {
     return updateWithForm('/admin/moveNodeTo.json' + path, formData)
   }
 
-replicate(path, replicationService='defaultRepl', deep=false, deactivate=false, resources=[]) {
+replicate(path, replicationService='', deep=false, deactivate=false, resources=[]) {
   const timeNow = Date.now() - 1000
   let noticeFunction = undefined
   let count = 0
