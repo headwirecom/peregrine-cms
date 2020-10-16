@@ -177,7 +177,7 @@ public final class DefaultSiteMapExtractor extends SiteMapExtractorBase implemen
             final Node node = version.getFrozenNode();
             return new Page(page, resourceResolver.getResource(node.getPath()));
         } catch (final RepositoryException e) {
-            logger.trace("Unable to grab the published version of " + path, e);
+            logger.trace("Unable to grab the published version of path: {} ", path, e);
             return null;
         }
     }
