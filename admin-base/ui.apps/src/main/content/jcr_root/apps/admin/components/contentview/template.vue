@@ -182,7 +182,11 @@ export default {
         return !!$perAdminApp.findNodeFromPath(this.pageView.page, this.path).children
       },
       dropLocation() {
-        return this.target.getAttribute(Attribute.LOCATION)
+        if (this.isTemplateNode) {
+          return 'after'
+        } else {
+          return this.target.getAttribute(Attribute.LOCATION)
+        }
       },
       targetInline() {
         return this.target.getAttribute(Attribute.INLINE)
@@ -658,11 +662,16 @@ export default {
         this.target = event.target
 
         if (this.component) {
+          if (!this.dropTarget && this.isTemplateNode) {
+            this.target = this.component.parentNode
+          }
+
           const isRoot = this.path === '/jcr:content'
           const relMousePos = this.getRelativeMousePosition(event)
 
           if (this.dropTarget) {
-            const dropLocation = this.dropLocation
+            let dropLocation = this.dropLocation
+
             if (relMousePos.yPercentage <= 10 && dropLocation === 'before' && !isRoot) {
               this.dropPosition = 'before'
               this.editable.class = 'drop-top'
