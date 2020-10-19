@@ -36,6 +36,9 @@ public final class DefaultSiteMapExtractorTest extends SiteStructureTestBase {
     @Mock
     private ResourceResolverFactoryProxy resolverFactory;
 
+    @Mock
+    private DefaultSiteMapExtractorConfig config;
+
     @Before
     public void setUp() throws NoSuchFieldException, LoginException {
         PrivateAccessor.setField(model, "pageRecognizer", pageRecognizer);
@@ -46,7 +49,8 @@ public final class DefaultSiteMapExtractorTest extends SiteStructureTestBase {
         PrivateAccessor.setField(model, "urlBuilder", urlBuilder);
         PrivateAccessor.setField(model, "resolverFactory", resolverFactory);
         when(resolverFactory.getServiceResourceResolver()).thenReturn(resourceResolver);
-        model.activate();
+        when(config.useCurrentVersions()).thenReturn(true);
+        model.activate(config);
     }
 
     @Test
