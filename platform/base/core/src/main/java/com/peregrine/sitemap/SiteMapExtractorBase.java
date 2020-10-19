@@ -59,13 +59,16 @@ public abstract class SiteMapExtractorBase implements SiteMapExtractor {
     public List<SiteMapEntry> extract(final Resource resource) {
         final Page page = getProxy(resource);
         final List<SiteMapEntry> result = new LinkedList<>();
-        Optional.ofNullable(page)
+        final Optional<SiteMapEntry> entry = Optional.ofNullable(page)
                 .filter(this::isPage)
-                .map(this::createEntry)
-                .ifPresent(result::add);
-        StreamSupport.stream(resource.getChildren().spliterator(), false)
-                .map(this::extract)
-                .forEach(result::addAll);
+                .map(this::createEntry);
+        entry.ifPresent(result::add);
+        if (entry.isPresent()) {
+            StreamSupport.stream(resource.getChildren().spliterator(), false)
+                    .map(this::extract)
+                    .forEach(result::addAll);
+        }
+
         return result;
     }
 
