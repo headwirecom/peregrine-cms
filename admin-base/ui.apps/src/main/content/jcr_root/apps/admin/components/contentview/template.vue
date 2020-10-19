@@ -692,17 +692,26 @@ export default {
         if (this.dropTarget && !isRoot) {
           let dropLocation = this.dropLocation
 
-          if (relMousePos.yPercentage <= 10 && dropLocation === 'before' && !isRoot) {
-            this.dropPosition = 'before'
-            this.editable.class = 'drop-top'
-          } else if (relMousePos.yPercentage >= 90 && dropLocation === 'after' && !isRoot) {
-            this.dropPosition = 'after'
-            this.editable.class = 'drop-bottom'
-          } else if (dropLocation) {
-            this.dropPosition = 'into-' + dropLocation
-            this.editable.class = 'selected'
+          if (this.isTemplateNode) {
+            if (dropLocation) {
+              this.dropPosition = 'into-' + dropLocation
+              this.editable.class = 'selected'
+            } else {
+              this.dropPosition = 'none'
+            }
           } else {
-            this.dropPosition = 'none'
+            if (relMousePos.yPercentage <= 10 && dropLocation === 'before' && !isRoot) {
+              this.dropPosition = 'before'
+              this.editable.class = 'drop-top'
+            } else if (relMousePos.yPercentage >= 90 && dropLocation === 'after' && !isRoot) {
+              this.dropPosition = 'after'
+              this.editable.class = 'drop-bottom'
+            } else if (dropLocation) {
+              this.dropPosition = 'into-' + dropLocation
+              this.editable.class = 'selected'
+            } else {
+              this.dropPosition = 'none'
+            }
           }
         } else if (!isRoot && !locked) {
           if (relMousePos.yPercentage <= 43.5) {
