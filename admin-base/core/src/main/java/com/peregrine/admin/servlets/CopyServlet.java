@@ -95,8 +95,7 @@ public class CopyServlet extends AbstractBaseServlet {
         String newName = request.getParameter(NEW_NAME);
         String newTitle = request.getParameter(NEW_TITLE);
         String deepParam = request.getParameter(DEEP);
-        boolean deep = false;
-        deep = "true".equalsIgnoreCase(deepParam);
+        boolean deep = Boolean.parseBoolean(deepParam);
         if(ORDER_CHILD_TYPE.equals(type)) {
             newParent = PerUtil.getResource(request.getResourceResolver(), toPath);
         }
@@ -113,7 +112,7 @@ public class CopyServlet extends AbstractBaseServlet {
                 .setRequestPath(fromPath);
         }
 
-        Resource copiedResource = null;
+        Resource copiedResource;
         ResourceResolver resourceResolver = request.getResourceResolver();
         try {
             copiedResource = resourceManagement

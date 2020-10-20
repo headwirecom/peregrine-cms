@@ -47,6 +47,7 @@ public class PerConstants {
     public static final String PER_REPLICATION_LAST_ACTION = "per:ReplicationLastAction";
     public static final String ACTIVATED = "activated";
     public static final String DEACTIVATED = "deactivated";
+    public static final String PUBLISHED_LABEL = "Published";
 
     public static final String SLING_SERVLET_DEFAULT = "sling/servlet/default";
 

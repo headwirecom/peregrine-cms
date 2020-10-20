@@ -614,7 +614,7 @@ public class AdminResourceHandlerService
     // jcr 2.0 Chapter 15
     // https://docs.adobe.com/content/docs/en/spec/jcr/2.0/15_Versioning.html#15.2.1%20Version%20Object
     @Override
-    public Version createVersion(ResourceResolver resourceResolver, String path, String label) throws ManagementException {
+    public Version createVersion(ResourceResolver resourceResolver, String path, String... labels) throws ManagementException {
         Resource resource = getResource(resourceResolver, path);
         if (resource == null) {
             throw new ManagementException("Could not find resource for versioning "+ path);
@@ -622,7 +622,7 @@ public class AdminResourceHandlerService
         Node versionableNode = resource.adaptTo(Node.class);
         try {
             VersionManager vm = versionableNode.getSession().getWorkspace().getVersionManager();
-            VersionHistory vh = null;
+            VersionHistory vh;
             try {
                 vh = vm.getVersionHistory(versionableNode.getPath());
             } catch (RepositoryException e) {
@@ -641,9 +641,12 @@ public class AdminResourceHandlerService
                 if (vm.isCheckedOut(path)){
                     Version v = vm.checkin(path);
                     vm.checkout(path);
-                    if (label != null) {
-                        vh.addVersionLabel(v.getName(), label, true);
+                    if (nonNull(labels)) {
+                        for (final String label : labels) {
+                            vh.addVersionLabel(v.getName(), label, true);
+                        }
                     }
+
                     logger.warn("Version created for {} at {}", path, v.getFrozenNode().getPath());
                     return v;
                 }
@@ -658,12 +661,12 @@ public class AdminResourceHandlerService
 
 
     @Override
-    public Resource restoreVersion(ResourceResolver resourceResolver, String path, String frozenNodepath, boolean force)
+    public Resource restoreVersion(ResourceResolver resourceResolver, String path, String frozenNodePath, boolean force)
             throws ManagementException {
         resourceResolver.refresh();
         Session jcrSession = resourceResolver.adaptTo(Session.class);
         try {
-            Version restoreVersion = (Version) jcrSession.getNode(frozenNodepath);
+            Version restoreVersion = (Version) jcrSession.getNode(frozenNodePath);
             VersionManager vm = jcrSession.getWorkspace().getVersionManager();
             vm.restore(restoreVersion, force);
             vm.checkout(path);
