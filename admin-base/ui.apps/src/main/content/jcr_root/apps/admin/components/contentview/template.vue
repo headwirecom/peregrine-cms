@@ -733,7 +733,6 @@ export default {
     onIframeDrop(event) {
       event.preventDefault()
       this.dragging = false
-      this.target = event.target
       if (this.isTouch) {
         this.selected.draggable = false
       }
