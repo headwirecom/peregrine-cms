@@ -668,6 +668,10 @@ export default {
       this.scrollTop = this.iframe.html.scrollTop
     },
 
+    onIframeDragStart(event) {
+      event.dataTransfer.effectAllowed = 'all';
+    },
+
     onIframeDragOver(event) {
       event.preventDefault()
       this.dragging = true
@@ -698,6 +702,7 @@ export default {
               this.editable.class = 'selected'
             } else {
               this.dropPosition = 'none'
+              event.dataTransfer.effectAllowed = ''
             }
           } else {
             if (relMousePos.yPercentage <= 10 && dropLocation === 'before' && !isRoot) {
@@ -711,6 +716,7 @@ export default {
               this.editable.class = 'selected'
             } else {
               this.dropPosition = 'none'
+              event.dataTransfer.effectAllowed = ''
             }
           }
         } else if (!isRoot && !locked) {
@@ -724,9 +730,11 @@ export default {
         } else {
           this.editable.class = ''
           this.dropPosition = 'none'
+          event.dataTransfer.effectAllowed = ''
         }
       } else {
         this.dropPosition = 'none'
+        event.dataTransfer.dropEffect = 'none'
       }
     },
 
@@ -825,6 +833,7 @@ export default {
       set($perAdminApp.getView(), '/state/contentview/editor/active', true)
       this.iframe.doc.addEventListener('click', this.onIframeClick)
       this.iframe.doc.addEventListener('scroll', this.onIframeScroll)
+      this.iframe.doc.addEventListener('dragstart', this.onIframeDragStart)
       this.iframe.doc.addEventListener('dragover', this.onIframeDragOver)
       this.iframe.doc.addEventListener('drop', this.onIframeDrop)
       this.iframe.doc.addEventListener('mouseover', this.onIframeMouseOver)
