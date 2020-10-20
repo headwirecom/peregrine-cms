@@ -154,19 +154,24 @@ public final class ResourceUtils {
     public static Resource performDeepSafeCopy(
             final ResourceResolver resourceResolver,
             final Resource resource,
-            final Resource targetParent
+            final Resource targetParent,
+            final String name
     ) throws PersistenceException {
-        final Resource result = performFlatSafeCopy(resourceResolver, resource, targetParent, resource.getName());
+        final Resource result = performFlatSafeCopy(resourceResolver, resource, targetParent, name);
         for (final Resource child : resource.getChildren()) {
-            performDeepSafeCopy(resourceResolver, child, result);
+            performDeepSafeCopy(resourceResolver, child, result, child.getName());
         }
 
         return result;
     }
 
-    public static Resource performDeepSafeCopy(final Resource resource, final Resource targetParent) throws PersistenceException {
+    public static Resource performDeepSafeCopy(final Resource resource, final Resource targetParent, final String name) throws PersistenceException {
         final ResourceResolver resourceResolver = targetParent.getResourceResolver();
-        return performDeepSafeCopy(resourceResolver, resource, targetParent);
+        return performDeepSafeCopy(resourceResolver, resource, targetParent, name);
+    }
+
+    public static Resource performDeepSafeCopy(final Resource resource, final Resource targetParent) throws PersistenceException {
+        return performDeepSafeCopy(resource, targetParent, resource.getName());
     }
 
 }

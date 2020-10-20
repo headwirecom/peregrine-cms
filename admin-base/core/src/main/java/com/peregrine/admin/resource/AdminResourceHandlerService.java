@@ -85,6 +85,8 @@ import static com.peregrine.commons.util.PerUtil.checkResource;
 import static com.peregrine.commons.util.PerUtil.getTenantVarPath;
 import static com.peregrine.commons.util.PerUtil.getTenantRootResource;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isAnyBlank;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -2393,7 +2395,7 @@ public class AdminResourceHandlerService
             if(tenantVarResource == null) {
                 logger.debug("Tenant var path does not exist, creating: '{}'", tenantVarPath);
                 tenantVarResource = resourceResolver.create(getTenantRootResource(resourceToCopy), "var",
-                        Collections.singletonMap("jcr:primaryType", (Object) "sling:Folder"));
+                        Collections.singletonMap("jcr:primaryType", "sling:Folder"));
             }
 
             //Create a temp location with a random (enough) path
@@ -2401,7 +2403,7 @@ public class AdminResourceHandlerService
             Resource tempResource = resourceResolver.create(tenantVarResource, tempResourceName, new HashMap<>());
             //Make a resource with the new name under the temp location
             //Copy all the children of the original resource to the temp copy
-            Resource tempCopy = ResourceUtils.performDeepSafeCopy(resourceToCopy, tempResource);
+            Resource tempCopy = ResourceUtils.performDeepSafeCopy(resourceToCopy, tempResource, newName);
             //Move the temp copy to the new parent location
             copiedResource = resourceResolver.move(tempCopy.getPath(), parentPath);
             //Clean up the temp location
@@ -2441,25 +2443,20 @@ public class AdminResourceHandlerService
         return copiedResource;
     }
 
-    private String getNameForCopy(Resource resourceToCopy, Resource newParent, String newName) throws ManagementException{
-        if(StringUtils.isNotBlank(newName)) {
-            if(newParent.getChild(newName) == null) {
-                return newName;
-            }
-            else {
-                throw new ManagementException(String.format(RESOURCE_NAME_COLLISION, newParent.getName(), newName));
-            }
-        }
-        newName = resourceToCopy.getName();
-        if(newParent.getChild(newName) == null) {
-            return newName;
+    private String getNameForCopy(Resource resourceToCopy, Resource newParent, String newName) {
+        String result = Optional.ofNullable(newName)
+                .filter(StringUtils::isNotBlank)
+                .orElseGet(resourceToCopy::getName);
+        if (isNull(newParent.getChild(result))) {
+            return result;
         }
 
         int i = 1;
-        while(newParent.getChild(newName+i) != null) {
+        while (nonNull(newParent.getChild(result + i))) {
             i++;
         }
-        return newName+i;
+
+        return result + i;
     }
 
     /**
