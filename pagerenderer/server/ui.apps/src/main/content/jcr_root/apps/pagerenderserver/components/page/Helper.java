@@ -1,4 +1,4 @@
-package apps.pagerenderserver.structure.page;
+package apps.pagerenderserver.components.page;
 
 /*-
  * #%L
