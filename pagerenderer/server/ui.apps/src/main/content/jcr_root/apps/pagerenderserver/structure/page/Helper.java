@@ -61,7 +61,7 @@ public class Helper implements Use {
     }
 
     public void init(Bindings bindings) {
-        Resource resource = (Resource) bindings.get("resource");
+        resource = (Resource) bindings.get("resource");
         SlingHttpServletRequest request = (SlingHttpServletRequest) bindings.get("request");
         SlingScriptHelper sling = (SlingScriptHelper) bindings.get("sling");
 
