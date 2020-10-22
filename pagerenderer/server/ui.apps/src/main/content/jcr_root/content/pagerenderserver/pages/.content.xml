@@ -32,7 +32,7 @@
 
   <jcr:content
     jcr:primaryType="per:PageContent"
-    sling:resourceType="pagerenderserver/structure/page"
+    sling:resourceType="pagerenderserver/components/page"
     jcr:title="pagerender-server root page"
     template="/content/pagerenderserver/templates"/>
 
