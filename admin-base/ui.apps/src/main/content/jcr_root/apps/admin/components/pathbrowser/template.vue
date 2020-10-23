@@ -263,7 +263,9 @@
                         <div class="item-content">
                           <i
                               class="material-icons"
-                              :style="`font-size: ${cardIconSize(cardSize)}px`">{{ getFolderIcon() }}</i>
+                              :style="`font-size: ${cardIconSize(cardSize)}px`">{{
+                              getFolderIcon()
+                            }}</i>
                           <br/>
                           <span class="truncate">{{ item.name }}</span>
                         </div>
@@ -284,7 +286,9 @@
                           <div class="item-content">
                             <i
                                 class="material-icons"
-                                :style="`font-size: ${cardIconSize(cardSize)}px`">{{ getFileIcon() }}</i>
+                                :style="`font-size: ${cardIconSize(cardSize)}px`">{{
+                                getFileIcon()
+                              }}</i>
                             <br/>
                             <span class="truncate">{{ item.name }}</span>
                           </div>
@@ -547,8 +551,11 @@ export default {
         'image/svg+xml'].indexOf(item.mimeType) >= 0
     },
     isImageExtension(item) {
-
-      return item.path.match(/.(jpg|jpeg|png|gif|svg)$/i)
+      if (item.path) {
+        return item.path.match(/.(jpg|jpeg|png|gif|svg)$/i)
+      } else {
+        return false
+      }
     },
     getFileIcon() {
       return 'insert_drive_file'
