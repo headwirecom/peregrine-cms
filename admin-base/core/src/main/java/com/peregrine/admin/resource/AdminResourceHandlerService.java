@@ -1,5 +1,6 @@
 package com.peregrine.admin.resource;
 
+import static com.peregrine.commons.ResourceUtils.*;
 import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
 import static com.peregrine.commons.util.PerConstants.ASSET;
 import static com.peregrine.commons.util.PerConstants.ASSETS_ROOT;
@@ -20,7 +21,6 @@ import static com.peregrine.commons.util.PerConstants.JCR_DATA;
 import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
-import static com.peregrine.commons.util.PerConstants.JCR_UUID;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.NODE;
 import static com.peregrine.commons.util.PerConstants.NT_FILE;
@@ -61,10 +61,6 @@ import static com.peregrine.commons.util.PerConstants.SITE_ASSETS_PATTERN;
 import static com.peregrine.commons.util.PerConstants.SITE_TEMPLATES_PATTERN;
 
 import static com.peregrine.commons.util.PerConstants.TITLE;
-
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
 
 import static com.peregrine.commons.util.PerUtil.convertToMap;
 import static com.peregrine.commons.util.PerUtil.getBoolean;
@@ -193,9 +189,6 @@ public class AdminResourceHandlerService
 
     private static final String RAW_TAGS = "raw_tags";
 
-    private static final List<String> IGNORED_PROPERTIES_FOR_COPY = new ArrayList<>();
-    private static final List<String> IGNORED_RESOURCE_PROPERTIES_FOR_COPY = new ArrayList<>();
-
     public static final String MISSING_RESOURCE_RESOLVER_FOR_SITE_COPY = "Resource Resolver must be provide to copy a Site";
     public static final String MISSING_PARENT_RESOURCE_FOR_COPY_SITES = "Sites Parent Resource was not provided or does not exist";
     public static final String MISSING_SOURCE_SITE_NAME = "Source Name must be provide";
@@ -249,19 +242,6 @@ public class AdminResourceHandlerService
     private static final String NAME_CONSTRAINT_VIOLATION = "The provided name '%s' is not valid.";
 
     private static final Pattern ANCHOR_SITE_REF_PATTERN = Pattern.compile("(<a .*?href=\"/content/)([a-z]+)/");
-
-    static {
-        IGNORED_PROPERTIES_FOR_COPY.add(JCR_PRIMARY_TYPE);
-        IGNORED_PROPERTIES_FOR_COPY.add(JCR_UUID);
-
-        IGNORED_RESOURCE_PROPERTIES_FOR_COPY.add(JCR_UUID);
-        IGNORED_RESOURCE_PROPERTIES_FOR_COPY.add(JCR_CREATED);
-        IGNORED_RESOURCE_PROPERTIES_FOR_COPY.add(JCR_CREATED_BY);
-
-        IGNORED_RESOURCE_PROPERTIES_FOR_COPY.add(PER_REPLICATED);
-        IGNORED_RESOURCE_PROPERTIES_FOR_COPY.add(PER_REPLICATED_BY);
-        IGNORED_RESOURCE_PROPERTIES_FOR_COPY.add(PER_REPLICATION_REF);
-    }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -1123,10 +1103,7 @@ public class AdminResourceHandlerService
     private void applyProperties(@NotNull Node node, @NotNull Map properties) throws RepositoryException, ManagementException {
         String prettyJson = prettyPrintJson(properties);
         logger.trace("Apply Properties, Node: '{}', props: '{}'", node, prettyJson);
-        Set<Entry> entrySet = properties.entrySet();
-        entrySet = entrySet.stream()
-            .filter(e -> !IGNORED_PROPERTIES_FOR_COPY.contains(e.getKey()))
-            .collect(Collectors.toSet());
+        final Set<Entry> entrySet = filterPropertiesAllowedOnExistingNode(properties).entrySet();
         for (final Entry entry : entrySet) {
             final String key = toStringOrNull(entry.getKey());
             final Object value = entry.getValue();
@@ -1261,7 +1238,7 @@ public class AdminResourceHandlerService
             final PropertyIterator pi = source.getProperties();
             while (pi.hasNext()) {
                 Property property = pi.nextProperty();
-                if (!IGNORED_PROPERTIES_FOR_COPY.contains(property.getName())) {
+                if (isPropertyAllowedOnExistingNode(property.getName())) {
                     if (property.isMultiple()) {
                         target.setProperty(property.getName(), property.getValues(), property.getType());
                     } else {
@@ -1764,7 +1741,7 @@ public class AdminResourceHandlerService
             return null;
         }
 
-        Map<String, Object> newProperties = copyProperties(source.getValueMap());
+        Map<String, Object> newProperties = getCopyableProperties(source);
         logger.trace("Resource Properties: '{}'", newProperties);
         try {
             target = source.getResourceResolver().create(targetParent, toName, newProperties);
@@ -1775,16 +1752,6 @@ public class AdminResourceHandlerService
         }
         logger.trace("New Resource Properties: '{}'", target.getValueMap());
         return target;
-    }
-
-    private Map<String, Object> copyProperties(ValueMap source) {
-        Map<String, Object> answer = new HashMap<>(source);
-        for (String ignore : IGNORED_RESOURCE_PROPERTIES_FOR_COPY) {
-            if (answer.containsKey(ignore)) {
-                answer.remove(ignore);
-            }
-        }
-        return answer;
     }
 
     public void updateTitle(Resource resource, String title) {
@@ -1899,7 +1866,7 @@ public class AdminResourceHandlerService
         }
 
         private void copyChild(Resource sourceChild, Resource targetParent, int depth) throws PersistenceException {
-            Map<String, Object> newProperties = copyProperties(sourceChild.getValueMap());
+            Map<String, Object> newProperties = getCopyableProperties(sourceChild);
             if (patternLength > 0) {
                 updatePaths(sourceChild, newProperties);
             }
@@ -1967,7 +1934,7 @@ public class AdminResourceHandlerService
         }
 
         private Resource copyFolder(Resource folder, Resource targetParent, String folderName) {
-            final Map<String, Object> newProperties = copyProperties(folder.getValueMap());
+            final Map<String, Object> newProperties = getCopyableProperties(folder);
             logger.trace("Resource Properties: '{}'", newProperties);
             try {
                 return resourceResolver.create(targetParent, folderName, newProperties);
@@ -2277,7 +2244,7 @@ public class AdminResourceHandlerService
 
     private Resource copyFolder(Resource folder, Resource targetParent, String folderName) {
         Resource answer = null;
-        Map<String, Object> newProperties = copyProperties(folder.getValueMap());
+        Map<String, Object> newProperties = getCopyableProperties(folder);
         logger.trace("Resource Properties: '{}'", newProperties);
         try {
             answer = folder.getResourceResolver().create(targetParent, folderName, newProperties);
