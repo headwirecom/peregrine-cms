@@ -3,10 +3,7 @@ package com.peregrine.commons;
 import com.peregrine.commons.util.PerConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceUtil;
+import org.apache.sling.api.resource.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,7 +22,7 @@ import static org.apache.commons.lang3.StringUtils.substringBefore;
 
 public final class ResourceUtils {
 
-    private static final Set<String> COPYABLE_PROPERTIES = Arrays.asList(
+    private static final Set<String> NONCOPYABLE_PROPERTIES = Arrays.asList(
             JcrConstants.JCR_BASEVERSION,
             JcrConstants.JCR_CREATED,
             JcrConstants.JCR_ISCHECKEDOUT,
@@ -131,15 +128,34 @@ public final class ResourceUtils {
         return list;
     }
 
-    public static Map<String, Object> getCopyableProperties(final Resource resource) {
-        return Optional.ofNullable(resource)
-                .map(Resource::getValueMap)
-                .map(vm -> (Map<String, Object>) vm)
+    public static boolean isPropertyCopyable(final String name) {
+        return !NONCOPYABLE_PROPERTIES.contains(name);
+    }
+
+    public static boolean isPropertyAllowedOnExistingNode(final String name) {
+        return !JCR_PRIMARY_TYPE.equals(name) && isPropertyCopyable(name);
+    }
+
+    public static Map<String, Object> filterCopyableProperties(final Map<String, ?> properties) {
+        return Optional.ofNullable(properties)
                 .orElseGet(Collections::emptyMap)
                 .entrySet()
                 .stream()
-                .filter(e -> !COPYABLE_PROPERTIES.contains(e.getKey()))
+                .filter(e -> isPropertyCopyable(e.getKey()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    public static Map<String, Object> filterPropertiesAllowedOnExistingNode(final Map<String, ?> properties) {
+        final Map<String, Object> result = filterCopyableProperties(properties);
+        result.remove(JCR_PRIMARY_TYPE);
+        return result;
+    }
+
+    public static Map<String, Object> getCopyableProperties(final Resource resource) {
+        return Optional.ofNullable(resource)
+                .map(Resource::getValueMap)
+                .map(ResourceUtils::filterCopyableProperties)
+                .orElseGet(Collections::emptyMap);
     }
 
     public static Resource performFlatSafeCopy(
