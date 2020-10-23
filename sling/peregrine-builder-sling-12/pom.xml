@@ -89,6 +89,7 @@
                             <filesInclude>oak/persistence/oak_persistence_sns.json</filesInclude>
                             <filesInclude>app/composum.json</filesInclude>
                             <filesInclude>app/distribution.json</filesInclude>
+                            <filesInclude>peregrine/*.json</filesInclude>
                             <title>Sling With Oak Segment NS Persistence</title>
                         </aggregate>
                         <aggregate>
@@ -98,6 +99,7 @@
                             <filesInclude>oak/persistence/oak_persistence_sns_fds.json</filesInclude>
                             <filesInclude>app/composum.json</filesInclude>
                             <filesInclude>app/distribution.json</filesInclude>
+                            <filesInclude>peregrine/*.json</filesInclude>
                             <title>Sling with Oak Segment NodeStore (sns) and File Datastore (fds)</title>
                         </aggregate>
                         <aggregate>

@@ -1,0 +1,8 @@
+{
+    "bundles":[
+	{
+            "id":"org.apache.jackrabbit:oak-auth-external:${oak.version}",
+            "start-order":"15"
+        }
+    ]
+}
