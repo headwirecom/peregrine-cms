@@ -1,7 +1,11 @@
-<!DOCTYPE html><sly data-sly-use.helper="apps.pagerenderserver.components.page.Helper"/>
+<!DOCTYPE html><sly data-sly-use.helper="com.peregrine.pagerender.server.helpers.PageHelper"/>
 <html lang="en">
 <head>
     <meta charset="utf-8">
+    <sly data-sly-list="${helper.model.prefetchDNS}"><link rel="preconnect" href="${item}"><link rel="dns-prefetch" href="${item}"></sly>
+    <sly data-sly-list="${helper.model.siteJS}"><link rel="preload" href="${item}" as="script"></sly>
+    <sly data-sly-list="${helper.model.siteCSS}"><link rel="preload" href="${item}" as="style"></sly>
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#c0c0c0">
 
