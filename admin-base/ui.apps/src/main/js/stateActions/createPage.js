@@ -50,13 +50,13 @@ export default function(me, target) {
         }
         api.savePageEdit(fullPath, target.data).then( () => {
             set(me.getView(), '/state/tools/page', fullPath)
-            me.loadContent(`${destination}/path${SUFFIX_PARAM_SEPARATOR + destinationPath}`).then(() => {
-                /**
-                 * TODO: workaround for broken reactivity in right-panel editor
-                 * https://github.com/headwirecom/peregrine-cms/issues/637
-                 */
-                window.reload()
-            })
+            me.loadContent(`${destination}/path${SUFFIX_PARAM_SEPARATOR + destinationPath}`)
+        }).then(() => {
+            /**
+             * TODO: workaround for broken reactivity in right-panel editor
+             * https://github.com/headwirecom/peregrine-cms/issues/637
+             */
+            setTimeout(() => {window.location.reload()}, 500)
         })
     })
 

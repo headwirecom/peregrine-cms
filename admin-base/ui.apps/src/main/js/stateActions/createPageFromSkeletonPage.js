@@ -24,6 +24,7 @@
  */
 import {LoggerFactory} from '../logger'
 import {Admin, SUFFIX_PARAM_SEPARATOR} from '../constants';
+import {set} from '../utils';
 
 let log = LoggerFactory.logger('createPageFromSkeletonPage').setLevelDebug()
 
@@ -32,6 +33,7 @@ export default function(me, target) {
     log.fine(target)
 
     const api = me.getApi()
+    const fullPath = `${target.parent}/${target.name}`
     let destination = Admin.Page.PAGES
     let destinationPath = target.parent
 
@@ -47,7 +49,14 @@ export default function(me, target) {
             target.data.title = undefined
         }
         api.savePageEdit(target.parent + '/' + target.name, target.data).then( () => {
+            set(me.getView(), '/state/tools/page', fullPath)
             me.loadContent(`${destination}/path${SUFFIX_PARAM_SEPARATOR + destinationPath}`)
+        }).then(() => {
+            /**
+             * TODO: workaround for broken reactivity in right-panel editor
+             * https://github.com/headwirecom/peregrine-cms/issues/637
+             */
+            setTimeout(() => {window.location.reload()}, 500)
         })
     })
 
