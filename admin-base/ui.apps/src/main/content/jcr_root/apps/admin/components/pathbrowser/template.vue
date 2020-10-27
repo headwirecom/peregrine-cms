@@ -332,7 +332,7 @@
                 </div>
                 <div v-if="isImageExtension({path: selectedPath})" class="img-group">
                   <div class="form-group">
-                    <label for="linkTitle">Image Width (px)</label>
+                    <label for="imgWidth">Image Width (px)</label>
                     <input
                         id="imgWidth"
                         type="number"
@@ -341,7 +341,7 @@
                         @input="onUpdateImgDimension('width', $event)"/>
                   </div>
                   <div class="form-group">
-                    <label for="linkTitle">Image Height (px)</label>
+                    <label for="imgHeight">Image Height (px)</label>
                     <input
                         id="imgHeight"
                         type="number"
