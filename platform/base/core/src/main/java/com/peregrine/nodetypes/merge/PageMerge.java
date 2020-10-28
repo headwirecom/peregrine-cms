@@ -36,11 +36,7 @@ import static java.util.regex.Pattern.compile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import javax.script.Bindings;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
@@ -63,6 +59,7 @@ public class PageMerge implements Use {
     private static ThreadLocal<RenderContext> renderContext = new ThreadLocal<>();
 
     public static final String FROM_TEMPLATE = "fromTemplate";
+    public static final String CHILDREN = "children";
     public static final String REQUEST = "request";
     public static final String SLING = "sling";
     public static final String TEMPLATE = "template";
@@ -71,7 +68,7 @@ public class PageMerge implements Use {
     private ModelFactory modelFactory;
 
     private SlingHttpServletRequest request;
-
+    private Resource resource;
     public static RenderContext getRenderContext() {
         return renderContext.get();
     }
@@ -83,6 +80,44 @@ public class PageMerge implements Use {
             res = res.getParent();
         }
         return toJSON(getMerged(res));
+    }
+
+    public List<Resource> getMergedResources(){
+        List<Resource> pageResources = new ArrayList<>();
+        resource = request.getResource();
+        if(resource.getName().equals(JCR_CONTENT)) {
+            resource = resource.getParent();
+        }
+        Map resourceMap = getMerged(resource);
+        // MAP to List
+        List<Map> maps = (ArrayList) resourceMap.get(CHILDREN);
+        for (Map map : maps) {
+            getChildren(map, pageResources);
+        }
+        return pageResources;
+    }
+
+    private void getChildren(Map map, List resources){
+        List<Map> maps = (ArrayList) map.get(CHILDREN);
+        String templatePath = getTemplatePath();
+        // when maps is null;
+        // the map represents a resource that is not a container; it should be added to the resource list.
+        if( Objects.isNull(maps)){
+            String relativePath = (String) map.get("path");
+            String basePath = "";
+            if (Objects.nonNull(map.get(FROM_TEMPLATE)) && (boolean) map.get(FROM_TEMPLATE)){
+                basePath = templatePath;
+            } else {
+                basePath = resource.getPath();
+            }
+            Resource resource = this.resource.getResourceResolver().getResource(basePath+relativePath);
+            resources.add(resource);
+        } else {
+        // when maps is defined; the resource is a container, and we need to get it's resources.
+            for (Map nestedMap : maps) {
+                getChildren(nestedMap, resources);
+            }
+        }
     }
 
     public String getMergedForScript() {
@@ -138,6 +173,11 @@ public class PageMerge implements Use {
                 }
             }
         }
+    }
+
+    private String getTemplatePath(){
+        Resource jcrContent = this.resource.getChild(JCR_CONTENT);
+        return jcrContent.getValueMap().get(TEMPLATE, String.class);
     }
 
     private Map merge(Map template, Map page) {
