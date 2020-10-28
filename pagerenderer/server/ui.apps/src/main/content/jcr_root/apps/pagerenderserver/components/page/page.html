@@ -1,4 +1,6 @@
-<!DOCTYPE html><sly data-sly-use.helper="com.peregrine.pagerender.server.helpers.PageHelper"/>
+<!DOCTYPE html>
+<sly data-sly-use.helper="com.peregrine.pagerender.server.helpers.PageHelper"/>
+<sly data-sly-use.pageMerge="com.peregrine.nodetypes.merge.PageMerge" />
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -24,12 +26,15 @@
 <body>
 <sly data-sly-include="tracker-bodystart.html"></sly>
 <div id="peregrine-app">
-    ${helper.path}
-    <div data-sly-list.item="${resource.listChildren}" data-per-path="${helper.model.path}">
+    ${helper.path}    
+    <div data-sly-list.item="${pageMerge.getMergedResources}" data-per-path="${helper.model.path}">
         <sly data-sly-resource="${item.path}"></sly>
-    </div>
-
+    </div>     
 </div>
+
+<sly data-sly-list="${helper.model.siteJS}">
+    <script type="text/javascript" src="${item}"></script>
+</sly>
 
 <sly data-sly-list="${helper.model.siteJS}">
     <script type="text/javascript" src="${item}"></script>
