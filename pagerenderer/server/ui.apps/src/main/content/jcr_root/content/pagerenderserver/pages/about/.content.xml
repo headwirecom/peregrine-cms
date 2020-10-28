@@ -32,7 +32,9 @@
   <jcr:content
     jcr:primaryType="per:PageContent"
     sling:resourceType="pagerenderserver/components/page"
-    jcr:title="peregrine-server About">
+    jcr:title="peregrine-server About"
+    template="/content/pagerenderserver/templates/base"
+    templatePath="/content/pagerenderserver/templates/base" >
 
     <content jcr:primaryType="nt:unstructured"
       sling:resourceType="pagerenderserver/components/container">

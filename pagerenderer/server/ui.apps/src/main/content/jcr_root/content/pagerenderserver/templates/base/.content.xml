@@ -31,13 +31,17 @@
 
   <jcr:content
     jcr:primaryType="per:PageContent"
-    sling:resourceType="pagerenderserver/components/page"
-    jcr:title="example htl site template">
-    
+    jcr:title="example htl site template"
+    sling:resourceType="pagerenderserver/components/page">
+
+    <base jcr:primaryType="nt:unstructured"
+      sling:resourceType="pagerenderserver/components/base"
+      text="example template content"/>
+
+      <content jcr:primaryType="nt:unstructured" sling:resourceType="pagerenderserver/components/container" />
+
 <!-- TODO: build nav and footer component for pagerenderserver
-<nav jcr:primaryType="nt:unstructured"
-      sling:resourceType="pagerenderserver/components/nav"
-      brand="example"/>
+
 
     <footer jcr:primaryType="nt:unstructured"
       sling:resourceType="pagerenderserver/components/footer"/> -->
