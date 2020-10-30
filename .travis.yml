@@ -42,4 +42,4 @@ deploy:
   provider: script
   script: docker push ${DOCKER_IMAGE}:${branch}
   on:
-    branch: develop-sling12
+    all_branches: true
