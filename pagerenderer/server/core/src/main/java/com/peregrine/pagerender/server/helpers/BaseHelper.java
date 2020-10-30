@@ -18,26 +18,28 @@ import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.util.Objects;
 
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+
 public class BaseHelper implements Use {
 
     // GLOBAL OBJECTS (from Use API Binding)
-    protected Node currentNode;
-    protected Session currentSession;
-    protected Logger log;
-    protected PrintWriter out;
-    protected ValueMap properties;
-    protected BufferedReader reader;
-    protected SlingHttpServletRequest request;
-    protected ResourceResolver resolver;
-    protected Resource resource;
-    protected SlingHttpServletResponse response;
-    protected SlingScriptHelper sling;
+    private Node currentNode;
+    private Session currentSession;
+    private Logger log;
+    private PrintWriter out;
+    private ValueMap properties;
+    private BufferedReader reader;
+    private SlingHttpServletRequest request;
+    private ResourceResolver resolver;
+    private Resource resource;
+    private SlingHttpServletResponse response;
+    private SlingScriptHelper sling;
 
     // Peregrine API
-    protected Object model;
-    protected Resource siteRoot;
-    protected PerPage currentPage;
-    protected String pagePath;
+    private Object model;
+    private Resource siteRoot;
+    private PerPage currentPage;
+    private String pagePath;
 
     // Constants
     public static String CURRENT_NODE = "currentNode";
@@ -68,6 +70,7 @@ public class BaseHelper implements Use {
 
         // initialize peregrine api
         pagePath = request.getRequestPathInfo().getResourcePath();
+        pagePath = pagePath.substring(0, pagePath.indexOf(JCR_CONTENT));
         Resource pageRes = resolver.getResource(pagePath);
         if (Objects.nonNull(pageRes)){
             currentPage = pageRes.adaptTo(PerPage.class);
@@ -77,10 +80,71 @@ public class BaseHelper implements Use {
         }
         try {
             model = sling.getService(ModelFactory.class).getModelFromResource(resource);
+            if (Objects.isNull(model)) {
+                model = sling.getService(ModelFactory.class).getModelFromRequest(request);
+            }            
         } catch(Throwable t) {
-            model = sling.getService(ModelFactory.class).getModelFromRequest(request);
+            log.warn("could not get model for "+resource.getPath());
         }
     }
 
+    public PrintWriter getOut() {
+        return out;
+    }
 
+    public ValueMap getProperties() {
+        return properties;
+    }
+
+    public BufferedReader getReader() {
+        return reader;
+    }
+
+    public SlingHttpServletRequest getRequest() {
+        return request;
+    }
+
+    public ResourceResolver getResolver() {
+        return resolver;
+    }
+
+    public Resource getResource() {
+        return resource;
+    }
+
+    public SlingHttpServletResponse getResponse() {
+        return response;
+    }
+
+    public SlingScriptHelper getSling() {
+        return sling;
+    }
+
+    public Object getModel() {
+        return model;
+    }
+
+    public Resource getSiteRoot() {
+        return siteRoot;
+    }
+
+    public PerPage getCurrentPage() {
+        return currentPage;
+    }
+
+    public String getPagePath() {
+        return pagePath;
+    }
+
+    public Node getCurrentNode() {
+        return currentNode;
+    }
+
+    public Session getCurrentSession() {
+        return currentSession;
+    }
+
+    public Logger getLog() {
+        return log;
+    }
 }

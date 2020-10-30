@@ -12,23 +12,20 @@ public class PageHelper extends BaseHelper {
     }
 
     public String getPath() {
-        return resource.getPath();
+        return this.getResource().getPath();
     }
 
-    public Object getModel() {
-        return model;
-    }
 
     public String getSiteRootPath() {
-        return Objects.nonNull(siteRoot) ? siteRoot.getPath() : null;
+        return Objects.nonNull(getSiteRoot()) ? getSiteRoot().getPath() : null;
     }
 
     public String getModelClass() {
-        return Objects.nonNull(model) ? model.getClass().toString() : null;
+        return Objects.nonNull(getModel()) ? getModel().getClass().toString() : null;
     }
 
     public String[] getSiteCSS(){
-        PageModel page = resource.adaptTo(PageModel.class);
+        PageModel page = getResource().adaptTo(PageModel.class);
         return page.getSiteCSS();
     }
 
