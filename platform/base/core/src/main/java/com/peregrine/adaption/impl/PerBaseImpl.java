@@ -146,6 +146,14 @@ public abstract class PerBaseImpl implements PerBase {
     }
 
     @Override
+    public ValueMap getSiteProperties(){
+        if(Objects.nonNull(getSiteResource()) && Objects.nonNull(getSiteResource().getChild(JCR_CONTENT))){
+            return getSiteResource().getChild(JCR_CONTENT).getValueMap();
+        }
+        return null;
+    }
+
+    @Override
     public Resource getSiteResource(){
         return this.getSiteResource(this.resource);
     }
