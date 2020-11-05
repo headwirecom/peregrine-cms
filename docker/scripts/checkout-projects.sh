@@ -17,8 +17,10 @@ THEMECLEANFLEX_BRANCH=$4
 SAVE_PWD=`pwd`
 
 echo "Checking out ${PEREGRINECMS_REPO} and using ${PEREGRINECMS_BRANCH}..."
-git clone ${PEREGRINECMS_REPO}
+git clone --depth 1 ${PEREGRINECMS_REPO}
 cd peregrine-cms
+git remote set-branches origin ${PEREGRINECMS_BRANCH}
+git fetch --depth 1 origin ${PEREGRINECMS_BRANCH}
 git checkout ${PEREGRINECMS_BRANCH}
 
 cd ..
