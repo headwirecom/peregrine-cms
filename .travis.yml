@@ -23,6 +23,10 @@ before_script:
 
 script:
 - cd docker && ./builddocker.sh
+- echo "Is pull request: ${TRAVIS_PULL_REQUEST}"
+- docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+- docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:${branch}"
+- docker push ${DOCKER_IMAGE}:${branch}
 
 after_script:
 - docker images
