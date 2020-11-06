@@ -98,22 +98,20 @@ public final class VersioningResourceResolver extends ResourceResolverWrapper {
             return resource;
         }
 
+        final ResourceResolver resourceResolver = resource.getResourceResolver();
         final String path = resource.getPath();
         if (ResourceUtil.isNonExistingResource(resource)) {
-            return resource.getResourceResolver() == this
-                    ? resource
+            return resourceResolver == this ? resource
                     : new NonExistingResource(this, path);
         }
 
         if (ResourceUtil.isSyntheticResource(resource)) {
-            return resource.getResourceResolver() == this
-                    ? resource
+            return resourceResolver == this ? resource
                     : new SyntheticResource(this, path, resource.getResourceType());
         }
 
         if (ResourceUtil.isStarResource(resource)) {
-            return resource.getResourceResolver() == this
-                    ? resource
+            return resourceResolver == this ? resource
                     : new VersionedResource(this, resource);
         }
 
