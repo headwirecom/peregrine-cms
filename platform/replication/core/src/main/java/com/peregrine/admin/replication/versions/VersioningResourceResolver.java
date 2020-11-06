@@ -138,6 +138,10 @@ public final class VersioningResourceResolver extends ResourceResolverWrapper {
     }
 
     private boolean forceVersion(final Resource resource) {
+        if (resource.isResourceType("per:Site")) {
+            return false;
+        }
+
         final String path = resource.getPath();
         if (exemptedPaths.stream().anyMatch(path::equals)) {
             return false;
