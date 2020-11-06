@@ -10,7 +10,6 @@
   <jcr:content
           jcr:primaryType="per:PageContent"
           sling:resourceType="example/components/page"
-          jcr:title="example sub-template"
-          template="/content/example/templates/base/sub-template"/>
+          jcr:title="example sub-template" />
 
 </jcr:root>
