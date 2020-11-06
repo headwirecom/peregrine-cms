@@ -32,6 +32,7 @@ import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static java.util.regex.Pattern.compile;
+import static org.apache.sling.api.scripting.SlingBindings.RESOLVER;
 import static org.apache.sling.api.scripting.SlingBindings.RESOURCE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,6 +42,7 @@ import java.util.*;
 import javax.script.Bindings;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.scripting.SlingScriptHelper;
 import org.apache.sling.models.factory.ExportException;
 import org.apache.sling.models.factory.MissingExporterException;
@@ -68,7 +70,7 @@ public class PageMerge implements Use {
     public static final String REGEX_TEMPLATES = "(?<=\\/content\\/)([a-zA-Z0-9\\\\s\\\\_-])*(?=\\/templates)";
 
     private ModelFactory modelFactory;
-
+    private ResourceResolver resolver;
     private SlingHttpServletRequest request;
     private Resource resource;
     public static RenderContext getRenderContext() {
@@ -115,10 +117,27 @@ public class PageMerge implements Use {
             } else {
                 basePath = templatePath;
             }
+
+            Resource templateContent = this.resolver.getResource(basePath+relativePath);
+            Resource templateResource = this.resolver.getResource(templatePath);
+            while (Objects.isNull(templateContent) && Objects.nonNull(templateResource)){
+                // while loop logic. Enter if templateContent is null, but templateResource is non null.
+                // then try to resolve the templateContent from template parents content
+                // exit while loop when templateContent is resolved or templateResource becomes null
+                templateResource = templateResource.getParent();
+                if (Objects.nonNull(templateResource)) {
+                    templateContent = resolver.getResource(templateResource.getPath()+relativePath);
+                }
+            }
+            if(Objects.nonNull(templateContent)){
+                resources.add(templateContent);
+            }
+        } else {
+            // page content
+            Resource pageResource = this.resource.getResourceResolver()
+                    .getResource(resource.getPath()+relativePath);
+            resources.add(pageResource);
         }
-        // get the component resource from the page's content or the template
-        Resource componentResource = this.resource.getResourceResolver().getResource(basePath+relativePath);
-        resources.add(componentResource);
     }
 
     public String getMergedForScript() {
@@ -147,7 +166,7 @@ public class PageMerge implements Use {
                 }
             }
             if(templatePath != null) {
-                Map template = getMerged(this.resource.getResourceResolver().getResource(templatePath));
+                Map template = getMerged(this.resolver.getResource(templatePath));
                 flagFromTemplate(template);
                 return merge(template, page);
             }
@@ -246,6 +265,7 @@ public class PageMerge implements Use {
         request = (SlingHttpServletRequest) bindings.get(REQUEST);
         resource = (Resource) bindings.get(RESOURCE);
         renderContext.set(new RenderContext(request));
+        resolver = (ResourceResolver) bindings.get(RESOLVER);
         SlingScriptHelper sling = (SlingScriptHelper) bindings.get(SLING);
         if (Objects.nonNull(sling)) {
             // the typical path
