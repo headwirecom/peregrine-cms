@@ -32,6 +32,7 @@ import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static java.util.regex.Pattern.compile;
+import static org.apache.sling.api.scripting.SlingBindings.RESOURCE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -63,6 +64,7 @@ public class PageMerge implements Use {
     public static final String REQUEST = "request";
     public static final String SLING = "sling";
     public static final String TEMPLATE = "template";
+    public static final String MODEL_FACTORY = "modelFactory";
     public static final String REGEX_TEMPLATES = "(?<=\\/content\\/)([a-zA-Z0-9\\\\s\\\\_-])*(?=\\/templates)";
 
     private ModelFactory modelFactory;
@@ -84,7 +86,9 @@ public class PageMerge implements Use {
 
     public List<Resource> getMergedResources(){
         List<Resource> pageResources = new ArrayList<>();
-        resource = request.getResource();
+        if (Objects.isNull(resource)){
+            resource = request.getResource();
+        }
         if(resource.getName().equals(JCR_CONTENT)) {
             resource = resource.getParent();
         }
@@ -98,26 +102,23 @@ public class PageMerge implements Use {
     }
 
     private void getChildren(Map map, List resources){
-        List<Map> maps = (ArrayList) map.get(CHILDREN);
         String templatePath = getTemplatePath();
-        // when maps is null;
-        // the map represents a resource that is not a container; it should be added to the resource list.
-        if( Objects.isNull(maps)){
-            String relativePath = (String) map.get("path");
-            String basePath = "";
-            if (Objects.nonNull(map.get(FROM_TEMPLATE)) && (boolean) map.get(FROM_TEMPLATE)){
-                basePath = templatePath;
-            } else {
+        String relativePath = (String) map.get("path");
+        String basePath = resource.getPath();
+        if (Objects.nonNull(map.get(FROM_TEMPLATE)) && (boolean) map.get(FROM_TEMPLATE)){
+        // if fromTemplate is set true determine whether the resource is an container empty container
+            List<Map> childMaps = (ArrayList) map.get(CHILDREN);
+            if (Objects.nonNull(childMaps)){
+                // this represents a page editing content container
+                // so basePath needs to be readjusted to the page path
                 basePath = resource.getPath();
-            }
-            Resource resource = this.resource.getResourceResolver().getResource(basePath+relativePath);
-            resources.add(resource);
-        } else {
-        // when maps is defined; the resource is a container, and we need to get it's resources.
-            for (Map nestedMap : maps) {
-                getChildren(nestedMap, resources);
+            } else {
+                basePath = templatePath;
             }
         }
+        // get the component resource from the page's content or the template
+        Resource componentResource = this.resource.getResourceResolver().getResource(basePath+relativePath);
+        resources.add(componentResource);
     }
 
     public String getMergedForScript() {
@@ -146,7 +147,7 @@ public class PageMerge implements Use {
                 }
             }
             if(templatePath != null) {
-                Map template = getMerged(request.getResourceResolver().getResource(templatePath));
+                Map template = getMerged(this.resource.getResourceResolver().getResource(templatePath));
                 flagFromTemplate(template);
                 return merge(template, page);
             }
@@ -243,8 +244,15 @@ public class PageMerge implements Use {
     @Override
     public void init(final Bindings bindings) {
         request = (SlingHttpServletRequest) bindings.get(REQUEST);
-        SlingScriptHelper sling = (SlingScriptHelper) bindings.get(SLING);
-        modelFactory = sling.getService(ModelFactory.class);
+        resource = (Resource) bindings.get(RESOURCE);
         renderContext.set(new RenderContext(request));
+        SlingScriptHelper sling = (SlingScriptHelper) bindings.get(SLING);
+        if (Objects.nonNull(sling)) {
+            // the typical path
+            modelFactory = sling.getService(ModelFactory.class);
+        } else if ( Objects.nonNull(bindings.get(MODEL_FACTORY))) {
+            // for unit testing
+            modelFactory = (ModelFactory) bindings.get(MODEL_FACTORY);
+        }
     }
 }
