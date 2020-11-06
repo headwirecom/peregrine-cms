@@ -41,6 +41,7 @@ import org.osgi.service.component.annotations.Reference;
 import javax.servlet.Servlet;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.peregrine.admin.replication.ReplicationConstants.*;
 import static com.peregrine.commons.util.PerConstants.NAME;
@@ -136,18 +137,23 @@ public final class ReplicationServlet extends AbstractBaseServlet {
                 if (parseBoolean(request.getParameter(DEACTIVATE))) {
                     sourceReplicable.setLastReplicationActionAsDeactivated();
                     replicates.addAll(replication.deactivate(source));
+                    // TODO remove version label!!
                 } else {
-                    // Replication can be local or remote and so the commit of the changes is done inside the Replication Service
-                    final Optional<String> path = Optional.ofNullable(sourceReplicable.getContentResource())
-                            .map(Resource::getPath);
-                    if (path.isPresent()) {
-                        resourceManagement.createVersion(resourceResolver, path.get(), PerConstants.PUBLISHED_LABEL);
-                    }
-
                     sourceReplicable.setLastReplicationActionAsActivated();
                     replicates.addAll(replication.replicate(resourcesToReplicate));
+                    // Replication can be local or remote and so the commit of the changes is done inside the Replication Service
+                    for (final String path : replicates.stream()
+                            .map(r -> r.adaptTo(PerReplicable.class))
+                            .filter(Objects::nonNull)
+                            .map(PerReplicable::getContentResource)
+                            .filter(Objects::nonNull)
+                            .map(Resource::getPath)
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toList())) {
+                        resourceManagement.createVersion(resourceResolver, path, PerConstants.PUBLISHED_LABEL);
+                    }
                 }
-            } catch (ReplicationException | AdminResourceHandler.ManagementException e) {
+            } catch (final ReplicationException | AdminResourceHandler.ManagementException e) {
                 return new ErrorResponse()
                         .setHttpErrorCode(SC_BAD_REQUEST)
                         .setErrorMessage(REPLICATION_FAILED)
