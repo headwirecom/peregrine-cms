@@ -23,8 +23,14 @@ import static org.apache.commons.lang3.StringUtils.*;
 public final class VersioningResourceResolver extends ResourceResolverWrapper {
 
     private static final String OPERATION_IS_NOT_SUPPORTED = "Operation is not supported in this resolver.";
-    private static final String _JCR_CONTENT_ = "/jcr:content/";
+    private static final String _JCR_CONTENT_ = SLASH + JCR_CONTENT + SLASH;
 
+    private final List<String> exemptedPrimaryTypes = Arrays.asList(
+            "nt:folder",
+            "sling:Folder",
+            "sling:OrderedFolder",
+            "per:Site"
+    );
     private final List<String> forcedPaths = Arrays.asList(
             "/content/"
     );
@@ -138,7 +144,10 @@ public final class VersioningResourceResolver extends ResourceResolverWrapper {
     }
 
     private boolean forceVersion(final Resource resource) {
-        if (resource.isResourceType("per:Site")) {
+        if (exemptedPrimaryTypes.stream()
+                .map(resource::isResourceType)
+                .anyMatch(x -> x)
+        ) {
             return false;
         }
 
@@ -149,7 +158,8 @@ public final class VersioningResourceResolver extends ResourceResolverWrapper {
 
         if (exemptedPaths.stream()
                 .map(p -> p + SLASH)
-                .anyMatch(path::startsWith)) {
+                .anyMatch(path::startsWith)
+        ) {
             return false;
         }
 
