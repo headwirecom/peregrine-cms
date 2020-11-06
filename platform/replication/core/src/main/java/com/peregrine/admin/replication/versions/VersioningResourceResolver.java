@@ -83,20 +83,32 @@ public final class VersioningResourceResolver extends ResourceResolverWrapper {
     public Resource getResource(final String path) {
         return Optional.ofNullable(path)
                 .map(resolver::getResource)
-                .filter(r -> !ResourceUtil.isNonExistingResource(r))
                 .map(this::wrap)
                 .orElse(null);
     }
 
     public Resource wrap(final Resource resource) {
-        if (isNull(resource)
-                || resource instanceof VersionedResource
-                || ResourceUtil.isNonExistingResource(resource)
-                || resource instanceof NonExistingResource
-                || ResourceUtil.isSyntheticResource(resource)
-                || ResourceUtil.isStarResource(resource)
-        ) {
+        if (isNull(resource) || resource instanceof VersionedResource) {
             return resource;
+        }
+
+        final String path = resource.getPath();
+        if (ResourceUtil.isNonExistingResource(resource)) {
+            return resource.getResourceResolver() == this
+                    ? resource
+                    : new NonExistingResource(this, path);
+        }
+
+        if (ResourceUtil.isSyntheticResource(resource)) {
+            return resource.getResourceResolver() == this
+                    ? resource
+                    : new SyntheticResource(this, path, resource.getResourceType());
+        }
+
+        if (ResourceUtil.isStarResource(resource)) {
+            return resource.getResourceResolver() == this
+                    ? resource
+                    : new VersionedResource(this, resource);
         }
 
         if (!forceVersion(resource)) {
@@ -107,7 +119,6 @@ public final class VersioningResourceResolver extends ResourceResolverWrapper {
             return new VersionedResource(this, resource);
         }
 
-        final String path = resource.getPath();
         if (JCR_CONTENT.equals(resource.getName())) {
             final Resource versionedNode = getVersionedNode(resource);
             if (nonNull(versionedNode)) {
@@ -123,7 +134,7 @@ public final class VersioningResourceResolver extends ResourceResolverWrapper {
             }
         }
 
-        return new NonExistingResource(this, path);
+        return null;
     }
 
     private boolean forceVersion(final Resource resource) {
@@ -133,7 +144,7 @@ public final class VersioningResourceResolver extends ResourceResolverWrapper {
         }
 
         if (exemptedPaths.stream()
-                .map(p -> p + "/")
+                .map(p -> p + SLASH)
                 .anyMatch(path::startsWith)) {
             return false;
         }
@@ -202,12 +213,19 @@ public final class VersioningResourceResolver extends ResourceResolverWrapper {
 
     @Override
     public Resource resolve(final String absPath) {
-        return wrap(resolve(null, absPath));
+        return resolve(null, absPath);
     }
 
     @Override
     public Resource resolve(final HttpServletRequest request) {
-        return wrap(resolve(request, request.getPathInfo()));
+        return resolve(request, request.getPathInfo());
+    }
+
+    @Override
+    public Resource resolve(final HttpServletRequest request, final String absPath) {
+        final Resource resource = resolver.resolve(request, absPath);
+        final Resource wrap = wrap(resource);
+        return nonNull(wrap) ? wrap : new NonExistingResource(this, resource.getPath());
     }
 
     @Override
