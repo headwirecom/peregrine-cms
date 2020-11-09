@@ -15,14 +15,14 @@ import static org.apache.jackrabbit.JcrConstants.JCR_PRIMARYTYPE;
 
 public final class VersionedResource extends ResourceWrapper {
 
-    private final VersioningResourceResolver resolver;
+    private final VersioningResourceResolverImpl resolver;
     private final String path;
     private final String name;
     private final Resource version;
     private final ValueMap valueMap;
 
     private VersionedResource(
-            final VersioningResourceResolver resolver,
+            final VersioningResourceResolverImpl resolver,
             final Resource base,
             final String path,
             final Resource version
@@ -41,19 +41,19 @@ public final class VersionedResource extends ResourceWrapper {
     }
 
     public VersionedResource(
-            final VersioningResourceResolver resolver,
+            final VersioningResourceResolverImpl resolver,
             final Resource base,
             final Resource version
     ) {
         this(resolver, base, base.getPath(), version);
     }
 
-    public VersionedResource(final VersioningResourceResolver resolver, final Resource base) {
+    public VersionedResource(final VersioningResourceResolverImpl resolver, final Resource base) {
         this(resolver, base, null);
     }
 
     public VersionedResource(
-            final VersioningResourceResolver resolver,
+            final VersioningResourceResolverImpl resolver,
             final String parentPath,
             final Resource version
     ) {
