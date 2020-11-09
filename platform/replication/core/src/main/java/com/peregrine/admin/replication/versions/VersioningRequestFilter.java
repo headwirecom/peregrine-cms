@@ -73,10 +73,11 @@ public final class VersioningRequestFilter implements Filter {
         try {
             final Method getRequestData = request.getClass().getMethod("getRequestData");
             final Object requestData = getRequestData.invoke(request);
-            final Method initResource = requestData.getClass().getMethod("initResource", ResourceResolver.class);
+            final Class<?> requestDataClass = requestData.getClass();
+            final Method initResource = requestDataClass.getMethod("initResource", ResourceResolver.class);
             final ResourceResolver resolver = new VersioningResourceResolver(oldResolver, versionLabel);
             final Object resource = initResource.invoke(requestData, resolver);
-            final Method initServlet = requestData.getClass()
+            final Method initServlet = requestDataClass
                     .getMethod("initServlet", Resource.class, ServletResolver.class);
             initServlet.invoke(requestData, resource, servletResolver);
         } catch (final NoSuchMethodException | InvocationTargetException | IllegalAccessException | RepositoryException e) {
