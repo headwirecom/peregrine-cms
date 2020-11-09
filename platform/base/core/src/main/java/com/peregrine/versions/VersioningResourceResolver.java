@@ -120,8 +120,13 @@ public final class VersioningResourceResolver extends ResourceResolverWrapper {
             return new VersionedResource(this, resource);
         }
 
-        if (nonNull(resource.getChild(JCR_CONTENT))) {
-            return new VersionedResource(this, resource);
+        final Resource content = resource.getChild(JCR_CONTENT);
+        if (nonNull(content)) {
+            if (isVersioned(content)) {
+                return new VersionedResource(this, resource);
+            }
+
+            return null;
         }
 
         if (JCR_CONTENT.equals(resource.getName())) {
@@ -167,6 +172,10 @@ public final class VersioningResourceResolver extends ResourceResolverWrapper {
 
     private Resource getVersionedNode(final Resource resource) {
         return getVersionedNode(resource.getPath());
+    }
+
+    private boolean isVersioned(final Resource resource) {
+        return nonNull(getVersionedNode(resource));
     }
 
     private Resource getVersionedNode(final String path) {
