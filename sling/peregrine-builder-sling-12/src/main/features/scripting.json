@@ -14,7 +14,7 @@
             "start-order":"20"
         },
         {
-            "id":"org.apache.sling:org.apache.sling.scripting.core:2.3.2",
+            "id":"org.apache.sling:org.apache.sling.scripting.core:2.3.4",
             "start-order":"20"
         },
         {
@@ -22,7 +22,7 @@
             "start-order":"20"
         },
         {
-            "id":"org.apache.sling:org.apache.sling.scripting.javascript:3.1.2",
+            "id":"org.apache.sling:org.apache.sling.scripting.javascript:3.1.4",
             "start-order":"20"
         },
         {
@@ -38,15 +38,15 @@
             "start-order":"20"
         },
         {
-            "id":"org.apache.sling:org.apache.sling.scripting.sightly.compiler.java:1.2.0-1.4.0",
+            "id":"org.apache.sling:org.apache.sling.scripting.sightly.compiler.java:1.2.2-1.4.0",
             "start-order":"20"
         },
         {
-            "id":"org.apache.sling:org.apache.sling.scripting.sightly.compiler:1.2.6-1.4.0",
+            "id":"org.apache.sling:org.apache.sling.scripting.sightly.compiler:1.2.8-1.4.0",
             "start-order":"20"
         },
         {
-            "id":"org.apache.sling:org.apache.sling.scripting.sightly.js.provider:1.2.0",
+            "id":"org.apache.sling:org.apache.sling.scripting.sightly.js.provider:1.2.6",
             "start-order":"20"
         },
         {
@@ -54,11 +54,11 @@
             "start-order":"20"
         },
         {
-            "id":"org.apache.sling:org.apache.sling.scripting.sightly.runtime:1.2.2-1.4.0",
+            "id":"org.apache.sling:org.apache.sling.scripting.sightly.runtime:1.2.4-1.4.0",
             "start-order":"20"
         },
         {
-            "id":"org.apache.sling:org.apache.sling.scripting.sightly:1.4.2-1.4.0",
+            "id":"org.apache.sling:org.apache.sling.scripting.sightly:1.4.4-1.4.0",
             "start-order":"20"
         }
     ],
@@ -70,22 +70,9 @@
         },
         "org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended~scripting":{
             "user.mapping":[
-                "org.apache.sling.scripting.core=sling-scripting",
-                "org.apache.sling.scripting.sightly.js.provider=sling-scripting"
+                "org.apache.sling.scripting.core=[sling-search-path-reader]",
+                "org.apache.sling.scripting.sightly.js.provider=[sling-search-path-reader]"
             ]
         }
-    },
-    "repoinit:TEXT|true":[
-        "#<<< SLING-5848 - Define service user and ACLs for Scripting",
-        "create service user sling-scripting",
-        "",
-        "create path (sling:Folder) /libs",
-        "create path (sling:Folder) /apps",
-        "",
-        "set ACL for sling-scripting",
-        "deny    jcr:all     on /",
-        "allow   jcr:read    on /libs,/apps",
-        "end",
-        "# SLING-5848 - Define service user and ACLs for Scripting >>>"
-    ]
+    }
 }

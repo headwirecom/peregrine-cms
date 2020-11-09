@@ -1,5 +1,8 @@
 
 {
+    "variables": {
+        "sling.home": null
+    },
     "bundles":[
         {
             "id":"org.apache.aries:org.apache.aries.util:1.1.3",
@@ -63,6 +66,10 @@
         },
         {
             "id":"org.apache.sling:org.apache.sling.commons.logservice:1.1.0",
+            "start-order":"1"
+        },
+        {
+            "id":"org.apache.felix:org.apache.felix.log:1.2.4",
             "start-order":"1"
         },
         {
