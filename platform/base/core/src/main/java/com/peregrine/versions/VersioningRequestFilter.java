@@ -2,7 +2,6 @@ package com.peregrine.versions;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.servlets.ServletResolver;
@@ -12,6 +11,7 @@ import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import javax.jcr.RepositoryException;
 import javax.servlet.*;
 import javax.servlet.http.Cookie;
 import java.io.IOException;
@@ -79,12 +79,12 @@ public final class VersioningRequestFilter implements Filter {
             final Object requestData = getRequestData.invoke(request);
             final Class<?> requestDataClass = requestData.getClass();
             final Method initResource = requestDataClass.getMethod("initResource", ResourceResolver.class);
-            final ResourceResolver resolver = new VersioningResourceResolverImpl(oldResolver, label);
+            final ResourceResolver resolver = new VersioningResourceResolver(oldResolver, label);
             final Object resource = initResource.invoke(requestData, resolver);
             final Method initServlet = requestDataClass
                     .getMethod("initServlet", Resource.class, ServletResolver.class);
             initServlet.invoke(requestData, resource, servletResolver);
-        } catch (final NoSuchMethodException | InvocationTargetException | IllegalAccessException | PersistenceException e) {
+        } catch (final NoSuchMethodException | InvocationTargetException | IllegalAccessException | RepositoryException e) {
             throw new ServletException("Error switching ResourceResolver");
         }
     }
