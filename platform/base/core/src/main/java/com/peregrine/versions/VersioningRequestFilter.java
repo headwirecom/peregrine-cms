@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication.versions;
+package com.peregrine.versions;
 
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
@@ -19,6 +19,7 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 
 import static com.peregrine.commons.Chars.EQ;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Component(
     service = { Filter.class },
@@ -29,8 +30,6 @@ import static com.peregrine.commons.Chars.EQ;
 )
 public final class VersioningRequestFilter implements Filter {
 
-    private final String versionLabel = VersioningConstants.PUBLISHED;
-
     @Reference
     private ServletResolver servletResolver;
 
@@ -40,24 +39,18 @@ public final class VersioningRequestFilter implements Filter {
             final ServletResponse response,
             final FilterChain chain
     ) throws IOException, ServletException {
-        final Optional<SlingHttpServletRequest> slingRequestOptional = Optional.of(request)
-                .map(this::unwrap)
-                .filter(this::isMarkedForPublished);
-        if (slingRequestOptional.isPresent()) {
-            switchResolver(slingRequestOptional.get());
+        final SlingHttpServletRequest slingRequest = unwrap(request);
+        final String label = Optional.ofNullable(slingRequest)
+                .map(VersioningRequestFilter::extractLabel)
+                .orElse(null);
+        if (isNotBlank(label)) {
+            switchResolver(slingRequest, label);
         }
 
         chain.doFilter(request, response);
     }
 
-    private boolean isMarkedForPublished(final SlingHttpServletRequest request) {
-        return Optional.ofNullable(request.getCookie(VersioningConstants.PEREGRINE_RENDERER_VERSION))
-                .map(Cookie::getValue)
-                .filter(versionLabel::equals)
-                .isPresent();
-    }
-
-    private SlingHttpServletRequest unwrap(final ServletRequest request) {
+    private static SlingHttpServletRequest unwrap(final ServletRequest request) {
         ServletRequest result = request;
         while (result instanceof SlingHttpServletRequestWrapper) {
             result = ((SlingHttpServletRequestWrapper) result).getSlingRequest();
@@ -68,14 +61,20 @@ public final class VersioningRequestFilter implements Filter {
                 : null;
     }
 
-    private void switchResolver(final SlingHttpServletRequest request) throws ServletException {
+    private static String extractLabel(final SlingHttpServletRequest request) {
+        return Optional.ofNullable(request.getCookie(VersioningResourceResolver.LABEL_PROPERTY))
+                .map(Cookie::getValue)
+                .orElse(null);
+    }
+
+    private void switchResolver(final SlingHttpServletRequest request, final String label) throws ServletException {
         final ResourceResolver oldResolver = request.getResourceResolver();
         try {
             final Method getRequestData = request.getClass().getMethod("getRequestData");
             final Object requestData = getRequestData.invoke(request);
             final Class<?> requestDataClass = requestData.getClass();
             final Method initResource = requestDataClass.getMethod("initResource", ResourceResolver.class);
-            final ResourceResolver resolver = new VersioningResourceResolver(oldResolver, versionLabel);
+            final ResourceResolver resolver = new VersioningResourceResolver(oldResolver, label);
             final Object resource = initResource.invoke(requestData, resolver);
             final Method initServlet = requestDataClass
                     .getMethod("initServlet", Resource.class, ServletResolver.class);
@@ -86,7 +85,7 @@ public final class VersioningRequestFilter implements Filter {
     }
 
     @Override
-    public void init(final FilterConfig filterConfig) { }
+    public void init(final FilterConfig config) { }
 
     @Override
     public void destroy() { }

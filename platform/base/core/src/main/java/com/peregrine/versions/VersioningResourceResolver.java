@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication.versions;
+package com.peregrine.versions;
 
 import com.google.common.collect.Iterators;
 import org.apache.sling.api.resource.*;
@@ -22,6 +22,7 @@ import static org.apache.commons.lang3.StringUtils.*;
 
 public final class VersioningResourceResolver extends ResourceResolverWrapper {
 
+    public static final String LABEL_PROPERTY = VersioningResourceResolver.class.getName() + "-label";
     private static final String OPERATION_IS_NOT_SUPPORTED = "Operation is not supported in this resolver.";
     private static final String _JCR_CONTENT_ = SLASH + JCR_CONTENT + SLASH;
 

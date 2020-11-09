@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication.versions;
+package com.peregrine.versions;
 
 import com.google.common.collect.ImmutableBiMap;
 import org.apache.sling.api.resource.ValueMap;

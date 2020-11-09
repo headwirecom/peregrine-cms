@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication.versions;
+package com.peregrine.versions;
 
 import org.apache.sling.api.resource.*;
 import org.apache.sling.api.wrappers.DeepReadValueMapDecorator;
