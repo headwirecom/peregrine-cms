@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.peregrine.commons.Chars.DOT;
 import static com.peregrine.commons.util.PerConstants.*;
@@ -26,7 +27,6 @@ public class SlingResourcesTest {
     protected static final String NN_PARENT = "parent";
     protected static final String NN_PAGE = "page";
     protected static final String NN_RESOURCE = "resource";
-    protected static final String PAGE_PATH = CONTENT_ROOT + SLASH + NN_PARENT + SLASH + NN_PAGE;
 
     protected final ResourceMock parent = new ResourceMock("Parent");
     protected final PageMock page = new PageMock("Page");
@@ -44,12 +44,23 @@ public class SlingResourcesTest {
 
     protected final List<ResourceMock> resources;
 
-    public SlingResourcesTest(final RepoMock repo) {
+    public SlingResourcesTest(final RepoMock repo, final String rootPath) {
         this.repo = repo;
         contentRoot = repo.getContent();
         resourceResolver = repo.getResourceResolver();
-        resources = Arrays.asList(contentRoot, parent, page, jcrContent, resource);
-        setPaths(PAGE_PATH, contentRoot, parent, page);
+        final String contentRootPathPrefix = contentRoot.getPath() + SLASH;
+        final String relRootPath = StringUtils.substringAfter(rootPath, contentRootPathPrefix);
+        resources = Arrays.asList(relRootPath.split(SLASH)).stream()
+                .filter(StringUtils::isNotBlank)
+                .map(ResourceMock::new)
+                .collect(Collectors.toList());
+        resources.add(0, contentRoot);
+        resources.add(parent);
+        resources.add(page);
+        setPaths(contentRootPathPrefix + relRootPath + SLASH + NN_PARENT + SLASH + NN_PAGE,
+                resources.toArray(new ResourceMock[resources.size()]));
+        resources.add(jcrContent);
+        resources.add(resource);
         resource.setPath(jcrContent.getPath() + SLASH + NN_RESOURCE);
         setParentChildRelationships(contentRoot, parent, page);
         setParentChildRelationships(jcrContent, resource);
@@ -63,8 +74,12 @@ public class SlingResourcesTest {
         bindRequest();
     }
 
+    public SlingResourcesTest(final String rootPath) {
+        this(new RepoMock(), rootPath);
+    }
+
     public SlingResourcesTest() {
-        this(new RepoMock());
+        this(CONTENT_ROOT);
     }
 
     private void bindRequest() {
