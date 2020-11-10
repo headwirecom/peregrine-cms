@@ -1,6 +1,7 @@
 package com.peregrine.versions;
 
 import com.google.common.collect.Iterators;
+import com.peregrine.commons.util.PerUtil;
 import org.apache.sling.api.resource.*;
 import org.apache.sling.api.wrappers.ResourceResolverWrapper;
 
@@ -42,11 +43,19 @@ public final class VersioningResourceResolver extends ResourceResolverWrapper {
     );
 
     private final ResourceResolver resolver;
-    private final Function<String, Resource> getVersionedNode;
+    private final Function<String, Resource> versionProvider;
 
-    public VersioningResourceResolver(final ResourceResolver resolver, final String versionLabel) {
+    public VersioningResourceResolver(final ResourceResolver resolver, final Function<String, Resource> versionProvider) {
         super(resolver);
         this.resolver = resolver;
+        this.versionProvider = versionProvider;
+    }
+
+    public VersioningResourceResolver(final ResourceResolver resolver, final String versionLabel) {
+        this(resolver, versionProvider(resolver, versionLabel));
+    }
+
+    private static Function<String, Resource> versionProvider(final ResourceResolver resolver, final String label) {
         final VersionManager versionManager = Optional.ofNullable(resolver.adaptTo(Session.class))
                 .map(Session::getWorkspace)
                 .map(w -> {
@@ -56,25 +65,27 @@ public final class VersioningResourceResolver extends ResourceResolverWrapper {
                         return null;
                     }
                 }).orElse(null);
-        getVersionedNode = isNull(versionManager)
-                ? path -> null :
-                path -> {
-                    try {
-                        final Version version = versionManager
-                                .getVersionHistory(path)
-                                .getVersionByLabel(versionLabel);
-                        if (nonNull(version)) {
-                            final Node node = version.getFrozenNode();
-                            final String versionPath = node.getPath();
-                            return resolver.getResource(versionPath);
-                        }
+        if (isNull(versionManager)) {
+            return path -> null;
+        }
 
-                    } catch (final RepositoryException e) {
-                        return null;
-                    }
+        return path -> {
+            try {
+                final Version version = versionManager
+                        .getVersionHistory(path)
+                        .getVersionByLabel(label);
+                if (nonNull(version)) {
+                    final Node node = version.getFrozenNode();
+                    final String versionPath = node.getPath();
+                    return resolver.getResource(versionPath);
+                }
 
-                    return null;
-                };
+            } catch (final RepositoryException e) {
+                return null;
+            }
+
+            return null;
+        };
     }
 
     @Override
@@ -143,28 +154,24 @@ public final class VersioningResourceResolver extends ResourceResolverWrapper {
             return new VersionedResource(this, resource);
         }
 
-        final Resource content = resource.getChild(JCR_CONTENT);
-        if (nonNull(content)) {
-            if (isVersioned(content)) {
-                return new VersionedResource(this, resource);
-            }
-
-            return null;
-        }
-
-        if (JCR_CONTENT.equals(resource.getName())) {
+        if (PerUtil.isJcrContent(resource)) {
             final Resource versionedNode = getVersionedNode(resource);
             if (nonNull(versionedNode)) {
                 return new VersionedResource(this, resource, versionedNode);
             }
         } else if (path.contains(_JCR_CONTENT_)) {
             final String ancestorPath = substringBeforeLast(path, _JCR_CONTENT_) + SLASH + JCR_CONTENT;
-            final Resource versionedNode = Optional.ofNullable(getVersionedNode.apply(ancestorPath))
+            final Resource versionedNode = Optional.ofNullable(getVersionedNode(ancestorPath))
                     .map(r -> r.getChild(substringAfterLast(path, _JCR_CONTENT_)))
                     .orElse(null);
             if (nonNull(versionedNode)) {
                 return new VersionedResource(this, resource, versionedNode);
             }
+        }
+
+        final Resource content = resource.getChild(JCR_CONTENT);
+        if (nonNull(content) && isVersioned(content)) {
+            return new VersionedResource(this, resource);
         }
 
         return null;
@@ -194,7 +201,11 @@ public final class VersioningResourceResolver extends ResourceResolverWrapper {
     }
 
     private Resource getVersionedNode(final Resource resource) {
-        return getVersionedNode.apply(resource.getPath());
+        return getVersionedNode(resource.getPath());
+    }
+
+    private Resource getVersionedNode(final String path) {
+        return versionProvider.apply(path);
     }
 
     private boolean isVersioned(final Resource resource) {
@@ -263,6 +274,26 @@ public final class VersioningResourceResolver extends ResourceResolverWrapper {
     @Override
     public Iterator<Map<String, Object>> queryResources(final String query, final String language) {
         return Iterators.transform(findResources(query, language), Resource::getValueMap);
+    }
+
+    @Override
+    public ResourceResolver clone(final Map<String, Object> authenticationInfo) throws LoginException {
+        return new VersioningResourceResolver(super.clone(authenticationInfo), versionProvider);
+    }
+
+    @Override
+    public Resource create(final Resource parent, final String name, final Map<String, Object> properties) throws PersistenceException {
+        return wrap(resolver.create(parent, name, properties));
+    }
+
+    @Override
+    public Resource copy(final String srcAbsPath, final String destAbsPath) throws PersistenceException {
+        return wrap(resolver.copy(srcAbsPath, destAbsPath));
+    }
+
+    @Override
+    public Resource move(final String srcAbsPath, final String destAbsPath) throws PersistenceException {
+        return wrap(resolver.move(srcAbsPath, destAbsPath));
     }
 
 }
