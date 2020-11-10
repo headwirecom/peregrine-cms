@@ -22,9 +22,7 @@ before_script:
 
 script:
 - cd docker && ./builddocker.sh
-- docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
-- docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:${branch}"
-- docker push ${DOCKER_IMAGE}:${branch}
+- cd docker && ./pushdocker-travis.sh
 
 after_script:
 - docker images
