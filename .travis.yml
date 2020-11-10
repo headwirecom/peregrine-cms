@@ -19,12 +19,13 @@ env:
 before_script:
 - branch="$(echo ${TRAVIS_BRANCH} | tr '/' '-' | tr '[:upper:]' '[:lower:]')"
 - version="$(awk '$2 == "APP_VERSION" { print $3; exit }' docker/Dockerfile)"
-- echo "Is pull request: ${TRAVIS_PULL_REQUEST} for branch ${branch}" 
+- echo "Is pull request: ${TRAVIS_PULL_REQUEST} for branch ${branch}"
 
 script:
-- cd docker && ./builddocker.sh 
-- docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" 
-# && docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:${branch}" && docker push ${DOCKER_IMAGE}:${branch}
+- cd docker && ./builddocker.sh
+- docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+- docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:${branch}"
+- docker push ${DOCKER_IMAGE}:${branch}
 
 after_script:
 - docker images
