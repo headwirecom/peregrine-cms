@@ -69,6 +69,10 @@ public final class VersionedResource extends ResourceWrapper {
         return result instanceof VersionedResource ? (VersionedResource) result : null;
     }
 
+    public boolean hasResource() {
+        return nonNull(getResource());
+    }
+
     public Resource getVersion() {
         return version;
     }
@@ -159,11 +163,15 @@ public final class VersionedResource extends ResourceWrapper {
             return null;
         }
 
-        if (ValueMap.class.isAssignableFrom(type)) {
+        if (ValueMap.class.equals(type)) {
             return type.cast(getValueMap());
         }
 
-        return super.adaptTo(type);
+        if (hasResource()) {
+            return super.adaptTo(type);
+        }
+
+        return null;
     }
 
 }
