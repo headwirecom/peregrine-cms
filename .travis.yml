@@ -22,7 +22,7 @@ before_script:
 
 script:
 - cd docker && ./builddocker.sh
-- cd docker && ./pushdocker-travis.sh
+- ./pushdocker-travis.sh
 
 after_script:
 - docker images
