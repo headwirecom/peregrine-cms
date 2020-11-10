@@ -11,7 +11,6 @@ import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import javax.jcr.RepositoryException;
 import javax.servlet.*;
 import javax.servlet.http.Cookie;
 import java.io.IOException;
@@ -84,7 +83,7 @@ public final class VersioningRequestFilter implements Filter {
             final Method initServlet = requestDataClass
                     .getMethod("initServlet", Resource.class, ServletResolver.class);
             initServlet.invoke(requestData, resource, servletResolver);
-        } catch (final NoSuchMethodException | InvocationTargetException | IllegalAccessException | RepositoryException e) {
+        } catch (final NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new ServletException("Error switching ResourceResolver");
         }
     }

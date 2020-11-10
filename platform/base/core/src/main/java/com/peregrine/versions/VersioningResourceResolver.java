@@ -11,6 +11,7 @@ import javax.jcr.version.Version;
 import javax.jcr.version.VersionManager;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -41,18 +42,39 @@ public final class VersioningResourceResolver extends ResourceResolverWrapper {
     );
 
     private final ResourceResolver resolver;
-    private final VersionManager versionManager;
-    private final String versionLabel;
+    private final Function<String, Resource> getVersionedNode;
 
-    public VersioningResourceResolver(final ResourceResolver resolver, final String versionLabel)
-            throws RepositoryException {
+    public VersioningResourceResolver(final ResourceResolver resolver, final String versionLabel) {
         super(resolver);
         this.resolver = resolver;
-        versionManager = resolver.adaptTo(Session.class)
-                .getWorkspace()
-                .getVersionManager();
+        final VersionManager versionManager = Optional.ofNullable(resolver.adaptTo(Session.class))
+                .map(Session::getWorkspace)
+                .map(w -> {
+                    try {
+                        return w.getVersionManager();
+                    } catch (final RepositoryException e) {
+                        return null;
+                    }
+                }).orElse(null);
+        getVersionedNode = isNull(versionManager)
+                ? path -> null :
+                path -> {
+                    try {
+                        final Version version = versionManager
+                                .getVersionHistory(path)
+                                .getVersionByLabel(versionLabel);
+                        if (nonNull(version)) {
+                            final Node node = version.getFrozenNode();
+                            final String versionPath = node.getPath();
+                            return resolver.getResource(versionPath);
+                        }
 
-        this.versionLabel = versionLabel;
+                    } catch (final RepositoryException e) {
+                        return null;
+                    }
+
+                    return null;
+                };
     }
 
     @Override
@@ -137,7 +159,7 @@ public final class VersioningResourceResolver extends ResourceResolverWrapper {
             }
         } else if (path.contains(_JCR_CONTENT_)) {
             final String ancestorPath = substringBeforeLast(path, _JCR_CONTENT_) + SLASH + JCR_CONTENT;
-            final Resource versionedNode = Optional.ofNullable(getVersionedNode(ancestorPath))
+            final Resource versionedNode = Optional.ofNullable(getVersionedNode.apply(ancestorPath))
                     .map(r -> r.getChild(substringAfterLast(path, _JCR_CONTENT_)))
                     .orElse(null);
             if (nonNull(versionedNode)) {
@@ -172,29 +194,11 @@ public final class VersioningResourceResolver extends ResourceResolverWrapper {
     }
 
     private Resource getVersionedNode(final Resource resource) {
-        return getVersionedNode(resource.getPath());
+        return getVersionedNode.apply(resource.getPath());
     }
 
     private boolean isVersioned(final Resource resource) {
         return nonNull(getVersionedNode(resource));
-    }
-
-    private Resource getVersionedNode(final String path) {
-        try {
-            final Version version = versionManager
-                    .getVersionHistory(path)
-                    .getVersionByLabel(versionLabel);
-            if (nonNull(version)) {
-                final Node node = version.getFrozenNode();
-                final String versionPath = node.getPath();
-                return resolver.getResource(versionPath);
-            }
-
-        } catch (final RepositoryException e) {
-            return null;
-        }
-
-        return null;
     }
 
     @Override
