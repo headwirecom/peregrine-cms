@@ -78,10 +78,12 @@ public class Container extends AbstractComponent {
         // find the template
         PerPage templatePage = perPage.getTemplate();
         // find the container under the template
-        if( Objects.nonNull(templatePage)) {
+        if(Objects.nonNull(templatePage)){
             Resource templateContainer = resolver.getResource(templatePage.getPath() + relativePath);
             // get template container children, add them to the list
-            templateContainer.getChildren().forEach(resource -> merged.add(resource));
+            if(Objects.nonNull(templateContainer)){
+                templateContainer.getChildren().forEach(resource -> merged.add(resource));
+            }
         }
         // get page container children
         this.getResource().getChildren().forEach(resource -> {
