@@ -25,17 +25,19 @@ package com.peregrine.pagerender.server.models;
  * #L%
  */
 
-import static com.peregrine.commons.util.PerConstants.JACKSON;
-import static com.peregrine.commons.util.PerConstants.JSON;
+import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.pagerender.server.models.PageRenderServerConstants.PR_SERVER_COMPONENT_CONTAINER_TYPE;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.peregrine.adaption.PerPage;
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
-import java.util.List;
+
+import java.util.*;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
 
@@ -64,4 +66,28 @@ public class Container extends AbstractComponent {
     public List<IComponent> getChildren() {
         return children;
     }
+
+    public List<Resource> getCombinedResources(){
+        ResourceResolver resolver = this.getResource().getResourceResolver();
+        List<Resource> merged = new ArrayList<>();
+        // find the page
+        String pagePath = this.getResource().getPath().substring(0, this.getResource().getPath().indexOf(JCR_CONTENT));
+        Resource page = resolver.getResource(pagePath);
+        PerPage perPage = page.adaptTo(PerPage.class);
+        String relativePath = this.getPath();
+        // find the template
+        PerPage templatePage = perPage.getTemplate();
+        // find the container under the template
+        if( Objects.nonNull(templatePage)) {
+            Resource templateContainer = resolver.getResource(templatePage.getPath() + relativePath);
+            // get template container children, add them to the list
+            templateContainer.getChildren().forEach(resource -> merged.add(resource));
+        }
+        // get page container children
+        this.getResource().getChildren().forEach(resource -> {
+            merged.add(resource);
+        });
+        return merged;
+    }
+
 }
