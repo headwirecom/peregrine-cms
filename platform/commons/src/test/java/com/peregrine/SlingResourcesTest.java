@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import static com.peregrine.commons.Chars.DOT;
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.mock.MockTools.*;
+import static org.apache.commons.lang3.StringUtils.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -49,7 +50,7 @@ public class SlingResourcesTest {
         contentRoot = repo.getContent();
         resourceResolver = repo.getResourceResolver();
         final String contentRootPathPrefix = contentRoot.getPath() + SLASH;
-        final String relRootPath = StringUtils.substringAfter(rootPath, contentRootPathPrefix);
+        final String relRootPath = substringAfter(rootPath, contentRootPathPrefix);
         resources = Arrays.asList(relRootPath.split(SLASH)).stream()
                 .filter(StringUtils::isNotBlank)
                 .map(ResourceMock::new)
@@ -57,7 +58,9 @@ public class SlingResourcesTest {
         resources.add(0, contentRoot);
         resources.add(parent);
         resources.add(page);
-        setPaths(contentRootPathPrefix + relRootPath + SLASH + NN_PARENT + SLASH + NN_PAGE,
+        setPaths(contentRootPathPrefix
+                        + (isNotBlank(relRootPath) ? relRootPath + SLASH : EMPTY)
+                        + NN_PARENT + SLASH + NN_PAGE,
                 resources.toArray(new ResourceMock[resources.size()]));
         resources.add(jcrContent);
         resources.add(resource);
