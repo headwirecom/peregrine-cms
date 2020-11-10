@@ -3,6 +3,7 @@ package com.peregrine.slingjunit;
 import com.peregrine.adaption.PerAsset;
 import com.peregrine.adaption.PerPage;
 import com.peregrine.nodetypes.merge.PageMerge;
+import com.peregrine.pagerender.server.models.Container;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
@@ -134,9 +135,13 @@ public class AdaptionJTest {
     }
 
     /**
+     *
      ssrPageMergeScenario2 test pages based on a sub-template
+
+     parent-template: /content/example/templates/base
      sub-template: /content/example/templates/base/sub-template
-     page:
+     page: /content/example/pages/sub-template-page
+     Passes if the $page has content resources inherited from the $parent-template
      */
     @Test
     public void ssrPageMergeScenario2(){
@@ -157,6 +162,54 @@ public class AdaptionJTest {
                 .collect(Collectors.toList());
         assertTrue(actualResourcePaths.containsAll(resourcePaths));
         assertTrue(resourcePaths.containsAll(actualResourcePaths));
+    }
+
+    /**
+     *
+     ssrPageMergeScenario3 templates with content containers
+
+     template: /content/pagerenderserver/templates/base
+     page: /content/pagerenderserver/pages/index
+     Passes if List<Resource> actualResources has
+        content resources inherited from the $template
+        content resources from the $page
+        overrides template content with page content if their relative paths are the same
+     */
+    @Test
+    public void ssrPageMergeScenario3(){
+        // set up expected resource list
+        resource = resourceResolver.getResource("/content/pagerenderserver/pages/index");
+        List<String> resourcePaths = new ArrayList<>();
+        resourcePaths.add("/content/pagerenderserver/templates/base/jcr:content/base");
+        resourcePaths.add("/content/pagerenderserver/pages/index/jcr:content/content");
+        bindings.put("resource", resource);
+        PageMerge pageMerge = new PageMerge();
+        pageMerge.init(bindings);
+
+        // run page merge test
+        List<Resource> actualResources = pageMerge.getMergedResources();
+        assertEquals(resourcePaths.size(), actualResources.size());
+        List<String> actualResourcePaths = actualResources.stream()
+                .map(Resource::getPath)
+                .collect(Collectors.toList());
+        assertTrue(actualResourcePaths.containsAll(resourcePaths));
+        assertTrue(resourcePaths.containsAll(actualResourcePaths));
+
+        // run container merge test
+        Resource containerRes = resourceResolver.getResource("/content/pagerenderserver/pages/index/jcr:content/content");
+        List<String> containerPaths = new ArrayList<>();
+        containerPaths.add("/content/pagerenderserver/templates/base/jcr:content/content/text");
+        containerPaths.add("/content/pagerenderserver/templates/base/jcr:content/content/text1");
+        containerPaths.add("/content/pagerenderserver/pages/index/jcr:content/content/text1");
+        containerPaths.add("/content/pagerenderserver/pages/index/jcr:content/content/text2");
+        Container containerModel = containerRes.adaptTo(Container.class);
+        assertNotNull(containerModel);
+        List<Resource> combinedResources = containerModel.getCombinedResources();
+        List<String> actualCombinedPaths = combinedResources.stream()
+                .map(Resource::getPath)
+                .collect(Collectors.toList());
+        assertEquals(containerPaths.size(), actualCombinedPaths.size());
+        assertTrue(containerPaths.containsAll(actualCombinedPaths));
     }
 
 
