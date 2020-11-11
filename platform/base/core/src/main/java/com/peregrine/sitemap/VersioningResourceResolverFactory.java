@@ -28,8 +28,6 @@ package com.peregrine.sitemap;
 import com.peregrine.versions.VersioningResourceResolver;
 import org.apache.sling.api.resource.LoginException;
 
-import javax.jcr.RepositoryException;
-
 public interface VersioningResourceResolverFactory {
 
     VersioningResourceResolver createResourceResolver() throws LoginException;
