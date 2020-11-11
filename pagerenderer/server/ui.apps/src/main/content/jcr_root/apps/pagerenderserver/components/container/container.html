@@ -1,39 +1,18 @@
-<sly data-sly-use.container="com.peregrine.pagerender.server.models.Container">
-    <sly data-sly-list.item="${container.getCombinedResources}">
-        <sly data-sly-resource="${item.path}"></sly>
+<div>
+    <sly data-sly-use.container="com.peregrine.pagerender.server.models.Container">
+        <sly data-sly-list.item="${container.getCombinedResources}">
+            <sly data-sly-resource="${item.path}"></sly>
+        </sly>
     </sly>
-</sly>
 
-<!-- <div class="per-drop-target" data-per-path="model.path" data-per-droptarget="true" data-per-location="after">
-    Drop Components
-</div> -->
+    <!-- <div class="per-drop-target" data-per-path="model.path" data-per-droptarget="true" data-per-location="after">
+        Drop Components
+    </div> -->
 
-<div data-per-path="/jcr:content/content" 
-    data-per-droptarget="true" 
-    data-per-location="after" 
-    class="per-drop-target per-drop-target-empty">
-    Drop Components
+    <div data-per-path="/jcr:content/content"
+        data-per-droptarget="true"
+        data-per-location="after"
+        class="per-drop-target per-drop-target-empty">
+        Drop Components
+    </div>
 </div>
-
-
-<style>
-    .per-drop-target {
-        border: 1px dashed #c0c0c0;
-        clear: both;
-        padding: 4px;
-        margin: 4px;
-        text-align: center;
-        width: calc(100% - 8px);
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        color: black !important; 
-        overflow: hidden;
-        font-size: 0.75em;
-        background: #f8f8f8e0;
-    }
-    .per-drop-target-empty {
-        font-size: 1.5em;
-        height: 3em;
-        padding-top: 0.75em;
-    }
-</style>

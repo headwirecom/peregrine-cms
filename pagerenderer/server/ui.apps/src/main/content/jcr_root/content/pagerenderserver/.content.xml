@@ -28,4 +28,8 @@
   jcr:primaryType="per:Site"
   jcr:title="Pagerender-Server Site"
   internal="true"
-  template="false"/>
+  template="false">
+  <jcr:content
+    jcr:primaryType="nt:unstructured"
+    siteCSS="[/etc/felibs/pagerenderserver/css/server.css]"/>
+</jcr:root>
