@@ -42,6 +42,7 @@ import javax.servlet.Servlet;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.peregrine.admin.replication.ReplicationConstants.*;
 import static com.peregrine.commons.util.PerConstants.NAME;
@@ -137,22 +138,14 @@ public final class ReplicationServlet extends AbstractBaseServlet {
                 if (parseBoolean(request.getParameter(DEACTIVATE))) {
                     sourceReplicable.setLastReplicationActionAsDeactivated();
                     replicates.addAll(replication.deactivate(source));
-                    for (final Resource resource : replicates.stream()
-                            .map(r -> r.adaptTo(PerReplicable.class))
-                            .filter(Objects::nonNull)
-                            .map(PerReplicable::getContentResource)
-                            .filter(Objects::nonNull)
+                    for (final Resource resource : streamReplicableResources(replicates)
                             .collect(Collectors.toList())) {
                         resourceManagement.deleteVersionLabel(resource, PerConstants.PUBLISHED_LABEL);
                     }
                 } else {
                     sourceReplicable.setLastReplicationActionAsActivated();
                     // Replication can be local or remote and so the commit of the changes is done inside the Replication Service
-                    for (final String path : resourcesToReplicate.stream()
-                            .map(r -> r.adaptTo(PerReplicable.class))
-                            .filter(Objects::nonNull)
-                            .map(PerReplicable::getContentResource)
-                            .filter(Objects::nonNull)
+                    for (final String path : streamReplicableResources(resourcesToReplicate)
                             .map(Resource::getPath)
                             .filter(Objects::nonNull)
                             .collect(Collectors.toList())) {
@@ -182,6 +175,14 @@ public final class ReplicationServlet extends AbstractBaseServlet {
 
         answer.writeClose();
         return answer;
+    }
+
+    private static Stream<Resource> streamReplicableResources(final Collection<Resource> resources) {
+        return resources.stream()
+                .map(r -> r.adaptTo(PerReplicable.class))
+                .filter(Objects::nonNull)
+                .map(PerReplicable::getContentResource)
+                .filter(Objects::nonNull);
     }
 
 }

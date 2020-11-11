@@ -33,7 +33,6 @@ import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import javax.jcr.RepositoryException;
 import java.util.HashMap;
 import java.util.Map;
 

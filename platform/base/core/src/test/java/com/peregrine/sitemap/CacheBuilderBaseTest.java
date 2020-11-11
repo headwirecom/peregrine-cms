@@ -13,7 +13,11 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.jcr.RepositoryException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.mock.MockTools.setParentChildRelationships;
@@ -90,7 +94,7 @@ public final class CacheBuilderBaseTest extends SiteStructureTestBase {
 
     @SuppressWarnings("unchecked")
 	@Test
-    public void rebuilds_throwLoginException() throws LoginException, RepositoryException {
+    public void rebuilds_throwLoginException() throws LoginException {
         when(model.createResourceResolver()).thenThrow(LoginException.class);
 
         model.rebuild(StringUtils.EMPTY);

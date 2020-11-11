@@ -152,13 +152,13 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase<String[], Site
     }
 
     private int putSiteMapsInCache(final ArrayList<String> source, final Resource target) {
-        final ModifiableValueMap properties = target.adaptTo(ModifiableValueMap.class);
+        final ModifiableValueMap modifiableValueMap = target.adaptTo(ModifiableValueMap.class);
         final int siteMapsSize = source.size();
         for (int i = 0; i < siteMapsSize; i++) {
-            properties.put(Integer.toString(i), source.get(i));
+            modifiableValueMap.put(Integer.toString(i), source.get(i));
         }
 
-        return removeCachedItemsAboveIndex(properties, siteMapsSize);
+        return removeCachedItemsAboveIndex(modifiableValueMap, siteMapsSize);
     }
 
     private int removeCachedItemsAboveIndex(final ModifiableValueMap modifiableValueMap, final int indexOfStartItem) {

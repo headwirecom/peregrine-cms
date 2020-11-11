@@ -63,7 +63,6 @@ public class IntraSlingCallerService
             pathInfo.setExtension(callerContext.getExtension());
             pathInfo.setSuffix(callerContext.getSuffix());
             req.setParameterMap(callerContext.getParameterMap());
-
             MockSlingHttpServletResponse resp = new MockSlingHttpServletResponse();
             resp.setCharacterEncoding("utf-8");
             requestProcessor.processRequest(req, resp, callerContext.getResourceResolver());

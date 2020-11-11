@@ -25,8 +25,13 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.commons.Page;
-import com.peregrine.sitemap.*;
+import com.peregrine.sitemap.PageRecognizer;
+import com.peregrine.sitemap.PropertyProvider;
+import com.peregrine.sitemap.SiteMapConfiguration;
+import com.peregrine.sitemap.SiteMapExtractorBase;
+import com.peregrine.sitemap.SiteMapUrlBuilder;
+import com.peregrine.sitemap.UrlExternalizer;
+import com.peregrine.sitemap.VersioningResourceResolverFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
@@ -35,15 +40,21 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
+import static com.peregrine.commons.util.PerConstants.PAGES;
+import static com.peregrine.commons.util.PerConstants.SITE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerUtil.isPrimaryType;
 import static java.util.Objects.isNull;
 

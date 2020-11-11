@@ -35,7 +35,6 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.RepositoryException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Optional;
@@ -81,7 +80,7 @@ public abstract class CacheBuilderBase<V, L extends CacheBuilder.RefreshListener
         return resourceResolver.getResource(path);
     }
 
-    protected abstract VersioningResourceResolver createResourceResolver() throws LoginException, RepositoryException;
+    protected abstract VersioningResourceResolver createResourceResolver() throws LoginException;
 
     protected final boolean isCached(final ResourceResolver resourceResolver, final String path) {
         return Optional.of(path)
@@ -172,7 +171,7 @@ public abstract class CacheBuilderBase<V, L extends CacheBuilder.RefreshListener
             }
 
             resourceResolver.commit();
-        } catch (final LoginException | RepositoryException e) {
+        } catch (final LoginException e) {
             logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
         } catch (final PersistenceException e) {
             logger.error(COULD_NOT_SAVE_CHANGES_TO_REPOSITORY, e);
@@ -213,7 +212,7 @@ public abstract class CacheBuilderBase<V, L extends CacheBuilder.RefreshListener
             final Resource resource = resourceResolver.getResource(path);
             build(resourceResolver, resource);
             resourceResolver.commit();
-        } catch (final LoginException | RepositoryException e) {
+        } catch (final LoginException e) {
             logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
         } catch (final PersistenceException e) {
             logger.error(COULD_NOT_SAVE_CHANGES_TO_REPOSITORY, e);
@@ -228,7 +227,7 @@ public abstract class CacheBuilderBase<V, L extends CacheBuilder.RefreshListener
                     .ifPresent(this::rebuildInTree);
             resourceResolver.commit();
             rebuildMandatoryContent();
-        } catch (final LoginException | RepositoryException e) {
+        } catch (final LoginException e) {
             logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
         } catch (final PersistenceException e) {
             logger.error(COULD_NOT_SAVE_CHANGES_TO_REPOSITORY, e);
