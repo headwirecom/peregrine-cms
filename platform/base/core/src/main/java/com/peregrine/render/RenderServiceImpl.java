@@ -1,6 +1,8 @@
 package com.peregrine.render;
 
+import com.peregrine.commons.util.PerConstants;
 import com.peregrine.intra.IntraSlingCaller;
+import com.peregrine.versions.VersioningResourceResolver;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -39,6 +41,7 @@ public class RenderServiceImpl
                     .setResourceResolver(resource.getResourceResolver())
                     .setPath(resource.getPath())
                     .setExtension(extension)
+                    .addAttribute(VersioningResourceResolver.LABEL_PROPERTY, PerConstants.PUBLISHED_LABEL)
             );
         } catch(IntraSlingCaller.CallException e) {
             throw new RenderException(FAILED_TO_RENDER_RESOURCE + e.getMessage(), e);

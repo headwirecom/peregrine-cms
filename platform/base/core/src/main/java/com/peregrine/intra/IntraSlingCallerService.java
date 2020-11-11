@@ -64,6 +64,10 @@ public class IntraSlingCallerService
             pathInfo.setExtension(callerContext.getExtension());
             pathInfo.setSuffix(callerContext.getSuffix());
             req.setParameterMap(callerContext.getParameterMap());
+            for (final Map.Entry<String, Object> e : callerContext.getAttributes().entrySet()) {
+                req.setAttribute(e.getKey(), e.getValue());
+            }
+
             MockSlingHttpServletResponse resp = new MockSlingHttpServletResponse();
             resp.setCharacterEncoding("utf-8");
             requestProcessor.processRequest(req, resp, callerContext.getResourceResolver());
@@ -92,6 +96,7 @@ public class IntraSlingCallerService
             extension,
             suffix;
         Map<String,Object> parameterMap = new HashMap<>();
+        Map<String, Object> attributes = new HashMap<>();
 
         @Override
         public Resource getResource() { return resource; }
@@ -126,6 +131,11 @@ public class IntraSlingCallerService
 
         @Override
         public Map<String, Object> getParameterMap() { return parameterMap; }
+
+        @Override
+        public Map<String, Object> getAttributes() {
+            return attributes;
+        }
 
         @Override
         public CallerContext setResource(Resource resource) {
@@ -173,6 +183,12 @@ public class IntraSlingCallerService
         public CallerContext setParameterMap(Map<String, Object> parameterMap) {
             if(parameterMap == null) { parameterMap = new HashMap<>(); }
             this.parameterMap = parameterMap;
+            return this;
+        }
+
+        @Override
+        public CallerContext addAttribute(final String key, final Object value) {
+            attributes.put(key, value);
             return this;
         }
 
