@@ -26,8 +26,6 @@ public interface IntraSlingCaller {
         public CallerContext setParameterMap(Map<String, Object> parameterMap);
         public String getMethod();
         public CallerContext setMethod(String method);
-        Map<String,Object> getAttributes();
-        CallerContext addAttribute(String key, Object value);
     }
 
     class CallException extends Exception {

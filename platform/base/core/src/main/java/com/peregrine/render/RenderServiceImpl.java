@@ -38,10 +38,9 @@ public class RenderServiceImpl
         try {
             return intraSlingCaller.call(
                 intraSlingCaller.createContext()
-                    .setResourceResolver(resource.getResourceResolver())
+                    .setResourceResolver(new VersioningResourceResolver(resource.getResourceResolver(), PerConstants.PUBLISHED_LABEL))
                     .setPath(resource.getPath())
                     .setExtension(extension)
-                    .addAttribute(VersioningResourceResolver.LABEL_PROPERTY, PerConstants.PUBLISHED_LABEL)
             );
         } catch(IntraSlingCaller.CallException e) {
             throw new RenderException(FAILED_TO_RENDER_RESOURCE + e.getMessage(), e);
