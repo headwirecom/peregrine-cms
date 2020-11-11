@@ -137,7 +137,14 @@ public final class ReplicationServlet extends AbstractBaseServlet {
                 if (parseBoolean(request.getParameter(DEACTIVATE))) {
                     sourceReplicable.setLastReplicationActionAsDeactivated();
                     replicates.addAll(replication.deactivate(source));
-                    // TODO remove version label!!
+                    for (final Resource resource : replicates.stream()
+                            .map(r -> r.adaptTo(PerReplicable.class))
+                            .filter(Objects::nonNull)
+                            .map(PerReplicable::getContentResource)
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toList())) {
+                        resourceManagement.deleteVersionLabel(resource, PerConstants.PUBLISHED_LABEL);
+                    }
                 } else {
                     sourceReplicable.setLastReplicationActionAsActivated();
                     // Replication can be local or remote and so the commit of the changes is done inside the Replication Service
