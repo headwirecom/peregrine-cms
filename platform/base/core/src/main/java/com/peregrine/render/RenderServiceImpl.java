@@ -1,11 +1,12 @@
 package com.peregrine.render;
 
-import com.peregrine.commons.util.PerConstants;
 import com.peregrine.intra.IntraSlingCaller;
 import com.peregrine.versions.VersioningResourceResolver;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+
+import static com.peregrine.commons.util.PerConstants.PUBLISHED_LABEL;
 
 /**
  * This class calls a resource internally and
@@ -25,25 +26,23 @@ public class RenderServiceImpl
     private IntraSlingCaller intraSlingCaller;
 
     public byte[] renderRawInternally(Resource resource, String extension) throws RenderException {
-        byte[] response = renderResource0(resource, extension);
-        return response;
-    }
-
-    public String renderInternally(Resource resource, String extension) throws RenderException {
-        byte[] response = renderResource0(resource, extension);
-        return new String(response);
-    }
-
-    private byte[] renderResource0(Resource resource, String extension) throws RenderException {
         try {
+            final var initialResolver = resource.getResourceResolver();
+            final var targetResolver = new VersioningResourceResolver(initialResolver, PUBLISHED_LABEL);
             return intraSlingCaller.call(
-                intraSlingCaller.createContext()
-                    .setResourceResolver(new VersioningResourceResolver(resource.getResourceResolver(), PerConstants.PUBLISHED_LABEL))
-                    .setPath(resource.getPath())
-                    .setExtension(extension)
+                    intraSlingCaller.createContext()
+                            .setResourceResolver(targetResolver)
+                            .setPath(resource.getPath())
+                            .setExtension(extension)
             );
         } catch(IntraSlingCaller.CallException e) {
             throw new RenderException(FAILED_TO_RENDER_RESOURCE + e.getMessage(), e);
         }
     }
+
+    public String renderInternally(Resource resource, String extension) throws RenderException {
+        byte[] response = renderRawInternally(resource, extension);
+        return new String(response);
+    }
+
 }
