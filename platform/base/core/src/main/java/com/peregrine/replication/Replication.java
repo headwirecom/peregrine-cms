@@ -44,6 +44,9 @@ public interface Replication {
     /** @return Description of the Service which is given to the Users when they list the Replication Services **/
     String getDescription();
 
+    List<Resource> findReferences(Resource source, boolean deep)
+            throws ReplicationException;
+
     /**
      * Replicates the given resource with its JCR Content and references
      * and if deep also with its children as well as referenced and missing
@@ -55,8 +58,10 @@ public interface Replication {
      *
      * @throws ReplicationException If the replication failed
      */
-    List<Resource> replicate(Resource source, boolean deep)
-        throws ReplicationException;
+    default List<Resource> replicate(final Resource source, final boolean deep)
+        throws ReplicationException {
+        return replicate(findReferences(source, deep));
+    }
 
     /**
      * Removes the replicated resources (and with it all child resources)

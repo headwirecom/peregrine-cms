@@ -83,9 +83,7 @@ public abstract class BaseFileReplicationService
     }
 
     @Override
-    public List<Resource> replicate(Resource startingResource, boolean deep)
-        throws ReplicationException
-    {
+    public List<Resource> findReferences(Resource startingResource, boolean deep) {
         log.trace("Replicate Resource: '{}', deep: '{}'", startingResource, deep);
         List<Resource> referenceList = getReferenceLister().getReferenceList(true, startingResource, true);
         List<Resource> replicationList = new ArrayList<>();
@@ -110,8 +108,8 @@ public abstract class BaseFileReplicationService
         for(Resource reference: replicationList) {
             PerUtil.listMissingResources(reference, replicationList, resourceChecker, false);
         }
-        PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, deep);
-        return replicate(replicationList);
+
+        return PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, deep);
     }
 
     @Override

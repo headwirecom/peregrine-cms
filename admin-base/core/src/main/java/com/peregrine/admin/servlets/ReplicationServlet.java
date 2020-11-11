@@ -140,9 +140,8 @@ public final class ReplicationServlet extends AbstractBaseServlet {
                     // TODO remove version label!!
                 } else {
                     sourceReplicable.setLastReplicationActionAsActivated();
-                    replicates.addAll(replication.replicate(resourcesToReplicate));
                     // Replication can be local or remote and so the commit of the changes is done inside the Replication Service
-                    for (final String path : replicates.stream()
+                    for (final String path : resourcesToReplicate.stream()
                             .map(r -> r.adaptTo(PerReplicable.class))
                             .filter(Objects::nonNull)
                             .map(PerReplicable::getContentResource)
@@ -152,6 +151,8 @@ public final class ReplicationServlet extends AbstractBaseServlet {
                             .collect(Collectors.toList())) {
                         resourceManagement.createVersion(resourceResolver, path, PerConstants.PUBLISHED_LABEL);
                     }
+
+                    replicates.addAll(replication.replicate(resourcesToReplicate));
                 }
             } catch (final ReplicationException | AdminResourceHandler.ManagementException e) {
                 return new ErrorResponse()

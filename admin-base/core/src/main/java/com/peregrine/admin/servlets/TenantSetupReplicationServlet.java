@@ -177,8 +177,7 @@ public class TenantSetupReplicationServlet extends AbstractBaseServlet {
         for (final Resource resource : replicationList) {
             try {
                 logger.info("Replication Resource: '{}'", resource);
-                List<Resource> replicatedItems = defaultReplicationMapper.replicate(resource, true);
-                allReplicatedResource.addAll(replicatedItems);
+                allReplicatedResource.addAll(defaultReplicationMapper.findReferences(resource, true));
             } catch (final ReplicationException e) {
                 logger.warn("Replication Failed", e);
                 return new ErrorResponse()
@@ -203,6 +202,15 @@ public class TenantSetupReplicationServlet extends AbstractBaseServlet {
                         logger.trace("Unable to create a version for path: {} ", path, e);
                     }
                 });
+        try {
+            defaultReplicationMapper.replicate(allReplicatedResource);
+        } catch (final ReplicationException e) {
+            return new ErrorResponse()
+                    .setHttpErrorCode(SC_BAD_REQUEST)
+                    .setErrorMessage(REPLICATION_FAILED)
+                    .setException(e);
+        }
+
         siteMapFilesCache.build(sourcePath + SLASH + PAGES);
 
         final JsonResponse answer = new JsonResponse();

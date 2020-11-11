@@ -38,4 +38,5 @@ public abstract class AbstractionReplicationService
     public String getDescription() {
         return description;
     }
+
 }
