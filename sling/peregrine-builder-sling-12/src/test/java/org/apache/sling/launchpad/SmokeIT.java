@@ -52,11 +52,11 @@ import org.w3c.dom.Node;
 
 public class SmokeIT {
 
-    private static final int LAUNCHPAD_PORT = Integer.getInteger("launchpad.http.port", 8080);
-    private static final int EXPECTED_BUNDLES_COUNT = Integer.getInteger("IT.expected.bundles.count", Integer.MAX_VALUE);
+    private static final int STARTER_HTTP_PORT = Integer.getInteger("starter.http.port", 8080);
+    private static final int STARTER_MIN_BUNDLES_COUNT = Integer.getInteger("starter.min.bundles.count", Integer.MAX_VALUE);
 
     @ClassRule
-    public static LaunchpadReadyRule LAUNCHPAD = new LaunchpadReadyRule(LAUNCHPAD_PORT);
+    public static StarterReadyRule LAUNCHPAD = new StarterReadyRule(STARTER_HTTP_PORT);
     private HttpClientContext httpClientContext;
 
     @Before
@@ -64,11 +64,11 @@ public class SmokeIT {
 
         CredentialsProvider credsProvider = new BasicCredentialsProvider();
         UsernamePasswordCredentials creds = new UsernamePasswordCredentials("admin", "admin");
-        credsProvider.setCredentials(new AuthScope("localhost", LAUNCHPAD_PORT), creds);
+        credsProvider.setCredentials(new AuthScope("localhost", STARTER_HTTP_PORT), creds);
 
         BasicAuthCache authCache = new BasicAuthCache();
         BasicScheme basicAuth = new BasicScheme();
-        authCache.put(new HttpHost("localhost", LAUNCHPAD_PORT, "http"), basicAuth);
+        authCache.put(new HttpHost("localhost", STARTER_HTTP_PORT, "http"), basicAuth);
 
         httpClientContext = HttpClientContext.create();
         httpClientContext.setCredentialsProvider(credsProvider);
@@ -87,7 +87,7 @@ public class SmokeIT {
 
         try ( CloseableHttpClient client = newClient() ) {
 
-            HttpGet get = new HttpGet("http://localhost:" + LAUNCHPAD_PORT + "/system/console/bundles.json");
+            HttpGet get = new HttpGet("http://localhost:" + STARTER_HTTP_PORT + "/system/console/bundles.json");
 
             // pass the context to ensure preemptive basic auth is used
             // https://hc.apache.org/httpcomponents-client-ga/tutorial/html/authentication.html
@@ -107,8 +107,8 @@ public class SmokeIT {
 
                 @SuppressWarnings("unchecked")
                 List<Object> bundles = (List<Object>) obj.get("data");
-                if(bundles.size() < EXPECTED_BUNDLES_COUNT) {
-                    fail("Expected at least " + EXPECTED_BUNDLES_COUNT + " bundles, got " + bundles.size());
+                if(bundles.size() < STARTER_MIN_BUNDLES_COUNT) {
+                    fail("Expected at least " + STARTER_MIN_BUNDLES_COUNT + " bundles, got " + bundles.size());
                 }
 
                 BundleStatus bs = new BundleStatus(status);
@@ -148,7 +148,7 @@ public class SmokeIT {
     public void ensureRepositoryIsStarted() throws Exception {
         try ( CloseableHttpClient client = newClient() ) {
 
-            HttpGet get = new HttpGet("http://localhost:" + LAUNCHPAD_PORT + "/server/default/jcr:root/content");
+            HttpGet get = new HttpGet("http://localhost:" + STARTER_HTTP_PORT + "/server/default/jcr:root/content");
 
             try ( CloseableHttpResponse response = client.execute(get) ) {
 

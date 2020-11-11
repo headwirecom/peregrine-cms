@@ -1,0 +1,17 @@
+
+{
+    "bundles":[
+        {
+            "id":"org.apache.sling:org.apache.sling.sample.slingshot:0.9.0",
+            "start-order":"20"
+        }
+    ],
+    "configurations":{
+        "org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended~sling.slingshot":{
+            "user.mapping":[
+                "org.apache.sling.sample.slingshot=[slingshot-service]"
+            ]
+        }
+    },
+    "repoinit:TEXT|true": "@file"
+}

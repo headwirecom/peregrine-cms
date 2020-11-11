@@ -118,7 +118,7 @@
             "start-order":"20"
         },
         {
-            "id":"org.apache.sling:org.apache.sling.xss:2.2.6",
+            "id":"org.apache.sling:org.apache.sling.xss:2.2.8",
             "start-order":"20"
         },
         {
@@ -226,7 +226,7 @@
             "start-order":"20"
         },
         {
-            "id":"org.apache.sling:org.apache.sling.jcr.repoinit:1.1.24",
+            "id":"org.apache.sling:org.apache.sling.jcr.repoinit:1.1.26",
             "start-order":"20"
         }
     ],
