@@ -183,6 +183,13 @@ Peregrine comes with a default configuration called **localFS** that will export
 
 ![OSGi System Configuration for Local FS](distribution.local.file.system.configuration.png)
 
+`Local FS` distribution relies on versions, and the renditions are based on `VersioningResourceResolver`.
+You can read more about it [here](../versioning/index.md). We are basically using this resolver to render stuff from
+the point of view of `Published` versions only.
+
+In addition to regular resources, `local FS` stores the sitemap under `[..]/content/<tenant>/pages.sitemap.xml`
+location, also using the `VersioningResourceResolver` to process `Published` pages only.
+
 # S3 Bucket
 
 Peregrine allows the user to setup a distribution of content to an AWS S3 service. In a nutshell
