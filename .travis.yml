@@ -2,46 +2,36 @@ branches:
   only:
   - develop-sling12
   - develop
-
 services:
 - docker
-
 jdk:
-  - openjdk11
-
+- openjdk11
 env:
   global:
   - DOCKER_IMAGE=peregrinecms/peregrine-cms
   - DOCKER_USERNAME=gastongonzalez
   matrix:
-  - secure: x21cQdxtCEHV9BrGPmP+FzaraSoRbTAty2DDeNbycAjcJZsJt4hMcUy5tOBShCY2o/IlF6jVDHmDo3inRPbPQvhop9b4iK3vSfnzfk1cT+K2/TJw9r0ZtWS55A2nkxkG6QidJE03Oc557MY1ouJX5JTSoAm2FO5AQ+AOXorxtwSpBCGQTHGNOmRhV6CayerReaqoG8zEiVLin/uRf/vv0IqyW86vSe5mQWCRIK0V4Rjm1E8so9y/yjTxDU4KazTN6+Yu37m70pV3J42OcNr1nfF7tMjqu9RLUtxArDzmGPMKuAXYisq6tARkcB5MRZ1xVT0u25IFEKLyBYySbjMeD/fF3gra4yCnijnqGraYeXQ2IdPxf/5kcrtt85OMRG4OV3KDCrCOt64yX0t254UWccD1xN5nWm8ht61gAcpvZ8/yy/bD1MKeJvWBCpMYG5MblO33da78sMO0yY8ziSO0wO7fLx0b/0wspfz7dSlXo8FKKgj/+xKUnmi0ZWnhxwvi5fhvJIBANwmdE5Tmcy+OtgbhRoMfNHIQv3Bwqdolpp9Z8ROQxGnpUd4W4qUGz1UoO49DCwAEUz/j7E4zZKJyG4U+ZyHcFotN1KTCXkxR5O/d2Nej1jAL0fQWzuk2pAGsBkQAAbvcHtJIkmK5hCxXm3wVK9S/Cii68zfIb8QUudI=
-
+  - secure: TOwAqQfLZyhcyflSe8NTZJEfD6sgx9v/fjvlYNSI5uXbdiMAVhMvglFzNWE0Pd2Kr6VvR5mdL+edoP+8HNYGF2QqK7hILJaC9L01r0f/3sJtvxafoXZ8LRS6H+TJNSgvFoecaep0bo/XfKjN8GA4NIhbMQrGcyTRUSfYHKs/9Tu1RzZo0qBKjLn+227wCexLWiCZ09zbxfU60t8oMLYnedjIY61LgMWDX+B6DOvwFzuzwjDX5dnEh7s4ry0EvaWvdny3CH64qwYO1c58pCZKoYkj8Va1j/UpozhZZFhu7biyKEYgglzcpMlgBJxCVSQYn3pNGRfeROrJ9iNcUZGuIhDDLBYEguL+rsPydfBYyv5Q09yCUTcY1HHUk6O/xMT/nPXIyf/cg+znniDQ/ckHu2ktrFlSo2Qu1aKN2hne/xNDzcIxseWtgGhSC9m5Ge7DGIBzmfb9gG1lrFS253UTBcyoHVkZze9zI+7M1vbCK98DI+1labIi3hlr6YiXDf54Z7SotMtcHgeuvtZz23TOWnmWOFTRbezSsy0HJy8LlbtZitjdtkegVje0Oz+KFEo4eUCE0l2oI1IZa2MwpNplR/YWo9r1oDLNL7XWGWS6oW2tEkXoMwCk3Vddh7UQm7FGIB+M6MPTWAZ2CUZLwjfK728YSiuLNuoJaRDpuart9BQ=
 before_script:
 - branch="$(echo ${TRAVIS_BRANCH} | tr '/' '-' | tr '[:upper:]' '[:lower:]')"
 - version="$(awk '$2 == "APP_VERSION" { print $3; exit }' docker/Dockerfile)"
-
 script:
 - cd docker && ./builddocker.sh
-- if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then TAG="pr-${TRAVIS_PULL_REQUEST}"; fi
-- if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin; fi
-- if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:${TAG}"; fi
-- if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then docker push ${DOCKER_IMAGE}:${TAG}; fi
-
+- if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then TAG="pr-${TRAVIS_PULL_REQUEST}";
+  fi
+- if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then echo "${DOCKER_PASSWORD}" | docker
+  login -u "$DOCKER_USERNAME" --password-stdin; fi
+- if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:${TAG}";
+  fi
+- if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then docker push ${DOCKER_IMAGE}:${TAG};
+  fi
 after_script:
 - docker images
-
 before_deploy:
 - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
 - docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:latest"
 - docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:${branch}"
-
 deploy:
-  # Stable release
-  provider: script
-  script: docker push ${DOCKER_IMAGE}:latest
-  on:
-    branch: develop
-  # Development release
   provider: script
   script: docker push ${DOCKER_IMAGE}:${branch}
   on:
