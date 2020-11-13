@@ -22,7 +22,10 @@ before_script:
 
 script:
 - cd docker && ./builddocker.sh
-- ./pushdocker-travis.sh
+- if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then TAG="pr-${TRAVIS_PULL_REQUEST}"; fi
+- if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"; fi
+- if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:${TAG}"; fi
+- if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then docker push ${DOCKER_IMAGE}:${TAG}; fi
 
 after_script:
 - docker images
