@@ -53,4 +53,3 @@ Due to how Sling processes requests it's not always reliable to trust `Versionin
 mainly to custom mocks wrapped around `SlingHttpSerlvetRequest`. It's all good for the OotB implementations.
 
 Additionally, the direct way is the only one in case of e.g. services or jobs where a `request` is not available.
-
