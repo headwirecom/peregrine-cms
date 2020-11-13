@@ -21,7 +21,7 @@ before_script:
 - version="$(awk '$2 == "APP_VERSION" { print $3; exit }' docker/Dockerfile)"
 
 script:
-- cd docker && ./builddocker.sh
+- cd docker && ./builddocker.sh ${TRAVIS_BRANCH} develop
 - ./pushdocker-travis.sh
 
 after_script:
