@@ -22,6 +22,14 @@
         <link rel="stylesheet" href="${item}" type="text/css">
     </sly>
 
+    <script>
+        $peregrineApp = {
+            loadComponent: (name) => {
+                console.log(name)
+            }
+        }
+    </script>
+
 </head>
 <body>
 <sly data-sly-include="tracker-bodystart.html"></sly>
