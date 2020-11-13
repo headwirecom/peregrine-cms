@@ -6,4 +6,5 @@
     xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
     jcr:primaryType="per:Component"
     jcr:title="page component pagerendervue" 
+    group=".hidden"
     templateComponent="true"/>
