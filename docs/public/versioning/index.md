@@ -37,16 +37,17 @@ Programmatically one will create an instance via `VersioningResourceResolver(Res
 For most regular applications there is another way additionally. `VersioningRequestFilter` is looking for the following
 property of a `request`:
 
-`com.peregrine.versions.VersioningResourceResolver-label`
+`x-per-version-label`
 
 Its value is the label that `VersioningResourceResolver` will look for in the resource version history. One can set it
 to e.g. `Published` or the other type described above.
 
-The property can be passed in two ways:
+The property can be passed in 3 ways:
+* as a `request` header,
 * as a `Cookie`,
 * as a `request` attribute.
 
-The first option allows for a consistent view of the given state of the site, when applied in the browser manually.
+The second option allows for a consistent view of the given state of the site, when applied in the browser manually.
 We do not provide any UI for the user to use it, it's an advanced option for the developers only.
 
 Due to how Sling processes requests it's not always reliable to trust `VersioningRequestFilter`. This remark applies

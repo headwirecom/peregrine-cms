@@ -18,7 +18,6 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 
 import static com.peregrine.commons.Chars.EQ;
-import static com.peregrine.versions.VersioningResourceResolver.LABEL_PROPERTY;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Component(
@@ -29,6 +28,8 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
     }
 )
 public final class VersioningRequestFilter implements Filter {
+
+    private static final String LABEL_PROPERTY = "x-per-version-label";
 
     @Reference
     private ServletResolver servletResolver;

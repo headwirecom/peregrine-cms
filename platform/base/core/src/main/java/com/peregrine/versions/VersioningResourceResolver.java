@@ -24,7 +24,6 @@ import static org.apache.commons.lang3.StringUtils.*;
 
 public final class VersioningResourceResolver extends ResourceResolverWrapper {
 
-    public static final String LABEL_PROPERTY = VersioningResourceResolver.class.getName() + "-label";
     private static final String _JCR_CONTENT_ = SLASH + JCR_CONTENT + SLASH;
 
     private final List<String> exemptedPrimaryTypes = Arrays.asList(
