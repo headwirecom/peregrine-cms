@@ -89,7 +89,7 @@ public class ListReplicationStatusServlet extends AbstractBaseServlet {
         answer.writeAttribute(SOURCE_PATH, replicable.getPath());
         answer.writeAttribute(ACTIVATED, replicable.isReplicated());
         answer.writeAttribute(PER_REPLICATION_REF, replicable.getReplicationRef());
-        answer.writeAttribute(PER_REPLICATED, Optional.of(replicable.getReplicated())
+        answer.writeAttribute(PER_REPLICATED, Optional.ofNullable(replicable.getReplicated())
                 .map(Calendar::getTime)
                 .map(Date::getTime)
                 .map(DATE_FORMATTER::format)
