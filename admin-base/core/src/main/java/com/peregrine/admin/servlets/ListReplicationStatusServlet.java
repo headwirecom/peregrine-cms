@@ -44,6 +44,7 @@ import static com.peregrine.admin.util.AdminConstants.SOURCE_NAME;
 import static com.peregrine.admin.util.AdminConstants.SOURCE_PATH;
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.*;
+import static java.util.Objects.isNull;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -68,21 +69,19 @@ public class ListReplicationStatusServlet extends AbstractBaseServlet {
 
     private static final String RESOURCE_NOT_FOUND = "Resource not found";
 
-
-
     @Override
     protected Response handleRequest(Request request) throws IOException {
-
-        JsonResponse answer = new JsonResponse();
-        final String path = request.getSuffix();
-        Resource resource = request.getResourceByPath(path);
-
-        PerReplicable replicable = resource.adaptTo(PerReplicable.class);
-        if(resource == null || replicable == null) {
+        final JsonResponse answer = new JsonResponse();
+        final String suffix = request.getSuffix();
+        final PerReplicable replicable = Optional.ofNullable(suffix)
+                .map(request::getResourceByPath)
+                .map(r ->  r.adaptTo(PerReplicable.class))
+                .orElse(null);
+        if(isNull(replicable)) {
             return new ErrorResponse()
                 .setHttpErrorCode(SC_BAD_REQUEST)
                 .setErrorMessage(RESOURCE_NOT_FOUND)
-                .setRequestPath(path);
+                .setRequestPath(suffix);
         }
 
         answer.writeAttribute(SOURCE_NAME, replicable.getName());
