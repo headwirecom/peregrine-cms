@@ -33,6 +33,9 @@ import org.osgi.service.component.annotations.Component;
 
 import javax.servlet.Servlet;
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Optional;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_LIST_REPLICATION_STATUS;
 import static com.peregrine.admin.servlets.NodesServlet.ACTIVATED;
@@ -86,7 +89,12 @@ public class ListReplicationStatusServlet extends AbstractBaseServlet {
         answer.writeAttribute(SOURCE_PATH, replicable.getPath());
         answer.writeAttribute(ACTIVATED, replicable.isReplicated());
         answer.writeAttribute(PER_REPLICATION_REF, replicable.getReplicationRef());
-        answer.writeAttribute(PER_REPLICATED, DATE_FORMATTER.format(replicable.getReplicated().getTime().getTime()));
+        answer.writeAttribute(PER_REPLICATED, Optional.of(replicable.getReplicated())
+                .map(Calendar::getTime)
+                .map(Date::getTime)
+                .map(DATE_FORMATTER::format)
+                .orElse(null)
+        );
         answer.writeAttribute(PER_REPLICATION_LAST_ACTION, replicable.getLastReplicationAction());
         answer.writeClose();
         return answer;
