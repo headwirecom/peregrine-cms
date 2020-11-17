@@ -49,8 +49,6 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.resource.Resource;
-import org.osgi.framework.BundleContext;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;

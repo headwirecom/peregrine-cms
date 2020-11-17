@@ -61,7 +61,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import static com.peregrine.commons.Strings.firstNotBlank;
 import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
 import static com.peregrine.commons.util.PerConstants.PAGES;
 import static com.peregrine.commons.util.PerConstants.PUBLISHED_LABEL;
