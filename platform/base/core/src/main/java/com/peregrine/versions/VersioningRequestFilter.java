@@ -1,6 +1,5 @@
 package com.peregrine.versions;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -63,12 +62,14 @@ public final class VersioningRequestFilter implements Filter {
     }
 
     private static String extractLabel(final SlingHttpServletRequest request) {
-        return Optional.ofNullable(request.getCookie(LABEL_PROPERTY))
-                .map(Cookie::getValue)
-                .filter(StringUtils::isNotBlank)
-                .orElseGet(() -> Optional.ofNullable(request.getAttribute(LABEL_PROPERTY))
-                        .map(Object::toString)
-                        .orElse(null));
+        Optional<String> result = Optional.ofNullable(request.getCookie(LABEL_PROPERTY))
+                .map(Cookie::getValue);
+        if (result.isEmpty()) {
+            result = Optional.ofNullable(request.getAttribute(LABEL_PROPERTY))
+                    .map(Object::toString);
+        }
+
+        return result.orElseGet(() -> request.getHeader(LABEL_PROPERTY));
     }
 
     private void switchResolver(final SlingHttpServletRequest request, final String label) throws ServletException {
