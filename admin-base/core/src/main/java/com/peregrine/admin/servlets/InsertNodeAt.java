@@ -67,7 +67,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.Servlet;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -91,9 +90,6 @@ public class InsertNodeAt extends AbstractBaseServlet {
 
     private static final String FAILED_TO_CREATE_INTERMEDIATE_RESOURCES = "Failed to create intermediate resources";
     private static final String RESOURCE_NOT_FOUND_BY_PATH = "Resource not found by Path";
-
-    @Reference
-    ModelFactory modelFactory;
 
     @Reference
     ResourceRelocation resourceRelocation;
