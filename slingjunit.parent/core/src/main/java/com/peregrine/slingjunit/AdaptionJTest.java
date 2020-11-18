@@ -212,6 +212,29 @@ public class AdaptionJTest {
         assertTrue(containerPaths.containsAll(actualCombinedPaths));
     }
 
+    /**
+     *
+     ssrPageMergeScenario4 new page should have template content, and content containers for authoring
+     template: /content/pagerenderserver/templates/base
+     page: /content/pagerenderserver/pages/new-empty
+     *
+     */
+    @Test
+    public void ssrPageMergeScenario4(){
+        // set up expected resource list
+        resource = resourceResolver.getResource("/content/pagerenderserver/pages/new-empty");
+        List<String> resourcePaths = new ArrayList<>();
+        resourcePaths.add("/content/pagerenderserver/templates/base/jcr:content/base");
+        resourcePaths.add("/content/pagerenderserver/templates/base/jcr:content/content");
+        // set PageMerge object to test
+        bindings.put("resource", resource);
+        PageMerge pageMerge = new PageMerge();
+        pageMerge.init(bindings);
+        // run page merge test
+        List<Resource> actualResources = pageMerge.getMergedResources();
+        assertEquals(resourcePaths.size(), actualResources.size());
+
+    }
 
     @Before
     public void setUp() throws Exception {

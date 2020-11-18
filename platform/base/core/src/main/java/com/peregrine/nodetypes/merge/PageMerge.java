@@ -103,21 +103,21 @@ public class PageMerge implements Use {
         return pageResources;
     }
 
-    private void getChildren(Map map, List resources){
+    private void getChildren(Map map, List resources) {
         String templatePath = getTemplatePath();
         String relativePath = (String) map.get("path");
         String basePath = resource.getPath();
-        if (Objects.nonNull(map.get(FROM_TEMPLATE)) && (boolean) map.get(FROM_TEMPLATE)){
-        // if fromTemplate is set true determine whether the resource is an container empty container
-            List<Map> childMaps = (ArrayList) map.get(CHILDREN);
-            if (Objects.nonNull(childMaps)){
-                // this represents a page editing content container
-                // so basePath needs to be readjusted to the page path
-                basePath = resource.getPath();
-            } else {
-                basePath = templatePath;
-            }
 
+        if (Objects.nonNull(resolver.getResource(basePath+relativePath))){
+            // if resource is from the template and the resource is not a type of container
+            // then the base path should point to the template
+            resources.add(resolver.getResource(basePath+relativePath));
+        } else if (Objects.nonNull(resolver.getResource(templatePath+relativePath))){
+            // if resource is from the template and the resource is type of container
+            // then the base path should point to the page
+            resources.add(resolver.getResource(templatePath+relativePath));
+        } else {
+            // otherwise try to add content resource inherited from parent templates
             Resource templateContent = this.resolver.getResource(basePath+relativePath);
             Resource templateResource = this.resolver.getResource(templatePath);
             while (Objects.isNull(templateContent) && Objects.nonNull(templateResource)){
@@ -132,11 +132,6 @@ public class PageMerge implements Use {
             if(Objects.nonNull(templateContent)){
                 resources.add(templateContent);
             }
-        } else {
-            // page content
-            Resource pageResource = this.resource.getResourceResolver()
-                    .getResource(resource.getPath()+relativePath);
-            resources.add(pageResource);
         }
     }
 
