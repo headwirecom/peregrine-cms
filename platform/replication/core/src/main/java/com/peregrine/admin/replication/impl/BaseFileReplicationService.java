@@ -202,7 +202,7 @@ public abstract class BaseFileReplicationService
     }
 
     private void replicateResource(Resource resource) throws ReplicationException {
-        // Need to figure out the type and replicate accordingl
+        // Need to figure out the type and replicate accordingly
         String primaryType = PerUtil.getPrimaryType(resource);
         if(ASSET_PRIMARY_TYPE.equals(primaryType)) {
             replicateAsset(resource);
