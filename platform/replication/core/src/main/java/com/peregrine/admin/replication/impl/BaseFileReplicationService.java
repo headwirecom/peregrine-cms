@@ -223,16 +223,17 @@ public abstract class BaseFileReplicationService
     private void replicateAsset(Resource resource) throws ReplicationException {
         try {
             // Get the image data of the resource and write to the target
-            byte[] imageContent = getRenderService().renderRawInternally(resource, "");
+            final RenderService renderService = getRenderService();
+            byte[] imageContent = renderService.renderRawInternally(resource, "");
             storeRendering(resource, "", imageContent);
             // Loop over all existing renditions and write the image data to the target
-            List<String> checkRenditions = new ArrayList<>(getMandatoryRenditions());
+            List<String> checkRenditions = getMandatoryRenditions();
             Resource renditions = resource.getChild(RENDITIONS);
             if(renditions != null) {
                 for(Resource rendition : renditions.getChildren()) {
                     if(NT_FILE.equals(PerUtil.getPrimaryType(rendition))) {
                         try {
-                            imageContent = getRenderService().renderRawInternally(resource, RENDITION_ACTION + SLASH + rendition.getName());
+                            imageContent = renderService.renderRawInternally(resource, RENDITION_ACTION + SLASH + rendition.getName());
                             storeRendering(resource, rendition.getName(), imageContent);
                             checkRenditions.remove(rendition.getName());
                         } catch(RenderException e) {
@@ -245,7 +246,7 @@ public abstract class BaseFileReplicationService
             // Loop over all remaining mandatory renditions and write the image data to the target
             for(String renditionName : checkRenditions) {
                 try {
-                    imageContent = getRenderService().renderRawInternally(resource, RENDITION_ACTION + SLASH + renditionName);
+                    imageContent = renderService.renderRawInternally(resource, RENDITION_ACTION + SLASH + renditionName);
                     // Get rendition
                     if(renditions == null) {
                         renditions = resource.getChild(RENDITIONS);
