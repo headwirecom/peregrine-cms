@@ -25,7 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
 import static junit.framework.TestCase.assertNotNull;
+import static org.apache.sling.api.resource.Resource.RESOURCE_TYPE_NON_EXISTING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -238,7 +240,46 @@ public class AdaptionJTest {
         // run page merge test
         List<Resource> actualResources = pageMerge.getMergedResources();
         assertEquals(resourcePaths.size(), actualResources.size());
+        assertAllResourcesHaveTypes(actualResources);
+    }
 
+    /**
+     *
+     ssrPageMergeScenario5
+     Test intermediate resources such that a template is configured with an empty container for authoring page
+     An author drops a component into the container from a page. The container resource type defined by the template should define the
+     rendering even though the container's intermediate path within the page's content has no resource type
+     template/jcr:content/container (sling:resourceType)
+     page/jcr:content/container (only nt:unstructured)
+
+     template: /content/pagerenderserver/templates/empty-container
+     page: /content/pagerenderserver/pages/non-empty-container
+     *
+     */
+    @Test
+    public void ssrPageMergeScenario5(){
+        // set up expected resource list
+        resource = resourceResolver.getResource("/content/pagerenderserver/pages/non-empty-container");
+        List<String> resourcePaths = new ArrayList<>();
+        resourcePaths.add("/content/pagerenderserver/pages/non-empty-container/jcr:content/content");
+        // set PageMerge object to test
+        bindings.put("resource", resource);
+        PageMerge pageMerge = new PageMerge();
+        pageMerge.init(bindings);
+        // run page merge test
+        List<Resource> actualResources = pageMerge.getMergedResources();
+        assertEquals(resourcePaths.size(), actualResources.size());
+        assertAllResourcesHaveTypes(actualResources);
+    }
+
+    private void assertAllResourcesHaveTypes(List<Resource> resourceList){
+        resourceList.stream().forEach( resourceInList -> {
+            assertNotNull(resourceInList.getResourceType());
+            assertFalse(resourceInList.getResourceType().isEmpty());
+            assertFalse(resourceInList.getResourceType().isBlank());
+            assertFalse(resourceInList.getResourceType().equals(RESOURCE_TYPE_NON_EXISTING));
+            assertFalse(resourceInList.getResourceType().equals(NT_UNSTRUCTURED));
+        });
     }
 
     @Before
