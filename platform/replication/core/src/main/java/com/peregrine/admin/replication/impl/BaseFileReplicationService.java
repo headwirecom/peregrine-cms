@@ -313,12 +313,13 @@ public abstract class BaseFileReplicationService
             if(exportExtension.supportsResource(resource)) {
                 Object renderingContent = null;
                 try {
+                    final RenderService renderService = getRenderService();
                     if(raw) {
                         log.trace("Before Rendering Raw Resource With Extension: '{}'", extension);
-                        renderingContent = getRenderService().renderRawInternally(resource, extension);
+                        renderingContent = renderService.renderRawInternally(resource, extension);
                     } else {
                         log.trace("Before Rendering String Resource With Extension: '{}'", extension);
-                        renderingContent = getRenderService().renderInternally(resource, extension);
+                        renderingContent = renderService.renderInternally(resource, extension);
                     }
                 } catch(RenderException e) {
                     log.warn("Rendering of '{}' failed -> ignore it", resource.getPath());
