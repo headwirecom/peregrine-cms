@@ -240,7 +240,6 @@ public class AdaptionJTest {
         // run page merge test
         List<Resource> actualResources = pageMerge.getMergedResources();
         assertEquals(resourcePaths.size(), actualResources.size());
-        assertAllResourcesHaveTypes(actualResources);
     }
 
     /**
@@ -269,18 +268,18 @@ public class AdaptionJTest {
         // run page merge test
         List<Resource> actualResources = pageMerge.getMergedResources();
         assertEquals(resourcePaths.size(), actualResources.size());
-        assertAllResourcesHaveTypes(actualResources);
+
+        // test intermediate container (nt:unstructured)
+        resource = resourceResolver.getResource("/content/pagerenderserver/pages/non-empty-container/jcr:content/content");
+        assertTrue(resource.getResourceType().equals(NT_UNSTRUCTURED));
+        Container containerRes = resource.adaptTo(Container.class);
+        assertNotNull(containerRes);
+        assertEquals(1, containerRes.getCombinedResources().size());
+        assertEquals("/content/pagerenderserver/pages/non-empty-container/jcr:content/content/text1",
+                containerRes.getCombinedResources().get(0).getPath());
+        assertEquals("12", containerRes.getCombinedProperties().get("mobilecolspan", String.class));
     }
 
-    private void assertAllResourcesHaveTypes(List<Resource> resourceList){
-        resourceList.stream().forEach( resourceInList -> {
-            assertNotNull(resourceInList.getResourceType());
-            assertFalse(resourceInList.getResourceType().isEmpty());
-            assertFalse(resourceInList.getResourceType().isBlank());
-            assertFalse(resourceInList.getResourceType().equals(RESOURCE_TYPE_NON_EXISTING));
-            assertFalse(resourceInList.getResourceType().equals(NT_UNSTRUCTURED));
-        });
-    }
 
     @Before
     public void setUp() throws Exception {

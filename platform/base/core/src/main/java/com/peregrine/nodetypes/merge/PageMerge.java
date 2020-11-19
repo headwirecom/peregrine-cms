@@ -119,6 +119,7 @@ public class PageMerge implements Use {
             // if resource is from the template and the resource is not a type of container
             // then the base path should point to the template
             resources.add(resolver.getResource(basePath+relativePath));
+
         } else if (Objects.nonNull(resolver.getResource(templatePath+relativePath))){
             // if resource is from the template and the resource is type of container
             // then the base path should point to the page
@@ -136,7 +137,7 @@ public class PageMerge implements Use {
                     templateContent = resolver.getResource(templateResource.getPath()+relativePath);
                 }
             }
-            if(Objects.nonNull(templateContent)){
+            if (Objects.nonNull(templateContent)){
                 resources.add(templateContent);
             }
         }

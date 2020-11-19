@@ -7,14 +7,9 @@ import java.util.Objects;
 
 public class PageHelper extends BaseHelper {
 
-    public String getHello() {
-        return "hello";
-    }
-
     public String getPath() {
         return this.getResource().getPath();
     }
-
 
     public String getSiteRootPath() {
         return Objects.nonNull(getSiteRoot()) ? getSiteRoot().getPath() : null;
@@ -32,5 +27,4 @@ public class PageHelper extends BaseHelper {
     public void init(Bindings bindings) {
         super.init(bindings);
     }
-
 }

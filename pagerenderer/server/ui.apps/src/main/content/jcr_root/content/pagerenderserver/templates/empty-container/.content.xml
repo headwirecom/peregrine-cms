@@ -12,6 +12,7 @@
     sling:resourceType="pagerenderserver/components/page">
 
     <content jcr:primaryType="nt:unstructured"
+             mobilecolspan="12"
              sling:resourceType="pagerenderserver/components/container" />
 
   </jcr:content>
