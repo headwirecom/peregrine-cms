@@ -1,12 +1,9 @@
 package com.peregrine.render;
 
 import com.peregrine.intra.IntraSlingCaller;
-import com.peregrine.versions.VersioningResourceResolver;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-
-import static com.peregrine.commons.util.PerConstants.PUBLISHED_LABEL;
 
 /**
  * This class calls a resource internally and
@@ -27,11 +24,9 @@ public class RenderServiceImpl
 
     public byte[] renderRawInternally(Resource resource, String extension) throws RenderException {
         try {
-            final var initialResolver = resource.getResourceResolver();
-            final var targetResolver = new VersioningResourceResolver(initialResolver, PUBLISHED_LABEL);
             return intraSlingCaller.call(
                     intraSlingCaller.createContext()
-                            .setResourceResolver(targetResolver)
+                            .setResourceResolver(resource.getResourceResolver())
                             .setPath(resource.getPath())
                             .setExtension(extension)
             );

@@ -143,6 +143,7 @@ public final class ReplicationServlet extends AbstractBaseServlet {
                         resourceManagement.deleteVersionLabel(resource, PerConstants.PUBLISHED_LABEL);
                     }
                 } else {
+                    replication.prepare(resourcesToReplicate);
                     sourceReplicable.setLastReplicationActionAsActivated();
                     // Replication can be local or remote and so the commit of the changes is done inside the Replication Service
                     for (final String path : streamReplicableResources(resourcesToReplicate)

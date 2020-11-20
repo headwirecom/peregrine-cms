@@ -63,6 +63,11 @@ public interface Replication {
         return replicate(findReferences(source, deep));
     }
 
+    default void prepare(final Resource source, final boolean deep)
+            throws ReplicationException {
+        prepare(findReferences(source, deep));
+    }
+
     /**
      * Removes the replicated resources (and with it all child resources)
      *
@@ -73,6 +78,8 @@ public interface Replication {
      */
     List<Resource> deactivate(Resource source)
         throws ReplicationException;
+
+    default void prepare(Collection<Resource> resourceList) throws ReplicationException { }
 
     /**
      * Replicates all the given resources and only them. This means

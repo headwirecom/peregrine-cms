@@ -178,6 +178,7 @@ public class TenantSetupReplicationServlet extends AbstractBaseServlet {
             try {
                 logger.info("Replication Resource: '{}'", resource);
                 allReplicatedResource.addAll(defaultReplicationMapper.findReferences(resource, true));
+                defaultReplicationMapper.prepare(allReplicatedResource);
             } catch (final ReplicationException e) {
                 logger.warn("Replication Failed", e);
                 return new ErrorResponse()
@@ -194,7 +195,6 @@ public class TenantSetupReplicationServlet extends AbstractBaseServlet {
                 .map(PerReplicable::getContentResource)
                 .filter(Objects::nonNull)
                 .map(Resource::getPath)
-                .filter(Objects::nonNull)
                 .forEach(path -> {
                     try {
                         resourceManagement.createVersion(resourceResolver, path, dateLabel, PerConstants.PUBLISHED_LABEL);
