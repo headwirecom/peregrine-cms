@@ -1,4 +1,11 @@
 .per-drop-target {
+    display: none;
+}
+.per-drop-target-empty {
+    display: none;
+}
+.edit-mode .per-drop-target {
+    display: inherit;
     border: 1px dashed #c0c0c0;
     clear: both;
     padding: 4px;
@@ -12,7 +19,8 @@
     font-size: 0.75em;
     background: #f8f8f8e0;
 }
-.per-drop-target-empty {
+.edit-mode .per-drop-target-empty {
+    display: inherit;
     font-size: 1.5em;
     height: 3em;
     padding-top: 0.75em;
