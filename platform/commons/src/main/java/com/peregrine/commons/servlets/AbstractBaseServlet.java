@@ -29,6 +29,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -147,11 +148,19 @@ public abstract class AbstractBaseServlet
      * as well as parameters
      */
     public static class Request {
+
+        protected final Logger logger = LoggerFactory.getLogger(getClass());
+
         private final SlingHttpServletRequest request;
         private final SlingHttpServletResponse response;
         private final Map<String, String> parameters;
 
         public Request(SlingHttpServletRequest request, SlingHttpServletResponse response) {
+            try {
+                request.setCharacterEncoding("UTF-8");
+            } catch( UnsupportedEncodingException uee ) {
+                logger.info("not able to set character decoding to UTF-8");
+            }
             this.request = request;
             this.response = response;
             this.parameters = ServletHelper.obtainParameters(request);
