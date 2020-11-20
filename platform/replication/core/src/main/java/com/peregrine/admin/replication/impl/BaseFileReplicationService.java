@@ -64,6 +64,7 @@ import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
 import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
 import static com.peregrine.commons.util.PerUtil.RENDITIONS;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
+import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -106,10 +107,15 @@ public abstract class BaseFileReplicationService
         }
     };
     private final RenditionConsumer assetRenditionReplicator = (resource, renditionName) -> {
-        final String extension = isBlank(renditionName) ? EMPTY : RENDITION_ACTION + SLASH + renditionName;
         final var initialResolver = resource.getResourceResolver();
         final var targetResolver = new VersioningResourceResolver(initialResolver, PUBLISHED_LABEL);
-        final byte[] content = getRenderService().renderRawInternally(targetResolver.wrap(resource), extension);
+        final var wrappedResource = targetResolver.wrap(resource);
+        if (isNull(wrappedResource)) {
+            return;
+        }
+
+        final String extension = isBlank(renditionName) ? EMPTY : RENDITION_ACTION + SLASH + renditionName;
+        final byte[] content = getRenderService().renderRawInternally(wrappedResource, extension);
         storeRendering(resource, renditionName, content);
     };
     private final ResourceReplicator resourceReplicator = resource -> {
@@ -260,6 +266,10 @@ public abstract class BaseFileReplicationService
     }
 
     private void processAssetRenditions(Resource resource, RenditionConsumer consumer) throws ReplicationException {
+        if (isNull(resource)) {
+            return;
+        }
+
         try {
             // Get the image data of the resource and write to the target
             consumer.consume(resource, EMPTY);
