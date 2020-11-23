@@ -28,6 +28,7 @@ package com.peregrine.replication;
 import org.apache.sling.api.resource.Resource;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -43,6 +44,10 @@ public interface Replication {
 
     /** @return Description of the Service which is given to the Users when they list the Replication Services **/
     String getDescription();
+
+    default List<Resource> filterReferences(final List<Resource> resources) {
+        return resources;
+    }
 
     List<Resource> findReferences(Resource source, boolean deep)
             throws ReplicationException;
@@ -79,7 +84,9 @@ public interface Replication {
     List<Resource> deactivate(Resource source)
         throws ReplicationException;
 
-    default void prepare(Collection<Resource> resourceList) throws ReplicationException { }
+    default List<Resource> prepare(Collection<Resource> resourceList) throws ReplicationException {
+        return Collections.emptyList();
+    }
 
     /**
      * Replicates all the given resources and only them. This means

@@ -164,22 +164,26 @@ public class DefaultReplicationMapperService
     }
 
     @Override
+    public List<Resource> deactivate(final Resource source) throws ReplicationException {
+        return getDefaultReplicationService().deactivate(source);
+    }
+
+    @Override
     public List<Resource> findReferences(Resource source, boolean deep) {
         logger.trace("Starting Resource: '{}'", source.getPath());
         final List<Resource> referenceList = referenceLister.getReferenceList(true, source, deep);
         final List<Resource> replicationList = listMissingResources(source, new ArrayList<>(), new AddAllResourceChecker(), deep);
         replicationList.add(0, source);
         replicationList.addAll(0, referenceList);
-        return ResourceUtils.removeDuplicates(replicationList);
+        try {
+            return delegate(replicationList, (replication, list) -> replication.filterReferences(list));
+        } catch (final ReplicationException e) {
+            return ResourceUtils.removeDuplicates(replicationList);
+        }
     }
 
-    @Override
-    public List<Resource> deactivate(final Resource source) throws ReplicationException {
-        return getDefaultReplicationService().deactivate(source);
-    }
-
-    @Override
-    public List<Resource> replicate(Collection<Resource> resourceList) throws ReplicationException {
+    private List<Resource> delegate(final Collection<Resource> resourceList, final ResourceListTaskDelegate processor)
+            throws ReplicationException {
         List<Resource> answer = new ArrayList<>();
         Map<DefaultReplicationConfig, List<Resource>> resourceByReplication = new HashMap<>();
         resourceByReplication.put(defaultMapping, new ArrayList<>());
@@ -204,10 +208,20 @@ public class DefaultReplicationMapperService
             final List<Resource> resources = pot.getValue();
             logger.trace("Replicate with Replication: '{}' these resources: '{}'", replicationName, resources);
             logger.trace("DRH Replication: '{}', Replicates: '{}'", replicationName, resources);
-            answer.addAll(replication.replicate(resources));
+            answer.addAll(processor.process(replication, resources));
         }
 
-        return answer;
+        return ResourceUtils.removeDuplicates(answer);
+    }
+
+    @Override
+    public List<Resource> prepare(Collection<Resource> resourceList) throws ReplicationException {
+        return delegate(resourceList, (replication, list) -> replication.prepare(list));
+    }
+
+    @Override
+    public List<Resource> replicate(Collection<Resource> resourceList) throws ReplicationException {
+        return delegate(resourceList, (replication, list) -> replication.replicate(list));
     }
 
     private List<DefaultReplicationConfig> getReplications(final Resource resource) {
@@ -354,4 +368,7 @@ public class DefaultReplicationMapperService
         }
     }
 
+    private interface ResourceListTaskDelegate {
+        List process(Replication replication, List<Resource> resources) throws ReplicationException;
+    }
 }

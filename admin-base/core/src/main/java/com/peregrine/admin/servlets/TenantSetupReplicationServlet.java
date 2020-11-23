@@ -177,8 +177,9 @@ public class TenantSetupReplicationServlet extends AbstractBaseServlet {
         for (final Resource resource : replicationList) {
             try {
                 logger.info("Replication Resource: '{}'", resource);
-                allReplicatedResource.addAll(defaultReplicationMapper.findReferences(resource, true));
-                defaultReplicationMapper.prepare(allReplicatedResource);
+                final var references = defaultReplicationMapper.findReferences(resource, true);
+                allReplicatedResource.addAll(references);
+                defaultReplicationMapper.prepare(references);
             } catch (final ReplicationException e) {
                 logger.warn("Replication Failed", e);
                 return new ErrorResponse()

@@ -99,6 +99,17 @@ public final class ResourceUtils {
         );
     }
 
+    public static Resource tryToCreateChildOrGetNull(
+            final Resource parent,
+            final String name,
+            final String resourceTypes) {
+        try {
+            return getOrCreateChild(parent, name, resourceTypes);
+        } catch (final PersistenceException e) {
+            return null;
+        }
+    }
+
     public static String fileNameToJcrName(final String name) {
         if (startsWith(name, _SCORE)) {
             final String nameAfterUnderscore = name.substring(1);

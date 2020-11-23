@@ -34,7 +34,6 @@ import com.peregrine.render.RenderService;
 import com.peregrine.render.RenderService.RenderException;
 import com.peregrine.versions.VersioningResourceResolver;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
@@ -45,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -119,6 +119,7 @@ public abstract class BaseFileReplicationService
         storeRendering(resource, renditionName, content);
     };
     private final ResourceReplicator resourceReplicator = resource -> {
+        handleParents(resource.getParent());
         // Need to figure out the type and replicate accordingly
         String primaryType = PerUtil.getPrimaryType(resource);
         if(ASSET_PRIMARY_TYPE.equals(primaryType)) {
@@ -127,6 +128,21 @@ public abstract class BaseFileReplicationService
             replicatePerResource(resource, false);
         }
     };
+
+    @Override
+    public List<Resource> filterReferences(final List<Resource> resources) {
+        return filterReferences((Collection<Resource>)resources);
+    }
+
+    private List<Resource> filterReferences(final Collection<Resource> resources) {
+        // Ignore jcr:content as they cannot be rendered to the FS (if needed then we need to map the file names)
+        // AS TODO: Check if the resource name can be mapped to a file name and if not ignore it.
+        // Also make sure we ignore nodes like jcr:content
+        return resources.stream()
+                .filter(Objects::nonNull)
+                .filter(item -> !item.getPath().contains(JCR_CONTENT))
+                .collect(Collectors.toList());
+    }
 
     @Override
     public List<Resource> findReferences(Resource startingResource, boolean deep) {
@@ -155,7 +171,7 @@ public abstract class BaseFileReplicationService
             PerUtil.listMissingResources(reference, replicationList, resourceChecker, false);
         }
 
-        return PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, deep);
+        return filterReferences(PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, deep));
     }
 
     @Override
@@ -167,8 +183,8 @@ public abstract class BaseFileReplicationService
     }
 
     @Override
-    public void prepare(Collection<Resource> resourceList) throws ReplicationException {
-        doReplicate(resourceList, resourceAssetsCreator);
+    public List<Resource> prepare(Collection<Resource> resourceList) throws ReplicationException {
+        return doReplicate(resourceList, resourceAssetsCreator);
     }
 
     @Override
@@ -176,7 +192,8 @@ public abstract class BaseFileReplicationService
         return doReplicate(resourceList, resourceReplicator);
     }
 
-    private List<Resource> doReplicate(Collection<Resource> resourceList, ResourceReplicator replicator) throws ReplicationException {
+    private List<Resource> doReplicate(Collection<Resource> resourceList, ResourceReplicator replicator)
+            throws ReplicationException {
         List<Resource> answer = new ArrayList<>();
         log.trace("Replicate Resource List: '{}'", resourceList);
         // Replicate the resources
@@ -189,16 +206,9 @@ public abstract class BaseFileReplicationService
         }
         if(resourceResolver != null) {
             Session session = resourceResolver.adaptTo(Session.class);
-            for(Resource item: resourceList) {
-                if(item != null) {
-                    // Ignore jcr:content as they cannot be rendered to the FS (if needed then we need to map the file names)
-                    //AS TODO: Check if the resource name can be mapped to a file name and if not ignore it. Also make sure we ignore nodes like jcr:content
-                    if(!item.getPath().contains(JCR_CONTENT)) {
-                        handleParents(item.getParent());
-                        replicator.replicate(item);
-                        answer.add(item);
-                    }
-                }
+            for(Resource item: filterReferences(resourceList)) {
+                replicator.replicate(item);
+                answer.add(item);
             }
             try {
                 session.save();
@@ -275,7 +285,7 @@ public abstract class BaseFileReplicationService
             consumer.consume(resource, EMPTY);
             // Loop over all existing renditions and write the image data to the target
             final List<String> checkRenditions = new ArrayList<>(getMandatoryRenditions());
-            final Resource renditions = ResourceUtils.getOrCreateChild(resource, RENDITIONS, SLING_FOLDER);
+            final Resource renditions = ResourceUtils.tryToCreateChildOrGetNull(resource, RENDITIONS, SLING_FOLDER);
             for (final Resource rendition : Optional.ofNullable(renditions)
                     .map(Resource::getChildren)
                     .map(Iterable::spliterator)
@@ -301,7 +311,7 @@ public abstract class BaseFileReplicationService
                     log.warn("Rendition Failure", e);
                 }
             }
-        } catch(final RenderException | PersistenceException e) {
+        } catch(final RenderException e) {
             throw new ReplicationException(RENDERING_OF_ASSET_FAILED, e);
         }
     }
