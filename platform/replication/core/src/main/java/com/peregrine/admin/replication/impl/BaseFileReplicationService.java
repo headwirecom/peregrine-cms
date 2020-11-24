@@ -99,13 +99,6 @@ public abstract class BaseFileReplicationService
             getRenderService().renderRawInternally(resource, RENDITION_ACTION + SLASH + renditionName);
         }
     };
-    private final ResourceReplicator resourceAssetsCreator = resource -> {
-        // Need to figure out the type and replicate accordingly
-        String primaryType = PerUtil.getPrimaryType(resource);
-        if (ASSET_PRIMARY_TYPE.equals(primaryType)) {
-            processAssetRenditions(resource, assetRenditionCreator);
-        }
-    };
     private final RenditionConsumer assetRenditionReplicator = (resource, renditionName) -> {
         final var initialResolver = resource.getResourceResolver();
         final var targetResolver = new VersioningResourceResolver(initialResolver, PUBLISHED_LABEL);
@@ -117,16 +110,6 @@ public abstract class BaseFileReplicationService
         final String extension = isBlank(renditionName) ? EMPTY : RENDITION_ACTION + SLASH + renditionName;
         final byte[] content = getRenderService().renderRawInternally(wrappedResource, extension);
         storeRendering(resource, renditionName, content);
-    };
-    private final ResourceReplicator resourceReplicator = resource -> {
-        handleParents(resource.getParent());
-        // Need to figure out the type and replicate accordingly
-        String primaryType = PerUtil.getPrimaryType(resource);
-        if(ASSET_PRIMARY_TYPE.equals(primaryType)) {
-            processAssetRenditions(resource, assetRenditionReplicator);
-        } else {
-            replicatePerResource(resource, false);
-        }
     };
 
     @Override
@@ -183,17 +166,21 @@ public abstract class BaseFileReplicationService
     }
 
     @Override
-    public List<Resource> prepare(Collection<Resource> resourceList) throws ReplicationException {
-        return doReplicate(resourceList, resourceAssetsCreator);
+    public List<Resource> prepare(final Collection<Resource> resourceList) throws ReplicationException {
+        final List<Resource> answer = filterReferences(resourceList);
+        for (final Resource resource: answer) {
+            // Need to figure out the type and replicate accordingly
+            String primaryType = PerUtil.getPrimaryType(resource);
+            if (ASSET_PRIMARY_TYPE.equals(primaryType)) {
+                processAssetRenditions(resource, assetRenditionCreator);
+            }
+        }
+
+        return answer;
     }
 
     @Override
     public List<Resource> replicate(Collection<Resource> resourceList) throws ReplicationException {
-        return doReplicate(resourceList, resourceReplicator);
-    }
-
-    private List<Resource> doReplicate(Collection<Resource> resourceList, ResourceReplicator replicator)
-            throws ReplicationException {
         List<Resource> answer = new ArrayList<>();
         log.trace("Replicate Resource List: '{}'", resourceList);
         // Replicate the resources
@@ -207,7 +194,15 @@ public abstract class BaseFileReplicationService
         if(resourceResolver != null) {
             Session session = resourceResolver.adaptTo(Session.class);
             for(Resource item: filterReferences(resourceList)) {
-                replicator.replicate(item);
+                handleParents(item.getParent());
+                // Need to figure out the type and replicate accordingly
+                String primaryType = PerUtil.getPrimaryType(item);
+                if(ASSET_PRIMARY_TYPE.equals(primaryType)) {
+                    processAssetRenditions(item, assetRenditionReplicator);
+                } else {
+                    replicatePerResource(item, false);
+                }
+
                 answer.add(item);
             }
             try {
@@ -433,10 +428,6 @@ public abstract class BaseFileReplicationService
 
     private interface RenditionConsumer {
         void consume(Resource resource, String renditionName) throws RenderException, ReplicationException;
-    }
-
-    private interface ResourceReplicator {
-        void replicate(Resource resource) throws ReplicationException;
     }
 
 }
