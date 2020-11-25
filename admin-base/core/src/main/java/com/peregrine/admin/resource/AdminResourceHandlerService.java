@@ -612,6 +612,7 @@ public class AdminResourceHandlerService
                 try {
                     resourceResolver.commit();
                 } catch (PersistenceException ex) {
+                    resourceResolver.revert();
                     logger.error("could not make node versionable", e);
                     return null;
                 }
