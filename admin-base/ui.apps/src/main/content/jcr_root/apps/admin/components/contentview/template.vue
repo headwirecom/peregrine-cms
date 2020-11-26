@@ -693,7 +693,7 @@ export default {
         const isRoot = this.path === '/jcr:content'
         const relMousePos = this.getRelativeMousePosition(event)
 
-        if (this.dropTarget && !isRoot) {
+        if (this.dropTarget) {
           let dropLocation = this.dropLocation
 
           if (this.isTemplateNode) {
