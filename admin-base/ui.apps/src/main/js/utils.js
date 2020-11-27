@@ -263,3 +263,15 @@ export function isChromeBrowser() {
   return /Chrome/.test(navigator.userAgent)
       && /Google Inc/.test(navigator.vendor)
 }
+
+export function removeSelection(win=window) {
+  if (win.getSelection) {
+    if (win.getSelection().empty) {  // Chrome
+      win.getSelection().empty();
+    } else if (win.getSelection().removeAllRanges) {  // Firefox
+      win.getSelection().removeAllRanges();
+    }
+  } else if (win.document.selection) {  // IE?
+    win.document.selection.empty();
+  }
+}
