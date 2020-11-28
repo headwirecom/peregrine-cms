@@ -43,8 +43,8 @@ public final class ScheduledSiteMapStructureCacheReBuilder implements Runnable {
 
     @Override
     public void run() {
-        files.rebuildAll();
         structure.rebuildAll();
+        files.rebuildAll();
     }
 
 }
