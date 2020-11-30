@@ -128,7 +128,7 @@ function updateIndexFiles() {
             });
 
             jsFiles.slice(1).forEach( function(file) {
-                slang.up('etc/felibs/' + appName + '/'+file).then(function (status) {
+                slang.up('etc/felibs/' + appName + '/' + file).then(function (status) {
 //                    console.log('success', status)
                 }).catch(function (status, err) {
                     console.error('error', status, err)
