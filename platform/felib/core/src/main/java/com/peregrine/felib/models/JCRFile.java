@@ -13,9 +13,9 @@ package com.peregrine.felib.models;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -25,19 +25,17 @@ package com.peregrine.felib.models;
  * #L%
  */
 
-import org.apache.sling.api.resource.ResourceResolver;
-
 /**
  * Created by rr on 4/18/2017.
  */
-public class JCRFile {
+public final class JCRFile {
 
-    private String filePath;
-    private String data;
+    private final String filePath;
+    private final String content;
 
-    public JCRFile(String filePath, String data) {
-        this.filePath = filePath;
-        this.data = data;
+    public JCRFile(final String path, final String content) {
+        this.filePath = path;
+        this.content = content;
     }
 
     public String getPath() {
@@ -45,11 +43,11 @@ public class JCRFile {
     }
 
     public String getContent() {
-        return data;
+        return content;
     }
 
     public String toString() {
-        return "filePath: "+filePath;
+        return "path: " + filePath;
     }
 
 }
