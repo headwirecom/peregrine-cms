@@ -23,7 +23,7 @@ console.log('building felib', felibName)
 var basePath = './src/main/content/jcr_root/apps'
 var distBasePath = './target/classes/etc/felibs/'+felibName
 
-/** creatte the target directories
+/** create the target directories
  *
  */
 fs.mkdirsSync(distBasePath)
