@@ -141,12 +141,6 @@ function updateIndexFiles() {
                     console.error('error', status, err)
                 });
             })
-            //     slang.up('etc/felibs/'+appName+'/js/'+appName+'Components'+componentName.charAt(0).toUpperCase()+componentName.substring(1)+'.js').then(function(status) {
-            //         console.log('success',status)
-            //     }).catch(function(status, err) {
-            //         console.error('error', status, err)
-            //     });
-            // }
         }
     }
 }

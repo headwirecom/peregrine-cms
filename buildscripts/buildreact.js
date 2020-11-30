@@ -70,15 +70,6 @@ function compileComponent(file){
         }).then( function() {
             updateIndexFiles()
         })
-        // alternate method for bundle.write
-        // var result = bundle.generate({
-        //   format: 'iife',
-        //   name: moduleName,
-        //   file:`./dist/${name}.js`
-        // })
-        // fs.writeFile(`dist/${name}.js`, result.code, 'utf8', function(err) {
-        //   if(err){ console.log('err: ', err) }
-        // })
     })
 
   return { name: name, nameCamelCase: nameCamelCase, nameCapitalCamelCase: nameCapitalCamelCase}
