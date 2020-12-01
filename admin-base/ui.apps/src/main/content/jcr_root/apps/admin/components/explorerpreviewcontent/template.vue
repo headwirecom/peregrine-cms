@@ -367,6 +367,10 @@ export default {
     isEdit: {
       type: Boolean,
       default: false
+    },
+    onDelete: {
+      type: Function,
+      default: (type, path) => new Promise()
     }
   },
   data() {
@@ -733,17 +737,13 @@ export default {
     deleteNode() {
       this.checkActivationStatusAndPerform(() => {
         const me = this
-        $perAdminApp.askUser(`Delete ${this.nodeType}?`, `Are you sure you want to delete this ${this.nodeType}?`, {
-            yes() {
-              $perAdminApp.stateAction(`delete${me.uNodeType}`, me.node.path).then(() => {
-                $perAdminApp.stateAction(`unselect${me.uNodeType}`, {})
-              }).then(() => {
-                const path = $perAdminApp.getNodeFromView('/state/tools/pages')
-                $perAdminApp.loadContent(
-                    '/content/admin/pages/pages.html/path' + SUFFIX_PARAM_SEPARATOR + path)
-              })
-              me.isOpen = false;
-            }
+        this.onDelete(this.nodeType, this.node.path).then(() => {
+          $perAdminApp.stateAction(`unselect${me.uNodeType}`, {})
+        }).then(() => {
+          const path = $perAdminApp.getNodeFromView('/state/tools/pages')
+          $perAdminApp.loadContent(
+              '/content/admin/pages/pages.html/path' + SUFFIX_PARAM_SEPARATOR + path)
+          me.isOpen = false
         })
       });
     },

@@ -225,7 +225,8 @@
             </div>
         </div>
         <admin-components-explorerpreview v-if="hasEdit">
-            <component v-bind:is="model.children[0].component" v-bind:model="model.children[0]"></component>
+            <component v-bind:is="model.children[0].component" v-bind:model="model.children[0]"
+                :onDelete="handleDelete"></component>
         </admin-components-explorerpreview>
     </div>
     </div>
@@ -645,6 +646,17 @@ export default {
                 } else {
                     me.deletePage(me, target)
                 }
+            },
+
+            handleDelete: function(type, path) {
+                return new Promise((resolve, reject) => {
+                    $perAdminApp.askUser(`Delete ${type}?`, `Are you sure you want to delete this ${type}?`, {
+                        yes() {
+                            $perAdminApp.stateAction(`delete${type.charAt(0).toUpperCase() + type.slice(1)}`, path)
+                            resolve()
+                        }
+                    })
+                })
             },
 
             deletePage: function(me, target) {
