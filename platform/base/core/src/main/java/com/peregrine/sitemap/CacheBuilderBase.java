@@ -26,6 +26,7 @@ package com.peregrine.sitemap;
  */
 
 import com.peregrine.commons.ResourceUtils;
+import com.peregrine.versions.VersioningResourceResolver;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.PersistenceException;
@@ -34,7 +35,10 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Optional;
+import java.util.Set;
 
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
@@ -76,13 +80,13 @@ public abstract class CacheBuilderBase<V, L extends CacheBuilder.RefreshListener
         return resourceResolver.getResource(path);
     }
 
-    protected abstract ResourceResolver getServiceResourceResolver() throws LoginException;
+    protected abstract VersioningResourceResolver createResourceResolver() throws LoginException;
 
     protected final boolean isCached(final ResourceResolver resourceResolver, final String path) {
         return Optional.of(path)
                 .map(this::getCacheContainerPath)
-                .map(p -> resourceResolver.getResource(p))
-                .map(r -> containsCacheAlready(r))
+                .map(resourceResolver::getResource)
+                .map(this::containsCacheAlready)
                 .orElse(false);
     }
 
@@ -156,7 +160,7 @@ public abstract class CacheBuilderBase<V, L extends CacheBuilder.RefreshListener
 
     @Override
     public final void rebuild(final String rootPagePath) {
-        try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
+        try (final ResourceResolver resourceResolver = createResourceResolver()) {
             String path = rootPagePath;
             while (isNotBlank(path)) {
                 if (isCached(resourceResolver, path)) {
@@ -203,9 +207,10 @@ public abstract class CacheBuilderBase<V, L extends CacheBuilder.RefreshListener
     protected abstract void rebuildImpl(final String rootPagePath);
 
     public final void build(final String path) {
-        try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
+        try (final ResourceResolver resourceResolver = createResourceResolver()) {
             cleanRemovedChildren(resourceResolver, path);
-            build(resourceResolver, resourceResolver.getResource(path));
+            final Resource resource = resourceResolver.getResource(path);
+            build(resourceResolver, resource);
             resourceResolver.commit();
         } catch (final LoginException e) {
             logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);
@@ -216,7 +221,7 @@ public abstract class CacheBuilderBase<V, L extends CacheBuilder.RefreshListener
 
     @Override
     public void rebuildAll() {
-        try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
+        try (final ResourceResolver resourceResolver = createResourceResolver()) {
             Optional.ofNullable(getCacheContainerPath(SLASH))
                     .map(resourceResolver::getResource)
                     .ifPresent(this::rebuildInTree);

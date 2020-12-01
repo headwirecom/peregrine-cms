@@ -83,6 +83,33 @@ public final class ResourceUtils {
         return resourceResolver.getResource(path);
     }
 
+    public static Resource getOrCreateChild(
+            final Resource parent,
+            final String name,
+            final String resourceTypes)
+            throws PersistenceException {
+        if (isBlank(name)) {
+            return parent;
+        }
+
+        return getOrCreateResource(
+                parent.getResourceResolver(),
+                parent.getPath() + SLASH + name,
+                resourceTypes
+        );
+    }
+
+    public static Resource tryToCreateChildOrGetNull(
+            final Resource parent,
+            final String name,
+            final String resourceTypes) {
+        try {
+            return getOrCreateChild(parent, name, resourceTypes);
+        } catch (final PersistenceException e) {
+            return null;
+        }
+    }
+
     public static String fileNameToJcrName(final String name) {
         if (startsWith(name, _SCORE)) {
             final String nameAfterUnderscore = name.substring(1);

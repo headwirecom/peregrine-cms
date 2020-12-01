@@ -49,6 +49,7 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -145,11 +146,13 @@ public class RenditionsServlet extends AbstractBaseServlet {
                 renditionName = renditionName.substring(index + 1);
             }
             ImageContext imageContext = null;
+            final var resourceResolver = request.getResourceResolver();
             try {
                 imageContext = renditionHandler.createRendition(resource, renditionName, sourceMimeType);
-                request.getResourceResolver().commit();
+                resourceResolver.commit();
             } catch(HandlerException e) {
                 logger.debug("Create Rendition failed !!", e);
+                resourceResolver.revert();
                 return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setException(e);
             }
             if(imageContext != null) {
