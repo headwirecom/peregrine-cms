@@ -244,14 +244,8 @@
                     class="btn"
                     v-on:click="onDoneFileUpload">ok</button>
             </div>
-            <!-- <progress class="file-upload-progress" v-bind:value="uploadProgress" max="100"></progress> -->
         </div>
     </div>
-    <!--
-    <template v-for="child in model.children[0].children">
-        <component v-bind:is="child.component" v-bind:model="child"></component>
-    </template>
-    -->
 </div>
 </template>
 
@@ -738,9 +732,6 @@ export default {
 <style>
     .item-activated {
         color: green;
-    }
-
-    .item-replication-unknown {
     }
 
     .item-deactivated {
