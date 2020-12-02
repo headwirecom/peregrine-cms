@@ -59,6 +59,7 @@
                             com.peregrine.sitemap,
                             com.peregrine.transform,
                             com.peregrine.transform.*,
+                            com.peregrine.versions,
                             com.peregrine.commons.util
                         </Export-Package>
                         <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>

@@ -1,4 +1,6 @@
 #!/bin/bash
+# exit if any command fails
+set -e
 
 echo "Building peregrine..."
 

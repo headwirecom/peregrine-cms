@@ -28,6 +28,7 @@ package com.peregrine.sitemap.impl;
 import com.peregrine.commons.concurrent.Callback;
 import com.peregrine.commons.concurrent.DeBouncer;
 import com.peregrine.sitemap.*;
+import com.peregrine.versions.VersioningResourceResolver;
 import org.apache.sling.api.resource.*;
 import org.apache.sling.serviceusermapping.ServiceUserMapped;
 import org.osgi.service.component.annotations.Activate;
@@ -54,7 +55,7 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase<List<SiteM
     public static final String NN_FIRST_CACHE_NODE = "0";
 
     @Reference
-    private ResourceResolverFactoryProxy resourceResolverFactory;
+    private VersioningResourceResolverFactory resourceResolverFactory;
 
     @Reference
     private SiteMapExtractorsContainer siteMapExtractorsContainer;
@@ -82,8 +83,8 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase<List<SiteM
 
     @Override
     public List<SiteMapEntry> get(final Resource rootPage) {
-        try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
-            final Resource cache = getCache(resourceResolver, rootPage);
+        try (final VersioningResourceResolver resourceResolver = createResourceResolver()) {
+            final Resource cache = getCache(resourceResolver, resourceResolver.wrap(rootPage));
             if (isNull(cache)) {
                 return null;
             }
@@ -145,8 +146,8 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase<List<SiteM
     }
 
     @Override
-    protected ResourceResolver getServiceResourceResolver() throws LoginException {
-        return resourceResolverFactory.getServiceResourceResolver();
+    protected VersioningResourceResolver createResourceResolver() throws LoginException {
+        return resourceResolverFactory.createResourceResolver();
     }
 
     protected boolean containsCacheAlready(final Resource cache) {

@@ -28,11 +28,9 @@ package com.peregrine.admin.servlets;
 import com.peregrine.adaption.PerReplicable;
 import com.peregrine.admin.replication.DefaultReplicationMapper;
 import com.peregrine.admin.resource.AdminResourceHandler;
-import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.commons.util.PerConstants;
 import com.peregrine.replication.Replication.ReplicationException;
 import com.peregrine.sitemap.SiteMapFilesCache;
-import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
@@ -44,30 +42,18 @@ import javax.servlet.Servlet;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static com.peregrine.admin.replication.ReplicationConstants.RESOURCE_TYPE_TENANT_SETUP_REPLICATION;
-import static com.peregrine.admin.replication.ReplicationConstants.SOURCE_NAME;
-import static com.peregrine.admin.replication.ReplicationConstants.SOURCE_PATH;
 
-import static com.peregrine.admin.servlets.ReplicationServlet.REPLICATES;
-import static com.peregrine.admin.servlets.ReplicationServlet.REPLICATION_FAILED;
-import static com.peregrine.admin.servlets.ReplicationServlet.SUFFIX_IS_NOT_RESOURCE;
 import static com.peregrine.commons.util.PerConstants.FELIBS_ROOT;
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.PAGES;
-import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.SITE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.commons.util.PerUtil.POST;
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
@@ -83,7 +69,8 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  *    ui.apps/src/main/content/jcr_root/api/definitions/admin.yaml
  *
  * It is invoked like this:
- *      curl -X POST "http://localhost:8080/perapi/admin/tenantSetupReplication.json/content/themeclean" -H  "accept: application/json" -H  "content-type: application/x-www-form-urlencoded" -d "name=defaultRepl&deep=false"
+ *      curl -X POST "http://localhost:8080/perapi/admin/tenantSetupReplication.json/content/themeclean" -H\
+ *      "accept: application/json" -H  "content-type: application/x-www-form-urlencoded" -d "name=defaultRepl&deep=false"
  */
 @Component(
     service = Servlet.class,
@@ -95,17 +82,9 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
     }
 )
 @SuppressWarnings("serial")
-public class TenantSetupReplicationServlet extends AbstractBaseServlet {
-
-    public static final String SUFFIX_IS_NOT_SITE = "Suffix: '%s' is not a Peregrine Site";
-    public static final String WITH_SITE = "withSite";
+public final class TenantSetupReplicationServlet extends ReplicationServletBase {
 
     private static final String SOURCE_SITE = "sourceSite";
-    private static final List<String> EXCLUDED_RESOURCES = new ArrayList<>();
-
-    static {
-        EXCLUDED_RESOURCES.add(JCR_CONTENT);
-    }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final SimpleDateFormat dateLabelFormat = new SimpleDateFormat("yyyy-MM-dd@HH.mm.ss");
@@ -120,124 +99,83 @@ public class TenantSetupReplicationServlet extends AbstractBaseServlet {
     private SiteMapFilesCache siteMapFilesCache;
 
     @Override
-    protected Response handleRequest(final Request request) throws IOException {
-        final SlingHttpServletRequest servletRequest = request.getRequest();
-        logger.trace("Request Path: '{}'", request.getRequestPath());
-        logger.trace("Request URI: '{}'", servletRequest.getRequestURI());
-        logger.trace("Request URL: '{}'", servletRequest.getRequestURL());
-//        String replicationName = request.getPa
-//        if(replicationName == null || replicationName.isEmpty()) {
-//            return new ErrorResponse()
-//                .setHttpErrorCode(SC_BAD_REQUEST)
-//                .setErrorMessage(PARAMETER_NAME_FOR_THE_REPLICATION_NAME_IS_NOT_PROVIDED);
-//        }
-//        String withSiteParameter = request.getParameter(WITH_SITE);
-//        boolean withSite = withSiteParameter != null && Boolean.TRUE.toString().equals(withSiteParameter.toLowerCase());
-//        String deactivateParameter = request.getParameter(DEACTIVATE);
-//        boolean deactivate = deactivateParameter != null && Boolean.TRUE.toString().equals(deactivateParameter.toLowerCase());
-//        Replication replication = replications.get(replicationName);
-//        if(replication == null) {
-//            return new ErrorResponse()
-//                .setHttpErrorCode(SC_BAD_REQUEST)
-//                .setErrorMessage(REPLICATION_NOT_FOUND_FOR_NAME + replicationName);
-//        }
-        final String sourcePath = request.getParameter(PATH);
-        final ResourceResolver resourceResolver = request.getResourceResolver();
-        Resource source = resourceResolver.getResource(sourcePath);
-        if (isNull(source)) {
+    protected Response performReplication(
+            final Request request,
+            final Resource site,
+            final ResourceResolver resourceResolver
+    ) throws IOException {
+        final String path = site.getPath();
+        // Make sure that the Resource is a Site
+        if (!SITE_PRIMARY_TYPE.equals(site.getResourceType())) {
             return new ErrorResponse()
                     .setHttpErrorCode(SC_BAD_REQUEST)
-                    .setErrorMessage(String.format(SUFFIX_IS_NOT_RESOURCE, sourcePath));
+                    .setErrorMessage(String.format("Suffix: '%s' is not a Peregrine Site", path));
         }
 
-        // Make sure that the Resource is a Site
-        if (!SITE_PRIMARY_TYPE.equals(source.getResourceType())) {
-            return new ErrorResponse()
-                    .setHttpErrorCode(SC_BAD_REQUEST)
-                    .setErrorMessage(String.format(SUFFIX_IS_NOT_SITE, sourcePath));
-        }
-        List<Resource> replicationList = new ArrayList<>();
-        // Thinks to search for
-        // - /content/<site>/pages/css
-        // - /etc/felibs/<theme>.css / .js
-        // - /etc/felibs/<site>.css / .js
-        // - /etc/felibs/<theme dependencies>.css / .js
-//            if(withSite) {
-        replicationList.add(source);
-//            } else {
-//                Resource css = source.getChild("pages/css");
-//                if (css != null) {
-//                    replicationList.add(css);
-//                }
-//            }
-        final Resource felibs = resourceResolver.getResource(FELIBS_ROOT);
-        handleSourceSites(source, replicationList, felibs);
-        logger.info("List of Resource to be replicated: '{}'", replicationList);
-        final List<Resource> allReplicatedResource = new ArrayList<>();
-        for (final Resource resource : replicationList) {
+        final var toBeReplicatedInitial = extractSiteFeLibs(site, resourceResolver.getResource(FELIBS_ROOT));
+        toBeReplicatedInitial.add(0, site);
+        logger.trace("List of Resource to be replicated: '{}'", toBeReplicatedInitial);
+        final var toBeReplicated = new LinkedList<>(toBeReplicatedInitial);
+        for (final Resource resource : toBeReplicatedInitial) {
             try {
-                logger.info("Replication Resource: '{}'", resource);
-                List<Resource> replicatedItems = defaultReplicationMapper.replicate(resource, true);
-                allReplicatedResource.addAll(replicatedItems);
+                logger.trace("Replication Resource: '{}'", resource);
+                var references = defaultReplicationMapper.findReferences(resource, true);
+                references = defaultReplicationMapper.prepare(references);
+                toBeReplicated.addAll(references);
             } catch (final ReplicationException e) {
                 logger.warn("Replication Failed", e);
-                return new ErrorResponse()
-                        .setHttpErrorCode(SC_BAD_REQUEST)
-                        .setErrorMessage(REPLICATION_FAILED)
-                        .setException(e);
+                return badRequestReplicationFailed(e);
             }
         }
 
-        final String dateLabel = source.getName() + "_" + dateLabelFormat.format(new Date(System.currentTimeMillis()));
-        allReplicatedResource.stream()
-                .map(r -> r.adaptTo(PerReplicable.class))
-                .filter(Objects::nonNull)
-                .map(PerReplicable::getContentResource)
-                .filter(Objects::nonNull)
+        final String dateLabel = site.getName() + "_" + dateLabelFormat.format(new Date(System.currentTimeMillis()));
+        streamReplicableResources(toBeReplicated)
                 .map(Resource::getPath)
-                .filter(Objects::nonNull)
-                .forEach(path -> {
+                .forEach(p -> {
                     try {
-                        resourceManagement.createVersion(resourceResolver, path, dateLabel, PerConstants.PUBLISHED_LABEL);
+                        resourceManagement.createVersion(resourceResolver, p, dateLabel, PerConstants.PUBLISHED_LABEL);
                     } catch (final AdminResourceHandler.ManagementException e) {
-                        logger.trace("Unable to create a version for path: {} ", path, e);
+                        logger.trace("Unable to create a version for path: {} ", p, e);
                     }
                 });
-        siteMapFilesCache.build(sourcePath + SLASH + PAGES);
-
-        final JsonResponse answer = new JsonResponse();
-        answer.writeAttribute(SOURCE_NAME, source.getName());
-        answer.writeAttribute(SOURCE_PATH, source.getPath());
-        answer.writeArray(REPLICATES);
-        for (final Resource child : allReplicatedResource) {
-            answer.writeObject();
-            answer.writeAttribute(NAME, child.getName());
-            answer.writeAttribute(PATH, child.getPath());
-            answer.writeClose();
+        try {
+            var replicatedStuff = defaultReplicationMapper.replicate(toBeReplicated);
+            siteMapFilesCache.build(path + SLASH + PAGES);
+            return prepareResponse(site, replicatedStuff);
+        } catch (final ReplicationException e) {
+            return badRequestReplicationFailed(e);
         }
-
-        answer.writeClose();
-        return answer;
     }
 
-    private void handleSourceSites(Resource sourceSite, List<Resource> replicationList, Resource felibs) {
-        logger.info("Source Site: '{}'", sourceSite);
-        String siteName = sourceSite.getName();
-        Resource siteFeLibs = felibs.getChild(siteName);
-        logger.info("Source FeLibs: '{}', Site Name: '{}'", siteFeLibs, siteName);
+    /**
+     * Things to search for
+     * - /content/<site>/pages/css
+     * - /etc/felibs/<theme>.(css|js)
+     * - /etc/felibs/<site>.(css|js)
+     * - /etc/felibs/<theme dependencies>.(css|js) **/
+    private List<Resource> extractSiteFeLibs(final Resource site, final Resource feLibsRoot) {
+        final List<Resource> result = new LinkedList<>();
+        logger.trace("Source Site: '{}'", site);
+        final String siteName = site.getName();
+        final Resource siteFeLibs = feLibsRoot.getChild(siteName);
+        logger.trace("Source FeLibs: '{}', Site Name: '{}'", siteFeLibs, siteName);
         if (nonNull(siteFeLibs)) {
-            logger.info("Add Site Felibs: '{}'", siteFeLibs);
-            replicationList.add(siteFeLibs);
+            logger.trace("Add Site FE libs: '{}'", siteFeLibs);
+            result.add(siteFeLibs);
         }
 
-        String parentSourceSiteName = sourceSite.getValueMap().get(SOURCE_SITE, String.class);
-        logger.info("Parent Source Site Name: '{}'", parentSourceSiteName);
-        Resource parentSourceSite = sourceSite.getParent().getChild(parentSourceSiteName);
-        logger.info("Parent Source Resource: '{}'", parentSourceSite);
-        if(nonNull(parentSourceSite)) {
-            logger.info("Add Site Parent: '{}'", parentSourceSite);
-            replicationList.add(parentSourceSite);
-            handleSourceSites(parentSourceSite, replicationList, felibs);
+        final Resource parentSite = Optional.of(site)
+                .map(Resource::getValueMap)
+                .map(props -> props.get(SOURCE_SITE, String.class))
+                .map(site.getParent()::getChild)
+                .orElse(null);
+        logger.trace("Parent Source Resource: '{}'", parentSite);
+        if (nonNull(parentSite)) {
+            logger.trace("Add Site Parent: '{}'", parentSite);
+            result.add(parentSite);
+            result.addAll(extractSiteFeLibs(parentSite, feLibsRoot));
         }
+
+        return result;
     }
 }

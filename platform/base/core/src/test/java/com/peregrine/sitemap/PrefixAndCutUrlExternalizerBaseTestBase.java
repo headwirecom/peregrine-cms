@@ -1,7 +1,5 @@
 package com.peregrine.sitemap;
 
-import com.peregrine.sitemap.impl.SiteStructureTestBase;
-
 import static junitx.framework.Assert.assertEquals;
 
 public class PrefixAndCutUrlExternalizerBaseTestBase<E extends PrefixAndCutUrlExternalizerBase>
