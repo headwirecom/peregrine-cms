@@ -649,8 +649,9 @@ export default {
             },
 
             handleDelete: function(type, path) {
+                const me = this
                 return new Promise((resolve, reject) => {
-                    $perAdminApp.askUser(`Delete ${type}?`, `Are you sure you want to delete this ${type}?`, {
+                    $perAdminApp.askUser(`Delete ${type}?`, me.$i18n(`Are you sure you want to delete this node and all its children?`), {
                         yes() {
                             $perAdminApp.stateAction(`delete${type.charAt(0).toUpperCase() + type.slice(1)}`, path)
                             resolve()
@@ -660,25 +661,19 @@ export default {
             },
 
             deletePage: function(me, target) {
-                $perAdminApp.askUser(`Delete Page`, me.$i18n(`Are you sure you want to delete this node and all its children?`), {
-                    yes() {
-                        const { resourceType, path } = target
-                        let action = 'deleteFolder'
-                        if (resourceType === 'per:Object') {
-                            action = 'deleteObject'
-                        } else if(resourceType === 'per:Asset') {
-                            action = 'deleteAsset'
-                        } else if(resourceType === 'sling:OrderedFolder') {
-                            action = 'deleteFolder'
-                        } else if(resourceType === 'per:Page') {
-                            action = 'deletePage'
-                        } else if(resourceType === 'nt:file') {
-                            action = 'deleteFile'
-                        }
+                const { resourceType, path } = target
+                let action = 'folder'
+                if (resourceType === 'per:Object') {
+                    action = 'object'
+                } else if(resourceType === 'per:Asset') {
+                    action = 'asset'
+                } else if(resourceType === 'per:Page') {
+                    action = 'page'
+                } else if(resourceType === 'nt:file') {
+                    action = 'file'
+                }
 
-                        $perAdminApp.stateAction(action, path)
-                    }
-                })
+                this.handleDelete(action, path)
             },
 
             deleteTenant: function(me, target) {
