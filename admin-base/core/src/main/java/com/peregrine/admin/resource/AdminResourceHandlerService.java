@@ -612,6 +612,7 @@ public class AdminResourceHandlerService
                 try {
                     resourceResolver.commit();
                 } catch (PersistenceException ex) {
+                    resourceResolver.revert();
                     logger.error("could not make node versionable", e);
                     return null;
                 }
@@ -639,7 +640,6 @@ public class AdminResourceHandlerService
         }
     }
 
-
     @Override
     public Resource restoreVersion(ResourceResolver resourceResolver, String path, String frozenNodePath, boolean force)
             throws ManagementException {
@@ -663,6 +663,30 @@ public class AdminResourceHandlerService
         VersionManager vm = jcrSession.getWorkspace().getVersionManager();
         vm.restore(path, versionName, removingExisting);
         vm.checkout(path);
+    }
+
+    @Override
+    public boolean deleteVersionLabel(final Resource resource, final String label) {
+        final var resolver = resource.getResourceResolver();
+        final var session = resolver.adaptTo(Session.class);
+        try {
+            final var versionManager = session.getWorkspace().getVersionManager();
+            final String path = resource.getPath();
+            if (!versionManager.isCheckedOut(path)) {
+                return false;
+            }
+
+            final var history = versionManager.getVersionHistory(path);
+            if (isNull(history)) {
+                return false;
+            }
+
+            history.removeVersionLabel(label);
+        } catch (final RepositoryException e) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override

@@ -80,4 +80,5 @@ public final class SiteMapServlet extends SlingAllMethodsServlet {
         response.setCharacterEncoding(PerConstants.UTF_8);
         response.getWriter().write(string);
     }
+
 }

@@ -693,7 +693,7 @@ export default {
         const isRoot = this.path === '/jcr:content'
         const relMousePos = this.getRelativeMousePosition(event)
 
-        if (this.dropTarget && !isRoot) {
+        if (this.dropTarget) {
           let dropLocation = this.dropLocation
 
           if (this.isTemplateNode) {
@@ -705,10 +705,10 @@ export default {
               event.dataTransfer.effectAllowed = ''
             }
           } else {
-            if (relMousePos.yPercentage <= 10 && dropLocation === 'before' && !isRoot) {
+            if (relMousePos['y%'] <= 10 && dropLocation === 'before' && !isRoot) {
               this.dropPosition = 'before'
               this.editable.class = 'drop-top'
-            } else if (relMousePos.yPercentage >= 90 && dropLocation === 'after' && !isRoot) {
+            } else if (relMousePos['y%'] >= 90 && dropLocation === 'after' && !isRoot) {
               this.dropPosition = 'after'
               this.editable.class = 'drop-bottom'
             } else if (dropLocation) {
@@ -720,7 +720,7 @@ export default {
             }
           }
         } else if (!isRoot && !locked) {
-          if (relMousePos.yPercentage <= 43.5) {
+          if (relMousePos['y%'] <= 43.5) {
             this.dropPosition = 'before'
             this.editable.class = 'drop-top'
           } else {
@@ -986,10 +986,10 @@ export default {
       return {
         width: offset.width,
         x: event.pageX - offset.left,
-        xPercentage: (event.pageX - offset.left) / offset.width * 100,
+        'x%': (event.pageX - offset.left) / offset.width * 100,
         height: offset.height,
         y: event.pageY - offset.top - this.scrollTop,
-        yPercentage: (event.pageY - offset.top - this.scrollTop) / offset.height * 100
+        'y%': (event.pageY - offset.top - this.scrollTop) / offset.height * 100
       }
     },
 
