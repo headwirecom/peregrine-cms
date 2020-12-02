@@ -130,72 +130,70 @@
     if(newImpl) {
         // define a couple of extra vue components that are used by components
         // but not in the tree of auto loaded components
-        (function(loadComponent) {
-            loadComponent('admin-components-iconaction')
-            loadComponent('admin-components-action')
-            loadComponent('admin-components-notifyuser')
-            loadComponent('admin-components-askuser')
-            loadComponent('admin-components-promptuser')
-            loadComponent('admin-components-pathbrowser')
-            loadComponent('admin-components-logo')
-            loadComponent('admin-components-extensions')
-            loadComponent('admin-components-spinner')
-            loadComponent('admin-components-tour')
-            loadComponent('admin-components-about')
-            loadComponent('admin-components-explorerpreview')
-            loadComponent('admin-components-explorerpreviewnavitem')
-            loadComponent('admin-components-explorerpreviewcontent')
-            loadComponent('admin-components-confirmdialog')
-            loadComponent('admin-components-fileupload')
-            loadComponent('admin-components-separator')
-            loadComponent('admin-components-colorpaletteselector')
-            loadComponent('admin-components-materializeswitch')
-            loadComponent('admin-components-componentexplorer')
-            loadComponent('admin-components-nodetreeitem')
-            loadComponent('admin-components-publishingmodal')
-            loadComponent('admin-components-publishinginfo')
-            loadComponent('admin-components-richtoolbar')
-            loadComponent('admin-components-richtoolbargroup')
-            loadComponent('admin-components-richtoolbarbtn')
-            loadComponent('admin-components-addcomponentmodal')
-            loadComponent('admin-components-icon')
-            loadComponent('admin-components-tabswrapper')
-            loadComponent('admin-components-tab')
+        [
+            'admin-components-iconaction',
+            'admin-components-action',
+            'admin-components-notifyuser',
+            'admin-components-askuser',
+            'admin-components-promptuser',
+            'admin-components-pathbrowser',
+            'admin-components-logo',
+            'admin-components-extensions',
+            'admin-components-spinner',
+            'admin-components-tour',
+            'admin-components-about',
+            'admin-components-explorerpreview',
+            'admin-components-explorerpreviewnavitem',
+            'admin-components-explorerpreviewcontent',
+            'admin-components-confirmdialog',
+            'admin-components-fileupload',
+            'admin-components-separator',
+            'admin-components-colorpaletteselector',
+            'admin-components-materializeswitch',
+            'admin-components-componentexplorer',
+            'admin-components-nodetreeitem',
+            'admin-components-publishingmodal',
+            'admin-components-publishinginfo',
+            'admin-components-richtoolbar',
+            'admin-components-richtoolbargroup',
+            'admin-components-richtoolbarbtn',
+            'admin-components-addcomponentmodal',
+            'admin-components-icon',
+            'admin-components-tabswrapper',
+            'admin-components-tab',
 
+            'admin-components-materializedropdown',
+            'admin-components-dropdowndivider',
+            'admin-components-materializemodal',
+            'admin-components-materializespinner',
 
-            loadComponent('admin-components-materializedropdown')
-            loadComponent('admin-components-dropdowndivider')
-            loadComponent('admin-components-materializemodal')
-            loadComponent('admin-components-materializespinner')
+            'field-pathbrowser',
+            'field-texteditor',
+            'field-list',
+            'field-collection',
+            'field-materialswitch',
+            'field-material-checkbox',
+            'field-material-radios',
+            'field-material-select',
+            'field-material-checklist',
+            'field-material-datepicker',
+            'field-material-timepicker',
+            'field-material-datetime',
+            'field-material-textarea',
+            'field-material-multiselect',
+            'field-material-range',
+            'field-listselection',
+            'field-iconbrowser',
+            'field-headline',
+            'field-horizontal-line',
 
-            loadComponent('field-pathbrowser')
-            loadComponent('field-texteditor')
-            loadComponent('field-list')
-            loadComponent('field-collection')
-            loadComponent('field-materialswitch')
-            loadComponent('field-material-checkbox')
-            loadComponent('field-material-radios')
-            loadComponent('field-material-select')
-            loadComponent('field-material-checklist')
-            loadComponent('field-material-datepicker')
-            loadComponent('field-material-timepicker')
-            loadComponent('field-material-datetime')
-            loadComponent('field-material-textarea')
-            loadComponent('field-material-multiselect')
-            loadComponent('field-material-range')
-            loadComponent('field-listselection')
-            loadComponent('field-iconbrowser')
-            loadComponent('field-headline')
-            loadComponent('field-horizontal-line')
-
-            loadComponent('admin-components-iconeditpage')
-            loadComponent('admin-components-iconopenfolder')
-            loadComponent('admin-components-iconrename')
-            loadComponent('admin-components-draghandle')
-            loadComponent('admin-components-iconbrowser')
-            loadComponent('pagerendervue-components-placeholder')
-        })($perAdminApp.loadComponent)
-
+            'admin-components-iconeditpage',
+            'admin-components-iconopenfolder',
+            'admin-components-iconrename',
+            'admin-components-draghandle',
+            'admin-components-iconbrowser',
+            'pagerendervue-components-placeholder'
+        ].forEach(name => $perAdminApp.loadComponent(name))
 
         // init peregrine admin app
         $perAdminApp.init($perAdminView)
