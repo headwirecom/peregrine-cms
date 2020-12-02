@@ -660,22 +660,23 @@ export default {
             },
 
             deletePage: function(me, target) {
-                $perAdminApp.askUser('Delete Page', me.$i18n('Are you sure you want to delete this node and all its children?'), {
+                $perAdminApp.askUser(`Delete Page`, me.$i18n(`Are you sure you want to delete this node and all its children?`), {
                     yes() {
-                        const resourceType = target.resourceType
-                        if(resourceType === 'per:Object') {
-                            $perAdminApp.stateAction('deleteObject', target.path)
+                        const { resourceType, path } = target
+                        let action = 'deleteFolder'
+                        if (resourceType === 'per:Object') {
+                            action = 'deleteObject'
                         } else if(resourceType === 'per:Asset') {
-                            $perAdminApp.stateAction('deleteAsset', target.path)
+                            action = 'deleteAsset'
                         } else if(resourceType === 'sling:OrderedFolder') {
-                            $perAdminApp.stateAction('deleteFolder', target.path)
+                            action = 'deleteFolder'
                         } else if(resourceType === 'per:Page') {
-                            $perAdminApp.stateAction('deletePage', target.path)
+                            action = 'deletePage'
                         } else if(resourceType === 'nt:file') {
-                            $perAdminApp.stateAction('deleteFile', target.path)
-                        }else {
-                            $perAdminApp.stateAction('deleteFolder', target.path)
+                            action = 'deleteFile'
                         }
+
+                        $perAdminApp.stateAction(action, path)
                     }
                 })
             },
