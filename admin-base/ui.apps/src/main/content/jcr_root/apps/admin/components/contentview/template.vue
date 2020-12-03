@@ -406,15 +406,19 @@ export default {
               }).then(() => {
                 $perAdminApp.action(vm, 'showComponentEdit', vm.path).then(() => {
                   vm.flushInlineState()
-                  vm.$nextTick(vm.pingToolbar)
-                  vm.$nextTick(focusElement(this.target))
+                  vm.$nextTick(() => {
+                    vm.pingToolbar()
+                    focusElement(this.target, this.iframe.win)
+                  })
                 })
               })
             } else {
               $perAdminApp.action(vm, 'showComponentEdit', vm.path).then(() => {
                 vm.flushInlineState()
-                vm.$nextTick(vm.pingToolbar)
-                vm.$nextTick(focusElement(this.target))
+                vm.$nextTick(() => {
+                  vm.pingToolbar()
+                  focusElement(this.target, this.iframe.win)
+                })
               })
             }
           } else {
@@ -664,6 +668,9 @@ export default {
     onIframeClick(ev) {
       if (!this.isContentEditableOrNested(ev.target)) {
         this.target = ev.target
+      }
+      if (this.target !== ev.target) {
+        //this.
       }
     },
 

@@ -262,9 +262,9 @@ export function isChromeBrowser() {
       && /Google Inc/.test(navigator.vendor)
 }
 
-export function focusElement(target) {
-  const selection = window.getSelection()
-  const range = document.createRange()
+export function focusElement(target, win=window) {
+  const selection = win.getSelection()
+  const range = win.document.createRange()
   range.setStart(target, 0)
   range.setEnd(target, 0)
   selection.removeAllRanges()
