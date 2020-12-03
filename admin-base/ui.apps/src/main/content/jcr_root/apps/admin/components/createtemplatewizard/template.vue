@@ -29,7 +29,7 @@
       v-bind:subtitle="''" @on-complete="onComplete" 
       error-color="#d32f2f"
       color="#546e7a">
-        <tab-content title="select component" :before-change="leaveTabOne">
+        <!-- <tab-content title="select component" :before-change="leaveTabOne">
             <fieldset class="vue-form-generator">
                 <div class="form-group required">
                     <label>Select Component</label>
@@ -46,8 +46,13 @@
                     </div>
                 </div>
             </fieldset>
-        </tab-content>
+        </tab-content> -->
         <tab-content title="choose name" :before-change="leaveTabTwo">
+            <p>
+                You are about to create a template. A template inherits
+                all the components from its parent template in the template
+                hierarchy.
+            </p>
             <vue-form-generator :model="formmodel"
                                 :schema="nameSchema"
                                 :options="formOptions"
@@ -56,7 +61,7 @@
             </vue-form-generator>
         </tab-content>
         <tab-content title="verify">
-            <pre v-html="JSON.stringify(formmodel, true, 2)"></pre>
+            Click <b>finish</b> to create a chld template `{{formmodel.title}}` of `{{formmodel.path}}`
         </tab-content>
     </form-wizard>
 </div>

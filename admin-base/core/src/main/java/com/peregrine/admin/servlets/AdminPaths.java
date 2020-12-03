@@ -10,6 +10,7 @@ public interface AdminPaths {
     public static final String RESOURCE_TYPE_CREATION_TENANT = API_PREFIX + "createTenant";
     public static final String RESOURCE_TYPE_DELETE_TENANT = API_PREFIX + "deleteTenant";
     public static final String RESOURCE_TYPE_CREATION_OBJECT = API_PREFIX + "createObject";
+    public static final String RESOURCE_TYPE_CREATION_OBJECT_DEFINITION = API_PREFIX + "createObjectDefinition";
     public static final String RESOURCE_TYPE_CREATION_PAGE = API_PREFIX + "createPage";
     public static final String RESOURCE_TYPE_CREATION_TEMPLATE = API_PREFIX + "createTemplate";
     public static final String RESOURCE_TYPE_DELETE_NODE = API_PREFIX + "deleteNode";
@@ -37,4 +38,5 @@ public interface AdminPaths {
     public static final String RESOURCE_TYPE_LIST_RECYCLABLES = API_PREFIX + "listRecyclables";
     public static final String RESOURCE_TYPE_LIST_VERSIONS = API_PREFIX + "listVersions";
     public static final String RESOURCE_TYPE_RESTORE_RECYCLABLE = API_PREFIX + "restoreRecyclable";
+    public static final String RESOURCE_TYPE_USER_PREFERENCES = API_PREFIX + "userPreferences";
 }

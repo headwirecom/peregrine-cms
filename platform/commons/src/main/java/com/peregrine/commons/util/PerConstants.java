@@ -3,6 +3,7 @@ package com.peregrine.commons.util;
 import com.peregrine.commons.Strings;
 
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 /**
  * Commonly used Constants in Peregrine
@@ -86,11 +87,13 @@ public class PerConstants {
     public static final String FELIBS = "felibs";
     public static final String ASSETS = "assets";
     public static final String OBJECTS = "objects";
+    public static final String OBJECT_DEFINITIONS = "object-definitions";
     public static final String PAGES = "pages";
     public static final String TEMPLATES = "templates";
     public static final String COMPONENTS = "components";
 
     public static final String APPS_ROOT = "/apps";
+    public static final String CONF_ROOT = "/conf";
     public static final String ETC_ROOT = "/etc";
     public static final String CONTENT_ROOT = "/content";
 
@@ -100,12 +103,14 @@ public class PerConstants {
     public static final String FELIBS_ROOT = ETC_ROOT + SLASH + FELIBS;
     public static final String ASSETS_ROOT = CONTENT_ROOT + SLASH + TENANT + SLASH + ASSETS;
     public static final String OBJECTS_ROOT = CONTENT_ROOT + SLASH + TENANT + SLASH + OBJECTS;
+    public static final String OBJECT_DEFINITIONS_ROOT = CONTENT_ROOT + SLASH + TENANT + SLASH + OBJECT_DEFINITIONS;
     public static final String PAGES_ROOT = CONTENT_ROOT + SLASH + TENANT + SLASH + PAGES;
     public static final String TEMPLATES_ROOT = CONTENT_ROOT + SLASH + TENANT + SLASH + TEMPLATES;
 
     public static final String FOLDER = "folder";
     public static final String ASSET = "asset";
     public static final String OBJECT = "object";
+    public static final String OBJECT_DEFINITION = "objectDefinition";
     public static final String PAGE = "page";
     public static final String TEMPLATE = "template";
     public static final String COMPONENT = "component";
@@ -165,5 +170,12 @@ public class PerConstants {
     public static final String SITE_OBJECTS_PATTERN = SITE_HOME_PATTERN + OBJECTS + REGEX_SLASH + "?.*";
     public static final String SITE_RECYCLEBIN_PATTERN
             = REGEX_SLASH + VAR + REGEX_SLASH + RECYCLE_BIN + SITE_HOME_PATTERN + "?.*";
+
+    public static final String DIALOG_JSON = "dialog.json";
+    public static final String OBJECT_PATH = "objectPath";
+    public static final String TENANT_ROOT_PATH_TEMPLATE = "/content/{TENANT}";
+    public static final String TENANT_VAR_PATH_TEMPLATE = "/content/{TENANT}/var";
+    public static final Pattern TENANT_PATH_PATTERN = Pattern.compile("^/content/([a-z0-9_]+)/?.*$");
+
 }
 

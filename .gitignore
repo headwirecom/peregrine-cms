@@ -12,7 +12,7 @@ node_modules
 !sling/auth
 sling/!auth
 out
-package-lock.json
+#package-lock.json
 npm-debug.log
 .DS_Store
 *.factorypath

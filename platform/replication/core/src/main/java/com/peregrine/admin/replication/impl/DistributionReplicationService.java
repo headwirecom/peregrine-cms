@@ -48,6 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
@@ -173,15 +174,15 @@ public class DistributionReplicationService
     }
 
     @Override
-    public List<Resource> replicate(List<Resource> resourceList) throws ReplicationException {
+    public List<Resource> replicate(Collection<Resource> resourceList) throws ReplicationException {
         return replicate(resourceList, true);
     }
 
-    public List<Resource> deactivate(List<Resource> resourceList) throws ReplicationException {
+    public List<Resource> deactivate(Collection<Resource> resourceList) throws ReplicationException {
         return replicate(resourceList, false);
     }
 
-    public List<Resource> replicate(List<Resource> resourceList, boolean activate) throws ReplicationException {
+    public List<Resource> replicate(Collection<Resource> resourceList, boolean activate) throws ReplicationException {
         List<Resource> answer = new ArrayList<>();
         if(distributor != null) {
             ResourceResolver resourceResolver = null;

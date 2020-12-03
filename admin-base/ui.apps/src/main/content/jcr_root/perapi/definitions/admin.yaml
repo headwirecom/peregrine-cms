@@ -119,6 +119,49 @@ paths:
           description: If one of the paths did not resolve, the provided new name already exists under the new parent location, or the copy operation failed
           schema:
             $ref: "#/definitions/Error"
+  '/copyPage.json{path}':
+    post:
+      description: Copy a page to a target location
+      parameters:
+        - name: path
+          type: string
+          in: path
+          description: the path of the page to copy
+          required: true
+        - name: to
+          type: string
+          in: formData
+          description: the path of the page that is either the new parent for type 'child' or the next sibling for type 'before'
+          required: true
+        - name: type
+          type: string
+          in: formData
+          description: The type of move which can be 'child' (add as child of the given to node) or 'before' (add before the given to node)
+          required: true
+        - name: newName
+          type: string
+          in: formData
+          description: The new name that copied page will have
+          required: false
+        - name: newTitle
+          type: string
+          in: formData
+          description: The new title that copied resource will have
+          required: false
+        - name: deep
+          type: boolean
+          in: formData
+          description: flag indicating if children of the selected page should also be copied
+          required: false
+      responses:
+        200:
+          description: returns the from node name and path and the new node name and path
+          schema:
+            $ref: "#/definitions/Move"
+        400:
+          description: If one of the paths did not resolve, the provided new name already exists under the new parent location, or the copy operation failed
+          schema:
+            $ref: "#/definitions/Error"
   '/createFolder.json{path}':
     post:
       description: Create a new folder in the system

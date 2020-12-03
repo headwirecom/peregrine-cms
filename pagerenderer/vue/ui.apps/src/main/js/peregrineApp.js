@@ -133,14 +133,19 @@ function registerViewImpl(v) {
 }
 
 function getView() {
-    if(window && window.parent && window.parent.$perAdminView && window.parent.$perAdminView.pageView) {
-        var mode = window.frameElement.attributes['data-per-mode'] ? window.frameElement.attributes['data-per-mode'].value : null;
-        if(mode === 'tutorial') { 
-            return view;
-        } else {
-            log.fine("getVIEW() - window.parent.perAdminView.pageView");
-            return window.parent.$perAdminView.pageView
+    try {
+        if(window && window.parent && window.parent.$perAdminView && window.parent.$perAdminView.pageView) {
+            var mode = window.frameElement.attributes['data-per-mode'] ? window.frameElement.attributes['data-per-mode'].value : null;
+            if(mode === 'tutorial') { 
+                return view;
+            } else {
+                log.fine("getVIEW() - window.parent.perAdminView.pageView");
+                return window.parent.$perAdminView.pageView
+            }
         }
+        return view
+    } catch (error) {
+        // different origin
     }
     return view
 }
@@ -158,8 +163,12 @@ function loadComponentImpl(name) {
             Vue.component(name, window[varName])
         }
         // if we are in edit mode push the component to the perAdminApp as well
-        if(window.parent.$perAdminApp && !window.parent[varName]) {
-            window.parent[varName] = window[varName]
+        try {
+            if(window.parent.$perAdminApp && !window.parent[varName]) {
+                window.parent[varName] = window[varName]
+            }
+        } catch (error) {
+            // same origin
         }
         loadedComponents[name] = true
 
@@ -351,14 +360,18 @@ function updateMeta(key, val, type) {
 
 function isAuthorModeImpl() {
 
-    if(window && window.parent && window.frameElement && window.frameElement.attributes['data-per-mode']) {
-        var mode = window.frameElement.attributes['data-per-mode'].value;
-        if(mode === 'preview' || mode === 'tutorial') {
-            return false
+    try {
+        if(window && window.parent && window.frameElement && window.frameElement.attributes['data-per-mode']) {
+            var mode = window.frameElement.attributes['data-per-mode'].value;
+            if(mode === 'preview' || mode === 'tutorial') {
+                return false
+            }
         }
-    }
-    if(window && window.parent && window.parent.$perAdminView && window.parent.$perAdminView.pageView) {
-        return true
+        if(window && window.parent && window.parent.$perAdminView && window.parent.$perAdminView.pageView) {
+            return true
+        }
+    } catch(error) {
+        // same origin
     }
     return false
     

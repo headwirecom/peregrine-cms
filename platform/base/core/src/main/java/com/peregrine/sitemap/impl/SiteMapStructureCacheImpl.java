@@ -52,6 +52,7 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
         implements SiteMapStructureCache, Callback<String>, SiteMapEntry.Visitor<Resource> {
 
     private static final String SLASH_JCR_CONTENT = SLASH + JCR_CONTENT;
+    public static final String NN_FIRST_CACHE_NODE = "0";
 
     private final Set<RefreshListener> refreshListeners = new HashSet<>();
 
@@ -151,20 +152,29 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
         return resourceResolverFactory.getServiceResourceResolver();
     }
 
-    @Override
-    protected String getCachePath(final String rootPagePath) {
-        final String cachePath = super.getCachePath(rootPagePath);
-        return isRepositoryRoot(rootPagePath) ? cachePath : cachePath + SLASH_JCR_CONTENT;
+    protected boolean containsCacheAlready(final Resource cache) {
+        return Optional.ofNullable(cache)
+                .map(r -> r.getChild(JCR_CONTENT))
+                .map(this::isCacheNode)
+                .orElse(false);
+    }
+
+    protected boolean isCacheNode(final Resource cache) {
+        return Optional.ofNullable(cache)
+                .filter(r -> JCR_CONTENT.equals(r.getName()))
+                .map(r -> r.getChild(NN_FIRST_CACHE_NODE))
+                .map(Objects::nonNull)
+                .orElse(false);
     }
 
     @Override
-    protected String getOriginalPath(final String cachePath) {
-        final String superOriginalPath = super.getOriginalPath(cachePath);
-        if (!endsWith(superOriginalPath, SLASH_JCR_CONTENT)) {
-            return null;
-        }
+    protected String getCachePathImpl(final String cachePath) {
+        return cachePath + SLASH_JCR_CONTENT;
+    }
 
-        return substringBeforeLast(superOriginalPath, SLASH_JCR_CONTENT);
+    @Override
+    protected String getOriginalPathImpl(final String originalPath) {
+        return substringBeforeLast(originalPath, SLASH_JCR_CONTENT);
     }
 
     @Override
@@ -180,7 +190,6 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
         final List<SiteMapEntry> entries = extractor.extract(rootPage);
         putSiteMapsInCache(entries, cache);
         notifyCacheRefreshed(rootPage, entries);
-
         return cache;
     }
 
@@ -239,11 +248,9 @@ public final class SiteMapStructureCacheImpl extends CacheBuilderBase
     }
 
     private void notifyCacheRefreshed(final Resource rootPage, final List<SiteMapEntry> entries) {
-        new Thread(() -> {
-            for (final RefreshListener listener : refreshListeners) {
-                listener.onCacheRefreshed(rootPage, entries);
-            }
-        }).start();
+        for (final RefreshListener listener : refreshListeners) {
+            listener.onCacheRefreshed(rootPage, entries);
+        }
     }
 
     private void removeCachedItemsStartingAtIndex(final Resource target, final int startItemIndex) throws PersistenceException {

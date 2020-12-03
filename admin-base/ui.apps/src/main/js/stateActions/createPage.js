@@ -44,6 +44,10 @@ export default function(me, target) {
 
     api.createPage(target.parent, target.name, target.template, target.title).then( () => {
         target.data.path = '/jcr:content'
+        if(target.data.title) {
+            target.data['jcr:title'] = target.data.title
+            target.data.title = undefined
+        }
         api.savePageEdit(fullPath, target.data).then( () => {
             set(me.getView(), '/state/tools/page', fullPath)
             me.loadContent(`${destination}/path${SUFFIX_PARAM_SEPARATOR + destinationPath}`)
