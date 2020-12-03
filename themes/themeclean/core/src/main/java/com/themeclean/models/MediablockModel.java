@@ -10,6 +10,8 @@ import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
 
+import java.awt.Dimension;
+
 /*
     //GEN[:DATA
     {
@@ -396,7 +398,7 @@ public class MediablockModel extends AbstractComponent {
 
 	@Inject
 	@ImageInfo(name="imagesrc")
-	private String imageinfo;
+	private Dimension imageinfo;
 
 //GEN]
 
@@ -516,7 +518,7 @@ public class MediablockModel extends AbstractComponent {
 		return bottompadding;
 	}
 
-	public String getImageinfo() {
+	public Dimension getImageinfo() {
 		return imageinfo;
 	}
 

@@ -26,25 +26,25 @@ import org.apache.sling.models.spi.Injector;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 
+import javax.imageio.ImageIO;
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Type;
 import java.util.Optional;
 
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerUtil.IMAGE_HEIGHT;
-import static com.peregrine.commons.util.PerUtil.IMAGE_WIDTH;
-import static com.peregrine.commons.util.PerUtil.METADATA;
-import static com.peregrine.commons.util.PerUtil.PER_DATA;
+import static com.peregrine.commons.util.PerConstants.*;
 import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Component(
     service = Injector.class,
     property = Constants.SERVICE_RANKING + "=" + "2000"
 )
 public final class ImageInfoInjector implements Injector {
-
-    private static final String IMAGE_INFO_FORMAT = "{'width': %1$d, 'height': %2$d}";
 
     @Override
     public String getName() {
@@ -53,9 +53,9 @@ public final class ImageInfoInjector implements Injector {
 
     @Override
     public Object getValue(Object adaptable, String name, Type type, AnnotatedElement element,
-            DisposalCallbackRegistry callbackRegistry
+                           DisposalCallbackRegistry callbackRegistry
     ) {
-        if (isNull(adaptable) || type != String.class) {
+        if (isNull(adaptable) || type != Dimension.class) {
             return null;
         }
 
@@ -73,17 +73,15 @@ public final class ImageInfoInjector implements Injector {
             return null;
         }
 
-        final ValueMap map = getImagePerData(resource, ((ImageInfo) annotation).name());
-        int width = map.get(IMAGE_WIDTH, 0);
-        int height = map.get(IMAGE_HEIGHT, 0);
-        if (width > 0 || height > 0) {
-            return String.format(IMAGE_INFO_FORMAT, width, height);
+        final BufferedImage image = getImage(resource, ((ImageInfo) annotation).name());
+        if (isNull(image)) {
+            return null;
         }
 
-        return null;
+        return new Dimension(image.getWidth(), image.getHeight());
     }
 
-    private ValueMap getImagePerData(Resource resource, String imagePropertyName) {
+    private BufferedImage getImage(Resource resource, String imagePropertyName) {
         return Optional.of(resource)
                 .map(Resource::getValueMap)
                 .map(map -> map.get(imagePropertyName, String.class))
@@ -91,10 +89,29 @@ public final class ImageInfoInjector implements Injector {
                 .filter(path -> !StringUtils.contains(path, ":/"))
                 .map(resource.getResourceResolver()::getResource)
                 .map(r -> r.getChild(JCR_CONTENT))
-                .map(r -> r.getChild(METADATA))
-                .map(r -> r.getChild(PER_DATA))
-                .map(Resource::getValueMap)
-                .orElse(ValueMap.EMPTY);
+                .map(this::getImage)
+                .orElse(null);
     }
+
+    private BufferedImage getImage(final Resource content) {
+        final ValueMap properties = content.getValueMap();
+        final String mimeType = properties.get(JCR_MIME_TYPE, String.class);
+        // SVG images are not handled by ImageIO so we ignore it here
+        if (isBlank(mimeType) || SVG_MIME_TYPE.equals(mimeType)) {
+            return null;
+        }
+
+        final InputStream stream = properties.get(JCR_DATA, InputStream.class);
+        if (isNull(stream)) {
+            return null;
+        }
+
+        try {
+            return ImageIO.read(stream);
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
 
 }
