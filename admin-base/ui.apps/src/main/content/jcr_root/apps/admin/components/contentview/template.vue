@@ -92,10 +92,10 @@
 import {Attribute, Key, Toast} from '../../../../../../js/constants'
 import {Error} from '../../../../../../js/messages'
 import {
+  focusElement,
   get,
   getCaretCharacterOffsetWithin,
   isChromeBrowser,
-  removeSelection,
   restoreSelection,
   saveSelection,
   set
@@ -407,14 +407,14 @@ export default {
                 $perAdminApp.action(vm, 'showComponentEdit', vm.path).then(() => {
                   vm.flushInlineState()
                   vm.$nextTick(vm.pingToolbar)
-                  removeSelection(vm.iframe.win)
+                  vm.$nextTick(focusElement(this.target))
                 })
               })
             } else {
               $perAdminApp.action(vm, 'showComponentEdit', vm.path).then(() => {
                 vm.flushInlineState()
                 vm.$nextTick(vm.pingToolbar)
-                removeSelection(vm.iframe.win)
+                vm.$nextTick(focusElement(this.target))
               })
             }
           } else {
