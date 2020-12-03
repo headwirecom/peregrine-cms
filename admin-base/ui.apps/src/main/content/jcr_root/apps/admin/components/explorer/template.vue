@@ -662,18 +662,18 @@ export default {
 
             deletePage: function(me, target) {
                 const { resourceType, path } = target
-                let action = 'folder'
+                let type = 'folder'
                 if (resourceType === 'per:Object') {
-                    action = 'object'
+                    type = 'object'
                 } else if(resourceType === 'per:Asset') {
-                    action = 'asset'
+                    type = 'asset'
                 } else if(resourceType === 'per:Page') {
-                    action = 'page'
+                    type = 'page'
                 } else if(resourceType === 'nt:file') {
-                    action = 'file'
+                    type = 'file'
                 }
 
-                this.handleDelete(action, path)
+                this.handleDelete(type, path)
             },
 
             deleteTenant: function(me, target) {
