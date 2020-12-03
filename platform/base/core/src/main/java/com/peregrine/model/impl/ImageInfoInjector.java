@@ -39,10 +39,8 @@ import static com.peregrine.commons.util.PerUtil.PER_DATA;
 import static java.util.Objects.isNull;
 
 @Component(
-    service={
-        Injector.class
-    },
-    property=Constants.SERVICE_RANKING + "=" + "2000"
+    service = Injector.class,
+    property = Constants.SERVICE_RANKING + "=" + "2000"
 )
 public final class ImageInfoInjector implements Injector {
 
