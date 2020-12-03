@@ -31,6 +31,8 @@
 
   <jcr:content
     jcr:primaryType="per:PageContent"
+    suffixToParameter="[path,/state/tools/dashboard]"
+    loaders="[populateNodesForBrowser:/state/tools/dashboard]"
     sling:resourceType="admin/components/toolingpage"
     jcr:title="Home"
     jcr:description="admin base home page">

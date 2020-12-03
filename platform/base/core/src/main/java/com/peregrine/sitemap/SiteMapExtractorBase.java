@@ -32,13 +32,14 @@ import org.apache.sling.api.resource.ResourceResolver;
 
 import java.util.*;
 import java.util.regex.Matcher;
+import java.util.stream.StreamSupport;
 
 import static java.util.Objects.isNull;
 
 public abstract class SiteMapExtractorBase implements SiteMapExtractor {
 
     @Override
-    public boolean appliesTo(final Resource root) {
+    public final boolean appliesTo(final Resource root) {
         if (isNull(root)) {
             return false;
         }
@@ -47,26 +48,25 @@ public abstract class SiteMapExtractorBase implements SiteMapExtractor {
                 .map(SiteMapConfiguration::getPagePathPattern)
                 .map(p -> p.matcher(root.getPath()))
                 .map(Matcher::matches)
-                .orElse(true);
+                .orElse(true) && appliesToImpl(root);
+    }
+
+    protected boolean appliesToImpl(final Resource root) {
+        return true;
     }
 
     @Override
-    public List<SiteMapEntry> extract(final Resource root) {
-        return extract(new Page(root));
-    }
-
-    private List<SiteMapEntry> extract(final Page root) {
+    public List<SiteMapEntry> extract(final Resource resource) {
+        final Page page = new Page(resource);
         final List<SiteMapEntry> result = new LinkedList<>();
-        if (!isPage(root)) {
-            return result;
-        }
-
-        result.add(createEntry(root));
-        for (final Resource child: root.getChildren()) {
-            final Page childPage = new Page(child);
-            if (isPage(childPage)) {
-                result.addAll(extract(childPage));
-            }
+        final Optional<SiteMapEntry> entry = Optional.ofNullable(page)
+                .filter(this::isPage)
+                .map(this::createEntry);
+        entry.ifPresent(result::add);
+        if (entry.isPresent()) {
+            StreamSupport.stream(resource.getChildren().spliterator(), false)
+                    .map(this::extract)
+                    .forEach(result::addAll);
         }
 
         return result;

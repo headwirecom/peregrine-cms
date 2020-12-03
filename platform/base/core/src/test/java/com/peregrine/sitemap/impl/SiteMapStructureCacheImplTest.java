@@ -1,6 +1,5 @@
 package com.peregrine.sitemap.impl;
 
-import com.peregrine.SlingResourcesTest;
 import com.peregrine.mock.PageMock;
 import com.peregrine.mock.ResourceMock;
 import com.peregrine.sitemap.*;
@@ -21,7 +20,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SiteMapStructureCacheImplTest extends SlingResourcesTest implements SiteMapStructureCache.RefreshListener {
+public final class SiteMapStructureCacheImplTest extends SiteStructureTestBase implements SiteMapStructureCache.RefreshListener {
 
     private static final String LOCATION = "/var/sitemaps/structure";
     private static final String X = "x";
@@ -30,11 +29,11 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest impl
     private final SiteMapStructureCacheImpl model = new SiteMapStructureCacheImpl();
     private final PageMock cacheParent = new PageMock();
     private final ResourceMock cache = cacheParent.getContent();
-    private final Map<Resource, List<SiteMapEntry>> onCacheRefreshedMap = new HashMap<>();
+    private final Map<String, List<SiteMapEntry>> onCacheRefreshedMap = new HashMap<>();
     private final List<SiteMapEntry> entries = new LinkedList<>();
 
     @Mock
-    private ResourceResolverFactoryProxy resourceResolverFactory;
+    private VersioningResourceResolverFactory resourceResolverFactory;
 
     @Mock
     private SiteMapExtractorsContainer siteMapExtractorsContainer;
@@ -60,7 +59,7 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest impl
         when(config.debounceInterval()).thenReturn(0);
         when(config.location()).thenReturn(LOCATION);
 
-        when(resourceResolverFactory.getServiceResourceResolver()).thenReturn(resourceResolver);
+        when(resourceResolverFactory.createResourceResolver()).thenReturn(versioningResolver);
 
         when(siteMapConfigurationsContainer.getAll()).thenReturn(Arrays.asList(siteMapConfiguration));
 
@@ -77,7 +76,7 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest impl
 
     @Override
     public void onCacheRefreshed(final Resource rootPage, final List<SiteMapEntry> entries) {
-        onCacheRefreshedMap.put(rootPage, entries);
+        onCacheRefreshedMap.put(rootPage.getPath(), entries);
     }
 
     @Test
@@ -90,7 +89,7 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest impl
     @SuppressWarnings("unchecked")
     @Test
     public void get_throwLoginException() throws LoginException {
-        when(resourceResolverFactory.getServiceResourceResolver()).thenThrow(LoginException.class);
+        when(resourceResolverFactory.createResourceResolver()).thenThrow(LoginException.class);
         assertNull(model.get(page));
     }
 
@@ -161,14 +160,11 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest impl
     }
 
     @Test
-    public void get_extractorIsNull() throws PersistenceException {
-        final ResourceMock _0 = cache.createChild("0");
+    public void get_extractorIsNull() {
         repo.mockResourceResolverCreate();
         disableCacheResolution();
         when(siteMapExtractorsContainer.findFirstFor(page)).thenReturn(null);
         assertNull(model.get(page));
-        assertOnCacheRefreshedMapContains(page);
-        verify(resourceResolver, times(1)).delete(_0);
     }
 
     private void assertOnCacheRefreshedMapContains(final Object key) {
@@ -185,9 +181,8 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest impl
     @Test
     public void putSiteMapsInCache() {
         repo.mockResourceResolverCreate();
-        disableCacheResolution();
         when(extractor.extract(page)).thenReturn(entries);
-        cache.createChild("0");
+        addEntryCache();
         SiteMapEntry entry = createEntry();
         entry.putProperty("x:y", 0);
         entries.add(entry);
@@ -209,7 +204,7 @@ public final class SiteMapStructureCacheImplTest extends SlingResourcesTest impl
         final HashSet<String> mandatoryPaths = new HashSet<>(Arrays.asList(page.getPath()));
         when(siteMapConfiguration.getMandatoryCachedPaths()).thenReturn(mandatoryPaths);
         model.rebuildAll();
-        assertOnCacheRefreshedMapContains(page);
+        assertOnCacheRefreshedMapContains(page.getPath());
     }
 
     @Test

@@ -48,11 +48,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
 import static com.peregrine.commons.util.PerConstants.JCR_UUID;
@@ -160,9 +156,7 @@ public class LocalReplicationService
     private ReferenceLister referenceLister;
 
     @Override
-    public List<Resource> replicate(Resource startingResource, boolean deep)
-        throws ReplicationException
-    {
+    public List<Resource> findReferences(Resource startingResource, boolean deep) throws ReplicationException {
         ResourceResolver resourceResolver = startingResource.getResourceResolver();
         Resource source = resourceResolver.getResource(localSource);
         if(source == null) {
@@ -186,8 +180,7 @@ public class LocalReplicationService
             listMissingResources(reference, replicationList, resourceChecker, false);
         }
         listMissingParents(startingResource, replicationList, source, resourceChecker);
-        listMissingResources(startingResource, replicationList, resourceChecker, deep);
-        return replicate(replicationList);
+        return listMissingResources(startingResource, replicationList, resourceChecker, deep);
     }
 
     @Override
@@ -211,7 +204,7 @@ public class LocalReplicationService
     }
 
     @Override
-    public List<Resource> replicate(List<Resource> resourceList) throws ReplicationException {
+    public List<Resource> replicate(Collection<Resource> resourceList) throws ReplicationException {
         List<Resource> handledSources = new ArrayList<>();
         List<Resource> answer = new ArrayList<>();
         // Replicate the resources

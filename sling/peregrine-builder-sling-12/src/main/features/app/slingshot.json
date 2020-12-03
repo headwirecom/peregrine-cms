@@ -1,0 +1,38 @@
+
+{
+    "bundles":[
+        {
+            "id":"org.apache.sling:org.apache.sling.sample.slingshot:0.9.0",
+            "start-order":"20"
+        }
+    ],
+    "configurations":{
+        "org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended~sling.slingshot":{
+            "user.mapping":[
+                "org.apache.sling.sample.slingshot=slingshot-service"
+            ]
+        }
+    },
+    "repoinit:TEXT|true":[
+        "create service user slingshot-service",
+        "create user slingshot1 with password slingshot1",
+        "create user slingshot2 with password slingshot2",
+        "",
+        "create path (sling:Folder) /content/slingshot",
+        "create path (sling:Folder) /content/slingshot/users",
+        "create path (sling:Folder) /content/slingshot/users/slingshot1",
+        "create path (sling:Folder) /content/slingshot/users/slingshot2",
+        "",
+        "set ACL for slingshot-service",
+        "allow   jcr:read,rep:write    on /content/slingshot",
+        "end",
+        "",
+        "set ACL for slingshot1",
+        "allow   jcr:read,rep:write    on /content/slingshot/users/slingshot1",
+        "end",
+        "",
+        "set ACL for slingshot2",
+        "allow   jcr:read,rep:write    on /content/slingshot/users/slingshot2",
+        "end"
+    ]
+}

@@ -61,6 +61,7 @@ export const Icon = {
   INFO: 'info',
   EDIT: 'edit',
   LIST: 'list',
+  REPLICATION: 'public',
   CHECK: 'check',
   CHECKED: 'check_box',
   UNCHECKED: 'check_box_outline_blank',
@@ -69,6 +70,7 @@ export const Icon = {
   MORE_VERT: 'more_vert',
   VERSIONS: 'restore_page'
 }
+
 export const NodeType = {
   PAGE: 'page',
   TEMPLATE: 'template',
@@ -117,4 +119,22 @@ export const Key = {
   ARROW_RIGHT: 39,
   ARROW_DOWN: 40,
   ESC: 27
+}
+
+export const IconLib = {
+  MATERIAL_ICONS: 'material-icons',
+  FONT_AWESOME: 'font-awesome',
+  PLAIN_TEXT: 'plain-text'
+}
+
+export const DropDown = {
+  DIVIDER: '--------------------------'
+}
+
+export const Toast = {
+  Level: {
+    INFO: 'info',
+    WARNING: 'warn',
+    ERROR: 'error'
+  }
 }

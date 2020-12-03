@@ -8,7 +8,7 @@
         <i v-else class="icon-placeholder"></i>
       </template>
       <i class="material-icons">description</i>
-      {{ item.name }}
+      {{ vTitle }}
     </div>
     <ul v-if="item.hasChildren" v-show="isOpen" class="content">
       <admin-components-nodetreeitem
@@ -22,9 +22,9 @@
 </template>
 
 <script>
-  import {capitalizeFirstLetter} from '../../../../../../js/utils'
+import {capitalizeFirstLetter} from '../../../../../../js/utils'
 
-  export default {
+export default {
     name: 'TreeItem',
     props: {
       item: Object,
@@ -36,6 +36,9 @@
       }
     },
     computed: {
+      vTitle() {
+        return this.item.title || this.item.name
+      },
       expandIcon() {
         return this.isOpen ? 'keyboard_arrow_down' : 'keyboard_arrow_right'
       },

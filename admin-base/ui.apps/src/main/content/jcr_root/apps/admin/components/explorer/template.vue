@@ -66,7 +66,8 @@
                                 command: 'selectPath',
                                 tooltipTitle: `${$i18n('select')} '${child.title || child.name}'`
                             }">
-                        <i class="material-icons">folder</i>
+                        <i v-if="child.hasChildren" class="material-icons">folder</i>
+                        <i v-else class="material-icons">folder_open</i>
                     </admin-components-action>
 
                     <admin-components-action v-if="editable(child)"
@@ -143,9 +144,19 @@
                                 command: 'deleteTenantOrPage',
                                 tooltipTitle: `${$i18n('delete')} '${child.title || child.name}'`
                             }">
-                            <i class="material-icons">delete</i>
+                            <i class="material-icons">{{canBeDeleted(child) ? 'delete' : 'delete_forever'}}</i>
                         </admin-components-action>
                     </div>
+                </li>
+                <li class="collection-item" v-if="isAssets(path)">
+                    <admin-components-action
+                        v-bind:model="{
+                            target: '',
+                            command: 'addFolder',
+                            tooltipTitle: `${$i18n('add folder')}`
+                        }">
+                            <i class="material-icons">add_circle</i> {{$i18n('add folder')}}
+                    </admin-components-action>
                 </li>
                 <li class="collection-item" v-if="isPages(path)">
                     <admin-components-action
@@ -177,7 +188,28 @@
                             <i class="material-icons">add_circle</i> {{$i18n('add template')}}
                     </admin-components-action>
                 </li>
+                <li class="collection-item" v-if="isObjectDefinitions(path)">
+                    <admin-components-action
+                        v-bind:model="{
+                            target: '',
+                            command: 'addObjectDefinition',
+                            tooltipTitle: `${$i18n('add object definition')}`
+                        }">
+                            <i class="material-icons">add_circle</i> {{$i18n('add object definition')}}
+                    </admin-components-action>
+                </li>
             </ul>
+            <div style="width: inherit; position: absolute; bottom: .5em;" v-if="model.showFilter ==='true'">
+                <div style="padding-left: 3em; padding-right: 1em;">
+                    <div class="switch">
+                        <label>
+                            <input type="checkbox" v-model="filter" style="direction: rtl;">
+                            <span class="lever"></span>
+                            filter secondary items
+                        </label>
+                    </div>
+                </div>
+            </div>
             <div v-if="children && children.length == 0" class="empty-explorer">
                 <div v-if="path.includes('assets')">
                     {{ $i18n('emptyExplorerHintAssets') }}.
@@ -193,7 +225,8 @@
             </div>
         </div>
         <admin-components-explorerpreview v-if="hasEdit">
-            <component v-bind:is="model.children[0].component" v-bind:model="model.children[0]"></component>
+            <component v-bind:is="model.children[0].component" v-bind:model="model.children[0]"
+                :onDelete="handleDelete"></component>
         </admin-components-explorerpreview>
     </div>
     </div>
@@ -212,22 +245,16 @@
                     class="btn"
                     v-on:click="onDoneFileUpload">ok</button>
             </div>
-            <!-- <progress class="file-upload-progress" v-bind:value="uploadProgress" max="100"></progress> -->
         </div>
     </div>
-    <!--
-    <template v-for="child in model.children[0].children">
-        <component v-bind:is="child.component" v-bind:model="child"></component>
-    </template>
-    -->
 </div>
 </template>
 
 <script>
 
-    import {set} from '../../../../../../js/utils';
+import {getCurrentDateTime, set} from '../../../../../../js/utils'
 
-    export default {
+export default {
         props: ['model'],
 
         data() {
@@ -235,7 +262,8 @@
                 isDraggingFile: false,
                 isDraggingUiEl: false,
                 isFileUploadVisible: false,
-                uploadProgress: 0
+                uploadProgress: 0,
+                filter: true
             }
         },
 
@@ -254,7 +282,7 @@
             },
             children: function() {
                 if ( this.pt.children ) {
-                    return this.pt.children.filter( child => this.checkIfAllowed(child.resourceType) )
+                    return this.pt.children.filter( child => this.checkIfAllowed(child) )
                 }
             },
             parentPath: function() {
@@ -274,6 +302,12 @@
                 return this.model.children && this.model.children[0]
             }
         },
+        created() {
+          document.addEventListener('paste', this.onDocumentPaste)
+        },
+        beforeDestroy() {
+          document.removeEventListener('paste', this.onDocumentPaste)
+        },
         methods: {
             getTenant() {
               return $perAdminApp.getView().state.tenant || {name: 'example'}
@@ -289,6 +323,10 @@
 
             isObjects(path) {
                 return path.startsWith(`/content/${this.getTenant().name}/objects`)
+            },
+
+            isObjectDefinitions(path) {
+                return path.startsWith(`/content/${this.getTenant().name}/object-definitions`)
             },
 
             isTemplates(path) {
@@ -481,6 +519,7 @@
             nodeTypeToIcon: function(nodeType) {
                 if(nodeType === 'per:Page')             return 'description'
                 if(nodeType === 'per:Object')           return 'layers'
+                if(nodeType === 'per:ObjectDefinition') return 'insert_drive_file'
                 if(nodeType === 'nt:file')              return 'insert_drive_file'
                 if(nodeType === 'per:Asset')            return 'image'
                 if(nodeType === 'sling:Folder')         return 'folder'
@@ -488,8 +527,12 @@
                 return 'unknown'
             },
 
-            checkIfAllowed: function(resourceType) {
-                return ['per:Asset', 'nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page', 'sling:OrderedFolder', 'per:Object'].indexOf(resourceType) >= 0
+            checkIfAllowed: function(node) {
+                if(this.model.showFilter && this.model.showFilter === 'true' && this.filter) {
+                    if(node.excludeFromSitemap && node.excludeFromSitemap === 'true') return false
+                    return ['per:Page', 'per:Asset', 'per:Object', 'per:ObjectDefinition'].indexOf(node.resourceType) >= 0
+                }
+                return ['per:Asset', 'nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page', 'sling:OrderedFolder', 'per:Object', 'per:ObjectDefinition'].indexOf(node.resourceType) >= 0
             },
 
             showInfo: function(me, target) {
@@ -568,6 +611,14 @@
                 }
             },
 
+            addObjectDefinition: function(me, target) {
+                const tenant = $perAdminApp.getView().state.tenant
+                const path = me.pt ? me.pt.path : `/content/${tenant.name}/object-definitions`
+                if(path.startsWith(`/content/${tenant.name}/object-definitions`)) {
+                    $perAdminApp.stateAction('createObjectDefinitionWizard', { path: path, target: target })
+                }
+            },
+
             addFolder: function(me, target) {
                 const tenant = $perAdminApp.getView().state.tenant
                 const path = me.pt.path
@@ -582,33 +633,47 @@
                 $perAdminApp.stateAction('sourceImageWizard', me.pt.path)
             },
 
+            canBeDeleted: function(obj) {
+                return !(obj.activated || obj.anyDescendantActivated);
+            },
+
             deleteTenantOrPage: function(me, target) {
-                if(me.path === '/content') {
+                if (!me.canBeDeleted(target)) {
+                    $perAdminApp.toast("You cannot delete this yet. The resource or one of its children is still published." +
+                                       " Please unpublish all of them first.", "warn", 7500)
+                } else if(me.path === '/content') {
                     me.deleteTenant(me, target)
                 } else {
                     me.deletePage(me, target)
                 }
             },
 
-            deletePage: function(me, target) {
-                $perAdminApp.askUser('Delete Page', me.$i18n('Are you sure you want to delete this node and all its children?'), {
-                    yes() {
-                        const resourceType = target.resourceType
-                        if(resourceType === 'per:Object') {
-                            $perAdminApp.stateAction('deleteObject', target.path)
-                        } else if(resourceType === 'per:Asset') {
-                            $perAdminApp.stateAction('deleteAsset', target.path)
-                        } else if(resourceType === 'sling:OrderedFolder') {
-                            $perAdminApp.stateAction('deleteFolder', target.path)
-                        } else if(resourceType === 'per:Page') {
-                            $perAdminApp.stateAction('deletePage', target.path)
-                        } else if(resourceType === 'nt:file') {
-                            $perAdminApp.stateAction('deleteFile', target.path)
-                        }else {
-                            $perAdminApp.stateAction('deleteFolder', target.path)
+            handleDelete: function(type, path) {
+                const me = this
+                return new Promise((resolve, reject) => {
+                    $perAdminApp.askUser(`Delete ${type}?`, me.$i18n(`Are you sure you want to delete this node and all its children?`), {
+                        yes() {
+                            $perAdminApp.stateAction(`delete${type.charAt(0).toUpperCase() + type.slice(1)}`, path)
+                            resolve()
                         }
-                    }
+                    })
                 })
+            },
+
+            deletePage: function(me, target) {
+                const { resourceType, path } = target
+                let type = 'folder'
+                if (resourceType === 'per:Object') {
+                    type = 'object'
+                } else if(resourceType === 'per:Asset') {
+                    type = 'asset'
+                } else if(resourceType === 'per:Page') {
+                    type = 'page'
+                } else if(resourceType === 'nt:file') {
+                    type = 'file'
+                }
+
+                this.handleDelete(type, path)
             },
 
             deleteTenant: function(me, target) {
@@ -619,7 +684,16 @@
                 })
             },
 
+            editReference: function(me, target) {
+                if(target.load) {
+                    $perAdminApp.loadContent(target.load)
+                } else {
+                    me.editPage(me, target.target)
+                }
+            },
+
             editPage: function(me, target) {
+
                 const view = $perAdminApp.getView()
                 const tenant = view.state.tenant
                 const path = me.pt.path
@@ -630,11 +704,11 @@
                     set(view, '/state/tools/template', target)
                 }
 
-                if(path.startsWith(`/content/${tenant.name}/objects`)) {
+                if(target.startsWith(`/content/${tenant.name}/objects`)) {
                     const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
                     me.selectedObject = path
                     $perAdminApp.stateAction('editObject', { selected: node.path, path: me.model.dataFrom })
-                } else if (path.startsWith(`/content/${tenant.name}/templates`)) {
+                } else if (target.startsWith(`/content/${tenant.name}/templates`)) {
                     $perAdminApp.stateAction('editTemplate', target )
                 } else {
                     $perAdminApp.stateAction('editPage', target )
@@ -643,6 +717,21 @@
 
             editFile: function(me, target) {
                 window.open(`/bin/cpm/edit/code.html${target}`, 'composum')
+            },
+
+            onDocumentPaste(event) {
+              if (!this.path.includes('assets')) return
+
+              const item = event.clipboardData.items[0]
+
+              if (item && item.type.indexOf('image') === 0) {
+                const blob = item.getAsFile()
+                const extension = blob.type.split('/').pop()
+                const name = `clipboard-${getCurrentDateTime()}.${extension}`
+                const file = new File([blob], name, {type: blob.type})
+
+                this.uploadFile([file])
+              }
             }
         }
     }
@@ -651,9 +740,6 @@
 <style>
     .item-activated {
         color: green;
-    }
-
-    .item-replication-unknown {
     }
 
     .item-deactivated {

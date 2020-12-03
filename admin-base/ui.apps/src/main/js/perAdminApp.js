@@ -202,6 +202,7 @@ function initPeregrineApp() {
     Vue.use(experiences)
     const lang = view.state.language
     const i18nData = view.admin.i18n
+    const tenant = view ? (view.state ? view.state.tenant : undefined) : undefined
 
     app = new Vue({
         el: '#peregrine-adminapp',
@@ -211,14 +212,16 @@ function initPeregrineApp() {
     const state = sessionStorage.getItem('perAdminApp.state')
     const admin = sessionStorage.getItem('perAdminApp.admin')
 
-    if(state && admin) {
-        view.state = JSON.parse(state)
-        view.admin = JSON.parse(admin)
 
-        // make i18n and language selection survive session storage
-        view.state.language = lang
-        view.admin.i18n = i18nData
-    }
+    // if(state && admin) {
+    //     view.state = JSON.parse(state)
+    //     view.admin = JSON.parse(admin)
+
+    //     // make i18n and language selection survive session storage
+    //     view.state.language = lang
+    //     view.admin.i18n = i18nData
+    //     if(tenant) { view.state.tenant = tenant }
+    // }
 
     app.$watch('state', function(newVal, oldVal) {
         sessionStorage.setItem('perAdminApp.state', JSON.stringify(newVal))
@@ -315,6 +318,26 @@ function loadContentImpl(initialPath, firstTime, fromPopState) {
 
     api.populateUser()
         .then(function() {
+            if(pathInfo.suffixParams.path) {
+                const segments = pathInfo.suffixParams.path.split('/')
+                if(segments.length >= 3) {
+                    if(view.state.tenant && view.state.tenant.name !== segments[2]) {
+                        logger.error('tenant mismatch')
+                    } else {
+                        logger.fine('tenant missing')
+                        return api.populateTenants().then( () => {
+                            const tenant = view.admin.tenants.filter( (node) => node.name === segments[2] )
+                            if(tenant.length >= 1) {
+                                view.state.tenant = tenant[0]
+                            } else {
+                                logger.error('tenant does not exist or no access to tenant')
+                            }
+                        })
+                    }
+                }
+            }
+        })
+        .then(function() {
             api.populateContent(dataUrl)
                 .then( function () {
                     logger.fine('got data for', path)
@@ -337,14 +360,20 @@ function loadContentImpl(initialPath, firstTime, fromPopState) {
                                 let params = view.adminPage.suffixToParameter
                                 let suffix = ""
                                 if(params) {
+                                    const rendered = []
                                     for(let i = 0; i < params.length; i+=2) {
+                                        if(rendered.indexOf(params[i]) >= 0) {
+                                            continue;
+                                        } else {
+                                            rendered.push(params[i])
+                                        } 
                                         if(i === 0) {
                                             suffix += '/'
                                         } else {
                                             suffix += SUFFIX_PARAM_SEPARATOR
                                         }
 
-                                        suffix += params[0]
+                                        suffix += params[i]
                                         suffix += SUFFIX_PARAM_SEPARATOR
                                         suffix += getNodeFromImpl(view, params[i+1])
                                     }
@@ -591,6 +620,15 @@ function notifyUserImpl(title, message, options) {
 function toastImpl(message, className, displayLength, callback) {
     const toast = Materialize.toast(message, displayLength, className, callback)
     toast.el.addEventListener('click', () => toast.remove())
+
+    const progressBar = document.createElement('div')
+    progressBar.setAttribute('class', 'progress-bar')
+    progressBar.style.transition = `width ${displayLength - 100}ms linear`
+    toast.el.appendChild(progressBar)
+    setTimeout(() => {
+        progressBar.style.width = '0%'
+    }, 100)
+    return toast
 }
 
 /**
@@ -979,7 +1017,7 @@ var PerAdminApp = {
      * @param callback
      */
     toast(message, className, displayLength=4000, callback=null) {
-        toastImpl(message, className, displayLength, callback)
+        return toastImpl(message, className, displayLength, callback)
     },
 
     /**

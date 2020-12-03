@@ -263,12 +263,12 @@ public class CreateTenantServlet extends AbstractBaseServlet {
                 logger.warn("Setting Site Permissions failed", e);
             }
             setBrandOnTemplate(resourceResolver, toTenant, title);
-            resourceResolver.commit();
             String colorPalette = request.getParameter(COLOR_PALETTE);
             if (isNotEmpty(colorPalette)) {
                 setColorPalette(resourceResolver, request.getParameter(COLOR_PALETTE), fromTenant, toTenant);
-                resourceResolver.commit();
             }
+
+            resourceResolver.commit();
             return new JsonResponse()
                 .writeAttribute(TYPE, SITE)
                 .writeAttribute(STATUS, CREATED)

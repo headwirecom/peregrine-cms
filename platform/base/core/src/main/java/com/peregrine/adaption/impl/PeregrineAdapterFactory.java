@@ -28,6 +28,7 @@ package com.peregrine.adaption.impl;
 import com.peregrine.adaption.PerAsset;
 import com.peregrine.adaption.PerPage;
 import com.peregrine.adaption.PerPageManager;
+import com.peregrine.adaption.PerReplicable;
 import com.peregrine.commons.util.PerUtil;
 import org.apache.sling.api.adapter.AdapterFactory;
 import org.apache.sling.api.resource.Resource;
@@ -37,10 +38,11 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
-import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+
+import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATION;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 
 /**
@@ -57,6 +59,7 @@ import static com.peregrine.commons.util.PerUtil.EQUALS;
         // The Adapter are the target aka the class that an object can be adapted to (parameter in the adaptTo() method)
         AdapterFactory.ADAPTER_CLASSES + EQUALS + "com.peregrine.adaption.PerPage",
         AdapterFactory.ADAPTER_CLASSES + EQUALS + "com.peregrine.adaption.PerAsset",
+        AdapterFactory.ADAPTER_CLASSES + EQUALS + "com.peregrine.adaption.PerReplicable",
         AdapterFactory.ADAPTER_CLASSES + EQUALS + "com.peregrine.adaption.PerPageManager",
         // The Adaptable is the source that can be adapt meaning the object on which adaptTo() is called on
         AdapterFactory.ADAPTABLE_CLASSES + EQUALS + "org.apache.sling.api.resource.Resource",
@@ -121,9 +124,11 @@ public class PeregrineAdapterFactory
                 log.trace("Given Resource: '{}' is not an Asset", resource);
             }
             return (AdapterType) new PerAssetImpl(resource);
-        } else {
-            log.warn("Unable to adapt unknown resource {} to type {}", resource, type.getName());
+        } else if (type.getName().equals(PerReplicable.class.getName()) ) {
+            return (AdapterType) new PerReplicableImpl(resource);
         }
+
+        log.warn("Unable to adapt unknown resource {} to type {}", resource, type.getName());
         return null;
     }
 
@@ -181,4 +186,18 @@ public class PeregrineAdapterFactory
                 null;
         }
     }
+
+//    /**
+//     * Static method resourceCanAddPerReplicationMixin checks whether a resource can have the replicat
+//     * @param resource
+//     * @return
+//     */
+//    public static boolean resourceCanAddPerReplicationMixin(Resource resource) {
+//        Node node = resource.adaptTo(Node.class);
+//        try {
+//            return node.canAddMixin(PER_REPLICATION);
+//        } catch (RepositoryException e) {
+//            return false;
+//        }
+//    }
 }

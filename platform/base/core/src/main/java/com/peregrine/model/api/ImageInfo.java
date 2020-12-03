@@ -32,5 +32,5 @@ public @interface ImageInfo {
     /**
      * @return Name of the Property with the Image Path
      */
-    public String name() default "";
+    String name() default "";
 }

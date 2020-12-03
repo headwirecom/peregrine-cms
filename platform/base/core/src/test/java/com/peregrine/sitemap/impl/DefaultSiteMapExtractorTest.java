@@ -2,7 +2,8 @@ package com.peregrine.sitemap.impl;
 
 import com.peregrine.mock.SiteMock;
 import com.peregrine.sitemap.PropertyProvider;
-import com.peregrine.sitemap.ResourceResolverFactoryProxy;
+import com.peregrine.sitemap.SiteStructureTestBase;
+import com.peregrine.sitemap.VersioningResourceResolverFactory;
 import com.peregrine.sitemap.SiteMapUrlBuilder;
 import junitx.util.PrivateAccessor;
 import org.apache.sling.api.resource.LoginException;
@@ -34,7 +35,10 @@ public final class DefaultSiteMapExtractorTest extends SiteStructureTestBase {
     private SiteMapUrlBuilder urlBuilder;
 
     @Mock
-    private ResourceResolverFactoryProxy resolverFactory;
+    private VersioningResourceResolverFactory resolverFactory;
+
+    @Mock
+    private DefaultSiteMapExtractorConfig config;
 
     @Before
     public void setUp() throws NoSuchFieldException, LoginException {
@@ -45,8 +49,9 @@ public final class DefaultSiteMapExtractorTest extends SiteStructureTestBase {
         PrivateAccessor.setField(model, "priorityPropertyProvider", priorityPropertyProvider);
         PrivateAccessor.setField(model, "urlBuilder", urlBuilder);
         PrivateAccessor.setField(model, "resolverFactory", resolverFactory);
-        when(resolverFactory.getServiceResourceResolver()).thenReturn(resourceResolver);
-        model.activate();
+        when(resolverFactory.createResourceResolver()).thenReturn(versioningResolver);
+        when(config.useCurrentVersions()).thenReturn(true);
+        model.activate(config);
     }
 
     @Test
@@ -103,7 +108,7 @@ public final class DefaultSiteMapExtractorTest extends SiteStructureTestBase {
         Set<String> paths = model.getMandatoryCachedPaths();
         assertEquals(0, paths.size());
 
-        when(resolverFactory.getServiceResourceResolver()).thenThrow(LoginException.class);
+        when(resolverFactory.createResourceResolver()).thenThrow(LoginException.class);
         paths = model.getMandatoryCachedPaths();
         assertEquals(0, paths.size());
     }

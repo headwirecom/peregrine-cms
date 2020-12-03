@@ -31,6 +31,8 @@ import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Calendar;
 
@@ -47,6 +49,8 @@ public class PerPageManagerImpl
 {
     public static final String RESOURCE_RESOLVER_MUST_BE_PROVIDED = "Resource Resolver must be provided";
     public static final String RESOURCE_MUST_BE_PROVIDED = "Resource must be provided";
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     /** Resource Resolver that backs that Page Manager **/
     private ResourceResolver resourceResolver;
 
@@ -91,7 +95,7 @@ public class PerPageManagerImpl
             try {
                 resourceResolver.commit();
             } catch(PersistenceException e) {
-                //AS TODO: Log exception
+                logger.error("could not clear replication properties", e);
             }
             if(!shallow) {
                 for(PerPage child : page.listChildren()) {

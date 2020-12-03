@@ -67,7 +67,7 @@ public final class SiteMapServlet extends SlingAllMethodsServlet {
     private SiteMapFilesCache cache;
 
     @Override
-    protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
+    protected void doGet(final SlingHttpServletRequest request, final SlingHttpServletResponse response) throws IOException {
         final Resource resource = request.getResource();
         final int index = urlBuilder.getIndex(request);
         final String string = index >= 0 ? cache.get(resource, index) : null;
@@ -80,4 +80,5 @@ public final class SiteMapServlet extends SlingAllMethodsServlet {
         response.setCharacterEncoding(PerConstants.UTF_8);
         response.getWriter().write(string);
     }
+
 }

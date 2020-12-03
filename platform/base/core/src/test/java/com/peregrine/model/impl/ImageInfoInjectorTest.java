@@ -1,81 +1,68 @@
 package com.peregrine.model.impl;
 
-import com.peregrine.testmodels.DefaultImageInfoModel;
-import com.peregrine.commons.test.AbstractTest;
+import com.peregrine.model.api.ImageInfo;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
-import org.apache.sling.models.impl.ModelAdapterFactory;
-import org.apache.sling.models.impl.ModelAdapterFactorySetup;
-import org.apache.sling.models.impl.injectors.ValueMapInjector;
+import org.apache.sling.models.spi.Injector;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ImageInfoInjectorTest extends AbstractTest {
-    private Logger logger = LoggerFactory.getLogger(getClass());
-    private ModelAdapterFactory factory;
-    private ResourceResolver resourceResolver;
+public final class ImageInfoInjectorTest {
 
-    @Override
-    public Logger getLogger() {
-        return logger;
-    }
+    private static final String CAPTION = "Test Image Info";
+    private static final String IMAGE_NAME = "013.jpg";
+    private static final String IMAGE_PATH = "/content/unitTest/assets/images/" + IMAGE_NAME;
+
+    private final Injector model = new ImageInfoInjector();
+
+    private final ResourceResolver resourceResolver = mock(ResourceResolver.class, "Test Resource Resolver");
+
+    @ImageInfo(name = "imagePath")
+    private String imageInfo;
+
+    private Field annotatedField;
 
     @Before
-    public void setup() {
-        super.setup();
-        try {
-            factory = ModelAdapterFactorySetup.createModelAdapterFactory(null, DefaultImageInfoModel.class);
-            // Add the Resource in Constructor Injection
-            ModelAdapterFactorySetup.addInjector(factory, new ImageInfoInjector(), 1);
-            // Add the Value Map properties Injection
-            ModelAdapterFactorySetup.addInjector(factory, new ValueMapInjector(), 2);
-            resourceResolver = mock(ResourceResolver.class, "Test Resource Resolver");
-        } catch (Exception e) {
-            throw new RuntimeException("Setup Failed", e);
-        }
+    public void setup() throws NoSuchFieldException {
+        annotatedField = getClass().getDeclaredField("imageInfo");
+    }
+
+    private String getValue(final Resource resource) {
+        return (String) model.getValue(resource, null, String.class, annotatedField, null);
     }
 
     @Test
     public void testImageDataFromMeta() {
         String title = "testImageInfo";
-        String caption = "Test Image Info";
-        String imageName = "013.jpg";
-        String imagePath = "/content/unitTest/assets/images/" + imageName;
         int width = 111;
         int height = 999;
 
         Resource testPageResource = createMockResource(
             "test page", null, "per:Page",
-            "title", title, "caption", caption, "imagePath", imagePath
+            "title", title, "caption", CAPTION, "imagePath", IMAGE_PATH
         );
         // Asset Test Resource
         Resource assetTestResource = createMockResource(
-            imageName, null, "per:Asset"
+                IMAGE_NAME, null, "per:Asset"
         );
         // Resource Resolver needs to return Asset
         when(testPageResource.getResourceResolver()).thenReturn(resourceResolver);
-        when(resourceResolver.getResource(imagePath)).thenReturn(assetTestResource);
+        when(resourceResolver.getResource(IMAGE_PATH)).thenReturn(assetTestResource);
 
         // Create JCR Content, Metadata and Per Data node
         Resource jcrContentTestResource = createMockResource(
@@ -83,37 +70,29 @@ public class ImageInfoInjectorTest extends AbstractTest {
             "jcr:mimeType", "image/jpeg"
         );
         Resource metaDataResource = createMockResource("metadata", jcrContentTestResource, "sling:Folder");
-        Resource perDataResource = createMockResource(
+        createMockResource(
             "per-data", metaDataResource, "sling:Folder",
             "width", width, "height", height
         );
 
-        DefaultImageInfoModel model = factory.getAdapter(testPageResource, DefaultImageInfoModel.class);
-        assertNotNull(model);
-        assertEquals(title, model.getTitle());
-        assertEquals(caption, model.getCaption());
-        assertEquals(imagePath, model.getImagePath());
-        assertEquals("{'width': " + width + ", 'height': " + height + "}", model.getImageInfo());
+        assertEquals("{'width': " + width + ", 'height': " + height + "}", getValue(testPageResource));
     }
 
     @Test
     public void testImageDataWitNoData() {
         String title = "noDataTestImage";
-        String caption = "Test Image Info";
-        String imageName = "013.jpg";
-        String imagePath = "/content/unitTest/assets/images/" + imageName;
 
         Resource testPageResource = createMockResource(
             "test page", null, "per:Page",
-            "title", title, "caption", caption, "imagePath", imagePath
+            "title", title, "caption", CAPTION, "imagePath", IMAGE_PATH
         );
         // Asset Test Resource
         Resource assetTestResource = createMockResource(
-            imageName, null, "per:Asset"
+                IMAGE_NAME, null, "per:Asset"
         );
         // Resource Resolver needs to return Asset
         when(testPageResource.getResourceResolver()).thenReturn(resourceResolver);
-        when(resourceResolver.getResource(imagePath)).thenReturn(assetTestResource);
+        when(resourceResolver.getResource(IMAGE_PATH)).thenReturn(assetTestResource);
 
         // Create JCR Content, Metadata and Per Data node
         Resource jcrContentTestResource = createMockResource(
@@ -121,75 +100,8 @@ public class ImageInfoInjectorTest extends AbstractTest {
             "jcr:mimeType", "image/jpeg"
         );
 
-        DefaultImageInfoModel model = factory.getAdapter(testPageResource, DefaultImageInfoModel.class);
-        assertNotNull(model);
-        assertEquals(title, model.getTitle());
-        assertEquals(caption, model.getCaption());
-        assertEquals(imagePath, model.getImagePath());
-        assertNull(model.getImageInfo());
+        assertNull(getValue(testPageResource));
     }
-
-//    @Test
-//    public void testImageDataFromImage() throws Exception {
-//        String title = "testImageInfo";
-//        String caption = "Test Image Info";
-//        String imageName = "013.jpg";
-//        String imagePath = "/content/unitTest/assets/images/" + imageName;
-//        int width = 1280;
-//        int height = 1024;
-//
-//        Resource testPageResource = createMockResource(
-//            "test page", null, "per:Page",
-//            "title", title, "caption", caption, "imagePath", imagePath
-//        );
-//        // Asset Test Resource
-//        Resource assetTestResource = createMockResource(
-//            imageName, null, "per:Asset"
-//        );
-//        // Resource Resolver needs to return Asset
-//        when(testPageResource.getResourceResolver()).thenReturn(resourceResolver);
-//        when(resourceResolver.getResource(imagePath)).thenReturn(assetTestResource);
-//
-//        InputStream is = getClass().getResourceAsStream("/test.image.jpg");
-//        // Create JCR Content, Metadata and Per Data node
-//        Resource jcrContentTestResource = createMockResource(
-//            "jcr:content", assetTestResource, "per:AssetContent",
-//            "jcr:mimeType", "image/jpeg",
-//            "jcr:data", is
-//        );
-//
-//        // Creation of the Metadata resource must be delated until it is created by the ImageInfoInjector and with it the per-data resource
-//        Map<String, Resource> createdResource = new HashMap<>();
-//        when(resourceResolver.create(eq(jcrContentTestResource), eq("metadata"), any(Map.class)))
-//            .thenAnswer(
-//                invocation -> {
-//                    Resource answer = createMockResource("metadata", jcrContentTestResource, "sling:Folder");
-//                    createdResource.put("metadata", answer);
-//                    return answer;
-//                }
-//            );
-//        when(resourceResolver.create(any(Resource.class), eq("per-data"), any(Map.class)))
-//            .thenAnswer(
-//                invocation -> {
-//                    Resource metaDataResource = createdResource.get("metadata");
-//                    Resource answer = createMockResource("per-data", metaDataResource, "sling:Folder");
-//                    createdResource.put("per-data", answer);
-//                    return answer;
-//                }
-//            );
-//
-//        DefaultImageInfoModel model = factory.getAdapter(testPageResource, DefaultImageInfoModel.class);
-//        assertNotNull("Failed to create Model", model);
-//        assertEquals(title, model.getTitle());
-//        assertEquals(caption, model.getCaption());
-//        assertEquals(imagePath, model.getImagePath());
-//        assertEquals("{'width': " + width + ", 'height': " + height + "}", model.getImageInfo());
-//        Resource perDataResource = createdResource.get("per-data");
-//        assertNotNull("per-data resource not found", perDataResource);
-//        ValueMap properties = perDataResource.getValueMap();
-//        assertEquals(properties.get("width"), width);
-//        assertEquals(properties.get("height"), height);
-//    }
 
     private Resource createMockResource(String name, Resource parent, String primaryType, Object...properties) {
         Resource answer = name == null ? mock(Resource.class) : mock(Resource.class, name);

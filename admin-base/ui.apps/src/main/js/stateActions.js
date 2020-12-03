@@ -35,6 +35,7 @@ import deletePage from './stateActions/deletePage'
 import deleteTenant from './stateActions/deleteTenant'
 import configureTenant from './stateActions/configureTenant'
 import renamePage from './stateActions/renamePage'
+import copyPage from './stateActions/copyPage'
 import movePage from './stateActions/movePage'
 import createTemplate from './stateActions/createTemplate'
 import createTemplateWizard from './stateActions/createTemplateWizard'
@@ -71,10 +72,14 @@ import showPageInfo from './stateActions/showPageInfo'
 import editPreview from './stateActions/editPreview'
 import createAssetFolder from './stateActions/createAssetFolder'
 import createObjectFolder from './stateActions/createObjectFolder'
+import createObjectDefinition from './stateActions/createObjectDefinition'
 import createAssetFolderWizard from './stateActions/createAssetFolderWizard'
 import createObjectFolderWizard from './stateActions/createObjectFolderWizard'
+import createObjectDefinitionWizard from './stateActions/createObjectDefinitionWizard'
 import savePageProperties from './stateActions/savePageProperties'
 import replicate from './stateActions/replicate'
+import publish from './stateActions/publish'
+import unreplicate from './stateActions/unreplicate'
 import moveTemplate from './stateActions/moveTemplate'
 import renameObject from './stateActions/renameObject'
 import moveObject from './stateActions/moveObject'
@@ -91,6 +96,7 @@ import backupTenant from "./stateActions/backupTenant";
 import downloadBackupTenant from "./stateActions/downloadBackupTenant";
 import uploadBackupTenant from "./stateActions/uploadBackupTenant";
 import restoreTenant from "./stateActions/restoreTenant";
+import acceptTermsAndConditions from './stateActions/acceptTermsAndConditions'
 
 let log = LoggerFactory.logger('actions').setLevelDebug()
 
@@ -107,6 +113,7 @@ actions['deletePage'] = deletePage
 actions['deleteTenant'] = deleteTenant
 actions['configureTenant'] = configureTenant
 actions['renamePage'] = renamePage
+actions['copyPage'] = copyPage
 actions['movePage'] = movePage
 actions['createTemplate'] = createTemplate
 actions['createTemplateWizard'] = createTemplateWizard
@@ -144,10 +151,14 @@ actions['editPreview'] = editPreview
 actions['createAssetFolder'] = createAssetFolder
 actions['createAssetFolderWizard'] = createAssetFolderWizard
 actions['createObjectFolder'] = createObjectFolder
+actions['createObjectDefinition'] = createObjectDefinition
 actions['createObjectFolderWizard'] = createObjectFolderWizard
+actions['createObjectDefinitionWizard'] = createObjectDefinitionWizard
 actions['renameObject'] = renameObject
 actions['savePageProperties'] = savePageProperties
 actions['replicate'] = replicate
+actions['publish'] = publish
+actions['unreplicate'] = unreplicate
 actions['moveObject'] = moveObject
 actions['showTemplateInfo'] = showPageInfo
 actions['saveTemplateProperties'] = savePageProperties
@@ -165,6 +176,7 @@ actions['backupTenant'] = backupTenant
 actions['downloadBackupTenant'] = downloadBackupTenant
 actions['uploadBackupTenant'] = uploadBackupTenant
 actions['restoreTenant'] = restoreTenant
+actions['acceptTermsAndConditions'] = acceptTermsAndConditions
 
 
 function noopAction(me, target) {

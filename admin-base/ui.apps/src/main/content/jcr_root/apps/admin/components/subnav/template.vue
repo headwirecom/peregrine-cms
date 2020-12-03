@@ -24,7 +24,7 @@
   -->
 <template>
     <div class="nav-content sub-nav" :class="classes">
-        <admin-components-richtoolbar v-if="renderRichToolbar"/>
+        <admin-components-richtoolbar v-if="renderRichToolbar" class="on-sub-nav"/>
         <div v-if="showNodeTree" class="page-tree">
             <admin-components-materializedropdown
                 ref="dropdown"
@@ -32,7 +32,7 @@
                 :below-origin="true"
                 alignment="right">
                 <template>
-                    {{ currentNodeName }}<span class="caret-down"></span>
+                    {{ vCurrentNodeTitle }}<span class="caret-down"></span>
                 </template>
                 <template slot="content" v-if="filteredChildren.length > 0">
                     <admin-components-nodetreeitem
@@ -52,10 +52,10 @@
 </template>
 
 <script>
-    import {NodeTree} from '../../../../../../js/constants'
-    import {get} from '../../../../../../js/utils'
+import {NodeTree} from '../../../../../../js/constants'
+import {get} from '../../../../../../js/utils'
 
-    export default {
+export default {
     props: ['model'],
     data() {
         return {
@@ -110,9 +110,13 @@
                 return []
             }
         },
-        currentNodeName() {
-            return this.getPath().split('/').pop() || 'loading...'
+        currentNode() {
+          return $perAdminApp.findNodeFromPath(this.nodes, this.getPath())
+              || {title: 'loading...'}
         },
+      vCurrentNodeTitle() {
+          return this.currentNode.title || this.currentNode.name
+      }
     },
     methods: {
         isEditor() {

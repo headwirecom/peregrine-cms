@@ -17,42 +17,26 @@
 package com.peregrine.model.impl;
 
 import com.peregrine.model.api.ImageInfo;
-import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.adapter.Adaptable;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.models.spi.DisposalCallbackRegistry;
 import org.apache.sling.models.spi.Injector;
-import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.JCR_DATA;
-import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
-import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
-import static com.peregrine.commons.util.PerConstants.SVG_MIME_TYPE;
 import static com.peregrine.commons.util.PerUtil.IMAGE_HEIGHT;
 import static com.peregrine.commons.util.PerUtil.IMAGE_WIDTH;
 import static com.peregrine.commons.util.PerUtil.METADATA;
 import static com.peregrine.commons.util.PerUtil.PER_DATA;
+import static java.util.Objects.isNull;
 
 @Component(
     service={
@@ -60,164 +44,59 @@ import static com.peregrine.commons.util.PerUtil.PER_DATA;
     },
     property=Constants.SERVICE_RANKING + "=" + "2000"
 )
-public class ImageInfoInjector implements Injector {
+public final class ImageInfoInjector implements Injector {
 
-    private static final Logger log = LoggerFactory.getLogger(ImageInfoInjector.class);
-
-    public static final String IMAGE_INFO_FORMAT = "{'width': %1$d, 'height': %2$d}";
-
-    private static final List<String> UNSUPPORTED_IMAGE_MIMES = Arrays.asList(SVG_MIME_TYPE);
+    private static final String IMAGE_INFO_FORMAT = "{'width': %1$d, 'height': %2$d}";
 
     @Override
-    public @NotNull String getName() {
+    public String getName() {
         return "imageinfo";
     }
 
     @Override
-    public Object getValue(@NotNull Object adaptable, String name, @NotNull Type type, @NotNull AnnotatedElement element,
-            @NotNull DisposalCallbackRegistry callbackRegistry
+    public Object getValue(Object adaptable, String name, Type type, AnnotatedElement element,
+            DisposalCallbackRegistry callbackRegistry
     ) {
-        String answer = null;
-        try {
-            if (adaptable != ObjectUtils.NULL) {
-                Annotation annotation = element.getDeclaredAnnotation(ImageInfo.class);
-                if (annotation != null) {
-                    ValueMap map = getValueMap(adaptable);
-                    if (map == null) {
-                        return null;
-                    } else if (type instanceof Class<?>) {
-                        Class<?> clazz = (Class<?>) type;
-                        if (clazz == String.class) {
-                            try {
-                                String sourceName = ((ImageInfo) annotation).name();
-                                ImageData imageData = getImageData(sourceName, adaptable);
-                                if (imageData != null) {
-                                    answer = String.format(IMAGE_INFO_FORMAT, imageData.width, imageData.height);
-                                }
-                            } catch (ClassCastException e) {
-                                log.warn("Could not obtain Value from ValueMap with name: '{}'", name);
-                            }
-                        }
-                    }
-                }
-            }
-        } catch(RuntimeException e) {
-            // A Runtime Exception is causing the entire page fail to load (due to be children being null)
-        }
-        return answer;
-    }
-
-    private ImageData getImageData(String imagePropertyName, Object adaptable) {
-        ImageData answer = null;
-        ValueMap map = getValueMap(adaptable);
-        String imagePath = map.get(imagePropertyName, String.class);
-        // Only handle local images
-        if(imagePath.indexOf(":/") < 0) {
-            Resource imageResource = imagePath == null ? null : getResourceResolver(adaptable).getResource(imagePath);
-            // Obtain Image
-            Resource imageContentResource = imageResource == null ? null : imageResource.getChild(JCR_CONTENT);
-            // Try to get the 'metadata' and the dimension based on the Image Type
-            if (imageContentResource != null) {
-                Resource metaData = imageContentResource.getChild(METADATA);
-                if (metaData != null) {
-                    answer = getDataFromMeta(metaData);
-                }
-// Right now we do not obtain the info when there is no metadata there
-//                if (answer == null) {
-//                    answer = getDataFromImage(imageContentResource);
-//                }
-            }
+        if (isNull(adaptable) || type != String.class) {
+            return null;
         }
 
-        return answer;
-    }
-
-    private ImageData getDataFromMeta(Resource metaData) {
-        ImageData answer = null;
-        Resource perData = metaData.getChild(PER_DATA);
-        ValueMap pngProperties = perData == null ? null : perData.getValueMap();
-        if(pngProperties != null) {
-            Integer width = pngProperties.get(IMAGE_WIDTH, Integer.class);
-            Integer height = pngProperties.get(IMAGE_HEIGHT, Integer.class);
-            if (width != null || height != null) {
-                answer = new ImageData().setWidth(width).setHeight(height);
-            }
-        }
-        return answer;
-    }
-
-    private ImageData getDataFromImage(Resource imageContentResource) {
-        ImageData answer = null;
-        ValueMap properties = imageContentResource.getValueMap();
-        String mimeType = properties.get(JCR_MIME_TYPE, String.class);
-        // SVG images are not handled by ImageIO so we ignore it here
-        if (mimeType != null && !UNSUPPORTED_IMAGE_MIMES.contains(mimeType)) {
-            InputStream imageStream = properties.get(JCR_DATA, InputStream.class);
-            try {
-                BufferedImage image = imageStream == null ? null : ImageIO.read(imageStream);
-                if (image != null) {
-                    // Obtain height and width
-                    int height = image.getHeight();
-                    int width = image.getWidth();
-                    // Store info into property
-                    answer = new ImageData().setWidth(width).setHeight(height);
-                    // Store data into metadata/per-data node
-                    Resource metaData = imageContentResource.getChild(METADATA);
-                    if (metaData == null) {
-                        Map<String, Object> metadataProperties = new HashMap<>();
-                        metadataProperties.put(JCR_PRIMARY_TYPE, SLING_FOLDER);
-                        metaData = imageContentResource.getResourceResolver().create(imageContentResource, METADATA, metadataProperties);
-                        Resource perData = metaData.getChild(PER_DATA);
-                        if (perData == null) {
-                            Map<String, Object> perDataProperties = new HashMap<>();
-                            perDataProperties.put(JCR_PRIMARY_TYPE, SLING_FOLDER);
-                            perData = imageContentResource.getResourceResolver().create(metaData, PER_DATA, perDataProperties);
-                        }
-                        ValueMap perDataProperties = perData.getValueMap();
-                        perDataProperties.put(IMAGE_WIDTH, width);
-                        perDataProperties.put(IMAGE_HEIGHT, height);
-                    }
-                }
-            } catch (IOException e) {
-                // Ignore
-            }
-        }
-        return answer;
-    }
-
-    private class ImageData {
-        private int width;
-        private int height;
-
-        public ImageData setWidth(Integer width) {
-            this.width = width == null ? 0 : width;
-            return this;
-        }
-
-        public ImageData setHeight(Integer height) {
-            this.height = height == null ? 0 : height;
-            return this;
-        }
-    }
-
-    protected ValueMap getValueMap(Object adaptable) {
-        if (adaptable instanceof ValueMap) {
-            return (ValueMap) adaptable;
-        } else if (adaptable instanceof Adaptable) {
-            ValueMap map = ((Adaptable) adaptable).adaptTo(ValueMap.class);
-            return map;
+        final Resource resource;
+        if (adaptable instanceof Resource) {
+            resource = (Resource) adaptable;
+        } else if (adaptable instanceof SlingHttpServletRequest) {
+            resource = ((SlingHttpServletRequest) adaptable).getResource();
         } else {
             return null;
         }
+
+        final Annotation annotation = element.getDeclaredAnnotation(ImageInfo.class);
+        if (isNull(annotation)) {
+            return null;
+        }
+
+        final ValueMap map = getImagePerData(resource, ((ImageInfo) annotation).name());
+        int width = map.get(IMAGE_WIDTH, 0);
+        int height = map.get(IMAGE_HEIGHT, 0);
+        if (width > 0 || height > 0) {
+            return String.format(IMAGE_INFO_FORMAT, width, height);
+        }
+
+        return null;
     }
 
-    protected ResourceResolver getResourceResolver(Object adaptable) {
-        ResourceResolver resolver = null;
-        if (adaptable instanceof Resource) {
-            resolver = ((Resource) adaptable).getResourceResolver();
-        } else if (adaptable instanceof SlingHttpServletRequest) {
-            resolver = ((SlingHttpServletRequest) adaptable).getResourceResolver();
-        }
-        return resolver;
+    private ValueMap getImagePerData(Resource resource, String imagePropertyName) {
+        return Optional.of(resource)
+                .map(Resource::getValueMap)
+                .map(map -> map.get(imagePropertyName, String.class))
+                .filter(StringUtils::isNotBlank)
+                .filter(path -> !StringUtils.contains(path, ":/"))
+                .map(resource.getResourceResolver()::getResource)
+                .map(r -> r.getChild(JCR_CONTENT))
+                .map(r -> r.getChild(METADATA))
+                .map(r -> r.getChild(PER_DATA))
+                .map(Resource::getValueMap)
+                .orElse(ValueMap.EMPTY);
     }
+
 }

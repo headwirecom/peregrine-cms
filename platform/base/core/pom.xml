@@ -56,14 +56,16 @@
                             com.peregrine.render,
                             com.peregrine.rendition,
                             com.peregrine.replication,
+                            com.peregrine.sitemap,
                             com.peregrine.transform,
                             com.peregrine.transform.*,
                             com.peregrine.commons.util,
                             com.peregrine.model.api,
-                            com.peregrine.model.impl
+                            com.peregrine.model.impl,
+                            com.peregrine.versions
                         </Export-Package>
                         <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
-                        <Sling-Model-Packages>com.peregrine.nodetypes.models</Sling-Model-Packages>
+                        <Sling-Model-Packages>com.peregrine.models,com.peregrine.nodetypes.models</Sling-Model-Packages>
                         <_dsannotations>*</_dsannotations>
                         <_metatypeannotations>*</_metatypeannotations>
                         <_removeheaders>
@@ -173,11 +175,6 @@
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.engine</artifactId>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.apache.sling</groupId>-->
-            <!--<artifactId>org.apache.sling.commons.testing</artifactId>-->
-            <!--<scope>compile</scope>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.event</artifactId>
@@ -202,10 +199,6 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-        </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -241,10 +234,6 @@
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
         </dependency>
 
         <dependency>

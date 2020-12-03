@@ -29,18 +29,10 @@ import org.apache.sling.api.resource.Resource;
 
 import java.util.List;
 
-public interface SiteMapStructureCache extends CacheBuilder {
+public interface SiteMapStructureCache extends CacheBuilder<List<SiteMapEntry>, SiteMapStructureCache.RefreshListener> {
 
     List<SiteMapEntry> get(Resource rootPage);
 
-    void addRefreshListener(RefreshListener listener);
-
-    void removeRefreshListener(RefreshListener listener);
-
-    interface RefreshListener {
-
-        void onCacheRefreshed(Resource rootPage, List<SiteMapEntry> entries);
-
-    }
+    interface RefreshListener extends CacheBuilder.RefreshListener<List<SiteMapEntry>> { }
 
 }

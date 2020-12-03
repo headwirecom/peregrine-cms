@@ -42,6 +42,10 @@ export default function(me, target) {
 
     api.createPageFromSkeletonPage(target.parent, target.name, target.skeletonPagePath).then( () => {
         target.data.path = '/jcr:content'
+        if(target.data.title) {
+            target.data['jcr:title'] = target.data.title
+            target.data.title = undefined
+        }
         api.savePageEdit(target.parent + '/' + target.name, target.data).then( () => {
             me.loadContent(`${destination}/path${SUFFIX_PARAM_SEPARATOR + destinationPath}`)
         })

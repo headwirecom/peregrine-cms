@@ -1,5 +1,6 @@
 package com.peregrine.sitemap.impl;
 
+import com.peregrine.sitemap.SiteMapFilesCache;
 import com.peregrine.sitemap.SiteMapStructureCache;
 import junitx.util.PrivateAccessor;
 import org.junit.Before;
@@ -17,17 +18,22 @@ public final class ScheduledSiteMapStructureCacheReBuilderTest {
     private final ScheduledSiteMapStructureCacheReBuilder model = new ScheduledSiteMapStructureCacheReBuilder();
 
     @Mock
-    private SiteMapStructureCache cache;
+    private SiteMapFilesCache files;
+
+    @Mock
+    private SiteMapStructureCache structure;
 
     @Before
     public void setUp() throws NoSuchFieldException {
-        PrivateAccessor.setField(model, "cache", cache);
+        PrivateAccessor.setField(model, "files", files);
+        PrivateAccessor.setField(model, "structure", structure);
     }
 
     @Test
     public void run() {
         model.run();
-        verify(cache, times(1)).rebuildAll();
+        verify(files, times(1)).rebuildAll();
+        verify(structure, times(1)).rebuildAll();
     }
 
 }

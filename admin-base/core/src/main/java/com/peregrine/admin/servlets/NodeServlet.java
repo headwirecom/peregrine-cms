@@ -44,6 +44,8 @@ import com.peregrine.intra.IntraSlingCaller;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import javax.servlet.Servlet;
+
+import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -76,12 +78,13 @@ public class NodeServlet extends AbstractBaseServlet {
     @Override
     protected Response handleRequest(Request request) throws IOException {
         String path = request.getParameter(PATH);
+        Resource resource = request.getResourceByPath(path);
 	 // Load that content internally  and return as JSON Content. If it fails redirect
         try {
             byte[] response = intraSlingCaller.call(
                 intraSlingCaller.createContext()
                     .setResourceResolver(request.getRequest().getResourceResolver())
-                    .setPath(path)
+                    .setPath(resource.getPath())
                     .setExtension(DATA_JSON_EXTENSION)
             );
             return new TextResponse(JSON, JSON_MIME_TYPE)

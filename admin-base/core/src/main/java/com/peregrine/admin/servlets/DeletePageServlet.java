@@ -45,13 +45,16 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+import com.peregrine.admin.replication.ReplicationUtil;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.admin.resource.AdminResourceHandler.DeletionResponse;
 import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import java.io.IOException;
+import java.util.Optional;
 import javax.servlet.Servlet;
-import org.apache.sling.models.factory.ModelFactory;
+
+import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -76,18 +79,23 @@ public class DeletePageServlet extends AbstractBaseServlet {
     public static final String FAILED_TO_DELETE_NODE = "Failed to delete node: ";
 
     @Reference
-    ModelFactory modelFactory;
-
-    @Reference
     AdminResourceHandler resourceManagement;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
         String path = request.getParameter(PATH);
+        final ResourceResolver resourceResolver = request.getResourceResolver();
+        if (Optional.ofNullable(path)
+                .map(resourceResolver::getResource)
+                .map(ReplicationUtil::isSelfOrAnyDescendantReplicated)
+                .orElse(false)
+        ) {
+            return getErrorResponse(path);
+        }
+
         try {
-            DeletionResponse response = resourceManagement
-                .deleteResource(request.getResourceResolver(), path, PAGE_PRIMARY_TYPE);
-            request.getResourceResolver().commit();
+            DeletionResponse response = resourceManagement.deleteResource(resourceResolver, path, PAGE_PRIMARY_TYPE);
+            resourceResolver.commit();
             return new JsonResponse()
                 .writeAttribute(TYPE, PAGE)
                 .writeAttribute(STATUS, DELETED)
@@ -95,11 +103,16 @@ public class DeletePageServlet extends AbstractBaseServlet {
                 .writeAttribute(NODE_TYPE, response.getType())
                 .writeAttribute(PARENT_PATH, response.getParentPath());
         } catch (ManagementException e) {
-            return new ErrorResponse()
-                .setHttpErrorCode(SC_BAD_REQUEST)
-                .setErrorMessage(FAILED_TO_DELETE_NODE + path)
-                .setRequestPath(path).setException(e);
+            return getErrorResponse(path).setException(e);
         }
     }
+
+    private ErrorResponse getErrorResponse(String path) throws IOException {
+        return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(FAILED_TO_DELETE_NODE + path)
+                .setRequestPath(path);
+    }
+
 }
 

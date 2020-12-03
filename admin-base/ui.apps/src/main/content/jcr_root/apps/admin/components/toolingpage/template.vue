@@ -23,7 +23,7 @@
   #L%
   -->
 <template>
-    <div class="tooling-page">
+    <div class="tooling-page" v-if="allowRender">
         <template v-for="child in model.children">
             <component v-bind:is="child.component" v-bind:model="child" v-bind:key="child.path"></component>
         </template>
@@ -42,6 +42,26 @@
     mounted(){
         // init materialize plugins
         $('.modal').modal()
+        if(this.preferences.firstLogin != undefined
+                && this.preferences.firstLogin == 'true'
+                && !window.location.pathname.startsWith('/content/admin/pages/onboard')) {
+            // we should switch to this but currently we have a problem with the load and the url check
+            // $perAdminApp.loadContent('/content/admin/pages/onboard.html')
+            window.location = '/content/admin/pages/onboard.html'
+        }
+    },
+    data() {
+        return { decline: false, preferences: $perAdminApp.getNodeFromViewWithDefault('/state/userPreferences', { firstLogin: "true" }) }
+    },
+    computed: {
+        allowRender() {
+            if(this.preferences.firstLogin != undefined
+                && this.preferences.firstLogin == 'true'
+                && !window.location.pathname.startsWith('/content/admin/pages/onboard')) {
+                return false
+            }
+            return true
+        }
     },
     methods: {
         selectPath: function(me, target) {
@@ -58,7 +78,11 @@
             // $perAdminApp.stateAction('selectToolsNodesPath', payload).then(() => {
             //     $perAdminApp.loadContent(action + '.html')
             // })
-            $perAdminApp.loadContent(target + '.html')
+            if(target.indexOf('.html') >= 0) {
+                $perAdminApp.loadContent(target)
+            } else {
+                $perAdminApp.loadContent(target + '.html')
+            }
         },
         editPreview: function(me, target) {
             $perAdminApp.stateAction('editPreview', target)
@@ -69,8 +93,17 @@
             $perAdminApp.stateAction('createTenantWizard', '/content')
         },
         configureTenant: function(me, target) {
-            $perAdminApp.stateAction('configureTenant', target)
+            $perAdminApp.stateAction('setTenant', target)
+                .then(() => $perAdminApp.stateAction('configureTenant', target))
+        },
+        onDecline(me) {
+            me.decline = true
+            $perAdminApp.loadContent('/content/admin/pages/onboard/sorry.html')
+        },
+        onAccept(me) {
+            $perAdminApp.stateAction('acceptTermsAndConditions', {} )
         }
+
     }
 }
 </script>

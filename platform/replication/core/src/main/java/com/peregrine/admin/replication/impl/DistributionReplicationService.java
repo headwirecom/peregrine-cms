@@ -26,10 +26,11 @@ package com.peregrine.admin.replication.impl;
  */
 
 import com.peregrine.admin.replication.AbstractionReplicationService;
-import com.peregrine.replication.ReferenceLister;
-import com.peregrine.replication.Replication;
+import com.peregrine.commons.util.PerConstants;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
+import com.peregrine.replication.ReferenceLister;
+import com.peregrine.replication.Replication;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -48,6 +49,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
@@ -126,9 +129,7 @@ public class DistributionReplicationService
     private ReferenceLister referenceLister;
 
     @Override
-    public List<Resource> replicate(Resource startingResource, boolean deep)
-        throws ReplicationException
-    {
+    public List<Resource> findReferences(Resource startingResource, boolean deep) {
         log.trace("Starting Resource: '{}'", startingResource.getPath());
         List<Resource> referenceList = referenceLister.getReferenceList(true, startingResource, true);
         log.trace("Reference List: '{}'", referenceList);
@@ -152,7 +153,7 @@ public class DistributionReplicationService
         }
         PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, deep);
         log.trace("List for Replication: '{}'", replicationList);
-        return replicate(replicationList);
+        return replicationList;
     }
 
     @Override
@@ -173,15 +174,15 @@ public class DistributionReplicationService
     }
 
     @Override
-    public List<Resource> replicate(List<Resource> resourceList) throws ReplicationException {
+    public List<Resource> replicate(Collection<Resource> resourceList) throws ReplicationException {
         return replicate(resourceList, true);
     }
 
-    public List<Resource> deactivate(List<Resource> resourceList) throws ReplicationException {
+    public List<Resource> deactivate(Collection<Resource> resourceList) throws ReplicationException {
         return replicate(resourceList, false);
     }
 
-    public List<Resource> replicate(List<Resource> resourceList, boolean activate) throws ReplicationException {
+    public List<Resource> replicate(Collection<Resource> resourceList, boolean activate) throws ReplicationException {
         List<Resource> answer = new ArrayList<>();
         if(distributor != null) {
             ResourceResolver resourceResolver = null;
@@ -196,28 +197,43 @@ public class DistributionReplicationService
                 int i = 0;
                 for(Resource resource : resourceList) {
                     paths[i++] = resource.getPath();
-                    // In order to make it possible to have the correct user set and Replicated By we need to set it here and now
+                    // In order to make it possible to have the correct user set and 'Replicated By' we need to set it here and now
                     updateReplicationProperties(resource, DISTRIBUTION_PENDING, null);
                 }
-                try {
-                    resourceResolver.commit();
-                } catch(PersistenceException e) {
-                    throw new ReplicationException("Could not set Replication User before distribution", e);
-                }
+
                 if(distributor != null) {
-                    DistributionResponse response = distributor.distribute(
-                        agentName,
-                        resourceResolver,
-                        new SimpleDistributionRequest(
-                            activate ?
-                                DistributionRequestType.ADD :
+                    if (activate) {
+                        // first deactivate page content so deleted or moved content is cleared
+                        String[] jcrPaths = Arrays.stream(paths)
+                                .filter(path -> path.endsWith(PerConstants.JCR_CONTENT))
+                                .toArray(String[]::new);
+                        SimpleDistributionRequest sdrDeactivate = new SimpleDistributionRequest(
                                 DistributionRequestType.DELETE,
-                            paths)
-                    );
+                                jcrPaths);
+                        DistributionResponse deactivateResp = distributor.distribute(
+                            agentName,
+                            resourceResolver,
+                            sdrDeactivate
+                        );
+
+                        log.trace("Distributor Response: '{}'", deactivateResp);
+                        if(!deactivateResp.isSuccessful() || !(deactivateResp.getState() == ACCEPTED || deactivateResp.getState() != DISTRIBUTED)) {
+                            throw new ReplicationException(String.format(DISTRIBUTION_FAILED, deactivateResp));
+                        }
+                    }
+
+                    // then activate/deactivate the nodes
+                    DistributionResponse response = distributor.distribute(
+                            agentName,
+                            resourceResolver,
+                            new SimpleDistributionRequest(
+                                    activate ? DistributionRequestType.ADD : DistributionRequestType.DELETE,
+                                    paths));
                     log.trace("Distributor Response: '{}'", response);
                     if(!response.isSuccessful() || !(response.getState() == ACCEPTED || response.getState() != DISTRIBUTED)) {
                         throw new ReplicationException(String.format(DISTRIBUTION_FAILED, response));
                     }
+
                     answer.addAll(resourceList);
                 } else {
                     throw new ReplicationException(NO_DISTRIBUTOR_AVAILABLE);

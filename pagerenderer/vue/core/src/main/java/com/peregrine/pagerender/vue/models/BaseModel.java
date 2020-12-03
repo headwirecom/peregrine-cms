@@ -57,6 +57,10 @@ public class BaseModel extends AbstractComponent {
     private String text;
 
     @Inject
+    @Default(values = "")
+    private String extraclasses;
+
+    @Inject
     private List<IComponent> experiences;
 
     public BaseModel(Resource resource) {
@@ -65,6 +69,10 @@ public class BaseModel extends AbstractComponent {
 
     public String getText() {
         return text == null ? "" : text;
+    }
+
+    public String getExtraclasses() {
+        return extraclasses;
     }
 
     public List<IComponent> getExperiences() {

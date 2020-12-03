@@ -26,8 +26,9 @@
 
 //-----------------------------------------------------------------------------
 // Mixin node type for replication
-[per:Replication]
+[per:Replication] > sling:Resource
   mixin
   - per:Replicated (date)
+  - per:ReplicationStatus (string)
   - per:ReplicatedBy (string)
   - per:ReplicationRef (string)

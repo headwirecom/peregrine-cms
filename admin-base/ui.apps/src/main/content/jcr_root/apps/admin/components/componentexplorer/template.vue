@@ -36,7 +36,7 @@
                     <div>
                         <ul class="collection">
                             <li
-                                class="collection-item"
+                                class="collection-item" style="cursor: move;"
                                 v-for="component in group"
                                 v-bind:key="componentKey(component)"
                                 v-on:dragstart="onDragStart(component, $event)"
@@ -60,32 +60,6 @@
 
     export default {
         props: ['model'],
-//        beforeCreate() {
-//            let perState = $perAdminApp.getNodeFromViewOrNull('/state');
-//            perState.componentExplorer = perState.componentExplorer || {
-//                accordion: {},
-//                filter: ""
-//            }
-//        },
-//
-//        data() {
-//            return {
-//                state: $perAdminApp.getNodeFromViewOrNull('/state/componentExplorer'),
-//            }
-//        },
-        
-//        mounted() {
-//            $(this.$refs.groups).collapsible({
-//                accordion: false,
-//                onOpen: (el) => { Vue.set(this.state.accordion, el[0].dataset.groupIndex, true) },
-//                onClose: (el) => { Vue.set(this.state.accordion, el[0].dataset.groupIndex, false) }
-//            })
-//        },
-
-//        beforeDestroy() {
-//            $(this.$refs.groups).collapsible('destroy')
-//        },
-
         computed: {
             state() {
                 const state = $perAdminApp.getNodeFromView('/state/componentExplorer')
@@ -98,9 +72,8 @@
             filteredList: function() {
                 var currentGroup = this.state.group
                 if (!this.$root.$data.admin.components) return {}
-                // if(!this.$root.$data.admin.currentPageConfig) return {}
                 var componentPath = this.$root.$data.pageView.path.split('/')
-                var allowedComponents = ['/apps/' + componentPath[2]+ '/'] // this.$root.$data.admin.currentPageConfig.allowedComponents
+                var allowedComponents = ['/apps/' + componentPath[2]+ '/']
                 var list = this.$root.$data.admin.components.data
                 if (!list || !allowedComponents) return {}
 
@@ -123,16 +96,14 @@
             },
             groupList: function() {
                 if (!this.$root.$data.admin.components) return {}
-                // if(!this.$root.$data.admin.currentPageConfig) return {}
                 var componentPath = this.$root.$data.pageView.path.split('/')
-                var allowedComponents = ['/apps/' + componentPath[2]] // this.$root.$data.admin.currentPageConfig.allowedComponents
+                var allowedComponents = ['/apps/' + componentPath[2]]
                 var list = this.$root.$data.admin.components.data
                 if (!list || !allowedComponents) return {}
 
                 // Filter list to local components
                 const ret = list.filter(component => {
                     if (component.group === '.hidden') return false;
-//                    if (component.title.toLowerCase().indexOf(this.state.filter.toLowerCase()) == -1) return false;
                     return component.path.startsWith(allowedComponents);
 
                 })

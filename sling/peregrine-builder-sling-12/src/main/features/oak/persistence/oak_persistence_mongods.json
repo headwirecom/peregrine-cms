@@ -1,0 +1,18 @@
+{
+    "bundles":[
+         {
+             "id":"com.h2database:h2-mvstore:1.4.194",
+             "start-order":"15"
+        },
+        {
+             "id":"org.mongodb:mongo-java-driver:3.8.2",
+             "start-order":"15"
+         }
+    ],
+    "configurations":{
+        "org.apache.jackrabbit.oak.plugins.document.DocumentNodeStoreService":{
+            "db":"sling",
+            "mongouri":"mongodb://localhost:27017"
+         }
+    }
+}

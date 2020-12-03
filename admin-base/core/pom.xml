@@ -92,6 +92,13 @@
         </dependency>
 
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>replication.core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
@@ -143,13 +150,11 @@
         </dependency>
         <dependency>
             <groupId>org.apache.sling</groupId>
-            <artifactId>org.apache.sling.junit.core</artifactId>
-            <version>${org.apache.sling.junit.core.version}</version>
-            <scope>provided</scope>
+            <artifactId>org.apache.sling.commons.mime</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.sling</groupId>
-            <artifactId>org.apache.sling.commons.mime</artifactId>
+            <artifactId>org.apache.sling.xss</artifactId>
         </dependency>
 
         <dependency>

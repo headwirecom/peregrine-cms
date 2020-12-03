@@ -30,16 +30,14 @@ import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import javax.jcr.Session;
-import javax.jcr.UnsupportedRepositoryOperationException;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionIterator;
-import javax.jcr.version.VersionManager;
 import javax.servlet.Servlet;
 import java.io.IOException;
+import java.util.Arrays;
+
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_LIST_VERSIONS;
 import static com.peregrine.admin.servlets.ListSiteRecyclablesServlet.DELETED_DATE_FORMAT;
-import static com.peregrine.admin.util.AdminConstants.CURRENT;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerUtil.*;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
@@ -86,7 +84,7 @@ public class ListResourceVersionsServlet extends AbstractBaseServlet {
                 }
                 resourceContent = resource.getChild(JCR_CONTENT);
                 if (resourceContent == null) {
-                    return new ErrorResponse().setHttpErrorCode(SC_NOT_FOUND).setErrorMessage(RESOURCE_NOT_FOUND);
+                    resourceContent = resource;
                 }
                 vi = resourceManagement.getVersionIterator(request.getResourceResolver(), resourceContent);
             } else {
@@ -118,6 +116,14 @@ public class ListResourceVersionsServlet extends AbstractBaseServlet {
                 answer.writeAttribute("name", v.getName());
                 answer.writeAttribute("created", DELETED_DATE_FORMAT.format(v.getCreated().getTime()));
                 answer.writeAttribute("path", v.getPath());
+                String[] labels = v.getContainingHistory().getVersionLabels(v);
+                if (labels.length > 0) {
+                    answer.writeArray("labels");
+                    for(int i =0; i<labels.length; i++){
+                        answer.writeString(labels[i]);
+                    }
+                    answer.writeClose();
+                }
                 if (base.getName().equals(v.getName())) {
                     answer.writeAttribute("base", true);
                 } else {

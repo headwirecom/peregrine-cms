@@ -25,6 +25,7 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
+import com.peregrine.sitemap.SiteMapFilesCache;
 import com.peregrine.sitemap.SiteMapStructureCache;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -35,11 +36,15 @@ import org.osgi.service.metatype.annotations.Designate;
 public final class ScheduledSiteMapStructureCacheReBuilder implements Runnable {
 
     @Reference
-    private SiteMapStructureCache cache;
+    private SiteMapFilesCache files;
+
+    @Reference
+    private SiteMapStructureCache structure;
 
     @Override
     public void run() {
-        cache.rebuildAll();
+        structure.rebuildAll();
+        files.rebuildAll();
     }
 
 }

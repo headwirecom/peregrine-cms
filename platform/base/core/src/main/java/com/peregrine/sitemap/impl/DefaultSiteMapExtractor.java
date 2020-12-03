@@ -25,7 +25,13 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.sitemap.*;
+import com.peregrine.sitemap.PageRecognizer;
+import com.peregrine.sitemap.PropertyProvider;
+import com.peregrine.sitemap.SiteMapConfiguration;
+import com.peregrine.sitemap.SiteMapExtractorBase;
+import com.peregrine.sitemap.SiteMapUrlBuilder;
+import com.peregrine.sitemap.UrlExternalizer;
+import com.peregrine.sitemap.VersioningResourceResolverFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
@@ -33,17 +39,27 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.metatype.annotations.Designate;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
+import static com.peregrine.commons.util.PerConstants.PAGES;
+import static com.peregrine.commons.util.PerConstants.SITE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerUtil.isPrimaryType;
 import static java.util.Objects.isNull;
 
 @Component(service = { DefaultSiteMapExtractor.class })
+@Designate(ocd = DefaultSiteMapExtractorConfig.class)
 public final class DefaultSiteMapExtractor extends SiteMapExtractorBase implements SiteMapConfiguration {
 
     private final Pattern pattern = Pattern.compile(CONTENT_ROOT + "/[^/]+/" + PAGES + "(/[^/]+)*");
@@ -70,10 +86,10 @@ public final class DefaultSiteMapExtractor extends SiteMapExtractorBase implemen
     private SiteMapUrlBuilder urlBuilder;
 
     @Reference
-    private ResourceResolverFactoryProxy resolverFactory;
+    private VersioningResourceResolverFactory resolverFactory;
 
     @Activate
-    public void activate() {
+    public void activate(final DefaultSiteMapExtractorConfig config) {
         propertyProviders.add(lastModPropertyProvider);
         propertyProviders.add(changeFreqPropertyProvider);
         propertyProviders.add(priorityPropertyProvider);
@@ -85,10 +101,11 @@ public final class DefaultSiteMapExtractor extends SiteMapExtractorBase implemen
     }
 
     @Override
-    public boolean appliesTo(final Resource root) {
-        return super.appliesTo(root) && Optional.ofNullable(root)
+    protected boolean appliesToImpl(final Resource root) {
+        return Optional.ofNullable(root)
                 .map(Resource::getPath)
-                .map(p -> StringUtils.isNotBlank(urlExternalizer.getPrefix(root.getResourceResolver(), p)))
+                .map(p -> urlExternalizer.getPrefix(root.getResourceResolver(), p))
+                .map(StringUtils::isNotBlank)
                 .orElse(false);
     }
 
@@ -124,7 +141,7 @@ public final class DefaultSiteMapExtractor extends SiteMapExtractorBase implemen
 
     @Override
     public Set<String> getMandatoryCachedPaths() {
-        try (final ResourceResolver resourceResolver = resolverFactory.getServiceResourceResolver()) {
+        try (final ResourceResolver resourceResolver = resolverFactory.createResourceResolver()) {
             final Resource content = resourceResolver.getResource(CONTENT_ROOT);
             if (isNull(content)) {
                 return Collections.emptySet();

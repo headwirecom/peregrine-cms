@@ -35,18 +35,19 @@ export default function(me, target) {
     const tenant = view.state.tenant
 
     return new Promise( (resolve, reject) => {
-        me.getApi().populateExplorerDialog(target.selected).then( () => {
+        return me.getApi().populateExplorerDialog(target.selected).then( () => {
             if(target.selected.startsWith(`/content/${tenant.name}/pages`)) {
-                me.getApi().populateReferencedBy(target.selected).then( () => {
+                return me.getApi().populateReferencedBy(target.selected).then( () => {
                     set(view, '/state/tools/page', target.selected)
                     resolve()
                 }).catch( error => reject(error))
             } else if(target.selected.startsWith(`/content/${tenant.name}/templates`)) {
-                me.getApi().populateReferencedBy(target.selected).then( () => {
+                return me.getApi().populateReferencedBy(target.selected).then( () => {
                     set(view, '/state/tools/template', target.selected)
                     resolve()
                 }).catch( error => reject(error))
             }
-        }).catch( error => reject(error))
+        })
+        .catch( error => reject(error))
     })
 }

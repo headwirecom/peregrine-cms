@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.peregrine.commons.util.PerConstants.DASH;
+import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 
 /**
@@ -55,7 +56,7 @@ public class ServletHelper {
 
         String suffix = request.getRequestPathInfo().getSuffix();
         if(suffix != null && !suffix.isEmpty()) {
-            answer.put("path", suffix);
+            answer.put(PATH, suffix);
         }
         Enumeration<String> e = request.getParameterNames();
         while(e.hasMoreElements()) {

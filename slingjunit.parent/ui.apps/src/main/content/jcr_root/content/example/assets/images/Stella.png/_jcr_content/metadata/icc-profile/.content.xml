@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+    jcr:primaryType="sling:Folder"
+    class="Display Device"
+    color_space="RGB "
+    connectionspace="XYZ "
+    copyright="Copyright Apple Inc., 2020"
+    dateandtime="2020:01:02 09:14:22"
+    description="Display"
+    device_manufacturer="APPL"
+    platform="Apple Computer, Inc."
+    signature="acsp"
+    size="3284"
+    tag_count="17"
+    version="2.1.0"/>

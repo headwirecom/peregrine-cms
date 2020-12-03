@@ -27,7 +27,11 @@ package com.peregrine.sitemap.impl;
 
 import com.peregrine.commons.ResourceUtils;
 import com.peregrine.sitemap.*;
-import org.apache.sling.api.resource.*;
+import com.peregrine.versions.VersioningResourceResolver;
+import org.apache.sling.api.resource.LoginException;
+import org.apache.sling.api.resource.ModifiableValueMap;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -40,13 +44,13 @@ import static java.util.Objects.isNull;
 
 @Component(service = SiteMapFilesCache.class)
 @Designate(ocd = SiteMapFilesCacheImplConfig.class)
-public final class SiteMapFilesCacheImpl extends CacheBuilderBase
+public final class SiteMapFilesCacheImpl extends CacheBuilderBase<String[], SiteMapFilesCache.RefreshListener>
         implements SiteMapFilesCache, SiteMapStructureCache.RefreshListener {
 
     private static final String MAIN_SITE_MAP_KEY = Integer.toString(0);
 
     @Reference
-    private ResourceResolverFactoryProxy resourceResolverFactory;
+    private VersioningResourceResolverFactory resourceResolverFactory;
 
     @Reference
     private SiteMapStructureCache structureCache;
@@ -87,8 +91,9 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase
     @Override
     public String get(final Resource rootPage, final int index) {
         final String key = Integer.toString(index);
-        try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
+        try (final VersioningResourceResolver resourceResolver = createResourceResolver()) {
             return Optional.ofNullable(rootPage)
+                    .map(resourceResolver::wrap)
                     .filter(ResourceUtils::exists)
                     .map(r -> getCache(resourceResolver, r))
                     .map(Resource::getValueMap)
@@ -101,8 +106,8 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase
     }
 
     @Override
-    protected ResourceResolver getServiceResourceResolver() throws LoginException {
-        return resourceResolverFactory.getServiceResourceResolver();
+    protected VersioningResourceResolver createResourceResolver() throws LoginException {
+        return resourceResolverFactory.createResourceResolver();
     }
 
     @Override
@@ -114,7 +119,7 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase
     }
 
     @Override
-    protected Resource buildCache(final Resource rootPage, final Resource cache) {
+    protected Resource build(final Resource rootPage, final Resource cache) {
         final List<SiteMapEntry> entries = structureCache.get(rootPage);
         return buildCache(rootPage, entries, cache);
     }
@@ -123,7 +128,8 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase
         final SiteMapExtractor extractor = siteMapExtractorsContainer.findFirstFor(rootPage);
         if (isNull(entries) || isNull(extractor)) {
             final ModifiableValueMap modifiableValueMap = cache.adaptTo(ModifiableValueMap.class);
-            removeCachedItemsAboveIndex(modifiableValueMap, 0);
+            final int previousItemsCount = removeCachedItemsAboveIndex(modifiableValueMap, 0);
+            notifyCacheRefreshed(rootPage, new String[previousItemsCount]);
             return null;
         }
 
@@ -140,28 +146,30 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase
             siteMaps.add(content);
         }
 
-        putSiteMapsInCache(siteMaps, cache);
-
+        final int previousItemsCount = putSiteMapsInCache(siteMaps, cache);
+        notifyCacheRefreshed(rootPage, siteMaps.toArray(new String[previousItemsCount]));
         return cache;
     }
 
-    private void putSiteMapsInCache(final ArrayList<String> source, final Resource target) {
+    private int putSiteMapsInCache(final ArrayList<String> source, final Resource target) {
         final ModifiableValueMap modifiableValueMap = target.adaptTo(ModifiableValueMap.class);
         final int siteMapsSize = source.size();
         for (int i = 0; i < siteMapsSize; i++) {
             modifiableValueMap.put(Integer.toString(i), source.get(i));
         }
 
-        removeCachedItemsAboveIndex(modifiableValueMap, siteMapsSize);
+        return removeCachedItemsAboveIndex(modifiableValueMap, siteMapsSize);
     }
 
-    private void removeCachedItemsAboveIndex(final ModifiableValueMap modifiableValueMap, final int indexOfStartItem) {
-        int i = indexOfStartItem;
-        String key = Integer.toString(i);
+    private int removeCachedItemsAboveIndex(final ModifiableValueMap modifiableValueMap, final int indexOfStartItem) {
+        int result = indexOfStartItem;
+        String key = Integer.toString(result);
         while (modifiableValueMap.containsKey(key)) {
             modifiableValueMap.remove(key);
-            key = Integer.toString(++i);
+            key = Integer.toString(++result);
         }
+
+        return result;
     }
 
     private LinkedList<List<SiteMapEntry>> splitEntries(final Collection<SiteMapEntry> entries) {
@@ -190,14 +198,15 @@ public final class SiteMapFilesCacheImpl extends CacheBuilderBase
 
     @Override
     protected void rebuildImpl(final String rootPagePath) {
-        buildCache(rootPagePath);
+        build(rootPagePath);
     }
 
     @Override
     public void onCacheRefreshed(final Resource rootPage, final List<SiteMapEntry> entries) {
-        try (final ResourceResolver resourceResolver = getServiceResourceResolver()) {
-            final Resource cache = getOrCreateCacheResource(resourceResolver, rootPage);
-            buildCache(rootPage, entries, cache);
+        try (final VersioningResourceResolver resourceResolver = createResourceResolver()) {
+            final Resource version = resourceResolver.wrap(rootPage);
+            final Resource cache = getOrCreateCacheResource(resourceResolver, version);
+            buildCache(version, entries, cache);
             resourceResolver.commit();
         } catch (final LoginException e) {
             logger.error(COULD_NOT_GET_SERVICE_RESOURCE_RESOLVER, e);

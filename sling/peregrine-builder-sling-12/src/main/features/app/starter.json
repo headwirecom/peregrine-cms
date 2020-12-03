@@ -1,0 +1,8 @@
+{
+    "bundles": [
+        {
+            "id":"org.apache.sling:org.apache.sling.starter.content:1.0.8",
+            "start-order":"20"
+        }
+    ]
+}

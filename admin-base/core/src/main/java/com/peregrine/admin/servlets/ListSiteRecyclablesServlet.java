@@ -27,6 +27,7 @@ package com.peregrine.admin.servlets;
 import com.peregrine.admin.models.Recyclable;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import org.apache.sling.xss.XSSAPI;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import javax.jcr.Node;
@@ -78,13 +79,16 @@ public class ListSiteRecyclablesServlet extends AbstractBaseServlet {
     @Reference
     AdminResourceHandler resourceManagement;
 
+    @Reference
+    private XSSAPI xssapi;
+
     @Override
     protected Response handleRequest(Request request) throws IOException {
         final Session session = request.getResourceResolver().adaptTo(Session.class);
         JsonResponse answer = new JsonResponse();
         final String sitePath = request.getSuffix();
 
-        if (sitePath == null || sitePath.isEmpty()) {
+        if (sitePath == null || sitePath.isEmpty() || sitePath.length() > 300) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(FAILED_TO_LIST_RECYCLABLES);
         }
 

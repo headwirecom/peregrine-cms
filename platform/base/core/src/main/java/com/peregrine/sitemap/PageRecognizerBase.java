@@ -27,9 +27,10 @@ package com.peregrine.sitemap;
 
 import com.peregrine.commons.Page;
 
-import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
+import java.util.Optional;
+
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
-import static com.peregrine.commons.util.PerUtil.isPropertyEqual;
+import static com.peregrine.commons.util.PerUtil.isUnfrozenPrimaryType;
 
 public abstract class PageRecognizerBase implements PageRecognizer {
 
@@ -47,7 +48,7 @@ public abstract class PageRecognizerBase implements PageRecognizer {
     }
 
     public final boolean isPage(final Page candidate) {
-        if (!isPropertyEqual(candidate, JCR_PRIMARY_TYPE, pagePrimaryType)) {
+        if (!isUnfrozenPrimaryType(candidate, pagePrimaryType)) {
             return false;
         }
 
@@ -55,7 +56,7 @@ public abstract class PageRecognizerBase implements PageRecognizer {
             return false;
         }
 
-        if (!isPropertyEqual(candidate.getContent(), JCR_PRIMARY_TYPE, pageContentPrimaryType)) {
+        if (!isUnfrozenPrimaryType(candidate.getContent(), pageContentPrimaryType)) {
             return false;
         }
 
@@ -63,18 +64,11 @@ public abstract class PageRecognizerBase implements PageRecognizer {
             return false;
         }
 
-        if (candidate.containsProperty(excludeFromSiteMapPropertyName)) {
-            Object excludeFromSiteMapProperty = candidate.getProperty(excludeFromSiteMapPropertyName);
-            if (excludeFromSiteMapProperty instanceof String) {
-                if (((String) excludeFromSiteMapProperty).equalsIgnoreCase("true")) {
-                    return false;
-                }
-            } else if (excludeFromSiteMapProperty instanceof Boolean) {
-                if (candidate.getProperty(excludeFromSiteMapPropertyName, false)) {
-                    return false;
-                }
-            }
-
+        if (Optional.ofNullable(candidate.getProperty(excludeFromSiteMapPropertyName))
+                .map(String::valueOf)
+                .map(Boolean::parseBoolean)
+                .orElse(false)) {
+            return false;
         }
 
         return isPageImpl(candidate);
