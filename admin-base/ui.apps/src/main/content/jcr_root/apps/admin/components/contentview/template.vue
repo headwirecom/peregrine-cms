@@ -404,22 +404,10 @@ export default {
                 data: vm.node,
                 path: vm.view.state.editor.path
               }).then(() => {
-                $perAdminApp.action(vm, 'showComponentEdit', vm.path).then(() => {
-                  vm.flushInlineState()
-                  vm.$nextTick(() => {
-                    vm.pingToolbar()
-                    focusElement(this.target, this.iframe.win)
-                  })
-                })
+                vm.updateSelectedComponent()
               })
             } else {
-              $perAdminApp.action(vm, 'showComponentEdit', vm.path).then(() => {
-                vm.flushInlineState()
-                vm.$nextTick(() => {
-                  vm.pingToolbar()
-                  focusElement(this.target, this.iframe.win)
-                })
-              })
+              vm.updateSelectedComponent()
             }
           } else {
             vm.flushInlineState()
@@ -440,6 +428,16 @@ export default {
         set(this.view, '/state/inline/model', this.inline)
         this.inline = null
       }
+    },
+
+    updateSelectedComponent() {
+      $perAdminApp.action(this, 'showComponentEdit', this.path).then(() => {
+        this.flushInlineState()
+        return this.$nextTick()
+      }).then(() => {
+        this.pingToolbar()
+        focusElement(this.target, this.iframe.win)
+      })
     },
 
     findComponentEl(targetEl) {
