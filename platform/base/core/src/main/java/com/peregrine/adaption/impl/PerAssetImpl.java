@@ -33,15 +33,22 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import javax.jcr.Binary;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import java.awt.*;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
+import static com.peregrine.assets.AssetConstants.*;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_DATA;
 import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
@@ -51,6 +58,8 @@ import static com.peregrine.commons.util.PerConstants.NT_RESOURCE;
 import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
 import static com.peregrine.commons.util.PerUtil.METADATA;
 import static com.peregrine.commons.util.PerUtil.RENDITIONS;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 /**
  * Peregrine Asset Wrapper Object
@@ -191,18 +200,21 @@ public class PerAssetImpl
 
     @Override
     public Object getTag(String category, String tag) {
-        Object answer = null;
-        Resource categoryResource = null;
+        return getTag(category, tag, Object.class);
+    }
+
+    private <X> X getTag(String category, String tag, Class<? extends X> type) {
         try {
-            categoryResource = getCategoryResource(category, false);
+            Resource categoryResource = getCategoryResource(category, false);
             if(categoryResource != null) {
                 ValueMap properties = categoryResource.getValueMap();
-                answer = properties.get(PerUtil.adjustMetadataName(tag));
+                return properties.get(PerUtil.adjustMetadataName(tag), type);
             }
         } catch(PersistenceException e) {
             // Ignore
         }
-        return answer;
+
+        return null;
     }
 
     /**
@@ -257,5 +269,34 @@ public class PerAssetImpl
 
         }
         return metadata;
+    }
+
+    public Dimension getOrSaveAndGetDimension() throws RepositoryException, IOException {
+        Integer width = getTag(NN_PER_DATA, PN_WIDTH, Integer.class);
+        Integer height = getTag(NN_PER_DATA, PN_HEIGHT, Integer.class);
+        if (nonNull(width) && nonNull(height)) {
+            return new Dimension(width, height);
+        }
+
+        final InputStream is = getRenditionStream((String) null);
+        // Ignore images that do not have a jcr:data element aka stream
+        if (isNull(is)) {
+            return null;
+        }
+
+        final ImageInputStream iis = ImageIO.createImageInputStream(is);
+        final Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
+        if (readers.hasNext()) {
+            final ImageReader reader = readers.next();
+            reader.setInput(iis);
+            final int minIndex = reader.getMinIndex();
+            width = reader.getWidth(minIndex);
+            height = reader.getHeight(minIndex);
+            addTag(NN_PER_DATA, PN_WIDTH, width);
+            addTag(NN_PER_DATA, PN_HEIGHT, height);
+            return new Dimension(width, height);
+        }
+
+        return null;
     }
 }

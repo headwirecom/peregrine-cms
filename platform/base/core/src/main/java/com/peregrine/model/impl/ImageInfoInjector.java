@@ -16,29 +16,25 @@
  */
 package com.peregrine.model.impl;
 
+import com.peregrine.adaption.PerAsset;
 import com.peregrine.model.api.ImageInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.models.spi.DisposalCallbackRegistry;
 import org.apache.sling.models.spi.Injector;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 
-import javax.imageio.ImageIO;
+import javax.jcr.RepositoryException;
 import java.awt.Dimension;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Type;
 import java.util.Optional;
 
-import static com.peregrine.commons.util.PerConstants.*;
 import static java.util.Objects.isNull;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Component(
     service = Injector.class,
@@ -52,8 +48,12 @@ public final class ImageInfoInjector implements Injector {
     }
 
     @Override
-    public Object getValue(Object adaptable, String name, Type type, AnnotatedElement element,
-                           DisposalCallbackRegistry callbackRegistry
+    public Object getValue(
+            final Object adaptable,
+            final String name,
+            final Type type,
+            final AnnotatedElement element,
+            final DisposalCallbackRegistry callbackRegistry
     ) {
         if (isNull(adaptable) || type != Dimension.class) {
             return null;
@@ -73,44 +73,27 @@ public final class ImageInfoInjector implements Injector {
             return null;
         }
 
-        final BufferedImage image = getImage(resource, ((ImageInfo) annotation).name());
-        if (isNull(image)) {
+        final PerAsset asset = getImage(resource, ((ImageInfo) annotation).name());
+        if (isNull(asset)) {
             return null;
         }
 
-        return new Dimension(image.getWidth(), image.getHeight());
+        try {
+            return asset.getOrSaveAndGetDimension();
+        } catch (final RepositoryException | IOException e) {
+            return null;
+        }
     }
 
-    private BufferedImage getImage(Resource resource, String imagePropertyName) {
+    private PerAsset getImage(final Resource resource, final String imagePropertyName) {
         return Optional.of(resource)
                 .map(Resource::getValueMap)
                 .map(map -> map.get(imagePropertyName, String.class))
                 .filter(StringUtils::isNotBlank)
                 .filter(path -> !StringUtils.contains(path, ":/"))
                 .map(resource.getResourceResolver()::getResource)
-                .map(r -> r.getChild(JCR_CONTENT))
-                .map(this::getImage)
+                .map(r -> r.adaptTo(PerAsset.class))
                 .orElse(null);
-    }
-
-    private BufferedImage getImage(final Resource content) {
-        final ValueMap properties = content.getValueMap();
-        final String mimeType = properties.get(JCR_MIME_TYPE, String.class);
-        // SVG images are not handled by ImageIO so we ignore it here
-        if (isBlank(mimeType) || SVG_MIME_TYPE.equals(mimeType)) {
-            return null;
-        }
-
-        final InputStream stream = properties.get(JCR_DATA, InputStream.class);
-        if (isNull(stream)) {
-            return null;
-        }
-
-        try {
-            return ImageIO.read(stream);
-        } catch (IOException e) {
-            return null;
-        }
     }
 
 

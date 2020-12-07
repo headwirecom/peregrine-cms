@@ -114,9 +114,6 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 import javax.jcr.*;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
@@ -952,7 +949,7 @@ public class AdminResourceHandlerService
                 }
             }
             // Obtain the Asset Dimension and store directly in the meta data folder
-            handleAssetDimensions(asset);
+            asset.getOrSaveAndGetDimension();
         } catch (ImageProcessingException e) {
             logger.debug(EMPTY, e);
         }
@@ -2313,25 +2310,6 @@ public class AdminResourceHandlerService
         }
         baseResourceHandler.updateModification(parent.getResourceResolver(), newPage);
         return newPage;
-    }
-
-    public void handleAssetDimensions(PerAsset perAsset) throws RepositoryException, IOException {
-        InputStream is = perAsset.getRenditionStream((String) null);
-        // Ignore images that do not have a jcr:data element aka stream
-        if (is != null) {
-            ImageInputStream iis = ImageIO.createImageInputStream(is);
-            Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
-            while (readers.hasNext()) {
-                ImageReader reader = readers.next();
-                reader.setInput(iis);
-                int minIndex = reader.getMinIndex();
-                int width = reader.getWidth(minIndex);
-                int height = reader.getHeight(minIndex);
-                perAsset.addTag("per-data", "width", width);
-                perAsset.addTag("per-data", "height", height);
-                break;
-            }
-        }
     }
 
     private String getPropsFromMap(Map source, String key, String defaultValue) {
