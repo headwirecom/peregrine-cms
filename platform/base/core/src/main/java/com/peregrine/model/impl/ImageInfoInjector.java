@@ -79,7 +79,7 @@ public final class ImageInfoInjector implements Injector {
         }
 
         try {
-            return asset.getOrSaveAndGetDimension();
+            return asset.getDimension();
         } catch (final RepositoryException | IOException e) {
             return null;
         }

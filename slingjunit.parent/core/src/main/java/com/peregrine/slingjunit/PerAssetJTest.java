@@ -2,13 +2,16 @@ package com.peregrine.slingjunit;
 
 import com.peregrine.adaption.PerAsset;
 import com.peregrine.admin.resource.AdminResourceHandler;
+import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.junit.annotations.SlingAnnotationsTestRunner;
 import org.apache.sling.junit.annotations.TestReference;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -34,7 +37,7 @@ public class PerAssetJTest {
     private static String ASSET_PNG = "/content/example/assets/images/logo.png";
     private static String ASSET_JPG = "/content/example/assets/images/anchored.jpg";
     private static String ASSET_SVG = "/content/example/assets/images/instagram.svg";
-
+    private static String PER_DATA = "jcr:content/metadata/per-data";
     @Test
     public void dimensionsPng() {
         resource = resourceResolver.getResource(ASSET_PNG);
@@ -58,7 +61,10 @@ public class PerAssetJTest {
 
     private void assertDimensions(){
         try {
-            Dimension dimension = perAsset.getOrSaveAndGetDimension();
+            perAsset.setDimension();
+            resourceResolver.refresh();
+            resourceResolver.commit();
+            Dimension dimension = perAsset.getDimension();
             assertTrue(dimension.getHeight() > 0);
             assertTrue(dimension.getWidth() > 0);
         } catch (RepositoryException e) {
@@ -75,6 +81,13 @@ public class PerAssetJTest {
 
     @After
     public void cleanup() {
+        Resource perData = resource.getChild(PER_DATA);
+        try {
+            resourceResolver.delete(perData);
+        } catch (PersistenceException e) {
+            logger.error("could reset dimensions", e);
+            fail("could reset dimensions");
+        }
         resourceResolver.close();
         resourceManagement = null;
         resolverFactory = null;
