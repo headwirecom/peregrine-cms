@@ -271,17 +271,12 @@ public class PerAssetImpl
         return metadata;
     }
 
-    public Dimension getOrSaveAndGetDimension() throws RepositoryException, IOException {
-        Integer width = getTag(NN_PER_DATA, PN_WIDTH, Integer.class);
-        Integer height = getTag(NN_PER_DATA, PN_HEIGHT, Integer.class);
-        if (nonNull(width) && nonNull(height)) {
-            return new Dimension(width, height);
-        }
+    public void setDimension() throws RepositoryException, IOException {
 
         final InputStream is = getRenditionStream((String) null);
         // Ignore images that do not have a jcr:data element aka stream
         if (isNull(is)) {
-            return null;
+            return;
         }
 
         final ImageInputStream iis = ImageIO.createImageInputStream(is);
@@ -290,13 +285,21 @@ public class PerAssetImpl
             final ImageReader reader = readers.next();
             reader.setInput(iis);
             final int minIndex = reader.getMinIndex();
-            width = reader.getWidth(minIndex);
-            height = reader.getHeight(minIndex);
+            int width = reader.getWidth(minIndex);
+            int height = reader.getHeight(minIndex);
             addTag(NN_PER_DATA, PN_WIDTH, width);
             addTag(NN_PER_DATA, PN_HEIGHT, height);
-            return new Dimension(width, height);
+            return;
         }
 
+    }
+
+    public Dimension getDimension() {
+        int width = getTag(NN_PER_DATA, PN_WIDTH, Integer.class);
+        int height = getTag(NN_PER_DATA, PN_HEIGHT, Integer.class);
+        if (nonNull(width) && nonNull(height)) {
+            return new Dimension(width, height);
+        }
         return null;
     }
 }
