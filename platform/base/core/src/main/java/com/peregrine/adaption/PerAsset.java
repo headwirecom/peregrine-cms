@@ -108,5 +108,16 @@ public interface PerAsset
      */
     public Object getTag(String category, String tag);
 
-    Dimension getOrSaveAndGetDimension() throws RepositoryException, IOException;
+    /**
+     * Saves dimensions based on the input stream (part of new asset processing)
+     * @throws RepositoryException
+     * @throws IOException
+     */
+    void setDimension() throws RepositoryException, IOException;
+
+    /**
+     * get dimension (or null) for asset
+     */
+    Dimension getDimension() throws RepositoryException, IOException;
+    
 }

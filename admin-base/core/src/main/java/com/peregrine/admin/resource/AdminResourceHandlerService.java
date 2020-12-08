@@ -949,7 +949,7 @@ public class AdminResourceHandlerService
                 }
             }
             // Obtain the Asset Dimension and store directly in the meta data folder
-            asset.getOrSaveAndGetDimension();
+            asset.setDimension();
         } catch (ImageProcessingException e) {
             logger.debug(EMPTY, e);
         }
