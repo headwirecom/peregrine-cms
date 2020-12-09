@@ -150,6 +150,7 @@ export default {
         firstTime: [],
         selection: null
       },
+      dynWatchers: [],
       toast: {
         templateComponent: null,
         missingEventPath: null
@@ -549,6 +550,14 @@ export default {
       const dataInline = this.targetInline.split('.').slice(1)
       this.inline = dataInline.join('.')
       set(this.view, '/state/inline/doc', this.iframe.doc)
+      const modelPropName = this.getCurrentModelPropName()
+      this.dynWatchers.some((w, index) => {
+        if (w.modelPropName === modelPropName) {
+          w.unwatch()
+          this.dynWatchers.splice(index, 1)
+          return true
+        }
+      })
     },
 
     onInlineFocusOut(event) {
@@ -558,6 +567,9 @@ export default {
       if (!isChromeBrowser() && event.target.innerHTML) {
         event.target.innerHTML = event.target.innerHTML.trim()
       }
+      const modelPropName = this.getCurrentModelPropName()
+      const unwatch = this.$watch(`node.${modelPropName}`, (val) => event.target.innerHTML = val)
+      this.dynWatchers.push({modelPropName, unwatch})
     },
 
     onInlineKeyDown(event) {
@@ -909,6 +921,10 @@ export default {
       style.type = 'text/css'
       style.appendChild(this.iframe.doc.createTextNode(css))
       style.setAttribute('id', 'editing-extra-styles')
+    },
+
+    getCurrentModelPropName(vm = this) {
+      return vm.targetInline.split('.').slice(1)[0]
     },
 
     isContentEditableOrNested(el) {
