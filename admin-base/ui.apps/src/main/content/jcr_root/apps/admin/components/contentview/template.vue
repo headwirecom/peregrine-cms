@@ -92,6 +92,7 @@
 import {Attribute, Key, Toast} from '../../../../../../js/constants'
 import {Error} from '../../../../../../js/messages'
 import {
+  focusElement,
   get,
   getCaretCharacterOffsetWithin,
   isChromeBrowser,
@@ -403,16 +404,10 @@ export default {
                 data: vm.node,
                 path: vm.view.state.editor.path
               }).then(() => {
-                $perAdminApp.action(vm, 'showComponentEdit', vm.path).then(() => {
-                  vm.flushInlineState()
-                  vm.$nextTick(vm.pingToolbar)
-                })
+                vm.updateSelectedComponent()
               })
             } else {
-              $perAdminApp.action(vm, 'showComponentEdit', vm.path).then(() => {
-                vm.flushInlineState()
-                vm.$nextTick(vm.pingToolbar)
-              })
+              vm.updateSelectedComponent()
             }
           } else {
             vm.flushInlineState()
@@ -433,6 +428,16 @@ export default {
         set(this.view, '/state/inline/model', this.inline)
         this.inline = null
       }
+    },
+
+    updateSelectedComponent() {
+      $perAdminApp.action(this, 'showComponentEdit', this.path).then(() => {
+        this.flushInlineState()
+        return this.$nextTick()
+      }).then(() => {
+        this.pingToolbar()
+        focusElement(this.target, this.iframe.win)
+      })
     },
 
     findComponentEl(targetEl) {
@@ -661,6 +666,9 @@ export default {
     onIframeClick(ev) {
       if (!this.isContentEditableOrNested(ev.target)) {
         this.target = ev.target
+      }
+      if (this.target !== ev.target) {
+        //this.
       }
     },
 
