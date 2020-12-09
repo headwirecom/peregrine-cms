@@ -2,11 +2,11 @@
 {
     "bundles":[
         {
-            "id":"org.apache.sling:org.apache.sling.distribution.api:0.4.0",
+            "id":"org.apache.sling:org.apache.sling.distribution.api:0.3.0",
             "start-order":"20"
         },
         {
-            "id":"org.apache.sling:org.apache.sling.distribution.core:0.4.2",
+            "id":"org.apache.sling:org.apache.sling.distribution.core:0.3.4",
             "start-order":"20"
         }
 

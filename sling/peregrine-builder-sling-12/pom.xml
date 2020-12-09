@@ -16,7 +16,7 @@
     <parent>
         <groupId>org.apache.sling</groupId>
         <artifactId>sling</artifactId>
-        <version>35</version>
+        <version>39</version>
         <relativePath />
     </parent>
 
@@ -31,14 +31,18 @@
 
     <properties>
         <sling.java.version>8</sling.java.version>
-        <IT.expected.bundles.count>126</IT.expected.bundles.count>
+        <starter.min.bundles.count>126</starter.min.bundles.count>
 
         <!-- versions to be replaced in the feature files -->
+        <asm.version>9.0</asm.version>
         <jackrabbit.version>2.20.0</jackrabbit.version>
         <oak.version>1.32.0</oak.version>
         <slf4j.version>1.7.25</slf4j.version>
-        <composum.nodes.version>1.12.0</composum.nodes.version>
+        <composum.nodes.version>2.1.1</composum.nodes.version>
         <jackson.version>2.11.1</jackson.version>
+        <groovy.version>3.0.6</groovy.version>
+        <!-- skip index generation for all builds except for CI and release -->
+        <bnd.index.generation.skip>true</bnd.index.generation.skip>
     </properties>
 
     <build>
@@ -72,10 +76,10 @@
             <plugin>
                 <groupId>org.apache.sling</groupId>
                 <artifactId>slingfeature-maven-plugin</artifactId>
-                <version>1.3.14</version>
+                <version>1.4.2</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <replacePropertyVariables>jackrabbit.version,oak.version,slf4j.version,composum.nodes.version,jackson.version</replacePropertyVariables>
+                    <replacePropertyVariables>asm.version,jackrabbit.version,groovy.version,oak.version,slf4j.version,composum.nodes.version,jackson.version</replacePropertyVariables>
                     <framework>
                         <groupId>org.apache.felix</groupId>
                         <artifactId>org.apache.felix.framework</artifactId>
@@ -83,47 +87,27 @@
                     </framework>
                     <aggregates>
                         <aggregate>
-                            <classifier>oak_tar</classifier>
-                            <filesInclude>*.json</filesInclude>
-                            <filesInclude>oak/*.json</filesInclude>
-                            <filesInclude>oak/persistence/oak_persistence_sns.json</filesInclude>
-                            <filesInclude>app/composum.json</filesInclude>
-                            <filesInclude>app/distribution.json</filesInclude>
-                            <title>Sling With Oak Segment NS Persistence</title>
-                        </aggregate>
-                        <aggregate>
                             <classifier>oak_tar_fds</classifier>
                             <filesInclude>*.json</filesInclude>
                             <filesInclude>oak/*.json</filesInclude>
                             <filesInclude>oak/persistence/oak_persistence_sns_fds.json</filesInclude>
+                            <!-- <filesInclude>app/*.json</filesInclude> -->
                             <filesInclude>app/composum.json</filesInclude>
-                            <filesInclude>app/distribution.json</filesInclude>
-                            <title>Sling with Oak Segment NodeStore (sns) and File Datastore (fds)</title>
-                        </aggregate>
-                        <aggregate>
-                            <classifier>nosample_base</classifier>
-                            <filesInclude>*.json</filesInclude>
-                            <filesInclude>oak/*.json</filesInclude>
-                            <title>Sling With No Samples and No Persistence</title>
+                            <filesInclude>app/distribution.json</filesInclude> 
+                            <title>Sling With Oak Segment NS Persistence</title>
                         </aggregate>
                     </aggregates>
                     <scans>
                         <scan>
-                            <includeClassifier>oak_tar</includeClassifier>
                             <includeClassifier>oak_tar_fds</includeClassifier>
-                            <includeClassifier>nosample_base</includeClassifier>
                         </scan>
                     </scans>
                     <archives>
                         <archive>
-                            <classifier>oak_tar_far</classifier>
-                            <includeClassifier>oak_tar</includeClassifier>
-                        </archive>
-                        <archive>
                             <classifier>oak_tar_fds_far</classifier>
                             <includeClassifier>oak_tar_fds</includeClassifier>
                         </archive>
-                    </archives>
+                    </archives>                 
                 </configuration>
                 <executions>
                     <execution>
@@ -149,11 +133,99 @@
                         </goals>
                         <phase>package</phase>
                         <configuration>
-                            <artifact>org.apache.sling:org.apache.sling.feature.launcher:1.1.4</artifact>
+                            <artifact>org.apache.sling:org.apache.sling.feature.launcher:1.1.6</artifact>
                             <stripVersion>true</stripVersion>
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <!-- generate bnd OSGi index (https://github.com/bndtools/bnd/tree/master/maven/bnd-indexer-maven-plugin) -->
+            <plugin>
+                <groupId>biz.aQute.bnd</groupId>
+                <artifactId>bnd-indexer-maven-plugin</artifactId>
+                <version>5.2.0</version>
+                <executions>
+                    <execution>
+                        <id>index</id>
+                        <goals>
+                            <goal>index</goal>
+                        </goals>
+                        <configuration>
+                            <scopes>provided</scopes>
+                            <skip>${bnd.index.generation.skip}</skip>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- reserve a network port for the integration tests -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>reserve-network-port</id>
+                        <goals>
+                            <goal>reserve-network-port</goal>
+                        </goals>
+                        <phase>pre-integration-test</phase>
+                        <configuration>
+                            <portNames>
+                                <portName>http.port</portName>
+                            </portNames>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- launch the oak_tar aggregate for the integration tests -->
+            <plugin>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>feature-launcher-maven-plugin</artifactId>
+                <version>0.1.0</version>
+                <configuration>
+                    <launches>
+                        <launch>
+                            <id>sling-12-oak-tar</id>
+                            <feature>
+                                <groupId>${project.groupId}</groupId>
+                                <artifactId>${project.artifactId}</artifactId>
+                                <version>${project.version}</version>
+                                <classifier>oak_tar_fds</classifier>
+                                <type>slingosgifeature</type>
+                            </feature>
+                            <launcherArguments>
+                                <frameworkProperties>
+                                    <org.osgi.service.http.port>${http.port}</org.osgi.service.http.port>
+                                </frameworkProperties>
+                            </launcherArguments>
+                        </launch>
+                    </launches>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>start</goal>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>                
+            <!-- run the ITs -->
+            <plugin>
+               <artifactId>maven-failsafe-plugin</artifactId>
+               <executions>
+                   <execution>
+                       <goals>
+                           <goal>integration-test</goal>
+                           <goal>verify</goal>
+                       </goals>
+                   </execution>
+               </executions>
+               <configuration>
+                   <systemPropertyVariables>
+                       <starter.http.port>${http.port}</starter.http.port>
+                       <starter.min.bundles.count>${starter.min.bundles.count}</starter.min.bundles.count>
+                   </systemPropertyVariables>
+               </configuration>
             </plugin>
         </plugins>
 
@@ -194,4 +266,21 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <!-- enabled during release builds -->
+            <id>apache-release</id>
+            <properties>
+               <bnd.index.generation.skip>false</bnd.index.generation.skip>
+            </properties>
+        </profile>
+        <profile>
+            <!-- enabled during ci builds -->
+            <id>ci</id>
+            <properties>
+               <bnd.index.generation.skip>false</bnd.index.generation.skip>
+            </properties>
+        </profile>
+    </profiles>
 </project>

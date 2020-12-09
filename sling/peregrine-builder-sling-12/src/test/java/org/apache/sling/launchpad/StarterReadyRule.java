@@ -29,33 +29,33 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.junit.rules.ExternalResource;
 
-public class LaunchpadReadyRule extends ExternalResource {
+public class StarterReadyRule extends ExternalResource {
 
     private static final int TRIES = 60;
     private static final int WAIT_BETWEEN_TRIES_MILLIS = 1000;
 
     private final List<Check> checks = new ArrayList<>();
 
-    public LaunchpadReadyRule(int launchpadPort) {
+    public StarterReadyRule(int launchpadPort) {
 
         checks.add(new Check("http://localhost:" + launchpadPort + "/server/default/jcr:root/content"));
-        checks.add(new Check("http://localhost:" + launchpadPort + "/content/starter.html") {
-            @Override
-            public String runCheck(HttpResponse response) throws Exception {
-                try (InputStreamReader isr = new InputStreamReader(response.getEntity().getContent());
-                        BufferedReader reader = new BufferedReader(isr)) {
+        // checks.add(new Check("http://localhost:" + launchpadPort + "/content/starter.html") {
+        //     @Override
+        //     public String runCheck(HttpResponse response) throws Exception {
+        //         try (InputStreamReader isr = new InputStreamReader(response.getEntity().getContent());
+        //                 BufferedReader reader = new BufferedReader(isr)) {
 
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        if (line.contains("Do not remove this comment, used for Starter integration tests")) {
-                            return null;
-                        }
-                    }
-                }
+        //             String line;
+        //             while ((line = reader.readLine()) != null) {
+        //                 if (line.contains("Do not remove this comment, used for Starter integration tests")) {
+        //                     return null;
+        //                 }
+        //             }
+        //         }
 
-                return "Did not find 'ready' marker in the response body";
-            }
-        });
+        //         return "Did not find 'ready' marker in the response body";
+        //     }
+        // });
     }
 
     @Override
@@ -93,7 +93,7 @@ public class LaunchpadReadyRule extends ExternalResource {
             Thread.sleep(WAIT_BETWEEN_TRIES_MILLIS);
         }
         
-        throw new RuntimeException(String.format("Launchpad not ready. Failed check for URL %s with message '%s'",
+        throw new RuntimeException(String.format("Starter not ready. Failed check for URL %s with message '%s'",
                 check.getUrl(), lastFailure));
     }
 

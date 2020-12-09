@@ -53,7 +53,7 @@
         <org.apache.sling.scripting.sightly.compiler.java.version>1.0.18</org.apache.sling.scripting.sightly.compiler.java.version>
         <org.apache.sling.servlet-helpers.version>1.1.8</org.apache.sling.servlet-helpers.version>
         <distribution.api.version>0.3.0</distribution.api.version>
-        <distribution.api.version.latest>0.3.1-SNAPSHOT</distribution.api.version.latest>
+        <distribution.api.version.latest>0.3.4</distribution.api.version.latest>
         <org.apache.sling.xss.version>2.2.2</org.apache.sling.xss.version>
 
         <!-- Third Party Dependencies Versions -->
