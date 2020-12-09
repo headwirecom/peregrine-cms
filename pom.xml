@@ -1004,6 +1004,7 @@
         <module>buildscripts</module>
         <module>platform</module>
         <module>pagerenderer/vue</module>
+        <module>pagerenderer/server</module>
         <module>admin-base</module>
         <module>samples/example-vue-site</module>
         <module>themes/themeclean</module>

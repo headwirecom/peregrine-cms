@@ -26,8 +26,10 @@
 <workspaceFilter version="1.0">
 
   <filter root="/content/example/assets/images/Stella.png" />
-  <filter root="/content/example/pages/contact" />
-
-
+  <filter root="/content/example/templates/base/sub-template" />
+  <filter root="/content/example/templates/base/sub-template-container" />
+  <filter root="/content/example/pages/contact/jcr:content" />
+  <filter root="/content/example/pages/sub-template-page" />
+  <filter root="/content/example/pages/sub-template-container-page" />
 
 </workspaceFilter>

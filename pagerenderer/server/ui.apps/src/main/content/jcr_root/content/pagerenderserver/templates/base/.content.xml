@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
-  peregrine server page renderer - UI Apps
+  example site - UI Apps
   %%
   Copyright (C) 2017 headwire inc.
   %%
@@ -31,24 +31,27 @@
 
   <jcr:content
     jcr:primaryType="per:PageContent"
-    sling:resourceType="pagerenderserver/components/page"
-    jcr:title="peregrine-server Index"
-    template="/content/pagerenderserver/templates/base"
-    templatePath="/content/pagerenderserver/templates/base" >
+    jcr:title="example htl site template"
+    sling:resourceType="pagerenderserver/components/page">
 
-    <content jcr:primaryType="nt:unstructured"
-      sling:resourceType="pagerenderserver/components/container">
+    <base jcr:primaryType="nt:unstructured"
+      sling:resourceType="pagerenderserver/components/base"
+      text="example template content"/>
 
+    <content jcr:primaryType="nt:unstructured" sling:resourceType="pagerenderserver/components/container" >
+      <text jcr:primaryType="nt:unstructured"
+            sling:resourceType="pagerenderserver/components/base"
+            text="&lt;h3&gt;template default h3 content &lt;/h3&gt;"/>
       <text1 jcr:primaryType="nt:unstructured"
-        sling:resourceType="pagerenderserver/components/base"
-        text="peregrine-cms is a basic headless, api first cms built on top of apache sling and apache jackrabbit"/>
-
-      <text2 jcr:primaryType="nt:unstructured"
-        sling:resourceType="pagerenderserver/components/base"
-        text="hello link: &lt;a href='/content/pagerenderserver/pages/about.html'&gt;about&lt;/a&gt;"/>
-
+            sling:resourceType="pagerenderserver/components/base"
+            text="text1: template content with same node name as page content. both shall be included since template content cannot be edited from the page."/>
     </content>
 
-  </jcr:content>
+<!--
+TODO: build nav and footer component for pagerenderserver
+    <footer jcr:primaryType="nt:unstructured"
+      sling:resourceType="pagerenderserver/components/footer"/>
+-->
 
+  </jcr:content>
 </jcr:root>

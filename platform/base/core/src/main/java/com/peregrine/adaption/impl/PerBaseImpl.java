@@ -33,21 +33,22 @@ import org.apache.sling.api.resource.ValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 import java.util.Calendar;
+import java.util.Objects;
 
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED;
-import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED_BY;
+import static com.peregrine.commons.util.PerConstants.*;
 
 /**
  * Common Base Class for Peregrine Object Wrappers
  *
  * Created by Andreas Schaefer on 6/4/17.
  */
-public abstract class PerBaseImpl
-    implements PerBase
-{
+public abstract class PerBaseImpl implements PerBase {
+
     public static final String RESOURCE_MUST_BE_PROVIDED = "Resource must be provided";
     Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -142,6 +143,35 @@ public abstract class PerBaseImpl
         return answer == null ?
             defaultValue :
             answer;
+    }
+
+    @Override
+    public ValueMap getSiteProperties(){
+        if(Objects.nonNull(getSiteResource()) && Objects.nonNull(getSiteResource().getChild(JCR_CONTENT))){
+            return getSiteResource().getChild(JCR_CONTENT).getValueMap();
+        }
+        return null;
+    }
+
+    @Override
+    public Resource getSiteResource(){
+        return this.getSiteResource(this.resource);
+    }
+
+    private Resource getSiteResource(Resource resource){
+        if (Objects.nonNull(this.resource)){
+            try {
+                NodeType nt = Objects.requireNonNull(resource.adaptTo(Node.class)).getPrimaryNodeType();
+                if( nt.getName().equals(SITE_PRIMARY_TYPE)){
+                    return resource;
+                } else {
+                    return getSiteResource(resource.getParent());
+                }
+            } catch (RepositoryException e) {
+                logger.error("Error getting root per:Site resource ", e);
+            }
+        }
+        return null;
     }
 
     @Override

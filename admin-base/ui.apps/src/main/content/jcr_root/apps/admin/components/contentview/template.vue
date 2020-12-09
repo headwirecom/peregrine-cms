@@ -533,6 +533,10 @@ export default {
       this.reWrapEditable()
     },
 
+    refreshEditor(vm) {
+      vm.$refs.editview.contentWindow.location.reload()
+    },
+
     onInlineClick(event) {
       this.pingToolbar()
     },
