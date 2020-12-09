@@ -948,11 +948,12 @@ public class AdminResourceHandlerService
                     addTagsToNewAsset(asset, directory, directoryName, selector);
                 }
             }
-            // Obtain the Asset Dimension and store directly in the meta data folder
-            asset.setDimension();
         } catch (ImageProcessingException e) {
             logger.debug(EMPTY, e);
         }
+
+        // Obtain the Asset Dimension and store directly in the meta data folder
+        asset.setDimension();
     }
 
     private void addTagsToNewAssetAsJson(PerAsset asset, Directory directory, String directoryName, ImageMetadataSelector selector) throws PersistenceException, RepositoryException {
