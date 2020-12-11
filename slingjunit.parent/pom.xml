@@ -35,7 +35,7 @@
   <version>1.0-SNAPSHOT</version>
   <description>Parent for Sling JUnit Tests</description>
   <properties>
-    <starter.min.bundles.count>126</starter.min.bundles.count>
+    <starter.min.bundles.count>238</starter.min.bundles.count>
     <http.port>8080</http.port>
   </properties>
 
@@ -79,6 +79,5 @@
     <module>core</module>
     <module>ui.apps</module>
   </modules>
-
 
 </project>

@@ -25,34 +25,48 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.sling.junit.impl.servlet.SlingJUnitServlet;
+import org.apache.sling.testing.clients.SlingHttpResponse;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-
+import org.apache.sling.testing.paxexam.TestSupport;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
+import org.apache.sling.testing.clients.osgi.OsgiConsoleClient;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-public class SlingJunitIT {
+public class SlingJunitIT extends TestSupport {
 
     private static final int STARTER_HTTP_PORT = Integer.getInteger("starter.http.port", 8080);
     private static final int STARTER_MIN_BUNDLES_COUNT = Integer.getInteger("starter.min.bundles.count", Integer.MAX_VALUE);
+    protected static OsgiConsoleClient CLIENT;
+    private final static int STARTUP_WAIT_SECONDS = 30;
+    private final static String VERSIONS_TEST = "/system/sling/junit/com.peregrine.slingjunit.VersionsJTest.html";
+    private final static String ADAPTION_TEST = "/system/sling/junit/com.peregrine.slingjunit.AdaptionJTest.html";
+    private final static String REFERENCES_TEST = "/system/sling/junit/com.peregrine.slingjunit.ReferencesJTest.html";
+
+
 
 //    @ClassRule
 //    public static StarterReadyRule LAUNCHPAD = new StarterReadyRule(STARTER_HTTP_PORT);
@@ -145,6 +159,7 @@ public class SlingJunitIT {
 
     @Test
     public void ensureRepositoryIsStarted() throws Exception {
+
         try ( CloseableHttpClient client = newClient() ) {
 
             HttpGet get = new HttpGet("http://localhost:" + STARTER_HTTP_PORT + "/server/default/jcr:root/content");
@@ -170,6 +185,55 @@ public class SlingJunitIT {
                 assertThat("no 'name' attribute found", nameAttr, notNullValue());
                 assertThat("Invalid name attribute value", nameAttr.getNodeValue(), equalTo("content"));
             }
+        }
+    }
+
+    @Test
+    public void runSlingJunitVersionsSpec() throws Exception {
+        SlingHttpResponse response = CLIENT.doPost(VERSIONS_TEST,
+                new StringEntity("some text"),
+                Collections.emptyList(),
+                200);
+        response.checkContentContains("TEST RUN FINISHED");
+        response.checkContentContains("failures:0");
+        response.checkContentContains("ignored:0");
+        response.checkContentContains("tests:14");
+    }
+
+    @Test
+    public void runSlingJunitAdaptionSpec() throws Exception {
+        SlingHttpResponse response = CLIENT.doPost(ADAPTION_TEST,
+                new StringEntity("some text"),
+                Collections.emptyList(),
+                200);
+        response.checkContentContains("TEST RUN FINISHED");
+        response.checkContentContains("failures:0");
+        response.checkContentContains("ignored:0");
+        response.checkContentContains("tests:8");
+    }
+
+    @Test
+    public void runSlingJunitReferencesSpec() throws Exception {
+        SlingHttpResponse response = CLIENT.doPost(REFERENCES_TEST,
+                new StringEntity("some text"),
+                Collections.emptyList(),
+                200);
+        response.checkContentContains("TEST RUN FINISHED");
+        response.checkContentContains("failures:0");
+        response.checkContentContains("ignored:0");
+        response.checkContentContains("tests:2");
+    }
+
+    @BeforeClass
+    public static void waitForSling() throws Exception {
+        final URI url = new URI(String.format("http://localhost:%d", STARTER_HTTP_PORT));
+        CLIENT = new OsgiConsoleClient(url, "admin", "admin");
+        CLIENT.waitExists("/", STARTUP_WAIT_SECONDS * 1000, 500);
+        CLIENT.waitComponentRegistered(SlingJUnitServlet.class.getName(), 10 * 1000, 500);
+        // Verify stable status for a bit
+        for(int i=0; i < 10 ; i++) {
+            CLIENT.waitComponentRegistered(SlingJUnitServlet.class.getName(), 1000, 100);
+            Thread.sleep(100);
         }
     }
 
