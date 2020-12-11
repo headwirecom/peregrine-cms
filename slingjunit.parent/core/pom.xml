@@ -34,7 +34,6 @@
   <name>Peregrine Sling-JUnit Testing Bundle</name>
   <description>JUnit tests for Peregrine CMS designed to the run within Sling-JUnit test-runner, /system/sling/junit/.html</description>
 
-
   <dependencies>
 <!--    JUnit-->
     <dependency>
@@ -162,6 +161,12 @@
       <version>4.5.12</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.apache.felix.utils</artifactId>
+      <version>1.11.2</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 
@@ -205,6 +210,26 @@
           <user>${sling.user}</user>
           <password>${sling.password}</password>
         </configuration>
+      </plugin>
+
+      <!-- run the ITs -->
+      <plugin>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+<!--        <configuration>-->
+<!--          <testSourceDirectory>src/test</testSourceDirectory>-->
+<!--          <systemPropertyVariables>-->
+<!--            <starter.http.port>${http.port}</starter.http.port>-->
+<!--            <starter.min.bundles.count>${starter.min.bundles.count}</starter.min.bundles.count>-->
+<!--          </systemPropertyVariables>-->
+<!--        </configuration>-->
       </plugin>
     </plugins>
   </build>
