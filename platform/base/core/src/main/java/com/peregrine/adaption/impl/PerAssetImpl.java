@@ -69,7 +69,7 @@ import static com.peregrine.commons.util.PerUtil.METADATA;
 import static com.peregrine.commons.util.PerUtil.RENDITIONS;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.endsWithIgnoreCase;
+
 
 /**
  * Peregrine Asset Wrapper Object
@@ -281,24 +281,28 @@ public class PerAssetImpl
         return metadata;
     }
 
-    public void setDimension() throws RepositoryException, IOException {
+    public void setDimension() {
         final InputStream is = getRenditionStream((String) null);
         // Ignore images that do not have a jcr:data element aka stream
         if (isNull(is)) {
             return;
         }
-
-        if (getMimeType().equals(SVG_MIME_TYPE)) {
-            setSVGDimension(is);
-            return;
+        try {
+            if (getMimeType().equals(SVG_MIME_TYPE)) {
+                setSVGDimension(is);
+            } else {
+                setImageDimension(is);
+            }
+        } catch (RepositoryException | IOException e) {
+            logger.error("could not set image dimension tags ", e);
+        } finally {
+            closeInputStream(is);
         }
-        setImageDimension(is);
     }
 
     private void setSVGDimension(final InputStream is) throws RepositoryException, PersistenceException {
         Document svgDoc = getXmlDocument(is);
         Element svgRoot = svgDoc.getDocumentElement();
-        closeInputStream(is);
         final var widthProp = svgRoot.getAttribute("width");
         final var heightProp =  svgRoot.getAttribute("height");
         final String viewBoxProp = svgRoot.getAttribute("viewBox");;
@@ -326,6 +330,7 @@ public class PerAssetImpl
             int height = reader.getHeight(minIndex);
             addDimensionTags(width, height);
         }
+        iis.close();
     }
 
     private void addDimensionTags(final int width, final int height) throws PersistenceException, RepositoryException {
