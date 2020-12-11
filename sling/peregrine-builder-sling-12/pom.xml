@@ -55,6 +55,9 @@
                         <goals>
                             <goal>verify-legal-files</goal>
                         </goals>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
