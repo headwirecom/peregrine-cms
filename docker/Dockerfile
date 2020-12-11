@@ -29,8 +29,8 @@ COPY overlay/root/.m2/settings.xml /root/.m2/
 
 # Start - Use repository/package pinning to upgrade libvips from version 8.4 to 8.6
 COPY overlay/etc/apt/preferences.d/* /etc/apt/preferences.d/
-RUN echo "deb http://archive.ubuntu.com/ubuntu/ eoan main restricted" >> /etc/apt/sources.list \
-    && echo "deb http://archive.ubuntu.com/ubuntu/ eoan universe" >> /etc/apt/sources.list \
+RUN echo "deb http://archive.ubuntu.com/ubuntu/ focal main restricted" >> /etc/apt/sources.list \
+    && echo "deb http://archive.ubuntu.com/ubuntu/ focal universe" >> /etc/apt/sources.list \
     && apt update \
     && apt --only-upgrade install -y libvips libvips-tools
 # End 
