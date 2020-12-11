@@ -119,5 +119,11 @@ public interface PerAsset
      * get dimension (or null) for asset
      */
     Dimension getDimension() throws RepositoryException, IOException;
-    
+
+
+    /**
+     * get asset mime type
+     */
+    String getMimeType();
+
 }

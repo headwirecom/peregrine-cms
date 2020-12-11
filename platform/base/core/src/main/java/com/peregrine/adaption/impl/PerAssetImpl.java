@@ -26,13 +26,15 @@ package com.peregrine.adaption.impl;
  */
 
 import com.peregrine.adaption.PerAsset;
+import com.peregrine.assets.XMLHelper;
 import com.peregrine.commons.util.PerUtil;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
-
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
@@ -40,17 +42,21 @@ import javax.jcr.Binary;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import java.awt.*;
-import java.io.BufferedReader;
+import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Objects;
 
 import static com.peregrine.assets.AssetConstants.NN_PER_DATA;
 import static com.peregrine.assets.AssetConstants.PN_HEIGHT;
 import static com.peregrine.assets.AssetConstants.PN_WIDTH;
+import static com.peregrine.assets.XMLHelper.closeInputStream;
+import static com.peregrine.assets.XMLHelper.getXmlDocument;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_DATA;
 import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
@@ -58,11 +64,12 @@ import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.NT_FILE;
 import static com.peregrine.commons.util.PerConstants.NT_RESOURCE;
 import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
+import static com.peregrine.commons.util.PerConstants.SVG_MIME_TYPE;
 import static com.peregrine.commons.util.PerUtil.METADATA;
 import static com.peregrine.commons.util.PerUtil.RENDITIONS;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.*;
+import static org.apache.commons.lang3.StringUtils.endsWithIgnoreCase;
 
 /**
  * Peregrine Asset Wrapper Object
@@ -281,112 +288,31 @@ public class PerAssetImpl
             return;
         }
 
-        if (endsWithIgnoreCase(getName(), ".svg")) {
+        if (getMimeType().equals(SVG_MIME_TYPE)) {
             setSVGDimension(is);
             return;
         }
-
         setImageDimension(is);
     }
 
     private void setSVGDimension(final InputStream is) throws RepositoryException, PersistenceException {
-        final var header = getSVGHeader(is);
-        if (isBlank(header)) {
+        Document svgDoc = getXmlDocument(is);
+        Element svgRoot = svgDoc.getDocumentElement();
+        closeInputStream(is);
+        final var widthProp = svgRoot.getAttribute("width");
+        final var heightProp =  svgRoot.getAttribute("height");
+        final String viewBoxProp = svgRoot.getAttribute("viewBox");;
+        final Rectangle viewBox  = XMLHelper.parseRectangle(viewBoxProp);;
+        if (!(XMLHelper.isExtendedAlphanumeric(widthProp) && XMLHelper.isExtendedAlphanumeric(heightProp)) && isNull(viewBox)) {
             return;
         }
-
-        final var widthProp = normalizeSVGAlphanumeric(extractSVGProperty(header, "width"));
-        final var heightProp = normalizeSVGAlphanumeric(extractSVGProperty(header, "height"));
-        final var viewBoxProp = extractSVGProperty(header, "viewBox");
-        final var viewBox = parseRectangle(viewBoxProp);
-        if (!(isExtendedAlphanumeric(widthProp) && isExtendedAlphanumeric(heightProp)) && isNull(viewBox)) {
-            return;
-        }
-
-        final int width = isExtendedAlphanumeric(widthProp)
+        final int width = XMLHelper.isExtendedAlphanumeric(widthProp)
                 ? Integer.parseInt(widthProp)
                 : (int) (viewBox.getWidth() - viewBox.getX());
-        final int height = isExtendedAlphanumeric(heightProp)
+        final int height = XMLHelper.isExtendedAlphanumeric(heightProp)
                 ? Integer.parseInt(heightProp)
                 : (int) (viewBox.getHeight() - viewBox.getY());
         addDimensionTags(width, height);
-    }
-
-    private String getSVGHeader(final InputStream is) {
-        final StringBuilder result = new StringBuilder();
-        final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-        char c = '\0';
-        while (!containsIgnoreCase(result, "<svg") || c != '>') {
-            try {
-                final int i = reader.read();
-                if (i == -1) {
-                    return null;
-                }
-
-                c = (char) i;
-                result.append(c);
-            } catch (final IOException e) {
-                return null;
-            }
-        }
-
-        return "<svg" + substringAfter(result.toString(), "<svg");
-    }
-
-    private String extractSVGProperty(final String header, final String name) {
-        var result = trim(header);
-        if (!contains(removeWhitespaces(result), name + "=\"")) {
-            return null;
-        }
-
-        while (!startsWith(removeWhitespaces(result), "=\"")) {
-            result = trim(substringAfter(result, name));
-        }
-
-        result = trim(substringAfter(result, "="));
-        result = substringAfter(result, "\"");
-        return substringBefore(result, "\"");
-    }
-
-    private String removeWhitespaces(final String string) {
-        return replaceAll(string, "\\s", "");
-    }
-
-    private Rectangle parseRectangle(final String string) {
-        if (isBlank(string)) {
-            return null;
-        }
-
-        final var normalized = replaceAll(string, "\\s+", " ");
-        final var parts = Arrays.stream(split(normalized, " "))
-                .filter(this::isExtendedAlphanumeric)
-                .map(this::normalizeSVGAlphanumeric)
-                .map(Integer::parseInt)
-                .collect(Collectors.toList());
-        if (parts.size() != 4) {
-            return null;
-        }
-
-        return new Rectangle(
-                parts.remove(0),
-                parts.remove(0),
-                parts.remove(0),
-                parts.remove(0)
-        );
-    }
-
-    private String normalizeSVGAlphanumeric(final String string) {
-        var result = lowerCase(string);
-        result = substringBeforeLast(result, "pt");
-        return substringBeforeLast(result, ".");
-    }
-
-    private boolean isExtendedAlphanumeric(final String string) {
-        if (startsWith(string, "-")) {
-            return isAlphanumeric(substringAfter(string, "-"));
-        }
-
-        return isAlphanumeric(string);
     }
 
     private void setImageDimension(final InputStream is) throws IOException, RepositoryException {
@@ -413,7 +339,14 @@ public class PerAssetImpl
         if (nonNull(width) && nonNull(height)) {
             return new Dimension(width, height);
         }
-
         return null;
     }
+
+    public String getMimeType() {
+        if (Objects.nonNull(getContentResource())) {
+            return this.getContentResource().getValueMap().get(JCR_MIME_TYPE, String.class);
+        }
+        return null;
+    }
+
 }
