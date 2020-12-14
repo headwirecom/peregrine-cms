@@ -31,3 +31,5 @@ Deploying the bundle directly from `peregrine-cms/slingjunit.parent` will provid
    are matching `org.apache.sling.jcr.repoinit.RepositoryInitializer~peregrine.json`
 3. `PermissionJTest` will fail as everyone has read access on `/content` by default as a result of `base.json` (line 335). 
 admins may find it more appropriate to remove this ACE depending on their specific requirements. 
+4. Use the profile `slingJunitIT` to run the tests on an instance running on localhost:8080
+   * `mvn clean install -P slingJunitIT`
