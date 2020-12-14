@@ -432,6 +432,9 @@ export default {
     },
 
     updateSelectedComponent() {
+      this.dynWatchers.forEach((watcher) => {
+        watcher.unwatch()
+      })
       $perAdminApp.action(this, 'showComponentEdit', this.path).then(() => {
         this.flushInlineState()
         return this.$nextTick()
@@ -924,7 +927,7 @@ export default {
     },
 
     getCurrentModelPropName(vm = this) {
-      return vm.targetInline.split('.').slice(1)[0]
+      return vm.targetInline.split('.').slice(1).join('.')
     },
 
     isContentEditableOrNested(el) {
