@@ -13,5 +13,6 @@ cd peregrine-cms
 mvn clean install -PautoInstallPackage
 cd ../themeclean-flex
 mvn clean install -PautoInstallPackage
-
+cd ../peregrine-cms/slingjunit.parent 
+mvn clean install -P slingJunitIT
 cd ${SAVE_PWD}

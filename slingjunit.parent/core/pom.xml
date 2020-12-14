@@ -226,25 +226,6 @@
         </configuration>
       </plugin>
 
-      <!-- run the ITs -->
-      <plugin>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <testSourceDirectory>src/test</testSourceDirectory>
-          <systemPropertyVariables>
-            <starter.http.port>${http.port}</starter.http.port>
-            <starter.min.bundles.count>${starter.min.bundles.count}</starter.min.bundles.count>
-          </systemPropertyVariables>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 
@@ -268,7 +249,32 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>slingJunitIT</id>
+      <build>
+          <plugins> 
+              <!-- run the ITs -->
+              <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <executions>
+                  <execution>
+                    <goals>
+                      <goal>integration-test</goal>
+                      <goal>verify</goal>
+                    </goals>
+                  </execution>
+                </executions>
+                <configuration>
+                  <testSourceDirectory>src/test</testSourceDirectory>
+                  <systemPropertyVariables>
+                    <starter.http.port>${http.port}</starter.http.port>
+                    <starter.min.bundles.count>${starter.min.bundles.count}</starter.min.bundles.count>
+                  </systemPropertyVariables>
+                </configuration>
+              </plugin>
+          </plugins>
+      </build>
+    </profile> 
   </profiles>
-
 
 </project>
