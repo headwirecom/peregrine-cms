@@ -55,7 +55,6 @@ import java.util.Objects;
 import static com.peregrine.assets.AssetConstants.NN_PER_DATA;
 import static com.peregrine.assets.AssetConstants.PN_HEIGHT;
 import static com.peregrine.assets.AssetConstants.PN_WIDTH;
-import static com.peregrine.assets.XMLHelper.closeInputStream;
 import static com.peregrine.assets.XMLHelper.getXmlDocument;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_DATA;
@@ -282,12 +281,11 @@ public class PerAssetImpl
     }
 
     public void setDimension() {
-        final InputStream is = getRenditionStream((String) null);
-        // Ignore images that do not have a jcr:data element aka stream
-        if (isNull(is)) {
-            return;
-        }
-        try {
+        try(final InputStream is = getRenditionStream((String) null)) {
+            // Ignore images that do not have a jcr:data element aka stream
+            if (isNull(is)) {
+                return;
+            }
             if (getMimeType().equals(SVG_MIME_TYPE)) {
                 setSVGDimension(is);
             } else {
@@ -295,8 +293,6 @@ public class PerAssetImpl
             }
         } catch (RepositoryException | IOException e) {
             logger.error("could not set image dimension tags ", e);
-        } finally {
-            closeInputStream(is);
         }
     }
 

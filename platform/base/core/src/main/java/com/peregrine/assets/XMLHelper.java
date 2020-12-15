@@ -30,9 +30,8 @@ public class XMLHelper {
     public static Document getXmlDocument(InputStream inputStream) {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         Document doc = null;
-        DocumentBuilder builder = null;
         try {
-            builder = factory.newDocumentBuilder();
+            DocumentBuilder builder = factory.newDocumentBuilder();
             doc = builder.parse(inputStream);
         } catch (ParserConfigurationException | SAXException e) {
             logger.error("error creating xml doc from inputstream", e);
@@ -40,14 +39,6 @@ public class XMLHelper {
             logger.error("error creating xml doc from inputstream", e);
         }
         return doc;
-    }
-
-    public static void closeInputStream(InputStream inputStream){
-        try {
-            inputStream.close();
-        } catch (IOException e) {
-            logger.error("error closing inputstream", e);
-        }
     }
 
     public static String normalizeSVGAlphanumeric(final String string) {
