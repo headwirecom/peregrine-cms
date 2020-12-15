@@ -275,18 +275,19 @@ public class PerAssetImpl
     }
 
     public void setDimension() throws RepositoryException, IOException {
-        final InputStream is = getRenditionStream((String) null);
-        // Ignore images that do not have a jcr:data element aka stream
-        if (isNull(is)) {
-            return;
-        }
+        try(final InputStream is = getRenditionStream((String) null)) {
+            // Ignore images that do not have a jcr:data element aka stream
+            if (isNull(is)) {
+                return;
+            }
 
-        if (endsWithIgnoreCase(getName(), ".svg")) {
-            setSVGDimension(is);
-            return;
-        }
+            if (endsWithIgnoreCase(getName(), ".svg")) {
+                setSVGDimension(is);
+                return;
+            }
 
-        setImageDimension(is);
+            setImageDimension(is);
+        }
     }
 
     private void setSVGDimension(final InputStream is) throws RepositoryException, PersistenceException {
