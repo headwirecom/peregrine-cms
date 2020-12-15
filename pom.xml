@@ -509,12 +509,6 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
-                <groupId>org.apache.sling</groupId>
-                <artifactId>org.apache.sling.event</artifactId>
-                <version>4.2.12</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.jackrabbit</groupId>
                 <artifactId>jackrabbit-api</artifactId>
                 <version>${jackrabbit.version}</version>
@@ -1009,6 +1003,7 @@
         <module>samples/example-vue-site</module>
         <module>themes/themeclean</module>
         <module>slingjunit.parent</module>
+        <module>sling/peregrine-builder-sling-12</module>
         <!--AS TODO: This module causes 'mvn site' to deploy an undeployable package and for now it is taken out -->
         <!--<module>autodocs</module>-->
 <!--        <module>tooling/maven/archetypes/project</module>-->
