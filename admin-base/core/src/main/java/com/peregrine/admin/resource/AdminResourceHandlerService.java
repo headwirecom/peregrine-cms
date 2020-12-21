@@ -101,6 +101,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.peregrine.adaption.PerAsset;
 import com.peregrine.admin.models.Recyclable;
 import com.peregrine.commons.ResourceUtils;
+import com.peregrine.commons.Strings;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.rendition.BaseResourceHandler;
 import com.peregrine.replication.ImageMetadataSelector;
@@ -2020,6 +2021,12 @@ public class AdminResourceHandlerService
                 updateProperties.put(name, value);
             }
         }
+
+        updateProperties.keySet().stream()
+                .filter(key -> !key.contains(Strings.COLON))
+                .filter(key -> !properties.containsKey(key))
+                .collect(Collectors.toSet())
+                .forEach(updateProperties::remove);
         baseResourceHandler.updateModification(resource);
     }
 
