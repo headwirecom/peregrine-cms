@@ -22,7 +22,7 @@ before_script:
 
 script:
 - if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then BUILD_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH; else BUILD_BRANCH=$TRAVIS_BRANCH; fi
-- cd docker && ./builddocker.sh ${BUILD_BRANCH} develop
+- cd docker && ./builddocker.sh ${BUILD_BRANCH} develop-sling12
 - ./pushdocker-travis.sh
 
 after_script:
