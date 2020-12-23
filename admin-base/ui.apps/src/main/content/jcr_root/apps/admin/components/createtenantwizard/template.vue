@@ -99,6 +99,27 @@
 </template>
 
 <script>
+    const nameAvailableDebouncer = (function() {
+        let timeout
+        let oldReject
+        return {
+            call: (func, wait) => new Promise((resolve, reject) => {
+                let context = this, args = arguments
+                let later = function() {
+                    resolve(func.apply(context, args))
+                }
+
+                if (timeout) {
+                    clearTimeout(timeout)
+                    oldReject()
+                }
+
+                oldReject = reject
+                timeout = setTimeout(later, wait)
+            })
+        }
+    })()
+
     export default {
         props: ['model'],
         data:
@@ -249,7 +270,7 @@
                     }
                 }
 
-                return axios.get('/perapi/admin/sites/name/available?name=' + value)
+                return nameAvailableDebouncer.call(() => axios.get('/perapi/admin/sites/name/available?name=' + value), 375)
                     .then(res => res.data)
                     .then(res => res.result ? [] : ['name already in use'])
                     .catch(e => [])
