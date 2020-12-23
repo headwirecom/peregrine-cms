@@ -29,6 +29,8 @@ import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 
 import javax.jcr.RepositoryException;
+import java.awt.*;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -105,4 +107,17 @@ public interface PerAsset
      * @return The value of the tag or null if not found
      */
     public Object getTag(String category, String tag);
+
+    /**
+     * Saves dimensions based on the input stream (part of new asset processing)
+     * @throws RepositoryException
+     * @throws IOException
+     */
+    void setDimension() throws RepositoryException, IOException;
+
+    /**
+     * get dimension (or null) for asset
+     */
+    Dimension getDimension() throws RepositoryException, IOException;
+    
 }
