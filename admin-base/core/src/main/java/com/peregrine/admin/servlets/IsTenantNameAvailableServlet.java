@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.Reference;
 import javax.servlet.Servlet;
 import java.io.IOException;
 
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_IS_SITE_NAME_AVAILABLE;
+import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_IS_TENANT_NAME_AVAILABLE;
 import static com.peregrine.admin.util.AdminConstants.PEREGRINE_SERVICE_NAME;
 import static com.peregrine.commons.util.PerUtil.*;
 import static java.util.Objects.isNull;
@@ -52,11 +52,11 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
         SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Is Site Name Available",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
         SLING_SERVLET_METHODS + EQUALS + GET,
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_IS_SITE_NAME_AVAILABLE
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_IS_TENANT_NAME_AVAILABLE
     }
 )
 @SuppressWarnings("serial")
-public class IsSiteNameAvailableServlet extends AbstractBaseServlet {
+public class IsTenantNameAvailableServlet extends AbstractBaseServlet {
 
     @Reference
     @SuppressWarnings("unused")
