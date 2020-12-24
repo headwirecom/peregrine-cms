@@ -270,7 +270,7 @@
                     }
                 }
 
-                return nameAvailableDebouncer.call(() => axios.get('/perapi/admin/tenants/name/available?name=' + value), 375)
+                return nameAvailableDebouncer.call(() => axios.get('/perapi/admin/tenants/name/available.json?name=' + value), 375)
                     .then(res => res.data)
                     .then(res => res.result ? [] : ['name already in use'])
                     .catch(e => [])
