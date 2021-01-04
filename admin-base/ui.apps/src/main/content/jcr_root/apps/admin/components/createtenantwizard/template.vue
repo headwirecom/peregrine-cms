@@ -99,27 +99,8 @@
 </template>
 
 <script>
-    const nameAvailableDebouncer = (function() {
-        let timeout
-        let oldReject
-        return {
-            call: (func, wait) => new Promise((resolve, reject) => {
-                let context = this, args = arguments
-                let later = function() {
-                    resolve(func.apply(context, args))
-                }
-
-                if (timeout) {
-                    clearTimeout(timeout)
-                    oldReject()
-                }
-
-                oldReject = reject
-                timeout = setTimeout(later, wait)
-            })
-        }
-    })()
-
+    import { createDebouncer} from '../../../../../../js/utils'
+    const nameAvailableDebouncer = createDebouncer()
     export default {
         props: ['model'],
         data:
