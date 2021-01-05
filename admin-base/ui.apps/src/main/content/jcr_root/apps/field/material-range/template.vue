@@ -1,7 +1,7 @@
 <template>
-  <div v-if="!schema.preview" class="range-field" :class="{'is-empty': !value}">
+  <div v-if="!schema.preview" class="range-field" :class="{'is-empty': isBlank}">
     <button class="range-btn" @click="onRangeBtnClick">
-      <span v-if="!value" class="strike"></span>
+      <span v-if="isBlank" class="strike"></span>
       <admin-components-icon icon="linear_scale" :lib="IconLib.MATERIAL_ICONS"/>
     </button>
     <input
@@ -10,7 +10,7 @@
         class="range"
         v-model="value"
         :id="getFieldID(schema)"
-        :class="[schema.fieldClasses, {hidden: !value}]"
+        :class="[schema.fieldClasses, {hidden: isBlank}]"
         :disabled="schema.disabled || schema.preview"
         :alt="schema.alt"
         :max="schema.max"
@@ -18,8 +18,8 @@
         :name="schema.inputName"
         :required="schema.required"
         :step="schema.step"/>
-    <div v-if="!value" class="empty-range">
       <div class="rail" @click="value = 0"></div>
+    <div v-if="isBlank" class="empty-range">
     </div>
     <input
         type="text"
@@ -46,6 +46,10 @@
 <script>
 import {IconLib, Toast} from '../../../../../js/constants'
 
+function isDefined(value) {
+  return value || value === 0 || value === "0"
+}
+
 export default {
   mixins: [VueFormGenerator.abstractField],
   data() {
@@ -68,13 +72,16 @@ export default {
     max() {
       return this.schema.max || 100
     },
+    isBlank() {
+      return !isDefined(this.value)
+    }
   },
   watch: {
     value(val) {
       this.model[this.schema.model] = val
 
       let propsToRemove = this.model['_opDeleteProps'] || []
-      if (val || val === 0 || val === "0") {
+      if (isDefined(val)) {
         propsToRemove = propsToRemove.filter(x => x !== this.schema.model)
       } else {
         propsToRemove.push(this.schema.model)
@@ -98,7 +105,7 @@ export default {
   },
   methods: {
     onRangeBtnClick() {
-      if (this.value) {
+      if (!this.isBlank) {
         this.oldValue = this.value
         this.value = null
       } else {
