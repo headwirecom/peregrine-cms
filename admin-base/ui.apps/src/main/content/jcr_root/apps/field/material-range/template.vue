@@ -18,8 +18,8 @@
         :name="schema.inputName"
         :required="schema.required"
         :step="schema.step"/>
-      <div class="rail" @click="value = 0"></div>
     <div v-if="isBlank" class="empty-range">
+      <div class="rail" @click="value = min"></div>
     </div>
     <input
         type="text"
