@@ -1,8 +1,8 @@
 <template>
-  <div v-if="!schema.preview" class="range-field" :class="{'is-empty': !value}">
+  <div v-if="!schema.preview" class="range-field" :class="{'is-empty': value === null}">
     <button class="range-btn" @click="onRangeBtnClick">
       <admin-components-icon :icon="icon" :lib="IconLib.MATERIAL_ICONS"/>
-      <span v-if="!value" class="strike"></span>
+      <span v-if="value === null" class="strike"></span>
     </button>
     <input
         ref="range"
@@ -10,7 +10,7 @@
         class="range"
         v-model="value"
         :id="getFieldID(schema)"
-        :class="[schema.fieldClasses, {hidden: !value}]"
+        :class="[schema.fieldClasses, {hidden: value === null}]"
         :disabled="schema.disabled || schema.preview"
         :alt="schema.alt"
         :max="schema.max"
@@ -18,7 +18,7 @@
         :name="schema.inputName"
         :required="schema.required"
         :step="schema.step"/>
-    <div v-if="!value" class="empty-range">
+    <div v-if="value === null" class="empty-range">
       <div class="rail" @click="value = 0"></div>
     </div>
     <input
@@ -101,7 +101,7 @@ export default {
   },
   methods: {
     onRangeBtnClick() {
-      if (this.value) {
+      if (this.value !== null) {
         this.oldValue = this.value
         this.value = null
       } else {
