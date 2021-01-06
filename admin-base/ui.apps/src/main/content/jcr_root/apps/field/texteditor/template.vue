@@ -25,11 +25,9 @@
 <template>
   <div class="text-editor-wrapper">
     <admin-components-richtoolbar
-        :key="`key-${key}`"
         class="on-right-panel"
         :show-always-active="false"
-        :responsive="false"
-        @ping="key = key === 'foo'? 'bar' : 'foo'"/>
+        :responsive="false"/>
     <p class="text-editor inline-edit"
        :class="['text-editor', 'inline-edit', {'inline-editing': editing}]"
        ref="textEditor"
@@ -50,52 +48,47 @@
 import {set} from '../../../../../js/utils'
 
 export default {
-  mixins: [VueFormGenerator.abstractField],
-  data() {
-    return {
-      doc: document,
-      editing: false,
-      key: 0
-    }
-  },
-  computed: {
-    view() {
-      return $perAdminApp.getView()
-    }
-  },
-  methods: {
-    onFocusIn(event) {
-      set(this.view, '/state/inline/rich', true)
-      set(this.view, '/state/inline/doc', this.doc)
-      this.editing = true
-      this.pingToolbar()
-    },
-    onFocusOut() {
-      set(this.view, '/state/inline/rich', true)
-      set(this.view, '/state/inline/doc', null)
-      this.editing = false
-      this.pingToolbar()
-    },
-    onInput(event) {
-      const domProps = this._vnode.children[2].data.domProps
-      const content = event.target.innerHTML
-      if (domProps) domProps.innerHTML = content
-      this.value = content
-      this.textEditorWriteToModel()
-      this.pingToolbar()
-    },
-    onDblClick(event) {
-      if (event.target.tagName === 'IMG') {
-        $perAdminApp.action(this, 'editImage', event.target)
+    mixins: [VueFormGenerator.abstractField],
+    data() {
+      return {
+        doc: document,
+        editing: false
       }
     },
-    textEditorWriteToModel(vm = this) {
-      vm.model.text = vm.$refs.textEditor.innerHTML
+    computed: {
+      view() {
+        return $perAdminApp.getView()
+      }
     },
-    pingToolbar() {
-      this.key = this.key === 'foo' ? 'bar' : 'foo'
-      $perAdminApp.action(this, 'pingRichToolbar')
+    methods: {
+      onFocusIn(event) {
+        set(this.view, '/state/inline/rich', true)
+        set(this.view, '/state/inline/doc', this.doc)
+        this.editing = true
+      },
+      onFocusOut() {
+        set(this.view, '/state/inline/rich', true)
+        set(this.view, '/state/inline/doc', null)
+        this.editing = false
+      },
+      onInput(event) {
+        const domProps = this._vnode.children[2].data.domProps
+        const content = event.target.innerHTML
+        if (domProps) domProps.innerHTML = content
+        this.value = content
+        this.textEditorWriteToModel()
+      },
+      onDblClick(event) {
+        if (event.target.tagName === 'IMG') {
+          $perAdminApp.action(this, 'editImage', event.target)
+        }
+      },
+      textEditorWriteToModel(vm=this) {
+        vm.model.text = vm.$refs.textEditor.innerHTML
+      },
+      pingToolbar() {
+        $perAdminApp.action(this, 'pingRichToolbar')
+      }
     }
   }
-}
 </script>
