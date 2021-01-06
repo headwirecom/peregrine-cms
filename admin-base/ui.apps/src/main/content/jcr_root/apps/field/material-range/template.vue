@@ -1,7 +1,7 @@
 <template>
   <div v-if="!schema.preview" class="range-field" :class="{'is-empty': value === null}">
     <button class="range-btn" @click="onRangeBtnClick">
-      <admin-components-icon :icon="icon" :lib="IconLib.MATERIAL_ICONS"/>
+      <admin-components-icon icon="linear_scale" :lib="IconLib.MATERIAL_ICONS"/>
       <span v-if="value === null" class="strike"></span>
     </button>
     <input
@@ -67,9 +67,6 @@ export default {
     },
     max() {
       return this.schema.max || 100
-    },
-    icon() {
-      return 'linear_scale'
     }
   },
   watch: {
