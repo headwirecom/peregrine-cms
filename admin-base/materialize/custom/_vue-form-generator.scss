@@ -880,16 +880,7 @@
         }
 
         .empty-range {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-
-            .rail {
-                width: 100%;
-                height: 3px;
-                background-color: #c2c2c2;
-            }
+            opacity: .5;
         }
 
         .range-numbers {

@@ -5,12 +5,13 @@
       <span v-if="value === null" class="strike"></span>
     </button>
     <input
+        v-if="value !== null"
         ref="range"
         type="range"
         class="range"
         v-model="value"
         :id="getFieldID(schema)"
-        :class="[schema.fieldClasses, {hidden: value === null}]"
+        :class="[schema.fieldClasses]"
         :disabled="schema.disabled || schema.preview"
         :alt="schema.alt"
         :max="schema.max"
@@ -18,9 +19,14 @@
         :name="schema.inputName"
         :required="schema.required"
         :step="schema.step"/>
-    <div v-if="value === null" class="empty-range">
-      <div class="rail" @click="value = 0"></div>
-    </div>
+    <input
+        v-if="value === null"
+        type="range"
+        class="empty-range range"
+        :value="50"
+        min="0"
+        max="100"
+        disabled>
     <input
         type="text"
         class="range-value"
@@ -74,7 +80,7 @@ export default {
       this.model[this.schema.model] = val
 
       let propsToRemove = this.model['_opDeleteProps'] || []
-      if (val || val === 0 || val === "0") {
+      if (val || val === 0 || val === '0') {
         propsToRemove = propsToRemove.filter(x => x !== this.schema.model)
       } else {
         propsToRemove.push(this.schema.model)
