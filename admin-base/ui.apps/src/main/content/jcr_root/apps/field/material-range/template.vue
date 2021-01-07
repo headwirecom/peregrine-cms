@@ -35,10 +35,6 @@
         :required="schema.required"
         @keypress="onRangeValueKeyPress"
         @paste="onRangeValuePaste"/>
-    <!--div class="range-numbers">
-      <div class="min">{{ min }}</div>
-      <div class="max">{{ max }}</div>
-    </div-->
   </div>
   <div v-else>{{ value }}</div>
 </template>
