@@ -1,16 +1,18 @@
 <template>
+
   <div v-if="!schema.preview" class="range-field" :class="{'is-empty': isBlank}">
     <button class="range-btn" @click="onRangeBtnClick">
       <admin-components-icon icon="linear_scale" :lib="IconLib.MATERIAL_ICONS"/>
       <span v-if="isBlank" class="strike"></span>
     </button>
     <input
+        v-if="value !== null"
         ref="range"
         type="range"
         class="range"
         v-model="value"
         :id="getFieldID(schema)"
-        :class="[schema.fieldClasses, {hidden: isBlank}]"
+        :class="[schema.fieldClasses]"
         :disabled="schema.disabled || schema.preview"
         :alt="schema.alt"
         :max="schema.max"
@@ -18,9 +20,14 @@
         :name="schema.inputName"
         :required="schema.required"
         :step="schema.step"/>
-    <div v-if="isBlank" class="empty-range">
-      <div class="rail" @click="value = min"></div>
-    </div>
+    <input
+        v-if="isBlank"
+        type="range"
+        class="empty-range range"
+        :value="50"
+        min="0"
+        max="100"
+        disabled/>
     <input
         type="text"
         class="range-value"
@@ -43,7 +50,7 @@
 import {IconLib, Toast} from '../../../../../js/constants'
 
 function isDefined(value) {
-  return value || value === 0 || value === "0"
+  return value || value === 0 || value === '0'
 }
 
 export default {
