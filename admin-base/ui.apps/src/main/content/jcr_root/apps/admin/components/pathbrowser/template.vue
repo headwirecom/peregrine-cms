@@ -25,8 +25,9 @@
 <template>
   <transition name="modal">
     <div class="modal-mask" v-on:click.stop.prevent="onCancel">
-      <div class="modal-wrapper">
+      <div class="modal-wrapper" ref="modalWrapper">
         <div class="pathbrowser modal-container"
+             ref="pathbrowser"
              @click.stop.prevent="onPrevent">
           <!-- @mousedown.prevent="() => {}" -->
           <div class="modal-header" v-if="">
@@ -411,16 +412,21 @@
             </div>
           </div>
         </div>
+        <file-dropper v-if="isBrowserTypeAsset" :drop-context="$refs.pathbrowser"/>
       </div>
     </div>
   </transition>
 </template>
 
 <script>
+import FileDropper from '../filedropper/template.vue';
 import {IconLib, PathBrowser} from '../../../../../../js/constants';
 
 export default {
   name: 'PathBrowser',
+  components: {
+    FileDropper
+  },
   props: {
     isOpen: Boolean,
     header: String,
@@ -534,6 +540,9 @@ export default {
     },
     isBrowserTypeImage() {
       return this.isType(PathBrowser.Type.IMAGE)
+    },
+    isBrowserTypeAsset() {
+      return this.isType(PathBrowser.Type.ASSET) || this.isType(PathBrowser.Type.IMAGE)
     },
     showRel() {
       return !this.selectedPath || (
