@@ -59,7 +59,6 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
-import com.peregrine.admin.resource.ResourceRelocation;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.commons.servlets.ServletHelper;
 import java.io.IOException;
@@ -67,7 +66,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.Servlet;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -91,12 +89,6 @@ public class InsertNodeAt extends AbstractBaseServlet {
 
     private static final String FAILED_TO_CREATE_INTERMEDIATE_RESOURCES = "Failed to create intermediate resources";
     private static final String RESOURCE_NOT_FOUND_BY_PATH = "Resource not found by Path";
-
-    @Reference
-    ModelFactory modelFactory;
-
-    @Reference
-    ResourceRelocation resourceRelocation;
 
     @Reference
     AdminResourceHandler resourceManagement;

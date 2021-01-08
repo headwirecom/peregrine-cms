@@ -1012,7 +1012,6 @@ public class AdminResourceHandlerService
         }
     }
 
-
     // TODO: needs deep clone
     private Node createNode(
         @NotNull final Node parent,
