@@ -92,6 +92,7 @@
 import {Attribute, Key, Toast} from '../../../../../../js/constants'
 import {Error} from '../../../../../../js/messages'
 import {
+  focusElement,
   get,
   getCaretCharacterOffsetWithin,
   isChromeBrowser,
@@ -149,6 +150,7 @@ export default {
         firstTime: [],
         selection: null
       },
+      dynWatchers: [],
       toast: {
         templateComponent: null,
         missingEventPath: null
@@ -403,16 +405,10 @@ export default {
                 data: vm.node,
                 path: vm.view.state.editor.path
               }).then(() => {
-                $perAdminApp.action(vm, 'showComponentEdit', vm.path).then(() => {
-                  vm.flushInlineState()
-                  vm.$nextTick(vm.pingToolbar)
-                })
+                vm.updateSelectedComponent()
               })
             } else {
-              $perAdminApp.action(vm, 'showComponentEdit', vm.path).then(() => {
-                vm.flushInlineState()
-                vm.$nextTick(vm.pingToolbar)
-              })
+              vm.updateSelectedComponent()
             }
           } else {
             vm.flushInlineState()
@@ -433,6 +429,19 @@ export default {
         set(this.view, '/state/inline/model', this.inline)
         this.inline = null
       }
+    },
+
+    updateSelectedComponent() {
+      this.dynWatchers.forEach((watcher) => {
+        watcher.unwatch()
+      })
+      $perAdminApp.action(this, 'showComponentEdit', this.path).then(() => {
+        this.flushInlineState()
+        return this.$nextTick()
+      }).then(() => {
+        this.pingToolbar()
+        focusElement(this.target, this.iframe.win)
+      })
     },
 
     findComponentEl(targetEl) {
@@ -544,6 +553,14 @@ export default {
       const dataInline = this.targetInline.split('.').slice(1)
       this.inline = dataInline.join('.')
       set(this.view, '/state/inline/doc', this.iframe.doc)
+      const modelPropName = this.getCurrentModelPropName()
+      this.dynWatchers.some((w, index) => {
+        if (w.modelPropName === modelPropName) {
+          w.unwatch()
+          this.dynWatchers.splice(index, 1)
+          return true
+        }
+      })
     },
 
     onInlineFocusOut(event) {
@@ -553,6 +570,9 @@ export default {
       if (!isChromeBrowser() && event.target.innerHTML) {
         event.target.innerHTML = event.target.innerHTML.trim()
       }
+      const modelPropName = this.getCurrentModelPropName()
+      const unwatch = this.$watch(`node.${modelPropName}`, (val) => event.target.innerHTML = val)
+      this.dynWatchers.push({modelPropName, unwatch})
     },
 
     onInlineKeyDown(event) {
@@ -661,6 +681,9 @@ export default {
     onIframeClick(ev) {
       if (!this.isContentEditableOrNested(ev.target)) {
         this.target = ev.target
+      }
+      if (this.target !== ev.target) {
+        //this.
       }
     },
 
@@ -901,6 +924,10 @@ export default {
       style.type = 'text/css'
       style.appendChild(this.iframe.doc.createTextNode(css))
       style.setAttribute('id', 'editing-extra-styles')
+    },
+
+    getCurrentModelPropName(vm = this) {
+      return vm.targetInline.split('.').slice(1).join('.')
     },
 
     isContentEditableOrNested(el) {
