@@ -184,7 +184,9 @@
             'admin-components-draghandle',
             'admin-components-iconbrowser',
             'pagerendervue-components-placeholder'
-        ].forEach(name => $perAdminApp.loadComponent(name))
+        ].forEach(function(name) {
+            $perAdminApp.loadComponent(name)
+        })
 
         // init peregrine admin app
         $perAdminApp.init($perAdminView)
