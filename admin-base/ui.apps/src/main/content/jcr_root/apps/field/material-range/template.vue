@@ -1,8 +1,8 @@
 <template>
   <div v-if="!schema.preview" class="range-field" :class="{'is-empty': isBlank}">
     <button class="range-btn" @click="onRangeBtnClick">
-      <span v-if="isBlank" class="strike"></span>
       <admin-components-icon icon="linear_scale" :lib="IconLib.MATERIAL_ICONS"/>
+      <span v-if="isBlank" class="strike"></span>
     </button>
     <input
         ref="range"
