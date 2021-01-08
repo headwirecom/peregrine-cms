@@ -37,9 +37,9 @@
         <link rel="stylesheet" href="${item}" type="text/css">
     </sly>
 
-    <link rel="stylesheet" href="/etc/felibs/admin.css" type="text/css" />
-    <link rel="stylesheet" href="/etc/felibs/admin/dependencies.css" type="text/css" />
-    <link rel="stylesheet" href="/etc/felibs/admin/dependencies/font-awesome/css/font-awesome.min.css" type="text/css" />
+    <link rel="stylesheet" href="/etc/felibs/admin.css" type="text/css">
+    <link rel="stylesheet" href="/etc/felibs/admin/dependencies.css" type="text/css">
+    <link rel="stylesheet" href="/etc/felibs/admin/dependencies/font-awesome/css/font-awesome.min.css" type="text/css">
 
     <script type="text/javascript">
         if(/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) {
@@ -114,16 +114,7 @@
 <sly data-sly-include="renderer.html" />
 <script>
     Vue.use(VueCodeMirror)
-    var $perAdminView = {
-        state: {},
-        adminPage: {},
-        adminPageStaged: {},
-        admin: {},
-        pageView: {
-            view: 'desktop'
-        },
-        nodes: {}
-    }
+    var $perAdminView = { state: {}, adminPage: {}, adminPageStaged: {}, admin: {}, pageView: { view: 'desktop'}, nodes: {} }
 
     // switch between old and new implementation
     var newImpl = true
