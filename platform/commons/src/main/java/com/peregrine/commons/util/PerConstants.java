@@ -2,6 +2,7 @@ package com.peregrine.commons.util;
 
 import com.peregrine.commons.Strings;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
@@ -51,7 +52,7 @@ public class PerConstants {
 
     public static final String SLING_SERVLET_DEFAULT = "sling/servlet/default";
 
-    public static final String UTF_8 = "UTF-8";
+    public static final String UTF_8 = StandardCharsets.UTF_8.name();
 
     public static final String RENDITION_ACTION = "rendition.json";
 
