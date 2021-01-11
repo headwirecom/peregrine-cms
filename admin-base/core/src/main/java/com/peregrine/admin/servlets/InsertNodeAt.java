@@ -69,6 +69,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.Servlet;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -103,44 +104,14 @@ public class InsertNodeAt extends AbstractBaseServlet {
     @Override
     protected Response handleRequest(Request request) throws IOException {
         final String path = request.getParameter(PATH);
-        final var resourceResolver = request.getResourceResolver();
-        Resource resource = getResource(resourceResolver, path);
-        //AS This is a fix for missing intermediary nodes from templates
-        if(isNull(resource)) {
-            if(contains(path, INNER_JCR_CONTENT)) {
-                // We found jcr:content. Now we check if that is a page and if so traverse down the path and create all nodes until we reach the parent
-                final String pagePath = substringBeforeLast(path, INNER_JCR_CONTENT);
-                final Resource page = getResource(resourceResolver, pagePath);
-                if(nonNull(page)) {
-                    if(isPrimaryType(page, PAGE_PRIMARY_TYPE)) {
-                        // Now we can traverse
-                        final String rest = substringAfter(path, pagePath + SLASH);
-                        logger.debug("Rest of Page Path: '{}'", rest);
-                        Resource intermediate = page;
-                        for(String nodeName : rest.split(SLASH)) {
-                            if(isNotEmpty(nodeName)) {
-                                Resource temp = intermediate.getChild(nodeName);
-                                logger.debug("Node Child Name: '{}', parent resource: '{}', resource found: '{}'", nodeName, intermediate.getPath(), temp == null ? "null" : temp.getPath());
-                                if(isNull(temp)) {
-                                    try {
-                                        intermediate = resourceManagement
-                                            .createNode(intermediate, nodeName, NT_UNSTRUCTURED, null);
-                                    } catch(ManagementException e) {
-                                        return new ErrorResponse()
-                                            .setHttpErrorCode(SC_BAD_REQUEST)
-                                            .setErrorMessage(FAILED_TO_CREATE_INTERMEDIATE_RESOURCES)
-                                            .setRequestPath(path);
-                                    }
-                                } else {
-                                    intermediate = temp;
-                                }
-                            }
-                        }
-
-                        resource = getResource(resourceResolver, path);
-                    }
-                }
-            }
+        final Resource resource;
+        try {
+            resource = getOrCreateResource(request.getResourceResolver(), path);
+        } catch(ManagementException e) {
+            return new ErrorResponse()
+                    .setHttpErrorCode(SC_BAD_REQUEST)
+                    .setErrorMessage(FAILED_TO_CREATE_INTERMEDIATE_RESOURCES)
+                    .setRequestPath(path);
         }
 
         //AS End of Patch
@@ -182,7 +153,7 @@ public class InsertNodeAt extends AbstractBaseServlet {
 
         final String variation = request.getParameter(VARIATION);
         try {
-            Resource newResource = resourceManagement
+            final Resource newResource = resourceManagement
                 .insertNode(resource, properties, addAsChild, addBefore, variation);
             newResource.getResourceResolver().commit();
             return new RedirectResponse((addAsChild ? path : resource.getParent().getPath()) + MODEL_JSON);
@@ -192,6 +163,44 @@ public class InsertNodeAt extends AbstractBaseServlet {
                 .setErrorMessage(e.getMessage())
                 .setException(e);
         }
+    }
+
+    private Resource getOrCreateResource(final ResourceResolver resourceResolver, final String path) throws ManagementException {
+        Resource resource = getResource(resourceResolver, path);
+        //AS This is a fix for missing intermediary nodes from templates
+        if(nonNull(resource)) {
+            return resource;
+        }
+
+        if(!contains(path, INNER_JCR_CONTENT)) {
+            return null;
+        }
+
+        // We found jcr:content. Now we check if that is a page and if so traverse down the path and create all nodes until we reach the parent
+        final String pagePath = substringBeforeLast(path, INNER_JCR_CONTENT);
+        final Resource page = getResource(resourceResolver, pagePath);
+        if(isNull(page) || !isPrimaryType(page, PAGE_PRIMARY_TYPE)) {
+            return null;
+        }
+
+        // Now we can traverse
+        final String rest = substringAfter(path, pagePath + SLASH);
+        logger.debug("Rest of Page Path: '{}'", rest);
+        resource = page;
+        for(String nodeName : rest.split(SLASH)) {
+            if(isNotEmpty(nodeName)) {
+                final Resource temp = resource.getChild(nodeName);
+                logger.debug("Node Child Name: '{}', parent resource: '{}', resource found: '{}'", nodeName, resource.getPath(), temp == null ? "null" : temp.getPath());
+                if(isNull(temp)) {
+                    resource = resourceManagement
+                        .createNode(resource, nodeName, NT_UNSTRUCTURED, null);
+                } else {
+                    resource = temp;
+                }
+            }
+        }
+
+        return resource;
     }
 }
 
