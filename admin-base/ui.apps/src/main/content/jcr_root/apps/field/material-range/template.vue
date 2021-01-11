@@ -76,18 +76,10 @@ export default {
     },
     isBlank() {
       return !isDefined(this.value)
-    },
-    thumbEl() {
-      return this.$refs.rangeField.querySelector('.thumb')
     }
   },
   watch: {
     value(val) {
-      if (val === null) {
-        console.log(this.thumbEl)
-        this.thumbEl.remove()
-      }
-
       this.model[this.schema.model] = val
 
       let propsToRemove = this.model['_opDeleteProps'] || []
