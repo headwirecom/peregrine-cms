@@ -24,7 +24,7 @@
   -->
 <template>
   <transition name="modal">
-    <div class="modal-mask" v-on:click.stop.prevent="onCancel">
+    <div class="modal-mask pathbrowser-modal-mask" v-on:click.stop.prevent="onCancel">
       <div class="modal-wrapper" ref="modalWrapper">
         <div class="pathbrowser modal-container"
              ref="pathbrowser"
@@ -412,7 +412,10 @@
             </div>
           </div>
         </div>
-        <file-dropper v-if="isBrowserTypeAsset" :drop-context="$refs.pathbrowser"/>
+        <file-dropper
+            v-if="isBrowserTypeAsset"
+            :drop-context="$refs.pathbrowser"
+            :path="currentPath"/>
       </div>
     </div>
   </transition>

@@ -1,5 +1,22 @@
 <template>
-  <div class="file-dropper"></div>
+  <div v-if="showMask" class="file-dropper file-upload">
+    <div class="file-upload-inner">
+      <i class="material-icons">file_download</i>
+      <span class="file-upload-text">Drag &amp; Drop files anywhere</span>
+      <div class="progress-bar">
+        <div class="progress-bar-value" :style="`width: ${progress}%`"></div>
+      </div>
+      <div class="progress-text">{{ progress }}%</div>
+      <div class="file-upload-action">
+        <button
+            type="button"
+            class="btn"
+            @click.prevent.stop="onUploadDone">
+          ok
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -13,6 +30,16 @@ export default {
       validator(val) {
         return !!val.addEventListener && !!val.removeEventListener
       }
+    },
+    path: {
+      type: String,
+      required: true
+    }
+  },
+  data() {
+    return {
+      showMask: false,
+      progress: 0
     }
   },
   created() {
@@ -30,26 +57,31 @@ export default {
   methods: {
     onDragOver(event) {
       event.preventDefault()
-      console.log('filedropper: onDragOver')
     },
     onDragEnter(event) {
       event.preventDefault()
-      console.log('filedropper: onDragEnter')
+      this.showMask = true
     },
     onDragLeave(event) {
       event.preventDefault()
-      console.log('filedropper: onDragLeave')
     },
     onDrop(event) {
       event.preventDefault()
-      console.log('filedropper: onDrop')
+      this.upload(event.dataTransfer.files)
     },
-    uploadFiles(files) {
+    upload(files) {
       $perAdminApp.stateAction('uploadFiles', {
-        path: $perAdminApp.getView().state.tools.assets,
+        path: this.path,
         files: files,
-        cb: this.setUploadProgress
+        cb: this.setProgress
       })
+    },
+    setProgress(percentCompleted) {
+      this.progress = percentCompleted
+    },
+    onUploadDone() {
+      this.showMask = false
+      this.progress = 0
     },
   }
 }
