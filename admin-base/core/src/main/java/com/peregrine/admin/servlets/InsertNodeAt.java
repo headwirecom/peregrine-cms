@@ -109,12 +109,12 @@ public class InsertNodeAt extends AbstractBaseServlet {
         if(isNull(resource)) {
             if(contains(path, INNER_JCR_CONTENT)) {
                 // We found jcr:content. Now we check if that is a page and if so traverse down the path and create all nodes until we reach the parent
-                final String pagePath = substringBefore(path, INNER_JCR_CONTENT);
+                final String pagePath = substringBeforeLast(path, INNER_JCR_CONTENT);
                 final Resource page = getResource(resourceResolver, pagePath);
                 if(nonNull(page)) {
                     if(isPrimaryType(page, PAGE_PRIMARY_TYPE)) {
                         // Now we can traverse
-                        final String rest = substringAfter(path, INNER_JCR_CONTENT);
+                        final String rest = substringAfter(path, pagePath + SLASH);
                         logger.debug("Rest of Page Path: '{}'", rest);
                         Resource intermediate = page;
                         for(String nodeName : rest.split(SLASH)) {
