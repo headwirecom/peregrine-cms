@@ -740,19 +740,19 @@ public class AdminResourceHandlerService
         }
     }
 
-
     @Override
     public Resource insertNode(Resource resource, Map<String, Object> properties, boolean addAsChild, boolean orderBefore, String variation) throws ManagementException {
         final Node node = getNode(resource);
-        if (node == null) {
+        if (isNull(node)) {
             throw new ManagementException(INSERT_RESOURCE_MISSING);
         }
+
         try {
-            final Node newNode;
+            final Node parent = addAsChild ? node : node.getParent();
+            final Node newNode = createNode(parent, properties, variation);
             final ResourceResolver resourceResolver = resource.getResourceResolver();
+            baseResourceHandler.updateModification(resourceResolver, newNode);
             if (addAsChild) {
-                newNode = createNode(node, properties, variation);
-                baseResourceHandler.updateModification(resourceResolver, newNode);
                 if (orderBefore) {
                     final Iterator<Resource> i = resource.listChildren();
                     if (i.hasNext()) {
@@ -760,9 +760,6 @@ public class AdminResourceHandlerService
                     }
                 }
             } else {
-                Node parent = node.getParent();
-                newNode = createNode(parent, properties, variation);
-                baseResourceHandler.updateModification(resourceResolver, newNode);
                 resourceRelocation.reorder(resource.getParent(), newNode.getName(), node.getName(), orderBefore);
             }
 
