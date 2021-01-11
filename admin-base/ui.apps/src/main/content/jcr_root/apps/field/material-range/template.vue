@@ -1,6 +1,5 @@
 <template>
-
-  <div v-if="!schema.preview" class="range-field" :class="{'is-empty': isBlank}">
+  <div v-if="!schema.preview" ref="rangeField" class="range-field" :class="{'is-empty': isBlank}">
     <button class="range-btn" @click="onRangeBtnClick">
       <admin-components-icon icon="linear_scale" :lib="IconLib.MATERIAL_ICONS"/>
       <span v-if="isBlank" class="strike"></span>
@@ -77,10 +76,18 @@ export default {
     },
     isBlank() {
       return !isDefined(this.value)
+    },
+    thumbEl() {
+      return this.$refs.rangeField.querySelector('.thumb')
     }
   },
   watch: {
     value(val) {
+      if (val === null) {
+        console.log(this.thumbEl)
+        this.thumbEl.remove()
+      }
+
       this.model[this.schema.model] = val
 
       let propsToRemove = this.model['_opDeleteProps'] || []
