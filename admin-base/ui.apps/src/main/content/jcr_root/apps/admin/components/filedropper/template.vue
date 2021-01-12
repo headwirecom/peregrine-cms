@@ -1,5 +1,5 @@
 <template>
-  <div v-if="showMask" class="file-dropper file-upload">
+  <div v-if="showMask" class="file-dropper file-upload" @click.prevent.stop="() => {}">
     <div class="file-upload-inner">
       <i class="material-icons">file_download</i>
       <span class="file-upload-text">Drag &amp; Drop files anywhere</span>
