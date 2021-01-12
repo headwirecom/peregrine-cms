@@ -1028,7 +1028,7 @@ public class AdminResourceHandlerService
         // If found we copy this over into our newly created node
         if (component.startsWith(SLASH)) {
             logger.warn("Component: '{}' started with a slash which is not valid -> ignored", component);
-        } else {
+        } else if (isNotBlank(variation) || properties.isEmpty()) {
             copyPropertiesFromComponentVariation(newNode, variation);
         }
 
@@ -1131,18 +1131,19 @@ public class AdminResourceHandlerService
             if (value instanceof String) {
                 node.setProperty(key, (String) value);
             } else if (value instanceof List) {
-                final List list = (List) value;
-                // Get sub node
+                final Node child;
                 if (node.hasNode(key)) {
-                    applyChildProperties(node.getNode(key), list);
+                    child = node.getNode(key);
                 } else {
-                    applyChildProperties(node, list);
+                    child = node.addNode(key);
                 }
+
+                applyChildrenProperties(child, (List) value);
             }
         }
     }
 
-    private void applyChildProperties(@NotNull Node parent, @NotNull List childProperties) throws RepositoryException, ManagementException {
+    private void applyChildrenProperties(@NotNull Node parent, @NotNull List childProperties) throws RepositoryException, ManagementException {
         // Loop over Array
         int counter = 0;
         for (final Object item : childProperties) {
@@ -1151,6 +1152,7 @@ public class AdminResourceHandlerService
             } else {
                 logger.warn("Array item: '{}' is not an Object and so ignored", item);
             }
+
             counter++;
         }
     }
@@ -1171,29 +1173,28 @@ public class AdminResourceHandlerService
 
         // No name or matching path name (auto generated IDs) -> use position to find target
         final Node target = getNodeAtPosition(parent, position);
-        if (target != null) {
+        if (isNull(target)) {
+            final String path = getPropsFromMap(properties, PATH, EMPTY);
+            final Node sourceNode = findSourceByPath(parent, path.split(SLASH));
+            final Node newNode = addNewNode(parent);
+            if (nonNull(sourceNode) && sourceNode.hasProperty(SLING_RESOURCE_TYPE)) {
+                String componentName = sourceNode.getProperty(SLING_RESOURCE_TYPE).getString();
+                newNode.setProperty(SLING_RESOURCE_TYPE, componentName);
+                logger.trace("Copy Props from Component Variation, component name: '{}'", componentName);
+                copyPropertiesFromComponentVariation(newNode, APPS_ROOT + SLASH + componentName, null);
+            }
+
+            logger.trace("Apply Properties to node: '{}', props: '{}'", newNode, properties);
+            applyProperties(newNode, properties);
+        } else {
             logger.trace("Found Target by position: '{}'", target.getPath());
             // Check if component matches
             final Object sourceComponent = properties.get(COMPONENT);
             final Object targetComponent = target.getProperty(COMPONENT).getString();
-            if (sourceComponent == null || !sourceComponent.equals(targetComponent)) {
-                logger.warn("Source Component: '{}' does not match target: '{}'", sourceComponent, targetComponent);
-            } else {
+            if (nonNull(sourceComponent) && sourceComponent.equals(targetComponent)) {
                 applyProperties(target, properties);
-            }
-        } else {
-            final String path = getPropsFromMap(properties, PATH, EMPTY);
-            final Node sourceNode = findSourceByPath(parent, path.split(SLASH));
-            if (sourceNode != null) {
-                Node newNode = addNewNode(parent);
-                if (sourceNode.hasProperty(SLING_RESOURCE_TYPE)) {
-                    String componentName = sourceNode.getProperty(SLING_RESOURCE_TYPE).getString();
-                    newNode.setProperty(SLING_RESOURCE_TYPE, componentName);
-                    logger.trace("Copy Props from Component Variation, component name: '{}'", componentName);
-                    copyPropertiesFromComponentVariation(newNode, APPS_ROOT + SLASH + componentName, null);
-                }
-                logger.trace("Apply Properties to node: '{}', props: '{}'", newNode, properties);
-                applyProperties(newNode, properties);
+            } else {
+                logger.warn("Source Component: '{}' does not match target: '{}'", sourceComponent, targetComponent);
             }
         }
     }
