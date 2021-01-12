@@ -11,7 +11,7 @@
         <button
             type="button"
             class="btn"
-            @click.prevent.stop="onUploadDone">
+            @click.prevent.stop="onOkClick">
           ok
         </button>
       </div>
@@ -40,6 +40,13 @@ export default {
     return {
       showMask: false,
       progress: 0
+    }
+  },
+  watch: {
+    progress(val) {
+      if (val === 100) {
+        this.onUploadDone()
+      }
     }
   },
   created() {
@@ -80,9 +87,12 @@ export default {
       this.progress = percentCompleted
     },
     onUploadDone() {
+      $perAdminApp.getApi().populateNodesForBrowser(this.path, 'pathBrowser')
+    },
+    onOkClick() {
       this.showMask = false
       this.progress = 0
-    },
+    }
   }
 }
 </script>
