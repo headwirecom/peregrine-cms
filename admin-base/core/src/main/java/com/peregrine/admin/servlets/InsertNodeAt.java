@@ -92,9 +92,9 @@ import org.osgi.service.component.annotations.Reference;
 public class InsertNodeAt extends AbstractBaseServlet {
 
     private static final String INNER_JCR_CONTENT = SLASH + JCR_CONTENT + SLASH;
+    private static final String APPS_PREFIX = APPS_ROOT + SLASH;
     private static final String FAILED_TO_CREATE_INTERMEDIATE_RESOURCES = "Failed to create intermediate resources";
     private static final String RESOURCE_NOT_FOUND_BY_PATH = "Resource not found by Path";
-    private static final String APPS_PREFIX = APPS_ROOT + SLASH;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
