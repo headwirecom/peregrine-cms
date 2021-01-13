@@ -698,7 +698,10 @@ export default {
     },
     onFileDropperUploadDone(files) {
       const lastFile = files[files.length - 1]
-      this.setSelectedPath(`${this.currentPath}/${lastFile.name}`)
+      lastFile.mimeType = lastFile.type
+      if (this.isImage(lastFile)) {
+        this.setSelectedPath(`${this.currentPath}/${lastFile.name}`)
+      }
     }
   }
 }
