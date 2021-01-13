@@ -23,7 +23,7 @@ before_script:
 script:
 - if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then BUILD_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH; else BUILD_BRANCH=$TRAVIS_BRANCH; fi
 - mvn clean install
-- cd peregrine-cms/sling/peregrine-builder-sling-12 && mvn clean install --quiet
+- cd sling/peregrine-builder-sling-12 && mvn clean install --quiet
 - ls -al && pwd
 - #cd docker && ./builddocker.sh ${BUILD_BRANCH} develop-sling12
 - #./pushdocker-travis.sh
