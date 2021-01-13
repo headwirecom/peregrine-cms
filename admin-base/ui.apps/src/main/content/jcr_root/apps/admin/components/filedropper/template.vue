@@ -11,6 +11,7 @@
         <button
             type="button"
             class="btn"
+            :disabled="progress < 100"
             @click.prevent.stop="onOkClick">
           ok
         </button>
@@ -39,7 +40,10 @@ export default {
   data() {
     return {
       showMask: false,
-      progress: 0
+      progress: 0,
+      files: {
+        uploaded: []
+      }
     }
   },
   watch: {
@@ -82,12 +86,14 @@ export default {
         files: files,
         cb: this.setProgress
       })
+      this.files.uploaded = files
     },
     setProgress(percentCompleted) {
       this.progress = percentCompleted
     },
     onUploadDone() {
       $perAdminApp.getApi().populateNodesForBrowser(this.path, 'pathBrowser')
+      this.$emit('upload-done', this.files.uploaded)
     },
     onOkClick() {
       this.showMask = false

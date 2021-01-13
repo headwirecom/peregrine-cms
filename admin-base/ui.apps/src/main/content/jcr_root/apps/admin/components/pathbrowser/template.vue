@@ -415,7 +415,8 @@
         <file-dropper
             v-if="isBrowserTypeAsset"
             :drop-context="$refs.pathbrowser"
-            :path="currentPath"/>
+            :path="currentPath"
+            @upload-done="onFileDropperUploadDone"/>
       </div>
     </div>
   </transition>
@@ -694,6 +695,10 @@ export default {
     onUpdateImgDimension(name, event) {
       const payload = event.target.value ? parseInt(event.target.value) : null
       this.$emit(`update-img-${name}`, payload)
+    },
+    onFileDropperUploadDone(files) {
+      const lastFile = files[files.length - 1]
+      this.setSelectedPath(`${this.currentPath}/${lastFile.name}`)
     }
   }
 }
