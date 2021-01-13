@@ -44,32 +44,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-osgi</artifactId>
-            <!--<version>1.11.181</version>-->
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-cbor</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>2.8.1</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.joda</groupId>
-            <artifactId>joda-convert</artifactId>
-            <version>1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>software.amazon.ion</groupId>
-            <artifactId>ion-java</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.junit.core</artifactId>
         </dependency>
@@ -97,31 +71,6 @@
                             <embeddedTarget>/apps/per/install</embeddedTarget>
                             <embeddeds>
                                 <embedded>
-                                    <groupId>com.amazonaws</groupId>
-                                    <artifactId>aws-java-sdk-osgi</artifactId>
-                                    <generateFilter>true</generateFilter>
-                                </embedded>
-                                <embedded>
-                                    <groupId>joda-time</groupId>
-                                    <artifactId>joda-time</artifactId>
-                                    <generateFilter>true</generateFilter>
-                                </embedded>
-                                <embedded>
-                                    <groupId>org.joda</groupId>
-                                    <artifactId>joda-convert</artifactId>
-                                    <generateFilter>true</generateFilter>
-                                </embedded>
-                                <embedded>
-                                    <groupId>com.fasterxml.jackson.dataformat</groupId>
-                                    <artifactId>jackson-dataformat-cbor</artifactId>
-                                    <generateFilter>true</generateFilter>
-                                </embedded>
-                                <embedded>
-                                    <groupId>software.amazon.ion</groupId>
-                                    <artifactId>ion-java</artifactId>
-                                    <generateFilter>true</generateFilter>
-                                </embedded>
-                                <embedded>
                                     <groupId>org.apache.sling</groupId>
                                     <artifactId>org.apache.sling.junit.core</artifactId>
                                     <generateFilter>true</generateFilter>
@@ -135,25 +84,4 @@
         </plugins>
     </build>
 
-    <profiles>
-        <profile>
-            <id>installAEM</id>
-            <!--AS NOTE: No installation of External as we don't support AWS S3 as of now -->
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>io.wcm.maven.plugins</groupId>
-                        <artifactId>wcmio-content-package-maven-plugin</artifactId>
-                        <extensions>true</extensions>
-                        <executions>
-                            <execution>
-                                <id>install-package</id>
-                                <phase>none</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>
