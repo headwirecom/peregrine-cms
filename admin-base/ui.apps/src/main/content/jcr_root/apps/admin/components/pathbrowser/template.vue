@@ -697,11 +697,13 @@ export default {
       this.$emit(`update-img-${name}`, payload)
     },
     onFileDropperUploadDone(files) {
-      const lastFile = files[files.length - 1]
-      lastFile.mimeType = lastFile.type
-      if (this.isImage(lastFile)) {
-        this.setSelectedPath(`${this.currentPath}/${lastFile.name}`)
-      }
+      files.reverse().some((file) => {
+        file.mimeType = file.type
+        if (this.isImage(file)) {
+          this.setSelectedPath(`${this.currentPath}/${file.name}`)
+          return true
+        }
+      })
     }
   }
 }

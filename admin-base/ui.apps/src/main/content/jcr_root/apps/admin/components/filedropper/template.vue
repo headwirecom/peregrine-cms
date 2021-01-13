@@ -81,12 +81,15 @@ export default {
       this.upload(event.dataTransfer.files)
     },
     upload(files) {
+      this.files.uploaded = []
       $perAdminApp.stateAction('uploadFiles', {
         path: this.path,
         files: files,
         cb: this.setProgress
       })
-      this.files.uploaded = files
+      for (let i = 0; i < files.length; i++) {
+        this.files.uploaded.push(files[i])
+      }
     },
     setProgress(percentCompleted) {
       this.progress = percentCompleted
