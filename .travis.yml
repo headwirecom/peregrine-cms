@@ -24,7 +24,14 @@ script:
 - if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then BUILD_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH; else BUILD_BRANCH=$TRAVIS_BRANCH; fi
 - mvn clean install
 - cd sling/peregrine-builder-sling-12 && mvn clean install --quiet
-- ls -al && pwd
+- cd ../..
+- git clone https://github.com/headwirecom/themeclean-flex
+- cd themeclean-flex
+- git checkout develop-sling12
+- mvn clean install
+- cd ..
+- find . | grep "\.zip"
+
 - #cd docker && ./builddocker.sh ${BUILD_BRANCH} develop-sling12
 - #./pushdocker-travis.sh
 
