@@ -86,6 +86,8 @@ export default {
         path: this.path,
         files: files,
         cb: this.setProgress
+      }).then((data) => {
+        $perAdminApp.getApi().populateNodesForBrowser(this.path, 'pathBrowser')
       })
       for (let i = 0; i < files.length; i++) {
         this.files.uploaded.push(files[i])
