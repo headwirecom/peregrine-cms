@@ -1,29 +1,44 @@
 package com.peregrine.adaption.impl;
 
 import com.peregrine.adaption.PerReplicable;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Calendar;
+import java.util.Optional;
 
 import static com.peregrine.commons.util.PerConstants.*;
 
 public class PerReplicableImpl extends PerBaseImpl implements PerReplicable {
-    private ValueMap vm;
-    private ModifiableValueMap modifiableValueMap;
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final ValueMap vm;
+    private final ModifiableValueMap modifiableValueMap;
 
     public PerReplicableImpl(Resource resource) {
         super(resource);
-        vm = this.getProperties();
-        if (vm == null) {
-            vm = this.getResource().getValueMap();
-        }
-        modifiableValueMap = this.getModifiableProperties();
-        if (modifiableValueMap == null) {
-            modifiableValueMap = this.getResource().adaptTo(ModifiableValueMap.class);
-        }
+        vm = Optional.ofNullable(getProperties())
+                .orElseGet(resource::getValueMap);
+        modifiableValueMap = Optional.ofNullable(getModifiableProperties())
+                .orElseGet(() -> resource.adaptTo(ModifiableValueMap.class));
+    }
+
+    private <T> T getProperty(final String name, final Class<T> type) {
+        return vm.get(name, type);
+    }
+
+    private String getStringProperty(final String name) {
+        return getProperty(name, String.class);
+    }
+
+    private Calendar getCalendarProperty(String jcrLastModified) {
+        return getProperty(jcrLastModified, Calendar.class);
     }
 
     /**
@@ -35,8 +50,9 @@ public class PerReplicableImpl extends PerBaseImpl implements PerReplicable {
      */
     @Override
     public boolean isReplicated() {
-        String replicatedRef = vm.get(PER_REPLICATION_REF, String.class);
-        return replicatedRef != null && !replicatedRef.isEmpty() ;
+        return Optional.ofNullable(getStringProperty(PER_REPLICATION_REF))
+                .map(StringUtils::isNotBlank)
+                .orElse(false);
     }
 
     /**
@@ -44,10 +60,9 @@ public class PerReplicableImpl extends PerBaseImpl implements PerReplicable {
      */
     @Override
     public boolean isStale() {
-        if (this.vm.get(JCR_LAST_MODIFIED, Calendar.class) != null){
-            return this.vm.get(JCR_LAST_MODIFIED, Calendar.class).after(getReplicated());
-        }
-        return false;
+        return Optional.ofNullable(getCalendarProperty(JCR_LAST_MODIFIED))
+                .map(lm -> lm.after(getReplicated()))
+                .orElse(false);
     }
 
     /**
@@ -55,7 +70,7 @@ public class PerReplicableImpl extends PerBaseImpl implements PerReplicable {
      */
     @Override
     public Calendar getReplicated() {
-        return this.vm.get(PER_REPLICATED, Calendar.class);
+        return getCalendarProperty(PER_REPLICATED);
     }
 
     /**
@@ -63,7 +78,7 @@ public class PerReplicableImpl extends PerBaseImpl implements PerReplicable {
      */
     @Override
     public String getReplicationRef() {
-        return this.vm.get(PER_REPLICATION_REF, String.class);
+        return getStringProperty(PER_REPLICATION_REF);
     }
 
 
@@ -79,7 +94,7 @@ public class PerReplicableImpl extends PerBaseImpl implements PerReplicable {
 
     @Override
     public String getLastReplicationAction(){
-        return this.vm.get(PER_REPLICATION_LAST_ACTION, String.class);
+        return getStringProperty(PER_REPLICATION_LAST_ACTION);
     }
 
     private void writeStringProperty(String name, String value){
