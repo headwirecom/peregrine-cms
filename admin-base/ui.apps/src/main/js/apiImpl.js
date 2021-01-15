@@ -896,7 +896,7 @@ class PerAdminImpl {
     }
     const data = new FormData()
     const fileNamesNotUploaded = []
-    this.populateNodesForBrowser(path).then(() => {
+    return this.populateNodesForBrowser(path).then(() => {
       for (let i = 0; i < files.length; i++) {
         const file = files[i]
         const available = this.nameAvailable(file.name, path)
@@ -974,7 +974,6 @@ class PerAdminImpl {
             })
       }
     })
-    return
   }
 
   nameAvailable(value, path) {
