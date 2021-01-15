@@ -1,6 +1,7 @@
 package com.peregrine.adaption.impl;
 
 import com.peregrine.adaption.PerReplicable;
+import com.peregrine.commons.util.PerUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
@@ -9,8 +10,10 @@ import org.apache.sling.api.resource.ValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Calendar;
-import java.util.Optional;
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import javax.jcr.nodetype.NodeType;
+import java.util.*;
 
 import static com.peregrine.commons.util.PerConstants.*;
 
@@ -81,24 +84,50 @@ public class PerReplicableImpl extends PerBaseImpl implements PerReplicable {
         return getStringProperty(PER_REPLICATION_REF);
     }
 
-
-    @Override
-    public void setLastReplicationActionAsActivated() {
-        writeStringProperty(PER_REPLICATION_LAST_ACTION, ACTIVATED);
-    }
-
-    @Override
-    public void setLastReplicationActionAsDeactivated(){
-        writeStringProperty(PER_REPLICATION_LAST_ACTION, DEACTIVATED);
-    }
-
     @Override
     public String getLastReplicationAction(){
         return getStringProperty(PER_REPLICATION_LAST_ACTION);
     }
 
-    private void writeStringProperty(String name, String value){
-        this.modifiableValueMap.put(name, value);
+    @Override
+    public boolean ensureReplicableMixin() {
+        final Resource resource = hasContent() ? getContentResource() : getResource();
+        if (PerUtil.isPrimaryType(resource, NT_UNSTRUCTURED,
+                ASSET_CONTENT_TYPE,
+                "per:NpmPackageConfig",
+                OBJECT_PRIMARY_TYPE,
+                OBJECT_DEFINITION_PRIMARY_TYPE,
+                PAGE_PRIMARY_TYPE,
+                PAGE_CONTENT_TYPE)) {
+            return true;
+        }
+        final Node node = resource.adaptTo(Node.class);
+        try {
+            if (!Arrays.stream(node.getMixinNodeTypes())
+                    .map(NodeType::getName)
+                    .anyMatch(PER_REPLICATION::equals)) {
+                node.addMixin(PER_REPLICATION);
+                node.getSession().save();
+            }
+
+            return true;
+        } catch (final RepositoryException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public void setLastReplicationActionAsActivated() {
+        setLastAction(ACTIVATED);
+    }
+
+    @Override
+    public void setLastReplicationActionAsDeactivated(){
+        setLastAction(DEACTIVATED);
+    }
+
+    private void setLastAction(String value){
+        this.modifiableValueMap.put(PER_REPLICATION_LAST_ACTION, value);
         try {
             this.getResource().getResourceResolver().commit();
         } catch (PersistenceException e) {
