@@ -668,6 +668,7 @@ export default {
       this.iframe.head = this.iframe.doc.querySelector('head')
       this.iframe.app = this.iframe.doc.querySelector('#peregrine-app')
       this.iframe.win.addEventListener('resize', this.updateIframeDimensions);
+      this.iframe.win.addEventListener('dragstart', this.onIframeDragStart);
       this.updateIframeDimensions()
       this.addIframeExtraStyles()
       this.refreshIframeElements()
@@ -692,7 +693,8 @@ export default {
     },
 
     onIframeDragStart(event) {
-      event.dataTransfer.effectAllowed = 'all';
+        event.preventDefault()
+        return false
     },
 
     onIframeDragOver(event) {
@@ -856,7 +858,6 @@ export default {
       set($perAdminApp.getView(), '/state/contentview/editor/active', true)
       this.iframe.doc.addEventListener('click', this.onIframeClick)
       this.iframe.doc.addEventListener('scroll', this.onIframeScroll)
-      this.iframe.doc.addEventListener('dragstart', this.onIframeDragStart)
       this.iframe.doc.addEventListener('dragover', this.onIframeDragOver)
       this.iframe.doc.addEventListener('drop', this.onIframeDrop)
       this.iframe.doc.addEventListener('mouseover', this.onIframeMouseOver)
