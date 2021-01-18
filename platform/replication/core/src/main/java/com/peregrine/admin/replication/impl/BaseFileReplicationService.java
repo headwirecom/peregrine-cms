@@ -40,12 +40,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -88,7 +83,6 @@ public abstract class BaseFileReplicationService
 
     static {
         NAME_PATTERNS.add(Pattern.compile(DATA_PATTERN));
-//        NAME_PATTERNS.add(Pattern.compile(HTML_PATTERN));
         EXCLUDED_RESOURCES.add(JCR_CONTENT);
         EXCLUDED_RESOURCES.add(RENDITIONS);
     }
@@ -98,18 +92,20 @@ public abstract class BaseFileReplicationService
         if (isNotBlank(renditionName)) {
             getRenderService().renderRawInternally(resource, RENDITION_ACTION + SLASH + renditionName);
         }
+
+        return null;
     };
     private final RenditionConsumer assetRenditionReplicator = (resource, renditionName) -> {
         final var initialResolver = resource.getResourceResolver();
         final var targetResolver = new VersioningResourceResolver(initialResolver, PUBLISHED_LABEL);
         final var wrappedResource = targetResolver.wrap(resource);
         if (isNull(wrappedResource)) {
-            return;
+            return null;
         }
 
         final String extension = isBlank(renditionName) ? EMPTY : RENDITION_ACTION + SLASH + renditionName;
         final byte[] content = getRenderService().renderRawInternally(wrappedResource, extension);
-        storeRendering(resource, renditionName, content);
+        return storeRendering(resource, renditionName, content);
     };
 
     @Override
@@ -181,36 +177,46 @@ public abstract class BaseFileReplicationService
 
     @Override
     public List<Resource> replicate(Collection<Resource> resourceList) throws ReplicationException {
-        List<Resource> answer = new ArrayList<>();
         log.trace("Replicate Resource List: '{}'", resourceList);
         // Replicate the resources
-        ResourceResolver resourceResolver = null;
-        for(Resource item: resourceList) {
-            if(item != null) {
-                resourceResolver = item.getResourceResolver();
-                break;
-            }
+        final ResourceResolver resourceResolver = resourceList.stream()
+                .filter(Objects::nonNull)
+                .map(Resource::getResourceResolver)
+                .findFirst().orElse(null);
+        if (isNull(resourceResolver)) {
+            return Collections.emptyList();
         }
-        if(resourceResolver != null) {
-            Session session = resourceResolver.adaptTo(Session.class);
-            for(Resource item: filterReferences(resourceList)) {
-                handleParents(item.getParent());
-                // Need to figure out the type and replicate accordingly
-                String primaryType = PerUtil.getPrimaryType(item);
-                if(ASSET_PRIMARY_TYPE.equals(primaryType)) {
-                    processAssetRenditions(item, assetRenditionReplicator);
-                } else {
-                    replicatePerResource(item, false);
-                }
 
-                answer.add(item);
+        final List<Resource> answer = new ArrayList<>();
+        Session session = resourceResolver.adaptTo(Session.class);
+        for(Resource item: filterReferences(resourceList)) {
+            handleParents(item.getParent());
+            // Need to figure out the type and replicate accordingly
+            String primaryType = PerUtil.getPrimaryType(item);
+            final String path;
+            if(ASSET_PRIMARY_TYPE.equals(primaryType)) {
+                path = processAssetRenditions(item, assetRenditionReplicator);
+            } else {
+                path = replicatePerResource(item, false);
             }
-            try {
-                session.save();
-            } catch(RepositoryException e) {
-                log.warn("Failed to save changes replicate parents", e);
+
+            answer.add(item);
+            if (isNotBlank(path)) {
+                final Resource contentResource = item.getChild(JCR_CONTENT);
+                if (contentResource != null) {
+                    updateReplicationProperties(contentResource, path, null);
+                } else {
+                    updateReplicationProperties(item, path, null);
+                }
             }
         }
+
+        try {
+            session.save();
+        } catch(RepositoryException e) {
+            log.warn("Failed to save changes replicate parents", e);
+        }
+
         return answer;
     }
 
@@ -270,14 +276,14 @@ public abstract class BaseFileReplicationService
         return resource.getName() + (isNotEmpty(extension) ? DOT + extension : EMPTY);
     }
 
-    private void processAssetRenditions(Resource resource, RenditionConsumer consumer) throws ReplicationException {
+    private String processAssetRenditions(Resource resource, RenditionConsumer consumer) throws ReplicationException {
         if (isNull(resource)) {
-            return;
+            return null;
         }
 
         try {
             // Get the image data of the resource and write to the target
-            consumer.consume(resource, EMPTY);
+            final String answer = consumer.consume(resource, EMPTY);
             // Loop over all existing renditions and write the image data to the target
             final List<String> checkRenditions = new ArrayList<>(getMandatoryRenditions());
             final Resource renditions = ResourceUtils.tryToCreateChildOrGetNull(resource, RENDITIONS, SLING_FOLDER);
@@ -306,6 +312,8 @@ public abstract class BaseFileReplicationService
                     log.warn("Rendition Failure", e);
                 }
             }
+
+            return answer;
         } catch(final RenderException e) {
             throw new ReplicationException(RENDERING_OF_ASSET_FAILED, e);
         }
@@ -343,7 +351,7 @@ public abstract class BaseFileReplicationService
      */
     abstract void removeReplica(Resource resource, final List<Pattern> namePattern, boolean isFolder) throws ReplicationException;
 
-    private void replicatePerResource(Resource resource, boolean post) throws ReplicationException {
+    private String replicatePerResource(Resource resource, boolean post) throws ReplicationException {
         log.trace("Replicate Resource: '{}', Post: '{}'", resource.getPath(), post);
         for(ExportExtension exportExtension: getExportExtensions()) {
             String extension = exportExtension.getName();
@@ -371,21 +379,16 @@ public abstract class BaseFileReplicationService
                 }
                 if(renderingContent != null) {
                     log.trace("Rendered Resource: {}", renderingContent);
-                    String path;
                     if(raw) {
-                        path = storeRendering(resource, extension, (byte[]) renderingContent);
-                    } else {
-                        path = storeRendering(resource, extension, (String) renderingContent);
+                        return storeRendering(resource, extension, (byte[]) renderingContent);
                     }
-                    Resource contentResource = resource.getChild(JCR_CONTENT);
-                    if(contentResource != null) {
-                        updateReplicationProperties(contentResource, path, null);
-                    } else {
-                        updateReplicationProperties(resource, path, null);
-                    }
+
+                    return storeRendering(resource, extension, (String) renderingContent);
                 }
             }
         }
+
+        return null;
     }
 
     public static class ExportExtension {
@@ -427,7 +430,7 @@ public abstract class BaseFileReplicationService
     }
 
     private interface RenditionConsumer {
-        void consume(Resource resource, String renditionName) throws RenderException, ReplicationException;
+        String consume(Resource resource, String renditionName) throws RenderException, ReplicationException;
     }
 
 }
