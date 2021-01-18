@@ -38,11 +38,7 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-
 import static com.peregrine.commons.util.PerConstants.*;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATION;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 
 /**
@@ -187,17 +183,4 @@ public class PeregrineAdapterFactory
         }
     }
 
-//    /**
-//     * Static method resourceCanAddPerReplicationMixin checks whether a resource can have the replicat
-//     * @param resource
-//     * @return
-//     */
-//    public static boolean resourceCanAddPerReplicationMixin(Resource resource) {
-//        Node node = resource.adaptTo(Node.class);
-//        try {
-//            return node.canAddMixin(PER_REPLICATION);
-//        } catch (RepositoryException e) {
-//            return false;
-//        }
-//    }
 }
