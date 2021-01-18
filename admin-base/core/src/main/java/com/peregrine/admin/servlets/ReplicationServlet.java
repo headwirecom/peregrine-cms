@@ -114,6 +114,7 @@ public final class ReplicationServlet extends ReplicationServletBase {
             return prepareResponse(resource, Collections.emptyList());
         }
 
+        replicable.ensureReplicableMixin();
         try {
             if (parseBoolean(request.getParameter(DEACTIVATE))) {
                 replicable.setLastReplicationActionAsDeactivated();

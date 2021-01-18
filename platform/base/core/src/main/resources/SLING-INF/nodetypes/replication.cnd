@@ -32,3 +32,4 @@
   - per:ReplicationStatus (string)
   - per:ReplicatedBy (string)
   - per:ReplicationRef (string)
+  - per:ReplicationLastAction (string)
