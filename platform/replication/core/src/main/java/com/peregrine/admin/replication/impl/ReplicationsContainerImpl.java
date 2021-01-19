@@ -58,6 +58,9 @@ public final class ReplicationsContainerImpl implements ReplicationsContainer {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Map<String, Replication> replications = new HashMap<>();
 
+    @Reference
+    private DefaultReplicationMapper defaultReplicationMapper;
+
     @Reference(
             cardinality = ReferenceCardinality.MULTIPLE,
             policy = ReferencePolicy.DYNAMIC,
@@ -108,7 +111,9 @@ public final class ReplicationsContainerImpl implements ReplicationsContainer {
 
     @Override
     public Replication getDefault() {
-        return get(DEFAULT_REPL);
+        return Optional.of(DEFAULT_REPL)
+                .map(this::get)
+                .orElse(defaultReplicationMapper);
     }
 
     @Override

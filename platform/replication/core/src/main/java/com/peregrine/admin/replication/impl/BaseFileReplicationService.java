@@ -26,11 +26,13 @@ package com.peregrine.admin.replication.impl;
  */
 
 import com.peregrine.admin.replication.AbstractionReplicationService;
+import com.peregrine.commons.ResourceUtils;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
 import com.peregrine.render.RenderService;
 import com.peregrine.render.RenderService.RenderException;
+import com.peregrine.versions.VersioningResourceResolver;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -42,10 +44,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
 import static com.peregrine.commons.Chars.DOT;
+import static com.peregrine.commons.util.PerConstants.PUBLISHED_LABEL;
 import static com.peregrine.commons.util.PerConstants.RENDITION_ACTION;
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
@@ -56,7 +64,10 @@ import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
 import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
 import static com.peregrine.commons.util.PerUtil.RENDITIONS;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
+import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * Base Class for External File System / Storage Replications
@@ -82,10 +93,42 @@ public abstract class BaseFileReplicationService
         EXCLUDED_RESOURCES.add(RENDITIONS);
     }
 
+
+    private final RenditionConsumer assetRenditionCreator = (resource, renditionName) -> {
+        if (isNotBlank(renditionName)) {
+            getRenderService().renderRawInternally(resource, RENDITION_ACTION + SLASH + renditionName);
+        }
+    };
+    private final RenditionConsumer assetRenditionReplicator = (resource, renditionName) -> {
+        final var initialResolver = resource.getResourceResolver();
+        final var targetResolver = new VersioningResourceResolver(initialResolver, PUBLISHED_LABEL);
+        final var wrappedResource = targetResolver.wrap(resource);
+        if (isNull(wrappedResource)) {
+            return;
+        }
+
+        final String extension = isBlank(renditionName) ? EMPTY : RENDITION_ACTION + SLASH + renditionName;
+        final byte[] content = getRenderService().renderRawInternally(wrappedResource, extension);
+        storeRendering(resource, renditionName, content);
+    };
+
     @Override
-    public List<Resource> replicate(Resource startingResource, boolean deep)
-        throws ReplicationException
-    {
+    public List<Resource> filterReferences(final List<Resource> resources) {
+        return filterReferences((Collection<Resource>)resources);
+    }
+
+    private List<Resource> filterReferences(final Collection<Resource> resources) {
+        // Ignore jcr:content as they cannot be rendered to the FS (if needed then we need to map the file names)
+        // AS TODO: Check if the resource name can be mapped to a file name and if not ignore it.
+        // Also make sure we ignore nodes like jcr:content
+        return resources.stream()
+                .filter(Objects::nonNull)
+                .filter(item -> !item.getPath().contains(JCR_CONTENT))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Resource> findReferences(Resource startingResource, boolean deep) {
         log.trace("Replicate Resource: '{}', deep: '{}'", startingResource, deep);
         List<Resource> referenceList = getReferenceLister().getReferenceList(true, startingResource, true);
         List<Resource> replicationList = new ArrayList<>();
@@ -110,8 +153,8 @@ public abstract class BaseFileReplicationService
         for(Resource reference: replicationList) {
             PerUtil.listMissingResources(reference, replicationList, resourceChecker, false);
         }
-        PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, deep);
-        return replicate(replicationList);
+
+        return filterReferences(PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, deep));
     }
 
     @Override
@@ -120,6 +163,20 @@ public abstract class BaseFileReplicationService
     {
         List<Resource> replicationList = new ArrayList<>(Arrays.asList(startingResource));
         return deactivate(startingResource, replicationList);
+    }
+
+    @Override
+    public List<Resource> prepare(final Collection<Resource> resourceList) throws ReplicationException {
+        final List<Resource> answer = filterReferences(resourceList);
+        for (final Resource resource: answer) {
+            // Need to figure out the type and replicate accordingly
+            String primaryType = PerUtil.getPrimaryType(resource);
+            if (ASSET_PRIMARY_TYPE.equals(primaryType)) {
+                processAssetRenditions(resource, assetRenditionCreator);
+            }
+        }
+
+        return answer;
     }
 
     @Override
@@ -136,16 +193,17 @@ public abstract class BaseFileReplicationService
         }
         if(resourceResolver != null) {
             Session session = resourceResolver.adaptTo(Session.class);
-            for(Resource item: resourceList) {
-                if(item != null) {
-                    // Ignore jcr:content as they cannot be rendered to the FS (if needed then we need to map the file names)
-                    //AS TODO: Check if the resource name can be mapped to a file name and if not ignore it. Also make sure we ignore nodes like jcr:content
-                    if(!item.getPath().contains(JCR_CONTENT)) {
-                        handleParents(item.getParent());
-                        replicateResource(item);
-                        answer.add(item);
-                    }
+            for(Resource item: filterReferences(resourceList)) {
+                handleParents(item.getParent());
+                // Need to figure out the type and replicate accordingly
+                String primaryType = PerUtil.getPrimaryType(item);
+                if(ASSET_PRIMARY_TYPE.equals(primaryType)) {
+                    processAssetRenditions(item, assetRenditionReplicator);
+                } else {
+                    replicatePerResource(item, false);
                 }
+
+                answer.add(item);
             }
             try {
                 session.save();
@@ -203,16 +261,6 @@ public abstract class BaseFileReplicationService
         }
     }
 
-    private void replicateResource(Resource resource) throws ReplicationException {
-        // Need to figure out the type and replicate accordingl
-        String primaryType = PerUtil.getPrimaryType(resource);
-        if(ASSET_PRIMARY_TYPE.equals(primaryType)) {
-            replicateAsset(resource);
-        } else {
-            replicatePerResource(resource, false);
-        }
-    }
-
     /** @return Map listing all extensions and the primary types of all nodes that are exported with that extension **/
     abstract List<ExportExtension> getExportExtensions();
     /** @return A list of all mandatory renditions which are created during the replication if not already there **/
@@ -222,48 +270,43 @@ public abstract class BaseFileReplicationService
         return resource.getName() + (isNotEmpty(extension) ? DOT + extension : EMPTY);
     }
 
-    private void replicateAsset(Resource resource) throws ReplicationException {
+    private void processAssetRenditions(Resource resource, RenditionConsumer consumer) throws ReplicationException {
+        if (isNull(resource)) {
+            return;
+        }
+
         try {
             // Get the image data of the resource and write to the target
-            byte[] imageContent = getRenderService().renderRawInternally(resource, "");
-            storeRendering(resource, "", imageContent);
+            consumer.consume(resource, EMPTY);
             // Loop over all existing renditions and write the image data to the target
-            List<String> checkRenditions = new ArrayList<>(getMandatoryRenditions());
-            Resource renditions = resource.getChild(RENDITIONS);
-            if(renditions != null) {
-                for(Resource rendition : renditions.getChildren()) {
-                    if(NT_FILE.equals(PerUtil.getPrimaryType(rendition))) {
-                        try {
-                            imageContent = getRenderService().renderRawInternally(resource, RENDITION_ACTION + SLASH + rendition.getName());
-                            storeRendering(resource, rendition.getName(), imageContent);
-                            checkRenditions.remove(rendition.getName());
-                        } catch(RenderException e) {
-                            log.warn("Rendition: '{}' failed with message: '{}'", rendition.getPath(), e.getMessage());
-                            log.warn("Rendition Failure", e);
-                        }
-                    }
+            final List<String> checkRenditions = new ArrayList<>(getMandatoryRenditions());
+            final Resource renditions = ResourceUtils.tryToCreateChildOrGetNull(resource, RENDITIONS, SLING_FOLDER);
+            for (final Resource rendition : Optional.ofNullable(renditions)
+                    .map(Resource::getChildren)
+                    .map(Iterable::spliterator)
+                    .map(i -> StreamSupport.stream(i, false))
+                    .orElseGet(Stream::empty)
+                    .filter(r -> NT_FILE.equals(PerUtil.getPrimaryType(r)))
+                    .collect(Collectors.toList())) {
+                try {
+                    final String renditionName = rendition.getName();
+                    consumer.consume(resource, renditionName);
+                    checkRenditions.remove(renditionName);
+                } catch (RenderException e) {
+                    log.warn("Rendition: '{}' failed with message: '{}'", rendition.getPath(), e.getMessage());
+                    log.warn("Rendition Failure", e);
                 }
             }
             // Loop over all remaining mandatory renditions and write the image data to the target
             for(String renditionName : checkRenditions) {
                 try {
-                    imageContent = getRenderService().renderRawInternally(resource, RENDITION_ACTION + SLASH + renditionName);
-                    // Get rendition
-                    if(renditions == null) {
-                        renditions = resource.getChild(RENDITIONS);
-                    }
-                    if(renditions != null) {
-                        Resource rendition = renditions.getChild(renditionName);
-                        if(rendition != null) {
-                            storeRendering(resource, rendition.getName(), imageContent);
-                        }
-                    }
+                    consumer.consume(resource, renditionName);
                 } catch(RenderException e) {
                     log.warn("Rendition: '{}' failed with message: '{}'", renditionName, e.getMessage());
                     log.warn("Rendition Failure", e);
                 }
             }
-        } catch(RenderException e) {
+        } catch(final RenderException e) {
             throw new ReplicationException(RENDERING_OF_ASSET_FAILED, e);
         }
     }
@@ -315,12 +358,13 @@ public abstract class BaseFileReplicationService
             if(exportExtension.supportsResource(resource)) {
                 Object renderingContent = null;
                 try {
+                    final RenderService renderService = getRenderService();
                     if(raw) {
                         log.trace("Before Rendering Raw Resource With Extension: '{}'", extension);
-                        renderingContent = getRenderService().renderRawInternally(resource, extension);
+                        renderingContent = renderService.renderRawInternally(resource, extension);
                     } else {
                         log.trace("Before Rendering String Resource With Extension: '{}'", extension);
-                        renderingContent = getRenderService().renderInternally(resource, extension);
+                        renderingContent = renderService.renderInternally(resource, extension);
                     }
                 } catch(RenderException e) {
                     log.warn("Rendering of '{}' failed -> ignore it", resource.getPath());
@@ -381,4 +425,9 @@ public abstract class BaseFileReplicationService
             return this;
         }
     }
+
+    private interface RenditionConsumer {
+        void consume(Resource resource, String renditionName) throws RenderException, ReplicationException;
+    }
+
 }

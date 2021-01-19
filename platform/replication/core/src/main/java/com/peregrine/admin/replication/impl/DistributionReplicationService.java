@@ -129,9 +129,7 @@ public class DistributionReplicationService
     private ReferenceLister referenceLister;
 
     @Override
-    public List<Resource> replicate(Resource startingResource, boolean deep)
-        throws ReplicationException
-    {
+    public List<Resource> findReferences(Resource startingResource, boolean deep) {
         log.trace("Starting Resource: '{}'", startingResource.getPath());
         List<Resource> referenceList = referenceLister.getReferenceList(true, startingResource, true);
         log.trace("Reference List: '{}'", referenceList);
@@ -155,7 +153,7 @@ public class DistributionReplicationService
         }
         PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, deep);
         log.trace("List for Replication: '{}'", replicationList);
-        return replicate(replicationList);
+        return replicationList;
     }
 
     @Override

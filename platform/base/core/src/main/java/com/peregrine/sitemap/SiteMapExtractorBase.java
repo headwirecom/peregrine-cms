@@ -57,7 +57,7 @@ public abstract class SiteMapExtractorBase implements SiteMapExtractor {
 
     @Override
     public List<SiteMapEntry> extract(final Resource resource) {
-        final Page page = getProxy(resource);
+        final Page page = new Page(resource);
         final List<SiteMapEntry> result = new LinkedList<>();
         final Optional<SiteMapEntry> entry = Optional.ofNullable(page)
                 .filter(this::isPage)
@@ -70,10 +70,6 @@ public abstract class SiteMapExtractorBase implements SiteMapExtractor {
         }
 
         return result;
-    }
-
-    protected Page getProxy(final Resource page) {
-        return new Page(page);
     }
 
     private boolean isPage(final Page page) {

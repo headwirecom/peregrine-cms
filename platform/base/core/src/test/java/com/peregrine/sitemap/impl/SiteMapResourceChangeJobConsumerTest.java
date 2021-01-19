@@ -1,8 +1,8 @@
 package com.peregrine.sitemap.impl;
 
-import com.peregrine.SlingResourcesTest;
-import com.peregrine.sitemap.ResourceResolverFactoryProxy;
 import com.peregrine.sitemap.SiteMapStructureCache;
+import com.peregrine.sitemap.SiteStructureTestBase;
+import com.peregrine.sitemap.VersioningResourceResolverFactory;
 import junitx.util.PrivateAccessor;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.event.jobs.Job;
@@ -13,16 +13,18 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import javax.jcr.RepositoryException;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.apache.jackrabbit.JcrConstants.JCR_FROZENPRIMARYTYPE;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SiteMapResourceChangeJobConsumerTest extends SlingResourcesTest {
+public final class SiteMapResourceChangeJobConsumerTest extends SiteStructureTestBase {
 
     private final String[] primaryTypes = { "per:X", "per:Y", "per:Z" };
     private final SiteMapResourceChangeJobConsumer model = new SiteMapResourceChangeJobConsumer();
@@ -32,7 +34,7 @@ public final class SiteMapResourceChangeJobConsumerTest extends SlingResourcesTe
     private SiteMapStructureCache cache;
 
     @Mock
-    private ResourceResolverFactoryProxy resourceResolverFactory;
+    private VersioningResourceResolverFactory resourceResolverFactory;
 
     @Mock
     private SiteMapResourceChangeJobConsumerConfig config;
@@ -41,29 +43,29 @@ public final class SiteMapResourceChangeJobConsumerTest extends SlingResourcesTe
     private Job job;
 
     @Before
-    public void setUp() throws NoSuchFieldException, LoginException {
+    public void setUp() throws NoSuchFieldException, LoginException, RepositoryException {
         PrivateAccessor.setField(model, "resourceResolverFactory", resourceResolverFactory);
         PrivateAccessor.setField(model, "cache", cache);
         when(config.primaryTypes()).thenReturn(primaryTypes);
         model.activate(config);
         when(job.getProperty(SiteMapResourceChangeJobConsumer.PN_PATHS, Set.class)).thenReturn(initialPaths);
-        when(resourceResolverFactory.getServiceResourceResolver()).thenReturn(resourceResolver);
+        when(resourceResolverFactory.createResourceResolver()).thenReturn(versioningResolver);
     }
 
     @SuppressWarnings("unchecked")
 	@Test
     public void handleLoginException() throws LoginException {
-        when(resourceResolverFactory.getServiceResourceResolver()).thenThrow(LoginException.class);
+        when(resourceResolverFactory.createResourceResolver()).thenThrow(LoginException.class);
         assertEquals(JobConsumer.JobResult.CANCEL, model.process(job));
     }
 
     @Test
     public void process() {
-        resource.setPrimaryType("per:X");
+        resource.putProperty(JCR_FROZENPRIMARYTYPE, "per:X");
         initialPaths.add(resource.getPath());
-        page.setPrimaryType("per:Page");
+        page.putProperty(JCR_FROZENPRIMARYTYPE, "per:Page");
         initialPaths.add(page.getPath());
-        parent.setPrimaryType("per:Y");
+        parent.putProperty(JCR_FROZENPRIMARYTYPE, "per:Y");
         initialPaths.add(parent.getPath());
         final Set<Object> rebuilt = new HashSet<>();
         doAnswer(invocation -> {
@@ -73,7 +75,6 @@ public final class SiteMapResourceChangeJobConsumerTest extends SlingResourcesTe
         assertEquals(JobConsumer.JobResult.OK, model.process(job));
         assertTrue(rebuilt.contains(resource.getPath()));
         assertFalse(rebuilt.contains(page.getPath()));
-        assertTrue(rebuilt.contains(parent.getPath()));
     }
 
 }

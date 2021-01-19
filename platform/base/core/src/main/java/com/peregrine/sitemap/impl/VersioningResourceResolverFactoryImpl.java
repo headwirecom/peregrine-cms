@@ -25,7 +25,8 @@ package com.peregrine.sitemap.impl;
  * #L%
  */
 
-import com.peregrine.sitemap.ResourceResolverFactoryProxy;
+import com.peregrine.sitemap.VersioningResourceResolverFactory;
+import com.peregrine.versions.VersioningResourceResolver;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
@@ -35,8 +36,10 @@ import org.osgi.service.component.annotations.Reference;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component(service = ResourceResolverFactoryProxy.class)
-public final class ResourceResolverFactoryProxyImpl implements ResourceResolverFactoryProxy {
+import static com.peregrine.commons.util.PerConstants.PUBLISHED_LABEL;
+
+@Component(service = VersioningResourceResolverFactory.class)
+public final class VersioningResourceResolverFactoryImpl implements VersioningResourceResolverFactory {
 
     private static final String SITE_MAPS_SUB_SERVICE = "sitemaps";
     private static final Map<String, Object> AUTHENTICATION_INFO = new HashMap<>();
@@ -49,8 +52,9 @@ public final class ResourceResolverFactoryProxyImpl implements ResourceResolverF
     private ResourceResolverFactory resourceResolverFactory;
 
     @Override
-    public ResourceResolver getServiceResourceResolver() throws LoginException {
-        return resourceResolverFactory.getServiceResourceResolver(AUTHENTICATION_INFO);
+    public VersioningResourceResolver createResourceResolver() throws LoginException {
+        final ResourceResolver resolver = resourceResolverFactory.getServiceResourceResolver(AUTHENTICATION_INFO);
+        return new VersioningResourceResolver(resolver, PUBLISHED_LABEL);
     }
 
 }

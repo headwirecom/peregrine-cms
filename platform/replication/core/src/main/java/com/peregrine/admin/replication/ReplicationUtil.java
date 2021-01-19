@@ -165,6 +165,7 @@ public class ReplicationUtil {
         try {
             resourceResolver.commit();
         } catch (final PersistenceException e) {
+            resourceResolver.revert();
             LOGGER.error("could not commit replication property changes", e);
         }
     }

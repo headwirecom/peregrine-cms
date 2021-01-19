@@ -52,7 +52,6 @@ public class PerUtil {
 
     public static final String RENDITIONS = "renditions";
     public static final String METADATA = "metadata";
-//    public static final String TEMPLATE = "template";
 
     public static final String PER_VENDOR = "headwire.com, Inc";
     public static final String PER_PREFIX = "Peregrine: ";
