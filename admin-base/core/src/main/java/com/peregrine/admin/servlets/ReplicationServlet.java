@@ -26,11 +26,13 @@ package com.peregrine.admin.servlets;
  */
 
 import com.peregrine.adaption.PerReplicable;
-import com.peregrine.admin.replication.DefaultReplicationMapper;
 import com.peregrine.admin.replication.ReplicationConstants;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.commons.util.PerConstants;
+import com.peregrine.replication.Replication;
 import com.peregrine.replication.Replication.ReplicationException;
+import com.peregrine.replication.ReplicationsContainer;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
@@ -43,6 +45,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.peregrine.admin.replication.ReplicationConstants.*;
+import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerUtil.AddAllResourceChecker;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -51,6 +54,7 @@ import static com.peregrine.commons.util.PerUtil.POST;
 import static com.peregrine.commons.util.PerUtil.listMissingResources;
 import static java.lang.Boolean.parseBoolean;
 import static java.util.Objects.isNull;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -79,6 +83,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 public final class ReplicationServlet extends ReplicationServletBase {
 
     public static final String DEACTIVATE = "deactivate";
+    public static final String REPLICATION_NOT_FOUND_FOR_NAME = "Replication not found for name: ";
     public static final String REPLICATION_FAILED = "Replication Failed";
     public static final String REPLICATES = "replicates";
     public static final String RESOURCES = "resources";
@@ -86,7 +91,7 @@ public final class ReplicationServlet extends ReplicationServletBase {
     public static final AddAllResourceChecker ADD_ALL_RESOURCE_CHECKER = new AddAllResourceChecker();
 
     @Reference
-    private DefaultReplicationMapper defaultReplicationMapper;
+    private ReplicationsContainer replicationsContainer;
 
     @Reference
     private AdminResourceHandler resourceManagement;
@@ -97,6 +102,14 @@ public final class ReplicationServlet extends ReplicationServletBase {
             final Resource resource,
             final ResourceResolver resourceResolver
     ) throws IOException {
+        final String replicationName = StringUtils.defaultString(request.getParameter(NAME), "defaultRepl");
+        final Replication replication = replicationsContainer.getOrDefault(replicationName);
+        if (isNull(replication)) {
+            return new ErrorResponse()
+                    .setHttpErrorCode(SC_BAD_REQUEST)
+                    .setErrorMessage(REPLICATION_NOT_FOUND_FOR_NAME + replicationName);
+        }
+
         final PerReplicable replicable = resource.adaptTo(PerReplicable.class);
         if (isNull(replicable)) {
             return prepareResponse(resource, Collections.emptyList());
@@ -106,7 +119,7 @@ public final class ReplicationServlet extends ReplicationServletBase {
         try {
             if (parseBoolean(request.getParameter(DEACTIVATE))) {
                 replicable.setLastReplicationActionAsDeactivated();
-                final var replicatedStuff = defaultReplicationMapper.deactivate(resource);
+                final var replicatedStuff = replication.deactivate(resource);
                 for (final Resource r : streamReplicableResources(replicatedStuff)
                         .collect(Collectors.toList())) {
                     resourceManagement.deleteVersionLabel(r, PerConstants.PUBLISHED_LABEL);
@@ -128,7 +141,7 @@ public final class ReplicationServlet extends ReplicationServletBase {
                 listMissingResources(r, toBeReplicated, ADD_ALL_RESOURCE_CHECKER, deep);
             }
 
-            toBeReplicated = defaultReplicationMapper.prepare(toBeReplicated);
+            toBeReplicated = replication.prepare(toBeReplicated);
             // Replication can be local or remote and so the commit of the changes is done inside the Replication Service
             streamReplicableResources(toBeReplicated)
                     .map(Resource::getPath)
@@ -139,7 +152,7 @@ public final class ReplicationServlet extends ReplicationServletBase {
                             logger.trace("Unable to create a version for path: {} ", p, e);
                         }
                     });
-            return prepareResponse(resource, defaultReplicationMapper.replicate(toBeReplicated));
+            return prepareResponse(resource, replication.replicate(toBeReplicated));
         } catch (final ReplicationException e) {
             return badRequestReplicationFailed(e);
         }

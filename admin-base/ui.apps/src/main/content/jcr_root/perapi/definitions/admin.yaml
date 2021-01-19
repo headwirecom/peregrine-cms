@@ -896,6 +896,11 @@ paths:
           in: path
           description: the path of the node(s) to be replicated
           required: true
+        - name: name
+          type: string
+          in: formData
+          description: the name of the replication service to be used
+          required: true
         - name: deep
           type: boolean
           in: formData
