@@ -75,6 +75,19 @@ export default {
   watch: {
     value(val) {
       this.model[this.schema.model] = val
+
+      let propsToRemove = this.model['_opDeleteProps'] || []
+      if (val || val === 0 || val === "0") {
+        propsToRemove = propsToRemove.filter(x => x !== this.schema.model)
+      } else {
+        propsToRemove.push(this.schema.model)
+      }
+
+      if (propsToRemove.length > 0) {
+        this.model['_opDeleteProps'] = propsToRemove
+      } else {
+        delete this.model['_opDeleteProps']
+      }
     }
   },
   created() {

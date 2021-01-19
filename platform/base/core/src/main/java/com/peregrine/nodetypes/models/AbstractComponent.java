@@ -89,4 +89,7 @@ public class AbstractComponent implements IComponent {
         return experiences;
     }
 
+    public String getName() {
+        return resource.getName();
+    }
 }

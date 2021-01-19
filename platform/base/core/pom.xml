@@ -59,7 +59,9 @@
                             com.peregrine.sitemap,
                             com.peregrine.transform,
                             com.peregrine.transform.*,
-                            com.peregrine.commons.util
+                            com.peregrine.commons.util,
+                            com.peregrine.model.api,
+                            com.peregrine.versions
                         </Export-Package>
                         <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
                         <Sling-Model-Packages>com.peregrine.models,com.peregrine.nodetypes.models</Sling-Model-Packages>
@@ -172,11 +174,6 @@
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.engine</artifactId>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.apache.sling</groupId>-->
-            <!--<artifactId>org.apache.sling.commons.testing</artifactId>-->
-            <!--<scope>compile</scope>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.event</artifactId>
@@ -219,14 +216,6 @@
             <artifactId>guava</artifactId>
             <groupId>com.google.guava</groupId>
         </dependency>
-
-        <!--AS TODO: Is that really needed -->
-        <!--<dependency>-->
-            <!--<artifactId>org.apache.felix.http.jetty</artifactId>-->
-            <!--<version>3.4.2</version>-->
-            <!--<groupId>org.apache.felix</groupId>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

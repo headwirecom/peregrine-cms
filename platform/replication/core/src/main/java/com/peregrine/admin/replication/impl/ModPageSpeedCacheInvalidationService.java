@@ -116,7 +116,7 @@ public class ModPageSpeedCacheInvalidationService
     private ReferenceLister referenceLister;
 
     @Override
-    public List<Resource> replicate(final Resource resource, boolean deep)
+    public List<Resource> findReferences(Resource source, boolean deep)
     {
         // no op
         return Collections.emptyList();

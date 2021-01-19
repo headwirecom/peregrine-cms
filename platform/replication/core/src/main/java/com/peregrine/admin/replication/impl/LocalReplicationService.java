@@ -156,9 +156,7 @@ public class LocalReplicationService
     private ReferenceLister referenceLister;
 
     @Override
-    public List<Resource> replicate(Resource startingResource, boolean deep)
-        throws ReplicationException
-    {
+    public List<Resource> findReferences(Resource startingResource, boolean deep) throws ReplicationException {
         ResourceResolver resourceResolver = startingResource.getResourceResolver();
         Resource source = resourceResolver.getResource(localSource);
         if(source == null) {
@@ -182,8 +180,7 @@ public class LocalReplicationService
             listMissingResources(reference, replicationList, resourceChecker, false);
         }
         listMissingParents(startingResource, replicationList, source, resourceChecker);
-        listMissingResources(startingResource, replicationList, resourceChecker, deep);
-        return replicate(replicationList);
+        return listMissingResources(startingResource, replicationList, resourceChecker, deep);
     }
 
     @Override

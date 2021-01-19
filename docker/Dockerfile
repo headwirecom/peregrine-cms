@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:latest as build
+FROM adoptopenjdk/openjdk11:latest
 
 ARG PEREGRINECMS_REPO=https://github.com/headwirecom/peregrine-cms.git
 ARG PEREGRINECMS_BRANCH=develop-sling12
@@ -13,9 +13,7 @@ RUN apt update -q \
     && apt install -q -y --no-install-recommends \
         curl \
         jq \
-        libvips libvips-tools
-
-RUN apt install -q -y \
+        libvips libvips-tools \
         tar \
         xz-utils \
         git \
@@ -31,8 +29,8 @@ COPY overlay/root/.m2/settings.xml /root/.m2/
 
 # Start - Use repository/package pinning to upgrade libvips from version 8.4 to 8.6
 COPY overlay/etc/apt/preferences.d/* /etc/apt/preferences.d/
-RUN echo "deb http://archive.ubuntu.com/ubuntu/ eoan main restricted" >> /etc/apt/sources.list \
-    && echo "deb http://archive.ubuntu.com/ubuntu/ eoan universe" >> /etc/apt/sources.list \
+RUN echo "deb http://archive.ubuntu.com/ubuntu/ focal main restricted" >> /etc/apt/sources.list \
+    && echo "deb http://archive.ubuntu.com/ubuntu/ focal universe" >> /etc/apt/sources.list \
     && apt update \
     && apt --only-upgrade install -y libvips libvips-tools
 # End 
@@ -49,22 +47,6 @@ RUN scripts/checkout-projects.sh $PEREGRINECMS_REPO $PEREGRINECMS_BRANCH \
     $THEMECLEANFLEX_REPO $THEMECLEANFLEX_BRANCH
 RUN scripts/install-sling.sh
 RUN scripts/install-peregrine.sh
-
-# clean up unnecessary git repos
-RUN rm -rf /app/peregrine-cms /app/themeclean-flex /app/binaries
-
-FROM adoptopenjdk/openjdk11:latest
-
-RUN apt update -q \
-    && apt upgrade -q -y \
-    && apt install -q -y --no-install-recommends \
-        curl \
-        jq \
-        libvips libvips-tools
-
-RUN apt-get purge -y --auto-remove && rm -rf /var/lib/apt/lists/* && rm -rf /etc/apt/sources.list.d/temp.list;
-
-COPY --from=build /app /app
 
 ENTRYPOINT /app/scripts/start.sh && tail -qF /app/sling/logs/error.log
 

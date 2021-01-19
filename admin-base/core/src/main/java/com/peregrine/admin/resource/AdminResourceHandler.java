@@ -156,6 +156,8 @@ public interface AdminResourceHandler {
     void restoreVersionByName(ResourceResolver resourceResolver, String path, String versionName, boolean removingExisting)
             throws RepositoryException;
 
+    boolean deleteVersionLabel(Resource resource, String label);
+
     /**
      * Checks whether a resource is checked-out (editabled), or checked-in (frozen)
      * @param resourceResolver Resource Resolver to manage resources and cannot be null

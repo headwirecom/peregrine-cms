@@ -143,11 +143,13 @@ public class RenditionsServlet extends AbstractBaseServlet {
                 renditionName = renditionName.substring(index + 1);
             }
             ImageContext imageContext = null;
+            final var resourceResolver = request.getResourceResolver();
             try {
                 imageContext = renditionHandler.createRendition(resource, renditionName, sourceMimeType);
-                request.getResourceResolver().commit();
+                resourceResolver.commit();
             } catch(HandlerException e) {
                 logger.debug("Create Rendition failed !!", e);
+                resourceResolver.revert();
                 return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST).setErrorMessage(e.getMessage()).setException(e);
             }
             if(imageContext != null) {

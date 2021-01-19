@@ -225,7 +225,8 @@
             </div>
         </div>
         <admin-components-explorerpreview v-if="hasEdit">
-            <component v-bind:is="model.children[0].component" v-bind:model="model.children[0]"></component>
+            <component v-bind:is="model.children[0].component" v-bind:model="model.children[0]"
+                :onDelete="handleDelete"></component>
         </admin-components-explorerpreview>
     </div>
     </div>
@@ -244,14 +245,8 @@
                     class="btn"
                     v-on:click="onDoneFileUpload">ok</button>
             </div>
-            <!-- <progress class="file-upload-progress" v-bind:value="uploadProgress" max="100"></progress> -->
         </div>
     </div>
-    <!--
-    <template v-for="child in model.children[0].children">
-        <component v-bind:is="child.component" v-bind:model="child"></component>
-    </template>
-    -->
 </div>
 </template>
 
@@ -653,25 +648,32 @@ export default {
                 }
             },
 
-            deletePage: function(me, target) {
-                $perAdminApp.askUser('Delete Page', me.$i18n('Are you sure you want to delete this node and all its children?'), {
-                    yes() {
-                        const resourceType = target.resourceType
-                        if(resourceType === 'per:Object') {
-                            $perAdminApp.stateAction('deleteObject', target.path)
-                        } else if(resourceType === 'per:Asset') {
-                            $perAdminApp.stateAction('deleteAsset', target.path)
-                        } else if(resourceType === 'sling:OrderedFolder') {
-                            $perAdminApp.stateAction('deleteFolder', target.path)
-                        } else if(resourceType === 'per:Page') {
-                            $perAdminApp.stateAction('deletePage', target.path)
-                        } else if(resourceType === 'nt:file') {
-                            $perAdminApp.stateAction('deleteFile', target.path)
-                        }else {
-                            $perAdminApp.stateAction('deleteFolder', target.path)
+            handleDelete: function(type, path) {
+                const me = this
+                return new Promise((resolve, reject) => {
+                    $perAdminApp.askUser(`Delete ${type}?`, me.$i18n(`Are you sure you want to delete this node and all its children?`), {
+                        yes() {
+                            $perAdminApp.stateAction(`delete${type.charAt(0).toUpperCase() + type.slice(1)}`, path)
+                            resolve()
                         }
-                    }
+                    })
                 })
+            },
+
+            deletePage: function(me, target) {
+                const { resourceType, path } = target
+                let type = 'folder'
+                if (resourceType === 'per:Object') {
+                    type = 'object'
+                } else if(resourceType === 'per:Asset') {
+                    type = 'asset'
+                } else if(resourceType === 'per:Page') {
+                    type = 'page'
+                } else if(resourceType === 'nt:file') {
+                    type = 'file'
+                }
+
+                this.handleDelete(type, path)
             },
 
             deleteTenant: function(me, target) {
@@ -738,9 +740,6 @@ export default {
 <style>
     .item-activated {
         color: green;
-    }
-
-    .item-replication-unknown {
     }
 
     .item-deactivated {
