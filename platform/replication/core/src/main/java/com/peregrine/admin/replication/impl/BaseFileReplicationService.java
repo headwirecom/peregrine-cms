@@ -391,10 +391,9 @@ public abstract class BaseFileReplicationService
         return null;
     }
 
-    public static class ExportExtension {
+    protected static class ExportExtension {
         private String name;
         private List<String> types;
-        private boolean exportFolders = false;
 
         public ExportExtension(String name, List<String> types) {
             if(StringUtils.isEmpty(name)) {
@@ -417,15 +416,6 @@ public abstract class BaseFileReplicationService
             String slingResourceType = PerUtil.getResourceType(resource);
             if(types.contains(slingResourceType)) { return true; }
             return false;
-        }
-
-        public boolean isExportFolders() {
-            return exportFolders;
-        }
-
-        public ExportExtension setExportFolders(boolean exportFolders) {
-            this.exportFolders = exportFolders;
-            return this;
         }
     }
 

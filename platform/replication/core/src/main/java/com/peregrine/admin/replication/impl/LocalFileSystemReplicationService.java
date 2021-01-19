@@ -46,7 +46,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -61,7 +60,6 @@ import static com.peregrine.commons.util.PerUtil.getJcrContent;
 import static com.peregrine.commons.util.PerUtil.intoList;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static com.peregrine.commons.util.PerUtil.splitIntoMap;
-import static com.peregrine.commons.util.PerUtil.splitIntoProperties;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
@@ -91,7 +89,6 @@ public class LocalFileSystemReplicationService
     public static final String FAILED_TO_STORE_RENDERING = "Failed to write raw rending content to file: '%s'";
     public static final String SUPPORTED_TYPES_EMPTY = "Supported Types is empty for Extension: '%s'";
     public static final String COULD_NOT_CREATE_LEAF_FOLDER = "Could not create leaf folder: '%s'";
-    public static final String EXPORT_FOLDER = "exportFolder";
     public static final String REPLICATION_TARGET_FOLDER_CANNOT_BE_EMPTY = "Replication Target Folder cannot be empty";
     public static final String COULD_NOT_CREATE_ALL_FOLDERS = "Could not create all folders: '%s'";
     public static final String REPLICATION_FOLDER_NOT_CREATED = "Replication Target Folder: '%s' does not exist and will not be created";
@@ -107,20 +104,17 @@ public class LocalFileSystemReplicationService
         @AttributeDefinition(
             name = "Name",
             description = "Name of the Replication Service",
-            defaultValue = "localFS",
-            required = true
+            defaultValue = "localFS"
         )
         String name();
         @AttributeDefinition(
             name = "Description",
-            description = "Description of this Replication Service",
-            required = true
+            description = "Description of this Replication Service"
         )
         String description();
         @AttributeDefinition(
             name = "TargetFolder",
-            description = "Path to the local folder where the content is exported to",
-            required = true
+            description = "Path to the local folder where the content is exported to"
         )
         String targetFolder();
         @AttributeDefinition(
@@ -128,20 +122,17 @@ public class LocalFileSystemReplicationService
             description = "Indicates what to create for the Target Folder. 0 (or any other not mentioned number) means no creation, 1 means creating only the leaf folder, 2 means creating all missing folders",
             defaultValue = CREATE_NONE_STRATEGY + "",
             min = CREATE_NONE_STRATEGY + "",
-            max = CREATE_ALL_STRATEGY + "",
-            required = true
+            max = CREATE_ALL_STRATEGY + ""
         )
         int creationStrategy();
         @AttributeDefinition(
             name = "Export Extensions",
-            description = "List of Export Extension in the format of <extension>=<comma separated list of primary types>",
-            required = true
+            description = "List of Export Extension in the format of <extension>=<comma separated list of primary types>"
         )
         String[] exportExtensions();
         @AttributeDefinition(
             name = "Mandatory Renditions",
-            description = "List of all the required renditions that are replicated (if missing they are created)",
-            required = true
+            description = "List of all the required renditions that are replicated (if missing they are created)"
         )
         String[] mandatoryRenditions();
     }
@@ -165,21 +156,12 @@ public class LocalFileSystemReplicationService
         creationStrategy = configuration.creationStrategy();
         exportExtensions.clear();
         Map<String, List<String>> extensions = splitIntoMap(configuration.exportExtensions(), "=", "\\|");
-        Map<String, List<String>> extensionParameters = new HashMap<>();
         for(Entry<String, List<String>> extension: extensions.entrySet()) {
             String name = extension.getKey();
             if(isNotEmpty(name)) {
                 List<String> types = extension.getValue();
                 if(types != null && !types.isEmpty()) {
-                    List<String> parameters = extensionParameters.get(name);
-                    boolean exportFolder = false;
-                    if(parameters != null) {
-                        String param = splitIntoProperties(parameters, ":").get(EXPORT_FOLDER) + "";
-                        exportFolder = Boolean.TRUE.toString().equalsIgnoreCase(param);
-                    }
-                    exportExtensions.add(
-                        new ExportExtension(name, types).setExportFolders(exportFolder)
-                    );
+                    exportExtensions.add(new ExportExtension(name, types));
                 } else {
                     throw new IllegalArgumentException(String.format(SUPPORTED_TYPES_EMPTY, extension));
                 }
