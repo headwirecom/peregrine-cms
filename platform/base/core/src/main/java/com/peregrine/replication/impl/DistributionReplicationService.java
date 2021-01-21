@@ -45,8 +45,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -105,8 +103,6 @@ public class DistributionReplicationService
     @SuppressWarnings("unused")
     void modified(Configuration configuration) { setup(configuration); }
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
-
     @Reference
     Distributor distributor;
 
@@ -114,7 +110,7 @@ public class DistributionReplicationService
 
     private void setup(Configuration configuration) {
         init(configuration.name(), configuration.description());
-        log.trace("Distributor: '{}'", distributor);
+        logger.trace("Distributor: '{}'", distributor);
         agentName = configuration.agentName();
         if(StringUtils.isEmpty(agentName)) {
             throw new IllegalArgumentException("Agent Name must be provided");
@@ -127,9 +123,9 @@ public class DistributionReplicationService
 
     @Override
     public List<Resource> findReferences(Resource startingResource, boolean deep) {
-        log.trace("Starting Resource: '{}'", startingResource.getPath());
+        logger.trace("Starting Resource: '{}'", startingResource.getPath());
         List<Resource> referenceList = referenceLister.getReferenceList(true, startingResource, true);
-        log.trace("Reference List: '{}'", referenceList);
+        logger.trace("Reference List: '{}'", referenceList);
         List<Resource> replicationList = new ArrayList<>();
         ResourceChecker resourceChecker = new ResourceChecker() {
             @Override
@@ -149,7 +145,7 @@ public class DistributionReplicationService
             PerUtil.listMissingResources(reference, replicationList, resourceChecker, false);
         }
         PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, deep);
-        log.trace("List for Replication: '{}'", replicationList);
+        logger.trace("List for Replication: '{}'", replicationList);
         return replicationList;
     }
 
@@ -157,7 +153,7 @@ public class DistributionReplicationService
     public List<Resource> deactivate(Resource startingResource)
         throws ReplicationException
     {
-        log.trace("Starting Resource: '{}'", startingResource.getPath());
+        logger.trace("Starting Resource: '{}'", startingResource.getPath());
         List<Resource> replicationList = new ArrayList<>();
         ResourceChecker resourceChecker = new ResourceChecker() {
             @Override
@@ -166,7 +162,7 @@ public class DistributionReplicationService
             public boolean doAddChildren(Resource resource) { return true; }
         };
         PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, true);
-        log.trace("List for Replication: '{}'", replicationList);
+        logger.trace("List for Replication: '{}'", replicationList);
         return deactivate(replicationList);
     }
 
@@ -213,7 +209,7 @@ public class DistributionReplicationService
                             sdrDeactivate
                         );
 
-                        log.trace("Distributor Response: '{}'", deactivateResp);
+                        logger.trace("Distributor Response: '{}'", deactivateResp);
                         if(!deactivateResp.isSuccessful() || !(deactivateResp.getState() == ACCEPTED || deactivateResp.getState() != DISTRIBUTED)) {
                             throw new ReplicationException(String.format(DISTRIBUTION_FAILED, deactivateResp));
                         }
@@ -226,7 +222,7 @@ public class DistributionReplicationService
                             new SimpleDistributionRequest(
                                     activate ? DistributionRequestType.ADD : DistributionRequestType.DELETE,
                                     paths));
-                    log.trace("Distributor Response: '{}'", response);
+                    logger.trace("Distributor Response: '{}'", response);
                     if(!response.isSuccessful() || !(response.getState() == ACCEPTED || response.getState() != DISTRIBUTED)) {
                         throw new ReplicationException(String.format(DISTRIBUTION_FAILED, response));
                     }
