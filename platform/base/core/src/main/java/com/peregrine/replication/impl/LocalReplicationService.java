@@ -171,7 +171,7 @@ public class LocalReplicationService
             }
         }
         // This only returns the referenced resources. Now we need to check if there are any JCR Content nodes to be added as well
-        for(Resource reference: new ArrayList<Resource>(replicationList)) {
+        for(Resource reference: new ArrayList<>(replicationList)) {
             listMissingResources(reference, replicationList, resourceChecker, false);
         }
         listMissingParents(startingResource, replicationList, source, resourceChecker);
@@ -192,7 +192,7 @@ public class LocalReplicationService
             throw new ReplicationException(String.format(LOCAL_TARGET_NOT_FOUND, localTarget));
         }
 
-        List<Resource> replicationList = new ArrayList<>(Arrays.asList(startingResource));
+        List<Resource> replicationList = new ArrayList<>(Collections.singletonList(startingResource));
         ResourceChecker resourceChecker = new MatchingResourceChecker(source, target);
         listMissingResources(startingResource, replicationList, resourceChecker, true);
         return deactivate(startingResource, replicationList);
@@ -379,7 +379,7 @@ public class LocalReplicationService
         throws PersistenceException
     {
         log.trace("Copy Resource: '{}', Target Parent Resource: '{}', Path Mappings: '{}'", source.getPath(), targetParent, pathMapping);
-        Resource answer = null;
+        Resource answer;
         Map<String, Object> newProperties = new HashMap<>();
         ModifiableValueMap properties = getModifiableProperties(source, false);
         for(String key : properties.keySet()) {

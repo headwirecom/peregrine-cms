@@ -157,8 +157,19 @@ public abstract class BaseFileReplicationService
     public List<Resource> deactivate(Resource startingResource)
         throws ReplicationException
     {
-        List<Resource> replicationList = new ArrayList<>(Arrays.asList(startingResource));
-        return deactivate(startingResource, replicationList);
+        List<Resource> answer = new ArrayList<>();
+        String primaryType = PerUtil.getPrimaryType(startingResource);
+        if(ASSET_PRIMARY_TYPE.equals(primaryType)) {
+            removeReplica(startingResource, null, false);
+            answer.add(startingResource);
+        } else if(primaryType.startsWith("per:")) {
+            removeReplica(startingResource, NAME_PATTERNS, false);
+            answer.add(startingResource);
+        } else if(primaryType.equals(NT_FOLDER) || primaryType.equals(SLING_FOLDER) || primaryType.equals(SLING_ORDERED_FOLDER)) {
+            removeReplica(startingResource, null, true);
+            answer.add(startingResource);
+        }
+        return answer;
     }
 
     @Override
@@ -197,17 +208,13 @@ public abstract class BaseFileReplicationService
             if(ASSET_PRIMARY_TYPE.equals(primaryType)) {
                 path = processAssetRenditions(item, assetRenditionReplicator);
             } else {
-                path = replicatePerResource(item, false);
+                path = replicatePerResource(item);
             }
 
             answer.add(item);
             if (isNotBlank(path)) {
                 final Resource contentResource = item.getChild(JCR_CONTENT);
-                if (contentResource != null) {
-                    updateReplicationProperties(contentResource, path, null);
-                } else {
-                    updateReplicationProperties(item, path, null);
-                }
+                updateReplicationProperties(Objects.requireNonNullElse(contentResource, item), path, null);
             }
         }
 
@@ -217,31 +224,6 @@ public abstract class BaseFileReplicationService
             log.warn("Failed to save changes replicate parents", e);
         }
 
-        return answer;
-    }
-
-    /**
-     * This method deactivates the given resource to deactivate it and then updates
-     * the given list of source resources with the replication properties
-     *
-     * @param toBeDeleted The staring resource to be removed which removes all its children
-     * @param resourceList The list of the source dependencies to be updated
-     * @return List of all updated source dependencies
-     * @throws ReplicationException
-     */
-    public List<Resource> deactivate(Resource toBeDeleted, List<Resource> resourceList) throws ReplicationException {
-        List<Resource> answer = new ArrayList<>();
-        String primaryType = PerUtil.getPrimaryType(toBeDeleted);
-        if(ASSET_PRIMARY_TYPE.equals(primaryType)) {
-            removeReplica(toBeDeleted, null, false);
-            answer.add(toBeDeleted);
-        } else if(primaryType.startsWith("per:")) {
-            removeReplica(toBeDeleted, NAME_PATTERNS, false);
-            answer.add(toBeDeleted);
-        } else if(primaryType.equals(NT_FOLDER) || primaryType.equals(SLING_FOLDER) || primaryType.equals(SLING_ORDERED_FOLDER)) {
-            removeReplica(toBeDeleted, null, true);
-            answer.add(toBeDeleted);
-        }
         return answer;
     }
 
@@ -351,8 +333,8 @@ public abstract class BaseFileReplicationService
      */
     abstract void removeReplica(Resource resource, final List<Pattern> namePattern, boolean isFolder) throws ReplicationException;
 
-    private String replicatePerResource(Resource resource, boolean post) throws ReplicationException {
-        log.trace("Replicate Resource: '{}', Post: '{}'", resource.getPath(), post);
+    private String replicatePerResource(Resource resource) throws ReplicationException {
+        log.trace("Replicate Resource: '{}'", resource.getPath());
         for(ExportExtension exportExtension: getExportExtensions()) {
             String extension = exportExtension.getName();
             log.trace("Handle Extension: '{}'", extension);
@@ -392,8 +374,8 @@ public abstract class BaseFileReplicationService
     }
 
     protected static class ExportExtension {
-        private String name;
-        private List<String> types;
+        private final String name;
+        private final List<String> types;
 
         public ExportExtension(String name, List<String> types) {
             if(StringUtils.isEmpty(name)) {
@@ -414,8 +396,7 @@ public abstract class BaseFileReplicationService
             String primaryType = PerUtil.getPrimaryType(resource);
             if(types.contains(primaryType)) { return true; }
             String slingResourceType = PerUtil.getResourceType(resource);
-            if(types.contains(slingResourceType)) { return true; }
-            return false;
+            return types.contains(slingResourceType);
         }
     }
 

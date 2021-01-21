@@ -145,15 +145,14 @@ public class LocalFileSystemReplicationService
     void modified(BundleContext context, Configuration configuration) { setup(context, configuration); }
 
     private File targetFolder;
-    private int creationStrategy = CREATE_NONE_STRATEGY;
-    private List<ExportExtension> exportExtensions = new ArrayList<>();
+    private final List<ExportExtension> exportExtensions = new ArrayList<>();
     private List<String> mandatoryRenditions = new ArrayList<>();
 
     private void setup(BundleContext context, Configuration configuration) {
         log.trace("Create Local FS Replication Service Name: '{}'", configuration.name());
         init(configuration.name(), configuration.description());
         log.debug("Extension: '{}'", configuration.exportExtensions());
-        creationStrategy = configuration.creationStrategy();
+        int creationStrategy = configuration.creationStrategy();
         exportExtensions.clear();
         Map<String, List<String>> extensions = splitIntoMap(configuration.exportExtensions(), "=", "\\|");
         for(Entry<String, List<String>> extension: extensions.entrySet()) {

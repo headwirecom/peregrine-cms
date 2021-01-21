@@ -1,6 +1,5 @@
 package com.peregrine.replication;
 
-import com.peregrine.replication.Replication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

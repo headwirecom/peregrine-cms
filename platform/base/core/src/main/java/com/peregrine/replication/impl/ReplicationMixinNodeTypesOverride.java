@@ -75,34 +75,25 @@ public class ReplicationMixinNodeTypesOverride {
         }
         List<String> replicationNodeTypes = Arrays.asList(configuration.replicationNodeTypes());
 
-        ResourceResolver resourceResolver = null;
-        try {
-            resourceResolver = loginService(resourceResolverFactory, DISTRIBUTION_SUB_SERVICE);
+        try (ResourceResolver resourceResolver = loginService(resourceResolverFactory, DISTRIBUTION_SUB_SERVICE)) {
             log.trace("Resource Resolver: '{}'", resourceResolver);
             NodeTypeManager manager = resourceResolver.adaptTo(Session.class).getWorkspace().getNodeTypeManager();
-            for(String replicationNodeType: replicationNodeTypes) {
+            for (String replicationNodeType : replicationNodeTypes) {
                 try {
                     manager.getNodeType(replicationNodeType);
-                } catch(NoSuchNodeTypeException e) {
+                } catch (NoSuchNodeTypeException e) {
                     log.error("Replication Node Type does not exist: '{}'", replicationNodeType, e);
                     throw new IllegalArgumentException("Node Type: '" + replicationNodeType + "' does not exist -> setup failed");
                 }
             }
             setReplicationPrimaryNodeTypes(replicationNodeTypes);
-        } catch(LoginException e) {
+        } catch (LoginException e) {
             log.warn("Replication Node Types could not be set", e);
             throw new IllegalArgumentException("Could not obtain Resource Resolver -> setup failed");
         } catch (RepositoryException e) {
             log.warn("Replication Node Types could not be set", e);
             throw new IllegalArgumentException("Could not access Node Types -> setup failed");
-        } finally {
-            if(resourceResolver != null) {
-                try {
-                    resourceResolver.close();
-                } catch(Exception e) {
-                    // ignore
-                }
-            }
         }
+        // ignore
     }
 }

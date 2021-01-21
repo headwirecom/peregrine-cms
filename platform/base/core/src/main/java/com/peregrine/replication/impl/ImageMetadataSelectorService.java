@@ -102,15 +102,13 @@ public class ImageMetadataSelectorService
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private String name;
     private Transformation category;
     private boolean included;
-    private List<String> selection = new ArrayList<>();
+    private final List<String> selection = new ArrayList<>();
     private boolean json;
-    private List<Transformation> mappings = new ArrayList<>();
+    private final List<Transformation> mappings = new ArrayList<>();
 
     private void setup(Configuration configuration) {
-        name = configuration.category();
         category = configuration.imageDirectory() == null ?
             new Transformation(configuration.category(), null ) :
             new Transformation(configuration.imageDirectory(), configuration.category());
@@ -182,8 +180,8 @@ public class ImageMetadataSelectorService
     private static class Transformation {
         private final Logger log = LoggerFactory.getLogger(getClass());
 
-        private String source;
-        private String destination;
+        private final String source;
+        private final String destination;
 
         public Transformation(String source, String destination) {
             if(source == null || source.isEmpty()) {
