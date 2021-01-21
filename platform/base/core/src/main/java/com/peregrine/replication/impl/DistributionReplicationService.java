@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication.impl;
+package com.peregrine.replication.impl;
 
 /*-
  * #%L
@@ -25,13 +25,12 @@ package com.peregrine.admin.replication.impl;
  * #L%
  */
 
-import com.peregrine.admin.replication.AbstractionReplicationService;
+import com.peregrine.replication.AbstractionReplicationService;
 import com.peregrine.commons.util.PerConstants;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
-import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequestType;
@@ -53,7 +52,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
+import static com.peregrine.replication.ReplicationUtil.updateReplicationProperties;
 import static org.apache.sling.distribution.DistributionRequestState.ACCEPTED;
 import static org.apache.sling.distribution.DistributionRequestState.DISTRIBUTED;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
@@ -84,20 +83,17 @@ public class DistributionReplicationService
     @interface Configuration {
         @AttributeDefinition(
             name = "Name",
-            description = "Name of the Replication Service",
-            required = true
+            description = "Name of the Replication Service"
         )
         String name();
         @AttributeDefinition(
             name = "Description",
-            description = "Description of this Replication Service",
-            required = true
+            description = "Description of this Replication Service"
         )
         String description();
         @AttributeDefinition(
             name = "Forward Agent",
-            description = "Name of the Forward Agent to use for the Replication.",
-            required = true
+            description = "Name of the Forward Agent to use for the Replication."
         )
         String agentName();
     }

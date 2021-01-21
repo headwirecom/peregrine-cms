@@ -1,8 +1,7 @@
-package com.peregrine.admin.replication.impl;
+package com.peregrine.replication.impl;
 
-import com.peregrine.admin.replication.DistributionEventPojo;
+import com.peregrine.replication.DistributionEventPojo;
 import org.apache.sling.api.resource.LoginException;
-import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
@@ -16,7 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
+import static com.peregrine.replication.ReplicationUtil.updateReplicationProperties;
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -65,10 +64,9 @@ public class DistributionEventHandlerService implements EventHandler {
     }
 
     private void setReplicationProperties(DistributionEventPojo distributionEventPojo) {
-        ResourceResolver resourceResolver = null;
 
         try {
-            resourceResolver = loginService(resourceResolverFactory, DISTRIBUTION_SUB_SERVICE);
+            final ResourceResolver resourceResolver = loginService(resourceResolverFactory, DISTRIBUTION_SUB_SERVICE);
             ResourceResolver finalResourceResolver = resourceResolver;
             List<String> paths = Arrays.stream(distributionEventPojo.getPaths())
                     .filter( path -> path.endsWith(JCR_CONTENT) || !path.contains(JCR_CONTENT))

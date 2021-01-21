@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication.impl;
+package com.peregrine.replication.impl;
 
 /*-
  * #%L
@@ -25,7 +25,7 @@ package com.peregrine.admin.replication.impl;
  * #L%
  */
 
-import com.peregrine.admin.replication.AbstractionReplicationService;
+import com.peregrine.replication.AbstractionReplicationService;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
 import com.peregrine.commons.util.PerUtil.MatchingResourceChecker;
@@ -50,7 +50,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import java.util.*;
 
-import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
+import static com.peregrine.replication.ReplicationUtil.updateReplicationProperties;
 import static com.peregrine.commons.util.PerConstants.JCR_UUID;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.containsResource;
@@ -92,20 +92,17 @@ public class LocalReplicationService
     @interface Configuration {
         @AttributeDefinition(
             name = "Name",
-            description = "Name of the Replication Service",
-            required = true
+            description = "Name of the Replication Service"
         )
         String name();
         @AttributeDefinition(
             name = "Description",
-            description = "Description of this Replication Service",
-            required = true
+            description = "Description of this Replication Service"
         )
         String description();
         @AttributeDefinition(
             name = "Local Mapping",
-            description = "JCR Root Path Mapping: <source path>=<target path> (only used if this is local). Anything outside will not be copied.",
-            required = true
+            description = "JCR Root Path Mapping: <source path>=<target path> (only used if this is local). Anything outside will not be copied."
         )
         String localMapping();
     }
@@ -118,7 +115,6 @@ public class LocalReplicationService
 
     private String localSource;
     private String localTarget;
-    private String destinationUrl;
 
     private void setup(Configuration configuration) {
         init(configuration.name(), configuration.description());
@@ -131,7 +127,6 @@ public class LocalReplicationService
         } else {
             throw new IllegalArgumentException(String.format(LOCAL_MAPPING_HAS_THE_WRONG_FORMAT, mapping));
         }
-        destinationUrl = null;
         if(localSource == null || localSource.isEmpty() || !localSource.startsWith("/")) {
             throw new IllegalArgumentException(String.format(LOCAL_MAPPING_SOURCE_MUST_BE_ABSOLUTE, mapping));
         }

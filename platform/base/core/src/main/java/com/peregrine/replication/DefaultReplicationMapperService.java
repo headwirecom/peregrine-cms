@@ -1,8 +1,6 @@
-package com.peregrine.admin.replication;
+package com.peregrine.replication;
 
 import com.peregrine.commons.ResourceUtils;
-import com.peregrine.replication.ReferenceLister;
-import com.peregrine.replication.Replication;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -62,20 +60,17 @@ public class DefaultReplicationMapperService
         @AttributeDefinition(
             name = "Name",
             description = "Name of the Default Replication Service (for the UI at least one service with 'defaultRepl' is required)",
-            defaultValue = "defaultRepl",
-            required = true
+            defaultValue = "defaultRepl"
         )
         String name();
         @AttributeDefinition(
             name = "Default",
-            description = "Default Mapping Configuration (used if none path covers it). Format: <replication name>[:(<parameter name>=<parameter value>|)*]",
-            required = true
+            description = "Default Mapping Configuration (used if none path covers it). Format: <replication name>[:(<parameter name>=<parameter value>|)*]"
         )
         String defaultMapping();
         @AttributeDefinition(
             name = "Description",
-            description = "Description of this Replication Service",
-            required = true
+            description = "Description of this Replication Service"
         )
         String description();
         @AttributeDefinition(

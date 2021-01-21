@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication.impl;
+package com.peregrine.replication.impl;
 
 /*-
  * #%L
@@ -52,7 +52,7 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
-import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
+import static com.peregrine.replication.ReplicationUtil.updateReplicationProperties;
 import static com.peregrine.commons.Chars._SCORE;
 import static com.peregrine.commons.ResourceUtils.jcrNameToFileName;
 import static com.peregrine.commons.util.PerConstants.SLASH;

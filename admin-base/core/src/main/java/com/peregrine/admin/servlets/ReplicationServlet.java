@@ -26,7 +26,6 @@ package com.peregrine.admin.servlets;
  */
 
 import com.peregrine.adaption.PerReplicable;
-import com.peregrine.admin.replication.ReplicationConstants;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.commons.util.PerConstants;
 import com.peregrine.replication.Replication;
@@ -44,7 +43,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.peregrine.admin.replication.ReplicationConstants.*;
+import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_DO_REPLICATION;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerUtil.AddAllResourceChecker;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
@@ -76,7 +75,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
         SERVICE_DESCRIPTION + EQUALS + PER_PREFIX + "Replication Servlet",
         SERVICE_VENDOR + EQUALS + PER_VENDOR,
         SLING_SERVLET_METHODS + EQUALS + POST,
-        SLING_SERVLET_RESOURCE_TYPES + EQUALS + ReplicationConstants.RESOURCE_TYPE_DO_REPLICATION
+        SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_DO_REPLICATION
     }
 )
 @SuppressWarnings("serial")
@@ -129,7 +128,7 @@ public final class ReplicationServlet extends ReplicationServletBase {
             }
 
             replicable.setLastReplicationActionAsActivated();
-            final boolean deep = parseBoolean(request.getParameter(DEEP));
+            final boolean deep = parseBoolean(request.getParameter("deep"));
             List<Resource> toBeReplicated = listMissingResources(resource, new LinkedList<>(), ADD_ALL_RESOURCE_CHECKER, deep);
             for (final Resource r : Optional.of(RESOURCES)
                     .map(request::getParameterValues)

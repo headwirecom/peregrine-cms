@@ -23,7 +23,6 @@
 
 package com.peregrine.slingjunit;
 
-import com.peregrine.adaption.PerReplicable;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.replication.ReferenceLister;
 import org.apache.sling.api.resource.Resource;
@@ -42,9 +41,8 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.apache.jackrabbit.JcrConstants.JCR_LASTMODIFIED;
 import static org.junit.Assert.*;
-import static com.peregrine.admin.replication.ReplicationUtil.queryContainsStringUnderResource;
+import static com.peregrine.replication.ReplicationUtil.queryContainsStringUnderResource;
 
 @RunWith(SlingAnnotationsTestRunner.class)
 public class ReferencesJTest {

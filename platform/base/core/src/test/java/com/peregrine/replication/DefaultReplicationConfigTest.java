@@ -1,6 +1,6 @@
-package com.peregrine.admin.replication;
+package com.peregrine.replication;
 
-import com.peregrine.admin.replication.DefaultReplicationMapperService.DefaultReplicationConfig;
+import com.peregrine.replication.DefaultReplicationMapperService.DefaultReplicationConfig;
 import org.apache.sling.api.resource.Resource;
 import org.junit.Test;
 
@@ -12,7 +12,7 @@ import static org.mockito.Mockito.when;
 public class DefaultReplicationConfigTest {
 
     @Test
-    public void testIsHandled() throws Exception {
+    public void testIsHandled() {
         DefaultReplicationConfig config = new DefaultReplicationConfig("test-rep", "/content/test/sub-folder", null);
         Resource handledResource = mock(Resource.class);
         when(handledResource.getPath()).thenReturn("/content/test/sub-folder/1");

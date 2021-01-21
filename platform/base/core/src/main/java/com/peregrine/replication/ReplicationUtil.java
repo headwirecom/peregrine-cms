@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication;
+package com.peregrine.replication;
 
 import com.peregrine.adaption.PerReplicable;
 import org.apache.sling.api.resource.*;
@@ -19,7 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import static com.peregrine.admin.replication.impl.DistributionReplicationService.DISTRIBUTION_PENDING;
+import static com.peregrine.replication.impl.DistributionReplicationService.DISTRIBUTION_PENDING;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;

@@ -36,8 +36,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import static com.peregrine.admin.replication.ReplicationConstants.SOURCE_NAME;
-import static com.peregrine.admin.replication.ReplicationConstants.SOURCE_PATH;
 import static com.peregrine.admin.servlets.ReplicationServlet.REPLICATION_FAILED;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.PATH;
@@ -92,8 +90,8 @@ public abstract class ReplicationServletBase extends AbstractBaseServlet {
 
     protected static Response prepareResponse(final Resource resource, final List<Resource> replicatedStuff) throws IOException {
         final JsonResponse answer = new JsonResponse();
-        answer.writeAttribute(SOURCE_NAME, resource.getName());
-        answer.writeAttribute(SOURCE_PATH, resource.getPath());
+        answer.writeAttribute("sourceName", resource.getName());
+        answer.writeAttribute("sourcePath", resource.getPath());
         answer.writeArray(REPLICATES);
         for (final Resource r : replicatedStuff) {
             answer.writeObject();
