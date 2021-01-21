@@ -25,7 +25,6 @@ package com.peregrine.replication.impl;
  * #L%
  */
 
-import com.peregrine.replication.DefaultReplicationMapper;
 import com.peregrine.replication.Replication;
 import com.peregrine.replication.ReplicationsContainer;
 import org.osgi.service.component.annotations.*;
@@ -50,13 +49,8 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 )
 public final class ReplicationsContainerImpl implements ReplicationsContainer {
 
-    public static final String DEFAULT_REPL = "defaultRepl";
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final Map<String, Replication> replications = new HashMap<>();
-
-    @Reference
-    private DefaultReplicationMapper defaultReplicationMapper;
 
     @Reference(
             cardinality = ReferenceCardinality.MULTIPLE,
@@ -84,40 +78,9 @@ public final class ReplicationsContainerImpl implements ReplicationsContainer {
         }
     }
 
-    @Reference(
-            cardinality = ReferenceCardinality.MULTIPLE,
-            policy = ReferencePolicy.DYNAMIC,
-            policyOption = ReferencePolicyOption.GREEDY
-    )
-    @SuppressWarnings("unused")
-    public void bindDefaultReplicationMapper(final DefaultReplicationMapper mapper) {
-        logger.trace("Register Default Replication Mapper: '{}'", mapper.getName());
-        bindReplication(mapper);
-    }
-
-    @SuppressWarnings("unused")
-    public void unbindDefaultReplicationMapper(final DefaultReplicationMapper mapper) {
-        logger.trace("UnRegister Default Replication Mapper: '{}'", mapper.getName());
-        unbindReplication(mapper);
-    }
-
     @Override
     public Replication get(final String name) {
         return replications.get(name);
-    }
-
-    @Override
-    public Replication getDefault() {
-        return Optional.of(DEFAULT_REPL)
-                .map(this::get)
-                .orElse(defaultReplicationMapper);
-    }
-
-    @Override
-    public Replication getOrDefault(final String name) {
-        return Optional.ofNullable(name)
-                .map(this::get)
-                .orElseGet(this::getDefault);
     }
 
     @Override

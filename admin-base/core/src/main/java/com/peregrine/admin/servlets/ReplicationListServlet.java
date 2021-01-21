@@ -27,7 +27,7 @@ package com.peregrine.admin.servlets;
 
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.replication.Replication;
-import com.peregrine.replication.ReplicationsContainer;
+import com.peregrine.replication.ReplicationsContainerWithDefault;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -67,14 +67,14 @@ public class ReplicationListServlet extends AbstractBaseServlet {
     public static final String DESCRIPTION = "description";
 
     @Reference
-    private ReplicationsContainer replicationsContainer;
+    private ReplicationsContainerWithDefault replications;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
         final JsonResponse answer;
         answer = new JsonResponse();
         answer.writeArray(REPLICATION_SERVICES);
-        for(final Replication replication: replicationsContainer.getAll()) {
+        for(final Replication replication: replications.getAll()) {
             answer.writeObject();
             answer.writeAttribute(NAME, replication.getName());
             answer.writeAttribute(DESCRIPTION, replication.getDescription());

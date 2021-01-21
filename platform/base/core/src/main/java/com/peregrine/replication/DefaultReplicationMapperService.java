@@ -1,16 +1,12 @@
 package com.peregrine.replication;
 
 import com.peregrine.commons.ResourceUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
@@ -79,40 +75,16 @@ public class DefaultReplicationMapperService
         String[] pathMapping();
     }
 
-    private final Map<String, Replication> replications = new HashMap<>();
     private final List<DefaultReplicationConfig> pathMapping = new ArrayList<>();
+
+    @Reference
+    private ReplicationsContainer replications;
 
     @Reference
     @SuppressWarnings("unused")
     private ReferenceLister referenceLister;
 
     private DefaultReplicationConfig defaultMapping;
-
-    @Reference(
-        cardinality = ReferenceCardinality.MULTIPLE,
-        policy = ReferencePolicy.DYNAMIC,
-        policyOption = ReferencePolicyOption.GREEDY
-    )
-    @SuppressWarnings("unused")
-    public void bindReplication(Replication replication) {
-        logger.trace("Bind DRMS Replication: '{}'", replication.getName());
-        final String name = replication.getName();
-        if(StringUtils.isNotEmpty(name)) {
-            replications.put(name, replication);
-        } else {
-            logger.error("Replication: '{}' does not provide an operation name -> binding is ignored", replication);
-        }
-    }
-
-    @SuppressWarnings("unused")
-    public void unbindReplication(Replication replication) {
-        final String name = replication.getName();
-        if(!replications.containsKey(name)) {
-            logger.error("Replication: '{}' is not register with operation name: '{}' -> unbinding is ignored", replication, name);
-        }
-
-        replications.remove(name);
-    }
 
     @Activate
     @SuppressWarnings("unused")
