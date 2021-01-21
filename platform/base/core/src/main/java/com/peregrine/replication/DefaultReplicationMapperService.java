@@ -1,6 +1,7 @@
 package com.peregrine.replication;
 
 import com.peregrine.commons.ResourceUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -78,11 +79,14 @@ public class DefaultReplicationMapperService
         String[] pathMapping();
     }
 
+    private final Map<String, Replication> replications = new HashMap<>();
+    private final List<DefaultReplicationConfig> pathMapping = new ArrayList<>();
+
     @Reference
     @SuppressWarnings("unused")
     private ReferenceLister referenceLister;
 
-    private final Map<String, Replication> replications = new HashMap<>();
+    private DefaultReplicationConfig defaultMapping;
 
     @Reference(
         cardinality = ReferenceCardinality.MULTIPLE,
@@ -92,9 +96,9 @@ public class DefaultReplicationMapperService
     @SuppressWarnings("unused")
     public void bindReplication(Replication replication) {
         logger.trace("Bind DRMS Replication: '{}'", replication.getName());
-        String replicationName = replication.getName();
-        if(replicationName != null && !replicationName.isEmpty()) {
-            replications.put(replicationName, replication);
+        final String name = replication.getName();
+        if(StringUtils.isNotEmpty(name)) {
+            replications.put(name, replication);
         } else {
             logger.error("Replication: '{}' does not provide an operation name -> binding is ignored", replication);
         }
@@ -102,12 +106,12 @@ public class DefaultReplicationMapperService
 
     @SuppressWarnings("unused")
     public void unbindReplication(Replication replication) {
-        String replicationName = replication.getName();
-        if(replications.containsKey(replicationName)) {
-            replications.remove(replicationName);
-        } else {
-            logger.error("Replication: '{}' is not register with operation name: '{}' -> unbinding is ignored", replication, replicationName);
+        final String name = replication.getName();
+        if(!replications.containsKey(name)) {
+            logger.error("Replication: '{}' is not register with operation name: '{}' -> unbinding is ignored", replication, name);
         }
+
+        replications.remove(name);
     }
 
     @Activate
@@ -122,19 +126,22 @@ public class DefaultReplicationMapperService
         setup(configuration);
     }
 
-    private DefaultReplicationConfig defaultMapping;
-    private final List<DefaultReplicationConfig> pathMapping = new ArrayList<>();
-
     private void setup(final Configuration configuration) {
         init(configuration.name(), configuration.description());
         // Register this service as Replication instance
         logger.trace("Default Mapping: '{}'", configuration.defaultMapping());
-        Map<String, Map<String, String>> temp = splitIntoParameterMap(new String[] {configuration.defaultMapping()}, ":", "\\|", "=");
+        Map<String, Map<String, String>> temp = splitIntoParameterMap(
+                new String[] { configuration.defaultMapping()},
+                ":",
+                "\\|",
+                "="
+        );
         logger.trace("Mapped Default Mapping: '{}'", temp);
         if(temp.isEmpty()) {
             throw new IllegalArgumentException(NO_DEFAULT_MAPPING);
         }
-        Entry<String, Map<String, String>> entry = temp.entrySet().iterator().next();
+
+        final Entry<String, Map<String, String>> entry = temp.entrySet().iterator().next();
         defaultMapping = new DefaultReplicationConfig(entry.getKey(), entry.getValue());
         logger.trace("Final Default Mapping: '{}'", defaultMapping);
         String[] pathMappings = configuration.pathMapping();
@@ -240,7 +247,7 @@ public class DefaultReplicationMapperService
     }
 
     private Replication getDefaultReplicationService() {
-        return this.replications.get(this.defaultMapping.getServiceName());
+        return replications.get(defaultMapping.getServiceName());
     }
 
     public String storeFile(final Resource parent, final String name, final String content)
@@ -309,6 +316,7 @@ public class DefaultReplicationMapperService
             if(isEmpty(path)) {
                 throw new IllegalArgumentException(REPLICATION_PATH_FOR_NON_DEFAULT_NAME_CANNOT_BE_NULL);
             }
+
             this.path = path;
         }
 
@@ -321,27 +329,26 @@ public class DefaultReplicationMapperService
             // If the config path does not end in a slash we must make sure that either the resource
             // path is the same or that the next character is a slash otherwise folders starting the
             // same will match but they should not (/test/one should not match /test/one-1)
-            boolean answer;
             String resourcePath = resource.getPath();
-            if(path != null && !path.endsWith("/")) {
-                if (path.contains("_tenant_")) {
-                    String tenant = resourcePath.split("/")[2];
-                    path = path.replace("_tenant_", tenant);
-                }
-                if(resourcePath.startsWith(path)) {
-                    if(resourcePath.equals(path)) {
-                        answer = true;
-                    } else {
-                        char next = resourcePath.charAt(path.length());
-                        answer = (next == '/');
-                    }
-                } else {
-                    answer = false;
-                }
-            } else {
-                answer = (path == null || resource.getPath().startsWith(path));
+            if(path == null || path.endsWith("/")) {
+                return path == null || resourcePath.startsWith(path);
             }
-            return answer;
+
+            if (path.contains("_tenant_")) {
+                String tenant = resourcePath.split("/")[2];
+                path = path.replace("_tenant_", tenant);
+            }
+
+            if(resourcePath.startsWith(path)) {
+                if(resourcePath.equals(path)) {
+                    return true;
+                }
+
+                return resourcePath.charAt(path.length()) == '/';
+            }
+
+            return false;
+
         }
 
         /** @return the Replication Service Name **/

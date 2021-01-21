@@ -140,11 +140,9 @@ public abstract class BaseFileReplicationService
             }
         };
         // Need to check this list of they need to be replicated first
-        for(Resource resource: referenceList) {
-            if(resourceChecker.doAdd(resource)) {
-                replicationList.add(resource);
-            }
-        }
+        referenceList.stream()
+                .filter(resourceChecker::doAdd)
+                .forEach(replicationList::add);
         // This only returns the referenced resources. Now we need to check if there are any JCR Content nodes to be added as well
         for(Resource reference: replicationList) {
             PerUtil.listMissingResources(reference, replicationList, resourceChecker, false);
