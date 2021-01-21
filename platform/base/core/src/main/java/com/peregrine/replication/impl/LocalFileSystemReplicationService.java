@@ -137,16 +137,16 @@ public class LocalFileSystemReplicationService
         String[] mandatoryRenditions();
     }
 
+    private File targetFolder;
+    private final List<ExportExtension> exportExtensions = new ArrayList<>();
+    private List<String> mandatoryRenditions = new ArrayList<>();
+
     @Activate
     @SuppressWarnings("unused")
     void activate(BundleContext context, Configuration configuration) { setup(context, configuration); }
     @Modified
     @SuppressWarnings("unused")
     void modified(BundleContext context, Configuration configuration) { setup(context, configuration); }
-
-    private File targetFolder;
-    private final List<ExportExtension> exportExtensions = new ArrayList<>();
-    private List<String> mandatoryRenditions = new ArrayList<>();
 
     private void setup(BundleContext context, Configuration configuration) {
         logger.trace("Create Local FS Replication Service Name: '{}'", configuration.name());
@@ -210,7 +210,7 @@ public class LocalFileSystemReplicationService
     private RenderService renderService;
     @Reference
     @SuppressWarnings("unused")
-    ResourceResolverFactory resourceResolverFactory;
+    private ResourceResolverFactory resourceResolverFactory;
 
     @Override
     RenderService getRenderService() {

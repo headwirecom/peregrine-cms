@@ -242,26 +242,19 @@ public class ModPageSpeedCacheInvalidationService
                 HttpClientBuilder.create().setDefaultRequestConfig(config).build();
 
         HttpPurge httpPurge = new HttpPurge(url);
-        try
-        {
-            try (CloseableHttpResponse response = httpClient.execute(httpPurge)) {
-                logger.info("PageSpeed cache invalidation request '{}' returned an '{}' response",
-                        url, response.getStatusLine());
-                HttpEntity entity1 = response.getEntity();
-                EntityUtils.consume(entity1);
-            }
-
-        } catch (IOException e)
-        {
+        try (CloseableHttpResponse response = httpClient.execute(httpPurge)) {
+            logger.info("PageSpeed cache invalidation request '{}' returned an '{}' response",
+                    url, response.getStatusLine());
+            HttpEntity entity1 = response.getEntity();
+            EntityUtils.consume(entity1);
+        } catch (IOException e) {
             logger.error("Error performing PageSpeed invalidation request: '{}'", url, e);
         }
     }
 
     private static class HttpPurge extends HttpRequestBase
     {
-        public HttpPurge(final String url)
-        {
-            super();
+        public HttpPurge(final String url) {
             setURI(URI.create(url));
         }
 
