@@ -1119,7 +1119,7 @@ class PerAdminImpl {
 
   insertNodeWithDataAt(path, data, drop) {
     logger.fine(arguments)
-    let formData = new FormData();
+    let formData = new FormData()
     formData.append('content', json(data))
     formData.append('drop', drop)
     return new Promise((resolve) => {
