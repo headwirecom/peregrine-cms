@@ -25,7 +25,7 @@ package com.peregrine.replication.impl;
  * #L%
  */
 
-import com.peregrine.replication.AbstractionReplicationService;
+import com.peregrine.replication.ReplicationServiceBase;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
 import com.peregrine.commons.util.PerUtil.MatchingResourceChecker;
@@ -75,7 +75,7 @@ import static com.peregrine.commons.util.PerUtil.relativePath;
 )
 @Designate(ocd = LocalReplicationService.Configuration.class, factory = true)
 public class LocalReplicationService
-    extends AbstractionReplicationService
+    extends ReplicationServiceBase
 {
 
     public static final String LOCAL_MAPPING_HAS_THE_WRONG_FORMAT = "Local Mapping has the wrong format: '%s'";

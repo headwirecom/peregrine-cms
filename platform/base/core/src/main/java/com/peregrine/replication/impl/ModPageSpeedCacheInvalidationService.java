@@ -25,7 +25,7 @@ package com.peregrine.replication.impl;
  * #L%
  */
 
-import com.peregrine.replication.AbstractionReplicationService;
+import com.peregrine.replication.ReplicationServiceBase;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
 import org.apache.commons.lang3.StringUtils;
@@ -60,7 +60,7 @@ import java.util.regex.Pattern;
 )
 @Designate(ocd = ModPageSpeedCacheInvalidationService.Configuration.class, factory = true)
 public class ModPageSpeedCacheInvalidationService
-        extends AbstractionReplicationService
+        extends ReplicationServiceBase
 {
     private static final int HTTP_CLIENT_TIMEOUT_SECONDS = 5;
     private static final Pattern ROOT_SITE_PATH_PATTERN = Pattern.compile("^(/content/[a-zA-Z0-9_]+)/.*$");
