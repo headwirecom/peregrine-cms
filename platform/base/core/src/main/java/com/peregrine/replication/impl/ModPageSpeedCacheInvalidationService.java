@@ -101,8 +101,8 @@ public class ModPageSpeedCacheInvalidationService
 
         cacheInvalidationUrl = configuration.cacheInvalidationUrl();
 
-        log.trace("PageSpeed Invalidation Service Name: '{}' created", getName());
-        log.trace("PageSpeed cache invalidation URL: '{}'", cacheInvalidationUrl);
+        logger.trace("PageSpeed Invalidation Service Name: '{}' created", getName());
+        logger.trace("PageSpeed cache invalidation URL: '{}'", cacheInvalidationUrl);
     }
 
     @Reference
@@ -157,7 +157,7 @@ public class ModPageSpeedCacheInvalidationService
                 final String sitePath = getSitePath(resource);
                 if (sites.contains(sitePath))
                 {
-                    log.trace("Skipping... unique site already processed");
+                    logger.trace("Skipping... unique site already processed");
                     continue;
                 }
                 sites.add(sitePath);
@@ -209,7 +209,7 @@ public class ModPageSpeedCacheInvalidationService
 
         if (null == rootTemplateNode)
         {
-            log.warn("Root template is null. Can't get domains for site: '{}'", sitePath);
+            logger.warn("Root template is null. Can't get domains for site: '{}'", sitePath);
             return domains;
         }
 
@@ -245,7 +245,7 @@ public class ModPageSpeedCacheInvalidationService
         try
         {
             try (CloseableHttpResponse response = httpClient.execute(httpPurge)) {
-                log.info("PageSpeed cache invalidation request '{}' returned an '{}' response",
+                logger.info("PageSpeed cache invalidation request '{}' returned an '{}' response",
                         url, response.getStatusLine());
                 HttpEntity entity1 = response.getEntity();
                 EntityUtils.consume(entity1);
@@ -253,7 +253,7 @@ public class ModPageSpeedCacheInvalidationService
 
         } catch (IOException e)
         {
-            log.error("Error performing PageSpeed invalidation request: '{}'", url, e);
+            logger.error("Error performing PageSpeed invalidation request: '{}'", url, e);
         }
     }
 

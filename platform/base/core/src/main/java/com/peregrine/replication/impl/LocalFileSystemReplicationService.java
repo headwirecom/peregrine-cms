@@ -149,9 +149,9 @@ public class LocalFileSystemReplicationService
     private List<String> mandatoryRenditions = new ArrayList<>();
 
     private void setup(BundleContext context, Configuration configuration) {
-        log.trace("Create Local FS Replication Service Name: '{}'", configuration.name());
+        logger.trace("Create Local FS Replication Service Name: '{}'", configuration.name());
         init(configuration.name(), configuration.description());
-        log.debug("Extension: '{}'", configuration.exportExtensions());
+        logger.debug("Extension: '{}'", configuration.exportExtensions());
         int creationStrategy = configuration.creationStrategy();
         exportExtensions.clear();
         Map<String, List<String>> extensions = splitIntoMap(configuration.exportExtensions(), "=", "\\|");
@@ -165,17 +165,17 @@ public class LocalFileSystemReplicationService
                     throw new IllegalArgumentException(String.format(SUPPORTED_TYPES_EMPTY, extension));
                 }
             } else {
-                log.warn("Configuration contained an empty extension");
+                logger.warn("Configuration contained an empty extension");
             }
         }
-        log.debug("Mandatory Renditions: '{}'", configuration.mandatoryRenditions());
+        logger.debug("Mandatory Renditions: '{}'", configuration.mandatoryRenditions());
         mandatoryRenditions = intoList(configuration.mandatoryRenditions());
         String targetFolderPath = configuration.targetFolder();
         if(targetFolderPath.isEmpty()) {
             throw new IllegalArgumentException(REPLICATION_TARGET_FOLDER_CANNOT_BE_EMPTY);
         } else {
             targetFolderPath = handlePlaceholders(context, targetFolderPath);
-            log.trace("Target Folder Path: '{}', creation strategy: '{}'", targetFolderPath, creationStrategy);
+            logger.trace("Target Folder Path: '{}', creation strategy: '{}'", targetFolderPath, creationStrategy);
             File temp = new File(targetFolderPath);
             if(!temp.exists()) {
                 switch(creationStrategy) {
@@ -199,7 +199,7 @@ public class LocalFileSystemReplicationService
             }
             targetFolder = temp;
         }
-        log.trace("Local FS Replication Service Name: '{}' created with target folder: '{}'", getName(), targetFolder);
+        logger.trace("Local FS Replication Service Name: '{}' created with target folder: '{}'", getName(), targetFolder);
     }
 
     @Reference
@@ -340,7 +340,7 @@ public class LocalFileSystemReplicationService
         }
 
         for (final File toBeDeleted : filesToBeDeletedFiles) {
-            log.trace("Delete File: '{}'", toBeDeleted.getAbsolutePath());
+            logger.trace("Delete File: '{}'", toBeDeleted.getAbsolutePath());
             if (!deleteFile(toBeDeleted)) {
                 throw new ReplicationException(String.format(FAILED_TO_DELETE_FILE, toBeDeleted.getAbsolutePath()));
             }
@@ -353,7 +353,7 @@ public class LocalFileSystemReplicationService
         if(file.isDirectory()) {
             for(File child: file.listFiles()) {
                 if(!deleteFile(child)) {
-                    log.warn(String.format(FAILED_TO_DELETE_FILE, file.getAbsolutePath()));
+                    logger.warn(String.format(FAILED_TO_DELETE_FILE, file.getAbsolutePath()));
                     return false;
                 }
             }
@@ -376,7 +376,7 @@ public class LocalFileSystemReplicationService
         if (file.isDirectory()) {
             throw new ReplicationException(String.format(FAILED_STORE_RENDERING_FILE_IS_DIRECTORY, file.getAbsolutePath()));
         } else {
-            log.trace("Delete existing Rendering File: '{}'", file.getAbsolutePath());
+            logger.trace("Delete existing Rendering File: '{}'", file.getAbsolutePath());
             file.delete();
         }
 
@@ -387,22 +387,22 @@ public class LocalFileSystemReplicationService
     public static final String PLACEHOLDER_END_TOKEN = "}";
 
     private String handlePlaceholders(BundleContext context, String source) {
-        log.trace("System Properties: '{}'", System.getProperties());
+        logger.trace("System Properties: '{}'", System.getProperties());
         String answer = source;
-        log.trace("Handle Place Holder: '{}'", source);
+        logger.trace("Handle Place Holder: '{}'", source);
         while(true) {
             int startIndex = answer.indexOf(PLACEHOLDER_START_TOKEN);
-            log.trace("Handle Place Holder, start index; '{}'", startIndex);
+            logger.trace("Handle Place Holder, start index; '{}'", startIndex);
             if(startIndex >= 0) {
                 int endIndex = answer.indexOf(PLACEHOLDER_END_TOKEN, startIndex);
-                log.trace("Handle Place Holder, end index; '{}'", endIndex);
+                logger.trace("Handle Place Holder, end index; '{}'", endIndex);
                 if(endIndex >= 0) {
                     String placeHolderName = answer.substring(startIndex + PLACEHOLDER_START_TOKEN.length(), endIndex);
                     String value = System.getProperty(placeHolderName);
-                    log.trace("Placeholder found: '{}', property value: '{}'", placeHolderName, value);
+                    logger.trace("Placeholder found: '{}', property value: '{}'", placeHolderName, value);
                     if(value == null) {
                         value = context.getProperty(placeHolderName);
-                        log.trace("Placeholder found through bundle context: '{}', property value: '{}'", placeHolderName, value);
+                        logger.trace("Placeholder found through bundle context: '{}', property value: '{}'", placeHolderName, value);
                     }
                     if(value != null) {
                         answer = answer.substring(0, startIndex) + value +
@@ -418,7 +418,7 @@ public class LocalFileSystemReplicationService
                 break;
             }
         }
-        log.trace("Place Holder handled, return: '{}'", answer);
+        logger.trace("Place Holder handled, return: '{}'", answer);
         return answer;
     }
 }

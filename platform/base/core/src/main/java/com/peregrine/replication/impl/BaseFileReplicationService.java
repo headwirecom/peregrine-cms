@@ -125,7 +125,7 @@ public abstract class BaseFileReplicationService
 
     @Override
     public List<Resource> findReferences(Resource startingResource, boolean deep) {
-        log.trace("Replicate Resource: '{}', deep: '{}'", startingResource, deep);
+        logger.trace("Replicate Resource: '{}', deep: '{}'", startingResource, deep);
         List<Resource> referenceList = getReferenceLister().getReferenceList(true, startingResource, true);
         List<Resource> replicationList = new ArrayList<>();
         ResourceChecker resourceChecker = new ResourceChecker() {
@@ -188,7 +188,7 @@ public abstract class BaseFileReplicationService
 
     @Override
     public List<Resource> replicate(Collection<Resource> resourceList) throws ReplicationException {
-        log.trace("Replicate Resource List: '{}'", resourceList);
+        logger.trace("Replicate Resource List: '{}'", resourceList);
         // Replicate the resources
         final ResourceResolver resourceResolver = resourceList.stream()
                 .filter(Objects::nonNull)
@@ -221,7 +221,7 @@ public abstract class BaseFileReplicationService
         try {
             session.save();
         } catch(RepositoryException e) {
-            log.warn("Failed to save changes replicate parents", e);
+            logger.warn("Failed to save changes replicate parents", e);
         }
 
         return answer;
@@ -281,8 +281,8 @@ public abstract class BaseFileReplicationService
                     consumer.consume(resource, renditionName);
                     checkRenditions.remove(renditionName);
                 } catch (RenderException e) {
-                    log.warn("Rendition: '{}' failed with message: '{}'", rendition.getPath(), e.getMessage());
-                    log.warn("Rendition Failure", e);
+                    logger.warn("Rendition: '{}' failed with message: '{}'", rendition.getPath(), e.getMessage());
+                    logger.warn("Rendition Failure", e);
                 }
             }
             // Loop over all remaining mandatory renditions and write the image data to the target
@@ -290,8 +290,8 @@ public abstract class BaseFileReplicationService
                 try {
                     consumer.consume(resource, renditionName);
                 } catch(RenderException e) {
-                    log.warn("Rendition: '{}' failed with message: '{}'", renditionName, e.getMessage());
-                    log.warn("Rendition Failure", e);
+                    logger.warn("Rendition: '{}' failed with message: '{}'", renditionName, e.getMessage());
+                    logger.warn("Rendition Failure", e);
                 }
             }
 
@@ -334,10 +334,10 @@ public abstract class BaseFileReplicationService
     abstract void removeReplica(Resource resource, final List<Pattern> namePattern, boolean isFolder) throws ReplicationException;
 
     private String replicatePerResource(Resource resource) throws ReplicationException {
-        log.trace("Replicate Resource: '{}'", resource.getPath());
+        logger.trace("Replicate Resource: '{}'", resource.getPath());
         for(ExportExtension exportExtension: getExportExtensions()) {
             String extension = exportExtension.getName();
-            log.trace("Handle Extension: '{}'", extension);
+            logger.trace("Handle Extension: '{}'", extension);
             boolean raw = extension.endsWith("~raw");
             if(raw) {
                 extension = extension.substring(0, extension.length() - "~raw".length());
@@ -350,17 +350,17 @@ public abstract class BaseFileReplicationService
                 try {
                     final RenderService renderService = getRenderService();
                     if(raw) {
-                        log.trace("Before Rendering Raw Resource With Extension: '{}'", extension);
+                        logger.trace("Before Rendering Raw Resource With Extension: '{}'", extension);
                         renderingContent = renderService.renderRawInternally(resource, extension);
                     } else {
-                        log.trace("Before Rendering String Resource With Extension: '{}'", extension);
+                        logger.trace("Before Rendering String Resource With Extension: '{}'", extension);
                         renderingContent = renderService.renderInternally(resource, extension);
                     }
                 } catch(RenderException e) {
-                    log.warn("Rendering of '{}' failed -> ignore it", resource.getPath());
+                    logger.warn("Rendering of '{}' failed -> ignore it", resource.getPath());
                 }
                 if(renderingContent != null) {
-                    log.trace("Rendered Resource: {}", renderingContent);
+                    logger.trace("Rendered Resource: {}", renderingContent);
                     if(raw) {
                         return storeRendering(resource, extension, (byte[]) renderingContent);
                     }

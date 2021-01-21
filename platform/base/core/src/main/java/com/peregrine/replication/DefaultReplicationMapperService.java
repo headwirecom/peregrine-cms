@@ -13,8 +13,6 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,7 +48,6 @@ public class DefaultReplicationMapperService
     implements DefaultReplicationMapper
 {
     public static final String NO_DEFAULT_MAPPING = "Default Mapping was not provided but is required";
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @ObjectClassDefinition(
         name = "Peregrine: Default Replication Mapper Service",
