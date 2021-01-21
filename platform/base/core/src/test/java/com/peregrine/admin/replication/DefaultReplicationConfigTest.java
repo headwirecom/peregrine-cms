@@ -12,7 +12,7 @@ import static org.mockito.Mockito.when;
 public class DefaultReplicationConfigTest {
 
     @Test
-    public void testIsHandled() throws Exception {
+    public void testIsHandled() {
         DefaultReplicationConfig config = new DefaultReplicationConfig("test-rep", "/content/test/sub-folder", null);
         Resource handledResource = mock(Resource.class);
         when(handledResource.getPath()).thenReturn("/content/test/sub-folder/1");
