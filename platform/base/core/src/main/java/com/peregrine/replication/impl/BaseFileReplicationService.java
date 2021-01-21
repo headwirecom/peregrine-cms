@@ -69,8 +69,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  *
  * Created by Andreas Schaefer on 5/25/17.
  */
-public abstract class BaseFileReplicationService
-    extends ReplicationServiceBase
+public abstract class BaseFileReplicationService extends ReplicationServiceBase
 {
     private static final List<Pattern> NAME_PATTERNS = new ArrayList<>();
     // List of all resources that are excluded from handling
@@ -300,17 +299,6 @@ public abstract class BaseFileReplicationService
     }
 
     /**
-     * Store the given Content Rendering on the target
-     * @param resource Resource that is exported
-     * @param extension File Extension (without a leading dot)
-     * @param content String content of the rendering
-     * @return Path to the Stored Rendition used for the Rendition Ref property
-     * @throws ReplicationException if the writing of the content failed
-     */
-    String storeRendering(Resource resource, String extension, String content) throws ReplicationException {
-        return storeFile(resource.getParent(), renderingName(resource, extension), content);
-    }
-    /**
      * Store the given Asset Rendering on the target
      * @param resource Resource that is exported
      * @param extension File Extension (without a leading dot)
@@ -363,7 +351,7 @@ public abstract class BaseFileReplicationService
                         return storeRendering(resource, extension, (byte[]) renderingContent);
                     }
 
-                    return storeRendering(resource, extension, (String) renderingContent);
+                    return storeFile(resource.getParent(), renderingName(resource, extension), (String) renderingContent);
                 }
             }
         }
