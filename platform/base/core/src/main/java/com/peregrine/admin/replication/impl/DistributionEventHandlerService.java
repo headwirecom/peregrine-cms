@@ -2,7 +2,6 @@ package com.peregrine.admin.replication.impl;
 
 import com.peregrine.admin.replication.DistributionEventPojo;
 import org.apache.sling.api.resource.LoginException;
-import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
@@ -65,10 +64,9 @@ public class DistributionEventHandlerService implements EventHandler {
     }
 
     private void setReplicationProperties(DistributionEventPojo distributionEventPojo) {
-        ResourceResolver resourceResolver = null;
 
         try {
-            resourceResolver = loginService(resourceResolverFactory, DISTRIBUTION_SUB_SERVICE);
+            final ResourceResolver resourceResolver = loginService(resourceResolverFactory, DISTRIBUTION_SUB_SERVICE);
             ResourceResolver finalResourceResolver = resourceResolver;
             List<String> paths = Arrays.stream(distributionEventPojo.getPaths())
                     .filter( path -> path.endsWith(JCR_CONTENT) || !path.contains(JCR_CONTENT))

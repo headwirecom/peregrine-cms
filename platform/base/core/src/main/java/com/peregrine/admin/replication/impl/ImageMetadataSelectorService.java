@@ -62,8 +62,7 @@ public class ImageMetadataSelectorService
     @interface Configuration {
         @AttributeDefinition(
             name = "Category",
-            description = "Metadata Category Name",
-            required = true
+            description = "Metadata Category Name"
         )
         String category();
         @AttributeDefinition(
@@ -74,26 +73,22 @@ public class ImageMetadataSelectorService
         String imageDirectory();
         @AttributeDefinition(
             name = "Included",
-            description = "If true then the given List is included and all others are ignored. If false then the given list is excluded and all others included",
-            required = true
+            description = "If true then the given List is included and all others are ignored. If false then the given list is excluded and all others included"
         )
         boolean included() default false;
         @AttributeDefinition(
             name = "Selection List",
-            description = "List of all Tag Names that are either included or excluded",
-            required = true
+            description = "List of all Tag Names that are either included or excluded"
         )
         String[] selection();
         @AttributeDefinition(
             name = "JSON",
-            description = "If true al properties are included as JSon property named 'raw_tags'",
-            required = true
+            description = "If true al properties are included as JSon property named 'raw_tags'"
         )
         boolean json() default false;
         @AttributeDefinition(
             name = "Mapping",
-            description = "List of Tag Name Mappings in the format of <adjusted name>=<mapped name>. Every Tag mapped here is always included",
-            required = true
+            description = "List of Tag Name Mappings in the format of <adjusted name>=<mapped name>. Every Tag mapped here is always included"
         )
         String[] mapping();
     }

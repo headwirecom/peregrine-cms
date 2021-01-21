@@ -35,7 +35,7 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.OPTIONA
     configurationPolicy = OPTIONAL,
     immediate = true
 )
-@Designate(ocd = ReplicationMixinNodeTypesOverride.Configuration.class, factory = false)
+@Designate(ocd = ReplicationMixinNodeTypesOverride.Configuration.class)
 public class ReplicationMixinNodeTypesOverride {
     @ObjectClassDefinition(
         name = "Peregrine: Replication Mixin Node Types Override",
@@ -45,14 +45,12 @@ public class ReplicationMixinNodeTypesOverride {
     @interface Configuration {
         @AttributeDefinition(
             name = "Description",
-            description = "Description of this Replication Service",
-            required = true
+            description = "Description of this Replication Service"
         )
         String description();
         @AttributeDefinition(
             name = "Replication Node Type",
-            description = "All Node Type Names that will have the Peregrine Replication Mixin added during replication",
-            required = true
+            description = "All Node Type Names that will have the Peregrine Replication Mixin added during replication"
         )
         String[] replicationNodeTypes();
     }
@@ -85,7 +83,7 @@ public class ReplicationMixinNodeTypesOverride {
             NodeTypeManager manager = resourceResolver.adaptTo(Session.class).getWorkspace().getNodeTypeManager();
             for(String replicationNodeType: replicationNodeTypes) {
                 try {
-                    NodeType nodeType = manager.getNodeType(replicationNodeType);
+                    manager.getNodeType(replicationNodeType);
                 } catch(NoSuchNodeTypeException e) {
                     log.error("Replication Node Type does not exist: '{}'", replicationNodeType, e);
                     throw new IllegalArgumentException("Node Type: '" + replicationNodeType + "' does not exist -> setup failed");

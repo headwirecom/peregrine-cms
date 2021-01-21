@@ -83,20 +83,17 @@ public class DistributionReplicationService
     @interface Configuration {
         @AttributeDefinition(
             name = "Name",
-            description = "Name of the Replication Service",
-            required = true
+            description = "Name of the Replication Service"
         )
         String name();
         @AttributeDefinition(
             name = "Description",
-            description = "Description of this Replication Service",
-            required = true
+            description = "Description of this Replication Service"
         )
         String description();
         @AttributeDefinition(
             name = "Forward Agent",
-            description = "Name of the Forward Agent to use for the Replication.",
-            required = true
+            description = "Name of the Forward Agent to use for the Replication."
         )
         String agentName();
     }

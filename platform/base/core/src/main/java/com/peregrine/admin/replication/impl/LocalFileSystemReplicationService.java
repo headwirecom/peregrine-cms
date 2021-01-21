@@ -107,20 +107,17 @@ public class LocalFileSystemReplicationService
         @AttributeDefinition(
             name = "Name",
             description = "Name of the Replication Service",
-            defaultValue = "localFS",
-            required = true
+            defaultValue = "localFS"
         )
         String name();
         @AttributeDefinition(
             name = "Description",
-            description = "Description of this Replication Service",
-            required = true
+            description = "Description of this Replication Service"
         )
         String description();
         @AttributeDefinition(
             name = "TargetFolder",
-            description = "Path to the local folder where the content is exported to",
-            required = true
+            description = "Path to the local folder where the content is exported to"
         )
         String targetFolder();
         @AttributeDefinition(
@@ -128,20 +125,17 @@ public class LocalFileSystemReplicationService
             description = "Indicates what to create for the Target Folder. 0 (or any other not mentioned number) means no creation, 1 means creating only the leaf folder, 2 means creating all missing folders",
             defaultValue = CREATE_NONE_STRATEGY + "",
             min = CREATE_NONE_STRATEGY + "",
-            max = CREATE_ALL_STRATEGY + "",
-            required = true
+            max = CREATE_ALL_STRATEGY + ""
         )
         int creationStrategy();
         @AttributeDefinition(
             name = "Export Extensions",
-            description = "List of Export Extension in the format of <extension>=<comma separated list of primary types>",
-            required = true
+            description = "List of Export Extension in the format of <extension>=<comma separated list of primary types>"
         )
         String[] exportExtensions();
         @AttributeDefinition(
             name = "Mandatory Renditions",
-            description = "List of all the required renditions that are replicated (if missing they are created)",
-            required = true
+            description = "List of all the required renditions that are replicated (if missing they are created)"
         )
         String[] mandatoryRenditions();
     }

@@ -88,7 +88,6 @@ public abstract class BaseFileReplicationService
 
     static {
         NAME_PATTERNS.add(Pattern.compile(DATA_PATTERN));
-//        NAME_PATTERNS.add(Pattern.compile(HTML_PATTERN));
         EXCLUDED_RESOURCES.add(JCR_CONTENT);
         EXCLUDED_RESOURCES.add(RENDITIONS);
     }
