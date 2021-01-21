@@ -43,7 +43,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.peregrine.replication.ReplicationConstants.RESOURCE_TYPE_TENANT_SETUP_REPLICATION;
+import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_TENANT_SETUP_REPLICATION;
 
 import static com.peregrine.commons.util.PerConstants.FELIBS_ROOT;
 import static com.peregrine.commons.util.PerConstants.PAGES;

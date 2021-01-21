@@ -1,4 +1,4 @@
-package com.peregrine.replication.servlet;
+package com.peregrine.admin.servlets;
 
 /*-
  * #%L
@@ -39,7 +39,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.peregrine.replication.ReplicationConstants.RESOURCE_TYPE_LIST_REPLICATION;
+import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_LIST_REPLICATION;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
