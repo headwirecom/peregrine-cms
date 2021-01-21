@@ -47,7 +47,7 @@ the call ends with an exception.
 This distributions allows to copy resources to another folder in the JCR of Peregrine.
 This service copies the resource and any references to other resources (like templates)
 to another folder. To make this work you need to configure the service
-**com.peregrine.admin.replication.impl.LocalReplicationService**:
+**com.peregrine.replication.impl.LocalReplicationService**:
 
 |Name|Parameter|Required|Type|Default|Description|
 |:---|:--------|:-------|:---|:------|:----------|
@@ -67,7 +67,7 @@ rendition in the target is obtained.
 This distributions allows to copy resources from one Peregrine to another, remote
 Peregrine instance using the **Sling Distribution** service. This is mostly used to replicate
 content from an **Author to a Publish** instance but it is not limited to that.
- To configure this distribution service: **com.peregrine.admin.replication.impl.DistributionReplicationService**:
+ To configure this distribution service: **com.peregrine.replication.impl.DistributionReplicationService**:
 
 |Name|Parameter|Required|Type|Default|Description|
 |:---|:--------|:-------|:---|:------|:----------|
@@ -160,7 +160,7 @@ folder):
 
 ![Deep Local FS Export File System Tree](distribution.local.file.system.result.tree.png)
 
-To configure this distribution service: **com.peregrine.admin.replication.impl.LocalFileSystemReplicationService**:
+To configure this distribution service: **com.peregrine.replication.impl.LocalFileSystemReplicationService**:
 
 |Name|Parameter|Required|Type|Default|Description|
 |:---|:--------|:-------|:---|:------|:----------|
@@ -201,7 +201,7 @@ Default Distribution is used like any other distribution but it does not
 actually do a distribution but rather delegate it to the target one.
 
 To configure this Default Replication Mapper Service service:
-**com.peregrine.admin.replication.DefaultReplicationMapperService**:
+**com.peregrine.replication.DefaultReplicationMapperService**:
 
 |Name|Parameter|Required|Type|Default|Description|
 |:---|:--------|:-------|:---|:------|:----------|

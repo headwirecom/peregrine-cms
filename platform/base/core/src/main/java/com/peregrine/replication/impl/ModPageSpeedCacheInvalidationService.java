@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication.impl;
+package com.peregrine.replication.impl;
 
 /*-
  * #%L
@@ -25,7 +25,7 @@ package com.peregrine.admin.replication.impl;
  * #L%
  */
 
-import com.peregrine.admin.replication.AbstractionReplicationService;
+import com.peregrine.replication.AbstractionReplicationService;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
 import org.apache.commons.lang3.StringUtils;

@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication;
+package com.peregrine.replication;
 
 import org.apache.sling.distribution.DistributionRequestType;
 import org.osgi.service.event.Event;

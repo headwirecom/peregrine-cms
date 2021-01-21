@@ -36,8 +36,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import static com.peregrine.admin.replication.ReplicationConstants.SOURCE_NAME;
-import static com.peregrine.admin.replication.ReplicationConstants.SOURCE_PATH;
+import static com.peregrine.replication.ReplicationConstants.SOURCE_NAME;
+import static com.peregrine.replication.ReplicationConstants.SOURCE_PATH;
 import static com.peregrine.admin.servlets.ReplicationServlet.REPLICATION_FAILED;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.PATH;

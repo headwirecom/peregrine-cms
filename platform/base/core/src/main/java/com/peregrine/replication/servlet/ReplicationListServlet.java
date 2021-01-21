@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication.servlet;
+package com.peregrine.replication.servlet;
 
 /*-
  * #%L
@@ -25,7 +25,7 @@ package com.peregrine.admin.replication.servlet;
  * #L%
  */
 
-import com.peregrine.admin.replication.DefaultReplicationMapper;
+import com.peregrine.replication.DefaultReplicationMapper;
 import com.peregrine.replication.Replication;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.osgi.service.component.annotations.Component;
@@ -39,7 +39,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.peregrine.admin.replication.ReplicationConstants.RESOURCE_TYPE_LIST_REPLICATION;
+import static com.peregrine.replication.ReplicationConstants.RESOURCE_TYPE_LIST_REPLICATION;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;

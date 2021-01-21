@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication;
+package com.peregrine.replication;
 
 public class ReplicationConstants {
     public static final String API_PREFIX = "perapi/admin/";

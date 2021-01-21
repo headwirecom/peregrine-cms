@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication.impl;
+package com.peregrine.replication.impl;
 
 /*-
  * #%L
@@ -25,7 +25,7 @@ package com.peregrine.admin.replication.impl;
  * #L%
  */
 
-import com.peregrine.admin.replication.AbstractionReplicationService;
+import com.peregrine.replication.AbstractionReplicationService;
 import com.peregrine.commons.ResourceUtils;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.commons.util.PerUtil;
@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
+import static com.peregrine.replication.ReplicationUtil.updateReplicationProperties;
 import static com.peregrine.commons.Chars.DOT;
 import static com.peregrine.commons.util.PerConstants.PUBLISHED_LABEL;
 import static com.peregrine.commons.util.PerConstants.RENDITION_ACTION;

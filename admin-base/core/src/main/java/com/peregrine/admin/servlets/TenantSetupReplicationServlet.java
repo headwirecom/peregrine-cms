@@ -25,7 +25,7 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.admin.replication.DefaultReplicationMapper;
+import com.peregrine.replication.DefaultReplicationMapper;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.commons.util.PerConstants;
 import com.peregrine.replication.Replication.ReplicationException;
@@ -43,7 +43,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.peregrine.admin.replication.ReplicationConstants.RESOURCE_TYPE_TENANT_SETUP_REPLICATION;
+import static com.peregrine.replication.ReplicationConstants.RESOURCE_TYPE_TENANT_SETUP_REPLICATION;
 
 import static com.peregrine.commons.util.PerConstants.FELIBS_ROOT;
 import static com.peregrine.commons.util.PerConstants.PAGES;
