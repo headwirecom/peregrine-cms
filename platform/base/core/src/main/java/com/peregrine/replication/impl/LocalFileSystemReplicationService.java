@@ -46,7 +46,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -61,7 +60,6 @@ import static com.peregrine.commons.util.PerUtil.getJcrContent;
 import static com.peregrine.commons.util.PerUtil.intoList;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static com.peregrine.commons.util.PerUtil.splitIntoMap;
-import static com.peregrine.commons.util.PerUtil.splitIntoProperties;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
@@ -148,32 +146,22 @@ public class LocalFileSystemReplicationService
     void modified(BundleContext context, Configuration configuration) { setup(context, configuration); }
 
     private File targetFolder;
-    private int creationStrategy = CREATE_NONE_STRATEGY;
-    private List<ExportExtension> exportExtensions = new ArrayList<>();
+    private final List<ExportExtension> exportExtensions = new ArrayList<>();
     private List<String> mandatoryRenditions = new ArrayList<>();
 
     private void setup(BundleContext context, Configuration configuration) {
         log.trace("Create Local FS Replication Service Name: '{}'", configuration.name());
         init(configuration.name(), configuration.description());
         log.debug("Extension: '{}'", configuration.exportExtensions());
-        creationStrategy = configuration.creationStrategy();
+        int creationStrategy = configuration.creationStrategy();
         exportExtensions.clear();
         Map<String, List<String>> extensions = splitIntoMap(configuration.exportExtensions(), "=", "\\|");
-        Map<String, List<String>> extensionParameters = new HashMap<>();
         for(Entry<String, List<String>> extension: extensions.entrySet()) {
             String name = extension.getKey();
             if(isNotEmpty(name)) {
                 List<String> types = extension.getValue();
                 if(types != null && !types.isEmpty()) {
-                    List<String> parameters = extensionParameters.get(name);
-                    boolean exportFolder = false;
-                    if(parameters != null) {
-                        String param = splitIntoProperties(parameters, ":").get(EXPORT_FOLDER) + "";
-                        exportFolder = Boolean.TRUE.toString().equalsIgnoreCase(param);
-                    }
-                    exportExtensions.add(
-                        new ExportExtension(name, types).setExportFolders(exportFolder)
-                    );
+                    exportExtensions.add(new ExportExtension(name, types));
                 } else {
                     throw new IllegalArgumentException(String.format(SUPPORTED_TYPES_EMPTY, extension));
                 }

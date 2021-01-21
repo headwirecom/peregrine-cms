@@ -32,7 +32,7 @@ import static com.peregrine.commons.util.PerUtil.isJcrContent;
 public class ReplicationUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReplicationUtil.class);
-    private static String SQL2_STATEMENT = "SELECT * FROM [nt:base] AS s WHERE ISDESCENDANTNODE([%s]) and CONTAINS(s.*, '%s')";
+    private static final String SQL2_STATEMENT = "SELECT * FROM [nt:base] AS s WHERE ISDESCENDANTNODE([%s]) and CONTAINS(s.*, '%s')";
     private static List<String> replicationPrimaryNodeTypes;
 
     /**

@@ -1,7 +1,5 @@
 package com.peregrine.replication;
 
-import com.peregrine.replication.Replication;
-
 /**
  * Marker Interface for the Default Replication Mapper Service
  *

@@ -66,8 +66,7 @@ public class DistributionEventHandlerService implements EventHandler {
     private void setReplicationProperties(DistributionEventPojo distributionEventPojo) {
 
         try {
-            final ResourceResolver resourceResolver = loginService(resourceResolverFactory, DISTRIBUTION_SUB_SERVICE);
-            ResourceResolver finalResourceResolver = resourceResolver;
+            ResourceResolver finalResourceResolver = loginService(resourceResolverFactory, DISTRIBUTION_SUB_SERVICE);
             List<String> paths = Arrays.stream(distributionEventPojo.getPaths())
                     .filter( path -> path.endsWith(JCR_CONTENT) || !path.contains(JCR_CONTENT))
                     .collect(Collectors.toList());

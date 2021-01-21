@@ -31,6 +31,7 @@ import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequestType;
@@ -115,7 +116,7 @@ public class DistributionReplicationService
         init(configuration.name(), configuration.description());
         log.trace("Distributor: '{}'", distributor);
         agentName = configuration.agentName();
-        if(agentName == null || agentName.isEmpty()) {
+        if(StringUtils.isEmpty(agentName)) {
             throw new IllegalArgumentException("Agent Name must be provided");
         }
     }
@@ -144,7 +145,7 @@ public class DistributionReplicationService
             }
         }
         // This only returns the referenced resources. Now we need to check if there are any JCR Content nodes to be added as well
-        for(Resource reference: new ArrayList<Resource>(replicationList)) {
+        for(Resource reference: new ArrayList<>(replicationList)) {
             PerUtil.listMissingResources(reference, replicationList, resourceChecker, false);
         }
         PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, deep);

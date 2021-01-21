@@ -50,7 +50,6 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
         SERVICE_VENDOR + EQUALS + PER_VENDOR
     }
 )
-@SuppressWarnings("serial")
 public final class ReplicationsContainerImpl implements ReplicationsContainer {
 
     public static final String DEFAULT_REPL = "defaultRepl";

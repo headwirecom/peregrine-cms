@@ -220,10 +220,7 @@ public class ModPageSpeedCacheInvalidationService
             String[] vals = properties.get("domains", String[].class);
             if (vals != null && vals.length > 0 )
             {
-                for (int i = 0; i < vals.length; i++)
-                {
-                    domains.add(vals[i]);
-                }
+                domains.addAll(Arrays.asList(vals));
             }
         }
 
@@ -247,14 +244,11 @@ public class ModPageSpeedCacheInvalidationService
         HttpPurge httpPurge = new HttpPurge(url);
         try
         {
-            CloseableHttpResponse response = httpClient.execute(httpPurge);
-            try {
+            try (CloseableHttpResponse response = httpClient.execute(httpPurge)) {
                 log.info("PageSpeed cache invalidation request '{}' returned an '{}' response",
                         url, response.getStatusLine());
                 HttpEntity entity1 = response.getEntity();
                 EntityUtils.consume(entity1);
-            } finally {
-                response.close();
             }
 
         } catch (IOException e)
