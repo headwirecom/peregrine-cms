@@ -242,4 +242,9 @@ public class DistributionReplicationService
         }
         return answer;
     }
+
+    @Override
+    public List<Resource> prepare(Collection<Resource> resourceList) throws ReplicationException {
+        return new ArrayList<>(resourceList);
+    }
 }
