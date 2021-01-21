@@ -32,9 +32,7 @@ import org.osgi.service.component.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -120,6 +118,11 @@ public final class ReplicationsContainerImpl implements ReplicationsContainer {
         return Optional.ofNullable(name)
                 .map(this::get)
                 .orElseGet(this::getDefault);
+    }
+
+    @Override
+    public Collection<Replication> getAll() {
+        return Collections.unmodifiableCollection(replications.values());
     }
 
 }

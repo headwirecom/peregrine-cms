@@ -25,6 +25,8 @@ package com.peregrine.replication;
  * #L%
  */
 
+import java.util.Collection;
+
 public interface ReplicationsContainer {
 
     Replication get(String name);
@@ -32,5 +34,7 @@ public interface ReplicationsContainer {
     Replication getDefault();
 
     Replication getOrDefault(String name);
+
+    Collection<Replication> getAll();
 
 }
