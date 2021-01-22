@@ -37,7 +37,7 @@ RUN mkdir -p /usr/local/lib/nodejs \
     && apt-get purge -y --auto-remove && rm -rf /var/lib/apt/lists/* && rm -rf /etc/apt/sources.list.d/temp.list;
 
 RUN scripts/install-sling.sh
-#RUN scripts/install-peregrine.sh
+RUN scripts/install-peregrine.sh
 
 ENTRYPOINT /app/scripts/start.sh && tail -qF /app/sling/logs/error.log
 
