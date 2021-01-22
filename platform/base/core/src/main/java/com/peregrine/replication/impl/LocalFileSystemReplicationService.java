@@ -52,6 +52,7 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
+import static com.peregrine.commons.IOUtils.*;
 import static com.peregrine.replication.ReplicationUtil.updateReplicationProperties;
 import static com.peregrine.commons.Chars._SCORE;
 import static com.peregrine.commons.ResourceUtils.jcrNameToFileName;
@@ -80,8 +81,7 @@ public class LocalFileSystemReplicationService
     public static final int CREATE_LEAF_STRATEGY = 1;
     public static final int CREATE_ALL_STRATEGY = 2;
     public static final String LOCAL_FILE_SYSTEM = "local-file-system://";
-    public static final String FAILED_TO_CREATED_FOLDER = "Failed to create folder: '%s'";
-    public static final String FAILED_TO_DELETE_FILE = "Failed to delete file: '%s'";
+    public static final String FAILED_TO_CREATE_FOLDER = "Failed to create folder: '%s'";
     public static final String FAILED_STORE_RENDERING_MISSING_PARENT_FOLDER = "Failed to Store Rendering as Parent Folder does not exist or is not a directory: '%s'";
     public static final String FAILED_STORE_RENDERING_FILE_IS_DIRECTORY = "Failed to Store Rendering as target file is a directory:: '%s'";
     public static final String PLACEHOLDER_NO_VALUE = "Place Holder: '%s' did not yield a value";
@@ -233,25 +233,15 @@ public class LocalFileSystemReplicationService
         File answer = targetFolder;
         for (final String name: path.split(SLASH)) {
             if (StringUtils.isNotEmpty(name)) {
-                answer = createTargetFolder(answer, jcrNameToFileName(name));
+                final String fileName = jcrNameToFileName(name);
+                answer = createChildDirectory(answer, fileName, fileName + _SCORE);
+                if (isNull(answer)) {
+                    throw new ReplicationException(String.format(FAILED_TO_CREATE_FOLDER, answer.getAbsolutePath()));
+                }
             }
         }
 
         return answer;
-    }
-
-    private File createTargetFolder(final File parent, final String name) throws ReplicationException {
-        File answer = new File(parent, name);
-        if (answer.exists() && !answer.isDirectory()) {
-            // File exists but is not a folder (like an image or so) -> create a folder with '_' at the end
-            answer = new File(parent, name + _SCORE);
-        }
-
-        if ((answer.exists() && answer.isDirectory()) || answer.mkdir()) {
-            return answer;
-        }
-
-        throw new ReplicationException(String.format(FAILED_TO_CREATED_FOLDER, answer.getAbsolutePath()));
     }
 
     @Override
@@ -341,25 +331,12 @@ public class LocalFileSystemReplicationService
 
         for (final File toBeDeleted : filesToBeDeletedFiles) {
             logger.trace("Delete File: '{}'", toBeDeleted.getAbsolutePath());
-            if (!deleteFile(toBeDeleted)) {
+            if (!deleteFileOrDirectory(toBeDeleted)) {
                 throw new ReplicationException(String.format(FAILED_TO_DELETE_FILE, toBeDeleted.getAbsolutePath()));
             }
 
             updateReplicationProperties(getJcrContent(resource), EMPTY, null);
         }
-    }
-
-    private boolean deleteFile(File file) {
-        if(file.isDirectory()) {
-            for(File child: file.listFiles()) {
-                if(!deleteFile(child)) {
-                    logger.warn(String.format(FAILED_TO_DELETE_FILE, file.getAbsolutePath()));
-                    return false;
-                }
-            }
-        }
-
-        return file.delete();
     }
 
     private File createFileWithParentAndName(final Resource parent, final String name) throws ReplicationException {
