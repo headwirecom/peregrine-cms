@@ -27,6 +27,9 @@ package com.peregrine.admin.servlets;
 
 import com.peregrine.adaption.PerReplicable;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.replication.Replication;
+import com.peregrine.replication.ReplicationsContainerWithDefault;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
@@ -36,17 +39,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import static com.peregrine.admin.servlets.ReplicationServlet.REPLICATION_FAILED;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.PATH;
-import static com.peregrine.commons.util.PerUtil.AddAllResourceChecker;
 import static java.util.Objects.isNull;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 
 public abstract class ReplicationServletBase extends AbstractBaseServlet {
 
+    public static final String REPLICATION_NOT_FOUND_FOR_NAME = "Replication not found for name: ";
+    public static final String REPLICATION_FAILED = "Replication Failed";
     public static final String REPLICATES = "replicates";
-    public static final AddAllResourceChecker ADD_ALL_RESOURCE_CHECKER = new AddAllResourceChecker();
 
     @Override
     protected final Response handleRequest(final Request request) throws IOException {
@@ -64,11 +66,21 @@ public abstract class ReplicationServletBase extends AbstractBaseServlet {
                     .setErrorMessage(String.format("Suffix: '%s' is not a resource", sourcePath));
         }
 
-        return performReplication(request, source, resourceResolver);
+        final String replicationName = StringUtils.defaultString(request.getParameter(NAME), "defaultRepl");
+        final Replication replication = getReplications().getOrDefault(replicationName);
+        if (isNull(replication)) {
+            return new ErrorResponse()
+                    .setHttpErrorCode(SC_BAD_REQUEST)
+                    .setErrorMessage(REPLICATION_NOT_FOUND_FOR_NAME + replicationName);
+        }
+
+        return performReplication(replication, request, source, resourceResolver);
     }
 
+    protected abstract ReplicationsContainerWithDefault getReplications();
+
     protected abstract Response performReplication(
-            Request request,
+            Replication replication, Request request,
             Resource resource,
             ResourceResolver resourceResolver
     ) throws IOException;

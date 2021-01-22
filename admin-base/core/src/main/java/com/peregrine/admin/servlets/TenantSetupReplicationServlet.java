@@ -26,10 +26,11 @@ package com.peregrine.admin.servlets;
  */
 
 import com.peregrine.adaption.PerReplicable;
-import com.peregrine.replication.DefaultReplicationMapper;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.commons.util.PerConstants;
+import com.peregrine.replication.Replication;
 import com.peregrine.replication.Replication.ReplicationException;
+import com.peregrine.replication.ReplicationsContainerWithDefault;
 import com.peregrine.sitemap.SiteMapFilesCache;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -46,10 +47,7 @@ import java.util.*;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_TENANT_SETUP_REPLICATION;
 
-import static com.peregrine.commons.util.PerConstants.FELIBS_ROOT;
-import static com.peregrine.commons.util.PerConstants.PAGES;
-import static com.peregrine.commons.util.PerConstants.SITE_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -90,7 +88,7 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
     private final SimpleDateFormat dateLabelFormat = new SimpleDateFormat("yyyy-MM-dd@HH.mm.ss");
 
     @Reference
-    private DefaultReplicationMapper defaultReplicationMapper;
+    private ReplicationsContainerWithDefault replications;
 
     @Reference
     private AdminResourceHandler resourceManagement;
@@ -98,8 +96,13 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
     @Reference
     private SiteMapFilesCache siteMapFilesCache;
 
+    protected ReplicationsContainerWithDefault getReplications() {
+        return replications;
+    }
+
     @Override
     protected Response performReplication(
+            final Replication replication,
             final Request request,
             final Resource site,
             final ResourceResolver resourceResolver
@@ -119,8 +122,8 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
         for (final Resource resource : toBeReplicatedInitial) {
             try {
                 logger.trace("Replication Resource: '{}'", resource);
-                var references = defaultReplicationMapper.findReferences(resource, true);
-                references = defaultReplicationMapper.prepare(references);
+                var references = replication.findReferences(resource, true);
+                references = replication.prepare(references);
                 toBeReplicated.addAll(references);
             } catch (final ReplicationException e) {
                 logger.warn("Replication Failed", e);
@@ -143,7 +146,7 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
                     }
                 });
         try {
-            var replicatedStuff = defaultReplicationMapper.replicate(toBeReplicated);
+            var replicatedStuff = replication.replicate(toBeReplicated);
             siteMapFilesCache.build(path + SLASH + PAGES);
             return prepareResponse(site, replicatedStuff);
         } catch (final ReplicationException e) {

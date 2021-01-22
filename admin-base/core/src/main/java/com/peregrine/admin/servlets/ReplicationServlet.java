@@ -31,7 +31,6 @@ import com.peregrine.commons.util.PerConstants;
 import com.peregrine.replication.Replication;
 import com.peregrine.replication.Replication.ReplicationException;
 import com.peregrine.replication.ReplicationsContainerWithDefault;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
@@ -44,7 +43,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_DO_REPLICATION;
-import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerUtil.AddAllResourceChecker;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -53,7 +51,6 @@ import static com.peregrine.commons.util.PerUtil.POST;
 import static com.peregrine.commons.util.PerUtil.listMissingResources;
 import static java.lang.Boolean.parseBoolean;
 import static java.util.Objects.isNull;
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -82,11 +79,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 public final class ReplicationServlet extends ReplicationServletBase {
 
     public static final String DEACTIVATE = "deactivate";
-    public static final String REPLICATION_NOT_FOUND_FOR_NAME = "Replication not found for name: ";
-    public static final String REPLICATION_FAILED = "Replication Failed";
-    public static final String REPLICATES = "replicates";
     public static final String RESOURCES = "resources";
-    public static final String SUFFIX_IS_NOT_RESOURCE = "Suffix: '%s' is not a resource";
     public static final AddAllResourceChecker ADD_ALL_RESOURCE_CHECKER = new AddAllResourceChecker();
 
     @Reference
@@ -95,20 +88,17 @@ public final class ReplicationServlet extends ReplicationServletBase {
     @Reference
     private AdminResourceHandler resourceManagement;
 
+    protected ReplicationsContainerWithDefault getReplications() {
+        return replications;
+    }
+
     @Override
     protected Response performReplication(
+            final Replication replication,
             final Request request,
             final Resource resource,
             final ResourceResolver resourceResolver
     ) throws IOException {
-        final String replicationName = StringUtils.defaultString(request.getParameter(NAME), "defaultRepl");
-        final Replication replication = replications.getOrDefault(replicationName);
-        if (isNull(replication)) {
-            return new ErrorResponse()
-                    .setHttpErrorCode(SC_BAD_REQUEST)
-                    .setErrorMessage(REPLICATION_NOT_FOUND_FOR_NAME + replicationName);
-        }
-
         final PerReplicable replicable = resource.adaptTo(PerReplicable.class);
         if (isNull(replicable)) {
             return prepareResponse(resource, Collections.emptyList());
