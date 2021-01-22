@@ -13,7 +13,9 @@ mvn clean install
 cd ..
 
 echo "Copying packages to Docker working directory..."
+rm -rf ./docker/files/*.zip
 find . -type f -name \*.zip -exec cp {} ./docker/files/ \;
+rm ./docker/files/npm-*.zip
 
 echo "Removing temporary 'themeclean-flex' project..."
 rm -rf themeclean-flex
