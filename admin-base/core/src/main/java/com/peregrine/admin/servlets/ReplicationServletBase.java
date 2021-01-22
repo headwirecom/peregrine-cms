@@ -28,6 +28,7 @@ package com.peregrine.admin.servlets;
 import com.peregrine.adaption.PerReplicable;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.replication.Replication;
+import com.peregrine.replication.Replication.ReplicationException;
 import com.peregrine.replication.ReplicationsContainerWithDefault;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
@@ -81,7 +82,11 @@ public abstract class ReplicationServletBase extends AbstractBaseServlet {
         }
 
         replicable.ensureReplicableMixin();
-        return performReplication(replication, request, replicable, resourceResolver);
+        try {
+            return performReplication(replication, request, replicable, resourceResolver);
+        } catch (final ReplicationException e) {
+            return badRequestReplicationFailed(e);
+        }
     }
 
     protected abstract ReplicationsContainerWithDefault getReplications();
@@ -90,7 +95,7 @@ public abstract class ReplicationServletBase extends AbstractBaseServlet {
             Replication replication, Request request,
             PerReplicable replicable,
             ResourceResolver resourceResolver
-    ) throws IOException;
+    ) throws IOException, ReplicationException;
 
     protected static ErrorResponse badRequestReplicationFailed(final Exception e) throws IOException {
         return badRequest(REPLICATION_FAILED).setException(e);

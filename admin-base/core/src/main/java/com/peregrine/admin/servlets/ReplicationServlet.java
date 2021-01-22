@@ -98,41 +98,37 @@ public final class ReplicationServlet extends ReplicationServletBase {
             final Request request,
             final PerReplicable replicable,
             final ResourceResolver resourceResolver
-    ) throws IOException {
-        try {
-            if (parseBoolean(request.getParameter(DEACTIVATE))) {
-                return performDeactivation(replication, replicable);
-            }
-
-            final Resource resource = replicable.getResource();
-            replicable.setLastReplicationActionAsActivated();
-            final boolean deep = parseBoolean(request.getParameter("deep"));
-            List<Resource> toBeReplicated = listMissingResources(resource, new LinkedList<>(), ADD_ALL_RESOURCE_CHECKER, deep);
-            for (final Resource r : Optional.of(RESOURCES)
-                    .map(request::getParameterValues)
-                    .map(Arrays::stream)
-                    .orElseGet(Stream::empty)
-                    .map(resourceResolver::getResource)
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList())){
-                listMissingResources(r, toBeReplicated, ADD_ALL_RESOURCE_CHECKER, deep);
-            }
-
-            toBeReplicated = replication.prepare(toBeReplicated);
-            // Replication can be local or remote and so the commit of the changes is done inside the Replication Service
-            streamReplicableResources(toBeReplicated)
-                    .map(Resource::getPath)
-                    .forEach(p -> {
-                        try {
-                            resourceManagement.createVersion(resourceResolver, p, PerConstants.PUBLISHED_LABEL);
-                        } catch (final AdminResourceHandler.ManagementException e) {
-                            logger.trace("Unable to create a version for path: {} ", p, e);
-                        }
-                    });
-            return prepareResponse(resource, replication.replicate(toBeReplicated));
-        } catch (final ReplicationException e) {
-            return badRequestReplicationFailed(e);
+    ) throws IOException, ReplicationException {
+        if (parseBoolean(request.getParameter(DEACTIVATE))) {
+            return performDeactivation(replication, replicable);
         }
+
+        final Resource resource = replicable.getResource();
+        final boolean deep = parseBoolean(request.getParameter("deep"));
+        List<Resource> toBeReplicated = listMissingResources(resource, new LinkedList<>(), ADD_ALL_RESOURCE_CHECKER, deep);
+        for (final Resource r : Optional.of(RESOURCES)
+                .map(request::getParameterValues)
+                .map(Arrays::stream)
+                .orElseGet(Stream::empty)
+                .map(resourceResolver::getResource)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList())) {
+            listMissingResources(r, toBeReplicated, ADD_ALL_RESOURCE_CHECKER, deep);
+        }
+
+        replicable.setLastReplicationActionAsActivated();
+        toBeReplicated = replication.prepare(toBeReplicated);
+        // Replication can be local or remote and so the commit of the changes is done inside the Replication Service
+        streamReplicableResources(toBeReplicated)
+                .map(Resource::getPath)
+                .forEach(p -> {
+                    try {
+                        resourceManagement.createVersion(resourceResolver, p, PerConstants.PUBLISHED_LABEL);
+                    } catch (final AdminResourceHandler.ManagementException e) {
+                        logger.trace("Unable to create a version for path: {} ", p, e);
+                    }
+                });
+        return prepareResponse(resource, replication.replicate(toBeReplicated));
     }
 
     @NotNull

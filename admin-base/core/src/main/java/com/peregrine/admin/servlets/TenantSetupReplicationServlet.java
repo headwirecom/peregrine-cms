@@ -105,7 +105,7 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
             final Request request,
             final PerReplicable replicable,
             final ResourceResolver resourceResolver
-    ) throws IOException {
+    ) throws IOException, ReplicationException {
         final Resource site = replicable.getResource();
         final String path = site.getPath();
         // Make sure that the Resource is a Site
@@ -143,13 +143,9 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
                         logger.trace("Unable to create a version for path: {} ", p, e);
                     }
                 });
-        try {
-            final var replicatedStuff = replication.replicate(toBeReplicated);
-            siteMapFilesCache.build(path + SLASH + PAGES);
-            return prepareResponse(site, replicatedStuff);
-        } catch (final ReplicationException e) {
-            return badRequestReplicationFailed(e);
-        }
+        final var replicatedStuff = replication.replicate(toBeReplicated);
+        siteMapFilesCache.build(path + SLASH + PAGES);
+        return prepareResponse(site, replicatedStuff);
     }
 
     /**
@@ -183,4 +179,5 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
 
         return result;
     }
+
 }
