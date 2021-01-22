@@ -35,6 +35,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -59,8 +60,8 @@ public abstract class ReplicationServletBase extends AbstractBaseServlet {
 
         final String sourcePath = request.getParameter(PATH);
         final ResourceResolver resourceResolver = request.getResourceResolver();
-        final Resource source = resourceResolver.getResource(sourcePath);
-        if (isNull(source)) {
+        final Resource resource = resourceResolver.getResource(sourcePath);
+        if (isNull(resource)) {
             return new ErrorResponse()
                     .setHttpErrorCode(SC_BAD_REQUEST)
                     .setErrorMessage(String.format("Suffix: '%s' is not a resource", sourcePath));
@@ -74,22 +75,31 @@ public abstract class ReplicationServletBase extends AbstractBaseServlet {
                     .setErrorMessage(REPLICATION_NOT_FOUND_FOR_NAME + replicationName);
         }
 
-        return performReplication(replication, request, source, resourceResolver);
+        final PerReplicable replicable = resource.adaptTo(PerReplicable.class);
+        if (isNull(replicable)) {
+            return prepareResponse(resource, Collections.emptyList());
+        }
+
+        replicable.ensureReplicableMixin();
+        return performReplication(replication, request, replicable, resourceResolver);
     }
 
     protected abstract ReplicationsContainerWithDefault getReplications();
 
     protected abstract Response performReplication(
             Replication replication, Request request,
-            Resource resource,
+            PerReplicable replicable,
             ResourceResolver resourceResolver
     ) throws IOException;
 
     protected static ErrorResponse badRequestReplicationFailed(final Exception e) throws IOException {
+        return badRequest(REPLICATION_FAILED).setException(e);
+    }
+
+    protected static ErrorResponse badRequest(final String message) throws IOException {
         return new ErrorResponse()
                 .setHttpErrorCode(SC_BAD_REQUEST)
-                .setErrorMessage(REPLICATION_FAILED)
-                .setException(e);
+                .setErrorMessage(message);
     }
 
     protected static Stream<Resource> streamReplicableResources(final Collection<Resource> resources) {

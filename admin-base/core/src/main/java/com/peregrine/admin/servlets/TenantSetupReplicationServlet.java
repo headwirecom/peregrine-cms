@@ -53,7 +53,6 @@ import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.commons.util.PerUtil.POST;
 import static java.util.Objects.nonNull;
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -104,15 +103,14 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
     protected Response performReplication(
             final Replication replication,
             final Request request,
-            final Resource site,
+            final PerReplicable replicable,
             final ResourceResolver resourceResolver
     ) throws IOException {
+        final Resource site = replicable.getResource();
         final String path = site.getPath();
         // Make sure that the Resource is a Site
         if (!SITE_PRIMARY_TYPE.equals(site.getResourceType())) {
-            return new ErrorResponse()
-                    .setHttpErrorCode(SC_BAD_REQUEST)
-                    .setErrorMessage(String.format("Suffix: '%s' is not a Peregrine Site", path));
+            return badRequest(String.format("Suffix: '%s' is not a Peregrine Site", path));
         }
 
         final var toBeReplicatedInitial = extractSiteFeLibs(site, resourceResolver.getResource(FELIBS_ROOT));
@@ -146,7 +144,7 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
                     }
                 });
         try {
-            var replicatedStuff = replication.replicate(toBeReplicated);
+            final var replicatedStuff = replication.replicate(toBeReplicated);
             siteMapFilesCache.build(path + SLASH + PAGES);
             return prepareResponse(site, replicatedStuff);
         } catch (final ReplicationException e) {

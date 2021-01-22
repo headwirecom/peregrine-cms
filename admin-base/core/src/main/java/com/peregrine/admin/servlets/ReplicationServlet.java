@@ -33,6 +33,7 @@ import com.peregrine.replication.Replication.ReplicationException;
 import com.peregrine.replication.ReplicationsContainerWithDefault;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -50,7 +51,6 @@ import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.commons.util.PerUtil.POST;
 import static com.peregrine.commons.util.PerUtil.listMissingResources;
 import static java.lang.Boolean.parseBoolean;
-import static java.util.Objects.isNull;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -96,27 +96,15 @@ public final class ReplicationServlet extends ReplicationServletBase {
     protected Response performReplication(
             final Replication replication,
             final Request request,
-            final Resource resource,
+            final PerReplicable replicable,
             final ResourceResolver resourceResolver
     ) throws IOException {
-        final PerReplicable replicable = resource.adaptTo(PerReplicable.class);
-        if (isNull(replicable)) {
-            return prepareResponse(resource, Collections.emptyList());
-        }
-
-        replicable.ensureReplicableMixin();
         try {
             if (parseBoolean(request.getParameter(DEACTIVATE))) {
-                replicable.setLastReplicationActionAsDeactivated();
-                final var replicatedStuff = replication.deactivate(resource);
-                for (final Resource r : streamReplicableResources(replicatedStuff)
-                        .collect(Collectors.toList())) {
-                    resourceManagement.deleteVersionLabel(r, PerConstants.PUBLISHED_LABEL);
-                }
-
-                return prepareResponse(resource, replicatedStuff);
+                return performDeactivation(replication, replicable);
             }
 
+            final Resource resource = replicable.getResource();
             replicable.setLastReplicationActionAsActivated();
             final boolean deep = parseBoolean(request.getParameter("deep"));
             List<Resource> toBeReplicated = listMissingResources(resource, new LinkedList<>(), ADD_ALL_RESOURCE_CHECKER, deep);
@@ -145,6 +133,22 @@ public final class ReplicationServlet extends ReplicationServletBase {
         } catch (final ReplicationException e) {
             return badRequestReplicationFailed(e);
         }
+    }
+
+    @NotNull
+    private Response performDeactivation(
+            final Replication replication,
+            final PerReplicable replicable
+    ) throws ReplicationException, IOException {
+        final Resource resource = replicable.getResource();
+        replicable.setLastReplicationActionAsDeactivated();
+        final var replicatedStuff = replication.deactivate(resource);
+        for (final Resource r : streamReplicableResources(replicatedStuff)
+                .collect(Collectors.toList())) {
+            resourceManagement.deleteVersionLabel(r, PerConstants.PUBLISHED_LABEL);
+        }
+
+        return prepareResponse(resource, replicatedStuff);
     }
 
 }
