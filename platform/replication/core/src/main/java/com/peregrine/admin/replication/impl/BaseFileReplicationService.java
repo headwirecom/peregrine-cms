@@ -166,8 +166,8 @@ public abstract class BaseFileReplicationService
     }
 
     @Override
-    public List<Resource> prepare(final Collection<Resource> resourceList) throws ReplicationException {
-        final List<Resource> answer = filterReferences(resourceList);
+    public List<Resource> prepare(final Collection<Resource> resources) throws ReplicationException {
+        final List<Resource> answer = filterReferences(resources);
         for (final Resource resource: answer) {
             // Need to figure out the type and replicate accordingly
             String primaryType = PerUtil.getPrimaryType(resource);

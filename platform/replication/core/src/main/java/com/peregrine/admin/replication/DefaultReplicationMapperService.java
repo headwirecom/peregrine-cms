@@ -215,8 +215,8 @@ public class DefaultReplicationMapperService
     }
 
     @Override
-    public List<Resource> prepare(Collection<Resource> resourceList) throws ReplicationException {
-        return delegate(resourceList, (replication, list) -> replication.prepare(list));
+    public List<Resource> prepare(Collection<Resource> resources) throws ReplicationException {
+        return delegate(resources, (replication, list) -> replication.prepare(list));
     }
 
     @Override
