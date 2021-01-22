@@ -29,6 +29,7 @@ import org.apache.sling.api.resource.Resource;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -84,8 +85,8 @@ public interface Replication {
     List<Resource> deactivate(Resource source)
         throws ReplicationException;
 
-    default List<Resource> prepare(Collection<Resource> resourceList) throws ReplicationException {
-        return Collections.emptyList();
+    default List<Resource> prepare(final Collection<Resource> resources) throws ReplicationException {
+        return new LinkedList<>(resources);
     }
 
     /**
