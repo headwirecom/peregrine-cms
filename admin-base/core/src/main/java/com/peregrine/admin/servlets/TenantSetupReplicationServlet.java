@@ -116,13 +116,11 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
         final var toBeReplicatedInitial = extractSiteFeLibs(site, resourceResolver.getResource(FELIBS_ROOT));
         toBeReplicatedInitial.add(0, site);
         logger.trace("List of Resource to be replicated: '{}'", toBeReplicatedInitial);
-        final var toBeReplicated = new LinkedList<>(toBeReplicatedInitial);
+        List<Resource> toBeReplicated = new LinkedList<>(toBeReplicatedInitial);
         for (final Resource resource : toBeReplicatedInitial) {
             try {
                 logger.trace("Replication Resource: '{}'", resource);
-                var references = replication.findReferences(resource, true);
-                references = replication.prepare(references);
-                toBeReplicated.addAll(references);
+                toBeReplicated.addAll(replication.findReferences(resource, true));
             } catch (final ReplicationException e) {
                 logger.warn("Replication Failed", e);
                 return badRequestReplicationFailed(e);
@@ -130,10 +128,8 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
         }
 
         final String dateLabel = site.getName() + "_" + dateLabelFormat.format(new Date(System.currentTimeMillis()));
-        streamReplicableResources(toBeReplicated)
-                .map(r -> r.adaptTo(PerReplicable.class))
-                .filter(Objects::nonNull)
-                .forEach(PerReplicable::ensureReplicableMixin);
+        toBeReplicated = replication.prepare(toBeReplicated);
+        ensureReplicationMixin(toBeReplicated);
         streamReplicableResources(toBeReplicated)
                 .map(Resource::getPath)
                 .forEach(p -> {
@@ -144,6 +140,7 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
                     }
                 });
         final var replicatedStuff = replication.replicate(toBeReplicated);
+        markAsActivated(replicatedStuff);
         siteMapFilesCache.build(path + SLASH + PAGES);
         return prepareResponse(site, replicatedStuff);
     }

@@ -131,4 +131,18 @@ public abstract class ReplicationServletBase extends AbstractBaseServlet {
         return answer;
     }
 
+    protected static void ensureReplicationMixin(final List<Resource> resources) {
+        streamReplicableResources(resources)
+                .map(r -> r.adaptTo(PerReplicable.class))
+                .filter(Objects::nonNull)
+                .forEach(PerReplicable::ensureReplicableMixin);
+    }
+
+    protected static void markAsActivated(final List<Resource> resources) {
+        streamReplicableResources(resources)
+                .map(r -> r.adaptTo(PerReplicable.class))
+                .filter(Objects::nonNull)
+                .forEach(PerReplicable::setLastReplicationActionAsActivated);
+    }
+
 }

@@ -44,6 +44,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_DO_REPLICATION;
+import static com.peregrine.commons.util.PerConstants.PAGES;
+import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerUtil.AddAllResourceChecker;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -116,9 +118,8 @@ public final class ReplicationServlet extends ReplicationServletBase {
             listMissingResources(r, toBeReplicated, ADD_ALL_RESOURCE_CHECKER, deep);
         }
 
-        replicable.setLastReplicationActionAsActivated();
         toBeReplicated = replication.prepare(toBeReplicated);
-        // Replication can be local or remote and so the commit of the changes is done inside the Replication Service
+        ensureReplicationMixin(toBeReplicated);
         streamReplicableResources(toBeReplicated)
                 .map(Resource::getPath)
                 .forEach(p -> {
@@ -128,7 +129,9 @@ public final class ReplicationServlet extends ReplicationServletBase {
                         logger.trace("Unable to create a version for path: {} ", p, e);
                     }
                 });
-        return prepareResponse(resource, replication.replicate(toBeReplicated));
+        final var replicatedStuff = replication.replicate(toBeReplicated);
+        markAsActivated(replicatedStuff);
+        return prepareResponse(resource, replicatedStuff);
     }
 
     @NotNull
