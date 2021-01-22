@@ -9,7 +9,7 @@ import static java.util.Objects.isNull;
 
 public final class IOUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(IOUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(IOUtils.class);
 
     public static final String FAILED_TO_DELETE_FILE = "Failed to delete file: '%s'";
 
@@ -17,7 +17,7 @@ public final class IOUtils {
         if (file.isDirectory()) {
             for (final File child: file.listFiles()) {
                 if(!deleteFileOrDirectory(child)) {
-                    logger.warn(String.format(FAILED_TO_DELETE_FILE, file.getAbsolutePath()));
+                    LOGGER.warn(String.format(FAILED_TO_DELETE_FILE, file.getAbsolutePath()));
                     return false;
                 }
             }
