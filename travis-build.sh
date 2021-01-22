@@ -2,7 +2,9 @@
 
 echo "Building Peregrine CMS..."
 mvn clean install
-cd  sling/peregrine-builder-sling-12 && mvn clean install --quiet
+
+echo "Building Peregrine CMS Feature Launcer..."
+cd sling/peregrine-builder-sling-12 && mvn clean install --quiet
 
 echo "Building 'themeclean-flex'..."
 cd ../..
@@ -16,6 +18,11 @@ echo "Copying packages to Docker working directory..."
 rm -rf ./docker/files/*.zip
 find . -type f -name \*.zip -exec cp {} ./docker/files/ \;
 rm ./docker/files/npm-*.zip
+
+echo "Copying Feature Models artifacts to Docker working directory..."
+cp sling/peregrine-builder-sling-12/target/dependency/org.apache.sling.feature.launcher.jar ./docker/files/
+cp sling/peregrine-builder-sling-12/target/slingfeature-tmp/feature-oak_tar.json ./docker/files/
+cp sling/peregrine-builder-sling-12/target/com.peregrine-cms.sling.launchpad-12-SNAPSHOT-oak_tar_fds_far.far ./docker/files/
 
 echo "Removing temporary 'themeclean-flex' project..."
 rm -rf themeclean-flex
