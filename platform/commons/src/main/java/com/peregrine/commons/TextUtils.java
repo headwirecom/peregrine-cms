@@ -1,6 +1,5 @@
 package com.peregrine.commons;
 
-import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
