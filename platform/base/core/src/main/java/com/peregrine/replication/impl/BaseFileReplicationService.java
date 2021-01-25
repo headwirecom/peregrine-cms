@@ -13,9 +13,9 @@ package com.peregrine.replication.impl;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -124,7 +124,7 @@ public abstract class BaseFileReplicationService extends ReplicationServiceBase
 
     @Override
     public List<Resource> findReferences(Resource startingResource, boolean deep) {
-        logger.trace("Replicate Resource: '{}', deep: '{}'", startingResource, deep);
+        log.trace("Replicate Resource: '{}', deep: '{}'", startingResource, deep);
         List<Resource> referenceList = getReferenceLister().getReferenceList(true, startingResource, true);
         List<Resource> replicationList = new ArrayList<>();
         ResourceChecker resourceChecker = new ResourceChecker() {
@@ -185,7 +185,7 @@ public abstract class BaseFileReplicationService extends ReplicationServiceBase
 
     @Override
     public List<Resource> replicate(Collection<Resource> resourceList) throws ReplicationException {
-        logger.trace("Replicate Resource List: '{}'", resourceList);
+        log.trace("Replicate Resource List: '{}'", resourceList);
         // Replicate the resources
         final ResourceResolver resourceResolver = resourceList.stream()
                 .filter(Objects::nonNull)
@@ -218,7 +218,7 @@ public abstract class BaseFileReplicationService extends ReplicationServiceBase
         try {
             session.save();
         } catch(RepositoryException e) {
-            logger.warn("Failed to save changes replicate parents", e);
+            log.warn("Failed to save changes replicate parents", e);
         }
 
         return answer;
@@ -278,8 +278,8 @@ public abstract class BaseFileReplicationService extends ReplicationServiceBase
                     consumer.consume(resource, renditionName);
                     checkRenditions.remove(renditionName);
                 } catch (RenderException e) {
-                    logger.warn("Rendition: '{}' failed with message: '{}'", rendition.getPath(), e.getMessage());
-                    logger.warn("Rendition Failure", e);
+                    log.warn("Rendition: '{}' failed with message: '{}'", rendition.getPath(), e.getMessage());
+                    log.warn("Rendition Failure", e);
                 }
             }
             // Loop over all remaining mandatory renditions and write the image data to the target
@@ -287,8 +287,8 @@ public abstract class BaseFileReplicationService extends ReplicationServiceBase
                 try {
                     consumer.consume(resource, renditionName);
                 } catch(RenderException e) {
-                    logger.warn("Rendition: '{}' failed with message: '{}'", renditionName, e.getMessage());
-                    logger.warn("Rendition Failure", e);
+                    log.warn("Rendition: '{}' failed with message: '{}'", renditionName, e.getMessage());
+                    log.warn("Rendition Failure", e);
                 }
             }
 
@@ -320,10 +320,10 @@ public abstract class BaseFileReplicationService extends ReplicationServiceBase
     abstract void removeReplica(Resource resource, final List<Pattern> namePattern, boolean isFolder) throws ReplicationException;
 
     private String replicatePerResource(Resource resource) throws ReplicationException {
-        logger.trace("Replicate Resource: '{}'", resource.getPath());
+        log.trace("Replicate Resource: '{}'", resource.getPath());
         for(ExportExtension exportExtension: getExportExtensions()) {
             String extension = exportExtension.getName();
-            logger.trace("Handle Extension: '{}'", extension);
+            log.trace("Handle Extension: '{}'", extension);
             boolean raw = extension.endsWith("~raw");
             if(raw) {
                 extension = extension.substring(0, extension.length() - "~raw".length());
@@ -336,17 +336,17 @@ public abstract class BaseFileReplicationService extends ReplicationServiceBase
                 try {
                     final RenderService renderService = getRenderService();
                     if(raw) {
-                        logger.trace("Before Rendering Raw Resource With Extension: '{}'", extension);
+                        log.trace("Before Rendering Raw Resource With Extension: '{}'", extension);
                         renderingContent = renderService.renderRawInternally(resource, extension);
                     } else {
-                        logger.trace("Before Rendering String Resource With Extension: '{}'", extension);
+                        log.trace("Before Rendering String Resource With Extension: '{}'", extension);
                         renderingContent = renderService.renderInternally(resource, extension);
                     }
                 } catch(RenderException e) {
-                    logger.warn("Rendering of '{}' failed -> ignore it", resource.getPath());
+                    log.warn("Rendering of '{}' failed -> ignore it", resource.getPath());
                 }
                 if(renderingContent != null) {
-                    logger.trace("Rendered Resource: {}", renderingContent);
+                    log.trace("Rendered Resource: {}", renderingContent);
                     if(raw) {
                         return storeRendering(resource, extension, (byte[]) renderingContent);
                     }

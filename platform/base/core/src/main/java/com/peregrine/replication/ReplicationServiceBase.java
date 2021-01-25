@@ -12,7 +12,7 @@ import static com.peregrine.commons.util.PerUtil.isEmpty;
 public abstract class ReplicationServiceBase
     implements Replication
 {
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     private String name;
     private String description;

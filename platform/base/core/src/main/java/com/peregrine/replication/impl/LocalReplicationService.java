@@ -13,9 +13,9 @@ package com.peregrine.replication.impl;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -139,8 +139,8 @@ public class LocalReplicationService
         if(localTarget.endsWith("/")) {
             localTarget = localTarget.substring(0, localTarget.length() - 1);
         }
-        logger.trace("Local Replication Service Name: '{}' created", getName());
-        logger.trace("Local Source: '{}', Target: '{}'", localSource, localTarget);
+        log.trace("Local Replication Service Name: '{}' created", getName());
+        log.trace("Local Source: '{}', Target: '{}'", localSource, localTarget);
     }
 
     @Reference
@@ -226,7 +226,7 @@ public class LocalReplicationService
                     String relativePath = relativePath(source, item);
                     if(relativePath != null) {
                         String targetPath = localTarget + '/' + relativePath;
-                        logger.trace("Add to Path mappings Source Path: '{}', Target Path: '{}'", item.getPath(), targetPath);
+                        log.trace("Add to Path mappings Source Path: '{}', Target Path: '{}'", item.getPath(), targetPath);
                         pathMapping.put(item.getPath(), targetPath);
                         // References need to be updated through the Path Mappings therefore we revisit them here
                         List<Resource> referenceList = referenceLister.getReferenceList(true, item, true, source, target);
@@ -234,12 +234,12 @@ public class LocalReplicationService
                             relativePath = relativePath(source, reference);
                             if(relativePath != null) {
                                 targetPath = localTarget + '/' + relativePath;
-                                logger.trace("Add to Path mappings Reference Source Path: '{}', Target Path: '{}'", reference.getPath(), targetPath);
+                                log.trace("Add to Path mappings Reference Source Path: '{}', Target Path: '{}'", reference.getPath(), targetPath);
                                 pathMapping.put(reference.getPath(), targetPath);
                             }
                         }
                     } else {
-                        logger.warn("Given Resource: '{}' path does not start with local source path: '{}' -> ignore", item, localSource);
+                        log.warn("Given Resource: '{}' path does not start with local source path: '{}' -> ignore", item, localSource);
                     }
                 }
             }
@@ -252,7 +252,7 @@ public class LocalReplicationService
             try {
                 session.save();
             } catch(RepositoryException e) {
-                logger.warn("Failed to save changes replicate parents", e);
+                log.warn("Failed to save changes replicate parents", e);
             }
         }
         return answer;
@@ -303,13 +303,13 @@ public class LocalReplicationService
                     }
                 }
             } else {
-                logger.warn("Given Resource: '{}' path does not start with local source path: '{}' -> ignore", toBeDeleted, localSource);
+                log.warn("Given Resource: '{}' path does not start with local source path: '{}' -> ignore", toBeDeleted, localSource);
             }
             Session session = resourceResolver.adaptTo(Session.class);
             try {
                 session.save();
             } catch(RepositoryException e) {
-                logger.warn("Failed to save changes replicate parents", e);
+                log.warn("Failed to save changes replicate parents", e);
             }
         }
         return answer;
@@ -318,47 +318,47 @@ public class LocalReplicationService
     private boolean handleParents(List<Resource> handledSources, Resource resource, List<Resource> resourceList, Map<String, String> pathMapping, ResourceResolver resourceResolver) {
         if(!containsResource(handledSources, resource)) {
             String targetPath = pathMapping.get(resource.getPath());
-            logger.trace("Handle Parents, Resource: '{}', Target Path: '{}'", resource.getPath(), targetPath);
+            log.trace("Handle Parents, Resource: '{}', Target Path: '{}'", resource.getPath(), targetPath);
             if(targetPath != null) {
                 try {
                     //AS TODO: If the parent is not found because the are intermediate missing parents
                     //AS TODO: we need to recursively go up the parents until we either find an existing parent and then create all its children on the way out
                     //AS TODO: or we fail and ignore it
                     String targetParent = getParent(targetPath);
-                    logger.trace("Target Parent: '{}'", targetParent);
+                    log.trace("Target Parent: '{}'", targetParent);
                     if(targetParent == null) {
                         // No more parent -> handling parents failed
                         return false;
                     }
                     Resource targetParentResource = resourceResolver.getResource(targetParent);
-                    logger.trace("Target Parent Resource: '{}'", targetParentResource == null ? "null" : targetParentResource.getPath());
+                    log.trace("Target Parent Resource: '{}'", targetParentResource == null ? "null" : targetParentResource.getPath());
                     if(targetParentResource == null) {
                         // Parent does not exist so try with its parent
                         Resource parent = resource.getParent();
-                        logger.trace("Source Parent: '{}'", parent == null ? "null" : parent.getPath());
+                        log.trace("Source Parent: '{}'", parent == null ? "null" : parent.getPath());
                         if(parent == null) {
                             // No more parent -> handling parents failed
                             return false;
                         }
-                        logger.trace("Recursive Handle Parents: '{}'", resource.getParent().getPath());
+                        log.trace("Recursive Handle Parents: '{}'", resource.getParent().getPath());
                         boolean ok = handleParents(handledSources, resource.getParent(), resourceList, pathMapping, resourceResolver);
                         if(!ok) {
                             // Handling of parent failed -> leaving as failure
                             return false;
                         } else {
                             targetParentResource = resourceResolver.getResource(targetParent);
-                            logger.trace("Target Parent Resource(2): '{}'", targetParentResource == null ? "null" : targetParentResource.getPath());
+                            log.trace("Target Parent Resource(2): '{}'", targetParentResource == null ? "null" : targetParentResource.getPath());
                             if(targetParentResource == null) {
-                                logger.error("Target Parent:'" + targetParent + "' is still not found even after all parents were handled");
+                                log.error("Target Parent:'" + targetParent + "' is still not found even after all parents were handled");
                             }
                         }
                     }
-                    logger.trace("Copy Resource: '{}' to Target: '{}'", resource.getPath(), targetParentResource.getPath());
+                    log.trace("Copy Resource: '{}' to Target: '{}'", resource.getPath(), targetParentResource.getPath());
                     Resource copy = copy(resource, targetParentResource, pathMapping);
                     resourceList.add(copy);
                     handledSources.add(resource);
                 } catch(PersistenceException e) {
-                    logger.error("Failed to replicate resource: '{}' -> ignored", resource, e);
+                    log.error("Failed to replicate resource: '{}' -> ignored", resource, e);
                 }
             }
         }
@@ -378,7 +378,7 @@ public class LocalReplicationService
     private Resource copy(Resource source, Resource targetParent, Map<String, String> pathMapping)
         throws PersistenceException
     {
-        logger.trace("Copy Resource: '{}', Target Parent Resource: '{}', Path Mappings: '{}'", source.getPath(), targetParent, pathMapping);
+        log.trace("Copy Resource: '{}', Target Parent Resource: '{}', Path Mappings: '{}'", source.getPath(), targetParent, pathMapping);
         Resource answer;
         Map<String, Object> newProperties = new HashMap<>();
         ModifiableValueMap properties = getModifiableProperties(source, false);
@@ -391,9 +391,9 @@ public class LocalReplicationService
             if(value instanceof String) {
                 String stringValue = (String) value;
                 String targetValue = pathMapping.get(value);
-                logger.trace("Is Property to be adjusted, name: '{}', value: '{}', mapped: '{}'", key, stringValue, targetValue);
+                log.trace("Is Property to be adjusted, name: '{}', value: '{}', mapped: '{}'", key, stringValue, targetValue);
                 if(targetValue != null) {
-                    logger.trace("Adjusted Property. Key: '{}', Old Value: '{}', New Value: '{}'", new String[]{key, stringValue, targetValue});
+                    log.trace("Adjusted Property. Key: '{}', Old Value: '{}', New Value: '{}'", new String[]{key, stringValue, targetValue});
                     value = targetValue;
                 }
             }
@@ -414,7 +414,7 @@ public class LocalReplicationService
                     // Ignore
                 }
             }
-            logger.trace("Create Resource: '{}' on Parent: '{}', Properties: '{}'", source.getName(), targetParent.getPath(), targetProperties);
+            log.trace("Create Resource: '{}' on Parent: '{}', Properties: '{}'", source.getName(), targetParent.getPath(), targetProperties);
             answer = source.getResourceResolver().create(targetParent, source.getName(), targetProperties);
         }
         updateReplicationProperties(source, null, answer);

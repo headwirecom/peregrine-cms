@@ -13,9 +13,9 @@ package com.peregrine.replication.impl;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -110,7 +110,7 @@ public class DistributionReplicationService
 
     private void setup(Configuration configuration) {
         init(configuration.name(), configuration.description());
-        logger.trace("Distributor: '{}'", distributor);
+        log.trace("Distributor: '{}'", distributor);
         agentName = configuration.agentName();
         if(StringUtils.isEmpty(agentName)) {
             throw new IllegalArgumentException("Agent Name must be provided");
@@ -123,9 +123,9 @@ public class DistributionReplicationService
 
     @Override
     public List<Resource> findReferences(Resource startingResource, boolean deep) {
-        logger.trace("Starting Resource: '{}'", startingResource.getPath());
+        log.trace("Starting Resource: '{}'", startingResource.getPath());
         List<Resource> referenceList = referenceLister.getReferenceList(true, startingResource, true);
-        logger.trace("Reference List: '{}'", referenceList);
+        log.trace("Reference List: '{}'", referenceList);
         List<Resource> replicationList = new ArrayList<>();
         ResourceChecker resourceChecker = new ResourceChecker() {
             @Override
@@ -145,7 +145,7 @@ public class DistributionReplicationService
             PerUtil.listMissingResources(reference, replicationList, resourceChecker, false);
         }
         PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, deep);
-        logger.trace("List for Replication: '{}'", replicationList);
+        log.trace("List for Replication: '{}'", replicationList);
         return replicationList;
     }
 
@@ -153,7 +153,7 @@ public class DistributionReplicationService
     public List<Resource> deactivate(Resource startingResource)
         throws ReplicationException
     {
-        logger.trace("Starting Resource: '{}'", startingResource.getPath());
+        log.trace("Starting Resource: '{}'", startingResource.getPath());
         List<Resource> replicationList = new ArrayList<>();
         ResourceChecker resourceChecker = new ResourceChecker() {
             @Override
@@ -162,7 +162,7 @@ public class DistributionReplicationService
             public boolean doAddChildren(Resource resource) { return true; }
         };
         PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, true);
-        logger.trace("List for Replication: '{}'", replicationList);
+        log.trace("List for Replication: '{}'", replicationList);
         return deactivate(replicationList);
     }
 
@@ -209,7 +209,7 @@ public class DistributionReplicationService
                             sdrDeactivate
                         );
 
-                        logger.trace("Distributor Response: '{}'", deactivateResp);
+                        log.trace("Distributor Response: '{}'", deactivateResp);
                         if(!deactivateResp.isSuccessful() || !(deactivateResp.getState() == ACCEPTED || deactivateResp.getState() != DISTRIBUTED)) {
                             throw new ReplicationException(String.format(DISTRIBUTION_FAILED, deactivateResp));
                         }
@@ -222,7 +222,7 @@ public class DistributionReplicationService
                             new SimpleDistributionRequest(
                                     activate ? DistributionRequestType.ADD : DistributionRequestType.DELETE,
                                     paths));
-                    logger.trace("Distributor Response: '{}'", response);
+                    log.trace("Distributor Response: '{}'", response);
                     if(!response.isSuccessful() || !(response.getState() == ACCEPTED || response.getState() != DISTRIBUTED)) {
                         throw new ReplicationException(String.format(DISTRIBUTION_FAILED, response));
                     }

@@ -101,27 +101,27 @@ public class DefaultReplicationMapperService
     private void setup(final Configuration configuration) {
         init(configuration.name(), configuration.description());
         // Register this service as Replication instance
-        logger.trace("Default Mapping: '{}'", configuration.defaultMapping());
+        log.trace("Default Mapping: '{}'", configuration.defaultMapping());
         Map<String, Map<String, String>> temp = splitIntoParameterMap(
                 new String[] { configuration.defaultMapping()},
                 ":",
                 "\\|",
                 "="
         );
-        logger.trace("Mapped Default Mapping: '{}'", temp);
+        log.trace("Mapped Default Mapping: '{}'", temp);
         if(temp.isEmpty()) {
             throw new IllegalArgumentException(NO_DEFAULT_MAPPING);
         }
 
         final Entry<String, Map<String, String>> entry = temp.entrySet().iterator().next();
         defaultMapping = new DefaultReplicationConfig(entry.getKey(), entry.getValue());
-        logger.trace("Final Default Mapping: '{}'", defaultMapping);
+        log.trace("Final Default Mapping: '{}'", defaultMapping);
         String[] pathMappings = configuration.pathMapping();
-        logger.trace("Path Mapping: '{}'", Arrays.asList(pathMappings));
+        log.trace("Path Mapping: '{}'", Arrays.asList(pathMappings));
         pathMapping.clear();
         if(pathMappings.length > 0) {
             temp = splitIntoParameterMap(pathMappings, ":", "\\|", "=");
-            logger.trace("Mapped Path Mapping: '{}'", temp);
+            log.trace("Mapped Path Mapping: '{}'", temp);
             // Check that each mapping has a Path (otherwise it is futile)
             for(Entry<String, Map<String, String>> tempEntry: temp.entrySet()) {
                 Map<String, String> parameters = tempEntry.getValue();
@@ -130,7 +130,7 @@ public class DefaultReplicationMapperService
                     new DefaultReplicationConfig(tempEntry.getKey(), path, parameters)
                 );
             }
-            logger.trace("Final Path Mapping: '{}'", pathMapping);
+            log.trace("Final Path Mapping: '{}'", pathMapping);
         }
     }
 
@@ -141,7 +141,7 @@ public class DefaultReplicationMapperService
 
     @Override
     public List<Resource> findReferences(Resource source, boolean deep) {
-        logger.trace("Starting Resource: '{}'", source.getPath());
+        log.trace("Starting Resource: '{}'", source.getPath());
         final List<Resource> referenceList = referenceLister.getReferenceList(true, source, deep);
         final List<Resource> replicationList = listMissingResources(source, new ArrayList<>(), new AddAllResourceChecker(), deep);
         replicationList.add(0, source);
@@ -177,8 +177,8 @@ public class DefaultReplicationMapperService
 
             final String replicationName = replication.getName();
             final List<Resource> resources = pot.getValue();
-            logger.trace("Replicate with Replication: '{}' these resources: '{}'", replicationName, resources);
-            logger.trace("DRH Replication: '{}', Replicates: '{}'", replicationName, resources);
+            log.trace("Replicate with Replication: '{}' these resources: '{}'", replicationName, resources);
+            log.trace("DRH Replication: '{}', Replicates: '{}'", replicationName, resources);
             answer.addAll(processor.process(replication, resources));
         }
 
@@ -200,7 +200,7 @@ public class DefaultReplicationMapperService
         boolean handled = false;
         for (final DefaultReplicationConfig config: pathMapping) {
             if (config.isHandled(resource)) {
-                logger.trace("Replicate Resource: '{}' using DRC: '{}'", resource.getPath(), config);
+                log.trace("Replicate Resource: '{}' using DRC: '{}'", resource.getPath(), config);
                 result.add(config);
                 // Resource is handled if the service name here is the same as for the default
                 if (!handled) {
@@ -211,7 +211,7 @@ public class DefaultReplicationMapperService
 
         if (!handled) {
             // Resource was not added to default mapping so add it here
-            logger.trace("Replicate Resource: '{}' using default DRC: '{}'", resource.getPath(), defaultMapping);
+            log.trace("Replicate Resource: '{}' using default DRC: '{}'", resource.getPath(), defaultMapping);
             result.add(defaultMapping);
         }
 

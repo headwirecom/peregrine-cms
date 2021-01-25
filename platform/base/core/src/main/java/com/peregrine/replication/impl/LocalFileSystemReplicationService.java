@@ -13,9 +13,9 @@ package com.peregrine.replication.impl;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -148,9 +148,9 @@ public class LocalFileSystemReplicationService
     void modified(BundleContext context, Configuration configuration) { setup(context, configuration); }
 
     private void setup(BundleContext context, Configuration configuration) {
-        logger.trace("Create Local FS Replication Service Name: '{}'", configuration.name());
+        log.trace("Create Local FS Replication Service Name: '{}'", configuration.name());
         init(configuration.name(), configuration.description());
-        logger.debug("Extension: '{}'", configuration.exportExtensions());
+        log.debug("Extension: '{}'", configuration.exportExtensions());
         int creationStrategy = configuration.creationStrategy();
         exportExtensions.clear();
         Map<String, List<String>> extensions = splitIntoMap(configuration.exportExtensions(), "=", "\\|");
@@ -164,17 +164,17 @@ public class LocalFileSystemReplicationService
                     throw new IllegalArgumentException(String.format(SUPPORTED_TYPES_EMPTY, extension));
                 }
             } else {
-                logger.warn("Configuration contained an empty extension");
+                log.warn("Configuration contained an empty extension");
             }
         }
-        logger.debug("Mandatory Renditions: '{}'", configuration.mandatoryRenditions());
+        log.debug("Mandatory Renditions: '{}'", configuration.mandatoryRenditions());
         mandatoryRenditions = intoList(configuration.mandatoryRenditions());
         String targetFolderPath = configuration.targetFolder();
         if(targetFolderPath.isEmpty()) {
             throw new IllegalArgumentException(REPLICATION_TARGET_FOLDER_CANNOT_BE_EMPTY);
         } else {
             targetFolderPath = replacePlaceholders(targetFolderPath, context::getProperty);
-            logger.trace("Target Folder Path: '{}', creation strategy: '{}'", targetFolderPath, creationStrategy);
+            log.trace("Target Folder Path: '{}', creation strategy: '{}'", targetFolderPath, creationStrategy);
             File temp = new File(targetFolderPath);
             if(!temp.exists()) {
                 switch(creationStrategy) {
@@ -198,7 +198,7 @@ public class LocalFileSystemReplicationService
             }
             targetFolder = temp;
         }
-        logger.trace("Local FS Replication Service Name: '{}' created with target folder: '{}'", getName(), targetFolder);
+        log.trace("Local FS Replication Service Name: '{}' created with target folder: '{}'", getName(), targetFolder);
     }
 
     @Reference
@@ -330,7 +330,7 @@ public class LocalFileSystemReplicationService
         }
 
         for (final File toBeDeleted : filesToBeDeletedFiles) {
-            logger.trace("Delete File: '{}'", toBeDeleted.getAbsolutePath());
+            log.trace("Delete File: '{}'", toBeDeleted.getAbsolutePath());
             if (!deleteFileOrDirectory(toBeDeleted)) {
                 throw new ReplicationException(String.format(FAILED_TO_DELETE_FILE, toBeDeleted.getAbsolutePath()));
             }
@@ -353,7 +353,7 @@ public class LocalFileSystemReplicationService
         if (file.isDirectory()) {
             throw new ReplicationException(String.format(FAILED_STORE_RENDERING_FILE_IS_DIRECTORY, file.getAbsolutePath()));
         } else {
-            logger.trace("Delete existing Rendering File: '{}'", file.getAbsolutePath());
+            log.trace("Delete existing Rendering File: '{}'", file.getAbsolutePath());
             file.delete();
         }
 

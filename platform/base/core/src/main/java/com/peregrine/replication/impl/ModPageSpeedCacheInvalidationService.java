@@ -64,7 +64,7 @@ public class ModPageSpeedCacheInvalidationService
 {
     private static final int HTTP_CLIENT_TIMEOUT_SECONDS = 5;
     private static final Pattern ROOT_SITE_PATH_PATTERN = Pattern.compile("^(/content/[a-zA-Z0-9_]+)/.*$");
-    
+
     @ObjectClassDefinition(
             name = "Peregrine: PageSpeed Cache Invalidation Service",
             description = "Each instance provides the configuration for a PageSpeed cache invalidation endpoint"
@@ -101,8 +101,8 @@ public class ModPageSpeedCacheInvalidationService
 
         cacheInvalidationUrl = configuration.cacheInvalidationUrl();
 
-        logger.trace("PageSpeed Invalidation Service Name: '{}' created", getName());
-        logger.trace("PageSpeed cache invalidation URL: '{}'", cacheInvalidationUrl);
+        log.trace("PageSpeed Invalidation Service Name: '{}' created", getName());
+        log.trace("PageSpeed cache invalidation URL: '{}'", cacheInvalidationUrl);
     }
 
     @Reference
@@ -157,7 +157,7 @@ public class ModPageSpeedCacheInvalidationService
                 final String sitePath = getSitePath(resource);
                 if (sites.contains(sitePath))
                 {
-                    logger.trace("Skipping... unique site already processed");
+                    log.trace("Skipping... unique site already processed");
                     continue;
                 }
                 sites.add(sitePath);
@@ -209,7 +209,7 @@ public class ModPageSpeedCacheInvalidationService
 
         if (null == rootTemplateNode)
         {
-            logger.warn("Root template is null. Can't get domains for site: '{}'", sitePath);
+            log.warn("Root template is null. Can't get domains for site: '{}'", sitePath);
             return domains;
         }
 
@@ -243,12 +243,12 @@ public class ModPageSpeedCacheInvalidationService
 
         HttpPurge httpPurge = new HttpPurge(url);
         try (CloseableHttpResponse response = httpClient.execute(httpPurge)) {
-            logger.info("PageSpeed cache invalidation request '{}' returned an '{}' response",
+            log.info("PageSpeed cache invalidation request '{}' returned an '{}' response",
                     url, response.getStatusLine());
             HttpEntity entity1 = response.getEntity();
             EntityUtils.consume(entity1);
         } catch (IOException e) {
-            logger.error("Error performing PageSpeed invalidation request: '{}'", url, e);
+            log.error("Error performing PageSpeed invalidation request: '{}'", url, e);
         }
     }
 
