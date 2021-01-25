@@ -1,6 +1,5 @@
 package com.peregrine.replication;
 
-import com.peregrine.adaption.PerReplicable;
 import org.apache.sling.api.resource.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.peregrine.replication.impl.DistributionReplicationService.DISTRIBUTION_PENDING;
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATION;

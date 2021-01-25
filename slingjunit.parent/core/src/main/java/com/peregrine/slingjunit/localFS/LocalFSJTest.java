@@ -1,6 +1,6 @@
 package com.peregrine.slingjunit.localFS;
 
-import com.peregrine.adaption.PerReplicable;
+import com.peregrine.replication.PerReplicable;
 import com.peregrine.replication.Replication;
 import com.peregrine.replication.ReplicationsContainerWithDefault;
 import com.peregrine.slingjunit.ReplicationTestBase;

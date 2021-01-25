@@ -25,7 +25,7 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.adaption.PerReplicable;
+import com.peregrine.replication.PerReplicable;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.commons.util.PerConstants;
 import com.peregrine.replication.Replication;

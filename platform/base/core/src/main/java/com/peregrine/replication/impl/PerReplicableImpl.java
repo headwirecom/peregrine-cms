@@ -1,6 +1,7 @@
-package com.peregrine.adaption.impl;
+package com.peregrine.replication.impl;
 
-import com.peregrine.adaption.PerReplicable;
+import com.peregrine.adaption.impl.PerBaseImpl;
+import com.peregrine.replication.PerReplicable;
 import com.peregrine.commons.util.PerUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.ModifiableValueMap;

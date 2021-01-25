@@ -25,7 +25,7 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.adaption.PerReplicable;
+import com.peregrine.replication.PerReplicable;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.commons.util.PerConstants;
 import com.peregrine.replication.Replication;
@@ -44,8 +44,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_DO_REPLICATION;
-import static com.peregrine.commons.util.PerConstants.PAGES;
-import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerUtil.AddAllResourceChecker;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
