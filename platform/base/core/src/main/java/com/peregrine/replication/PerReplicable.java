@@ -1,6 +1,7 @@
 package com.peregrine.replication;
 
 import com.peregrine.adaption.PerBase;
+import org.apache.sling.api.resource.Resource;
 
 import java.util.Calendar;
 
@@ -15,6 +16,8 @@ import java.util.Calendar;
  *
  */
 public interface PerReplicable extends PerBase {
+
+    Resource getMainResource();
 
     /**
      * @return true if the resource has been replicated

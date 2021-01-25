@@ -45,6 +45,11 @@ public class PerReplicableImpl extends PerBaseImpl implements PerReplicable {
         return getProperty(jcrLastModified, Calendar.class);
     }
 
+    @Override
+    public Resource getMainResource() {
+        return Optional.ofNullable(getContentResource()).orElseGet(this::getResource);
+    }
+
     /**
      * Is Replicated makes an inference about the replication status based on the Per:ReplicationRef property
      * If it exists but empty; the inference is the resource was deactivated
@@ -135,4 +140,5 @@ public class PerReplicableImpl extends PerBaseImpl implements PerReplicable {
             logger.error("Could not set replication status to pending", e);
         }
     }
+
 }

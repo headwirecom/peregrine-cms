@@ -111,7 +111,7 @@ public abstract class ReplicationServletBase extends AbstractBaseServlet {
         return resources.stream()
                 .map(r -> r.adaptTo(PerReplicable.class))
                 .filter(Objects::nonNull)
-                .map(PerReplicable::getContentResource)
+                .map(PerReplicable::getMainResource)
                 .filter(Objects::nonNull);
     }
 
@@ -139,7 +139,7 @@ public abstract class ReplicationServletBase extends AbstractBaseServlet {
     }
 
     protected static void markAsActivated(final List<Resource> resources) {
-        streamReplicableResources(resources)
+        resources.stream()
                 .map(r -> r.adaptTo(PerReplicable.class))
                 .filter(Objects::nonNull)
                 .forEach(PerReplicable::setLastReplicationActionAsActivated);
