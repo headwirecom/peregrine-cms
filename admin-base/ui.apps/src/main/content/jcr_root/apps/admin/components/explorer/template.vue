@@ -349,15 +349,11 @@ export default {
 
             replicatedClass(item) {
                 if(item.ReplicationStatus) {
-                    const created = item.created
-                    const modified = item.lastModified ? item.lastModified : created
+                    const modified = item.lastModified || item.created
                     const replicated = item.Replicated
-                    if(replicated > modified) {
-                        return 'item-'+item.ReplicationStatus
-                    } else {
-                        return 'item-'+item.ReplicationStatus+'-modified'
-                    }
+                    return `item-${item.ReplicationStatus}${replicated < modified ? '-modified' : ''}`
                 }
+
                 return 'item-replication-unknown'
             },
 
