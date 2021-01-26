@@ -20,10 +20,26 @@ done
 
 slingpackager list
 
-slingpackager list | awk '{print $1}' | cut -d"=" -f2 | while read package;
+PKG_ORDER=( \
+  /com.peregrine-cms/admin.sling.ui.apps-1.0-SNAPSHOT.zip \
+  /com.peregrine-cms/admin.ui.apps-1.0-SNAPSHOT.zip \
+  /com.peregrine-cms/admin.ui.materialize-1.0-SNAPSHOT.zip \
+  /com.peregrine-cms/base.ui.apps-1.0-SNAPSHOT.zip \
+  /com.peregrine-cms/external-1.0-SNAPSHOT.zip \
+  /com.peregrine-cms/felib.ui.apps-1.0-SNAPSHOT.zip \
+  /com.peregrine-cms/node-js.ui.apps-1.0-SNAPSHOT.zip \
+  /com.peregrine-cms/node-js.ui.apps.script-1.0-SNAPSHOT.zip \
+  /com.peregrine-cms/pagerender-vue.ui.apps-1.0-SNAPSHOT.zip \
+  /com.peregrine-cms/replication.ui.apps-1.0-SNAPSHOT.zip \
+  /com.peregrine-cms.example/example-vue.ui.apps-1.0-SNAPSHOT.zip \
+  /com.peregrine-cms.slingjunit/slingjunit.ui.apps-1.0-SNAPSHOT.zip \
+  /themeclean-flex/themecleanflex.ui.apps-1.0-SNAPSHOT.zip \
+)
+
+for pkg in "${PKG_ORDER[@]}"
 do
-  echo "Installing package: ${package}..."
-#  slingpackager -v install ${package}
+  echo "Installing package '${pkg}' in defined order..."
+  slingpackager install $pkg
 done
 
 cd ${SAVE_PWD}
