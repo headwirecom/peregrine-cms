@@ -136,7 +136,7 @@ public class PerReplicableImpl extends PerBaseImpl implements PerReplicable {
         this.modifiableValueMap.put(PER_REPLICATION_LAST_ACTION, value);
         try {
             this.getResource().getResourceResolver().commit();
-        } catch (PersistenceException e) {
+        } catch (final PersistenceException e) {
             logger.error("Could not set replication status to pending", e);
         }
     }

@@ -31,6 +31,7 @@ import com.peregrine.adaption.PerPageManager;
 import com.peregrine.replication.PerReplicable;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.replication.impl.PerReplicableImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.adapter.AdapterFactory;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -103,8 +104,8 @@ public class PeregrineAdapterFactory
     private <AdapterType> AdapterType getAdapter(Resource resource,
                                                  Class<AdapterType> type) {
         log.trace("Get Adapter for Type: '{}' and Resource: '{}', ", type.getName(), resource);
+        String primaryType = PerUtil.getPrimaryType(resource);
         if(PerPage.class.equals(type)) {
-            String primaryType = PerUtil.getPrimaryType(resource);
             if(PAGE_PRIMARY_TYPE.equals(primaryType)) {
                 return (AdapterType) new PerPageImpl(resource);
             }
@@ -121,7 +122,6 @@ public class PeregrineAdapterFactory
         }
 
         if(PerAsset.class.equals(type)) {
-            String primaryType = PerUtil.getPrimaryType(resource);
             if(ASSET_PRIMARY_TYPE.equals(primaryType)) {
                 return (AdapterType) new PerAssetImpl(resource);
             }
@@ -131,6 +131,10 @@ public class PeregrineAdapterFactory
         }
 
         if(PerReplicable.class.equals(type)) {
+            if (StringUtils.startsWith(primaryType, "rep:")) {
+                return null;
+            }
+
             return (AdapterType) new PerReplicableImpl(resource);
         }
 

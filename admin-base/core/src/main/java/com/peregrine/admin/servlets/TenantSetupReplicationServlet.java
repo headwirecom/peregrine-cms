@@ -140,6 +140,7 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
                     }
                 });
         final var replicatedStuff = replication.replicate(toBeReplicated);
+        ensureReplicationMixin(replicatedStuff);
         markAsActivated(replicatedStuff);
         siteMapFilesCache.build(path + SLASH + PAGES);
         return prepareResponse(site, replicatedStuff);
