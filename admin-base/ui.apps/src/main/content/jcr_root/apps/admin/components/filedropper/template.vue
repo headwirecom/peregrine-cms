@@ -15,6 +15,13 @@
             @click.prevent.stop="onOkClick">
           ok
         </button>
+        <button
+            type="button"
+            class="btn"
+            :disabled="progress < 100 && progress !== 0"
+            @click.prevent.stop="showMask = false">
+          close
+        </button>
       </div>
     </div>
   </div>
