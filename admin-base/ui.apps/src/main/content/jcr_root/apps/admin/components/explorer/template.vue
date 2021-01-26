@@ -73,7 +73,7 @@
                     <admin-components-action v-if="editable(child)"
                         v-bind:model="{
                             target: child.path,
-                            command: 'editPage',
+                            command: 'editEntity',
                             dblClickTarget: child,
                             dblClickCommand: 'selectPath',
                             tooltipTitle: `${$i18n('edit')} '${child.title || child.name}'`
@@ -94,7 +94,7 @@
                         <admin-components-action v-if="editable(child)"
                             v-bind:model="{
                                 target: child.path,
-                                command: 'editPage',
+                                command: 'editEntity',
                                 tooltipTitle: `${$i18n('edit')} '${child.title || child.name}'`
                             }">
                             <admin-components-iconeditpage></admin-components-iconeditpage>
@@ -678,37 +678,6 @@ export default {
                         $perAdminApp.stateAction('deleteTenant', target)
                     }
                 })
-            },
-
-            editReference: function(me, target) {
-                if(target.load) {
-                    $perAdminApp.loadContent(target.load)
-                } else {
-                    me.editPage(me, target.target)
-                }
-            },
-
-            editPage: function(me, target) {
-
-                const view = $perAdminApp.getView()
-                const tenant = view.state.tenant
-                const path = me.pt.path
-
-                if(target.startsWith(`/content/${tenant.name}/pages`)) {
-                    set(view, '/state/tools/page', target)
-                } else if(target.startsWith(`/content/${tenant.name}/templates`)) {
-                    set(view, '/state/tools/template', target)
-                }
-
-                if(target.startsWith(`/content/${tenant.name}/objects`)) {
-                    const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
-                    me.selectedObject = path
-                    $perAdminApp.stateAction('editObject', { selected: node.path, path: me.model.dataFrom })
-                } else if (target.startsWith(`/content/${tenant.name}/templates`)) {
-                    $perAdminApp.stateAction('editTemplate', target )
-                } else {
-                    $perAdminApp.stateAction('editPage', target )
-                }
             },
 
             editFile: function(me, target) {
