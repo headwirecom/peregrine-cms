@@ -1,16 +1,17 @@
 <template>
-  <div v-if="!schema.preview" class="range-field" :class="{'is-empty': !value}">
+  <div v-if="!schema.preview" ref="rangeField" class="range-field" :class="{'is-empty': isBlank}">
     <button class="range-btn" @click="onRangeBtnClick">
-      <admin-components-icon :icon="icon" :lib="IconLib.MATERIAL_ICONS"/>
-      <span v-if="!value" class="strike"></span>
+      <admin-components-icon icon="linear_scale" :lib="IconLib.MATERIAL_ICONS"/>
+      <span v-if="isBlank" class="strike"></span>
     </button>
     <input
+        v-if="value !== null"
         ref="range"
         type="range"
         class="range"
         v-model="value"
         :id="getFieldID(schema)"
-        :class="[schema.fieldClasses, {hidden: !value}]"
+        :class="[schema.fieldClasses]"
         :disabled="schema.disabled || schema.preview"
         :alt="schema.alt"
         :max="schema.max"
@@ -18,9 +19,14 @@
         :name="schema.inputName"
         :required="schema.required"
         :step="schema.step"/>
-    <div v-if="!value" class="empty-range">
-      <div class="rail" @click="value = 0"></div>
-    </div>
+    <input
+        v-if="isBlank"
+        type="range"
+        class="empty-range range"
+        :value="50"
+        min="0"
+        max="100"
+        disabled/>
     <input
         type="text"
         class="range-value"
@@ -35,16 +41,16 @@
         :required="schema.required"
         @keypress="onRangeValueKeyPress"
         @paste="onRangeValuePaste"/>
-    <!--div class="range-numbers">
-      <div class="min">{{ min }}</div>
-      <div class="max">{{ max }}</div>
-    </div-->
   </div>
   <div v-else>{{ value }}</div>
 </template>
 
 <script>
 import {IconLib, Toast} from '../../../../../js/constants'
+
+function isDefined(value) {
+  return value || value === 0 || value === '0'
+}
 
 export default {
   mixins: [VueFormGenerator.abstractField],
@@ -68,8 +74,8 @@ export default {
     max() {
       return this.schema.max || 100
     },
-    icon() {
-      return 'linear_scale'
+    isBlank() {
+      return !isDefined(this.value)
     }
   },
   watch: {
@@ -77,7 +83,7 @@ export default {
       this.model[this.schema.model] = val
 
       let propsToRemove = this.model['_opDeleteProps'] || []
-      if (val || val === 0 || val === "0") {
+      if (isDefined(val)) {
         propsToRemove = propsToRemove.filter(x => x !== this.schema.model)
       } else {
         propsToRemove.push(this.schema.model)
@@ -101,7 +107,7 @@ export default {
   },
   methods: {
     onRangeBtnClick() {
-      if (this.value) {
+      if (!this.isBlank) {
         this.oldValue = this.value
         this.value = null
       } else {
