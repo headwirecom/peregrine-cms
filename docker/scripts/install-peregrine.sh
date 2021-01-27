@@ -21,18 +21,16 @@ done
 slingpackager list
 
 PKG_ORDER=( \
-  /com.peregrine-cms/admin.sling.ui.apps-1.0-SNAPSHOT.zip \
-  /com.peregrine-cms/admin.ui.apps-1.0-SNAPSHOT.zip \
-  /com.peregrine-cms/admin.ui.materialize-1.0-SNAPSHOT.zip \
   /com.peregrine-cms/base.ui.apps-1.0-SNAPSHOT.zip \
   /com.peregrine-cms/external-1.0-SNAPSHOT.zip \
   /com.peregrine-cms/felib.ui.apps-1.0-SNAPSHOT.zip \
-  /com.peregrine-cms/node-js.ui.apps-1.0-SNAPSHOT.zip \
-  /com.peregrine-cms/node-js.ui.apps.script-1.0-SNAPSHOT.zip \
-  /com.peregrine-cms/pagerender-vue.ui.apps-1.0-SNAPSHOT.zip \
   /com.peregrine-cms/replication.ui.apps-1.0-SNAPSHOT.zip \
+  /com.peregrine-cms/pagerender-vue.ui.apps-1.0-SNAPSHOT.zip \
+  /com.peregrine-cms/admin.ui.apps-1.0-SNAPSHOT.zip \
+  /com.peregrine-cms/admin.ui.materialize-1.0-SNAPSHOT.zip \
+  /com.peregrine-cms/admin.sling.ui.apps-1.0-SNAPSHOT.zip \
   /com.peregrine-cms.example/example-vue.ui.apps-1.0-SNAPSHOT.zip \
-  /com.peregrine-cms.slingjunit/slingjunit.ui.apps-1.0-SNAPSHOT.zip \
+  /themeclean/themeclean-ui.apps-1.0-SNAPSHOT.zip \
   /themeclean-flex/themecleanflex.ui.apps-1.0-SNAPSHOT.zip \
 )
 
