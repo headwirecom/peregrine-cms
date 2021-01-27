@@ -26,7 +26,6 @@ package com.peregrine.replication.impl;
  */
 
 import com.google.common.collect.Iterables;
-import com.peregrine.commons.ResourceUtils;
 import com.peregrine.commons.util.PerUtil.*;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
@@ -72,6 +71,10 @@ public class LocalReplicationService
     public static final String LOCAL_TARGET_NOT_FOUND = "Local Target: '%s' not found. Please fix the local mapping or create the local target.";
     public static final String FAILED_TO_DELETE_A_TARGET_RESOURCE = "Failed to delete a target resource: '%s'";
 
+    private String localSource;
+    private String localTarget;
+    private String localSourceWithSlash;
+
     @ObjectClassDefinition(
         name = "Peregrine: Local Replication Service",
         description = "Each instance provides the configuration for a Local Replication"
@@ -100,12 +103,9 @@ public class LocalReplicationService
     @SuppressWarnings("unused")
     void modified(Configuration configuration) { setup(configuration); }
 
-    private String localSource;
-    private String localTarget;
-
     private void setup(Configuration configuration) {
         init(configuration.name(), configuration.description());
-        localSource = localTarget = null;
+        localSource = localTarget = localSourceWithSlash = null;
         final String mapping = configuration.localMapping();
         final String[] tokens = mapping.split(EQUALS);
         if(tokens.length < 2) {
@@ -113,6 +113,7 @@ public class LocalReplicationService
         }
 
         localSource = StringUtils.stripEnd(tokens[0], SLASH);
+        localSourceWithSlash = localSource + SLASH;
         localTarget = StringUtils.stripEnd(tokens[1], SLASH);
         if(!StringUtils.startsWith(localSource, SLASH)) {
             throw new IllegalArgumentException(String.format(LOCAL_MAPPING_SOURCE_MUST_BE_ABSOLUTE, mapping));
@@ -284,15 +285,12 @@ public class LocalReplicationService
             return true;
         }
 
-        final String targetPath = pathMapping.get(resource.getPath());
+        final String targetPath = getTargetPath(resource);
         log.trace("Handle Parents, Resource: '{}', Target Path: '{}'", resource.getPath(), targetPath);
         if (isBlank(targetPath)) {
             return true;
         }
 
-        //AS TODO: If the parent is not found because the are intermediate missing parents
-        //AS TODO: we need to recursively go up the parents until we either find an existing parent and then create all its children on the way out
-        //AS TODO: or we fail and ignore it
         final String targetParentPath = getParent(targetPath);
         log.trace("Target Parent: '{}'", targetParentPath);
         if (isBlank(targetParentPath)) {
@@ -333,6 +331,18 @@ public class LocalReplicationService
 
         handledSources.add(resource);
         return true;
+    }
+
+    private String getTargetPath(final Resource resource) {
+        return getTargetPath(resource.getPath());
+    }
+
+    private String getTargetPath(final String path) {
+        if (StringUtils.startsWith(path, localSourceWithSlash)) {
+            return StringUtils.replaceFirst(path, localSource, localTarget);
+        }
+
+        return null;
     }
 
 }
