@@ -12,16 +12,9 @@ import javax.jcr.nodetype.NodeTypeIterator;
 import javax.jcr.nodetype.NodeTypeManager;
 import javax.jcr.query.Query;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATION;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
+import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.*;
 import static java.util.Objects.isNull;
 
@@ -98,12 +91,11 @@ public class ReplicationUtil {
      * @param target Target Resource to be updated with same date and reference back to the source in the replication ref. If null will be ignored
      */
     public static void updateReplicationProperties(Resource source, String targetPath, Resource target) {
-        if (isNull(source) || !supportsReplicationProperties(source)) {
+        if (isNull(source) || !supportsReplicationProperties(source) || !ensureMixin(source)) {
             return;
         }
 
-        ensureMixin(source);
-        ModifiableValueMap sourceProperties = getModifiableProperties(source, false);
+        final ModifiableValueMap sourceProperties = getModifiableProperties(source, false);
         if (isNull(sourceProperties)) {
             return;
         }
@@ -118,30 +110,27 @@ public class ReplicationUtil {
             if (isEmpty(targetPath)) {
                 // If Target Path is empty remove the replication ref property
                 sourceProperties.remove(PER_REPLICATION_REF);
+                sourceProperties.put(PER_REPLICATION_LAST_ACTION, DEACTIVATED);
             } else {
                 sourceProperties.put(PER_REPLICATION_REF, targetPath);
+                sourceProperties.put(PER_REPLICATION_LAST_ACTION, ACTIVATED);
             }
-        } else {
-            ensureMixin(target);
-            try {
-                ModifiableValueMap targetProperties = getModifiableProperties(target, false);
-                LOGGER.trace("Replication User Id: '{}' for target: '{}'", userId, target.getPath());
-                targetProperties.put(PER_REPLICATED_BY, userId);
-                targetProperties.put(PER_REPLICATED, replicated);
-                if (isJcrContent(source)) {
-                    // For jcr:content nodes set the replication ref to its parent
-                    sourceProperties.put(PER_REPLICATION_REF, target.getParent().getPath());
-                    targetProperties.put(PER_REPLICATION_REF, source.getParent().getPath());
-                } else {
-                    sourceProperties.put(PER_REPLICATION_REF, target.getPath());
-                    targetProperties.put(PER_REPLICATION_REF, source.getPath());
-                }
+        } else if (ensureMixin(target)) {
+            sourceProperties.put(PER_REPLICATION_LAST_ACTION, ACTIVATED);
+            final ModifiableValueMap targetProperties = getModifiableProperties(target, false);
+            LOGGER.trace("Replication User Id: '{}' for target: '{}'", userId, target.getPath());
+            targetProperties.put(PER_REPLICATED_BY, userId);
+            targetProperties.put(PER_REPLICATED, replicated);
+            if (isJcrContent(source)) {
+                // For jcr:content nodes set the replication ref to its parent
+                sourceProperties.put(PER_REPLICATION_REF, target.getParent().getPath());
+                targetProperties.put(PER_REPLICATION_REF, source.getParent().getPath());
+            } else {
+                sourceProperties.put(PER_REPLICATION_REF, target.getPath());
+                targetProperties.put(PER_REPLICATION_REF, source.getPath());
+            }
 
-                LOGGER.trace("Updated Target: '{}' Replication Properties", target.getPath());
-            } catch (final IllegalArgumentException e) {
-                LOGGER.error("Failed to add replication properties", e);
-                throw e;
-            }
+            LOGGER.trace("Updated Target: '{}' Replication Properties", target.getPath());
         }
 
         refreshAndCommit(resourceResolver);
@@ -175,13 +164,12 @@ public class ReplicationUtil {
      *         be added or if adding failed
      */
     private static boolean ensureMixin(Resource resource) {
-        boolean answer = false;
         Node node = resource.adaptTo(Node.class);
         if(node != null) {
             try {
                 if(node.canAddMixin(PER_REPLICATION)) {
                     node.addMixin(PER_REPLICATION);
-                    answer = true;
+                    return true;
                 } else {
                     LOGGER.warn("Could not set Replication Mixin on resource: '{}'", resource);
                 }
@@ -189,7 +177,8 @@ public class ReplicationUtil {
                 LOGGER.warn("Could not add Replication Mixin to node: '{}'", node);
             }
         }
-        return answer;
+
+        return false;
     }
 
     public static boolean isReplicated(final Resource resource) {

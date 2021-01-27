@@ -36,7 +36,6 @@ import org.apache.sling.api.resource.ResourceResolver;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -76,14 +75,8 @@ public abstract class ReplicationServletBase extends AbstractBaseServlet {
                     .setErrorMessage(REPLICATION_NOT_FOUND_FOR_NAME + replicationName);
         }
 
-        final PerReplicable replicable = resource.adaptTo(PerReplicable.class);
-        if (isNull(replicable)) {
-            return prepareResponse(resource, Collections.emptyList());
-        }
-
-        replicable.ensureReplicableMixin();
         try {
-            return performReplication(replication, request, replicable, resourceResolver);
+            return performReplication(replication, request, resource, resourceResolver);
         } catch (final ReplicationException e) {
             return badRequestReplicationFailed(e);
         }
@@ -92,8 +85,9 @@ public abstract class ReplicationServletBase extends AbstractBaseServlet {
     protected abstract ReplicationsContainerWithDefault getReplications();
 
     protected abstract Response performReplication(
-            Replication replication, Request request,
-            PerReplicable replicable,
+            Replication replication,
+            Request request,
+            Resource resource,
             ResourceResolver resourceResolver
     ) throws IOException, ReplicationException;
 
@@ -129,20 +123,6 @@ public abstract class ReplicationServletBase extends AbstractBaseServlet {
 
         answer.writeClose();
         return answer;
-    }
-
-    protected static void ensureReplicationMixin(final List<Resource> resources) {
-        streamReplicableResources(resources)
-                .map(r -> r.adaptTo(PerReplicable.class))
-                .filter(Objects::nonNull)
-                .forEach(PerReplicable::ensureReplicableMixin);
-    }
-
-    protected static void markAsActivated(final List<Resource> resources) {
-        resources.stream()
-                .map(r -> r.adaptTo(PerReplicable.class))
-                .filter(Objects::nonNull)
-                .forEach(PerReplicable::setLastReplicationActionAsActivated);
     }
 
 }

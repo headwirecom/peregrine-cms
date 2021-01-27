@@ -43,16 +43,4 @@ public interface PerReplicable extends PerBase {
      * @return A string property describing the last replication action (either activated, deactivated, null)
      */
     String getLastReplicationAction();
-
-    boolean ensureReplicableMixin();
-
-    /**
-     * Call this method to mark the value of per:ReplicationLastAction as "activated"
-     */
-    void setLastReplicationActionAsActivated();
-
-    /**
-     * Call this method to mark the value of per:ReplicationLastAction as "deactivated"
-     */
-    void setLastReplicationActionAsDeactivated();
 }

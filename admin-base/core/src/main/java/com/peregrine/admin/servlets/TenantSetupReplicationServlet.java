@@ -25,7 +25,6 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.replication.PerReplicable;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.commons.util.PerConstants;
 import com.peregrine.replication.Replication;
@@ -103,10 +102,9 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
     protected Response performReplication(
             final Replication replication,
             final Request request,
-            final PerReplicable replicable,
+            final Resource site,
             final ResourceResolver resourceResolver
     ) throws IOException, ReplicationException {
-        final Resource site = replicable.getResource();
         final String path = site.getPath();
         // Make sure that the Resource is a Site
         if (!SITE_PRIMARY_TYPE.equals(site.getResourceType())) {
@@ -129,7 +127,6 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
 
         final String dateLabel = site.getName() + "_" + dateLabelFormat.format(new Date(System.currentTimeMillis()));
         toBeReplicated = replication.prepare(toBeReplicated);
-        ensureReplicationMixin(toBeReplicated);
         streamReplicableResources(toBeReplicated)
                 .map(Resource::getPath)
                 .forEach(p -> {
@@ -140,8 +137,6 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
                     }
                 });
         final var replicatedStuff = replication.replicate(toBeReplicated);
-        ensureReplicationMixin(replicatedStuff);
-        markAsActivated(replicatedStuff);
         siteMapFilesCache.build(path + SLASH + PAGES);
         return prepareResponse(site, replicatedStuff);
     }

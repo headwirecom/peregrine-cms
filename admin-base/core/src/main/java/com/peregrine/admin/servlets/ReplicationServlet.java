@@ -25,7 +25,6 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.replication.PerReplicable;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.commons.util.PerConstants;
 import com.peregrine.replication.Replication;
@@ -96,14 +95,13 @@ public final class ReplicationServlet extends ReplicationServletBase {
     protected Response performReplication(
             final Replication replication,
             final Request request,
-            final PerReplicable replicable,
+            final Resource resource,
             final ResourceResolver resourceResolver
     ) throws IOException, ReplicationException {
         if (parseBoolean(request.getParameter(DEACTIVATE))) {
-            return performDeactivation(replication, replicable);
+            return performDeactivation(replication, resource);
         }
 
-        final Resource resource = replicable.getResource();
         final boolean deep = parseBoolean(request.getParameter("deep"));
         List<Resource> toBeReplicated = listMissingResources(resource, new LinkedList<>(), ADD_ALL_RESOURCE_CHECKER, deep);
         for (final Resource r : Optional.of(RESOURCES)
@@ -117,7 +115,6 @@ public final class ReplicationServlet extends ReplicationServletBase {
         }
 
         toBeReplicated = replication.prepare(toBeReplicated);
-        ensureReplicationMixin(toBeReplicated);
         streamReplicableResources(toBeReplicated)
                 .map(Resource::getPath)
                 .forEach(p -> {
@@ -127,18 +124,14 @@ public final class ReplicationServlet extends ReplicationServletBase {
                         logger.trace("Unable to create a version for path: {} ", p, e);
                     }
                 });
-        final var replicatedStuff = replication.replicate(toBeReplicated);
-        markAsActivated(replicatedStuff);
-        return prepareResponse(resource, replicatedStuff);
+        return prepareResponse(resource, replication.replicate(toBeReplicated));
     }
 
     @NotNull
     private Response performDeactivation(
             final Replication replication,
-            final PerReplicable replicable
+            final Resource resource
     ) throws ReplicationException, IOException {
-        final Resource resource = replicable.getResource();
-        replicable.setLastReplicationActionAsDeactivated();
         final var replicatedStuff = replication.deactivate(resource);
         for (final Resource r : streamReplicableResources(replicatedStuff)
                 .collect(Collectors.toList())) {
