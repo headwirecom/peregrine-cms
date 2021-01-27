@@ -64,7 +64,6 @@ public class DistributionEventHandlerService implements EventHandler {
     }
 
     private void setReplicationProperties(DistributionEventPojo distributionEventPojo) {
-
         try {
             ResourceResolver finalResourceResolver = loginService(resourceResolverFactory, DISTRIBUTION_SUB_SERVICE);
             List<String> paths = Arrays.stream(distributionEventPojo.getPaths())

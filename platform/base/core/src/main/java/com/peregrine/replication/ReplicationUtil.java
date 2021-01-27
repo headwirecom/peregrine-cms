@@ -18,7 +18,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import static com.peregrine.replication.impl.DistributionReplicationService.DISTRIBUTION_PENDING;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATION;
@@ -109,18 +108,13 @@ public class ReplicationUtil {
             return;
         }
 
-        Calendar replicated = Calendar.getInstance();
         final ResourceResolver resourceResolver = source.getResourceResolver();
-        if (DISTRIBUTION_PENDING.equals(targetPath)) {
-            // Note for remote replication use-case
-            // updateReplicationProperties will be called twice. The first time will include a resource
-            //   obtained from the user initiating resource publishing. In this case targetPath will be "distribution pending"
-            // TODO: CR add replication status to the per:Replication mixin such that these inferences are not needed.
-            sourceProperties.put(PER_REPLICATED_BY, resourceResolver.getUserID());
-        }
+        final String userId = resourceResolver.getUserID();
+        sourceProperties.put(PER_REPLICATED_BY, userId);
+        final Calendar replicated = Calendar.getInstance();
         sourceProperties.put(PER_REPLICATED, replicated);
         LOGGER.trace("Updated Source Replication Properties");
-        if (target == null) {
+        if (isNull(target)) {
             if (isEmpty(targetPath)) {
                 // If Target Path is empty remove the replication ref property
                 sourceProperties.remove(PER_REPLICATION_REF);
@@ -131,12 +125,8 @@ public class ReplicationUtil {
             ensureMixin(target);
             try {
                 ModifiableValueMap targetProperties = getModifiableProperties(target, false);
-                String userId = resourceResolver.getUserID();
                 LOGGER.trace("Replication User Id: '{}' for target: '{}'", userId, target.getPath());
-                // TODO: Refactor duplicated code
-                if (DISTRIBUTION_PENDING.equals(targetPath)) {
-                    targetProperties.put(PER_REPLICATED_BY, userId);
-                }
+                targetProperties.put(PER_REPLICATED_BY, userId);
                 targetProperties.put(PER_REPLICATED, replicated);
                 if (isJcrContent(source)) {
                     // For jcr:content nodes set the replication ref to its parent
@@ -146,8 +136,9 @@ public class ReplicationUtil {
                     sourceProperties.put(PER_REPLICATION_REF, target.getPath());
                     targetProperties.put(PER_REPLICATION_REF, source.getPath());
                 }
+
                 LOGGER.trace("Updated Target: '{}' Replication Properties", target.getPath());
-            } catch (IllegalArgumentException e) {
+            } catch (final IllegalArgumentException e) {
                 LOGGER.error("Failed to add replication properties", e);
                 throw e;
             }
