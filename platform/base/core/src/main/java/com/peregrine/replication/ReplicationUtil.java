@@ -156,13 +156,13 @@ public class ReplicationUtil {
         refreshAndCommit(resourceResolver);
     }
 
-    private static void refreshAndCommit(final ResourceResolver resourceResolver) {
+    public static void refreshAndCommit(final ResourceResolver resourceResolver) {
         resourceResolver.refresh();
         try {
             resourceResolver.commit();
         } catch (final PersistenceException e) {
             resourceResolver.revert();
-            LOGGER.error("could not commit replication property changes", e);
+            LOGGER.error("Could not commit changes", e);
         }
     }
 
