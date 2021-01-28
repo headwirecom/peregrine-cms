@@ -19,6 +19,9 @@ rm -rf ./docker/files/*.zip
 find . -type f -name \*.zip -exec cp {} ./docker/files/ \;
 rm ./docker/files/npm-*.zip
 
+echo "Copy select bundles..."
+cp platform/login/target/login-1.0-SNAPSHOT.jar ./docker/files/
+
 echo "Copying Feature Models artifacts to Docker working directory..."
 cp sling/peregrine-builder-sling-12/target/dependency/org.apache.sling.feature.launcher.jar ./docker/files/
 cp sling/peregrine-builder-sling-12/target/slingfeature-tmp/feature-oak_tar.json ./docker/files/

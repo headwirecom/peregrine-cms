@@ -34,10 +34,24 @@ PKG_ORDER=( \
   /themeclean-flex/themecleanflex.ui.apps-1.0-SNAPSHOT.zip \
 )
 
+
 for pkg in "${PKG_ORDER[@]}"
 do
   echo "Installing package '${pkg}' in defined order..."
   slingpackager install $pkg
+
+  # Install login bundle after felib
+  if [ $pkg == '/com.peregrine-cms/felib.ui.apps-1.0-SNAPSHOT.zip' ]; then
+    echo "Installing: ${PACKAGE_DIR}/login-1.0-SNAPSHOT.jar"
+    curl -u admin:admin -F action=install -F bundlestartlevel=20 -F \
+        bundlefile=@"${PACKAGE_DIR}/login-1.0-SNAPSHOT.jar" http://localhost:8080/system/console/bundles
+  fi
 done
+
+#echo "Stopping Peregrine..."
+#kill `ps -ef | grep org.apache.sling.feature.launcher.jar | grep -v grep | awk '{print $2}'`
+
+#echo "Starting Sling for the second time..."
+#/app/scripts/start.sh
 
 cd ${SAVE_PWD}

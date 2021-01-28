@@ -11,9 +11,7 @@ RUN apt update -q \
         jq \
         libvips libvips-tools \
         tar \
-        xz-utils \
-        git \
-        maven
+        xz-utils
 
 ENV PATH "/usr/local/lib/nodejs/node-v10.16.0-linux-x64/bin:$PATH"
 

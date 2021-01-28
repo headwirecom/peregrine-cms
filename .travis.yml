@@ -24,7 +24,7 @@ script:
 - if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then BUILD_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH; else BUILD_BRANCH=$TRAVIS_BRANCH; fi
 - ./travis-build.sh
 - cd docker && ./builddocker.sh
-- #./pushdocker-travis.sh
+- ./pushdocker-travis.sh
 
 after_script:
 - docker images
