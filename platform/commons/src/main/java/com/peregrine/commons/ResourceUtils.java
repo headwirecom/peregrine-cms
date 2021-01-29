@@ -1,5 +1,6 @@
 package com.peregrine.commons;
 
+import com.google.common.collect.Iterables;
 import com.peregrine.commons.util.PerConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
@@ -254,6 +255,13 @@ public final class ResourceUtils {
 
     public static Resource performDeepSafeCopy(final Resource resource, final Resource targetParent) throws PersistenceException {
         return performDeepSafeCopy(resource, targetParent, resource.getName());
+    }
+
+    public static ResourceResolver findResolver(final Collection<Resource> resources) {
+        return resources.stream()
+                .filter(Objects::nonNull)
+                .map(Resource::getResourceResolver)
+                .findFirst().orElse(null);
     }
 
 }

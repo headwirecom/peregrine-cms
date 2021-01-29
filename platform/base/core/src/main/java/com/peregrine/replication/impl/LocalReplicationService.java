@@ -26,6 +26,7 @@ package com.peregrine.replication.impl;
  */
 
 import com.google.common.collect.Iterables;
+import com.peregrine.commons.ResourceUtils;
 import com.peregrine.commons.util.PerUtil.*;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
@@ -193,58 +194,48 @@ public class LocalReplicationService
      * @throws ReplicationException
      */
     private List<Resource> deactivate(Resource toBeDeleted, List<Resource> resourceList) throws ReplicationException {
+        final ResourceResolver resourceResolver = ResourceUtils.findResolver(resourceList);
+        if (isNull(resourceResolver)) {
+            return Collections.emptyList();
+        }
+
         List<Resource> answer = new ArrayList<>();
         // Replicate the resources
-        ResourceResolver resourceResolver = null;
-        for(Resource item: resourceList) {
-            if(item != null) {
-                resourceResolver = item.getResourceResolver();
-                break;
-            }
+        Resource source = resolveLocalSource(resourceResolver);
+        resolveLocalTarget(resourceResolver);
+        // Update all replication targets by setting the new Replication Date, User and remove the Ref to indicate the deactivation
+        for (Resource item : resourceList) {
+            updateReplicationProperties(item, "", null);
         }
-        if(resourceResolver != null) {
-            Resource source = resolveLocalSource(resourceResolver);
-            Resource target = resourceResolver.getResource(localTarget);
-            if(target == null) {
-                throw new ReplicationException(String.format(LOCAL_TARGET_NOT_FOUND, localTarget));
-            }
-            // Update all replication targets by setting the new Replication Date, User and remove the Ref to indicate the deactivation
-            for(Resource item: resourceList) {
-                updateReplicationProperties(item, "", null);
-            }
-            // Delete the replicated target resource
-            String relativePath = relativePath(source, toBeDeleted);
-            if(relativePath != null) {
-                String targetPath = localTarget + '/' + relativePath;
-                Resource targetResource = getResource(resourceResolver, targetPath);
-                if(targetResource != null) {
-                    try {
-                        resourceResolver.delete(targetResource);
-                    } catch(PersistenceException e) {
-                        throw new ReplicationException(String.format(FAILED_TO_DELETE_A_TARGET_RESOURCE, targetPath), e);
-                    }
+        // Delete the replicated target resource
+        String relativePath = relativePath(source, toBeDeleted);
+        if (relativePath != null) {
+            String targetPath = localTarget + '/' + relativePath;
+            Resource targetResource = getResource(resourceResolver, targetPath);
+            if (targetResource != null) {
+                try {
+                    resourceResolver.delete(targetResource);
+                } catch (PersistenceException e) {
+                    throw new ReplicationException(String.format(FAILED_TO_DELETE_A_TARGET_RESOURCE, targetPath), e);
                 }
-            } else {
-                log.warn("Given Resource: '{}' path does not start with local source path: '{}' -> ignore", toBeDeleted, localSource);
             }
-
-            refreshAndCommit(resourceResolver);
+        } else {
+            log.warn("Given Resource: '{}' path does not start with local source path: '{}' -> ignore", toBeDeleted, localSource);
         }
 
+        refreshAndCommit(resourceResolver);
         return answer;
     }
 
     @Override
     public List<Resource> replicate(final Collection<Resource> resourceList) throws ReplicationException {
-        final Collection<Resource> safeResourceList = new LinkedList<>(resourceList);
-        Iterables.removeIf(safeResourceList, Objects::isNull);
-        final ResourceResolver resourceResolver = safeResourceList.stream()
-                .map(Resource::getResourceResolver)
-                .findFirst().orElse(null);
+        final ResourceResolver resourceResolver = ResourceUtils.findResolver(resourceList);
         if (isNull(resourceResolver)) {
             return Collections.emptyList();
         }
 
+        final Collection<Resource> safeResourceList = new LinkedList<>(resourceList);
+        Iterables.removeIf(safeResourceList, Objects::isNull);
         final Resource source = resolveLocalSource(resourceResolver);
         final Resource target = resolveLocalTarget(resourceResolver);
         // Prepare the Mappings for the Properties mapping
