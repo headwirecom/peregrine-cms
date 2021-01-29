@@ -43,7 +43,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_DO_REPLICATION;
-import static com.peregrine.commons.util.PerUtil.AddAllResourceChecker;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -79,7 +78,6 @@ public final class ReplicationServlet extends ReplicationServletBase {
 
     public static final String DEACTIVATE = "deactivate";
     public static final String RESOURCES = "resources";
-    public static final AddAllResourceChecker ADD_ALL_RESOURCE_CHECKER = new AddAllResourceChecker();
 
     @Reference
     private ReplicationsContainerWithDefault replications;
@@ -103,7 +101,7 @@ public final class ReplicationServlet extends ReplicationServletBase {
         }
 
         final boolean deep = parseBoolean(request.getParameter("deep"));
-        List<Resource> toBeReplicated = listMissingResources(resource, new LinkedList<>(), ADD_ALL_RESOURCE_CHECKER, deep);
+        List<Resource> toBeReplicated = listMissingResources(resource, deep, new LinkedList<>());
         for (final Resource r : Optional.of(RESOURCES)
                 .map(request::getParameterValues)
                 .map(Arrays::stream)
@@ -111,7 +109,7 @@ public final class ReplicationServlet extends ReplicationServletBase {
                 .map(resourceResolver::getResource)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList())) {
-            listMissingResources(r, toBeReplicated, ADD_ALL_RESOURCE_CHECKER, deep);
+            listMissingResources(r, deep, toBeReplicated);
         }
 
         toBeReplicated = replication.prepare(toBeReplicated);

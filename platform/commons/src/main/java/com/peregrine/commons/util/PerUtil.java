@@ -428,18 +428,17 @@ public class PerUtil {
      * Goes recursively through the resource tree and adds all resources that are selected by the resource checker.
      * The JCR Content is traversed by default (except when the Resource Checker prevents it) but the other children
      * only when the deep flag is set true
-     *
-     * @param startingResource Root resource of the search
-     * @param response List of resources where the missing resources are added to
+     *  @param startingResource Root resource of the search
      * @param resourceChecker Resource Checker instance that decides which resource is deemed missing and defines
      *                         if children resources are traversed
      * @param deep If true this goes down recursively any children
+     * @param response List of resources where the missing resources are added to
      */
     public static <C extends Collection<Resource>> C listMissingResources(
             final Resource startingResource,
-            final C response,
             final ResourceChecker resourceChecker,
-            final boolean deep) {
+            final boolean deep, final C response
+    ) {
         ResourceChecker childResourceChecker = resourceChecker;
         if (isNull(startingResource) || isNull(resourceChecker) || isNull(response)) {
             return response;
@@ -461,11 +460,19 @@ public class PerUtil {
 
         for (final Resource child : startingResource.getChildren()) {
             if (deep || isJcrContent(child)) {
-                listMissingResources(child, response, childResourceChecker, true);
+                listMissingResources(child, childResourceChecker, true, response);
             }
         }
 
         return response;
+    }
+
+    public static <C extends Collection<Resource>> C listMissingResources(
+            final Resource startingResource,
+            final boolean deep,
+            final C response
+    ) {
+        return listMissingResources(startingResource, ADD_ALL_RESOURCE_CHECKER, deep, response);
     }
 
     public static boolean containsResource(final Collection<Resource> resources, final Resource check) {
