@@ -179,6 +179,11 @@ public class DistributionReplicationService
         return replicate(resourceList, false);
     }
 
+    @Override
+    public List<Resource> prepare(Collection<Resource> resourceList) throws ReplicationException {
+        return new ArrayList<>(resourceList);
+    }
+
     public List<Resource> replicate(Collection<Resource> resourceList, boolean activate) throws ReplicationException {
         List<Resource> answer = new ArrayList<>();
         if(distributor != null) {

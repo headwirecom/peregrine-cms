@@ -85,9 +85,7 @@ public interface Replication {
     List<Resource> deactivate(Resource source)
         throws ReplicationException;
 
-    default List<Resource> prepare(final Collection<Resource> resources) throws ReplicationException {
-        return new LinkedList<>(resources);
-    }
+    List<Resource> prepare(final Collection<Resource> resources) throws ReplicationException;
 
     /**
      * Replicates all the given resources and only them. This means
