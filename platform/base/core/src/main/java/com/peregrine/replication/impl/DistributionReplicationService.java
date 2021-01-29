@@ -74,6 +74,15 @@ public class DistributionReplicationService
     public static final String NO_DISTRIBUTOR_AVAILABLE = "No Distributor available -> configure Sling Distribution first";
     public static final String DISTRIBUTION_FAILED = "Distribution failed due to: '%s'";
 
+    @Reference
+    Distributor distributor;
+
+    private String agentName;
+
+    @Reference
+    @SuppressWarnings("unused")
+    private ReferenceLister referenceLister;
+
     @ObjectClassDefinition(
         name = "Peregrine: Remote Replication Service",
         description = "Each instance provides the configuration for Remote Replication through Sling Distribution"
@@ -102,11 +111,6 @@ public class DistributionReplicationService
     @SuppressWarnings("unused")
     void modified(Configuration configuration) { setup(configuration); }
 
-    @Reference
-    Distributor distributor;
-
-    private String agentName;
-
     private void setup(Configuration configuration) {
         init(configuration.name(), configuration.description());
         log.trace("Distributor: '{}'", distributor);
@@ -115,10 +119,6 @@ public class DistributionReplicationService
             throw new IllegalArgumentException("Agent Name must be provided");
         }
     }
-
-    @Reference
-    @SuppressWarnings("unused")
-    private ReferenceLister referenceLister;
 
     @Override
     public List<Resource> findReferences(Resource startingResource, boolean deep) {
