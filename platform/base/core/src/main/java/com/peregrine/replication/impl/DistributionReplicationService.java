@@ -48,7 +48,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static com.peregrine.replication.ReplicationUtil.updateReplicationProperties;
+import static com.peregrine.replication.ReplicationUtil.markAsPending;
 import static java.util.Objects.isNull;
 import static org.apache.sling.distribution.DistributionRequestState.ACCEPTED;
 import static org.apache.sling.distribution.DistributionRequestState.DISTRIBUTED;
@@ -69,7 +69,6 @@ public class DistributionReplicationService
     extends ReplicationServiceBase
 {
 
-    public static final String DISTRIBUTION_PENDING = "distribution pending";
     public static final String DISTRIBUTION_FAILED = "Distribution failed due to: '%s'";
 
     @Reference
@@ -165,7 +164,7 @@ public class DistributionReplicationService
 
         // In order to make it possible to have the correct user set and 'Replicated By' we need to set it here and now
         for (final Resource resource : resources) {
-            updateReplicationProperties(resource, DISTRIBUTION_PENDING, null);
+            markAsPending(resource);
         }
 
         if (activate) {

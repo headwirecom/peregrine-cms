@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static com.peregrine.replication.ReplicationUtil.updateReplicationProperties;
+import static com.peregrine.replication.ReplicationUtil.markAsActivated;
 import static com.peregrine.commons.Chars.DOT;
 import static com.peregrine.commons.util.PerConstants.PUBLISHED_LABEL;
 import static com.peregrine.commons.util.PerConstants.RENDITION_ACTION;
@@ -60,6 +60,7 @@ import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
 import static com.peregrine.commons.util.PerUtil.RENDITIONS;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static java.util.Objects.isNull;
+import static java.util.Objects.requireNonNullElse;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -208,7 +209,7 @@ public abstract class BaseFileReplicationService extends ReplicationServiceBase 
             answer.add(item);
             if (isNotBlank(path)) {
                 final Resource contentResource = item.getChild(JCR_CONTENT);
-                updateReplicationProperties(Objects.requireNonNullElse(contentResource, item), path, null);
+                markAsActivated(requireNonNullElse(contentResource, item), path);
             }
         }
 

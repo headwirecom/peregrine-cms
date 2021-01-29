@@ -43,8 +43,7 @@ import java.util.*;
 import static com.peregrine.commons.ResourceUtils.performFlatSafeCopy;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerUtil.*;
-import static com.peregrine.replication.ReplicationUtil.refreshAndCommit;
-import static com.peregrine.replication.ReplicationUtil.updateReplicationProperties;
+import static com.peregrine.replication.ReplicationUtil.*;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -205,7 +204,7 @@ public class LocalReplicationService
         resolveLocalTarget(resourceResolver);
         // Update all replication targets by setting the new Replication Date, User and remove the Ref to indicate the deactivation
         for (Resource item : resourceList) {
-            updateReplicationProperties(item, "", null);
+            markAsDeactivated(item);
         }
         // Delete the replicated target resource
         String relativePath = relativePath(source, toBeDeleted);
@@ -314,7 +313,7 @@ public class LocalReplicationService
         try {
             log.trace("Copy Resource: '{}' to Target: '{}'", resource.getPath(), targetParent.getPath());
             final Resource copy = performFlatSafeCopy(resourceResolver, resource, targetParent, pathMapping::get);
-            updateReplicationProperties(resource, null, copy);
+            markAsActivated(resource, copy);
             resourceList.add(copy);
         } catch (final PersistenceException e) {
             log.error("Failed to replicate resource: '{}' -> ignored", resource, e);

@@ -54,7 +54,6 @@ import java.util.regex.Pattern;
 
 import static com.peregrine.commons.IOUtils.*;
 import static com.peregrine.commons.TextUtils.replacePlaceholders;
-import static com.peregrine.replication.ReplicationUtil.updateReplicationProperties;
 import static com.peregrine.commons.Chars._SCORE;
 import static com.peregrine.commons.ResourceUtils.jcrNameToFileName;
 import static com.peregrine.commons.util.PerConstants.SLASH;
@@ -62,9 +61,10 @@ import static com.peregrine.commons.util.PerUtil.getJcrContent;
 import static com.peregrine.commons.util.PerUtil.intoList;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static com.peregrine.commons.util.PerUtil.splitIntoMap;
+import static com.peregrine.replication.ReplicationUtil.markAsActivated;
+import static com.peregrine.replication.ReplicationUtil.markAsDeactivated;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
  * This class replicates resources to a local file system folder
@@ -296,7 +296,7 @@ public class LocalFileSystemReplicationService
         }
 
         final String localFileSystemPath = LOCAL_FILE_SYSTEM + file.getAbsolutePath();
-        updateReplicationProperties(getJcrContent(parent), localFileSystemPath, null);
+        markAsActivated(getJcrContent(parent), localFileSystemPath);
         return localFileSystemPath;
     }
 
@@ -335,7 +335,7 @@ public class LocalFileSystemReplicationService
                 throw new ReplicationException(String.format(FAILED_TO_DELETE_FILE, toBeDeleted.getAbsolutePath()));
             }
 
-            updateReplicationProperties(getJcrContent(resource), EMPTY, null);
+            markAsDeactivated(getJcrContent(resource));
         }
     }
 

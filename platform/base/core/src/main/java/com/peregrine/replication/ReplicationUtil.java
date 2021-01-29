@@ -17,6 +17,8 @@ import java.util.*;
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.*;
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class ReplicationUtil {
 
@@ -82,58 +84,58 @@ public class ReplicationUtil {
         return answer;
     }
 
-    /**
-     * Set the replications properties if the source supports Replication Mixin
-     *
-     * @param source Source Resource to be updated. If null or the resource does not support Replication Mixin this call does nothing.
-     * @param targetPath Replication Ref target path. If the TARGET is NULL this will set the source's Replication Ref property
-     *                   or removes it if empty or null
-     * @param target Target Resource to be updated with same date and reference back to the source in the replication ref. If null will be ignored
-     */
-    public static void updateReplicationProperties(Resource source, String targetPath, Resource target) {
-        if (isNull(source) || !supportsReplicationProperties(source) || !ensureMixin(source)) {
-            return;
+    public static void markAsActivated(final Resource source, final String targetPath) {
+        if (isNotEmpty(targetPath)) {
+            addReplicationProps(source, targetPath);
         }
+    }
 
-        final ModifiableValueMap sourceProperties = getModifiableProperties(source, false);
-        if (isNull(sourceProperties)) {
-            return;
-        }
-
-        final ResourceResolver resourceResolver = source.getResourceResolver();
-        final String userId = resourceResolver.getUserID();
-        sourceProperties.put(PER_REPLICATED_BY, userId);
-        final Calendar replicated = Calendar.getInstance();
-        sourceProperties.put(PER_REPLICATED, replicated);
-        LOGGER.trace("Updated Source Replication Properties");
-        if (isNull(target)) {
-            if (isEmpty(targetPath)) {
-                // If Target Path is empty remove the replication ref property
-                sourceProperties.remove(PER_REPLICATION_REF);
-                sourceProperties.put(PER_REPLICATION_LAST_ACTION, DEACTIVATED);
-            } else {
-                sourceProperties.put(PER_REPLICATION_REF, targetPath);
-                sourceProperties.put(PER_REPLICATION_LAST_ACTION, ACTIVATED);
-            }
-        } else if (ensureMixin(target)) {
-            sourceProperties.put(PER_REPLICATION_LAST_ACTION, ACTIVATED);
-            final ModifiableValueMap targetProperties = getModifiableProperties(target, false);
-            LOGGER.trace("Replication User Id: '{}' for target: '{}'", userId, target.getPath());
-            targetProperties.put(PER_REPLICATED_BY, userId);
-            targetProperties.put(PER_REPLICATED, replicated);
+    public static void markAsActivated(final Resource source, final Resource target) {
+        if (nonNull(target) && ensureMixin(target)) {
             if (isJcrContent(source)) {
-                // For jcr:content nodes set the replication ref to its parent
-                sourceProperties.put(PER_REPLICATION_REF, target.getParent().getPath());
-                targetProperties.put(PER_REPLICATION_REF, source.getParent().getPath());
+                addReplicationProps(source, target.getParent().getPath());
+                addReplicationProps(target, source.getParent().getPath());
             } else {
-                sourceProperties.put(PER_REPLICATION_REF, target.getPath());
-                targetProperties.put(PER_REPLICATION_REF, source.getPath());
+                addReplicationProps(source, target.getPath());
+                addReplicationProps(target, source.getPath());
             }
+        }
+    }
 
-            LOGGER.trace("Updated Target: '{}' Replication Properties", target.getPath());
+    public static void markAsDeactivated(final Resource resource) {
+        addReplicationProps(resource, null);
+    }
+
+    private static void addReplicationProps(final Resource resource, final String replicationRef) {
+        addReplicationProps(resource, Calendar.getInstance(), replicationRef);
+    }
+
+    private static void addReplicationProps(final Resource resource, final Calendar replicated, final String replicationRef) {
+        if (isNull(resource) || !supportsReplicationProperties(resource) || !ensureMixin(resource)) {
+            return;
         }
 
-        refreshAndCommit(resourceResolver);
+        final ModifiableValueMap properties = getModifiableProperties(resource, false);
+        if (isNull(properties)) {
+            return;
+        }
+
+        final ResourceResolver resolver = resource.getResourceResolver();
+        properties.put(PER_REPLICATED_BY, resolver.getUserID());
+        properties.put(PER_REPLICATED, replicated);
+        if (isBlank(replicationRef)) {
+            properties.put(PER_REPLICATION_LAST_ACTION, DEACTIVATED);
+            properties.remove(PER_REPLICATION_REF);
+        } else {
+            properties.put(PER_REPLICATION_LAST_ACTION, ACTIVATED);
+            properties.put(PER_REPLICATION_REF, replicationRef);
+        }
+
+        refreshAndCommit(resolver);
+    }
+
+    public static void markAsPending(final Resource resource) {
+        markAsActivated(resource, "distribution pending");
     }
 
     public static void refreshAndCommit(final ResourceResolver resourceResolver) {
@@ -163,19 +165,21 @@ public class ReplicationUtil {
      * @return True if the mixin was added, false if node could not be adapted, mixin could not
      *         be added or if adding failed
      */
-    private static boolean ensureMixin(Resource resource) {
-        Node node = resource.adaptTo(Node.class);
-        if(node != null) {
-            try {
-                if(node.canAddMixin(PER_REPLICATION)) {
-                    node.addMixin(PER_REPLICATION);
-                    return true;
-                } else {
-                    LOGGER.warn("Could not set Replication Mixin on resource: '{}'", resource);
-                }
-            } catch(RepositoryException e) {
-                LOGGER.warn("Could not add Replication Mixin to node: '{}'", node);
+    private static boolean ensureMixin(final Resource resource) {
+        final Node node = resource.adaptTo(Node.class);
+        if (isNull(node)) {
+            return false;
+        }
+
+        try {
+            if (node.canAddMixin(PER_REPLICATION)) {
+                node.addMixin(PER_REPLICATION);
+                return true;
+            } else {
+                LOGGER.warn("Could not set Replication Mixin on resource: '{}'", resource);
             }
+        } catch (final RepositoryException e) {
+            LOGGER.warn("Could not add Replication Mixin to node: '{}'", node);
         }
 
         return false;

@@ -15,12 +15,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 
-import static com.peregrine.replication.ReplicationUtil.updateReplicationProperties;
+import static com.peregrine.replication.ReplicationUtil.markAsActivated;
+import static com.peregrine.replication.ReplicationUtil.markAsDeactivated;
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.loginService;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.sling.distribution.event.DistributionEventTopics.AGENT_PACKAGE_DISTRIBUTED;
 import static org.apache.sling.distribution.event.DistributionEventTopics.IMPORTER_PACKAGE_IMPORTED;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
@@ -64,14 +64,14 @@ public class DistributionEventHandlerService implements EventHandler {
             Arrays.stream(data.getPaths())
                     .filter(path -> PerUtil.isJcrContent(path) || !path.contains(JCR_CONTENT))
                     .forEach(path -> {
-                        String replicationRef = EMPTY;
-                        if (DISTRIBUTION_TYPE_ADD.equals(data.getDistributionType().name())) {
-                            replicationRef = data.getDistributionComponentKind() + "://" + path;
-                        }
-
                         log.info("properties for {} were updated by dist event handler.", path);
                         final Resource resource = resourceResolver.getResource(path);
-                        updateReplicationProperties(resource, replicationRef, null);
+                        if (DISTRIBUTION_TYPE_ADD.equals(data.getDistributionType().name())) {
+                            final String replicationRef = data.getDistributionComponentKind() + "://" + path;
+                            markAsActivated(resource, replicationRef);
+                        } else {
+                            markAsDeactivated(resource);
+                        }
                     });
         } catch (LoginException e) {
             log.error("Failed to update per:Replication properties", e);
