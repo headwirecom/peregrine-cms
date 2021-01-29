@@ -68,6 +68,8 @@ public class PerUtil {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
+    private static final ResourceChecker ADD_ALL_RESOURCE_CHECKER = new AddAllResourceChecker();
+
     /** @return True if the given text is either null or empty **/
     public static boolean isEmpty(String text) {
         return text == null || text.isEmpty();
@@ -449,7 +451,7 @@ public class PerUtil {
             }
             // If this is JCR Content we need to add all children
             if (isJcrContent(startingResource)) {
-                childResourceChecker = new AddAllResourceChecker();
+                childResourceChecker = ADD_ALL_RESOURCE_CHECKER;
             }
         }
 
@@ -906,18 +908,6 @@ public class PerUtil {
         public boolean doAddChildren(final Resource resource) { return true; }
     }
 
-    /** Checks all resources **/
-    public static class AddAllResourceChecker
-        implements ResourceChecker
-    {
-        @Override
-        public boolean doAdd(final Resource resource) {
-            return true;
-        }
-        @Override
-        public boolean doAddChildren(Resource resource) { return true; }
-    }
-
     /**
      * Extracts the tenant name from the resource
      * @param resource a resource
@@ -998,4 +988,20 @@ public class PerUtil {
 
        return tenantRoot;
     }
+
+    /** Checks all resources **/
+    public static final class AddAllResourceChecker implements ResourceChecker {
+
+        @Override
+        public boolean doAdd(final Resource resource) {
+            return true;
+        }
+
+        @Override
+        public boolean doAddChildren(Resource resource) {
+            return true;
+        }
+
+    }
+
 }
