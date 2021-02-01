@@ -1,4 +1,6 @@
-package com.peregrine.adaption;
+package com.peregrine.replication;
+
+import com.peregrine.adaption.PerBase;
 
 import java.util.Calendar;
 

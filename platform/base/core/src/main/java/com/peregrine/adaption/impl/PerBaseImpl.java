@@ -30,8 +30,6 @@ import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.jcr.Session;
 import java.util.Calendar;
@@ -49,7 +47,6 @@ public abstract class PerBaseImpl
     implements PerBase
 {
     public static final String RESOURCE_MUST_BE_PROVIDED = "Resource must be provided";
-    Logger logger = LoggerFactory.getLogger(getClass());
 
     /** The Resource this instance wraps **/
     private Resource resource;

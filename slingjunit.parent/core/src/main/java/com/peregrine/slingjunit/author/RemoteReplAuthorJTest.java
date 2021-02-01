@@ -1,7 +1,7 @@
 package com.peregrine.slingjunit.author;
 
 
-import com.peregrine.adaption.PerReplicable;
+import com.peregrine.replication.PerReplicable;
 import com.peregrine.replication.Replication;
 import com.peregrine.replication.ReplicationsContainer;
 import com.peregrine.slingjunit.ReplicationTestBase;

@@ -1,6 +1,5 @@
 package com.peregrine.replication;
 
-import com.peregrine.adaption.PerReplicable;
 import org.apache.sling.api.resource.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

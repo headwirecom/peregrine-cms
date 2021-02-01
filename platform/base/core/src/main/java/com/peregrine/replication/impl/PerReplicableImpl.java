@@ -1,16 +1,22 @@
-package com.peregrine.adaption.impl;
+package com.peregrine.replication.impl;
 
-import com.peregrine.adaption.PerReplicable;
+import com.peregrine.adaption.impl.PerBaseImpl;
+import com.peregrine.replication.PerReplicable;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Calendar;
 
 import static com.peregrine.commons.util.PerConstants.*;
 
 public class PerReplicableImpl extends PerBaseImpl implements PerReplicable {
+
+    private static final Logger LOG = LoggerFactory.getLogger(PerReplicableImpl.class);
+
     private ValueMap vm;
     private ModifiableValueMap modifiableValueMap;
 
@@ -87,7 +93,7 @@ public class PerReplicableImpl extends PerBaseImpl implements PerReplicable {
         try {
             this.getResource().getResourceResolver().commit();
         } catch (PersistenceException e) {
-            logger.error("Could not set replication status to pending", e);
+            LOG.error("Could not set replication status to pending", e);
         }
     }
 }
