@@ -69,7 +69,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  *
  * Created by Andreas Schaefer on 5/25/17.
  */
-public abstract class BaseFileReplicationService
+public abstract class FileReplicationServiceBase
     extends ReplicationServiceBase
 {
     private static final List<Pattern> NAME_PATTERNS = new ArrayList<>();
