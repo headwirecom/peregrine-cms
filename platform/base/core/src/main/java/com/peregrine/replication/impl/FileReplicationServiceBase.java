@@ -70,7 +70,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  *
  * Created by Andreas Schaefer on 5/25/17.
  */
-public abstract class BaseFileReplicationService extends ReplicationServiceBase {
+public abstract class FileReplicationServiceBase extends ReplicationServiceBase {
 
     private static final List<Pattern> NAME_PATTERNS = Collections.singletonList(
             Pattern.compile(".*(\\.data\\.json|\\.html)")

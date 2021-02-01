@@ -76,7 +76,7 @@ import static java.util.Objects.nonNull;
 )
 @Designate(ocd = LocalFileSystemReplicationService.Configuration.class, factory = true)
 public class LocalFileSystemReplicationService
-    extends BaseFileReplicationService
+    extends FileReplicationServiceBase
 {
     public static final int CREATE_NONE_STRATEGY = 0;
     public static final int CREATE_LEAF_STRATEGY = 1;

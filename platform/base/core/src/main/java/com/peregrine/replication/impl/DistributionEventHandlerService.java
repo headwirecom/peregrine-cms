@@ -1,7 +1,6 @@
 package com.peregrine.replication.impl;
 
 import com.peregrine.commons.util.PerUtil;
-import com.peregrine.replication.DistributionEventPojo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
@@ -55,11 +54,11 @@ public class DistributionEventHandlerService implements EventHandler {
     @Override
     public void handleEvent(final Event event) {
         if (StringUtils.equalsAny(event.getTopic(), AGENT_PACKAGE_DISTRIBUTED, IMPORTER_PACKAGE_IMPORTED)) {
-            setReplicationProperties(new DistributionEventPojo(event));
+            setReplicationProperties(new DistributionEvent(event));
         }
     }
 
-    private void setReplicationProperties(final DistributionEventPojo data) {
+    private void setReplicationProperties(final DistributionEvent data) {
         try (final ResourceResolver resourceResolver = loginService(resourceResolverFactory, DISTRIBUTION_SUB_SERVICE)) {
             Arrays.stream(data.getPaths())
                     .filter(path -> PerUtil.isJcrContent(path) || !path.contains(JCR_CONTENT))

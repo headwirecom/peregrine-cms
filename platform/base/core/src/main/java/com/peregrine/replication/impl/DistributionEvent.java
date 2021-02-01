@@ -1,9 +1,9 @@
-package com.peregrine.replication;
+package com.peregrine.replication.impl;
 
 import org.apache.sling.distribution.DistributionRequestType;
 import org.osgi.service.event.Event;
 
-public class DistributionEventPojo {
+public class DistributionEvent {
 
     private static final String DISTRIBUTION_PATHS = "distribution.paths";
     private static final String DISTRIBUTION_TYPE = "distribution.type";
@@ -45,7 +45,7 @@ public class DistributionEventPojo {
         this.distributionComponentKind = distributionComponentKind;
     }
 
-    public DistributionEventPojo(Event event){
+    public DistributionEvent(Event event){
         this.eventTopic  = event.getTopic();
         this.distributionType  = (DistributionRequestType) event.getProperty(DISTRIBUTION_TYPE);
         this.paths = (String[]) event.getProperty(DISTRIBUTION_PATHS);
