@@ -2,12 +2,7 @@ package com.peregrine.mock;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
-
 import static com.peregrine.commons.util.PerConstants.SLASH;
-import static org.junit.Assert.*;
 
 public final class MockTools {
 

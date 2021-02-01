@@ -29,7 +29,6 @@ import com.peregrine.transform.ImageContext;
 import com.peregrine.transform.ImageTransformation;
 import com.peregrine.transform.OperationContext;
 import org.apache.sling.commons.mime.MimeTypeService;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
