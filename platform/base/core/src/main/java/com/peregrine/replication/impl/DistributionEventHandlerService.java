@@ -1,6 +1,5 @@
 package com.peregrine.replication.impl;
 
-import com.peregrine.replication.DistributionEventPojo;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -58,26 +57,26 @@ public class DistributionEventHandlerService implements EventHandler {
         final String topic = event.getTopic();
 
         if (AGENT_PACKAGE_DISTRIBUTED.equals(topic) || IMPORTER_PACKAGE_IMPORTED.equals(topic)) {
-            final DistributionEventPojo distributionEventPojo = new DistributionEventPojo(event);
-            setReplicationProperties(distributionEventPojo);
+            final DistributionEvent distributionEvent = new DistributionEvent(event);
+            setReplicationProperties(distributionEvent);
         }
     }
 
-    private void setReplicationProperties(DistributionEventPojo distributionEventPojo) {
+    private void setReplicationProperties(DistributionEvent distributionEvent) {
 
         try {
             ResourceResolver finalResourceResolver = loginService(resourceResolverFactory, DISTRIBUTION_SUB_SERVICE);
-            List<String> paths = Arrays.stream(distributionEventPojo.getPaths())
+            List<String> paths = Arrays.stream(distributionEvent.getPaths())
                     .filter( path -> path.endsWith(JCR_CONTENT) || !path.contains(JCR_CONTENT))
                     .collect(Collectors.toList());
 
             for (String path : paths) {
                 String replicationRef = "";
                 Resource resource = finalResourceResolver.getResource(path);
-                if (DISTRIBUTION_TYPE_ADD.equals( distributionEventPojo.getDistributionType().name())) {
-                    replicationRef = distributionEventPojo.getDistributionComponentKind() + "://" + path;
+                if (DISTRIBUTION_TYPE_ADD.equals( distributionEvent.getDistributionType().name())) {
+                    replicationRef = distributionEvent.getDistributionComponentKind() + "://" + path;
 
-                } else if (DISTRIBUTION_TYPE_DELETE.equals( distributionEventPojo.getDistributionType().name())) {
+                } else if (DISTRIBUTION_TYPE_DELETE.equals( distributionEvent.getDistributionType().name())) {
                     replicationRef = null;
                 }
                 log.info("properties for {} were updated by dist event handler.",path);
