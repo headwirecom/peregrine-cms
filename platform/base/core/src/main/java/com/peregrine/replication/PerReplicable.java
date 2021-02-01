@@ -41,6 +41,8 @@ public interface PerReplicable extends PerBase {
      */
     String getLastReplicationAction();
 
+    boolean ensureReplicableMixin();
+
     /**
      * Call this method to mark the value of per:ReplicationLastAction as "activated"
      */

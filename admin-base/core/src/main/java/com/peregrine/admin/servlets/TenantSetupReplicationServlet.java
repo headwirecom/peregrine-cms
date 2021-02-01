@@ -28,6 +28,7 @@ package com.peregrine.admin.servlets;
 import com.peregrine.replication.DefaultReplicationMapper;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.commons.util.PerConstants;
+import com.peregrine.replication.PerReplicable;
 import com.peregrine.replication.Replication.ReplicationException;
 import com.peregrine.sitemap.SiteMapFilesCache;
 import org.apache.sling.api.resource.Resource;
@@ -128,6 +129,10 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
         }
 
         final String dateLabel = site.getName() + "_" + dateLabelFormat.format(new Date(System.currentTimeMillis()));
+        streamReplicableResources(toBeReplicated)
+                .map(r -> r.adaptTo(PerReplicable.class))
+                .filter(Objects::nonNull)
+                .forEach(PerReplicable::ensureReplicableMixin);
         streamReplicableResources(toBeReplicated)
                 .map(Resource::getPath)
                 .forEach(p -> {

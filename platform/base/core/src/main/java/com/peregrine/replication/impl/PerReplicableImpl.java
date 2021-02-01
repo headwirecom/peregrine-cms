@@ -2,6 +2,8 @@ package com.peregrine.replication.impl;
 
 import com.peregrine.adaption.impl.PerBaseImpl;
 import com.peregrine.replication.PerReplicable;
+import com.peregrine.commons.util.PerUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
@@ -9,7 +11,10 @@ import org.apache.sling.api.resource.ValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Calendar;
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import javax.jcr.nodetype.NodeType;
+import java.util.*;
 
 import static com.peregrine.commons.util.PerConstants.*;
 
@@ -22,14 +27,22 @@ public class PerReplicableImpl extends PerBaseImpl implements PerReplicable {
 
     public PerReplicableImpl(Resource resource) {
         super(resource);
-        vm = this.getProperties();
-        if (vm == null) {
-            vm = this.getResource().getValueMap();
-        }
-        modifiableValueMap = this.getModifiableProperties();
-        if (modifiableValueMap == null) {
-            modifiableValueMap = this.getResource().adaptTo(ModifiableValueMap.class);
-        }
+        vm = Optional.ofNullable(getProperties())
+                .orElseGet(resource::getValueMap);
+        modifiableValueMap = Optional.ofNullable(getModifiableProperties())
+                .orElseGet(() -> resource.adaptTo(ModifiableValueMap.class));
+    }
+
+    private <T> T getProperty(final String name, final Class<T> type) {
+        return vm.get(name, type);
+    }
+
+    private String getStringProperty(final String name) {
+        return getProperty(name, String.class);
+    }
+
+    private Calendar getCalendarProperty(String jcrLastModified) {
+        return getProperty(jcrLastModified, Calendar.class);
     }
 
     /**
@@ -41,8 +54,9 @@ public class PerReplicableImpl extends PerBaseImpl implements PerReplicable {
      */
     @Override
     public boolean isReplicated() {
-        String replicatedRef = vm.get(PER_REPLICATION_REF, String.class);
-        return replicatedRef != null && !replicatedRef.isEmpty() ;
+        return Optional.ofNullable(getStringProperty(PER_REPLICATION_REF))
+                .map(StringUtils::isNotBlank)
+                .orElse(false);
     }
 
     /**
@@ -50,10 +64,9 @@ public class PerReplicableImpl extends PerBaseImpl implements PerReplicable {
      */
     @Override
     public boolean isStale() {
-        if (this.vm.get(JCR_LAST_MODIFIED, Calendar.class) != null){
-            return this.vm.get(JCR_LAST_MODIFIED, Calendar.class).after(getReplicated());
-        }
-        return false;
+        return Optional.ofNullable(getCalendarProperty(JCR_LAST_MODIFIED))
+                .map(lm -> lm.after(getReplicated()))
+                .orElse(false);
     }
 
     /**
@@ -61,7 +74,7 @@ public class PerReplicableImpl extends PerBaseImpl implements PerReplicable {
      */
     @Override
     public Calendar getReplicated() {
-        return this.vm.get(PER_REPLICATED, Calendar.class);
+        return getCalendarProperty(PER_REPLICATED);
     }
 
     /**
@@ -69,27 +82,53 @@ public class PerReplicableImpl extends PerBaseImpl implements PerReplicable {
      */
     @Override
     public String getReplicationRef() {
-        return this.vm.get(PER_REPLICATION_REF, String.class);
-    }
-
-
-    @Override
-    public void setLastReplicationActionAsActivated() {
-        writeStringProperty(PER_REPLICATION_LAST_ACTION, ACTIVATED);
-    }
-
-    @Override
-    public void setLastReplicationActionAsDeactivated(){
-        writeStringProperty(PER_REPLICATION_LAST_ACTION, DEACTIVATED);
+        return getStringProperty(PER_REPLICATION_REF);
     }
 
     @Override
     public String getLastReplicationAction(){
-        return this.vm.get(PER_REPLICATION_LAST_ACTION, String.class);
+        return getStringProperty(PER_REPLICATION_LAST_ACTION);
     }
 
-    private void writeStringProperty(String name, String value){
-        this.modifiableValueMap.put(name, value);
+    @Override
+    public boolean ensureReplicableMixin() {
+        final Resource resource = hasContent() ? getContentResource() : getResource();
+        if (PerUtil.isPrimaryType(resource, NT_UNSTRUCTURED,
+                ASSET_CONTENT_TYPE,
+                "per:NpmPackageConfig",
+                OBJECT_PRIMARY_TYPE,
+                OBJECT_DEFINITION_PRIMARY_TYPE,
+                PAGE_PRIMARY_TYPE,
+                PAGE_CONTENT_TYPE)) {
+            return true;
+        }
+        final Node node = resource.adaptTo(Node.class);
+        try {
+            if (!Arrays.stream(node.getMixinNodeTypes())
+                    .map(NodeType::getName)
+                    .anyMatch(PER_REPLICATION::equals)) {
+                node.addMixin(PER_REPLICATION);
+                node.getSession().save();
+            }
+
+            return true;
+        } catch (final RepositoryException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public void setLastReplicationActionAsActivated() {
+        setLastAction(ACTIVATED);
+    }
+
+    @Override
+    public void setLastReplicationActionAsDeactivated(){
+        setLastAction(DEACTIVATED);
+    }
+
+    private void setLastAction(String value){
+        this.modifiableValueMap.put(PER_REPLICATION_LAST_ACTION, value);
         try {
             this.getResource().getResourceResolver().commit();
         } catch (PersistenceException e) {
