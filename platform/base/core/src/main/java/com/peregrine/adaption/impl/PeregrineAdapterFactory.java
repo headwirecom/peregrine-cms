@@ -43,6 +43,7 @@ import java.util.Optional;
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.*;
 import static java.util.Objects.nonNull;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
 
 /**
  * This Adapter Factory allows to adapt a resource to a Wrapped Peregrine Object
