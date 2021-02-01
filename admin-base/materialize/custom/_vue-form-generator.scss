@@ -864,7 +864,32 @@
         }
 
         .thumb {
-            margin-left: calc(1rem + 7px) !important;
+            position: absolute;
+
+            .value {
+                display: none;
+            }
+
+            &.active {
+                margin-left: calc(1rem + 7px) !important;
+                background-color: #546e7a;
+                transform-origin: 50% 50%;
+                transform: rotate(-45deg);
+                user-select: none;
+                cursor: pointer;
+                border-radius: 50% 50% 50% 0;
+
+                .value {
+                    display: block;
+                    width: 30px;
+                    text-align: center;
+                    transform: rotate(45deg);
+                    color: #fff;
+                    margin-left: -1px;
+                    margin-top: 8px;
+                    font-size: 10px;
+                }
+            }
         }
 
         .range-value {
@@ -880,16 +905,7 @@
         }
 
         .empty-range {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-
-            .rail {
-                width: 100%;
-                height: 3px;
-                background-color: #c2c2c2;
-            }
+            opacity: .5;
         }
 
         .range-numbers {

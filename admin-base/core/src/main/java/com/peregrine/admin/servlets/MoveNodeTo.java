@@ -52,7 +52,6 @@ import com.peregrine.commons.servlets.AbstractBaseServlet;
 import java.io.IOException;
 import javax.servlet.Servlet;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -73,9 +72,6 @@ import org.osgi.service.component.annotations.Reference;
 )
 @SuppressWarnings("serial")
 public class MoveNodeTo extends AbstractBaseServlet {
-
-    @Reference
-    ModelFactory modelFactory;
 
     @Reference
     AdminResourceHandler resourceManagement;

@@ -2,7 +2,6 @@ package com.peregrine.admin.replication.impl;
 
 import com.peregrine.admin.replication.DistributionEventPojo;
 import org.apache.sling.api.resource.LoginException;
-import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
