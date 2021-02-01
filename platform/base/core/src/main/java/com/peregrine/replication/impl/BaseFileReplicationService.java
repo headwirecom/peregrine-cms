@@ -25,7 +25,7 @@ package com.peregrine.replication.impl;
  * #L%
  */
 
-import com.peregrine.replication.AbstractionReplicationService;
+import com.peregrine.replication.ReplicationServiceBase;
 import com.peregrine.commons.ResourceUtils;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.commons.util.PerUtil;
@@ -70,7 +70,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  * Created by Andreas Schaefer on 5/25/17.
  */
 public abstract class BaseFileReplicationService
-    extends AbstractionReplicationService
+    extends ReplicationServiceBase
 {
     private static final List<Pattern> NAME_PATTERNS = new ArrayList<>();
     // List of all resources that are excluded from handling

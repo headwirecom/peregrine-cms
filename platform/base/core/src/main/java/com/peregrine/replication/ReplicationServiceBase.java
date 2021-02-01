@@ -8,7 +8,7 @@ import static com.peregrine.commons.util.PerUtil.isEmpty;
 /**
  * Common Properties Base Class for Replications
  */
-public abstract class AbstractionReplicationService
+public abstract class ReplicationServiceBase
     implements Replication
 {
     protected final Logger log = LoggerFactory.getLogger(getClass());

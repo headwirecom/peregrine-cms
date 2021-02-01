@@ -46,7 +46,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 )
 @Designate(ocd = DefaultReplicationMapperService.Configuration.class, factory = true)
 public class DefaultReplicationMapperService
-    extends AbstractionReplicationService
+    extends ReplicationServiceBase
     implements DefaultReplicationMapper
 {
     public static final String NO_DEFAULT_MAPPING = "Default Mapping was not provided but is required";

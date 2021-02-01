@@ -25,7 +25,7 @@ package com.peregrine.replication.impl;
  * #L%
  */
 
-import com.peregrine.replication.AbstractionReplicationService;
+import com.peregrine.replication.ReplicationServiceBase;
 import com.peregrine.commons.util.PerConstants;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
@@ -70,7 +70,7 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
 )
 @Designate(ocd = DistributionReplicationService.Configuration.class, factory = true)
 public class DistributionReplicationService
-    extends AbstractionReplicationService
+    extends ReplicationServiceBase
 {
 
     public static final String DISTRIBUTION_PENDING = "distribution pending";
