@@ -164,12 +164,14 @@ public final class ResourceUtils {
     }
 
     public static Map<String, Object> filterCopyableProperties(final Map<String, ?> properties) {
-        return Optional.ofNullable(properties)
+        final Map<String, Object> result = new HashMap<>();
+        Optional.ofNullable(properties)
                 .orElseGet(Collections::emptyMap)
                 .entrySet()
                 .stream()
                 .filter(e -> isPropertyCopyable(e.getKey()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .forEach(e -> result.put(e.getKey(), e.getValue()));
+        return result;
     }
 
     public static Map<String, Object> filterPropertiesAllowedOnExistingNode(final Map<String, ?> properties) {

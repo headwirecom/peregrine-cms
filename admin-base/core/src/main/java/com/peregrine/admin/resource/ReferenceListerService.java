@@ -32,7 +32,6 @@ import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static com.peregrine.commons.util.PerUtil.listMissingParents;
 import static java.util.Objects.isNull;
 
-import com.google.common.collect.Lists;
 import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
 import com.peregrine.replication.Reference;
 import com.peregrine.replication.ReferenceLister;

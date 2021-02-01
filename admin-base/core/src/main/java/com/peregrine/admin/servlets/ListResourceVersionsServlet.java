@@ -34,7 +34,6 @@ import javax.jcr.version.Version;
 import javax.jcr.version.VersionIterator;
 import javax.servlet.Servlet;
 import java.io.IOException;
-import java.util.Arrays;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_LIST_VERSIONS;
 import static com.peregrine.admin.servlets.ListSiteRecyclablesServlet.DELETED_DATE_FORMAT;
