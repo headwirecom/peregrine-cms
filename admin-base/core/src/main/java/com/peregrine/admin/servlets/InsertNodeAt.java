@@ -62,6 +62,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;
+import com.peregrine.admin.resource.ResourceRelocation;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.commons.servlets.ServletHelper;
 import java.io.IOException;
@@ -97,6 +98,9 @@ public class InsertNodeAt extends AbstractBaseServlet {
     private static final String RESOURCE_NOT_FOUND_BY_PATH = "Resource not found by Path";
 
     private final ObjectMapper mapper = new ObjectMapper();
+
+    @Reference
+    private ResourceRelocation resourceRelocation;
 
     @Reference
     private AdminResourceHandler resourceManagement;
