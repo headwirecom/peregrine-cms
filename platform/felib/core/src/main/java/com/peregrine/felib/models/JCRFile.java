@@ -25,8 +25,6 @@ package com.peregrine.felib.models;
  * #L%
  */
 
-import org.apache.sling.api.resource.ResourceResolver;
-
 /**
  * Created by rr on 4/18/2017.
  */

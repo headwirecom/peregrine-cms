@@ -544,11 +544,11 @@ public class PerUtil {
                 .orElse(null);
     }
 
-    public static boolean isPropertyEqual(final Resource resource, final String propertyName, final String value) {
+    public static boolean isPropertyEqual(final Resource resource, final String propertyName, final String... value) {
         return Optional.ofNullable(resource)
                 .map(r -> getProperties(r, false))
                 .map(p -> p.get(propertyName, String.class))
-                .map(v -> v.equals(value))
+                .map(v -> Arrays.stream(value).anyMatch(v::equals))
                 .orElse(false);
     }
 
@@ -558,7 +558,7 @@ public class PerUtil {
      * @param resourceType Sling Resource Type to test. If null or empty this method returns false
      * @return true if the resource contains a Sling Resource Type that matches the given value
      */
-    public static boolean isResourceType(final Resource resource, final String resourceType) {
+    public static boolean isResourceType(final Resource resource, final String... resourceType) {
         return isPropertyEqual(resource, SLING_RESOURCE_TYPE, resourceType);
     }
 
@@ -568,11 +568,11 @@ public class PerUtil {
      * @param primaryType Primary Type to test. If null or empty this method returns false
      * @return true if the resource contains a Primary Type that matches the given value
      */
-    public static boolean isPrimaryType(final Resource resource, final String primaryType) {
+    public static boolean isPrimaryType(final Resource resource, final String... primaryType) {
         return isPropertyEqual(resource, JCR_PRIMARY_TYPE, primaryType);
     }
 
-    public static boolean isUnfrozenPrimaryType(final Resource resource, final String primaryType) {
+    public static boolean isUnfrozenPrimaryType(final Resource resource, final String... primaryType) {
         if (isPrimaryType(resource, primaryType)) {
             return true;
         }
