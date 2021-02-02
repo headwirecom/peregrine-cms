@@ -1,7 +1,14 @@
 <template>
-  <div v-if="showMask" class="file-dropper file-upload" @click.prevent.stop="() => {}">
+  <div v-if="showMask"
+       class="file-dropper file-upload"
+       :class="{dragging}"
+       @click.prevent.stop="() => {}"
+       @dragover.prevent="dragging = true"
+       @dragenter.stop.prevent="dragging = true"
+       @dragleave.prevent="dragging = false"
+       @drop.prevent="onDrop">
     <div class="file-upload-inner">
-      <i class="material-icons">file_download</i>
+      <icon icon="file_download"/>
       <span class="file-upload-text">Drag &amp; Drop files anywhere</span>
       <div class="progress-bar">
         <div class="progress-bar-value" :style="`width: ${progress}%`"></div>
@@ -21,8 +28,13 @@
 </template>
 
 <script>
+import Icon from '../icon/template.vue'
+
 export default {
   name: 'FileDropper',
+  components: {
+    Icon
+  },
   props: {
     dropContext: {
       default() {
@@ -43,7 +55,8 @@ export default {
       progress: 0,
       files: {
         uploaded: []
-      }
+      },
+      dragging: false
     }
   },
   watch: {
@@ -53,32 +66,22 @@ export default {
       }
     }
   },
-  created() {
-    this.dropContext.addEventListener('dragover', this.onDragOver)
-    this.dropContext.addEventListener('dragenter', this.onDragEnter)
-    this.dropContext.addEventListener('dragleave', this.onDragLeave)
-    this.dropContext.addEventListener('drop', this.onDrop)
+  mounted() {
+    this.$nextTick(() => { //ensure that this.dropContext element is present
+      this.dropContext.addEventListener('dragenter', this.onDropContextDragEnter)
+    })
   },
   beforeDestroy() {
-    this.dropContext.removeEventListener('dragover', this.onDragOver)
-    this.dropContext.removeEventListener('dragenter', this.onDragEnter)
-    this.dropContext.removeEventListener('dragleave', this.onDragLeave)
-    this.dropContext.removeEventListener('drop', this.onDrop)
+    this.dropContext.removeEventListener('dragenter', this.onDropContextDragEnter)
   },
   methods: {
-    onDragOver(event) {
-      event.preventDefault()
-    },
-    onDragEnter(event) {
+    onDropContextDragEnter(event) {
       event.preventDefault()
       this.showMask = true
     },
-    onDragLeave(event) {
-      event.preventDefault()
-    },
     onDrop(event) {
-      event.preventDefault()
       this.upload(event.dataTransfer.files)
+      this.dragging = false
     },
     upload(files) {
       this.files.uploaded = []
