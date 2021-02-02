@@ -35,6 +35,7 @@ export default {
   components: {
     Icon
   },
+  emits: ['upload-done'],
   props: {
     dropContext: {
       default() {
@@ -57,13 +58,6 @@ export default {
         uploaded: []
       },
       dragging: false
-    }
-  },
-  watch: {
-    progress(val) {
-      if (val === 100) {
-        this.onUploadDone()
-      }
     }
   },
   mounted() {
@@ -91,10 +85,11 @@ export default {
         cb: this.setProgress
       }).then((data) => {
         $perAdminApp.getApi().populateNodesForBrowser(this.path, 'pathBrowser')
+        for (let i = 0; i < files.length; i++) {
+          this.files.uploaded.push(files[i])
+        }
+        this.$emit('upload-done', this.files.uploaded)
       })
-      for (let i = 0; i < files.length; i++) {
-        this.files.uploaded.push(files[i])
-      }
     },
     setProgress(percentCompleted) {
       this.progress = percentCompleted
