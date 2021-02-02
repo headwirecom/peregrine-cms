@@ -10,7 +10,7 @@
   left: 0;
   right: 0;
   color: color("blue-grey", "base");
-  z-index: 1;
+  z-index: 100;
   background-color: rgba(255, 255, 255, .5);
 
   .file-upload-inner {
@@ -27,6 +27,7 @@
       color: color("blue-grey", "lighten-2");
       width: 100%;
       font-size: 80px;
+      transition: color .25s ease-out;
     }
 
     .file-upload-text {
@@ -73,6 +74,14 @@
     .file-upload-status {
       .material-icons {
         cursor: pointer;
+      }
+    }
+  }
+
+  &.dragging {
+    .file-upload-inner {
+      .icon {
+        color: var(--pcms-orange);
       }
     }
   }
