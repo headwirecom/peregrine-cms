@@ -668,7 +668,6 @@ export default {
       this.iframe.head = this.iframe.doc.querySelector('head')
       this.iframe.app = this.iframe.doc.querySelector('#peregrine-app')
       this.iframe.win.addEventListener('resize', this.updateIframeDimensions);
-      this.iframe.win.addEventListener('dragstart', this.onIframeDragStart);
       this.updateIframeDimensions()
       this.addIframeExtraStyles()
       this.refreshIframeElements()
@@ -690,11 +689,6 @@ export default {
 
     onIframeScroll() {
       this.scrollTop = this.iframe.html.scrollTop
-    },
-
-    onIframeDragStart(event) {
-        event.preventDefault()
-        return false
     },
 
     onIframeDragOver(event) {
@@ -773,6 +767,9 @@ export default {
       if (this.dropPosition === 'none') return false
 
       const componentPath = event.dataTransfer.getData('text')
+
+      if (!componentPath) return
+
       if (this.path === componentPath) {
         event.dataTransfer.clearData('text')
         return false
