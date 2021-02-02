@@ -48,7 +48,6 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.Part;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -87,9 +86,6 @@ public class UploadFilesServlet extends AbstractBaseServlet {
     private static final String ASSET_NAME = "assetName";
     private static final String ASSET_PATH = "assetPath";
     private static final String UPLOAD_FAILED_BECAUSE_OF_SERVLET_PARTS_PROBLEM = "Upload Failed because of Servlet Parts Problem";
-
-    @Reference
-    ModelFactory modelFactory;
 
     @Reference
     AdminResourceHandler resourceManagement;

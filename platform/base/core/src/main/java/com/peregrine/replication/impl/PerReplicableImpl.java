@@ -15,7 +15,7 @@ public class PerReplicableImpl extends PerBaseImpl implements PerReplicable {
 
     private final ValueMap vm;
 
-    public PerReplicableImpl(Resource resource) {
+    public PerReplicableImpl(final Resource resource) {
         super(resource);
         vm = Optional.ofNullable(getProperties())
                 .orElseGet(resource::getValueMap);

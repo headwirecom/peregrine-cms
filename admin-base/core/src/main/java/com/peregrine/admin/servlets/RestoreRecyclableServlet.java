@@ -28,7 +28,6 @@ import com.peregrine.admin.models.Recyclable;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -36,7 +35,6 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.servlet.Servlet;
 import java.io.IOException;
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_LIST_RECYCLABLES;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_RESTORE_RECYCLABLE;
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.*;
