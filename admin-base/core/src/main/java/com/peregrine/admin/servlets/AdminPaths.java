@@ -1,6 +1,7 @@
 package com.peregrine.admin.servlets;
 
 public interface AdminPaths {
+
     String API_PREFIX = "perapi/admin/";
     String RESOURCE_TYPE_ACCESS = API_PREFIX + "access";
     String RESOURCE_TYPE_COMPONENT_DEFINITION = API_PREFIX + "componentDefinition";
@@ -43,4 +44,6 @@ public interface AdminPaths {
     String RESOURCE_TYPE_LIST_REPLICATION = API_PREFIX + "listRepl";
     String RESOURCE_TYPE_DO_REPLICATION = API_PREFIX + "repl";
     String RESOURCE_TYPE_TENANT_SETUP_REPLICATION = API_PREFIX + "tenantSetupReplication";
+    String RESOURCE_TYPE_IS_TENANT_NAME_AVAILABLE = API_PREFIX + "tenants/name/available";
+
 }
