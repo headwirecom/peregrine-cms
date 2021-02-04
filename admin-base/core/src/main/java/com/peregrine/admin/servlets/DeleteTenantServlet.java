@@ -64,7 +64,6 @@ import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.jcr.base.util.AccessControlUtil;
-import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -88,9 +87,6 @@ public class DeleteTenantServlet extends AbstractBaseServlet {
 
     private static final String FAILED_TO_DELETE_SITE = "Failed to delete site";
     private static final String FAILED_TO_REMOVE_TENANT_SECURITY = "Unable to remove Tenant Permissions";
-
-    @Reference
-    ModelFactory modelFactory;
 
     @Reference
     AdminResourceHandler resourceManagement;

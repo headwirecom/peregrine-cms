@@ -141,7 +141,8 @@ import org.slf4j.LoggerFactory;
 )
 public class AdminResourceHandlerService
     implements AdminResourceHandler {
-    public static final String DELETION_PROPERTY_NAME = "_opDelete";
+    public static final String PN_DELETE_NODE = "_opDelete";
+    public static final String PN_DELETE_PROPS = "_opDeleteProps";
     public static final String MODE_PROPERTY = "mode";
 
     private static final String PARENT_NOT_FOUND = "Could not find %s Parent Resource. Path: '%s', name: '%s'";
@@ -739,19 +740,19 @@ public class AdminResourceHandlerService
         }
     }
 
-
     @Override
     public Resource insertNode(Resource resource, Map<String, Object> properties, boolean addAsChild, boolean orderBefore, String variation) throws ManagementException {
         final Node node = getNode(resource);
-        if (node == null) {
+        if (isNull(node)) {
             throw new ManagementException(INSERT_RESOURCE_MISSING);
         }
+
         try {
-            final Node newNode;
+            final Node parent = addAsChild ? node : node.getParent();
+            final Node newNode = createNode(parent, properties, variation);
             final ResourceResolver resourceResolver = resource.getResourceResolver();
+            baseResourceHandler.updateModification(resourceResolver, newNode);
             if (addAsChild) {
-                newNode = createNode(node, properties, variation);
-                baseResourceHandler.updateModification(resourceResolver, newNode);
                 if (orderBefore) {
                     final Iterator<Resource> i = resource.listChildren();
                     if (i.hasNext()) {
@@ -759,9 +760,6 @@ public class AdminResourceHandlerService
                     }
                 }
             } else {
-                Node parent = node.getParent();
-                newNode = createNode(parent, properties, variation);
-                baseResourceHandler.updateModification(resourceResolver, newNode);
                 resourceRelocation.reorder(resource.getParent(), newNode.getName(), node.getName(), orderBefore);
             }
 
@@ -1011,7 +1009,6 @@ public class AdminResourceHandlerService
         }
     }
 
-
     // TODO: needs deep clone
     private Node createNode(
         @NotNull final Node parent,
@@ -1031,7 +1028,7 @@ public class AdminResourceHandlerService
         // If found we copy this over into our newly created node
         if (component.startsWith(SLASH)) {
             logger.warn("Component: '{}' started with a slash which is not valid -> ignored", component);
-        } else {
+        } else if (isNotBlank(variation) || properties.isEmpty()) {
             copyPropertiesFromComponentVariation(newNode, variation);
         }
 
@@ -1134,18 +1131,19 @@ public class AdminResourceHandlerService
             if (value instanceof String) {
                 node.setProperty(key, (String) value);
             } else if (value instanceof List) {
-                final List list = (List) value;
-                // Get sub node
+                final Node child;
                 if (node.hasNode(key)) {
-                    applyChildProperties(node.getNode(key), list);
+                    child = node.getNode(key);
                 } else {
-                    applyChildProperties(node, list);
+                    child = node.addNode(key);
                 }
+
+                applyChildrenProperties(child, (List) value);
             }
         }
     }
 
-    private void applyChildProperties(@NotNull Node parent, @NotNull List childProperties) throws RepositoryException, ManagementException {
+    private void applyChildrenProperties(@NotNull Node parent, @NotNull List childProperties) throws RepositoryException, ManagementException {
         // Loop over Array
         int counter = 0;
         for (final Object item : childProperties) {
@@ -1154,6 +1152,7 @@ public class AdminResourceHandlerService
             } else {
                 logger.warn("Array item: '{}' is not an Object and so ignored", item);
             }
+
             counter++;
         }
     }
@@ -1174,29 +1173,28 @@ public class AdminResourceHandlerService
 
         // No name or matching path name (auto generated IDs) -> use position to find target
         final Node target = getNodeAtPosition(parent, position);
-        if (target != null) {
+        if (isNull(target)) {
+            final String path = getPropsFromMap(properties, PATH, EMPTY);
+            final Node sourceNode = findSourceByPath(parent, path.split(SLASH));
+            final Node newNode = addNewNode(parent);
+            if (nonNull(sourceNode) && sourceNode.hasProperty(SLING_RESOURCE_TYPE)) {
+                String componentName = sourceNode.getProperty(SLING_RESOURCE_TYPE).getString();
+                newNode.setProperty(SLING_RESOURCE_TYPE, componentName);
+                logger.trace("Copy Props from Component Variation, component name: '{}'", componentName);
+                copyPropertiesFromComponentVariation(newNode, APPS_ROOT + SLASH + componentName, null);
+            }
+
+            logger.trace("Apply Properties to node: '{}', props: '{}'", newNode, properties);
+            applyProperties(newNode, properties);
+        } else {
             logger.trace("Found Target by position: '{}'", target.getPath());
             // Check if component matches
             final Object sourceComponent = properties.get(COMPONENT);
             final Object targetComponent = target.getProperty(COMPONENT).getString();
-            if (sourceComponent == null || !sourceComponent.equals(targetComponent)) {
-                logger.warn("Source Component: '{}' does not match target: '{}'", sourceComponent, targetComponent);
-            } else {
+            if (nonNull(sourceComponent) && sourceComponent.equals(targetComponent)) {
                 applyProperties(target, properties);
-            }
-        } else {
-            final String path = getPropsFromMap(properties, PATH, EMPTY);
-            final Node sourceNode = findSourceByPath(parent, path.split(SLASH));
-            if (sourceNode != null) {
-                Node newNode = addNewNode(parent);
-                if (sourceNode.hasProperty(SLING_RESOURCE_TYPE)) {
-                    String componentName = sourceNode.getProperty(SLING_RESOURCE_TYPE).getString();
-                    newNode.setProperty(SLING_RESOURCE_TYPE, componentName);
-                    logger.trace("Copy Props from Component Variation, component name: '{}'", componentName);
-                    copyPropertiesFromComponentVariation(newNode, APPS_ROOT + SLASH + componentName, null);
-                }
-                logger.trace("Apply Properties to node: '{}', props: '{}'", newNode, properties);
-                applyProperties(newNode, properties);
+            } else {
+                logger.warn("Source Component: '{}' does not match target: '{}'", sourceComponent, targetComponent);
             }
         }
     }
@@ -2006,7 +2004,20 @@ public class AdminResourceHandlerService
         if (deleteIfContainsMarkerProperty(resource, properties)) {
             return;
         }
+
         ModifiableValueMap updateProperties = getModifiableProperties(resource, false);
+        if (properties.containsKey(PN_DELETE_PROPS)) {
+            final Object value = properties.remove(PN_DELETE_PROPS);
+            if (value instanceof String) {
+                properties.remove(value);
+                updateProperties.remove(value);
+            } else if (value instanceof List) {
+                final var list = (List) value;
+                list.forEach(properties::remove);
+                list.forEach(updateProperties::remove);
+            }
+        }
+
         for (Entry<String, Object> entry : properties.entrySet()) {
             String name = entry.getKey();
             Object value = entry.getValue();
@@ -2018,12 +2029,13 @@ public class AdminResourceHandlerService
                 updateProperties.put(name, value);
             }
         }
+
         baseResourceHandler.updateModification(resource);
     }
 
     private boolean deleteIfContainsMarkerProperty(Resource resource, Map<String, Object> properties) throws ManagementException {
-        if (properties.containsKey(DELETION_PROPERTY_NAME)) {
-            Object value = properties.get(DELETION_PROPERTY_NAME);
+        if (properties.containsKey(PN_DELETE_NODE)) {
+            Object value = properties.get(PN_DELETE_NODE);
             if (value == null || Boolean.TRUE.toString().equalsIgnoreCase(value.toString())) {
                 // This indicates that this node shall be removed
                 try {
@@ -2066,6 +2078,7 @@ public class AdminResourceHandlerService
             childProperties.remove(NAME);
             childProperties.remove(SLING_RESOURCE_TYPE);
             childProperties.remove(JCR_PRIMARY_TYPE);
+            childProperties.remove(PN_DELETE_PROPS);
             child = createNode(parent, childName, NT_UNSTRUCTURED, resourceType);
             // Now update the child with any remaining properties
             writeProperties(childProperties, child);
@@ -2190,7 +2203,7 @@ public class AdminResourceHandlerService
         // Get index of the matching resource child to compare with the index in the list
         int index = getChildIndex(parent, child);
         String name = child.getName();
-        if (getBoolean(itemProperties, DELETION_PROPERTY_NAME, false)) {
+        if (getBoolean(itemProperties, PN_DELETE_NODE, false)) {
             try {
                 logger.trace("Remove List Child: '{}' ('{}')", name, child.getPath());
                 parent.getResourceResolver().delete(child);
