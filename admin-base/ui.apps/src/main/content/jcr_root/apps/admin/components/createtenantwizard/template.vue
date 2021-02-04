@@ -251,10 +251,9 @@
                     }
                 }
 
-                return nameAvailableDebouncer.call(() => axios.get('/perapi/admin/tenants/name/available.json?name=' + value), 375)
-                    .then(res => res.data)
+                return nameAvailableDebouncer.call(() => $perAdminApp.getApi().checkTenantNameAvailability(value), 375)
                     .then(res => res.result ? [] : ['name already in use'])
-                    .catch(e => [])
+                    .catch(() => [])
             },
             validSiteName(value) {
                 if(!value || value.length === 0) {
