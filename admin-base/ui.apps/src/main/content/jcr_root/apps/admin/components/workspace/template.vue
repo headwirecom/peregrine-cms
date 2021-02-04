@@ -89,6 +89,8 @@
 </template>
 
 <script>
+    import {set} from '../../../../../../js/utils'
+
     export default {
         props: ['model'],
         computed: {
@@ -124,12 +126,16 @@
             },
 
             showComponentEdit(me, target) {
+
+              set($perAdminApp.getView(), `/state/editorVisible`, false)
               // only trigger state action if another component is selected
               if($perAdminApp.getNodeFromView('/state/editor/path') !== target) {
-                return $perAdminApp.stateAction('editComponent', target)
+                return $perAdminApp.stateAction('editComponent', target).then(() => {
+                  set($perAdminApp.getView(), `/state/editorVisible`, true)
+                })
               } else {
                   return new Promise((resolve) => {
-                      resolve()
+                    resolve()
                   })
               }
             },
