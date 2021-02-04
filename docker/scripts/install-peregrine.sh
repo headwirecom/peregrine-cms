@@ -22,7 +22,6 @@ slingpackager list
 
 PKG_ORDER=( \
   /com.peregrine-cms/base.ui.apps-1.0-SNAPSHOT.zip \
-  /com.peregrine-cms/external-1.0-SNAPSHOT.zip \
   /com.peregrine-cms/felib.ui.apps-1.0-SNAPSHOT.zip \
   /com.peregrine-cms/replication.ui.apps-1.0-SNAPSHOT.zip \
   /com.peregrine-cms/pagerender-vue.ui.apps-1.0-SNAPSHOT.zip \
