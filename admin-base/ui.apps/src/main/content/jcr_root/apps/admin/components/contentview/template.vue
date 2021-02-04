@@ -694,10 +694,6 @@ export default {
       this.scrollTop = this.iframe.html.scrollTop
     },
 
-    onIframeDragStart(event) {
-      event.dataTransfer.effectAllowed = 'all';
-    },
-
     onIframeDragOver(event) {
       event.preventDefault()
       this.dragging = true
@@ -774,6 +770,9 @@ export default {
       if (this.dropPosition === 'none') return false
 
       const componentPath = event.dataTransfer.getData('text')
+
+      if (!componentPath) return
+
       if (this.path === componentPath) {
         event.dataTransfer.clearData('text')
         return false
@@ -859,7 +858,6 @@ export default {
       set($perAdminApp.getView(), '/state/contentview/editor/active', true)
       this.iframe.doc.addEventListener('click', this.onIframeClick)
       this.iframe.doc.addEventListener('scroll', this.onIframeScroll)
-      this.iframe.doc.addEventListener('dragstart', this.onIframeDragStart)
       this.iframe.doc.addEventListener('dragover', this.onIframeDragOver)
       this.iframe.doc.addEventListener('drop', this.onIframeDrop)
       this.iframe.doc.addEventListener('mouseover', this.onIframeMouseOver)
