@@ -41,25 +41,25 @@ public interface PerBase
     extends Adaptable
 {
     /** @return Underlying resource which is never null **/
-    public Resource getResource();
+    Resource getResource();
     /** @return Path of the underlying resource **/
-    public String getPath();
+    String getPath();
     /** @return Name of the underlying resource **/
-    public String getName();
+    String getName();
     /** @return Last Modified Date of the resource if set otherwise null **/
-    public Calendar getLastModified();
+    Calendar getLastModified();
     /** @return User who Last Modified the resource if set otherwise null **/
-    public String getLastModifiedBy();
+    String getLastModifiedBy();
     /** @return If the page has a content node **/
-    public boolean hasContent();
+    boolean hasContent();
     /** @return If the page is valid **/
-    public boolean isValid();
+    boolean isValid();
     /** @return The Content Resource node if available otherwise null **/
-    public Resource getContentResource();
+    Resource getContentResource();
     /** @return Value Map of the Content Resource if the page has a content **/
-    public ValueMap getProperties();
+    ValueMap getProperties();
     /** @return Modifiable Value Map of the Content Resource if the page has a content **/
-    public ModifiableValueMap getModifiableProperties();
+    ModifiableValueMap getModifiableProperties();
 
     /**
      * Provide Content Property
@@ -67,7 +67,7 @@ public interface PerBase
      * @param type Response Type
      * @return Content Property Value converted to the given type or null if not found or could not convert
      */
-    public <T> T getContentProperty(String propertyName, Class<T> type);
+    <T> T getContentProperty(String propertyName, Class<T> type);
 
     /**
      * Provide Content Property
@@ -75,5 +75,5 @@ public interface PerBase
      * @param defaultValue Value to be returned if not found and cannot be null
      * @return The content property of the type of the default value or if not found the default value instead
      */
-    public <T> T getContentProperty(String propertyName, T defaultValue);
+    <T> T getContentProperty(String propertyName, T defaultValue);
 }
