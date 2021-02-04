@@ -99,6 +99,8 @@
 </template>
 
 <script>
+    import { createDebouncer} from '../../../../../../js/utils'
+    const nameAvailableDebouncer = createDebouncer()
     export default {
         props: ['model'],
         data:
@@ -148,7 +150,7 @@
                                 hint: "System name of this website. use lower case letters, 0 through 9, and underscore only.",
                                 required: true,
                                 onChanged: (model, newVal, oldVal, field) => {
-                                    this.nameChanged = true;
+                                    this.nameChanged = true
                                 },
                                 validator: [this.nameAvailable, this.validSiteName]
                             },
@@ -235,19 +237,23 @@
                 return this.validateTabOne(this);
             },
             nameAvailable(value) {
-                if(!value || value.length === 0) {
+                if(!value) {
                     return ['name is required']
-                } else {
-                    const folder = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, '/content')
-                    if(folder && folder.children) {
-                        for(let i = 0; i < folder.children.length; i++) {
-                            if(folder.children[i].name === value) {
-                                return ['name aready in use']
-                            }
+                }
+
+                const folder = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, '/content')
+                const children = folder && folder.children
+                if (children) {
+                    for(let i = 0; i < children.length; i++) {
+                        if(children[i].name === value) {
+                            return ['name already in use']
                         }
                     }
-                    return []
                 }
+
+                return nameAvailableDebouncer.call(() => $perAdminApp.getApi().checkTenantNameAvailability(value), 375)
+                    .then(res => res.result ? [] : ['name already in use'])
+                    .catch(() => [])
             },
             validSiteName(value) {
                 if(!value || value.length === 0) {

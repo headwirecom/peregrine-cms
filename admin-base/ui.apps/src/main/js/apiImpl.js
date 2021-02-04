@@ -1270,6 +1270,9 @@ replicate(path, replicationService='', deep=false, deactivate=false, resources=[
     })
   }
 
+  checkTenantNameAvailability(name) {
+    return fetch('/admin/tenants/name/available.json?name=' + name)
+  }
 }
 
 export default PerAdminImpl

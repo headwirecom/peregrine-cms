@@ -432,6 +432,9 @@ export default {
     },
 
     updateSelectedComponent() {
+      if (this.iframe.doc.activeElement) {
+        this.iframe.doc.activeElement.blur()
+      }
       this.dynWatchers.forEach((watcher) => {
         watcher.unwatch()
       })
