@@ -270,3 +270,24 @@ export function focusElement(target, win=window) {
   selection.removeAllRanges()
   selection.addRange(range)
 }
+
+export function createDebouncer() {
+    let timeout
+    let oldReject
+    return {
+        call: (func, wait) => new Promise((resolve, reject) => {
+            let context = this, args = arguments
+            let later = function() {
+                resolve(func.apply(context, args))
+            }
+
+            if (timeout) {
+                clearTimeout(timeout)
+                oldReject()
+            }
+
+            oldReject = reject
+            timeout = setTimeout(later, wait)
+        })
+    }
+}

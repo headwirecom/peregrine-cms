@@ -314,6 +314,10 @@ class PerApi {
     acceptTermsAndConditions() {
         return impl.acceptTermsAndConditions()
     }
+
+    checkTenantNameAvailability(name) {
+        return impl.checkTenantNameAvailability(name)
+    }
 }
 
 export default PerApi
