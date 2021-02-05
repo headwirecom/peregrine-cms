@@ -35,9 +35,9 @@
 </template>
 
 <script>
-    import {set} from '../../../../../../js/utils'
+import {set} from '../../../../../../js/utils'
 
-    export default {
+export default {
     props: ['model'],
     mounted(){
         // init materialize plugins
@@ -61,7 +61,13 @@
                 return false
             }
             return true
-        }
+        },
+        path() {
+          return $perAdminApp.getNodeFrom($perAdminApp.getView(), this.model.dataFrom)
+        },
+        pt() {
+          return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, this.path)
+        },
     },
     methods: {
         selectPath: function(me, target) {
@@ -102,8 +108,32 @@
         },
         onAccept(me) {
             $perAdminApp.stateAction('acceptTermsAndConditions', {} )
+        },
+        editReference(me, target) {
+          if (target.load) {
+            $perAdminApp.loadContent(target.load)
+          } else {
+            me.editEntity(me, target.target)
+          }
+        },
+        editEntity(me, target) {
+          const view = $perAdminApp.getView()
+          const tenant = view.state.tenant
+          const path = me.pt.path
+          if (target.startsWith(`/content/${tenant.name}/pages`)) {
+            set(view, '/state/tools/page', target)
+          } else if (target.startsWith(`/content/${tenant.name}/templates`)) {
+            set(view, '/state/tools/template', target)
+          }
+          if (target.startsWith(`/content/${tenant.name}/objects`)) {
+            const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
+            $perAdminApp.stateAction('editObject', {selected: node.path, path: me.model.dataFrom})
+          } else if (target.startsWith(`/content/${tenant.name}/templates`)) {
+            $perAdminApp.stateAction('editTemplate', target)
+          } else {
+            $perAdminApp.stateAction('editPage', target)
+          }
         }
-
     }
 }
 </script>

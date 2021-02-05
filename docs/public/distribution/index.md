@@ -17,7 +17,6 @@ These are the current supported distributions:
 1. Local, in-Peregrine Copies
 1. Remote Sling Distributions (Peregrine to remote Peregrine)
 1. Local File System
-1. S3 Bucket
 1. Default Distribution
 
 **Attention**:
@@ -189,28 +188,6 @@ the point of view of `Published` versions only.
 
 In addition to regular resources, `local FS` stores the sitemap under `[..]/content/<tenant>/pages.sitemap.xml`
 location, also using the `VersioningResourceResolver` to process `Published` pages only.
-
-# S3 Bucket
-
-Peregrine allows the user to setup a distribution of content to an AWS S3 service. In a nutshell
-this service is more or less the same as the **local file system copies** just copying in to an
-S3 rather than writing to a local file.
-
-To configure this distribution service: **com.peregrine.admin.replication.impl.RemoteS3SystemReplicationService**:
-
-|Name|Parameter|Required|Type|Default|Description|
-|:---|:--------|:-------|:---|:------|:----------|
-|Name|name|yes|String|none|Name of the Distribution Service|
-|Description|description|no|String|none|Description of this Service|
-|AWS Access Key|awsAccessKey|yes|String|none|Access Key for the S3 Service|
-|AWS Secret Key|awsSecretKey|yes|String|none|Secret Key for the S3 Service|
-|AWS Region Name|awsRegionName|yes|String|none|Region of your S3 Service|
-|AWS Bucket Name|awsBucketName|yes|String|none|Bucket Name of your S3 Service|
-|Export Extensions|exportExtensions|yes|String|none|List of Extensions to be exported. The format is &lt;extension[~raw]>=&lt;&vert;-split list of primary types that are exported>|
-|Mandatory Renditions|mandatoryRenditions|String|no|Name of the Renditions that are created (if not already done) during the distribution|
-
-Whenever the service tries to push a change to S3 and the connection fails it will retry
-once and if it fails again it will end the distribution.
 
 # Default Distribution Mapping
 
