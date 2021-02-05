@@ -38,11 +38,11 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
+import java.util.Optional;
 
 import static com.peregrine.commons.util.PerConstants.*;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATION;
+import static com.peregrine.commons.util.PerUtil.*;
+import static java.util.Objects.nonNull;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 
 /**
@@ -71,21 +71,20 @@ public class PeregrineAdapterFactory
 {
     private static final Logger log = LoggerFactory.getLogger(PeregrineAdapterFactory.class);
 
-    public PeregrineAdapterFactory() {
-    }
-
     @Override
     public <AdapterType> AdapterType getAdapter(Object adaptable,
                                                 Class<AdapterType> type) {
         if(adaptable instanceof Resource) {
             return getAdapter((Resource) adaptable, type);
-        } else if (adaptable instanceof ResourceResolver) {
-            return getAdapter((ResourceResolver) adaptable, type);
-        } else {
-            log.warn("Unable to handle adaptable {}",
-                adaptable.getClass().getName());
-            return null;
         }
+
+        if (adaptable instanceof ResourceResolver) {
+            return getAdapter((ResourceResolver) adaptable, type);
+        }
+
+        log.warn("Unable to handle adaptable {}",
+            adaptable.getClass().getName());
+        return null;
     }
 
     /**
@@ -102,29 +101,34 @@ public class PeregrineAdapterFactory
     private <AdapterType> AdapterType getAdapter(Resource resource,
                                                  Class<AdapterType> type) {
         log.trace("Get Adapter for Type: '{}' and Resource: '{}', ", type.getName(), resource);
-        if(type.getName().equals(PerPage.class.getName())) {
+        if(PerPage.class.equals(type)) {
             String primaryType = PerUtil.getPrimaryType(resource);
             if(PAGE_PRIMARY_TYPE.equals(primaryType)) {
                 return (AdapterType) new PerPageImpl(resource);
-            } else {
-                // Traverse up the tree. If we find a jcr:content of type per:PageContent and its parent is per:Page
-                // then return that one instead
-                PerPage answer = findPage(resource);
-                if(answer == null) {
-                    log.trace("Given Resource: '{}' is not a Page", resource);
-                } else {
-                    return (AdapterType) answer;
-                }
             }
-        } else if(type.getName().equals(PerAsset.class.getName())) {
+
+            // Traverse up the tree. If we find a jcr:content of type per:PageContent and its parent is per:Page
+            // then return that one instead
+            PerPage answer = findPage(resource);
+            if(nonNull(answer)) {
+                return (AdapterType) answer;
+            }
+
+            log.trace("Given Resource: '{}' is not a Page", resource);
+            return null;
+        }
+
+        if(PerAsset.class.equals(type)) {
             String primaryType = PerUtil.getPrimaryType(resource);
             if(ASSET_PRIMARY_TYPE.equals(primaryType)) {
                 return (AdapterType) new PerAssetImpl(resource);
-            } else {
-                log.trace("Given Resource: '{}' is not an Asset", resource);
             }
+
+            log.trace("Given Resource: '{}' is not an Asset", resource);
             return (AdapterType) new PerAssetImpl(resource);
-        } else if (type.getName().equals(PerReplicable.class.getName()) ) {
+        }
+
+        if(PerReplicable.class.equals(type)) {
             return (AdapterType) new PerReplicableImpl(resource);
         }
 
@@ -142,13 +146,12 @@ public class PeregrineAdapterFactory
     @SuppressWarnings("unchecked")
     private <AdapterType> AdapterType getAdapter(ResourceResolver resolver,
                                                  Class<AdapterType> type) {
-        if(type.equals(PerPageManager.class)) {
+        if(PerPageManager.class.equals(type)) {
             return (AdapterType) new PerPageManagerImpl(resolver);
-        } else {
-            log.warn("Unable to adapt resolver to requested type {}",
-                type.getName());
-            return null;
         }
+
+        log.warn("Unable to adapt resolver to requested type {}", type.getName());
+        return null;
     }
 
     /**
@@ -161,43 +164,22 @@ public class PeregrineAdapterFactory
      */
     private PerPage findPage(Resource resource) {
         log.trace("path: {}", resource.getPath());
-        String primaryType = PerUtil.getPrimaryType(resource);
+        final String primaryType = PerUtil.getPrimaryType(resource);
+        final Resource parent = resource.getParent();
         log.trace("primaryType: {}", primaryType);
-        if(JCR_CONTENT.equals(resource.getName())) {
-            if(PAGE_CONTENT_TYPE.equals(primaryType)) {
-                Resource parent = resource.getParent();
-                String parentPrimaryType = PerUtil.getPrimaryType(parent);
-                if(PAGE_PRIMARY_TYPE.equals(parentPrimaryType)) {
-                    return new PerPageImpl(parent);
-                } else {
-                    // Found jcr:content but either wrong type or no parent -> done
-                    return null;
-                }
-            } else {
-                // JCR Content found not of the correct type -> done
-                return null;
-            }
-        } else {
-            Resource parent = resource.getParent();
-            return parent != null ?
-                // Parent Found -> check this one out
-                findPage(parent) :
-                // No parent found -> done
-                null;
+        if (!isJcrContent(resource)) {
+            return Optional.ofNullable(parent)
+                    .map(this::findPage)
+                    .orElse(null);
         }
+
+        if (isPrimaryType(resource, PAGE_CONTENT_TYPE) && isPrimaryType(parent, PAGE_PRIMARY_TYPE)) {
+            return new PerPageImpl(parent);
+        }
+
+        // Found jcr:content but either wrong type or no parent -> done
+        // JCR Content found not of the correct type -> done
+        return null;
     }
 
-//    /**
-//     * Static method resourceCanAddPerReplicationMixin checks whether a resource can have the replicat
-//     * @param resource
-//     * @return
-//     */
-//    public static boolean resourceCanAddPerReplicationMixin(Resource resource) {
-//        Node node = resource.adaptTo(Node.class);
-//        try {
-//            return node.canAddMixin(PER_REPLICATION);
-//        } catch (RepositoryException e) {
-//            return false;
-//        }
-//    }
 }

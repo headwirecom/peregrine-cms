@@ -48,7 +48,6 @@ import com.peregrine.commons.servlets.AbstractBaseServlet;
 import java.io.IOException;
 import javax.servlet.Servlet;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -71,9 +70,6 @@ import org.osgi.service.component.annotations.Reference;
 public class CreateFolderServlet extends AbstractBaseServlet {
 
     private static final String FAILED_TO_CREATE_FOLDER = "Failed to create folder";
-
-    @Reference
-    ModelFactory modelFactory;
 
     @Reference
     AdminResourceHandler resourceManagement;

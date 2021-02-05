@@ -24,9 +24,10 @@
   -->
 <template>
   <transition name="modal">
-    <div class="modal-mask" v-on:click.stop.prevent="onCancel">
-      <div class="modal-wrapper">
+    <div class="modal-mask pathbrowser-modal-mask" v-on:click.stop.prevent="onCancel">
+      <div class="modal-wrapper" ref="modalWrapper">
         <div class="pathbrowser modal-container"
+             ref="pathbrowser"
              @click.stop.prevent="onPrevent">
           <!-- @mousedown.prevent="() => {}" -->
           <div class="modal-header" v-if="">
@@ -411,16 +412,25 @@
             </div>
           </div>
         </div>
+        <file-dropper
+            v-if="isBrowserTypeAsset"
+            :drop-context="$refs.pathbrowser"
+            :path="currentPath"
+            @upload-done="onFileDropperUploadDone"/>
       </div>
     </div>
   </transition>
 </template>
 
 <script>
+import FileDropper from '../filedropper/template.vue';
 import {IconLib, PathBrowser} from '../../../../../../js/constants';
 
 export default {
   name: 'PathBrowser',
+  components: {
+    FileDropper
+  },
   props: {
     isOpen: Boolean,
     header: String,
@@ -534,6 +544,9 @@ export default {
     },
     isBrowserTypeImage() {
       return this.isType(PathBrowser.Type.IMAGE)
+    },
+    isBrowserTypeAsset() {
+      return this.isType(PathBrowser.Type.ASSET) || this.isType(PathBrowser.Type.IMAGE)
     },
     showRel() {
       return !this.selectedPath || (
@@ -682,6 +695,15 @@ export default {
     onUpdateImgDimension(name, event) {
       const payload = event.target.value ? parseInt(event.target.value) : null
       this.$emit(`update-img-${name}`, payload)
+    },
+    onFileDropperUploadDone(files) {
+      files.reverse().some((file) => {
+        file.mimeType = file.type
+        if (this.isImage(file)) {
+          this.setSelectedPath(`${this.currentPath}/${file.name}`)
+          return true
+        }
+      })
     }
   }
 }
