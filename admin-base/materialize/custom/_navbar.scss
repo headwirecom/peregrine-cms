@@ -139,6 +139,31 @@ nav {
             background-color: var(--pcms-orange-hover);
           }
         }
+
+        .user-info {
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          line-height: 2rem;
+
+          .row {
+            margin: .2rem 1rem .2rem 0;
+            padding-left: 1rem;
+
+            &:first-child {
+              margin-top: 0;
+            }
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+
+            > p {
+              margin: 0 0 0 -5px;
+              font-weight: bold;
+            }
+          }
+        }
       }
 
       .more-link {
