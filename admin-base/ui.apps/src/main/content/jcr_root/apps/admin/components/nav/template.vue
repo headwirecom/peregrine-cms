@@ -166,6 +166,11 @@
         return this.model.children && this.model.children.length > 0
       },
       username() {
+        if(this.$root.$data.state.userPreferences && 
+           this.$root.$data.state.userPreferences.profile &&
+           this.$root.$data.state.userPreferences.profile.email) {
+          return this.$root.$data.state.userPreferences.profile.email
+        }
         return this.$root.$data.state.user
       },
       help() {
