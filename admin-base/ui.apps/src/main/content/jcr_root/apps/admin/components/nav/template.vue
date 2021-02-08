@@ -111,7 +111,7 @@
                       @click.native.stop="copyUsername"/>
                 </p>
                 <div class="username" :title="username">
-                  {{ username + 'fsfddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd' }}
+                  {{ username }}
                 </div>
                 <input ref="usernameInput" clasS="username-input" type="hidden" :value="username">
               </div>
