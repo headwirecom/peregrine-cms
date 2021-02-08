@@ -101,11 +101,19 @@
             </div>
             <div class="user-info">
               <div class="row">
-                <p class="bold">Logged in as:</p>
-                {{
-                  username
-                  + 'fsfdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd'
-                }}
+                <p class="bold">
+                  Logged in as:
+                  <icon
+                      icon="clone"
+                      lib="font-awesome"
+                      class="copy-username"
+                      title="Copy username"
+                      @click.native.stop="copyUsername"/>
+                </p>
+                <div class="username" :title="username">
+                  {{ username + 'fsfddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd' }}
+                </div>
+                <input ref="usernameInput" clasS="username-input" type="hidden" :value="username">
               </div>
               <div class="row">
                 <p class="bold">Language:</p>
@@ -136,7 +144,13 @@
 </template>
 
 <script>
+import Icon from '../icon/template.vue'
+import {Toast} from '../../../../../../js/constants'
+
 export default {
+  components: {
+    Icon
+  },
   props: ['model'],
   data() {
     return {
@@ -282,6 +296,17 @@ export default {
         return breadcrumbs[0].path.split('/')[4]
       }
       return 'welcome'
+    },
+    copyUsername() {
+      this.$refs.usernameInput.setAttribute('type', 'text')
+      this.$refs.usernameInput.select()
+      try {
+        document.execCommand('copy')
+        $perAdminApp.toast(`copied username <p><i>"${this.username}"</i></p>`, Toast.Level.INFO)
+      } catch (err) {
+        $perAdminApp.toast('FAILED to copy username', Toast.Level.WARNING)
+      }
+      this.$refs.usernameInput.setAttribute('type', 'hidden')
     }
   }
 }

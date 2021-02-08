@@ -163,6 +163,28 @@ nav {
               font-weight: bold;
             }
           }
+
+          .copy-username {
+            float: right;
+            color: #333;
+            font-size: 13px;
+            cursor: pointer;
+
+            &:hover {
+              color: var(--pcms-orange);
+            }
+          }
+
+          .username {
+            width: 100%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+          }
+
+          .username-input {
+            opacity: 0;
+            display: none;
+          }
         }
       }
 
