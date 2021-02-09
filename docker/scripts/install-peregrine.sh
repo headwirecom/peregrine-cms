@@ -41,9 +41,9 @@ do
 
   # Install login bundle after felib
   if [ $pkg == '/com.peregrine-cms/felib.ui.apps-1.0-SNAPSHOT.zip' ]; then
-    echo "Installing: ${PACKAGE_DIR}/login-1.0-SNAPSHOT.jar"
-    curl -u admin:admin -F action=install -F bundlestartlevel=20 -F \
-        bundlefile=@"${PACKAGE_DIR}/login-1.0-SNAPSHOT.jar" http://localhost:8080/system/console/bundles
+   echo "Installing: ${PACKAGE_DIR}/login-1.0-SNAPSHOT.jar"
+   curl -u admin:admin -F action=install -F bundlestartlevel=20 -F \
+       bundlefile=@"${PACKAGE_DIR}/login-1.0-SNAPSHOT.jar" http://localhost:8080/system/console/bundles
   fi
 done
 
