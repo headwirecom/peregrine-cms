@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication.impl;
+package com.peregrine.replication.impl;
 
 /*-
  * #%L
@@ -25,12 +25,13 @@ package com.peregrine.admin.replication.impl;
  * #L%
  */
 
-import com.peregrine.admin.replication.AbstractionReplicationService;
+import com.peregrine.replication.ReplicationServiceBase;
 import com.peregrine.commons.util.PerConstants;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.distribution.DistributionRequestType;
@@ -52,7 +53,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static com.peregrine.admin.replication.ReplicationUtil.updateReplicationProperties;
+import static com.peregrine.replication.ReplicationUtil.updateReplicationProperties;
 import static org.apache.sling.distribution.DistributionRequestState.ACCEPTED;
 import static org.apache.sling.distribution.DistributionRequestState.DISTRIBUTED;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
@@ -69,7 +70,7 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
 )
 @Designate(ocd = DistributionReplicationService.Configuration.class, factory = true)
 public class DistributionReplicationService
-    extends AbstractionReplicationService
+    extends ReplicationServiceBase
 {
 
     public static final String DISTRIBUTION_PENDING = "distribution pending";
@@ -83,20 +84,17 @@ public class DistributionReplicationService
     @interface Configuration {
         @AttributeDefinition(
             name = "Name",
-            description = "Name of the Replication Service",
-            required = true
+            description = "Name of the Replication Service"
         )
         String name();
         @AttributeDefinition(
             name = "Description",
-            description = "Description of this Replication Service",
-            required = true
+            description = "Description of this Replication Service"
         )
         String description();
         @AttributeDefinition(
             name = "Forward Agent",
-            description = "Name of the Forward Agent to use for the Replication.",
-            required = true
+            description = "Name of the Forward Agent to use for the Replication."
         )
         String agentName();
     }
@@ -118,7 +116,7 @@ public class DistributionReplicationService
         init(configuration.name(), configuration.description());
         log.trace("Distributor: '{}'", distributor);
         agentName = configuration.agentName();
-        if(agentName == null || agentName.isEmpty()) {
+        if(StringUtils.isEmpty(agentName)) {
             throw new IllegalArgumentException("Agent Name must be provided");
         }
     }
@@ -147,7 +145,7 @@ public class DistributionReplicationService
             }
         }
         // This only returns the referenced resources. Now we need to check if there are any JCR Content nodes to be added as well
-        for(Resource reference: new ArrayList<Resource>(replicationList)) {
+        for(Resource reference: new ArrayList<>(replicationList)) {
             PerUtil.listMissingResources(reference, replicationList, resourceChecker, false);
         }
         PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, deep);
@@ -241,4 +239,5 @@ public class DistributionReplicationService
         }
         return answer;
     }
+
 }

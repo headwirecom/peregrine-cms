@@ -1,6 +1,5 @@
-package com.peregrine.admin.replication;
+package com.peregrine.replication;
 
-import com.peregrine.adaption.PerReplicable;
 import org.apache.sling.api.resource.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import static com.peregrine.admin.replication.impl.DistributionReplicationService.DISTRIBUTION_PENDING;
+import static com.peregrine.replication.impl.DistributionReplicationService.DISTRIBUTION_PENDING;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
@@ -32,7 +31,7 @@ import static com.peregrine.commons.util.PerUtil.isJcrContent;
 public class ReplicationUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReplicationUtil.class);
-    private static String SQL2_STATEMENT = "SELECT * FROM [nt:base] AS s WHERE ISDESCENDANTNODE([%s]) and CONTAINS(s.*, '%s')";
+    private static final String SQL2_STATEMENT = "SELECT * FROM [nt:base] AS s WHERE ISDESCENDANTNODE([%s]) and CONTAINS(s.*, '%s')";
     private static List<String> replicationPrimaryNodeTypes;
 
     /**
@@ -169,45 +168,6 @@ public class ReplicationUtil {
             LOGGER.error("could not commit replication property changes", e);
         }
     }
-
-//    /**
-//     * References under /content for replication
-//     * @param resource traverse the jcr:content of the resource to find replication status of the references
-//     * @return null if resource param is null or that resource does not have a child named jcr:content
-//     *
-//     */
-//    public static List<ReferenceReplicationStatus> getReferencesReplicationStatusList(Resource resource){
-//        return getReferencesReplicationStatusList(resource, CONTENT_ROOT);
-//    }
-//
-//    /**
-//     * References used by the resource having a path that starts with the supplied prefix
-//     * @param resource traverse the jcr:content of the resource to find replication status of the references
-//     * @return null if resource param is null or that resource does not have a child named jcr:content
-//     *
-//     */
-//    public static List<ReferenceReplicationStatus> getReferencesReplicationStatusList(Resource resource, String refPrefix){
-//
-//        if(resource != null && !resource.getName().equals(JCR_CONTENT)){
-//            resource = resource.getChild(JCR_CONTENT);
-//        }
-//        if(resource == null || !resource.getName().equals(JCR_CONTENT)) {
-//            return null;
-//        }
-//
-//        List<ReferenceReplicationStatus> referenceReplicationStatuses = new ArrayList<>();
-//        Iterator<Resource> resourcesWithReferences = queryContainsStringUnderResource(resource, refPrefix);
-//        while (resourcesWithReferences.hasNext()){
-//            Resource res = resourcesWithReferences.next();
-//            ValueMap valueMap = ResourceUtil.getValueMap(res);
-//            for (Map.Entry<String,Object> entry : valueMap.entrySet()){
-//                entry
-//            }
-//
-//        }
-//
-//        return referenceReplicationStatuses;
-//    }
 
     /**
      * Query a search term under a resource

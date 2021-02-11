@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication.impl;
+package com.peregrine.replication.impl;
 
 /*-
  * #%L
@@ -62,8 +62,7 @@ public class ImageMetadataSelectorService
     @interface Configuration {
         @AttributeDefinition(
             name = "Category",
-            description = "Metadata Category Name",
-            required = true
+            description = "Metadata Category Name"
         )
         String category();
         @AttributeDefinition(
@@ -74,26 +73,22 @@ public class ImageMetadataSelectorService
         String imageDirectory();
         @AttributeDefinition(
             name = "Included",
-            description = "If true then the given List is included and all others are ignored. If false then the given list is excluded and all others included",
-            required = true
+            description = "If true then the given List is included and all others are ignored. If false then the given list is excluded and all others included"
         )
         boolean included() default false;
         @AttributeDefinition(
             name = "Selection List",
-            description = "List of all Tag Names that are either included or excluded",
-            required = true
+            description = "List of all Tag Names that are either included or excluded"
         )
         String[] selection();
         @AttributeDefinition(
             name = "JSON",
-            description = "If true al properties are included as JSon property named 'raw_tags'",
-            required = true
+            description = "If true al properties are included as JSon property named 'raw_tags'"
         )
         boolean json() default false;
         @AttributeDefinition(
             name = "Mapping",
-            description = "List of Tag Name Mappings in the format of <adjusted name>=<mapped name>. Every Tag mapped here is always included",
-            required = true
+            description = "List of Tag Name Mappings in the format of <adjusted name>=<mapped name>. Every Tag mapped here is always included"
         )
         String[] mapping();
     }
@@ -107,15 +102,13 @@ public class ImageMetadataSelectorService
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private String name;
     private Transformation category;
     private boolean included;
-    private List<String> selection = new ArrayList<>();
+    private final List<String> selection = new ArrayList<>();
     private boolean json;
-    private List<Transformation> mappings = new ArrayList<>();
+    private final List<Transformation> mappings = new ArrayList<>();
 
     private void setup(Configuration configuration) {
-        name = configuration.category();
         category = configuration.imageDirectory() == null ?
             new Transformation(configuration.category(), null ) :
             new Transformation(configuration.imageDirectory(), configuration.category());
@@ -187,8 +180,8 @@ public class ImageMetadataSelectorService
     private static class Transformation {
         private final Logger log = LoggerFactory.getLogger(getClass());
 
-        private String source;
-        private String destination;
+        private final String source;
+        private final String destination;
 
         public Transformation(String source, String destination) {
             if(source == null || source.isEmpty()) {
