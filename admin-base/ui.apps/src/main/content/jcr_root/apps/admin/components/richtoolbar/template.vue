@@ -226,6 +226,7 @@ export default {
   methods: {
     pingRichToolbar(vm = this) {
       vm.key = vm.key === 1 ? 0 : 1
+      vm.$emit('ping')
       $perAdminApp.action(vm, 'reWrapEditable')
     },
     getKey(group, index) {
