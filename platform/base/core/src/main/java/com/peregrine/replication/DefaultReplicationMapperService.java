@@ -1,8 +1,6 @@
-package com.peregrine.admin.replication;
+package com.peregrine.replication;
 
 import com.peregrine.commons.ResourceUtils;
-import com.peregrine.replication.ReferenceLister;
-import com.peregrine.replication.Replication;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -48,7 +46,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 )
 @Designate(ocd = DefaultReplicationMapperService.Configuration.class, factory = true)
 public class DefaultReplicationMapperService
-    extends AbstractionReplicationService
+    extends ReplicationServiceBase
     implements DefaultReplicationMapper
 {
     public static final String NO_DEFAULT_MAPPING = "Default Mapping was not provided but is required";
@@ -62,20 +60,17 @@ public class DefaultReplicationMapperService
         @AttributeDefinition(
             name = "Name",
             description = "Name of the Default Replication Service (for the UI at least one service with 'defaultRepl' is required)",
-            defaultValue = "defaultRepl",
-            required = true
+            defaultValue = "defaultRepl"
         )
         String name();
         @AttributeDefinition(
             name = "Default",
-            description = "Default Mapping Configuration (used if none path covers it). Format: <replication name>[:(<parameter name>=<parameter value>|)*]",
-            required = true
+            description = "Default Mapping Configuration (used if none path covers it). Format: <replication name>[:(<parameter name>=<parameter value>|)*]"
         )
         String defaultMapping();
         @AttributeDefinition(
             name = "Description",
-            description = "Description of this Replication Service",
-            required = true
+            description = "Description of this Replication Service"
         )
         String description();
         @AttributeDefinition(
@@ -90,7 +85,7 @@ public class DefaultReplicationMapperService
     @SuppressWarnings("unused")
     private ReferenceLister referenceLister;
 
-    private Map<String, Replication> replications = new HashMap<>();
+    private final Map<String, Replication> replications = new HashMap<>();
 
     @Reference(
         cardinality = ReferenceCardinality.MULTIPLE,
@@ -131,7 +126,7 @@ public class DefaultReplicationMapperService
     }
 
     private DefaultReplicationConfig defaultMapping;
-    private List<DefaultReplicationConfig> pathMapping = new ArrayList<>();
+    private final List<DefaultReplicationConfig> pathMapping = new ArrayList<>();
 
     private void setup(final Configuration configuration) {
         init(configuration.name(), configuration.description());
@@ -176,7 +171,7 @@ public class DefaultReplicationMapperService
         replicationList.add(0, source);
         replicationList.addAll(0, referenceList);
         try {
-            return delegate(replicationList, (replication, list) -> replication.filterReferences(list));
+            return delegate(replicationList, Replication::filterReferences);
         } catch (final ReplicationException e) {
             return ResourceUtils.removeDuplicates(replicationList);
         }
@@ -215,13 +210,13 @@ public class DefaultReplicationMapperService
     }
 
     @Override
-    public List<Resource> prepare(Collection<Resource> resourceList) throws ReplicationException {
-        return delegate(resourceList, (replication, list) -> replication.prepare(list));
+    public List<Resource> prepare(Collection<Resource> resources) throws ReplicationException {
+        return delegate(resources, Replication::prepare);
     }
 
     @Override
     public List<Resource> replicate(Collection<Resource> resourceList) throws ReplicationException {
-        return delegate(resourceList, (replication, list) -> replication.replicate(list));
+        return delegate(resourceList, Replication::replicate);
     }
 
     private List<DefaultReplicationConfig> getReplications(final Resource resource) {
@@ -298,9 +293,9 @@ public class DefaultReplicationMapperService
     static class DefaultReplicationConfig {
         public static final String REPLICATION_SERVICE_NAME_CANNOT_BE_NULL = "Replication Service Name cannot be null for mapping";
         public static final String REPLICATION_PATH_FOR_NON_DEFAULT_NAME_CANNOT_BE_NULL = "Replication Path (for non default) Name cannot be null for mapping";
-        private String serviceName;
+        private final String serviceName;
         private String path;
-        private Map<String, String> parameters = new HashMap<>();
+        private final Map<String, String> parameters = new HashMap<>();
 
         /** Configuration for the Default Replication **/
         public DefaultReplicationConfig(String serviceName, Map<String, String> parameters) {
@@ -329,7 +324,7 @@ public class DefaultReplicationMapperService
             // If the config path does not end in a slash we must make sure that either the resource
             // path is the same or that the next character is a slash otherwise folders starting the
             // same will match but they should not (/test/one should not match /test/one-1)
-            boolean answer = false;
+            boolean answer;
             String resourcePath = resource.getPath();
             if(path != null && !path.endsWith("/")) {
                 if (path.contains("_tenant_")) {

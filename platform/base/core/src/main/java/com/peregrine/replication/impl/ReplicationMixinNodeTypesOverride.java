@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication.impl;
+package com.peregrine.replication.impl;
 
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -16,12 +16,11 @@ import org.slf4j.LoggerFactory;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NoSuchNodeTypeException;
-import javax.jcr.nodetype.NodeType;
 import javax.jcr.nodetype.NodeTypeManager;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.peregrine.admin.replication.ReplicationUtil.setReplicationPrimaryNodeTypes;
+import static com.peregrine.replication.ReplicationUtil.setReplicationPrimaryNodeTypes;
 import static com.peregrine.commons.util.PerConstants.DISTRIBUTION_SUB_SERVICE;
 import static com.peregrine.commons.util.PerUtil.loginService;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.OPTIONAL;
@@ -35,7 +34,7 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.OPTIONA
     configurationPolicy = OPTIONAL,
     immediate = true
 )
-@Designate(ocd = ReplicationMixinNodeTypesOverride.Configuration.class, factory = false)
+@Designate(ocd = ReplicationMixinNodeTypesOverride.Configuration.class)
 public class ReplicationMixinNodeTypesOverride {
     @ObjectClassDefinition(
         name = "Peregrine: Replication Mixin Node Types Override",
@@ -45,14 +44,12 @@ public class ReplicationMixinNodeTypesOverride {
     @interface Configuration {
         @AttributeDefinition(
             name = "Description",
-            description = "Description of this Replication Service",
-            required = true
+            description = "Description of this Replication Service"
         )
         String description();
         @AttributeDefinition(
             name = "Replication Node Type",
-            description = "All Node Type Names that will have the Peregrine Replication Mixin added during replication",
-            required = true
+            description = "All Node Type Names that will have the Peregrine Replication Mixin added during replication"
         )
         String[] replicationNodeTypes();
     }
@@ -78,34 +75,25 @@ public class ReplicationMixinNodeTypesOverride {
         }
         List<String> replicationNodeTypes = Arrays.asList(configuration.replicationNodeTypes());
 
-        ResourceResolver resourceResolver = null;
-        try {
-            resourceResolver = loginService(resourceResolverFactory, DISTRIBUTION_SUB_SERVICE);
+        try (ResourceResolver resourceResolver = loginService(resourceResolverFactory, DISTRIBUTION_SUB_SERVICE)) {
             log.trace("Resource Resolver: '{}'", resourceResolver);
             NodeTypeManager manager = resourceResolver.adaptTo(Session.class).getWorkspace().getNodeTypeManager();
-            for(String replicationNodeType: replicationNodeTypes) {
+            for (String replicationNodeType : replicationNodeTypes) {
                 try {
-                    NodeType nodeType = manager.getNodeType(replicationNodeType);
-                } catch(NoSuchNodeTypeException e) {
+                    manager.getNodeType(replicationNodeType);
+                } catch (NoSuchNodeTypeException e) {
                     log.error("Replication Node Type does not exist: '{}'", replicationNodeType, e);
                     throw new IllegalArgumentException("Node Type: '" + replicationNodeType + "' does not exist -> setup failed");
                 }
             }
             setReplicationPrimaryNodeTypes(replicationNodeTypes);
-        } catch(LoginException e) {
+        } catch (LoginException e) {
             log.warn("Replication Node Types could not be set", e);
             throw new IllegalArgumentException("Could not obtain Resource Resolver -> setup failed");
         } catch (RepositoryException e) {
             log.warn("Replication Node Types could not be set", e);
             throw new IllegalArgumentException("Could not access Node Types -> setup failed");
-        } finally {
-            if(resourceResolver != null) {
-                try {
-                    resourceResolver.close();
-                } catch(Exception e) {
-                    // ignore
-                }
-            }
         }
+        // ignore
     }
 }

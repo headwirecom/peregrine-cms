@@ -28,8 +28,9 @@ package com.peregrine.adaption.impl;
 import com.peregrine.adaption.PerAsset;
 import com.peregrine.adaption.PerPage;
 import com.peregrine.adaption.PerPageManager;
-import com.peregrine.adaption.PerReplicable;
+import com.peregrine.replication.PerReplicable;
 import com.peregrine.commons.util.PerUtil;
+import com.peregrine.replication.impl.PerReplicableImpl;
 import org.apache.sling.api.adapter.AdapterFactory;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -59,7 +60,7 @@ import static com.peregrine.commons.util.PerUtil.EQUALS;
         // The Adapter are the target aka the class that an object can be adapted to (parameter in the adaptTo() method)
         AdapterFactory.ADAPTER_CLASSES + EQUALS + "com.peregrine.adaption.PerPage",
         AdapterFactory.ADAPTER_CLASSES + EQUALS + "com.peregrine.adaption.PerAsset",
-        AdapterFactory.ADAPTER_CLASSES + EQUALS + "com.peregrine.adaption.PerReplicable",
+        AdapterFactory.ADAPTER_CLASSES + EQUALS + "com.peregrine.replication.PerReplicable",
         AdapterFactory.ADAPTER_CLASSES + EQUALS + "com.peregrine.adaption.PerPageManager",
         // The Adaptable is the source that can be adapt meaning the object on which adaptTo() is called on
         AdapterFactory.ADAPTABLE_CLASSES + EQUALS + "org.apache.sling.api.resource.Resource",
