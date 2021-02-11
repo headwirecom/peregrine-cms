@@ -100,16 +100,14 @@
               <i class="material-icons">face</i>
             </div>
             <div class="user-info">
-              <div class="row">
-                <p class="bold">
-                  Logged in as:
-                  <icon
-                      icon="clone"
-                      lib="font-awesome"
-                      class="copy-username"
-                      title="Copy username"
-                      @click.native.stop="copyUsername"/>
-                </p>
+              <div class="row logged-in-as">
+                <p class="bold">Logged in as:</p>
+                <icon
+                    icon="clone"
+                    lib="font-awesome"
+                    class="copy-username"
+                    title="Copy username"
+                    @click.native.stop="copyUsername"/>
                 <div class="username" :title="username">
                   {{ username }}
                 </div>

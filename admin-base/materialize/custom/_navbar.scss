@@ -162,13 +162,27 @@ nav {
               margin: 0 0 0 -5px;
               font-weight: bold;
             }
+
+            &.logged-in-as {
+              position: relative;
+
+              &:hover {
+                .copy-username {
+                  opacity: 1;
+                }
+              }
+            }
           }
 
           .copy-username {
-            float: right;
+            position: absolute;
+            top: 3px;
+            right: 0;
             color: #333;
             font-size: 13px;
             cursor: pointer;
+            opacity: 0;
+            transition: opacity .1s linear;
 
             &:hover {
               color: var(--pcms-orange);
