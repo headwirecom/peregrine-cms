@@ -131,7 +131,7 @@ public class DefaultReplicationMapperService
         init(configuration.name(), configuration.description());
         // Register this service as Replication instance
         log.trace("Default Mapping: '{}'", configuration.defaultMapping());
-        Map<String, Map<String, String>> temp = splitIntoParameterMap(new String[] {configuration.defaultMapping()}, ":", "\\|", "=");
+        var temp = splitIntoParameterMap(configuration.defaultMapping(), ":", "\\|", "=");
         log.trace("Mapped Default Mapping: '{}'", temp);
         if(temp.isEmpty()) {
             throw new IllegalArgumentException(NO_DEFAULT_MAPPING);
