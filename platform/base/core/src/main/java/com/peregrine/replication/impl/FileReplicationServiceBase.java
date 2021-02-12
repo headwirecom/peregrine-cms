@@ -139,10 +139,10 @@ public abstract class FileReplicationServiceBase extends ReplicationServiceBase 
                 .forEach(replicationList::add);
         // This only returns the referenced resources. Now we need to check if there are any JCR Content nodes to be added as well
         for(Resource reference: replicationList) {
-            PerUtil.listMissingResources(reference, replicationList, EXCLUDED_RESOURCES_RESOURCE_CHECKER, false);
+            PerUtil.listMissingResources(reference, EXCLUDED_RESOURCES_RESOURCE_CHECKER, false, replicationList);
         }
 
-        return filterReferences(PerUtil.listMissingResources(startingResource, replicationList, EXCLUDED_RESOURCES_RESOURCE_CHECKER, deep));
+        return filterReferences(PerUtil.listMissingResources(startingResource, EXCLUDED_RESOURCES_RESOURCE_CHECKER, deep, replicationList));
     }
 
     @Override
