@@ -27,5 +27,5 @@ let log = LoggerFactory.logger('unreplicate').setLevelDebug()
 
 export default function(me, target) {
     log.fine(target)    
-    return me.getApi().replicate(target, 'defaultRepl', false, true, undefined)
+    return me.getApi().replicate(target, false, true, undefined)
 }
