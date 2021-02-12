@@ -183,33 +183,31 @@ public abstract class FileReplicationServiceBase extends ReplicationServiceBase 
         List<Resource> answer = new ArrayList<>();
         log.trace("Replicate Resource List: '{}'", resourceList);
         // Replicate the resources
-        ResourceResolver resourceResolver = null;
-        for(Resource item: resourceList) {
-            if(item != null) {
-                resourceResolver = item.getResourceResolver();
-                break;
-            }
+        final ResourceResolver resourceResolver = ResourceUtils.findResolver(resourceList);
+        if (isNull(resourceResolver)) {
+            return Collections.emptyList();
         }
-        if(resourceResolver != null) {
-            Session session = resourceResolver.adaptTo(Session.class);
-            for(Resource item: filterReferences(resourceList)) {
-                handleParents(item.getParent());
-                // Need to figure out the type and replicate accordingly
-                String primaryType = PerUtil.getPrimaryType(item);
-                if(ASSET_PRIMARY_TYPE.equals(primaryType)) {
-                    processAssetRenditions(item, assetRenditionReplicator);
-                } else {
-                    replicatePerResource(item, false);
-                }
 
-                answer.add(item);
+        Session session = resourceResolver.adaptTo(Session.class);
+        for (Resource item : filterReferences(resourceList)) {
+            handleParents(item.getParent());
+            // Need to figure out the type and replicate accordingly
+            String primaryType = PerUtil.getPrimaryType(item);
+            if (ASSET_PRIMARY_TYPE.equals(primaryType)) {
+                processAssetRenditions(item, assetRenditionReplicator);
+            } else {
+                replicatePerResource(item, false);
             }
-            try {
-                session.save();
-            } catch(RepositoryException e) {
-                log.warn("Failed to save changes replicate parents", e);
-            }
+
+            answer.add(item);
         }
+
+        try {
+            session.save();
+        } catch (RepositoryException e) {
+            log.warn("Failed to save changes replicate parents", e);
+        }
+
         return answer;
     }
 
