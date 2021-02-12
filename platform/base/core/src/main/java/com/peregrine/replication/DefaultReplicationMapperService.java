@@ -81,37 +81,16 @@ public class DefaultReplicationMapperService
         String[] pathMapping();
     }
 
+    private final List<DefaultReplicationConfig> pathMapping = new ArrayList<>();
+
+    @Reference
+    private ReplicationsContainer replications;
+
     @Reference
     @SuppressWarnings("unused")
     private ReferenceLister referenceLister;
 
-    private final Map<String, Replication> replications = new HashMap<>();
-
-    @Reference(
-        cardinality = ReferenceCardinality.MULTIPLE,
-        policy = ReferencePolicy.DYNAMIC,
-        policyOption = ReferencePolicyOption.GREEDY
-    )
-    @SuppressWarnings("unused")
-    public void bindReplication(Replication replication) {
-        logger.trace("Bind DRMS Replication: '{}'", replication.getName());
-        String replicationName = replication.getName();
-        if(replicationName != null && !replicationName.isEmpty()) {
-            replications.put(replicationName, replication);
-        } else {
-            logger.error("Replication: '{}' does not provide an operation name -> binding is ignored", replication);
-        }
-    }
-
-    @SuppressWarnings("unused")
-    public void unbindReplication(Replication replication) {
-        String replicationName = replication.getName();
-        if(replications.containsKey(replicationName)) {
-            replications.remove(replicationName);
-        } else {
-            logger.error("Replication: '{}' is not register with operation name: '{}' -> unbinding is ignored", replication, replicationName);
-        }
-    }
+    private DefaultReplicationConfig defaultMapping;
 
     @Activate
     @SuppressWarnings("unused")
@@ -124,9 +103,6 @@ public class DefaultReplicationMapperService
     void modified(Configuration configuration) {
         setup(configuration);
     }
-
-    private DefaultReplicationConfig defaultMapping;
-    private final List<DefaultReplicationConfig> pathMapping = new ArrayList<>();
 
     private void setup(final Configuration configuration) {
         init(configuration.name(), configuration.description());
