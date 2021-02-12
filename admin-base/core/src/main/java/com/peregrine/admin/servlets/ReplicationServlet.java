@@ -30,7 +30,7 @@ import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.commons.util.PerConstants;
 import com.peregrine.replication.Replication;
 import com.peregrine.replication.Replication.ReplicationException;
-import com.peregrine.replication.ReplicationsContainer;
+import com.peregrine.replication.ReplicationsContainerWithDefault;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
@@ -89,7 +89,7 @@ public final class ReplicationServlet extends ReplicationServletBase {
     public static final AddAllResourceChecker ADD_ALL_RESOURCE_CHECKER = new AddAllResourceChecker();
 
     @Reference
-    private ReplicationsContainer replicationsContainer;
+    private ReplicationsContainerWithDefault replications;
 
     @Reference
     private AdminResourceHandler resourceManagement;
@@ -101,7 +101,7 @@ public final class ReplicationServlet extends ReplicationServletBase {
             final ResourceResolver resourceResolver
     ) throws IOException {
         final String replicationName = request.getParameter(NAME);
-        final Replication replication = replicationsContainer.getOrDefault(replicationName);
+        final Replication replication = replications.getOrDefault(replicationName);
         if (isNull(replication)) {
             return new ErrorResponse()
                     .setHttpErrorCode(SC_BAD_REQUEST)
