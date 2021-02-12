@@ -30,7 +30,6 @@ import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.replication.Replication;
 import com.peregrine.replication.Replication.ReplicationException;
 import com.peregrine.replication.ReplicationsContainerWithDefault;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
@@ -67,7 +66,7 @@ public abstract class ReplicationServletBase extends AbstractBaseServlet {
                     .setErrorMessage(String.format("Suffix: '%s' is not a resource", sourcePath));
         }
 
-        final String replicationName = StringUtils.defaultString(request.getParameter(NAME), "defaultRepl");
+        final String replicationName = request.getParameter(NAME);
         final Replication replication = getReplications().getOrDefault(replicationName);
         if (isNull(replication)) {
             return new ErrorResponse()
