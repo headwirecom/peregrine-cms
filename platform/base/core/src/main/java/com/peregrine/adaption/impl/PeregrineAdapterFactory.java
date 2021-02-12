@@ -104,7 +104,7 @@ public class PeregrineAdapterFactory
     private <AdapterType> AdapterType getAdapter(Resource resource,
                                                  Class<AdapterType> type) {
         log.trace("Get Adapter for Type: '{}' and Resource: '{}', ", type.getName(), resource);
-        String primaryType = PerUtil.getPrimaryType(resource);
+        final String primaryType = PerUtil.getPrimaryType(resource);
         if(PerPage.class.equals(type)) {
             if(PAGE_PRIMARY_TYPE.equals(primaryType)) {
                 return (AdapterType) new PerPageImpl(resource);
