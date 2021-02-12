@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 
+import static com.peregrine.commons.Strings.SLASH;
 import static com.peregrine.commons.util.PerUtil.AddAllResourceChecker;
 import static com.peregrine.commons.util.PerUtil.isEmpty;
 import static com.peregrine.commons.util.PerUtil.listMissingResources;
@@ -136,7 +137,8 @@ public class DefaultReplicationMapperService
         if(temp.isEmpty()) {
             throw new IllegalArgumentException(NO_DEFAULT_MAPPING);
         }
-        Entry<String, Map<String, String>> entry = temp.entrySet().iterator().next();
+
+        final Entry<String, Map<String, String>> entry = temp.entrySet().iterator().next();
         defaultMapping = new DefaultReplicationConfig(entry.getKey(), entry.getValue());
         log.trace("Final Default Mapping: '{}'", defaultMapping);
         String[] pathMappings = configuration.pathMapping();
@@ -242,7 +244,7 @@ public class DefaultReplicationMapperService
     }
 
     private Replication getDefaultReplicationService() {
-        return this.replications.get(this.defaultMapping.getServiceName());
+        return replications.get(defaultMapping.getServiceName());
     }
 
     public String storeFile(final Resource parent, final String name, final String content)
@@ -311,6 +313,7 @@ public class DefaultReplicationMapperService
             if(isEmpty(path)) {
                 throw new IllegalArgumentException(REPLICATION_PATH_FOR_NON_DEFAULT_NAME_CANNOT_BE_NULL);
             }
+
             this.path = path;
         }
 
@@ -323,27 +326,26 @@ public class DefaultReplicationMapperService
             // If the config path does not end in a slash we must make sure that either the resource
             // path is the same or that the next character is a slash otherwise folders starting the
             // same will match but they should not (/test/one should not match /test/one-1)
-            boolean answer;
             String resourcePath = resource.getPath();
-            if(path != null && !path.endsWith("/")) {
-                if (path.contains("_tenant_")) {
-                    String tenant = resourcePath.split("/")[2];
-                    path = path.replace("_tenant_", tenant);
-                }
-                if(resourcePath.startsWith(path)) {
-                    if(resourcePath.equals(path)) {
-                        answer = true;
-                    } else {
-                        char next = resourcePath.charAt(path.length());
-                        answer = (next == '/');
-                    }
-                } else {
-                    answer = false;
-                }
-            } else {
-                answer = (path == null || resource.getPath().startsWith(path));
+            if(path == null || path.endsWith(SLASH)) {
+                return path == null || resourcePath.startsWith(path);
             }
-            return answer;
+
+            if (path.contains("_tenant_")) {
+                String tenant = resourcePath.split(SLASH)[2];
+                path = path.replace("_tenant_", tenant);
+            }
+
+            if(resourcePath.startsWith(path)) {
+                if(resourcePath.equals(path)) {
+                    return true;
+                }
+
+                return resourcePath.charAt(path.length()) == '/';
+            }
+
+            return false;
+
         }
 
         /** @return the Replication Service Name **/
