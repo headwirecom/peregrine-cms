@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 
+import static com.peregrine.commons.Strings.SLASH;
 import static com.peregrine.commons.util.PerUtil.isEmpty;
 import static com.peregrine.commons.util.PerUtil.listMissingResources;
 import static com.peregrine.commons.util.PerUtil.splitIntoParameterMap;
@@ -101,12 +102,7 @@ public class DefaultReplicationMapperService
         init(configuration.name(), configuration.description());
         // Register this service as Replication instance
         log.trace("Default Mapping: '{}'", configuration.defaultMapping());
-        Map<String, Map<String, String>> temp = splitIntoParameterMap(
-                new String[] { configuration.defaultMapping()},
-                ":",
-                "\\|",
-                "="
-        );
+        var temp = splitIntoParameterMap(configuration.defaultMapping(), ":", "\\|", "=");
         log.trace("Mapped Default Mapping: '{}'", temp);
         if(temp.isEmpty()) {
             throw new IllegalArgumentException(NO_DEFAULT_MAPPING);
@@ -301,12 +297,12 @@ public class DefaultReplicationMapperService
             // path is the same or that the next character is a slash otherwise folders starting the
             // same will match but they should not (/test/one should not match /test/one-1)
             String resourcePath = resource.getPath();
-            if(path == null || path.endsWith("/")) {
+            if(path == null || path.endsWith(SLASH)) {
                 return path == null || resourcePath.startsWith(path);
             }
 
             if (path.contains("_tenant_")) {
-                String tenant = resourcePath.split("/")[2];
+                String tenant = resourcePath.split(SLASH)[2];
                 path = path.replace("_tenant_", tenant);
             }
 

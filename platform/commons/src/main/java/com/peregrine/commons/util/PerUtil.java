@@ -206,7 +206,12 @@ public class PerUtil {
                 }
             }
         }
+
         return answer;
+    }
+
+    public static Map<String, Map<String, String>> splitIntoParameterMap(String entry, String keySeparator, String valueSeparator, String parameterSeparator) {
+        return splitIntoParameterMap(new String[]{ entry }, keySeparator, valueSeparator, parameterSeparator);
     }
 
     /**
