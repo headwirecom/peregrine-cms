@@ -138,7 +138,7 @@ public class DistributionReplicationService
         throws ReplicationException
     {
         log.trace("Starting Resource: '{}'", startingResource.getPath());
-        final List<Resource> replicationList = PerUtil.listMissingResources(startingResource, true, new LinkedList<>());
+        List<Resource> replicationList = PerUtil.listMissingResources(startingResource, true);
         log.trace("List for Replication: '{}'", replicationList);
         return deactivate(replicationList);
     }

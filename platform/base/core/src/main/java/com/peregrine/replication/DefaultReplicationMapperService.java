@@ -138,7 +138,7 @@ public class DefaultReplicationMapperService
     public List<Resource> findReferences(Resource source, boolean deep) {
         log.trace("Starting Resource: '{}'", source.getPath());
         final List<Resource> referenceList = referenceLister.getReferenceList(true, source, deep);
-        final List<Resource> replicationList = listMissingResources(source, deep, new ArrayList<>());
+        final List<Resource> replicationList = listMissingResources(source, deep);
         replicationList.add(0, source);
         replicationList.addAll(0, referenceList);
         try {

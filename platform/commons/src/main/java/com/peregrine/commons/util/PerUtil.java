@@ -442,7 +442,8 @@ public class PerUtil {
     public static <C extends Collection<Resource>> C listMissingResources(
             final Resource startingResource,
             final ResourceChecker resourceChecker,
-            final boolean deep, final C response
+            final boolean deep,
+            final C response
     ) {
         ResourceChecker childResourceChecker = resourceChecker;
         if (isNull(startingResource) || isNull(resourceChecker) || isNull(response)) {
@@ -478,6 +479,13 @@ public class PerUtil {
             final C response
     ) {
         return listMissingResources(startingResource, ADD_ALL_RESOURCE_CHECKER, deep, response);
+    }
+
+    public static List<Resource> listMissingResources(
+            final Resource startingResource,
+            final boolean deep
+    ) {
+        return listMissingResources(startingResource, deep, new LinkedList<>());
     }
 
     public static boolean containsResource(final Collection<Resource> resources, final Resource check) {
