@@ -13,8 +13,6 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +25,6 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 
 import static com.peregrine.commons.Strings.SLASH;
-import static com.peregrine.commons.util.PerUtil.AddAllResourceChecker;
 import static com.peregrine.commons.util.PerUtil.isEmpty;
 import static com.peregrine.commons.util.PerUtil.listMissingResources;
 import static com.peregrine.commons.util.PerUtil.splitIntoParameterMap;
@@ -168,7 +165,7 @@ public class DefaultReplicationMapperService
     public List<Resource> findReferences(Resource source, boolean deep) {
         log.trace("Starting Resource: '{}'", source.getPath());
         final List<Resource> referenceList = referenceLister.getReferenceList(true, source, deep);
-        final List<Resource> replicationList = listMissingResources(source, new ArrayList<>(), new AddAllResourceChecker(), deep);
+        final List<Resource> replicationList = listMissingResources(source, deep);
         replicationList.add(0, source);
         replicationList.addAll(0, referenceList);
         try {
