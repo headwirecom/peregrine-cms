@@ -12,39 +12,22 @@ echo "Starting Sling for the first time..."
 echo "Installing Sling Packager"
 npm install @peregrinecms/slingpackager -g
 
-ls ${PACKAGE_DIR}/*.zip | while read package;
-do
-  echo "Uploading package: ${package}..."
-  slingpackager -v upload ${package}
-done
-
-slingpackager list
-
 PKG_ORDER=( \
-  /com.peregrine-cms/base.ui.apps-1.0-SNAPSHOT.zip \
-  /com.peregrine-cms/felib.ui.apps-1.0-SNAPSHOT.zip \
-  /com.peregrine-cms/replication.ui.apps-1.0-SNAPSHOT.zip \
-  /com.peregrine-cms/pagerender-vue.ui.apps-1.0-SNAPSHOT.zip \
-  /com.peregrine-cms/admin.ui.apps-1.0-SNAPSHOT.zip \
-  /com.peregrine-cms/admin.ui.materialize-1.0-SNAPSHOT.zip \
-  /com.peregrine-cms/admin.sling.ui.apps-1.0-SNAPSHOT.zip \
-  /com.peregrine-cms.example/example-vue.ui.apps-1.0-SNAPSHOT.zip \
-  /themeclean/themeclean-ui.apps-1.0-SNAPSHOT.zip \
-  /themeclean-flex/themecleanflex.ui.apps-1.0-SNAPSHOT.zip \
+  base.ui.apps-1.0-SNAPSHOT.zip \
+  felib.ui.apps-1.0-SNAPSHOT.zip \
+  pagerender-vue.ui.apps-1.0-SNAPSHOT.zip \
+  admin.ui.apps-1.0-SNAPSHOT.zip \
+  admin.ui.materialize-1.0-SNAPSHOT.zip \
+  admin.sling.ui.apps-1.0-SNAPSHOT.zip \
+  example-vue.ui.apps-1.0-SNAPSHOT.zip \
+  themeclean-ui.apps-1.0-SNAPSHOT.zip \
+  themecleanflex.ui.apps-1.0-SNAPSHOT.zip \
 )
-
 
 for pkg in "${PKG_ORDER[@]}"
 do
   echo "Installing package '${pkg}' in defined order..."
-  slingpackager install $pkg
-
-  # Install login bundle after felib
-  if [ $pkg == '/com.peregrine-cms/felib.ui.apps-1.0-SNAPSHOT.zip' ]; then
-   echo "Installing: ${PACKAGE_DIR}/login-1.0-SNAPSHOT.jar"
-   curl -u admin:admin -F action=install -F bundlestartlevel=20 -F \
-       bundlefile=@"${PACKAGE_DIR}/login-1.0-SNAPSHOT.jar" http://localhost:8080/system/console/bundles
-  fi
+  slingpackager -v upload --install ${PACKAGE_DIR}/$pkg
 done
 
 #echo "Stopping Peregrine..."
