@@ -1,6 +1,5 @@
-package com.peregrine.admin.replication;
+package com.peregrine.replication;
 
-import com.peregrine.replication.Replication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,7 +8,7 @@ import static com.peregrine.commons.util.PerUtil.isEmpty;
 /**
  * Common Properties Base Class for Replications
  */
-public abstract class AbstractionReplicationService
+public abstract class ReplicationServiceBase
     implements Replication
 {
     protected final Logger log = LoggerFactory.getLogger(getClass());

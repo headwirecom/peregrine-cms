@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication.impl;
+package com.peregrine.replication.impl;
 
 /*-
  * #%L
@@ -25,7 +25,7 @@ package com.peregrine.admin.replication.impl;
  * #L%
  */
 
-import com.peregrine.admin.replication.DefaultReplicationMapper;
+import com.peregrine.replication.DefaultReplicationMapper;
 import com.peregrine.replication.Replication;
 import com.peregrine.replication.ReplicationsContainer;
 import org.osgi.service.component.annotations.*;
@@ -50,7 +50,6 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
         SERVICE_VENDOR + EQUALS + PER_VENDOR
     }
 )
-@SuppressWarnings("serial")
 public final class ReplicationsContainerImpl implements ReplicationsContainer {
 
     public static final String DEFAULT_REPL = "defaultRepl";

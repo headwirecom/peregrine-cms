@@ -1,4 +1,4 @@
-package com.peregrine.admin.replication.impl;
+package com.peregrine.replication.impl;
 
 /*-
  * #%L
@@ -25,7 +25,7 @@ package com.peregrine.admin.replication.impl;
  * #L%
  */
 
-import com.peregrine.admin.replication.AbstractionReplicationService;
+import com.peregrine.replication.ReplicationServiceBase;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
 import org.apache.commons.lang3.StringUtils;
@@ -60,7 +60,7 @@ import java.util.regex.Pattern;
 )
 @Designate(ocd = ModPageSpeedCacheInvalidationService.Configuration.class, factory = true)
 public class ModPageSpeedCacheInvalidationService
-        extends AbstractionReplicationService
+        extends ReplicationServiceBase
 {
     private static final int HTTP_CLIENT_TIMEOUT_SECONDS = 5;
     private static final Pattern ROOT_SITE_PATH_PATTERN = Pattern.compile("^(/content/[a-zA-Z0-9_]+)/.*$");
@@ -72,20 +72,17 @@ public class ModPageSpeedCacheInvalidationService
     @interface Configuration {
         @AttributeDefinition(
                 name = "Name",
-                description = "Name of the PageSpeed cache invalidation service",
-                required = true
+                description = "Name of the PageSpeed cache invalidation service"
         )
         String name();
         @AttributeDefinition(
                 name = "Description",
-                description = "Description of the PageSpeed cache invalidation service",
-                required = true
+                description = "Description of the PageSpeed cache invalidation service"
         )
         String description();
         @AttributeDefinition(
                 name = "PageSpeed cache invalidation endpoint",
-                description = "Absolute URL to the PageSpeed cache invalidation endpoint (i.e. http://localhost/pagespeed_admin/cache).",
-                required = true
+                description = "Absolute URL to the PageSpeed cache invalidation endpoint (i.e. http://localhost/pagespeed_admin/cache)."
         )
         String cacheInvalidationUrl();
     }
@@ -152,7 +149,7 @@ public class ModPageSpeedCacheInvalidationService
     private Set<String> getSitesInvalidationUrls(final Collection<Resource> resources)
     {
         Set<String> siteInvalidationUls = new HashSet<>();
-        Set<String> sites = new HashSet<String>();
+        Set<String> sites = new HashSet<>();
         if (resources != null)
         {
             for (final Resource resource: resources)
@@ -223,10 +220,7 @@ public class ModPageSpeedCacheInvalidationService
             String[] vals = properties.get("domains", String[].class);
             if (vals != null && vals.length > 0 )
             {
-                for (int i = 0; i < vals.length; i++)
-                {
-                    domains.add(vals[i]);
-                }
+                domains.addAll(Arrays.asList(vals));
             }
         }
 
@@ -250,14 +244,11 @@ public class ModPageSpeedCacheInvalidationService
         HttpPurge httpPurge = new HttpPurge(url);
         try
         {
-            CloseableHttpResponse response = httpClient.execute(httpPurge);
-            try {
+            try (CloseableHttpResponse response = httpClient.execute(httpPurge)) {
                 log.info("PageSpeed cache invalidation request '{}' returned an '{}' response",
                         url, response.getStatusLine());
                 HttpEntity entity1 = response.getEntity();
                 EntityUtils.consume(entity1);
-            } finally {
-                response.close();
             }
 
         } catch (IOException e)
@@ -266,13 +257,8 @@ public class ModPageSpeedCacheInvalidationService
         }
     }
 
-    public class HttpPurge extends HttpRequestBase
+    private static class HttpPurge extends HttpRequestBase
     {
-        public HttpPurge()
-        {
-            super();
-        }
-
         public HttpPurge(final String url)
         {
             super();

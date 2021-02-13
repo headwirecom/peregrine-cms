@@ -30,7 +30,7 @@
           user.mapping=
 "[
 com.peregrine-cms.admin.core:peregrine-distribution-sub-service=distribution-agent-user,
-com.peregrine-cms.replication.core:peregrine-distribution-sub-service=distribution-agent-user
+com.peregrine-cms.base.core:peregrine-distribution-sub-service=distribution-agent-user
 ]"
 >
     <!-- This configuration is setting up the Service User: 'defaultAgentService' for this bundle
