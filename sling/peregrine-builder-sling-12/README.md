@@ -1,4 +1,25 @@
-# Apache Sling Starter for Peregrine CMS
+The Peregrine-CMS builder has moved
+===
+
+We moved this part of peregrine-cms to [github.com/peregrine-cms/peregrine-builder](https://github.com/peregrine-cms/peregrine-builder)
+
+You can download the launcher and a far file to launch the minimal version of sling required for peregrine from the [releases](https://github.com/peregrine-cms/peregrine-builder/releases) section of the peregrine-builder project.
+
+To start a clean sling instance download
+
+- org.apache.sling.feature.launcher.jar
+- com.peregrine-cms.sling.launchpad-12-SNAPSHOT-oak_tar_far.far
+
+and launch apache sling with
+
+```
+java -jar org.apache.sling.feature.launcher.jar -f com.peregrine-cms.sling.launchpad-12-SNAPSHOT-oak_tar_far.far -D -p sling
+```
+
+previous documentation
+===
+
+## Apache Sling Starter for Peregrine CMS
 
 This module is part of the [Peregrine CMS ProjectSling](https://www.peregrine-cms.com/)
 It runs on [Apache Sling](https://sling.apache.org) project.
