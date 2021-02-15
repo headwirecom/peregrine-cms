@@ -107,11 +107,11 @@
                     lib="font-awesome"
                     class="copy-username"
                     title="Copy username"
-                    @click.native.stop="copyUsername"/>
+                    @click.native.stop.prevent="copyUsername"/>
                 <div class="username" :title="username">
                   {{ username }}
                 </div>
-                <input ref="usernameInput" clasS="username-input" type="hidden" :value="username">
+                <input ref="usernameInput" class="username-input" type="hidden" :value="username">
               </div>
               <div class="row">
                 <p class="bold">Language:</p>
@@ -296,15 +296,21 @@ export default {
       return 'welcome'
     },
     copyUsername() {
+      let success = false
       this.$refs.usernameInput.setAttribute('type', 'text')
       this.$refs.usernameInput.select()
       try {
-        document.execCommand('copy')
-        $perAdminApp.toast(`copied username <p><i>"${this.username}"</i></p>`, Toast.Level.INFO)
+        success = !!document.execCommand('copy')
       } catch (err) {
+        console.error('error while copying username: ', err)
+      }
+      if (success) {
+        $perAdminApp.toast(`copied username <i>"${this.username}"</i>`, Toast.Level.INFO)
+      } else {
         $perAdminApp.toast('FAILED to copy username', Toast.Level.WARNING)
       }
       this.$refs.usernameInput.setAttribute('type', 'hidden')
+      window.getSelection().removeAllRanges()
     }
   }
 }
