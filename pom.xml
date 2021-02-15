@@ -30,52 +30,52 @@
 
         <!-- OSGi Dependency Versions -->
         <osgi.core>6.0.0</osgi.core>
-        <osgi.annotation.version>8.0.0</osgi.annotation.version>
-        <org.osgi.service.component.annotations.version>1.4.0</org.osgi.service.component.annotations.version>
-        <org.osgi.service.metatype.annotations.version>1.4.0</org.osgi.service.metatype.annotations.version>
-        <org.osgi.compendium.version>5.0.0</org.osgi.compendium.version>
+        <osgi.annotation.version>6.0.1</osgi.annotation.version>
+        <org.osgi.service.component.annotations.version>1.3.0</org.osgi.service.component.annotations.version>
+        <org.osgi.service.metatype.annotations.version>1.3.0</org.osgi.service.metatype.annotations.version>
+        <org.osgi.compendium.version>4.2.0</org.osgi.compendium.version>
 
         <!-- Java Frameworks -->
-        <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
+        <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
         <javax.inject.version>1</javax.inject.version>
         <javax.jcr.version>2.0</javax.jcr.version>
-        <slf4j.version>2.0.0-alpha1</slf4j.version>
+        <slf4j.version>1.7.25</slf4j.version>
 
         <!-- Sling Dependencies Versions -->
         <org.apache.sling.api.version>2.23.0</org.apache.sling.api.version>
         <org.apache.sling.jcr.api.version>2.4.0</org.apache.sling.jcr.api.version>
         <org.apache.sling.jcr.base.version>3.1.6</org.apache.sling.jcr.base.version>
-        <org.apache.sling.commons.mime.version>2.2.2</org.apache.sling.commons.mime.version>
-        <org.apache.sling.settings.version>1.4.2</org.apache.sling.settings.version>
-        <org.apache.sling.commons.osgi.version>2.4.2</org.apache.sling.commons.osgi.version>
-        <org.apache.sling.models.api.version>1.3.8</org.apache.sling.models.api.version>
-        <org.apache.sling.engine.version>2.7.2</org.apache.sling.engine.version>
-        <org.apache.sling.scripting.sightly.compiler.java.version>1.2.2-1.4.0</org.apache.sling.scripting.sightly.compiler.java.version>
-        <org.apache.sling.servlet-helpers.version>1.4.2</org.apache.sling.servlet-helpers.version>
-        <distribution.api.version>0.4.0</distribution.api.version>
+        <org.apache.sling.commons.mime.version>2.1.10</org.apache.sling.commons.mime.version>
+        <org.apache.sling.settings.version>1.3.8</org.apache.sling.settings.version>
+        <org.apache.sling.commons.osgi.version>2.4.0</org.apache.sling.commons.osgi.version>
+        <org.apache.sling.models.api.version>1.3.4</org.apache.sling.models.api.version>
+        <org.apache.sling.engine.version>2.6.12</org.apache.sling.engine.version>
+        <org.apache.sling.scripting.sightly.compiler.java.version>1.0.18</org.apache.sling.scripting.sightly.compiler.java.version>
+        <org.apache.sling.servlet-helpers.version>1.1.8</org.apache.sling.servlet-helpers.version>
+        <distribution.api.version>0.3.0</distribution.api.version>
         <distribution.api.version.latest>0.3.1-SNAPSHOT</distribution.api.version.latest>
-        <org.apache.sling.xss.version>2.2.8</org.apache.sling.xss.version>
+        <org.apache.sling.xss.version>2.2.2</org.apache.sling.xss.version>
 
         <!-- Third Party Dependencies Versions -->
-        <jackrabbit.version>2.21.5</jackrabbit.version>
-        <commons-lang3.version>3.11</commons-lang3.version>
-        <commons-io.version>2.8.0</commons-io.version>
-        <commons-collections.version>20040616</commons-collections.version>
-        <com.fasterxml.jackson.version>2.12.1</com.fasterxml.jackson.version>
-        <guava.version>30.1-jre</guava.version>
+        <jackrabbit.version>2.14.4</jackrabbit.version>
+        <commons-lang3.version>3.5</commons-lang3.version>
+        <commons-io.version>2.6</commons-io.version>
+        <commons-collections.version>3.2.2</commons-collections.version>
+        <com.fasterxml.jackson.version>2.11.1</com.fasterxml.jackson.version>
+        <guava.version>15.0</guava.version>
         <!-- <aws-java-sdk-osgi.version>1.11.181</aws-java-sdk-osgi.version> -->
         <metadata-extractor.version>2.15.0</metadata-extractor.version>
         <xmpcore.version>5.1.3</xmpcore.version>
-        <tika.version>1.25</tika.version>
+        <tika.version>1.14</tika.version>
 
         <!-- Tests Dependencies Versions -->
-        <junit.version>4.13.2</junit.version>
-        <mockito-all.version>2.0.2-beta</mockito-all.version>
-        <jmock-junit4.version>2.12.2</jmock-junit4.version>
-        <org.apache.sling.commons.testing.version>2.4.2</org.apache.sling.commons.testing.version>
-        <org.apache.sling.junit.core.version>1.1.0</org.apache.sling.junit.core.version>
-        <org.apache.sling.testing.clients.version>2.0.8</org.apache.sling.testing.clients.version>
-        <org.apache.sling.junit.teleporter.version>1.0.22</org.apache.sling.junit.teleporter.version>
+        <junit.version>4.11</junit.version>
+        <mockito-all.version>1.9.5</mockito-all.version>
+        <jmock-junit4.version>2.8.2</jmock-junit4.version>
+        <org.apache.sling.commons.testing.version>2.1.0</org.apache.sling.commons.testing.version>
+        <org.apache.sling.junit.core.version>1.0.26</org.apache.sling.junit.core.version>
+        <org.apache.sling.testing.clients.version>1.0.0</org.apache.sling.testing.clients.version>
+        <org.apache.sling.junit.teleporter.version>1.0.16</org.apache.sling.junit.teleporter.version>
 
         <sourceReleaseAssemblyDescriptor>source-release</sourceReleaseAssemblyDescriptor>
 
@@ -87,7 +87,7 @@
         <gpg.useagent>true</gpg.useagent>
 
         <noContent>true</noContent>
-        <org.apache.sling.serviceusermapper.version>1.5.2</org.apache.sling.serviceusermapper.version>
+        <org.apache.sling.serviceusermapper.version>1.3.2</org.apache.sling.serviceusermapper.version>
         <org.apache.sling.event.version>4.2.12</org.apache.sling.event.version>
     </properties>
 
@@ -529,7 +529,7 @@
             <dependency>
                 <groupId>org.apache.jackrabbit.vault</groupId>
                 <artifactId>org.apache.jackrabbit.vault</artifactId>
-                <version>3.4.8</version>
+                <version>3.2.6</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -591,7 +591,7 @@
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
-                <version>4.5.13</version>
+                <version>4.4.1</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -711,7 +711,7 @@
             <dependency>
                 <groupId>org.jetbrains</groupId>
                 <artifactId>annotations</artifactId>
-                <version>20.1.0</version>
+                <version>16.0.2</version>
                 <scope>provided</scope>
             </dependency>
 
