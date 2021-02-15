@@ -574,7 +574,11 @@ export default {
         event.target.innerHTML = event.target.innerHTML.trim()
       }
       const modelPropName = this.getCurrentModelPropName()
-      const unwatch = this.$watch(`node.${modelPropName}`, (val) => event.target.innerHTML = val)
+      const unwatch = this.$watch(`node.${modelPropName}`, (val) => {
+        if (![undefined, null].includes(val)) {
+          event.target.innerHTML = val
+        }
+      })
       this.dynWatchers.push({modelPropName, unwatch})
     },
 
