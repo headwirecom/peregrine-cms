@@ -74,7 +74,7 @@ public class ReplicationMixinNodeTypesOverride {
             return;
         }
         List<String> replicationNodeTypes = Arrays.asList(configuration.replicationNodeTypes());
-
+        setReplicationPrimaryNodeTypes(replicationNodeTypes);
         try (ResourceResolver resourceResolver = loginService(resourceResolverFactory, DISTRIBUTION_SUB_SERVICE)) {
             log.trace("Resource Resolver: '{}'", resourceResolver);
             NodeTypeManager manager = resourceResolver.adaptTo(Session.class).getWorkspace().getNodeTypeManager();
@@ -82,18 +82,11 @@ public class ReplicationMixinNodeTypesOverride {
                 try {
                     manager.getNodeType(replicationNodeType);
                 } catch (NoSuchNodeTypeException e) {
-                    log.error("Replication Node Type does not exist: '{}'", replicationNodeType, e);
-                    throw new IllegalArgumentException("Node Type: '" + replicationNodeType + "' does not exist -> setup failed");
+                    log.warn("Replication Node Type does not exist: '{}'", replicationNodeType, e);
                 }
             }
-            setReplicationPrimaryNodeTypes(replicationNodeTypes);
-        } catch (LoginException e) {
-            log.warn("Replication Node Types could not be set", e);
-            throw new IllegalArgumentException("Could not obtain Resource Resolver -> setup failed");
-        } catch (RepositoryException e) {
-            log.warn("Replication Node Types could not be set", e);
-            throw new IllegalArgumentException("Could not access Node Types -> setup failed");
+        } catch (final LoginException | RepositoryException e) {
+            log.warn("Replication Node Types could not be checked", e);
         }
-        // ignore
     }
 }
