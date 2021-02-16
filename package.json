@@ -5,21 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node ./node_modules/rollup/bin/rollup -c && node ./buildscripts/buildvue.js admin && node src/main/buildjs/mdtopage.js",
     "site": "node ./node_modules/jsdoc/jsdoc.js -c jsdoc.config.json -P package.json"
   },
   "author": "headwire.com, Inc",
   "license": "Apache-2.0",
   "dependencies": {
-    "camelcase": "^5.0.0",
-    "fs-extra": "^7.0.1",
     "jsdoc": "^3.5.5",
     "jsdoc-vue": "^1.0.0",
-    "marked": "^0.6.0",
-    "request": "^2.88.0",
-    "rollup": "^1.1.2",
-    "rollup-plugin-buble": "^0.19.6",
-    "rollup-plugin-vue": "^4.6.1",
     "vue": "^2.6.12",
     "vue-template-compiler": "^2.6.12",
     "xml-escape": "^1.1.0"
