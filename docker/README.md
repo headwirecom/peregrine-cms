@@ -25,6 +25,8 @@ If you prefer to build the Peregrine image yourself, simply run:
     $ cd docker
     $ ./builddocker.sh
 
+Launch the locally built docker image 
+    $ docker run -it -p 8080:8080 peregrinecms/peregrine-cms:latest
 
 # Verifying Container Startup
 
