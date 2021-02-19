@@ -632,13 +632,6 @@
                 <scope>provided</scope>
             </dependency>
 
-            <!-- <dependency>
-                <groupId>com.amazonaws</groupId>
-                <artifactId>aws-java-sdk-osgi</artifactId>
-                <version>${aws-java-sdk-osgi.version}</version>
-                <scope>provided</scope>
-            </dependency> -->
-
             <!-- Image Metadata Extractor -->
             <dependency>
                 <groupId>com.drewnoakes</groupId>
