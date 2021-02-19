@@ -1,9 +1,5 @@
 FROM adoptopenjdk/openjdk11:latest
 
-ARG PEREGRINECMS_REPO=https://github.com/headwirecom/peregrine-cms.git
-ARG PEREGRINECMS_BRANCH=develop-sling12
-ARG THEMECLEANFLEX_REPO=https://github.com/headwirecom/themeclean-flex.git
-ARG THEMECLEANFLEX_BRANCH=develop
 ENV APP_VERSION 2.0.0
 
 WORKDIR /app
@@ -15,17 +11,12 @@ RUN apt update -q \
         jq \
         libvips libvips-tools \
         tar \
-        xz-utils \
-        git \
-        maven
+        xz-utils
 
 ENV PATH "/usr/local/lib/nodejs/node-v10.16.0-linux-x64/bin:$PATH"
 
 COPY files/* /app/binaries/
 COPY scripts/*.sh /app/scripts/
-
-RUN mkdir -p /root/.m2
-COPY overlay/root/.m2/settings.xml /root/.m2/
 
 # Start - Use repository/package pinning to upgrade libvips from version 8.4 to 8.6
 COPY overlay/etc/apt/preferences.d/* /etc/apt/preferences.d/
@@ -43,8 +34,6 @@ RUN mkdir -p /usr/local/lib/nodejs \
     && echo npx: $(npx -v) \
     && apt-get purge -y --auto-remove && rm -rf /var/lib/apt/lists/* && rm -rf /etc/apt/sources.list.d/temp.list;
 
-RUN scripts/checkout-projects.sh $PEREGRINECMS_REPO $PEREGRINECMS_BRANCH \
-    $THEMECLEANFLEX_REPO $THEMECLEANFLEX_BRANCH
 RUN scripts/install-sling.sh
 RUN scripts/install-peregrine.sh
 
