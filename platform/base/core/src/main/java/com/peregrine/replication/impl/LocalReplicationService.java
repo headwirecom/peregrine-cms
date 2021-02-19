@@ -172,10 +172,10 @@ public class LocalReplicationService
         }
         // This only returns the referenced resources. Now we need to check if there are any JCR Content nodes to be added as well
         for(Resource reference: new ArrayList<>(replicationList)) {
-            listMissingResources(reference, replicationList, resourceChecker, false);
+            listMissingResources(reference, resourceChecker, false, replicationList);
         }
         listMissingParents(startingResource, replicationList, source, resourceChecker);
-        return listMissingResources(startingResource, replicationList, resourceChecker, deep);
+        return listMissingResources(startingResource, resourceChecker, deep, replicationList);
     }
 
     @Override
@@ -194,7 +194,7 @@ public class LocalReplicationService
 
         List<Resource> replicationList = new ArrayList<>(Collections.singletonList(startingResource));
         ResourceChecker resourceChecker = new MatchingResourceChecker(source, target);
-        listMissingResources(startingResource, replicationList, resourceChecker, true);
+        listMissingResources(startingResource, resourceChecker, true, replicationList);
         return deactivate(startingResource, replicationList);
     }
 
