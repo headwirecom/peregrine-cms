@@ -27,7 +27,7 @@ package com.peregrine.replication.impl;
 
 import com.peregrine.replication.Replication;
 import com.peregrine.replication.Replication.ReplicationException;
-import com.peregrine.replication.ReplicationsContainer;
+import com.peregrine.replication.ReplicationsContainerWithDefault;
 import com.peregrine.sitemap.SiteMapFilesCache;
 import com.peregrine.sitemap.SiteMapUrlBuilder;
 import org.apache.sling.api.resource.Resource;
@@ -47,7 +47,7 @@ public final class LocalFileSystemSiteMapReplication implements SiteMapFilesCach
     final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Reference
-    private ReplicationsContainer replicationsContainer;
+    private ReplicationsContainerWithDefault replications;
 
     @Reference
     private SiteMapFilesCache siteMapFilesCache;
@@ -67,7 +67,7 @@ public final class LocalFileSystemSiteMapReplication implements SiteMapFilesCach
 
     @Override
     public void onCacheRefreshed(final Resource rootPage, final String[] contents) {
-        final Replication replication = replicationsContainer.getDefault();
+        final Replication replication = replications.getDefault();
         if (isNull(replication)) {
             return;
         }

@@ -30,7 +30,7 @@ import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.commons.util.PerConstants;
 import com.peregrine.replication.Replication;
 import com.peregrine.replication.Replication.ReplicationException;
-import com.peregrine.replication.ReplicationsContainer;
+import com.peregrine.replication.ReplicationsContainerWithDefault;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
@@ -87,7 +87,7 @@ public final class ReplicationServlet extends ReplicationServletBase {
     public static final String SUFFIX_IS_NOT_RESOURCE = "Suffix: '%s' is not a resource";
 
     @Reference
-    private ReplicationsContainer replicationsContainer;
+    private ReplicationsContainerWithDefault replications;
 
     @Reference
     private AdminResourceHandler resourceManagement;
@@ -99,7 +99,7 @@ public final class ReplicationServlet extends ReplicationServletBase {
             final ResourceResolver resourceResolver
     ) throws IOException {
         final String replicationName = request.getParameter(NAME);
-        final Replication replication = replicationsContainer.getOrDefault(replicationName);
+        final Replication replication = replications.getOrDefault(replicationName);
         if (isNull(replication)) {
             return new ErrorResponse()
                     .setHttpErrorCode(SC_BAD_REQUEST)
