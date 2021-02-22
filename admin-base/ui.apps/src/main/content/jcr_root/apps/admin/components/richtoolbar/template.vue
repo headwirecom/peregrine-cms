@@ -101,7 +101,6 @@ export default {
   },
   data() {
     return {
-      key: 0,
       selection: {
         restore: false,
         buffer: null,
@@ -177,6 +176,10 @@ export default {
       if (!this.inline) return null
       return this.inline.rich
     },
+    inlinePing() {
+      if (!this.inline) return 30
+      return this.inline.ping || 20
+    },
     viewport() {
       return $perAdminApp.getNodeFromViewOrNull('/state/tools/workspace/view')
     },
@@ -234,7 +237,7 @@ export default {
     getKey(group, index) {
       let key = `rich-toolbar-group-${index}-${group.label}`
       if (this.groupIsActive(group)) {
-        key += `-${this.key}`
+        key += `-${this.inlinePing}`
       }
       return key
     },

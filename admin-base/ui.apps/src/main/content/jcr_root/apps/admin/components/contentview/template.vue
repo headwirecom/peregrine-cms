@@ -154,6 +154,10 @@ export default {
       toast: {
         templateComponent: null,
         missingEventPath: null
+      },
+      pingDebouncer: {
+        id: null,
+        timeout: 150
       }
     }
   },
@@ -1134,7 +1138,15 @@ export default {
     },
 
     pingToolbar() {
-      $perAdminApp.action(this, 'pingRichToolbar')
+      clearTimeout(this.pingDebouncer.id)
+      setTimeout(() => {
+        const currentPing = get(this.view, '/state/inline/ping', 0)
+        if (currentPing < 10) {
+          set(this.view, '/state/inline/ping', currentPing + 1)
+        } else {
+          set(this.view, '/state/inline/ping', 0)
+        }
+      }, this.pingDebouncer.timeout)
     },
 
     onAddComponentModalComponentAdded(newNode) {
