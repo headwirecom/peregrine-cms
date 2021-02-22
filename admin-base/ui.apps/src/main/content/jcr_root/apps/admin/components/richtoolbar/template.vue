@@ -499,9 +499,8 @@ export default {
         this.restoreSelection()
         this.$nextTick(() => {
           const range = this.getSelection(0)
-          const content = range.extractContents()
-          content.appendChild(link)
-          range.insertNode(content)
+          link.appendChild(range.extractContents())
+          range.insertNode(link)
           $perAdminApp.action(this, 'reWrapEditable')
           $perAdminApp.action(this, 'writeInlineToModel')
           this.$nextTick(() => {
