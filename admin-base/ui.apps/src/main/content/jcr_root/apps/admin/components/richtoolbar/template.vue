@@ -1,6 +1,6 @@
 <template>
   <div class="richtoolbar" :class="{disabled: !inlineRich || preview === 'preview'}">
-    <admin-components-richtoolbargroup
+    <richtoolbar-group
         v-if="groupAllowed(alwaysActiveGroup)"
         :icon="alwaysActiveGroup.icon"
         :iconLib="alwaysActiveGroup.iconLib"
@@ -12,7 +12,7 @@
         :class="alwaysActiveGroup.class"
         @click="exec($event.btn.cmd)"/>
     <template v-for="(group, groupIndex) in filteredGroups">
-      <admin-components-richtoolbargroup
+      <richtoolbar-group
           :key="getKey(group, groupIndex)"
           v-if="group.items.length > 0"
           :icon="group.icon"
@@ -27,7 +27,7 @@
           @toggle-click="group.toggleClick? group.toggleClick() : () => {}"
           @click="exec($event.btn.cmd)"/>
     </template>
-    <admin-components-richtoolbargroup
+    <richtoolbar-group
         v-if="groupAllowed(responsiveMenuGroup)"
         :icon="responsiveMenuGroup.icon"
         :iconLib="responsiveMenuGroup.iconLib"
@@ -39,7 +39,7 @@
         :class="responsiveMenuGroup.class"
         @click="exec($event.btn.cmd)"/>
 
-    <admin-components-pathbrowser
+    <pathbrowser
         v-if="browser.open"
         :isOpen="browser.open"
         :header="browser.header"
@@ -83,9 +83,12 @@ import {
 } from './groups'
 import {get, restoreSelection, saveSelection, set} from '../../../../../../js/utils'
 import {PathBrowser} from '../../../../../../js/constants'
+import RichtoolbarGroup from '../richtoolbargroup/template.vue'
+import Pathbrowser from '../pathbrowser/template.vue'
 
 export default {
   name: 'RichToolbar',
+  components: {RichtoolbarGroup, Pathbrowser},
   props: {
     showAlwaysActive: {
       type: Boolean,
