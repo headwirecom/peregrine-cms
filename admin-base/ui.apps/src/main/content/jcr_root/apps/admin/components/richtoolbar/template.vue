@@ -98,7 +98,6 @@ export default {
   },
   data() {
     return {
-      console,
       key: 0,
       selection: {
         restore: false,
@@ -200,7 +199,7 @@ export default {
           label: `${this.$i18n('headline')} ${i}`,
           icon: 'title',
           class: () => this.itemIsTag(`H${i}`) ? 'active' : null,
-          click: () => this.exec('formatBlock', `h${i}`),
+          click: () => this.exec('formatBlock', `h${i}`)
         })
       }
       return [
@@ -460,7 +459,7 @@ export default {
       this.$nextTick(() => {
         if (['editLink', 'insertLink'].includes(this.param.cmd)) {
           this.onLinkSelect()
-          return;
+          return
         } else if (['insertImage', 'editImage'].includes(this.param.cmd)) {
           this.onImageSelect()
         }
