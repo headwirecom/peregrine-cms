@@ -281,8 +281,6 @@ export default {
       const start = range.startOffset
       const text = range.startContainer.textContent.substr(start, len)
 
-      this.selection.content = range.startContainer.textContent.substr(start, len)
-
       this.param.cmd = 'insertLink'
       this.browser.header = this.$i18n('Insert Link')
       this.browser.path.current = this.roots.pages
@@ -498,12 +496,12 @@ export default {
         link.setAttribute('title', this.browser.linkTitle)
         link.setAttribute('target', this.browser.newWindow ? '_blank' : '_self')
         link.setAttribute('rel', this.browser.rel ? 'noopener noreferrer' : '')
-        link.textContent = this.selection.content
         this.restoreSelection()
         this.$nextTick(() => {
           const range = this.getSelection(0)
-          range.deleteContents()
-          range.insertNode(link)
+          const content = range.extractContents()
+          content.appendChild(link)
+          range.insertNode(content)
           $perAdminApp.action(this, 'reWrapEditable')
           $perAdminApp.action(this, 'writeInlineToModel')
           this.$nextTick(() => {
