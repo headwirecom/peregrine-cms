@@ -25,7 +25,6 @@
 <template>
   <div class="text-editor-wrapper">
     <richtoolbar
-        :key="`key-${key}`"
         class="on-right-panel"
         :show-always-active="false"
         :responsive="false"
