@@ -7,14 +7,9 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +21,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 
-import static com.peregrine.commons.util.PerUtil.AddAllResourceChecker;
+import static com.peregrine.commons.Strings.SLASH;
 import static com.peregrine.commons.util.PerUtil.isEmpty;
 import static com.peregrine.commons.util.PerUtil.listMissingResources;
 import static com.peregrine.commons.util.PerUtil.splitIntoParameterMap;
@@ -50,7 +45,6 @@ public class DefaultReplicationMapperService
     implements DefaultReplicationMapper
 {
     public static final String NO_DEFAULT_MAPPING = "Default Mapping was not provided but is required";
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @ObjectClassDefinition(
         name = "Peregrine: Default Replication Mapper Service",
@@ -81,37 +75,16 @@ public class DefaultReplicationMapperService
         String[] pathMapping();
     }
 
+    private final List<DefaultReplicationConfig> pathMapping = new ArrayList<>();
+
+    @Reference
+    private ReplicationsContainer replications;
+
     @Reference
     @SuppressWarnings("unused")
     private ReferenceLister referenceLister;
 
-    private final Map<String, Replication> replications = new HashMap<>();
-
-    @Reference(
-        cardinality = ReferenceCardinality.MULTIPLE,
-        policy = ReferencePolicy.DYNAMIC,
-        policyOption = ReferencePolicyOption.GREEDY
-    )
-    @SuppressWarnings("unused")
-    public void bindReplication(Replication replication) {
-        logger.trace("Bind DRMS Replication: '{}'", replication.getName());
-        String replicationName = replication.getName();
-        if(replicationName != null && !replicationName.isEmpty()) {
-            replications.put(replicationName, replication);
-        } else {
-            logger.error("Replication: '{}' does not provide an operation name -> binding is ignored", replication);
-        }
-    }
-
-    @SuppressWarnings("unused")
-    public void unbindReplication(Replication replication) {
-        String replicationName = replication.getName();
-        if(replications.containsKey(replicationName)) {
-            replications.remove(replicationName);
-        } else {
-            logger.error("Replication: '{}' is not register with operation name: '{}' -> unbinding is ignored", replication, replicationName);
-        }
-    }
+    private DefaultReplicationConfig defaultMapping;
 
     @Activate
     @SuppressWarnings("unused")
@@ -125,27 +98,25 @@ public class DefaultReplicationMapperService
         setup(configuration);
     }
 
-    private DefaultReplicationConfig defaultMapping;
-    private final List<DefaultReplicationConfig> pathMapping = new ArrayList<>();
-
     private void setup(final Configuration configuration) {
         init(configuration.name(), configuration.description());
         // Register this service as Replication instance
-        logger.trace("Default Mapping: '{}'", configuration.defaultMapping());
-        Map<String, Map<String, String>> temp = splitIntoParameterMap(new String[] {configuration.defaultMapping()}, ":", "\\|", "=");
-        logger.trace("Mapped Default Mapping: '{}'", temp);
+        log.trace("Default Mapping: '{}'", configuration.defaultMapping());
+        var temp = splitIntoParameterMap(configuration.defaultMapping(), ":", "\\|", "=");
+        log.trace("Mapped Default Mapping: '{}'", temp);
         if(temp.isEmpty()) {
             throw new IllegalArgumentException(NO_DEFAULT_MAPPING);
         }
-        Entry<String, Map<String, String>> entry = temp.entrySet().iterator().next();
+
+        final Entry<String, Map<String, String>> entry = temp.entrySet().iterator().next();
         defaultMapping = new DefaultReplicationConfig(entry.getKey(), entry.getValue());
-        logger.trace("Final Default Mapping: '{}'", defaultMapping);
+        log.trace("Final Default Mapping: '{}'", defaultMapping);
         String[] pathMappings = configuration.pathMapping();
-        logger.trace("Path Mapping: '{}'", Arrays.asList(pathMappings));
+        log.trace("Path Mapping: '{}'", Arrays.asList(pathMappings));
         pathMapping.clear();
         if(pathMappings.length > 0) {
             temp = splitIntoParameterMap(pathMappings, ":", "\\|", "=");
-            logger.trace("Mapped Path Mapping: '{}'", temp);
+            log.trace("Mapped Path Mapping: '{}'", temp);
             // Check that each mapping has a Path (otherwise it is futile)
             for(Entry<String, Map<String, String>> tempEntry: temp.entrySet()) {
                 Map<String, String> parameters = tempEntry.getValue();
@@ -154,7 +125,7 @@ public class DefaultReplicationMapperService
                     new DefaultReplicationConfig(tempEntry.getKey(), path, parameters)
                 );
             }
-            logger.trace("Final Path Mapping: '{}'", pathMapping);
+            log.trace("Final Path Mapping: '{}'", pathMapping);
         }
     }
 
@@ -165,9 +136,9 @@ public class DefaultReplicationMapperService
 
     @Override
     public List<Resource> findReferences(Resource source, boolean deep) {
-        logger.trace("Starting Resource: '{}'", source.getPath());
+        log.trace("Starting Resource: '{}'", source.getPath());
         final List<Resource> referenceList = referenceLister.getReferenceList(true, source, deep);
-        final List<Resource> replicationList = listMissingResources(source, new ArrayList<>(), new AddAllResourceChecker(), deep);
+        final List<Resource> replicationList = listMissingResources(source, deep);
         replicationList.add(0, source);
         replicationList.addAll(0, referenceList);
         try {
@@ -201,8 +172,8 @@ public class DefaultReplicationMapperService
 
             final String replicationName = replication.getName();
             final List<Resource> resources = pot.getValue();
-            logger.trace("Replicate with Replication: '{}' these resources: '{}'", replicationName, resources);
-            logger.trace("DRH Replication: '{}', Replicates: '{}'", replicationName, resources);
+            log.trace("Replicate with Replication: '{}' these resources: '{}'", replicationName, resources);
+            log.trace("DRH Replication: '{}', Replicates: '{}'", replicationName, resources);
             answer.addAll(processor.process(replication, resources));
         }
 
@@ -224,7 +195,7 @@ public class DefaultReplicationMapperService
         boolean handled = false;
         for (final DefaultReplicationConfig config: pathMapping) {
             if (config.isHandled(resource)) {
-                logger.trace("Replicate Resource: '{}' using DRC: '{}'", resource.getPath(), config);
+                log.trace("Replicate Resource: '{}' using DRC: '{}'", resource.getPath(), config);
                 result.add(config);
                 // Resource is handled if the service name here is the same as for the default
                 if (!handled) {
@@ -235,7 +206,7 @@ public class DefaultReplicationMapperService
 
         if (!handled) {
             // Resource was not added to default mapping so add it here
-            logger.trace("Replicate Resource: '{}' using default DRC: '{}'", resource.getPath(), defaultMapping);
+            log.trace("Replicate Resource: '{}' using default DRC: '{}'", resource.getPath(), defaultMapping);
             result.add(defaultMapping);
         }
 
@@ -243,7 +214,7 @@ public class DefaultReplicationMapperService
     }
 
     private Replication getDefaultReplicationService() {
-        return this.replications.get(this.defaultMapping.getServiceName());
+        return replications.get(defaultMapping.getServiceName());
     }
 
     public String storeFile(final Resource parent, final String name, final String content)
@@ -312,6 +283,7 @@ public class DefaultReplicationMapperService
             if(isEmpty(path)) {
                 throw new IllegalArgumentException(REPLICATION_PATH_FOR_NON_DEFAULT_NAME_CANNOT_BE_NULL);
             }
+
             this.path = path;
         }
 
@@ -324,27 +296,26 @@ public class DefaultReplicationMapperService
             // If the config path does not end in a slash we must make sure that either the resource
             // path is the same or that the next character is a slash otherwise folders starting the
             // same will match but they should not (/test/one should not match /test/one-1)
-            boolean answer;
             String resourcePath = resource.getPath();
-            if(path != null && !path.endsWith("/")) {
-                if (path.contains("_tenant_")) {
-                    String tenant = resourcePath.split("/")[2];
-                    path = path.replace("_tenant_", tenant);
-                }
-                if(resourcePath.startsWith(path)) {
-                    if(resourcePath.equals(path)) {
-                        answer = true;
-                    } else {
-                        char next = resourcePath.charAt(path.length());
-                        answer = (next == '/');
-                    }
-                } else {
-                    answer = false;
-                }
-            } else {
-                answer = (path == null || resource.getPath().startsWith(path));
+            if(path == null || path.endsWith(SLASH)) {
+                return path == null || resourcePath.startsWith(path);
             }
-            return answer;
+
+            if (path.contains("_tenant_")) {
+                String tenant = resourcePath.split(SLASH)[2];
+                path = path.replace("_tenant_", tenant);
+            }
+
+            if(resourcePath.startsWith(path)) {
+                if(resourcePath.equals(path)) {
+                    return true;
+                }
+
+                return resourcePath.charAt(path.length()) == '/';
+            }
+
+            return false;
+
         }
 
         /** @return the Replication Service Name **/

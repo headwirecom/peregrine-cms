@@ -68,6 +68,8 @@ public class PerUtil {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
+    private static final ResourceChecker ADD_ALL_RESOURCE_CHECKER = new AddAllResourceChecker();
+
     /** @return True if the given text is either null or empty **/
     public static boolean isEmpty(String text) {
         return text == null || text.isEmpty();
@@ -204,7 +206,12 @@ public class PerUtil {
                 }
             }
         }
+
         return answer;
+    }
+
+    public static Map<String, Map<String, String>> splitIntoParameterMap(String entry, String keySeparator, String valueSeparator, String parameterSeparator) {
+        return splitIntoParameterMap(new String[]{ entry }, keySeparator, valueSeparator, parameterSeparator);
     }
 
     /**
@@ -426,18 +433,18 @@ public class PerUtil {
      * Goes recursively through the resource tree and adds all resources that are selected by the resource checker.
      * The JCR Content is traversed by default (except when the Resource Checker prevents it) but the other children
      * only when the deep flag is set true
-     *
-     * @param startingResource Root resource of the search
-     * @param response List of resources where the missing resources are added to
+     *  @param startingResource Root resource of the search
      * @param resourceChecker Resource Checker instance that decides which resource is deemed missing and defines
      *                         if children resources are traversed
      * @param deep If true this goes down recursively any children
+     * @param response List of resources where the missing resources are added to
      */
     public static <C extends Collection<Resource>> C listMissingResources(
             final Resource startingResource,
-            final C response,
             final ResourceChecker resourceChecker,
-            final boolean deep) {
+            final boolean deep,
+            final C response
+    ) {
         ResourceChecker childResourceChecker = resourceChecker;
         if (isNull(startingResource) || isNull(resourceChecker) || isNull(response)) {
             return response;
@@ -449,7 +456,7 @@ public class PerUtil {
             }
             // If this is JCR Content we need to add all children
             if (isJcrContent(startingResource)) {
-                childResourceChecker = new AddAllResourceChecker();
+                childResourceChecker = ADD_ALL_RESOURCE_CHECKER;
             }
         }
 
@@ -459,11 +466,26 @@ public class PerUtil {
 
         for (final Resource child : startingResource.getChildren()) {
             if (deep || isJcrContent(child)) {
-                listMissingResources(child, response, childResourceChecker, true);
+                listMissingResources(child, childResourceChecker, true, response);
             }
         }
 
         return response;
+    }
+
+    public static <C extends Collection<Resource>> C listMissingResources(
+            final Resource startingResource,
+            final boolean deep,
+            final C response
+    ) {
+        return listMissingResources(startingResource, ADD_ALL_RESOURCE_CHECKER, deep, response);
+    }
+
+    public static List<Resource> listMissingResources(
+            final Resource startingResource,
+            final boolean deep
+    ) {
+        return listMissingResources(startingResource, deep, new LinkedList<>());
     }
 
     public static boolean containsResource(final Collection<Resource> resources, final Resource check) {
@@ -906,18 +928,6 @@ public class PerUtil {
         public boolean doAddChildren(final Resource resource) { return true; }
     }
 
-    /** Checks all resources **/
-    public static class AddAllResourceChecker
-        implements ResourceChecker
-    {
-        @Override
-        public boolean doAdd(final Resource resource) {
-            return true;
-        }
-        @Override
-        public boolean doAddChildren(Resource resource) { return true; }
-    }
-
     /**
      * Extracts the tenant name from the resource
      * @param resource a resource
@@ -998,4 +1008,20 @@ public class PerUtil {
 
        return tenantRoot;
     }
+
+    /** Checks all resources **/
+    public static final class AddAllResourceChecker implements ResourceChecker {
+
+        @Override
+        public boolean doAdd(final Resource resource) {
+            return true;
+        }
+
+        @Override
+        public boolean doAddChildren(Resource resource) {
+            return true;
+        }
+
+    }
+
 }
