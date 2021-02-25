@@ -939,12 +939,10 @@ class PerAdminImpl {
         .then(() => {
           Array.from(files).forEach((file) => addFile(file))
           if (files.length === 1) {
-            if (doReplaceFile(file)) {
-              upload.accepted = upload.rejected
-              upload.rejected = []
-            }
+            return this.onFileExists(upload, path)
+          } else {
+            return upload
           }
-          return upload
         })
         .then(({accepted, rejected}) => {
           if (rejected.length > 0) {
@@ -989,58 +987,43 @@ class PerAdminImpl {
     return true
   }
 
-  onFileExists() {
-    $perAdminApp.askUser('File exists',
-        'Select to replace the existing one, or keep both', {
-          yesText: 'Replace',
-          noText: 'Keep both',
-          yes() {
-            logger.info(`user selected 'replace' upload file ${file.name}`)
-            const replaceData = new FormData()
-            replaceData.append(file.name, file, file.name)
-            return updateWithFormAndConfig(
-                '/admin/uploadFiles.json' + path, replaceData,
-                config)
-                .then(() => me.populateNodesForBrowser(path))
-                .catch(error => {
-                  logger.error('Failed to upload: ' + error)
-                  reject(
-                      'Unable to upload due to an error. '
-                      + error)
-                })
-          },
-          no() {
-            logger.info(
-                'user selected \'keep both\' make the uploaded file name unique and upload')
-            let localNamePart = file.name
-            let extensionPart = ''
-            const indexOfLasDot = file.name.lastIndexOf('.')
-            let newFileName
-            if (indexOfLasDot > 0) {
-              // filename has a dot
-              localNamePart = file.name.substring(0,
-                  indexOfLasDot)
-              extensionPart = file.name.substring(indexOfLasDot,
-                  file.name.length)
+  onFileExists(upload, path) {
+    const me = this
+    return new Promise((resolve, reject) => {
+      upload.accepted = upload.rejected
+      upload.rejected = []
+      $perAdminApp.askUser(
+          'File already exists',
+          'Do you want to replace the original or keep both?',
+          {
+            yesText: 'Replace',
+            noText: 'Keep both',
+            yes() {
+              logger.info(`onFileExists: user selected 'replace'`)
+              resolve(upload)
+            },
+            no() {
+              logger.info('onFileExists: user selected \'keep both\'')
+              const file = upload.accepted[0]
+              const fileSplit = file.name.split('.')
+              const fileExtension = fileSplit.pop()
+              const rawFileName = fileSplit.join('.')
+              let copyFileName = `${rawFileName}-copy.${fileExtension}`
+              let counter = 2
+              while (!me.nameAvailable(copyFileName, path)) {
+                copyFileName = `${rawFileName}-copy-${counter}.${fileExtension}`
+                counter++
+              }
+              upload.accepted.push(new File(
+                  [file],
+                  copyFileName,
+                  {type: file.type}
+              ))
+              resolve(upload)
             }
-            let i = 1
-            do {
-              newFileName = localNamePart + i++ + extensionPart
-            } while (!me.nameAvailable(newFileName, path))
-            const keepbothData = new FormData()
-            keepbothData.append(newFileName, file, newFileName)
-            return updateWithFormAndConfig(
-                '/admin/uploadFiles.json' + path, keepbothData,
-                config)
-                .then(() => $api.populateNodesForBrowser(path))
-                .catch(error => {
-                  logger.error('Failed to upload: ' + error)
-                  reject(
-                      'Unable to upload due to an error. '
-                      + error)
-                })
           }
-        })
+      )
+    })
   }
 
   fetchExternalImage(path, url, name, config) {
