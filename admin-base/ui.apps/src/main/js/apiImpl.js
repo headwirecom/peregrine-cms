@@ -1004,26 +1004,25 @@ class PerAdminImpl {
             },
             no() {
               logger.info('onFileExists: user selected \'keep both\'')
-              const file = upload.accepted[0]
-              const fileSplit = file.name.split('.')
-              const fileExtension = fileSplit.pop()
-              const rawFileName = fileSplit.join('.')
-              let copyFileName = `${rawFileName}-copy.${fileExtension}`
-              let counter = 2
-              while (!me.nameAvailable(copyFileName, path)) {
-                copyFileName = `${rawFileName}-copy-${counter}.${fileExtension}`
-                counter++
-              }
-              upload.accepted.push(new File(
-                  [file],
-                  copyFileName,
-                  {type: file.type}
-              ))
+              upload.accepted.push(me.createFileCopy(uploaded.accepted[0]))
               resolve(upload)
             }
           }
       )
     })
+  }
+
+  createFileCopy(file, path) {
+    const split = file.name.split('.')
+    const extension = fileSplit.pop()
+    const rawName = fileSplit.join('.')
+    let copyName = `${rawFileName}-copy.${fileExtension}`
+    let counter = 2
+    while (!this.nameAvailable(copyFileName, path)) {
+      copyName = `${rawFileName}-copy-${counter}.${fileExtension}`
+      counter++
+    }
+    return new File([file], copyFileName, {type: file.type})
   }
 
   fetchExternalImage(path, url, name, config) {
