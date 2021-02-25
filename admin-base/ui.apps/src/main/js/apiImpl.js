@@ -911,22 +911,23 @@ class PerAdminImpl {
 
   uploadFiles(path, files, callback) {
     const me = this
-    const upload = {
-      accepted: [],
-      rejected: [],
-      success: []
-    }
+    let uploaded = []
 
     function onUploadProgress(progressEvent) {
       callback(Math.floor((progressEvent.loaded * 100) / progressEvent.total))
     }
 
     function addFile(file) {
-      if (me.nameAvailable(file.name, path)) {
-        upload.accepted.push(file)
-      } else {
-        upload.rejected.push(file)
-      }
+      return new Promise((resolve, reject) => {
+        if (me.nameAvailable(file.name, path)) {
+          resolve([file])
+        } else {
+          me.onFileExists(file, path).then((files) => {
+            console.log('onFileExits result: ', files)
+            resolve(files)
+          })
+        }
+      })
     }
 
     function fileListToFormData(fileList) {
@@ -937,34 +938,42 @@ class PerAdminImpl {
 
     return this.populateNodesForBrowser(path)
         .then(() => {
-          Array.from(files).forEach((file) => addFile(file))
-          if (files.length === 1) {
-            return this.onFileExists(upload, path)
-          } else {
-            return upload
-          }
+          const promises = []
+          files = Array.from(files)
+          let chain = Promise.resolve()
+          Array.from(files).forEach((file) => {
+            chain = chain.then((newFiles) => {
+              const promise = addFile(file)
+              promises.push(promise)
+              return promise
+            })
+          })
+          return chain.then((data) => Promise.all(promises))
+              .then((promiseResults) => {
+                const addedFiles = []
+                promiseResults.forEach((result) => addedFiles.push(...result))
+                return addedFiles
+              })
         })
-        .then(({accepted, rejected}) => {
-          if (rejected.length > 0) {
-            this.$notifier.filesNotUploaded(rejected)
-          }
-          if (accepted.length > 0) {
+        .then((addedFiles) => {
+          console.log('addedFiles:', addedFiles)
+          if (addedFiles.length > 0) {
             const uri = `/admin/uploadFiles.json${path}`
-            const formData = fileListToFormData(accepted)
+            const formData = fileListToFormData(addedFiles)
             const config = {onUploadProgress}
             return updateWithFormAndConfig(uri, formData, config)
           }
         })
         .then((data) => {
           if (data && data.assets) {
-            upload.success = data.assets
+            uploaded = data.assets
             return this.populateNodesForBrowser(path)
           } else {
             throw 'updateWithFormAndConfig has been rejected'
           }
         })
         .then(() => {
-          return upload
+          return uploaded
         })
         .catch(error => {
           logger.error(`Failed to upload: ${error}`)
@@ -987,25 +996,22 @@ class PerAdminImpl {
     return true
   }
 
-  onFileExists(upload, path) {
+  onFileExists(file, path) {
     const me = this
     return new Promise((resolve, reject) => {
-      upload.accepted = upload.rejected
-      upload.rejected = []
       $perAdminApp.askUser(
-          'File already exists',
+          `File "${file.name}" already exists`,
           'Do you want to replace the original or keep both?',
           {
             yesText: 'Replace',
             noText: 'Keep both',
             yes() {
               logger.info(`onFileExists: user selected 'replace'`)
-              resolve(upload)
+              resolve([file])
             },
             no() {
               logger.info('onFileExists: user selected \'keep both\'')
-              upload.accepted.push(me.createFileCopy(uploaded.accepted[0]))
-              resolve(upload)
+              resolve([file, me.createFileCopy(file, path)])
             }
           }
       )
@@ -1014,15 +1020,15 @@ class PerAdminImpl {
 
   createFileCopy(file, path) {
     const split = file.name.split('.')
-    const extension = fileSplit.pop()
-    const rawName = fileSplit.join('.')
-    let copyName = `${rawFileName}-copy.${fileExtension}`
+    const extension = split.pop()
+    const rawName = split.join('.')
+    let name = `${rawName}-copy.${extension}`
     let counter = 2
-    while (!this.nameAvailable(copyFileName, path)) {
-      copyName = `${rawFileName}-copy-${counter}.${fileExtension}`
+    while (!this.nameAvailable(name, path)) {
+      name = `${rawName}-copy-${counter}.${extension}`
       counter++
     }
-    return new File([file], copyFileName, {type: file.type})
+    return new File([file], name, {type: file.type})
   }
 
   fetchExternalImage(path, url, name, config) {

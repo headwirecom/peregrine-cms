@@ -6,7 +6,7 @@ class Notifier {
 
   filesNotUploaded(fileList) {
     return this.$app.notifyUser(
-        'Info',
+        'Warning !',
         `
         Some assets were not uploaded. Asset exists in this location:
         ${fileList.map((file) => file.name).join(', ')}

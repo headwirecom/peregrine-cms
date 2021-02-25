@@ -461,7 +461,7 @@ export default {
                 path: $perAdminApp.getView().state.tools.assets,
                 files: files,
                 cb: this.setUploadProgress
-              }).then((data) => console.log(data))
+              })
             },
 
             setUploadProgress(percentCompleted) {
