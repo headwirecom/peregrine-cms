@@ -920,10 +920,10 @@ class PerAdminImpl {
     function addFile(file) {
       return new Promise((resolve, reject) => {
         if (me.nameAvailable(file.name, path)) {
-          resolve([file])
+          resolve(file)
         } else {
-          me.onFileExists(file, path).then((files) => {
-            resolve(files)
+          me.onFileExists(file, path).then((file) => {
+            resolve(file)
           })
         }
       })
@@ -948,11 +948,6 @@ class PerAdminImpl {
             })
           })
           return chain.then((data) => Promise.all(promises))
-              .then((promiseResults) => {
-                const addedFiles = []
-                promiseResults.forEach((result) => addedFiles.push(...result))
-                return addedFiles
-              })
         })
         .then((addedFiles) => {
           if (addedFiles.length > 0) {
@@ -960,18 +955,15 @@ class PerAdminImpl {
             const formData = fileListToFormData(addedFiles)
             const config = {onUploadProgress}
             return updateWithFormAndConfig(uri, formData, config)
+                .then((data) => ({addedFiles, data}))
           }
         })
-        .then((data) => {
+        .then(({addedFiles, data}) => {
           if (data && data.assets) {
-            uploaded = data.assets
-            return this.populateNodesForBrowser(path)
+            return this.populateNodesForBrowser(path).then(() => addedFiles)
           } else {
             throw 'updateWithFormAndConfig has been rejected'
           }
-        })
-        .then(() => {
-          return uploaded
         })
         .catch(error => {
           logger.error(`Failed to upload: ${error}`)
@@ -1005,11 +997,11 @@ class PerAdminImpl {
             noText: 'Keep both',
             yes() {
               logger.info(`onFileExists: user selected 'replace'`)
-              resolve([file])
+              resolve(file)
             },
             no() {
               logger.info('onFileExists: user selected \'keep both\'')
-              resolve([file, me.createFileCopy(file, path)])
+              resolve(me.createFileCopy(file, path))
             }
           }
       )
