@@ -923,7 +923,6 @@ class PerAdminImpl {
           resolve([file])
         } else {
           me.onFileExists(file, path).then((files) => {
-            console.log('onFileExits result: ', files)
             resolve(files)
           })
         }
@@ -956,7 +955,6 @@ class PerAdminImpl {
               })
         })
         .then((addedFiles) => {
-          console.log('addedFiles:', addedFiles)
           if (addedFiles.length > 0) {
             const uri = `/admin/uploadFiles.json${path}`
             const formData = fileListToFormData(addedFiles)
