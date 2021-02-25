@@ -214,21 +214,21 @@ public final class ResourceUtils {
             final Resource targetParent,
             final Function<Object, String> pathMapping
     ) throws PersistenceException {
+        final String name = resource.getName();
+        final Resource answer = targetParent.getChild(name);
+        if (nonNull(answer)) {
+            return answer;
+        }
+
         final Map<String, Object> properties = Optional.ofNullable(resource)
                 .map(ResourceUtils::getCopyableProperties)
-                .orElseGet(HashMap::new);
+                .orElseGet(Collections::emptyMap);
         for (final Map.Entry<String, Object> e : properties.entrySet()) {
             Optional.ofNullable(e.getValue())
                     .filter(v -> v instanceof String)
                     .map(String.class::cast)
                     .map(pathMapping)
                     .ifPresent(e::setValue);
-        }
-
-        final String name = resource.getName();
-        final Resource answer = targetParent.getChild(name);
-        if (nonNull(answer)) {
-            return answer;
         }
 
         return resourceResolver.create(targetParent, name, properties);
