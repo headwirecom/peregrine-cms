@@ -13,9 +13,9 @@ package com.peregrine.replication.impl;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -25,8 +25,8 @@ package com.peregrine.replication.impl;
  * #L%
  */
 
-import com.peregrine.commons.ResourceUtils;
 import com.peregrine.replication.ReplicationServiceBase;
+import com.peregrine.commons.util.PerConstants;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
@@ -44,12 +44,15 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
-import static com.peregrine.replication.ReplicationUtil.markAsPending;
-import static java.util.Objects.isNull;
+import static com.peregrine.replication.ReplicationUtil.updateReplicationProperties;
 import static org.apache.sling.distribution.DistributionRequestState.ACCEPTED;
 import static org.apache.sling.distribution.DistributionRequestState.DISTRIBUTED;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
@@ -69,16 +72,9 @@ public class DistributionReplicationService
     extends ReplicationServiceBase
 {
 
+    public static final String DISTRIBUTION_PENDING = "distribution pending";
+    public static final String NO_DISTRIBUTOR_AVAILABLE = "No Distributor available -> configure Sling Distribution first";
     public static final String DISTRIBUTION_FAILED = "Distribution failed due to: '%s'";
-
-    @Reference
-    Distributor distributor;
-
-    private String agentName;
-
-    @Reference
-    @SuppressWarnings("unused")
-    private ReferenceLister referenceLister;
 
     @ObjectClassDefinition(
         name = "Peregrine: Remote Replication Service",
@@ -108,6 +104,13 @@ public class DistributionReplicationService
     @SuppressWarnings("unused")
     void modified(Configuration configuration) { setup(configuration); }
 
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
+    @Reference
+    Distributor distributor;
+
+    private String agentName;
+
     private void setup(Configuration configuration) {
         init(configuration.name(), configuration.description());
         log.trace("Distributor: '{}'", distributor);
@@ -117,17 +120,24 @@ public class DistributionReplicationService
         }
     }
 
+    @Reference
+    @SuppressWarnings("unused")
+    private ReferenceLister referenceLister;
+
     @Override
     public List<Resource> findReferences(Resource startingResource, boolean deep) {
         log.trace("Starting Resource: '{}'", startingResource.getPath());
-        final List<Resource> referenceList = referenceLister.getReferenceList(true, startingResource, true);
+        List<Resource> referenceList = referenceLister.getReferenceList(true, startingResource, true);
         log.trace("Reference List: '{}'", referenceList);
-        final List<Resource> replicationList = new ArrayList<>(referenceList);
+        List<Resource> replicationList = new ArrayList<>();
+        // Need to check this list of they need to be replicated first
+        for(Resource resource: referenceList) {
+            replicationList.add(resource);
+        }
         // This only returns the referenced resources. Now we need to check if there are any JCR Content nodes to be added as well
-        for (final Resource reference: referenceList) {
+        for(Resource reference: new ArrayList<>(replicationList)) {
             PerUtil.listMissingResources(reference, false, replicationList);
         }
-
         PerUtil.listMissingResources(startingResource, deep, replicationList);
         log.trace("List for Replication: '{}'", replicationList);
         return replicationList;
@@ -138,7 +148,8 @@ public class DistributionReplicationService
         throws ReplicationException
     {
         log.trace("Starting Resource: '{}'", startingResource.getPath());
-        List<Resource> replicationList = PerUtil.listMissingResources(startingResource, true);
+        List<Resource> replicationList = new ArrayList<>();
+        PerUtil.listMissingResources(startingResource, true, replicationList);
         log.trace("List for Replication: '{}'", replicationList);
         return deactivate(replicationList);
     }
@@ -152,51 +163,65 @@ public class DistributionReplicationService
         return replicate(resourceList, false);
     }
 
-    public List<Resource> replicate(final Collection<Resource> resources, final boolean activate) throws ReplicationException {
-        if (isNull(distributor)) {
-            return Collections.emptyList();
+    public List<Resource> replicate(Collection<Resource> resourceList, boolean activate) throws ReplicationException {
+        List<Resource> answer = new ArrayList<>();
+        if(distributor != null) {
+            ResourceResolver resourceResolver = null;
+            for(Resource item: resourceList) {
+                if(item != null) {
+                    resourceResolver = item.getResourceResolver();
+                    break;
+                }
+            }
+            if(resourceResolver != null) {
+                String[] paths = new String[resourceList.size()];
+                int i = 0;
+                for(Resource resource : resourceList) {
+                    paths[i++] = resource.getPath();
+                    // In order to make it possible to have the correct user set and 'Replicated By' we need to set it here and now
+                    updateReplicationProperties(resource, DISTRIBUTION_PENDING, null);
+                }
+
+                if(distributor != null) {
+                    if (activate) {
+                        // first deactivate page content so deleted or moved content is cleared
+                        String[] jcrPaths = Arrays.stream(paths)
+                                .filter(path -> path.endsWith(PerConstants.JCR_CONTENT))
+                                .toArray(String[]::new);
+                        SimpleDistributionRequest sdrDeactivate = new SimpleDistributionRequest(
+                                DistributionRequestType.DELETE,
+                                jcrPaths);
+                        DistributionResponse deactivateResp = distributor.distribute(
+                            agentName,
+                            resourceResolver,
+                            sdrDeactivate
+                        );
+
+                        log.trace("Distributor Response: '{}'", deactivateResp);
+                        if(!deactivateResp.isSuccessful() || !(deactivateResp.getState() == ACCEPTED || deactivateResp.getState() != DISTRIBUTED)) {
+                            throw new ReplicationException(String.format(DISTRIBUTION_FAILED, deactivateResp));
+                        }
+                    }
+
+                    // then activate/deactivate the nodes
+                    DistributionResponse response = distributor.distribute(
+                            agentName,
+                            resourceResolver,
+                            new SimpleDistributionRequest(
+                                    activate ? DistributionRequestType.ADD : DistributionRequestType.DELETE,
+                                    paths));
+                    log.trace("Distributor Response: '{}'", response);
+                    if(!response.isSuccessful() || !(response.getState() == ACCEPTED || response.getState() != DISTRIBUTED)) {
+                        throw new ReplicationException(String.format(DISTRIBUTION_FAILED, response));
+                    }
+
+                    answer.addAll(resourceList);
+                } else {
+                    throw new ReplicationException(NO_DISTRIBUTOR_AVAILABLE);
+                }
+            }
         }
-
-        final ResourceResolver resourceResolver = ResourceUtils.findResolver(resources);
-        if (isNull(resourceResolver)) {
-            return Collections.emptyList();
-        }
-
-        // In order to make it possible to have the correct user set and 'Replicated By' we need to set it here and now
-        for (final Resource resource : resources) {
-            markAsPending(resource);
-        }
-
-        if (activate) {
-            // first deactivate page content so deleted or moved content is cleared
-            distribute(resourceResolver, DistributionRequestType.DELETE, pathsStream(resources).filter(PerUtil::isJcrContent));
-            // then activate/deactivate the nodes
-            distribute(resourceResolver, DistributionRequestType.ADD, pathsStream(resources));
-        } else {
-            distribute(resourceResolver, DistributionRequestType.DELETE, pathsStream(resources));
-        }
-
-        return new LinkedList<>(resources);
-    }
-
-    private static Stream<String> pathsStream(final Collection<Resource> resources) {
-        return resources.stream().map(Resource::getPath);
-    }
-
-    private void distribute(
-            final ResourceResolver resourceResolver,
-            final DistributionRequestType requestType,
-            final Stream<String> paths
-    ) throws ReplicationException {
-        final DistributionResponse response = distributor.distribute(
-                agentName,
-                resourceResolver,
-                new SimpleDistributionRequest(requestType, paths.toArray(String[]::new))
-        );
-        log.trace("Distributor Response: '{}'", response);
-        if (!response.isSuccessful() || !(response.getState() == ACCEPTED || response.getState() == DISTRIBUTED)) {
-            throw new ReplicationException(String.format(DISTRIBUTION_FAILED, response));
-        }
+        return answer;
     }
 
 }

@@ -19,6 +19,7 @@ import static com.peregrine.commons.util.PerUtil.*;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class ReplicationUtil {
 
@@ -82,6 +83,28 @@ public class ReplicationUtil {
         }
 
         return answer;
+    }
+
+    /**
+     * Set the replications properties if the source supports Replication Mixin
+     *
+     * @param source Source Resource to be updated. If null or the resource does not support Replication Mixin this call does nothing.
+     * @param targetPath Replication Ref target path. If the TARGET is NULL this will set the source's Replication Ref property
+     *                   or removes it if empty or null
+     * @param target Target Resource to be updated with same date and reference back to the source in the replication ref. If null will be ignored
+     */
+    public static void updateReplicationProperties(Resource source, String targetPath, Resource target) {
+        if (isNull(source)) {
+            return;
+        }
+
+        if (nonNull(target)) {
+            markAsActivated(source, target);
+        } else if (isNotBlank(targetPath)) {
+            markAsActivated(source, targetPath);
+        } else {
+            markAsDeactivated(source);
+        }
     }
 
     public static void markAsActivated(final Resource source, final String targetPath) {

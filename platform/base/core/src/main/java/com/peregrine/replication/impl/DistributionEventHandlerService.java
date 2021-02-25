@@ -1,7 +1,5 @@
 package com.peregrine.replication.impl;
 
-import com.peregrine.commons.util.PerUtil;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -13,9 +11,10 @@ import org.osgi.service.event.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import static com.peregrine.replication.ReplicationUtil.markAsActivated;
-import static com.peregrine.replication.ReplicationUtil.markAsDeactivated;
+import static com.peregrine.replication.ReplicationUtil.updateReplicationProperties;
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -44,6 +43,8 @@ import static org.osgi.service.event.EventConstants.EVENT_TOPIC;
 public class DistributionEventHandlerService implements EventHandler {
 
     private static final String DISTRIBUTION_TYPE_ADD = "ADD";
+    private static final String DISTRIBUTION_TYPE_DELETE = "DELETE";
+
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -52,26 +53,35 @@ public class DistributionEventHandlerService implements EventHandler {
     private ResourceResolverFactory resourceResolverFactory;
 
     @Override
-    public void handleEvent(final Event event) {
-        if (StringUtils.equalsAny(event.getTopic(), AGENT_PACKAGE_DISTRIBUTED, IMPORTER_PACKAGE_IMPORTED)) {
-            setReplicationProperties(new DistributionEvent(event));
+    public void handleEvent(Event event) {
+        final String topic = event.getTopic();
+
+        if (AGENT_PACKAGE_DISTRIBUTED.equals(topic) || IMPORTER_PACKAGE_IMPORTED.equals(topic)) {
+            final DistributionEvent distributionEvent = new DistributionEvent(event);
+            setReplicationProperties(distributionEvent);
         }
     }
 
-    private void setReplicationProperties(final DistributionEvent data) {
-        try (final ResourceResolver resourceResolver = loginService(resourceResolverFactory, DISTRIBUTION_SUB_SERVICE)) {
-            Arrays.stream(data.getPaths())
-                    .filter(path -> PerUtil.isJcrContent(path) || !path.contains(JCR_CONTENT))
-                    .forEach(path -> {
-                        log.info("properties for {} were updated by dist event handler.", path);
-                        final Resource resource = resourceResolver.getResource(path);
-                        if (DISTRIBUTION_TYPE_ADD.equals(data.getDistributionType().name())) {
-                            final String replicationRef = data.getDistributionComponentKind() + "://" + path;
-                            markAsActivated(resource, replicationRef);
-                        } else {
-                            markAsDeactivated(resource);
-                        }
-                    });
+    private void setReplicationProperties(DistributionEvent distributionEvent) {
+
+        try {
+            ResourceResolver finalResourceResolver = loginService(resourceResolverFactory, DISTRIBUTION_SUB_SERVICE);
+            List<String> paths = Arrays.stream(distributionEvent.getPaths())
+                    .filter( path -> path.endsWith(JCR_CONTENT) || !path.contains(JCR_CONTENT))
+                    .collect(Collectors.toList());
+
+            for (String path : paths) {
+                String replicationRef = "";
+                Resource resource = finalResourceResolver.getResource(path);
+                if (DISTRIBUTION_TYPE_ADD.equals( distributionEvent.getDistributionType().name())) {
+                    replicationRef = distributionEvent.getDistributionComponentKind() + "://" + path;
+
+                } else if (DISTRIBUTION_TYPE_DELETE.equals( distributionEvent.getDistributionType().name())) {
+                    replicationRef = null;
+                }
+                log.info("properties for {} were updated by dist event handler.",path);
+                updateReplicationProperties(resource, replicationRef, null);
+            }
         } catch (LoginException e) {
             log.error("Failed to update per:Replication properties", e);
         }
