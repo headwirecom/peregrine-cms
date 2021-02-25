@@ -64,7 +64,7 @@ public class ModPageSpeedCacheInvalidationService
 {
     private static final int HTTP_CLIENT_TIMEOUT_SECONDS = 5;
     private static final Pattern ROOT_SITE_PATH_PATTERN = Pattern.compile("^(/content/[a-zA-Z0-9_]+)/.*$");
-
+    
     @ObjectClassDefinition(
             name = "Peregrine: PageSpeed Cache Invalidation Service",
             description = "Each instance provides the configuration for a PageSpeed cache invalidation endpoint"
@@ -242,19 +242,26 @@ public class ModPageSpeedCacheInvalidationService
                 HttpClientBuilder.create().setDefaultRequestConfig(config).build();
 
         HttpPurge httpPurge = new HttpPurge(url);
-        try (CloseableHttpResponse response = httpClient.execute(httpPurge)) {
-            log.info("PageSpeed cache invalidation request '{}' returned an '{}' response",
-                    url, response.getStatusLine());
-            HttpEntity entity1 = response.getEntity();
-            EntityUtils.consume(entity1);
-        } catch (IOException e) {
+        try
+        {
+            try (CloseableHttpResponse response = httpClient.execute(httpPurge)) {
+                log.info("PageSpeed cache invalidation request '{}' returned an '{}' response",
+                        url, response.getStatusLine());
+                HttpEntity entity1 = response.getEntity();
+                EntityUtils.consume(entity1);
+            }
+
+        } catch (IOException e)
+        {
             log.error("Error performing PageSpeed invalidation request: '{}'", url, e);
         }
     }
 
     private static class HttpPurge extends HttpRequestBase
     {
-        public HttpPurge(final String url) {
+        public HttpPurge(final String url)
+        {
+            super();
             setURI(URI.create(url));
         }
 
