@@ -306,7 +306,7 @@
 
 <script>
 import {IconLib, MimeType, NodeType, SUFFIX_PARAM_SEPARATOR} from '../../../../../../js/constants'
-import {deepClone, get} from '../../../../../../js/utils'
+import {deepClone, get, set} from '../../../../../../js/utils'
 import NodeNameValidation from '../../../../../../js/mixins/NodeNameValidation'
 import ReferenceUtil from '../../../../../../js/mixins/ReferenceUtil'
 import Icon from '../icon/template.vue'
@@ -851,6 +851,7 @@ export default {
           data[key] = targetNode;
         }
       }
+      set($perAdminApp.getView(), '/state/tools/save/confirmed', true)
       $perAdminApp.stateAction('saveObjectEdit', {data: data, path: show}).then(() => {
         $perAdminApp.getNodeFromView('/state/tools')._deleted = {}
       });
