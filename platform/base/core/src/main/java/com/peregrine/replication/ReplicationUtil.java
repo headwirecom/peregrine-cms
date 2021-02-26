@@ -157,10 +157,6 @@ public class ReplicationUtil {
         refreshAndCommit(resolver);
     }
 
-    public static void markAsPending(final Resource resource) {
-        markAsActivated(resource, "distribution pending");
-    }
-
     public static void refreshAndCommit(final ResourceResolver resourceResolver) {
         resourceResolver.refresh();
         try {

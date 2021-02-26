@@ -1,5 +1,6 @@
 package com.peregrine;
 
+import com.peregrine.mock.PageContentMock;
 import com.peregrine.mock.PageMock;
 import com.peregrine.mock.RepoMock;
 import com.peregrine.mock.ResourceMock;
@@ -33,7 +34,7 @@ public class SlingResourcesTest {
 
     protected final ResourceMock parent = new ResourceMock("Parent");
     protected final PageMock page = new PageMock("Page");
-    protected final ResourceMock jcrContent = page.getContent();
+    protected final PageContentMock jcrContent = page.getContent();
     protected final ResourceMock resource = new ResourceMock("Resource");
 
     protected final PageMock component = new PageMock("Per Component");

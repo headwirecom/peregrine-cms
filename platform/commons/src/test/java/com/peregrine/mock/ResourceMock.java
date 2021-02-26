@@ -8,17 +8,19 @@ import org.apache.sling.api.resource.ResourceWrapper;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.wrappers.ModifiableValueMapDecorator;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
+import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
+import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -32,6 +34,7 @@ public class ResourceMock extends ResourceWrapper {
 
     protected final Resource mock;
     protected final Node node;
+    private final NodeType nodeType = Mockito.mock(NodeType.class);
 
     protected final Map<String, Object> properties = new HashMap<>();
 
@@ -84,6 +87,7 @@ public class ResourceMock extends ResourceWrapper {
                             .orElse(null)
             );
             when(mock.getIdentifier()).thenReturn(name);
+            when(mock.getPrimaryNodeType()).thenReturn(nodeType);
         } catch (final RepositoryException e) { }
 
         return mock;
@@ -134,11 +138,14 @@ public class ResourceMock extends ResourceWrapper {
 
     public final ResourceMock setPrimaryType(final String primaryType) {
         putProperty(JcrConstants.JCR_PRIMARYTYPE, primaryType);
+        when(mock.isResourceType(primaryType)).thenReturn(true);
+        when(nodeType.getName()).thenReturn(primaryType);
         return this;
     }
 
     public final ResourceMock setResourceType(final String resourceType) {
         when(mock.getResourceType()).thenReturn(resourceType);
+        when(mock.isResourceType(resourceType)).thenReturn(true);
         putProperty(SLING_RESOURCE_TYPE, resourceType);
         return this;
     }
