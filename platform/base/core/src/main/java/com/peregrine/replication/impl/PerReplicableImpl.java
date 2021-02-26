@@ -29,8 +29,8 @@ public class PerReplicableImpl extends PerBaseImpl implements PerReplicable {
         return getProperty(name, String.class);
     }
 
-    private Calendar getCalendarProperty(String jcrLastModified) {
-        return getProperty(jcrLastModified, Calendar.class);
+    private Calendar getCalendarProperty(String name) {
+        return getProperty(name, Calendar.class);
     }
 
     @Override
