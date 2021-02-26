@@ -23,7 +23,7 @@
  * #L%
  */
 import {LoggerFactory} from '../logger'
-import {deepClone, set, get} from '../utils'
+import {deepClone, set} from '../utils'
 
 let log = LoggerFactory.logger('editObject').setLevelDebug()
 
@@ -35,8 +35,6 @@ export default function(me, target) {
     set(me.getView(), '/state/tools/save/confirmed', false)
 
     me.beforeStateAction((name) => {
-        const confirmed = get(me.getView(), '/state/tools/save/confirmed',
-            false)
         const currentObject = deepClone(
             me.getNodeFromView('/state/tools/object'))
 
@@ -44,7 +42,7 @@ export default function(me, target) {
             // if there was no change skip asking to save
             const newChecksum = JSON.stringify(
                 me.getNodeFromView('/state/tools/object/data'))
-            if (confirmed || checksum === newChecksum) {
+            if (checksum === newChecksum) {
                 return true
             } else {
                 return new Promise((resolve) => {
@@ -73,9 +71,10 @@ export default function(me, target) {
     })
 
     let view = me.getView()
-    Vue.set(me.getNodeFromView('/state/tools'), 'edit', true)
+    set(me.getView(), `/state/tools/edit`, false)
     me.getApi().populateObject(target.selected, '/state/tools/object', 'data').then( () => {
         checksum = JSON.stringify(me.getNodeFromView('/state/tools/object/data'))
         set(view, '/state/tools/object/show', target.selected)
+        set(me.getView(), `/state/tools/edit`, true)
     })
 }

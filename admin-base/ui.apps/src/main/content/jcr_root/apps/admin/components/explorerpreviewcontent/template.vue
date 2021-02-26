@@ -507,11 +507,19 @@ export default {
     },
     activationSensitiveClass() {
       return this.selfOrAnyDescendantActivated ? 'operationDisabledOnActivatedItem' : null;
+    },
+    stateToolsEdit() {
+      const stateTools = $perAdminApp.getNodeFromViewOrNull('/state/tools')
+      if (stateTools) {
+        return stateTools.edit
+      } else {
+        return false
+      }
     }
   },
   watch: {
-    edit(newVal) {
-      $perAdminApp.getNodeFromView('/state/tools').edit = newVal;
+    edit(val) {
+      $perAdminApp.getNodeFromViewOrNull('/state/tools').edit = val
     },
     activeTab : function(tab) {
       if (tab === 'versions'){
@@ -525,6 +533,9 @@ export default {
         this.showVersions()
       } else if (this.activeTab === 'references'){
         this.showReferencedBy()
+      }
+      if (this.stateToolsEdit) {
+        this.onEdit()
       }
     }
   },
@@ -621,6 +632,10 @@ export default {
     onEdit() {
       this.edit = true
       this.formGenerator.original = deepClone(this.node)
+
+      if (this.nodeType === NodeType.OBJECT) {
+        $perAdminApp.stateAction('editObject', {selected: this.currentObject})
+      }
     },
     onCancel() {
       const payload = {selected: this.currentObject}
