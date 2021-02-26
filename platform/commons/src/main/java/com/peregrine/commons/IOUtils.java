@@ -13,6 +13,24 @@ public final class IOUtils {
 
     public static final String FAILED_TO_DELETE_FILE = "Failed to delete file: '%s'";
 
+    public static File createChildDirectory(final File parent, final String... namesToChooseFrom) {
+        if (isNull(namesToChooseFrom) || namesToChooseFrom.length == 0) {
+            return null;
+        }
+
+        int i = 0;
+        File result = new File(parent, namesToChooseFrom[i]);
+        while (result.exists() && !result.isDirectory() && ++i < namesToChooseFrom.length) {
+            result = new File(parent, namesToChooseFrom[i]);
+        }
+
+        if ((result.exists() && result.isDirectory()) || result.mkdir()) {
+            return result;
+        }
+
+        return null;
+    }
+
     public static boolean deleteFileOrDirectory(final File file) {
         if (file.isDirectory()) {
             for (final File child: file.listFiles()) {
@@ -24,25 +42,6 @@ public final class IOUtils {
         }
 
         return file.delete();
-    }
-
-    public static File createChildDirectory(final File parent, final String... name) {
-        final int length = name.length;
-        if (isNull(name) || length == 0) {
-            return null;
-        }
-
-        int i = 0;
-        File answer = new File(parent, name[i]);
-        while (answer.exists() && !answer.isDirectory() && ++i < length) {
-            answer = new File(parent, name[i]);
-        }
-
-        if ((answer.exists() && answer.isDirectory()) || answer.mkdir()) {
-            return answer;
-        }
-
-        return null;
     }
 
 }
