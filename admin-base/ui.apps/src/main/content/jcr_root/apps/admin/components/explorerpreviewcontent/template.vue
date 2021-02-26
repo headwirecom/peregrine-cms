@@ -111,10 +111,12 @@
       </template>
 
       <template v-else-if="isTab(Tab.REFERENCES)">
-        <span class="panel-title">{{getActiveTabName}}</span>
-        <ul :class="['collection', 'with-header', `explorer-${nodeType}-referenced-by`]">
+        <span class="panel-title">{{ getActiveTabName }}</span>
+        <linear-preloader v-if="loading"/>
+        <ul v-else :class="['collection', 'with-header', `explorer-${nodeType}-referenced-by`]">
           <li class="collection-header">
-            referenced in {{ referencedBy.length }} location<span v-if="referencedBy.length !== 1 ">s</span>
+            referenced in {{ referencedBy.length }}
+            location<span v-if="referencedBy.length !== 1 ">s</span>
           </li>
           <li v-for="item in referencedBy" :key="item.path" class="collection-item">
             <span>
@@ -316,6 +318,7 @@ import ConfirmDialog from '../confirmdialog/template.vue'
 import Action from '../action/template.vue'
 import ExplorerPreviewNavItem from '../explorerpreviewnavitem/template.vue'
 import IconEditPage from '../iconeditpage/template.vue'
+import LinearPreloader from '../linearpreloader/template.vue'
 
 const Tab = {
   INFO: 'info',
@@ -335,6 +338,7 @@ const SchemaKey = {
 export default {
   name: 'ExplorerPreviewContent',
   components: {
+    LinearPreloader,
     Icon,
     PathBrowser,
     MaterializeModal,
@@ -408,7 +412,8 @@ export default {
       },
       formGenerator: {
         changes: []
-      }
+      },
+      loading: false
     }
   },
   mixins: [NodeNameValidation,ReferenceUtil],
@@ -757,7 +762,12 @@ export default {
       $perAdminApp.getApi().populateVersions(this.currentObject);
     },
     showReferencedBy() {
-      $perAdminApp.getApi().populateReferencedBy(this.currentObject);
+      this.loading = true
+      $perAdminApp.getApi()
+          .populateReferencedBy(this.currentObject)
+          .then(() => {
+            this.loading = false
+          })
     },
     deleteVersion(me, target) {
       $perAdminApp.stateAction('deleteVersion', { path: target.path, version: target.version.name });
