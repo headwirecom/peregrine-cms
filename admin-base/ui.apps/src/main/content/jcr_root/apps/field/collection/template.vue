@@ -148,6 +148,9 @@
             this.prepModel(newChild, this.schema)
             newChild['sling:resourceType'] = this.schema.resourceType
         }
+        if (!this.value) {
+          this.value = []
+        }
         this.value.push(newChild)
         // Vue.set(this.value, this.value.length -1, newChild)
         this.onSetActiveItem(this.value.length - 1)
