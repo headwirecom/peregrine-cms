@@ -34,31 +34,39 @@ export default function(me, target) {
     let checksum = ''
     set(me.getView(), '/state/tools/save/confirmed', false)
 
-    me.beforeStateAction( (name) => {
-        const confirmed = get(me.getView(), '/state/tools/save/confirmed', false)
-        const currentObject = deepClone(me.getNodeFromView('/state/tools/object'))
+    me.beforeStateAction((name) => {
+        const confirmed = get(me.getView(), '/state/tools/save/confirmed',
+            false)
+        const currentObject = deepClone(
+            me.getNodeFromView('/state/tools/object'))
 
-        if(name !== 'saveObjectEdit') {
+        if (name !== 'saveObjectEdit') {
             // if there was no change skip asking to save
-            const newChecksum = JSON.stringify(me.getNodeFromView('/state/tools/object/data'))
-            if(confirmed || checksum === newChecksum) {
+            const newChecksum = JSON.stringify(
+                me.getNodeFromView('/state/tools/object/data'))
+            if (confirmed || checksum === newChecksum) {
                 return true
             } else {
-                $perAdminApp.askUser(
-                    'Save Object Edit?',
-                    'Would you like to save your object edits?',
-                    {
-                        yesText: 'Save',
-                        noText: 'Cancel',
-                        yes() {
-                            me.stateAction('saveObjectEdit', {
-                                data: currentObject.data,
-                                path: currentObject.show
-                            })
-                        },
-                        no: () => {}
-                    }
-                )
+                return new Promise((resolve) => {
+                    $perAdminApp.askUser(
+                        'Save Object Edit?',
+                        'Would you like to save your object edits?',
+                        {
+                            yesText: 'Save',
+                            noText: 'Cancel',
+                            yes() {
+                                me.stateAction('saveObjectEdit', {
+                                    data: currentObject.data,
+                                    path: currentObject.show
+                                })
+                                resolve()
+                            },
+                            no() {
+                                resolve()
+                            }
+                        }
+                    )
+                })
             }
         }
         return true
