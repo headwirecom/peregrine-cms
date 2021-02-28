@@ -8,6 +8,8 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.wrappers.SlingHttpServletRequestWrapper;
 import org.mockito.Mockito;
 
+import java.util.*;
+
 import static com.peregrine.commons.Chars.DOT;
 import static com.peregrine.commons.util.PerConstants.HTML;
 import static org.mockito.Mockito.mock;
@@ -17,6 +19,7 @@ public final class SlingHttpServletRequestMock extends SlingHttpServletRequestWr
 
     private final SlingHttpServletRequest mock;
     private final RequestPathInfo requestPathInfo = Mockito.mock(RequestPathInfo.class);
+    private final Map<String, String[]> parameters = new HashMap<>();
 
     public SlingHttpServletRequestMock(final SlingHttpServletRequest mock) {
         super(mock);
@@ -49,6 +52,42 @@ public final class SlingHttpServletRequestMock extends SlingHttpServletRequestWr
     public void setSelectorsString(final String selectorsString) {
         when(requestPathInfo.getSelectors()).thenReturn(selectorsString.split("\\."));
         when(requestPathInfo.getSelectorString()).thenReturn(selectorsString);
+    }
+
+    @Override
+    public String getParameter(final String name) {
+        return Optional.ofNullable(name)
+                .map(this::getParameterValues)
+                .filter(a -> a.length > 0)
+                .map(a -> a[0])
+                .orElse(null);
+    }
+
+    @Override
+    public Map<String, String[]> getParameterMap() {
+        return parameters;
+    }
+
+    @Override
+    public Enumeration<String> getParameterNames() {
+        return new Vector(parameters.keySet()).elements();
+    }
+
+    @Override
+    public String[] getParameterValues(final String name) {
+        return parameters.get(name);
+    }
+
+    public String[] putParameter(final String key, final String[] value) {
+        return parameters.put(key, value);
+    }
+
+    public String[] putParameter(final String key, final String value) {
+        return putParameter(key, new String[]{ value });
+    }
+
+    public String[] putParameter(final String key, final Object value) {
+        return putParameter(key, String.valueOf(value));
     }
 
 }
