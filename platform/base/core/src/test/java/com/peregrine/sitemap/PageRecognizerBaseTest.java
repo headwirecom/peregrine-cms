@@ -22,6 +22,8 @@ public class PageRecognizerBaseTest extends SlingResourcesTest {
 
     protected PageRecognizerBaseTest(final PageRecognizerBase model) {
         this.model = model;
+        page.removeProperty(SLING_RESOURCE_TYPE);
+        page.getContent().removeProperty(SLING_RESOURCE_TYPE);
     }
 
     public PageRecognizerBaseTest() {
@@ -31,8 +33,6 @@ public class PageRecognizerBaseTest extends SlingResourcesTest {
                 return true;
             }
         });
-        page.removeProperty(SLING_RESOURCE_TYPE);
-        page.getContent().removeProperty(SLING_RESOURCE_TYPE);
     }
 
     @Test
