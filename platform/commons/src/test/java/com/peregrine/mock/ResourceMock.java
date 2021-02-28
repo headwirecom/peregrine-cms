@@ -190,6 +190,11 @@ public class ResourceMock extends ResourceWrapper {
         return properties.get(name);
     }
 
+    public final ResourceMock removeProperty(final String name) {
+        properties.remove(name);
+        return this;
+    }
+
     public String getString(final String name) {
         final Object value = properties.get(name);
         return Objects.isNull(value) ? null : value.toString();
