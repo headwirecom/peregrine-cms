@@ -37,13 +37,13 @@ public class PageRecognizerBaseTest extends SlingResourcesTest {
     @Test
     public void isPage() {
         assertFalse(model.isPage(candidate));
-        parent.putProperty(JCR_PRIMARY_TYPE, model.getPagePrimaryType());
+        parent.setPrimaryType(model.getPagePrimaryType());
         assertFalse(model.isPage(new Page(parent)));
-        page.putProperty(JCR_PRIMARY_TYPE, model.getPagePrimaryType());
+        page.setPrimaryType(model.getPagePrimaryType());
         assertFalse(model.isPage(candidate));
         jcrContent.setPrimaryType(model.getPageContentPrimaryType());
         assertFalse(model.isPage(candidate));
-        page.putProperty(SLING_RESOURCE_TYPE, RESOURCE_TYPE);
+        page.setResourceType(RESOURCE_TYPE);
         assertTrue(model.isPage(candidate));
         page.putProperty(model.getExcludeFromSiteMapPropertyName(), true);
         assertFalse(model.isPage(candidate));
