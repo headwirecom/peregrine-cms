@@ -7,7 +7,6 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class SiteMapUrlBuilderImplTest extends SlingResourcesTest {
@@ -22,18 +21,18 @@ public final class SiteMapUrlBuilderImplTest extends SlingResourcesTest {
 
     @Test
     public void getIndex() {
-        when(requestPathInfo.getExtension()).thenReturn(SiteMapConstants.XML);
-        setSelectors((String[])null);
+        request.setExtension(SiteMapConstants.XML);
+        request.setSelectors((String[])null);
         assertEquals(0, model.getIndex(request));
-        setSelectorsString("sitemap");
+        request.setSelectorsString("sitemap");
         assertEquals(0, model.getIndex(request));
-        setSelectorsString("sitemap.0");
+        request.setSelectorsString("sitemap.0");
         assertEquals(0, model.getIndex(request));
-        setSelectorsString("sitemap.1");
+        request.setSelectorsString("sitemap.1");
         assertEquals(1, model.getIndex(request));
-        setSelectorsString("sitemap.x");
+        request.setSelectorsString("sitemap.x");
         assertEquals(-1, model.getIndex(request));
-        setSelectorsString("sitemap..x");
+        request.setSelectorsString("sitemap..x");
         assertEquals(0, model.getIndex(request));
     }
 
