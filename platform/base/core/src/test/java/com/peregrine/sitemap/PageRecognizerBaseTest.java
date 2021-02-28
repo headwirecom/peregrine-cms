@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -32,6 +31,8 @@ public class PageRecognizerBaseTest extends SlingResourcesTest {
                 return true;
             }
         });
+        page.removeProperty(SLING_RESOURCE_TYPE);
+        page.getContent().removeProperty(SLING_RESOURCE_TYPE);
     }
 
     @Test
