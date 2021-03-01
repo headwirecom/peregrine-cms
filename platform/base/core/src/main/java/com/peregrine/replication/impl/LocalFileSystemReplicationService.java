@@ -30,7 +30,6 @@ import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -207,9 +206,6 @@ public class LocalFileSystemReplicationService
     @Reference
     @SuppressWarnings("unused")
     private RenderService renderService;
-    @Reference
-    @SuppressWarnings("unused")
-    private ResourceResolverFactory resourceResolverFactory;
 
     @Override
     RenderService getRenderService() {

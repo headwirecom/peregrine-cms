@@ -10,9 +10,7 @@ import java.util.stream.Collectors;
 
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.mock.MockTools.*;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.StringUtils.substringAfter;
+import static org.apache.commons.lang3.StringUtils.*;
 
 public class SlingResourcesTest {
 

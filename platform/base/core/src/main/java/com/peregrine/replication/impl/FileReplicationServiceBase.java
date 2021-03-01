@@ -93,7 +93,7 @@ public abstract class FileReplicationServiceBase extends ReplicationServiceBase 
 
     private static final String EXTENSION_NAME_MUST_BE_PROVIDED = "Extension Name must be provided";
     private static final String EXTENSION_TYPES_MUST_BE_PROVIDED = "Extension Types must be provided";
-    public static final String RENDERING_OF_ASSET_FAILED = "Rendering of Asset failed";
+    private static final String RENDERING_OF_ASSET_FAILED = "Rendering of Asset failed";
 
     private final RenditionConsumer assetRenditionCreator = (resource, renditionName) -> {
         if (isNotBlank(renditionName)) {
@@ -126,7 +126,7 @@ public abstract class FileReplicationServiceBase extends ReplicationServiceBase 
         // Also make sure we ignore nodes like jcr:content
         return resources.stream()
                 .filter(Objects::nonNull)
-                .filter(item -> !item.getPath().contains(JCR_CONTENT))
+                .filter(item -> !PerUtil.isJcrContentOrDescendant(item))
                 .collect(Collectors.toList());
     }
 

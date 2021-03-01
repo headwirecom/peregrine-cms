@@ -68,6 +68,7 @@ public final class RepoMock {
                             .map(Resource::listChildren)
                             .orElseGet(() -> Collections.<Resource>emptyList().iterator())
                 );
+        when(resourceResolver.adaptTo(Session.class)).thenReturn(session);
     }
 
     private void bindResolverFactory() {

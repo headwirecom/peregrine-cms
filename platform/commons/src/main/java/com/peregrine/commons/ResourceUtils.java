@@ -1,6 +1,5 @@
 package com.peregrine.commons;
 
-import com.google.common.collect.Iterables;
 import com.peregrine.commons.util.PerConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
