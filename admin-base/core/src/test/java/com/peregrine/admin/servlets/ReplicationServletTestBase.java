@@ -38,8 +38,8 @@ public class ReplicationServletTestBase extends SlingServletTest {
             throws NoSuchFieldException, Replication.ReplicationException
     {
         this.servlet = servlet;
-        PrivateAccessor.setField(servlet, "replications", replications);
-        PrivateAccessor.setField(servlet, "resourceManagement", resourceManagement);
+        setField("replications", replications);
+        setField("resourceManagement", resourceManagement);
 
         when(replication.prepare(any())).thenAnswer(i -> i.getArguments()[0]);
         when(replication.replicate(any())).thenAnswer(i -> i.getArguments()[0]);
@@ -52,6 +52,10 @@ public class ReplicationServletTestBase extends SlingServletTest {
         page.addAdapter(replicable);
         jcrContent.addAdapter(replicable);
         when(replicable.getMainResource()).thenReturn(jcrContent);
+    }
+
+    protected void setField(final String name, final Object value) throws NoSuchFieldException {
+        PrivateAccessor.setField(servlet, name, value);
     }
 
     protected void performReplicationResponseContains(final PageMock page, final String... substrings) throws IOException, Replication.ReplicationException {
