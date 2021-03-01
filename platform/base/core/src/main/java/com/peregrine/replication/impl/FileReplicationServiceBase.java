@@ -71,9 +71,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  */
 public abstract class FileReplicationServiceBase extends ReplicationServiceBase {
 
-    private static final List<Pattern> NAME_PATTERNS = Collections.singletonList(
-            Pattern.compile(".*(\\.data\\.json|\\.html)")
-    );
+    private static final Pattern NAME_PATTERN = Pattern.compile(".*((\\.data|\\.infinity)\\.json|\\.html)");
     private static final ResourceChecker EXCLUDED_RESOURCES_RESOURCE_CHECKER = new ResourceChecker() {
 
         // List of all resources that are excluded from handling
@@ -157,7 +155,7 @@ public abstract class FileReplicationServiceBase extends ReplicationServiceBase 
             removeReplica(startingResource, null, false);
             answer.add(startingResource);
         } else if(primaryType.startsWith("per:")) {
-            removeReplica(startingResource, NAME_PATTERNS, false);
+            removeReplica(startingResource, NAME_PATTERN, false);
             answer.add(startingResource);
         } else if(primaryType.equals(NT_FOLDER) || primaryType.equals(SLING_FOLDER) || primaryType.equals(SLING_ORDERED_FOLDER)) {
             removeReplica(startingResource, null, true);
@@ -317,7 +315,7 @@ public abstract class FileReplicationServiceBase extends ReplicationServiceBase 
      * @param isFolder If true this is a folder to be removed
      * @throws ReplicationException If the removal fails
      */
-    abstract void removeReplica(Resource resource, final List<Pattern> namePattern, boolean isFolder) throws ReplicationException;
+    abstract void removeReplica(Resource resource, final Pattern namePattern, boolean isFolder) throws ReplicationException;
 
     private String replicatePerResource(Resource resource) throws ReplicationException {
         String result = null;

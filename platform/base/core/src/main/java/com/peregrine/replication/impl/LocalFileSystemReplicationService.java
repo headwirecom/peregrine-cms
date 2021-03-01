@@ -56,10 +56,7 @@ import static com.peregrine.commons.TextUtils.replacePlaceholders;
 import static com.peregrine.commons.Chars._SCORE;
 import static com.peregrine.commons.ResourceUtils.jcrNameToFileName;
 import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerUtil.getJcrContent;
-import static com.peregrine.commons.util.PerUtil.intoList;
-import static com.peregrine.commons.util.PerUtil.isNotEmpty;
-import static com.peregrine.commons.util.PerUtil.splitIntoMap;
+import static com.peregrine.commons.util.PerUtil.*;
 import static com.peregrine.replication.ReplicationUtil.markAsActivated;
 import static com.peregrine.replication.ReplicationUtil.markAsDeactivated;
 import static java.util.Objects.isNull;
@@ -297,7 +294,7 @@ public class LocalFileSystemReplicationService
     }
 
     @Override
-    void removeReplica(Resource resource, final List<Pattern> namePattern, final boolean isFolder) throws ReplicationException {
+    void removeReplica(Resource resource, final Pattern namePattern, final boolean isFolder) throws ReplicationException {
         final String resourceName = resource.getName();
         final File directory = new File(targetFolder, resource.getParent().getPath());
         if(!directory.exists() || !directory.isDirectory()) {
@@ -310,15 +307,7 @@ public class LocalFileSystemReplicationService
                         return true;
                     }
 
-                    if (isNull(namePattern)) {
-                        return name.startsWith(resourceName);
-                    }
-
-                    for (final Pattern pattern : namePattern) {
-                        return pattern.matcher(name).matches() && file.getName().startsWith(resourceName);
-                    }
-
-                    return false;
+                    return name.startsWith(resourceName) && (isNull(namePattern) || namePattern.matcher(name).matches());
                 }
         );
         if (isNull(filesToBeDeletedFiles)) {
@@ -331,7 +320,7 @@ public class LocalFileSystemReplicationService
                 throw new ReplicationException(String.format(FAILED_TO_DELETE_FILE, toBeDeleted.getAbsolutePath()));
             }
 
-            markAsDeactivated(getJcrContent(resource));
+            markAsDeactivated(getJcrContentOrSelf(resource));
         }
     }
 

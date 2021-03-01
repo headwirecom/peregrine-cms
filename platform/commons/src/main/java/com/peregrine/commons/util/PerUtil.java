@@ -371,14 +371,6 @@ public class PerUtil {
         return getProperJcrContent(resource);
     }
 
-    public static String getJcrContent(final String path) {
-        if (isJcrContent(path)) {
-            return path;
-        }
-
-        return path + SLASH + PerConstants.JCR_CONTENT;
-    }
-
     public static Resource getProperJcrContent(final Resource resource) {
         return resource.getChild(PerConstants.JCR_CONTENT);
     }
