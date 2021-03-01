@@ -54,12 +54,16 @@ public class ReplicationServletTestBase extends SlingServletTest {
         when(replicable.getMainResource()).thenReturn(jcrContent);
     }
 
-    protected void performReplicationResponseContains(final String... substrings) throws IOException, Replication.ReplicationException {
+    protected void performReplicationResponseContains(final PageMock page, final String... substrings) throws IOException, Replication.ReplicationException {
         final AbstractBaseServlet.Request request = new AbstractBaseServlet.Request(this.request, response);
         final String response = servlet.performReplication(replication, request, page, resourceResolver).getContent();
         Arrays.stream(substrings)
                 .map(response::contains)
                 .forEach(Assert::assertTrue);
+    }
+
+    protected void performReplicationResponseContains(final String... substrings) throws IOException, Replication.ReplicationException {
+        performReplicationResponseContains(page, substrings);
     }
 
     protected void performReplicationResponseContains(final Resource... resources) throws IOException, Replication.ReplicationException {

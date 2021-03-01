@@ -1,7 +1,6 @@
 package com.peregrine.mock;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceWrapper;
@@ -19,8 +18,9 @@ import javax.jcr.nodetype.NodeType;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.peregrine.commons.util.PerConstants.*;
-import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
+import static org.apache.jackrabbit.JcrConstants.JCR_PRIMARYTYPE;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -136,15 +136,26 @@ public class ResourceMock extends ResourceWrapper {
         return this;
     }
 
+    public final String getPrimaryType() {
+        return Optional.ofNullable(getProperty(JCR_PRIMARYTYPE))
+                .map(Object::toString)
+                .orElse(null);
+    }
+
     public final ResourceMock setPrimaryType(final String primaryType) {
-        putProperty(JcrConstants.JCR_PRIMARYTYPE, primaryType);
+        putProperty(JCR_PRIMARYTYPE, primaryType);
         when(mock.isResourceType(primaryType)).thenReturn(true);
         when(nodeType.getName()).thenReturn(primaryType);
         return this;
     }
 
+    public final String getResourceType() {
+        return Optional.ofNullable(getProperty(SLING_RESOURCE_TYPE))
+                .map(Object::toString)
+                .orElseGet(this::getPrimaryType);
+    }
+
     public final ResourceMock setResourceType(final String resourceType) {
-        when(mock.getResourceType()).thenReturn(resourceType);
         when(mock.isResourceType(resourceType)).thenReturn(true);
         putProperty(SLING_RESOURCE_TYPE, resourceType);
         return this;
