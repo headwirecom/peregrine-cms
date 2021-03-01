@@ -10,17 +10,14 @@ import com.peregrine.replication.ReplicationsContainerWithDefault;
 import junitx.util.PrivateAccessor;
 import org.apache.sling.api.resource.Resource;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.stream.StreamSupport;
 
-import static com.peregrine.admin.servlets.ReplicationServlet.DEACTIVATE;
-import static org.junit.Assert.assertTrue;
+import static com.peregrine.commons.util.PerConstants.PATH;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -41,6 +38,8 @@ public class ReplicationServletTestBase extends SlingServletTest {
         setField("replications", replications);
         setField("resourceManagement", resourceManagement);
 
+        when(replications.getOrDefault(anyString())).thenReturn(replication);
+
         when(replication.prepare(any())).thenAnswer(i -> i.getArguments()[0]);
         when(replication.replicate(any())).thenAnswer(i -> i.getArguments()[0]);
         when(replication.deactivate(any(PageMock.class))).thenAnswer(
@@ -58,19 +57,20 @@ public class ReplicationServletTestBase extends SlingServletTest {
         PrivateAccessor.setField(servlet, name, value);
     }
 
-    protected void performReplicationResponseContains(final PageMock page, final String... substrings) throws IOException, Replication.ReplicationException {
+    protected void performReplicationResponseContains(final PageMock page, final String... substrings) throws IOException {
+        request.putParameter(PATH, page.getPath());
         final AbstractBaseServlet.Request request = new AbstractBaseServlet.Request(this.request, response);
-        final String response = servlet.performReplication(replication, request, page, resourceResolver).getContent();
+        final String response = servlet.handleRequest(request).getContent();
         Arrays.stream(substrings)
                 .map(response::contains)
                 .forEach(Assert::assertTrue);
     }
 
-    protected void performReplicationResponseContains(final String... substrings) throws IOException, Replication.ReplicationException {
+    protected void performReplicationResponseContains(final String... substrings) throws IOException {
         performReplicationResponseContains(page, substrings);
     }
 
-    protected void performReplicationResponseContains(final Resource... resources) throws IOException, Replication.ReplicationException {
+    protected void performReplicationResponseContains(final Resource... resources) throws IOException {
         performReplicationResponseContains(Arrays.stream(resources)
                 .map(Resource::getPath)
                 .toArray(String[]::new)

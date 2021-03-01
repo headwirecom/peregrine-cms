@@ -14,13 +14,13 @@ public final class ReplicationServletTest extends ReplicationServletTestBase {
     }
 
     @Test
-    public void performDeactivation() throws IOException, Replication.ReplicationException {
+    public void performDeactivation() throws IOException {
         request.putParameter(DEACTIVATE, true);
         performReplicationResponseContains(jcrContent);
     }
 
     @Test
-    public void performActivation() throws IOException, Replication.ReplicationException {
+    public void performActivation() throws IOException {
         performReplicationResponseContains(jcrContent);
     }
 

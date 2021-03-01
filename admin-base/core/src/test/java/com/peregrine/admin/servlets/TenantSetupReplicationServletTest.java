@@ -20,12 +20,12 @@ public class TenantSetupReplicationServletTest extends ReplicationServletTestBas
     }
 
     @Test
-    public void notSite() throws IOException, Replication.ReplicationException {
+    public void notSite() throws IOException {
         performReplicationResponseContains("message");
     }
 
     @Test
-    public void site() throws IOException, Replication.ReplicationException {
+    public void site() throws IOException {
         performReplicationResponseContains(site,site.getPath());
     }
 
