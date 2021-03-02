@@ -154,6 +154,10 @@ export default {
       toast: {
         templateComponent: null,
         missingEventPath: null
+      },
+      pingDebouncer: {
+        id: null,
+        timeout: 150
       }
     }
   },
@@ -192,6 +196,7 @@ export default {
     },
     targetInline() {
       return this.target.getAttribute(Attribute.INLINE)
+          || this.target.querySelector(`[${Attribute.INLINE}]`).getAttribute(Attribute.INLINE)
     },
     view() {
       return $perAdminApp.getView()
@@ -262,7 +267,7 @@ export default {
       const selector = `[${Attribute.PATH}="${this.path}"][${Attribute.DROPTARGET}]`
       const dropTargetElements = this.component.querySelectorAll(selector)
 
-      return dropTargetElements.length > 0;
+      return dropTargetElements.length > 0
     },
     sibling() {
       if (!this.target || !this.component) return {previous: null, next: null}
@@ -633,7 +638,7 @@ export default {
     onInlineDelete(event) {
       const selection = this.iframe.win.getSelection()
       if (selection.rangeCount > 1 && selection.anchorNode === this.target) {
-        event.preventDefault();
+        event.preventDefault()
         this.iframe.doc.execCommand('delete')
         this.target.innerHTML = ''
         this.writeInlineToModel()
@@ -674,7 +679,7 @@ export default {
       this.iframe.body = this.iframe.doc.querySelector('body')
       this.iframe.head = this.iframe.doc.querySelector('head')
       this.iframe.app = this.iframe.doc.querySelector('#peregrine-app')
-      this.iframe.win.addEventListener('resize', this.updateIframeDimensions);
+      this.iframe.win.addEventListener('resize', this.updateIframeDimensions)
       this.updateIframeDimensions()
       this.addIframeExtraStyles()
       this.refreshIframeElements()
@@ -790,15 +795,15 @@ export default {
       }
       let addOrMove
       if (componentPath.includes('/components/')) {
-        addOrMove = 'addComponentToPath';
+        addOrMove = 'addComponentToPath'
       } else {
-        addOrMove = 'moveComponentToPath';
+        addOrMove = 'moveComponentToPath'
         const targetNode = $perAdminApp.findNodeFromPath(this.view.pageView.page, this.path)
         if (!targetNode || targetNode.fromTemplate) {
           $perAdminApp.notifyUser('template component',
               'You cannot drag a component into a template section')
           this.unselect(this)
-          return false;
+          return false
         }
         this.cleanUpAfterDelete(componentPath)
       }
@@ -976,16 +981,16 @@ export default {
     },
 
     getElementStyle(e, styleName) {
-      let styleValue = '';
+      let styleValue = ''
       if (document.defaultView && document.defaultView.getComputedStyle) {
-        styleValue = document.defaultView.getComputedStyle(e, '').getPropertyValue(styleName);
+        styleValue = document.defaultView.getComputedStyle(e, '').getPropertyValue(styleName)
       } else if (e.currentStyle) {
         styleName = styleName.replace(/-(\w)/g, (strMatch, p1) => {
-          return p1.toUpperCase();
-        });
-        styleValue = e.currentStyle[styleName];
+          return p1.toUpperCase()
+        })
+        styleValue = e.currentStyle[styleName]
       }
-      return styleValue;
+      return styleValue
     },
 
     getBoundingClientRect(e) {
@@ -998,11 +1003,11 @@ export default {
         left: rect.left - (marginLeft > 0 ? marginLeft : 0),
         right: rect.right + (marginRight > 0 ? marginRight : 0),
         top: rect.top - marginTop,
-        bottom: rect.bottom + marginBottom,
+        bottom: rect.bottom + marginBottom
       }
       newRect.width = newRect.right - newRect.left
       newRect.height = newRect.bottom - newRect.top
-      return newRect;
+      return newRect
     },
 
     removeEditable() {
@@ -1133,7 +1138,15 @@ export default {
     },
 
     pingToolbar() {
-      $perAdminApp.action(this, 'pingRichToolbar')
+      clearTimeout(this.pingDebouncer.id)
+      setTimeout(() => {
+        const currentPing = get(this.view, '/state/inline/ping', 0)
+        if (currentPing < 10) {
+          set(this.view, '/state/inline/ping', currentPing + 1)
+        } else {
+          set(this.view, '/state/inline/ping', 0)
+        }
+      }, this.pingDebouncer.timeout)
     },
 
     onAddComponentModalComponentAdded(newNode) {

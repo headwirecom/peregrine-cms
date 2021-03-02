@@ -1,6 +1,8 @@
+package com.peregrine.replication;
+
 /*-
  * #%L
- * admin base - UI Apps
+ * admin base - Core
  * %%
  * Copyright (C) 2017 headwire inc.
  * %%
@@ -22,10 +24,11 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('unreplicate').setLevelDebug()
 
-export default function(me, target) {
-    log.fine(target)    
-    return me.getApi().replicate(target, false, true, undefined)
+public interface ReplicationsContainerWithDefault extends ReplicationsContainer {
+
+    Replication getDefault();
+
+    Replication getOrDefault(String name);
+
 }
