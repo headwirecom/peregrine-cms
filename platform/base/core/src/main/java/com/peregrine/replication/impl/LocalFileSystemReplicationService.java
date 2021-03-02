@@ -52,6 +52,7 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
+import static com.peregrine.commons.TextUtils.replacePlaceholders;
 import static com.peregrine.replication.ReplicationUtil.updateReplicationProperties;
 import static com.peregrine.commons.Chars._SCORE;
 import static com.peregrine.commons.ResourceUtils.jcrNameToFileName;
@@ -84,8 +85,6 @@ public class LocalFileSystemReplicationService
     public static final String FAILED_TO_DELETE_FILE = "Failed to delete file: '%s'";
     public static final String FAILED_STORE_RENDERING_MISSING_PARENT_FOLDER = "Failed to Store Rendering as Parent Folder does not exist or is not a directory: '%s'";
     public static final String FAILED_STORE_RENDERING_FILE_IS_DIRECTORY = "Failed to Store Rendering as target file is a directory:: '%s'";
-    public static final String PLACEHOLDER_NO_VALUE = "Place Holder: '%s' did not yield a value";
-    public static final String PLACEHOLDER_UNMATCHED_SEPARATORS = "Place Holder String opened a Place Holder with '%s' but did not close it with: '%s'";
     public static final String FAILED_TO_STORE_RENDERING = "Failed to write raw rending content to file: '%s'";
     public static final String SUPPORTED_TYPES_EMPTY = "Supported Types is empty for Extension: '%s'";
     public static final String COULD_NOT_CREATE_LEAF_FOLDER = "Could not create leaf folder: '%s'";
@@ -175,7 +174,7 @@ public class LocalFileSystemReplicationService
         if(targetFolderPath.isEmpty()) {
             throw new IllegalArgumentException(REPLICATION_TARGET_FOLDER_CANNOT_BE_EMPTY);
         } else {
-            targetFolderPath = handlePlaceholders(context, targetFolderPath);
+            targetFolderPath = replacePlaceholders(targetFolderPath, context::getProperty);
             log.trace("Target Folder Path: '{}', creation strategy: '{}'", targetFolderPath, creationStrategy);
             File temp = new File(targetFolderPath);
             if(!temp.exists()) {
@@ -384,42 +383,4 @@ public class LocalFileSystemReplicationService
         return file;
     }
 
-    public static final String PLACEHOLDER_START_TOKEN = "${";
-    public static final String PLACEHOLDER_END_TOKEN = "}";
-
-    private String handlePlaceholders(BundleContext context, String source) {
-        log.trace("System Properties: '{}'", System.getProperties());
-        String answer = source;
-        log.trace("Handle Place Holder: '{}'", source);
-        while(true) {
-            int startIndex = answer.indexOf(PLACEHOLDER_START_TOKEN);
-            log.trace("Handle Place Holder, start index; '{}'", startIndex);
-            if(startIndex >= 0) {
-                int endIndex = answer.indexOf(PLACEHOLDER_END_TOKEN, startIndex);
-                log.trace("Handle Place Holder, end index; '{}'", endIndex);
-                if(endIndex >= 0) {
-                    String placeHolderName = answer.substring(startIndex + PLACEHOLDER_START_TOKEN.length(), endIndex);
-                    String value = System.getProperty(placeHolderName);
-                    log.trace("Placeholder found: '{}', property value: '{}'", placeHolderName, value);
-                    if(value == null) {
-                        value = context.getProperty(placeHolderName);
-                        log.trace("Placeholder found through bundle context: '{}', property value: '{}'", placeHolderName, value);
-                    }
-                    if(value != null) {
-                        answer = answer.substring(0, startIndex) + value +
-                            (answer.length() - 1 > endIndex ? answer.substring(endIndex + 1) : "");
-                    } else {
-                        throw new IllegalArgumentException(String.format(PLACEHOLDER_NO_VALUE, placeHolderName));
-                    }
-                } else {
-                    throw new IllegalArgumentException(String.format(PLACEHOLDER_UNMATCHED_SEPARATORS, PLACEHOLDER_START_TOKEN, PLACEHOLDER_END_TOKEN));
-                }
-            } else {
-                // Done -> exit
-                break;
-            }
-        }
-        log.trace("Place Holder handled, return: '{}'", answer);
-        return answer;
-    }
 }

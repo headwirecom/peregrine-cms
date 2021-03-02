@@ -30,7 +30,7 @@ import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.commons.util.PerConstants;
 import com.peregrine.replication.Replication;
 import com.peregrine.replication.Replication.ReplicationException;
-import com.peregrine.replication.ReplicationsContainer;
+import com.peregrine.replication.ReplicationsContainerWithDefault;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
@@ -44,7 +44,6 @@ import java.util.stream.Stream;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_DO_REPLICATION;
 import static com.peregrine.commons.util.PerConstants.NAME;
-import static com.peregrine.commons.util.PerUtil.AddAllResourceChecker;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -63,7 +62,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  * and any references
  *
  * The API Definition can be found in the Swagger Editor configuration:
- *    ui.apps/src/main/content/jcr_root/api/definitions/admin.yaml
+ *    ui.apps/src/main/content/jcr_root/perapi/definitions/admin.yaml
  *
  * It is invoked like this:
  *      curl -X POST "http://localhost:8080/perapi/admin/repl.json/content/themeclean" -H  "accept: application/json" -H  "content-type: application/x-www-form-urlencoded" -d "name=defaultRepl&deep=false"
@@ -86,10 +85,9 @@ public final class ReplicationServlet extends ReplicationServletBase {
     public static final String REPLICATES = "replicates";
     public static final String RESOURCES = "resources";
     public static final String SUFFIX_IS_NOT_RESOURCE = "Suffix: '%s' is not a resource";
-    public static final AddAllResourceChecker ADD_ALL_RESOURCE_CHECKER = new AddAllResourceChecker();
 
     @Reference
-    private ReplicationsContainer replicationsContainer;
+    private ReplicationsContainerWithDefault replications;
 
     @Reference
     private AdminResourceHandler resourceManagement;
@@ -101,7 +99,7 @@ public final class ReplicationServlet extends ReplicationServletBase {
             final ResourceResolver resourceResolver
     ) throws IOException {
         final String replicationName = request.getParameter(NAME);
-        final Replication replication = replicationsContainer.getOrDefault(replicationName);
+        final Replication replication = replications.getOrDefault(replicationName);
         if (isNull(replication)) {
             return new ErrorResponse()
                     .setHttpErrorCode(SC_BAD_REQUEST)
@@ -128,7 +126,7 @@ public final class ReplicationServlet extends ReplicationServletBase {
 
             replicable.setLastReplicationActionAsActivated();
             final boolean deep = parseBoolean(request.getParameter("deep"));
-            List<Resource> toBeReplicated = listMissingResources(resource, new LinkedList<>(), ADD_ALL_RESOURCE_CHECKER, deep);
+            List<Resource> toBeReplicated = listMissingResources(resource, deep);
             for (final Resource r : Optional.of(RESOURCES)
                     .map(request::getParameterValues)
                     .map(Arrays::stream)
@@ -136,7 +134,7 @@ public final class ReplicationServlet extends ReplicationServletBase {
                     .map(resourceResolver::getResource)
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList())){
-                listMissingResources(r, toBeReplicated, ADD_ALL_RESOURCE_CHECKER, deep);
+                listMissingResources(r, deep, toBeReplicated);
             }
 
             toBeReplicated = replication.prepare(toBeReplicated);

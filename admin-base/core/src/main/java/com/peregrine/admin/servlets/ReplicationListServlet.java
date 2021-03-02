@@ -25,26 +25,18 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.replication.DefaultReplicationMapper;
-import com.peregrine.replication.Replication;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.replication.Replication;
+import com.peregrine.replication.ReplicationsContainerWithDefault;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 import javax.servlet.Servlet;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_LIST_REPLICATION;
 import static com.peregrine.commons.util.PerConstants.NAME;
-import static com.peregrine.commons.util.PerUtil.EQUALS;
-import static com.peregrine.commons.util.PerUtil.GET;
-import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
-import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
+import static com.peregrine.commons.util.PerUtil.*;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -74,62 +66,21 @@ public class ReplicationListServlet extends AbstractBaseServlet {
     public static final String REPLICATION_SERVICES = "replicationServices";
     public static final String DESCRIPTION = "description";
 
-    private Map<String, Replication> replications = new HashMap<>();
-
-    @Reference(
-        cardinality = ReferenceCardinality.MULTIPLE,
-        policy = ReferencePolicy.DYNAMIC,
-        policyOption = ReferencePolicyOption.GREEDY
-    )
-    @SuppressWarnings("unused")
-    public void bindReplication(Replication replication) {
-        String replicationName = replication.getName();
-        logger.trace("Register replication with name: '{}': {}", replicationName, replication);
-        if(replicationName != null && !replicationName.isEmpty()) {
-            replications.put(replicationName, replication);
-        } else {
-            logger.error("Replication: '{}' does not provide an operation name -> binding is ignored", replication);
-        }
-    }
-
-    @SuppressWarnings("unused")
-    public void unbindReplication(Replication replication) {
-        String replicationName = replication.getName();
-        if(replications.containsKey(replicationName)) {
-            replications.remove(replicationName);
-        } else {
-            logger.error("Replication: '{}' is not register with operation name: '{}' -> unbinding is ignored", replication, replicationName);
-        }
-    }
-
-    @Reference(
-        cardinality = ReferenceCardinality.MULTIPLE,
-        policy = ReferencePolicy.DYNAMIC,
-        policyOption = ReferencePolicyOption.GREEDY
-    )
-    @SuppressWarnings("unused")
-    public void bindDefaultReplicationMapper(DefaultReplicationMapper defaultReplicationMapper) {
-        logger.trace("Register Default Replication Mapper: '{}'", defaultReplicationMapper.getName());
-        bindReplication(defaultReplicationMapper);
-    }
-
-    @SuppressWarnings("unused")
-    public void unbindDefaultReplicationMapper(DefaultReplicationMapper defaultReplicationMapper) {
-        logger.trace("UnRegister Default Replication Mapper: '{}'", defaultReplicationMapper.getName());
-        unbindReplication(defaultReplicationMapper);
-    }
+    @Reference
+    private ReplicationsContainerWithDefault replications;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        JsonResponse answer;
+        final JsonResponse answer;
         answer = new JsonResponse();
         answer.writeArray(REPLICATION_SERVICES);
-        for(Replication replication: replications.values()) {
+        for(final Replication replication: replications.getAll()) {
             answer.writeObject();
             answer.writeAttribute(NAME, replication.getName());
             answer.writeAttribute(DESCRIPTION, replication.getDescription());
             answer.writeClose();
         }
+
         answer.writeClose();
         return answer;
     }
