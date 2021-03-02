@@ -1,8 +1,8 @@
 package com.peregrine.slingjunit.localFS;
 
-import com.peregrine.adaption.PerReplicable;
+import com.peregrine.replication.PerReplicable;
 import com.peregrine.replication.Replication;
-import com.peregrine.replication.ReplicationsContainer;
+import com.peregrine.replication.ReplicationsContainerWithDefault;
 import com.peregrine.slingjunit.ReplicationTestBase;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
@@ -34,7 +34,7 @@ public class LocalFSJTest extends ReplicationTestBase {
 //    If possible, remove OSGI configs for unused replication service implementations; remote and local service, before running this test.
 //    Otherwise, since the following line is non-deterministic, it could inject any of the replication services configured.
     @TestReference
-    private ReplicationsContainer replicationsContainer;
+    private ReplicationsContainerWithDefault replications;
     private Replication replication;
     public static String INDEX = "/content/example/pages/index";
     public static String CONTACT = "/content/example/pages/contact";
@@ -49,7 +49,7 @@ public class LocalFSJTest extends ReplicationTestBase {
     @Before
     public void setup(){
         try {
-            replication = replicationsContainer.get(LOCAL_FS);
+            replication = replications.get(LOCAL_FS);
             beforeTime = Calendar.getInstance();
             adminResourceResolver = resolverFactory.getAdministrativeResourceResolver(null);
             stellaImgRes = adminResourceResolver.getResource(STELLA_PNG);

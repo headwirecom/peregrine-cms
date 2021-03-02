@@ -219,4 +219,11 @@ public final class ResourceUtils {
         return performDeepSafeCopy(resource, targetParent, resource.getName());
     }
 
+    public static ResourceResolver findResolver(final Collection<Resource> resources) {
+        return resources.stream()
+                .filter(Objects::nonNull)
+                .map(Resource::getResourceResolver)
+                .findFirst().orElse(null);
+    }
+
 }

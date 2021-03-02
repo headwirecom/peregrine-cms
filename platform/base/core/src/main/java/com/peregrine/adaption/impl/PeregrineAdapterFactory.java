@@ -28,8 +28,10 @@ package com.peregrine.adaption.impl;
 import com.peregrine.adaption.PerAsset;
 import com.peregrine.adaption.PerPage;
 import com.peregrine.adaption.PerPageManager;
-import com.peregrine.adaption.PerReplicable;
+import com.peregrine.replication.PerReplicable;
 import com.peregrine.commons.util.PerUtil;
+import com.peregrine.replication.impl.PerReplicableImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.adapter.AdapterFactory;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -43,7 +45,8 @@ import java.util.Optional;
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.*;
 import static java.util.Objects.nonNull;
-import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static org.apache.sling.api.adapter.AdapterFactory.ADAPTABLE_CLASSES;
+import static org.apache.sling.api.adapter.AdapterFactory.ADAPTER_CLASSES;
 
 /**
  * This Adapter Factory allows to adapt a resource to a Wrapped Peregrine Object
@@ -57,13 +60,13 @@ import static com.peregrine.commons.util.PerUtil.EQUALS;
         Constants.SERVICE_DESCRIPTION + EQUALS + "Peregrine: Adapter Factory",
         Constants.SERVICE_VENDOR + EQUALS + "headwire.com, Inc",
         // The Adapter are the target aka the class that an object can be adapted to (parameter in the adaptTo() method)
-        AdapterFactory.ADAPTER_CLASSES + EQUALS + "com.peregrine.adaption.PerPage",
-        AdapterFactory.ADAPTER_CLASSES + EQUALS + "com.peregrine.adaption.PerAsset",
-        AdapterFactory.ADAPTER_CLASSES + EQUALS + "com.peregrine.adaption.PerReplicable",
-        AdapterFactory.ADAPTER_CLASSES + EQUALS + "com.peregrine.adaption.PerPageManager",
+        ADAPTER_CLASSES + EQUALS + "com.peregrine.adaption.PerPage",
+        ADAPTER_CLASSES + EQUALS + "com.peregrine.adaption.PerAsset",
+        ADAPTER_CLASSES + EQUALS + "com.peregrine.adaption.PerPageManager",
+        ADAPTER_CLASSES + EQUALS + "com.peregrine.replication.PerReplicable",
         // The Adaptable is the source that can be adapt meaning the object on which adaptTo() is called on
-        AdapterFactory.ADAPTABLE_CLASSES + EQUALS + "org.apache.sling.api.resource.Resource",
-        AdapterFactory.ADAPTABLE_CLASSES + EQUALS + "org.apache.sling.api.resource.ResourceResolver"
+        ADAPTABLE_CLASSES + EQUALS + "org.apache.sling.api.resource.Resource",
+        ADAPTABLE_CLASSES + EQUALS + "org.apache.sling.api.resource.ResourceResolver"
     }
 )
 public class PeregrineAdapterFactory
@@ -101,8 +104,8 @@ public class PeregrineAdapterFactory
     private <AdapterType> AdapterType getAdapter(Resource resource,
                                                  Class<AdapterType> type) {
         log.trace("Get Adapter for Type: '{}' and Resource: '{}', ", type.getName(), resource);
+        final String primaryType = PerUtil.getPrimaryType(resource);
         if(PerPage.class.equals(type)) {
-            String primaryType = PerUtil.getPrimaryType(resource);
             if(PAGE_PRIMARY_TYPE.equals(primaryType)) {
                 return (AdapterType) new PerPageImpl(resource);
             }
@@ -119,7 +122,6 @@ public class PeregrineAdapterFactory
         }
 
         if(PerAsset.class.equals(type)) {
-            String primaryType = PerUtil.getPrimaryType(resource);
             if(ASSET_PRIMARY_TYPE.equals(primaryType)) {
                 return (AdapterType) new PerAssetImpl(resource);
             }

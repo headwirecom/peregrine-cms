@@ -900,7 +900,7 @@ paths:
           type: string
           in: formData
           description: the name of the replication service to be used
-          required: true
+          required: false
         - name: deep
           type: boolean
           in: formData
@@ -1140,6 +1140,24 @@ paths:
           description: Error of the failed restoring
           schema:
             $ref: "#/definitions/Error"
+  '/tenants/name/available.json':
+    get:
+      description: Checks whether the tenant name is available
+      parameters:
+        - name: name
+          type: string
+          in: query
+          description: the name of the tenant site to be checked
+          required: true
+      responses:
+        200:
+          description: returns json object with a 'result' marker field
+          schema:
+            $ref: "#/definitions/BooleanResponse"
+        400:
+          description: Missing 'name' parameter error
+          schema:
+            $ref: "#/definitions/Error"
 definitions:
   Error:
     type: object
@@ -1183,3 +1201,8 @@ definitions:
         type: string
       outcome:
         type: string
+  BooleanResponse:
+    type: object
+    properties:
+      result:
+        type: boolean

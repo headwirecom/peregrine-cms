@@ -49,9 +49,9 @@ import org.apache.sling.api.resource.Resource;
  * Created by Andreas Schaefer on 5/25/17.
  */
 public class Reference {
-    private Resource resource;
-    private Resource propertyResource;
-    private String propertyName;
+    private final Resource resource;
+    private final Resource propertyResource;
+    private final String propertyName;
 
     public Reference(Resource resource, String propertyName, Resource propertyResource) {
         this.resource = resource;

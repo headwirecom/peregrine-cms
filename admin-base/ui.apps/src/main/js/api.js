@@ -275,8 +275,8 @@ class PerApi {
         return impl.moveNodeTo(path, component, drop)
     }
 
-    replicate(path, replicationService, deep, deactivate, references) {
-        return impl.replicate(path, replicationService, deep, deactivate, references)
+    replicate(path, deep, deactivate, references) {
+        return impl.replicate(path, deep, deactivate, references)
     }
 
     getPalettes(templateName) {
@@ -313,6 +313,10 @@ class PerApi {
 
     acceptTermsAndConditions() {
         return impl.acceptTermsAndConditions()
+    }
+
+    checkTenantNameAvailability(name) {
+        return impl.checkTenantNameAvailability(name)
     }
 }
 

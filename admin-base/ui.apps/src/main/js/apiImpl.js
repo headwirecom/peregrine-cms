@@ -230,7 +230,12 @@ class PerAdminImpl {
               // alert('please login to continue')
               window.location = '/'
             }
-            return populateView('/state', 'userPreferences', data.preferences)
+            return populateView('/state', 'userPreferences', data.preferences )
+              .then( () => { 
+                if(data.profile) {
+                  return populateView('/state/userPreferences', 'profile', data.profile )}
+              }
+            )
           })
         })
   }
@@ -896,83 +901,84 @@ class PerAdminImpl {
     }
     const data = new FormData()
     const fileNamesNotUploaded = []
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i]
-      const available = this.nameAvailable(file.name, path)
-      if (available) {
-        data.append(file.name, file, file.name)
-      } else {
-        if (files.length == 1) {
-          // if user is uploading 1 assets && name not available,
-          // Then ask user whether to 'keep both' or 'replace'
-          $perAdminApp.askUser('File exists',
-              'Select to replace the existing one, or keep both', {
-                yesText: 'Replace',
-                noText: 'Keep both',
-                yes() {
-                  const $api = $perAdminApp.getApi()
-                  logger.info(
-                      'user selected \'replace\' upload file ' + file.name)
-                  const replaceData = new FormData()
-                  replaceData.append(file.name, file, file.name)
-                  return updateWithFormAndConfig(
-                      '/admin/uploadFiles.json' + path, replaceData, config)
-                      .then(() => $api.populateNodesForBrowser(path))
-                      .catch(error => {
-                        log.error('Failed to upload: ' + error)
-                        reject('Unable to upload due to an error. ' + error)
-                      })
-                },
-                no() {
-                  logger.info(
-                      'user selected \'keep both\' make the uploaded file name unique and upload')
-                  const $api = $perAdminApp.getApi()
-                  let localNamePart = file.name
-                  let extensionPart = ''
-                  const indexOfLasDot = file.name.lastIndexOf('.');
-                  let newFileName
-                  if (indexOfLasDot > 0) {
-                    // filename has a dot
-                    localNamePart = file.name.substring(0, indexOfLasDot);
-                    extensionPart = file.name.substring(indexOfLasDot,
-                        file.name.length);
-                  }
-                  let i = 1
-                  do {
-                    newFileName = localNamePart + i++ + extensionPart
-                  } while (!$api.nameAvailable(newFileName, path));
-                  const keepbothData = new FormData()
-                  keepbothData.append(newFileName, file, newFileName)
-                  return updateWithFormAndConfig(
-                      '/admin/uploadFiles.json' + path, keepbothData, config)
-                      .then(() => $api.populateNodesForBrowser(path))
-                      .catch(error => {
-                        log.error('Failed to upload: ' + error)
-                        reject('Unable to upload due to an error. ' + error)
-                      })
-                }
-              })
+    return this.populateNodesForBrowser(path).then(() => {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+        const available = this.nameAvailable(file.name, path)
+        if (available) {
+          data.append(file.name, file, file.name)
         } else {
-          fileNamesNotUploaded.push(file.name)
+          if (files.length == 1) {
+            // if user is uploading 1 assets && name not available,
+            // Then ask user whether to 'keep both' or 'replace'
+            $perAdminApp.askUser('File exists',
+                'Select to replace the existing one, or keep both', {
+                  yesText: 'Replace',
+                  noText: 'Keep both',
+                  yes() {
+                    const $api = $perAdminApp.getApi()
+                    logger.info(
+                        'user selected \'replace\' upload file ' + file.name)
+                    const replaceData = new FormData()
+                    replaceData.append(file.name, file, file.name)
+                    return updateWithFormAndConfig(
+                        '/admin/uploadFiles.json' + path, replaceData, config)
+                        .then(() => $api.populateNodesForBrowser(path))
+                        .catch(error => {
+                          log.error('Failed to upload: ' + error)
+                          reject('Unable to upload due to an error. ' + error)
+                        })
+                  },
+                  no() {
+                    logger.info(
+                        'user selected \'keep both\' make the uploaded file name unique and upload')
+                    const $api = $perAdminApp.getApi()
+                    let localNamePart = file.name
+                    let extensionPart = ''
+                    const indexOfLasDot = file.name.lastIndexOf('.');
+                    let newFileName
+                    if (indexOfLasDot > 0) {
+                      // filename has a dot
+                      localNamePart = file.name.substring(0, indexOfLasDot);
+                      extensionPart = file.name.substring(indexOfLasDot,
+                          file.name.length);
+                    }
+                    let i = 1
+                    do {
+                      newFileName = localNamePart + i++ + extensionPart
+                    } while (!$api.nameAvailable(newFileName, path));
+                    const keepbothData = new FormData()
+                    keepbothData.append(newFileName, file, newFileName)
+                    return updateWithFormAndConfig(
+                        '/admin/uploadFiles.json' + path, keepbothData, config)
+                        .then(() => $api.populateNodesForBrowser(path))
+                        .catch(error => {
+                          log.error('Failed to upload: ' + error)
+                          reject('Unable to upload due to an error. ' + error)
+                        })
+                  }
+                })
+          } else {
+            fileNamesNotUploaded.push(file.name)
+          }
         }
       }
-    }
-    if (fileNamesNotUploaded.length > 0) {
-      $perAdminApp.notifyUser('Info',
-          'Some assets were not uploaded. Asset exists in this location: ' +
-          fileNamesNotUploaded.toString())
-    }
+      if (fileNamesNotUploaded.length > 0) {
+        $perAdminApp.notifyUser('Info',
+            'Some assets were not uploaded. Asset exists in this location: ' +
+            fileNamesNotUploaded.toString())
+      }
 //    if there are eny entries
-    if (!data.entries().next().done) {
-      return updateWithFormAndConfig('/admin/uploadFiles.json' + path, data,
-          config)
-          .then(() => this.populateNodesForBrowser(path))
-          .catch(error => {
-            log.error('Failed to upload: ' + error)
-            reject('Unable to upload due to an error. ' + error)
-          })
-    }
-    return
+      if (!data.entries().next().done) {
+        return updateWithFormAndConfig('/admin/uploadFiles.json' + path, data,
+            config)
+            .then(() => this.populateNodesForBrowser(path))
+            .catch(error => {
+              log.error('Failed to upload: ' + error)
+              reject('Unable to upload due to an error. ' + error)
+            })
+      }
+    })
   }
 
   nameAvailable(value, path) {
@@ -1139,58 +1145,64 @@ class PerAdminImpl {
     return updateWithForm('/admin/moveNodeTo.json' + path, formData)
   }
 
-replicate(path, replicationService='', deep=false, deactivate=false, resources=[]) {
-  const timeNow = Date.now() - 1000
-  let noticeFunction = undefined
-  let count = 0
-  console.log(`time now = ${timeNow}`)
+  replicate(path, deep=false, deactivate=false, resources=[]) {
+    const timeNow = Date.now() - 1000
+    let noticeFunction = undefined
+    let count = 0
+    console.log(`time now = ${timeNow}`)
     return new Promise((resolve, reject) => {
       let formData = new FormData();
       formData.append('deep', deep)
-      formData.append('name', replicationService)
       formData.append('deactivate', deactivate)
-      resources.forEach((ref) => formData.append('resources', ref))      
+      resources.forEach((ref) => formData.append('resources', ref))
       updateWithForm('/admin/repl.json' + path, formData)
-          .then((respData)=>{
-            count = 0
-            noticeFunction = setInterval(function(){    
-                return fetch(`/admin/listReplicationStatus.json${respData.sourcePath}`)
-                  .then((data) => {
-                    let stopPolling = false
-                    if (count++ >= 25) {
-                      stopPolling = true
-                      clearInterval(noticeFunction)
-                      $perAdminApp.notifyUser('Error', `Action timed out when ${deactivate?'un':''}publishing ${data.sourcePath}.`)
-                      reject()
-                      return                      
-                    }
-                    if (data['per:ReplicationLastAction'] === "deactivated" && data['activated'] === false && !data['per:ReplicationRef']) {
-                      stopPolling = true
-                    } else if (data['per:ReplicationLastAction'] === "activated" 
-                        && data['activated'] === true  && data['per:Replicated'] && timeNow < Date.parse(data['per:Replicated'])
-                        && data['per:ReplicationRef'] && data['per:ReplicationRef'].indexOf("pending") < 0) {
-                          stopPolling = true
-                    }
-
-                    if (stopPolling) {
-                        const parentPath = path.substring(0, path.lastIndexOf("/"))
-                        $perAdminApp.getApi().populateNodesForBrowser(parentPath)
-                        clearInterval(noticeFunction)
-                        $perAdminApp.notifyUser('Success', `${data.sourcePath} was successfuly ${deactivate?'un':''}published.`)
-                      }
-                  })
-              }, 500);
-          })
-          .then(() => resolve())
-          .catch(error => {            
-              clearInterval(noticeFunction)
-              $perAdminApp.notifyUser('Errors', `were encountered when ${deactivate?'un':''}publishing ${data.sourcePath}. Please check with your admin.`)
-              if (error.response && error.response.data && error.response.data.message) {
-                reject(error.response.data.message)
+        .then(respData => {
+          count = 0
+          noticeFunction = setInterval(function() {
+            function stopPolling(data) {
+              const lastAction = data['per:ReplicationLastAction']
+              const activated = data['activated']
+              const ref = data['per:ReplicationRef']
+              const replicated = data['per:Replicated']
+              let stopPolling = false
+              if (lastAction === "deactivated" && activated === false && !ref) {
+                return true
               }
-              reject(error)
-          })
-    })  
+
+              if (lastAction === "activated" && activated === true
+                      && replicated && timeNow < Date.parse(replicated)
+                      && ref !== "distribution pending") {
+                return true
+              }
+
+              return false
+            }
+
+            return fetch(`/admin/listReplicationStatus.json${respData.sourcePath}`)
+              .then(data => {
+                if (count++ >= 25) {
+                  clearInterval(noticeFunction)
+                  $perAdminApp.notifyUser('Error', `Action timed out when ${deactivate?'un':''}publishing ${data.sourcePath}.`)
+                  reject()
+                } else if (stopPolling(data)) {
+                  clearInterval(noticeFunction)
+                  const parentPath = path.substring(0, path.lastIndexOf("/"))
+                  $perAdminApp.getApi().populateNodesForBrowser(parentPath)
+                  $perAdminApp.notifyUser('Success', `${data.sourcePath} was successfully ${deactivate?'un':''}published.`)
+                }
+              })
+          }, 500);
+        })
+        .then(() => resolve())
+        .catch(error => {
+          clearInterval(noticeFunction)
+          $perAdminApp.notifyUser('Errors', `were encountered when ${deactivate?'un':''}publishing ${data.sourcePath}. Please check with your admin.`)
+          if (error.response && error.response.data && error.response.data.message) {
+            reject(error.response.data.message)
+          }
+          reject(error)
+        })
+    })
   }
 
 
@@ -1270,6 +1282,9 @@ replicate(path, replicationService='', deep=false, deactivate=false, resources=[
     })
   }
 
+  checkTenantNameAvailability(name) {
+    return fetch('/admin/tenants/name/available.json?name=' + name)
+  }
 }
 
 export default PerAdminImpl

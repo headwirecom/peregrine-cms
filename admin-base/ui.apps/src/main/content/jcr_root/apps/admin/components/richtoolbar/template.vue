@@ -1,6 +1,6 @@
 <template>
   <div class="richtoolbar" :class="{disabled: !inlineRich || preview === 'preview'}">
-    <admin-components-richtoolbargroup
+    <richtoolbar-group
         v-if="groupAllowed(alwaysActiveGroup)"
         :icon="alwaysActiveGroup.icon"
         :iconLib="alwaysActiveGroup.iconLib"
@@ -12,7 +12,7 @@
         :class="alwaysActiveGroup.class"
         @click="exec($event.btn.cmd)"/>
     <template v-for="(group, groupIndex) in filteredGroups">
-      <admin-components-richtoolbargroup
+      <richtoolbar-group
           :key="getKey(group, groupIndex)"
           v-if="group.items.length > 0"
           :icon="group.icon"
@@ -27,7 +27,7 @@
           @toggle-click="group.toggleClick? group.toggleClick() : () => {}"
           @click="exec($event.btn.cmd)"/>
     </template>
-    <admin-components-richtoolbargroup
+    <richtoolbar-group
         v-if="groupAllowed(responsiveMenuGroup)"
         :icon="responsiveMenuGroup.icon"
         :iconLib="responsiveMenuGroup.iconLib"
@@ -39,7 +39,7 @@
         :class="responsiveMenuGroup.class"
         @click="exec($event.btn.cmd)"/>
 
-    <admin-components-pathbrowser
+    <pathbrowser
         v-if="browser.open"
         :isOpen="browser.open"
         :header="browser.header"
@@ -83,9 +83,12 @@ import {
 } from './groups'
 import {get, restoreSelection, saveSelection, set} from '../../../../../../js/utils'
 import {PathBrowser} from '../../../../../../js/constants'
+import RichtoolbarGroup from '../richtoolbargroup/template.vue'
+import Pathbrowser from '../pathbrowser/template.vue'
 
 export default {
   name: 'RichToolbar',
+  components: {RichtoolbarGroup, Pathbrowser},
   props: {
     showAlwaysActive: {
       type: Boolean,
@@ -98,8 +101,6 @@ export default {
   },
   data() {
     return {
-      console,
-      key: 0,
       selection: {
         restore: false,
         buffer: null,
@@ -175,6 +176,10 @@ export default {
       if (!this.inline) return null
       return this.inline.rich
     },
+    inlinePing() {
+      if (!this.inline) return 30
+      return this.inline.ping || 20
+    },
     viewport() {
       return $perAdminApp.getNodeFromViewOrNull('/state/tools/workspace/view')
     },
@@ -200,7 +205,7 @@ export default {
           label: `${this.$i18n('headline')} ${i}`,
           icon: 'title',
           class: () => this.itemIsTag(`H${i}`) ? 'active' : null,
-          click: () => this.exec('formatBlock', `h${i}`),
+          click: () => this.exec('formatBlock', `h${i}`)
         })
       }
       return [
@@ -226,12 +231,13 @@ export default {
   methods: {
     pingRichToolbar(vm = this) {
       vm.key = vm.key === 1 ? 0 : 1
+      vm.$emit('ping')
       $perAdminApp.action(vm, 'reWrapEditable')
     },
     getKey(group, index) {
       let key = `rich-toolbar-group-${index}-${group.label}`
       if (this.groupIsActive(group)) {
-        key += `-${this.key}`
+        key += `-${this.inlinePing}`
       }
       return key
     },
@@ -274,8 +280,6 @@ export default {
       const len = range.endOffset - range.startOffset
       const start = range.startOffset
       const text = range.startContainer.textContent.substr(start, len)
-
-      this.selection.content = range.startContainer.textContent.substr(start, len)
 
       this.param.cmd = 'insertLink'
       this.browser.header = this.$i18n('Insert Link')
@@ -459,7 +463,7 @@ export default {
       this.$nextTick(() => {
         if (['editLink', 'insertLink'].includes(this.param.cmd)) {
           this.onLinkSelect()
-          return;
+          return
         } else if (['insertImage', 'editImage'].includes(this.param.cmd)) {
           this.onImageSelect()
         }
@@ -492,11 +496,10 @@ export default {
         link.setAttribute('title', this.browser.linkTitle)
         link.setAttribute('target', this.browser.newWindow ? '_blank' : '_self')
         link.setAttribute('rel', this.browser.rel ? 'noopener noreferrer' : '')
-        link.textContent = this.selection.content
         this.restoreSelection()
         this.$nextTick(() => {
           const range = this.getSelection(0)
-          range.deleteContents()
+          link.appendChild(range.extractContents())
           range.insertNode(link)
           $perAdminApp.action(this, 'reWrapEditable')
           $perAdminApp.action(this, 'writeInlineToModel')
