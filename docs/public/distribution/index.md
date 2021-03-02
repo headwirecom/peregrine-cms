@@ -64,7 +64,7 @@ rendition in the target is obtained.
 
 # Peregrine to Peregrine Copies
 
-This distributions allows to copy resources from one Peregrine to another, remote
+This distribution allows to copy resources from one Peregrine to another, remote
 Peregrine instance using the **Sling Distribution** service. This is mostly used to replicate
 content from an **Author to a Publish** instance but it is not limited to that.
  To configure this distribution service: **com.peregrine.replication.impl.DistributionReplicationService**:
@@ -116,9 +116,10 @@ The only things that needs to be adjusted is the URL that points to the **Publis
 on the **Author** and then let the Peregrine Replication Service know about
 that . Do this:
 
-1. Open [OSGi System Console Configuration](http://localhost:8080/system/console/configMgr)
-1. Search for **Forward Agents Factory**
-1. Either select an existing Forward Agents and click on edit or create a new one by clicking the
+1. Open [**OSGi System Console Configuration**](http://localhost:8080/system/console/configMgr)
+1. Search for [**Forward Agents Factory**](http://localhost:8080/system/console/configMgr/org.apache.sling.distribution.agent.impl.ForwardDistributionAgentFactory)
+1. Either select an [existing Forward Agent](http://localhost:8080/system/console/configMgr/org.apache.sling.distribution.agent.impl.ForwardDistributionAgentFactory~publish)
+   and click on edit or create [a new one](http://localhost:8080/system/console/configMgr/org.apache.sling.distribution.agent.impl.ForwardDistributionAgentFactory) by clicking the
 **+** sign on the Factory
 1. Give it a **name**
 1. Look for Property: **Importer Endpoints**
@@ -134,13 +135,13 @@ to adjust is the server name and its port
 
 #### Verification
 
-In the **OSGi System Console Configuration make sure these services are configured:
+In the [**OSGi System Console Configuration**](http://localhost:8080/system/console/configMgr) make sure these services are configured:
 
-* Forward Agent
-* Vault Package Builder Factory
-* Privilege Request Authorization Strategy
-* User Credentials based DistributionTransportSecretProvider
-* Peregrine: Remote Replication Service
+* [Forward Agent](http://localhost:8080/system/console/configMgr/org.apache.sling.distribution.agent.impl.ForwardDistributionAgentFactory~publish)
+* [Vault Package Builder Factory](http://localhost:8080/system/console/configMgr/org.apache.sling.distribution.serialization.impl.vlt.VaultDistributionPackageBuilderFactory~default)
+* [Privilege Request Authorization Strategy](http://localhost:8080/system/console/configMgr/org.apache.sling.distribution.agent.impl.PrivilegeDistributionRequestAuthorizationStrategyFactory~default)
+* User Credentials based [DistributionTransportSecretProvider](http://localhost:8080/system/console/configMgr/org.apache.sling.distribution.transport.impl.UserCredentialsDistributionTransportSecretProvider~default)
+* Peregrine: [Remote Replication Service](http://localhost:8080/system/console/configMgr/com.peregrine.replication.impl.DistributionReplicationService~remote)
 
 **Attention**: make sure the *User Credentials based DistributionTransportSecretProvider* has
 the correct credentials as by default it is set to the default Sling admin password.

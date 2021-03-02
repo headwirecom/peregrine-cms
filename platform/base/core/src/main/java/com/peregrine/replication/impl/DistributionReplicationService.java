@@ -28,7 +28,6 @@ package com.peregrine.replication.impl;
 import com.peregrine.replication.ReplicationServiceBase;
 import com.peregrine.commons.util.PerConstants;
 import com.peregrine.commons.util.PerUtil;
-import com.peregrine.commons.util.PerUtil.ResourceChecker;
 import com.peregrine.replication.ReferenceLister;
 import com.peregrine.replication.Replication;
 import org.apache.commons.lang3.StringUtils;
@@ -131,24 +130,15 @@ public class DistributionReplicationService
         List<Resource> referenceList = referenceLister.getReferenceList(true, startingResource, true);
         log.trace("Reference List: '{}'", referenceList);
         List<Resource> replicationList = new ArrayList<>();
-        ResourceChecker resourceChecker = new ResourceChecker() {
-            @Override
-            public boolean doAdd(Resource resource) { return true; }
-
-            @Override
-            public boolean doAddChildren(Resource resource) { return true; }
-        };
         // Need to check this list of they need to be replicated first
         for(Resource resource: referenceList) {
-            if(resourceChecker.doAdd(resource)) {
-                replicationList.add(resource);
-            }
+            replicationList.add(resource);
         }
         // This only returns the referenced resources. Now we need to check if there are any JCR Content nodes to be added as well
         for(Resource reference: new ArrayList<>(replicationList)) {
-            PerUtil.listMissingResources(reference, replicationList, resourceChecker, false);
+            PerUtil.listMissingResources(reference, false, replicationList);
         }
-        PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, deep);
+        PerUtil.listMissingResources(startingResource, deep, replicationList);
         log.trace("List for Replication: '{}'", replicationList);
         return replicationList;
     }
@@ -159,13 +149,7 @@ public class DistributionReplicationService
     {
         log.trace("Starting Resource: '{}'", startingResource.getPath());
         List<Resource> replicationList = new ArrayList<>();
-        ResourceChecker resourceChecker = new ResourceChecker() {
-            @Override
-            public boolean doAdd(Resource resource) { return true; }
-            @Override
-            public boolean doAddChildren(Resource resource) { return true; }
-        };
-        PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, true);
+        PerUtil.listMissingResources(startingResource, true, replicationList);
         log.trace("List for Replication: '{}'", replicationList);
         return deactivate(replicationList);
     }

@@ -69,24 +69,31 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  *
  * Created by Andreas Schaefer on 5/25/17.
  */
-public abstract class FileReplicationServiceBase
-    extends ReplicationServiceBase
-{
-    private static final List<Pattern> NAME_PATTERNS = new ArrayList<>();
-    // List of all resources that are excluded from handling
-    static final List<String> EXCLUDED_RESOURCES = new ArrayList<>();
-    public static String DATA_PATTERN = ".*(\\.data\\.json|\\.html)";
+public abstract class FileReplicationServiceBase extends ReplicationServiceBase {
+
+    private static final List<Pattern> NAME_PATTERNS = Collections.singletonList(
+            Pattern.compile(".*(\\.data\\.json|\\.html)")
+    );
+    private static final ResourceChecker EXCLUDED_RESOURCES_RESOURCE_CHECKER = new ResourceChecker() {
+
+        // List of all resources that are excluded from handling
+        private final List<String> excludedResources = Arrays.asList(JCR_CONTENT, RENDITIONS);
+
+        @Override
+        public boolean doAdd(final Resource resource) {
+            return !excludedResources.contains(resource.getName());
+        }
+
+        @Override
+        public boolean doAddChildren(final Resource resource) {
+            return doAdd(resource);
+        }
+
+    };
 
     private static final String EXTENSION_NAME_MUST_BE_PROVIDED = "Extension Name must be provided";
     private static final String EXTENSION_TYPES_MUST_BE_PROVIDED = "Extension Types must be provided";
     public static final String RENDERING_OF_ASSET_FAILED = "Rendering of Asset failed";
-
-    static {
-        NAME_PATTERNS.add(Pattern.compile(DATA_PATTERN));
-        EXCLUDED_RESOURCES.add(JCR_CONTENT);
-        EXCLUDED_RESOURCES.add(RENDITIONS);
-    }
-
 
     private final RenditionConsumer assetRenditionCreator = (resource, renditionName) -> {
         if (isNotBlank(renditionName)) {
@@ -126,29 +133,16 @@ public abstract class FileReplicationServiceBase
         log.trace("Replicate Resource: '{}', deep: '{}'", startingResource, deep);
         List<Resource> referenceList = getReferenceLister().getReferenceList(true, startingResource, true);
         List<Resource> replicationList = new ArrayList<>();
-        ResourceChecker resourceChecker = new ResourceChecker() {
-            @Override
-            public boolean doAdd(Resource resource) {
-                return !EXCLUDED_RESOURCES.contains(resource.getName());
-            }
-
-            @Override
-            public boolean doAddChildren(Resource resource) {
-                return !EXCLUDED_RESOURCES.contains(resource.getName());
-            }
-        };
         // Need to check this list of they need to be replicated first
-        for(Resource resource: referenceList) {
-            if(resourceChecker.doAdd(resource)) {
-                replicationList.add(resource);
-            }
-        }
+        referenceList.stream()
+                .filter(EXCLUDED_RESOURCES_RESOURCE_CHECKER::doAdd)
+                .forEach(replicationList::add);
         // This only returns the referenced resources. Now we need to check if there are any JCR Content nodes to be added as well
         for(Resource reference: replicationList) {
-            PerUtil.listMissingResources(reference, replicationList, resourceChecker, false);
+            PerUtil.listMissingResources(reference, EXCLUDED_RESOURCES_RESOURCE_CHECKER, false, replicationList);
         }
 
-        return filterReferences(PerUtil.listMissingResources(startingResource, replicationList, resourceChecker, deep));
+        return filterReferences(PerUtil.listMissingResources(startingResource, EXCLUDED_RESOURCES_RESOURCE_CHECKER, deep, replicationList));
     }
 
     @Override
@@ -189,33 +183,31 @@ public abstract class FileReplicationServiceBase
         List<Resource> answer = new ArrayList<>();
         log.trace("Replicate Resource List: '{}'", resourceList);
         // Replicate the resources
-        ResourceResolver resourceResolver = null;
-        for(Resource item: resourceList) {
-            if(item != null) {
-                resourceResolver = item.getResourceResolver();
-                break;
-            }
+        final ResourceResolver resourceResolver = ResourceUtils.findResolver(resourceList);
+        if (isNull(resourceResolver)) {
+            return Collections.emptyList();
         }
-        if(resourceResolver != null) {
-            Session session = resourceResolver.adaptTo(Session.class);
-            for(Resource item: filterReferences(resourceList)) {
-                handleParents(item.getParent());
-                // Need to figure out the type and replicate accordingly
-                String primaryType = PerUtil.getPrimaryType(item);
-                if(ASSET_PRIMARY_TYPE.equals(primaryType)) {
-                    processAssetRenditions(item, assetRenditionReplicator);
-                } else {
-                    replicatePerResource(item, false);
-                }
 
-                answer.add(item);
+        Session session = resourceResolver.adaptTo(Session.class);
+        for (Resource item : filterReferences(resourceList)) {
+            handleParents(item.getParent());
+            // Need to figure out the type and replicate accordingly
+            String primaryType = PerUtil.getPrimaryType(item);
+            if (ASSET_PRIMARY_TYPE.equals(primaryType)) {
+                processAssetRenditions(item, assetRenditionReplicator);
+            } else {
+                replicatePerResource(item, false);
             }
-            try {
-                session.save();
-            } catch(RepositoryException e) {
-                log.warn("Failed to save changes replicate parents", e);
-            }
+
+            answer.add(item);
         }
+
+        try {
+            session.save();
+        } catch (RepositoryException e) {
+            log.warn("Failed to save changes replicate parents", e);
+        }
+
         return answer;
     }
 
