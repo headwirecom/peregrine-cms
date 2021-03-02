@@ -26,9 +26,8 @@ package com.peregrine.admin.servlets;
  * Contributed by Cris Rockwell, University of Michigan
  */
 
-import com.peregrine.adaption.PerReplicable;
+import com.peregrine.replication.PerReplicable;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
-import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 
 import javax.servlet.Servlet;

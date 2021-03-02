@@ -1,1 +1,0 @@
-{"fields":[{"type":"input","inputType":"text","placeholder":"title","label":"title","model":"title"},{"type":"input","inputType":"text","placeholder":"date","label":"date","model":"date"},{"type":"input","inputType":"text","placeholder":"author","label":"author","model":"author"}]}

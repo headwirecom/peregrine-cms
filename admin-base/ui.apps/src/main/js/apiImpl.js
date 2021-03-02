@@ -230,7 +230,12 @@ class PerAdminImpl {
               // alert('please login to continue')
               window.location = '/'
             }
-            return populateView('/state', 'userPreferences', data.preferences)
+            return populateView('/state', 'userPreferences', data.preferences )
+              .then( () => { 
+                if(data.profile) {
+                  return populateView('/state/userPreferences', 'profile', data.profile )}
+              }
+            )
           })
         })
   }
@@ -1140,58 +1145,64 @@ class PerAdminImpl {
     return updateWithForm('/admin/moveNodeTo.json' + path, formData)
   }
 
-replicate(path, replicationService='', deep=false, deactivate=false, resources=[]) {
-  const timeNow = Date.now() - 1000
-  let noticeFunction = undefined
-  let count = 0
-  console.log(`time now = ${timeNow}`)
+  replicate(path, deep=false, deactivate=false, resources=[]) {
+    const timeNow = Date.now() - 1000
+    let noticeFunction = undefined
+    let count = 0
+    console.log(`time now = ${timeNow}`)
     return new Promise((resolve, reject) => {
       let formData = new FormData();
       formData.append('deep', deep)
-      formData.append('name', replicationService)
       formData.append('deactivate', deactivate)
-      resources.forEach((ref) => formData.append('resources', ref))      
+      resources.forEach((ref) => formData.append('resources', ref))
       updateWithForm('/admin/repl.json' + path, formData)
-          .then((respData)=>{
-            count = 0
-            noticeFunction = setInterval(function(){    
-                return fetch(`/admin/listReplicationStatus.json${respData.sourcePath}`)
-                  .then((data) => {
-                    let stopPolling = false
-                    if (count++ >= 25) {
-                      stopPolling = true
-                      clearInterval(noticeFunction)
-                      $perAdminApp.notifyUser('Error', `Action timed out when ${deactivate?'un':''}publishing ${data.sourcePath}.`)
-                      reject()
-                      return                      
-                    }
-                    if (data['per:ReplicationLastAction'] === "deactivated" && data['activated'] === false && !data['per:ReplicationRef']) {
-                      stopPolling = true
-                    } else if (data['per:ReplicationLastAction'] === "activated" 
-                        && data['activated'] === true  && data['per:Replicated'] && timeNow < Date.parse(data['per:Replicated'])
-                        && data['per:ReplicationRef'] && data['per:ReplicationRef'].indexOf("pending") < 0) {
-                          stopPolling = true
-                    }
-
-                    if (stopPolling) {
-                        const parentPath = path.substring(0, path.lastIndexOf("/"))
-                        $perAdminApp.getApi().populateNodesForBrowser(parentPath)
-                        clearInterval(noticeFunction)
-                        $perAdminApp.notifyUser('Success', `${data.sourcePath} was successfuly ${deactivate?'un':''}published.`)
-                      }
-                  })
-              }, 500);
-          })
-          .then(() => resolve())
-          .catch(error => {            
-              clearInterval(noticeFunction)
-              $perAdminApp.notifyUser('Errors', `were encountered when ${deactivate?'un':''}publishing ${data.sourcePath}. Please check with your admin.`)
-              if (error.response && error.response.data && error.response.data.message) {
-                reject(error.response.data.message)
+        .then(respData => {
+          count = 0
+          noticeFunction = setInterval(function() {
+            function stopPolling(data) {
+              const lastAction = data['per:ReplicationLastAction']
+              const activated = data['activated']
+              const ref = data['per:ReplicationRef']
+              const replicated = data['per:Replicated']
+              let stopPolling = false
+              if (lastAction === "deactivated" && activated === false && !ref) {
+                return true
               }
-              reject(error)
-          })
-    })  
+
+              if (lastAction === "activated" && activated === true
+                      && replicated && timeNow < Date.parse(replicated)
+                      && ref !== "distribution pending") {
+                return true
+              }
+
+              return false
+            }
+
+            return fetch(`/admin/listReplicationStatus.json${respData.sourcePath}`)
+              .then(data => {
+                if (count++ >= 25) {
+                  clearInterval(noticeFunction)
+                  $perAdminApp.notifyUser('Error', `Action timed out when ${deactivate?'un':''}publishing ${data.sourcePath}.`)
+                  reject()
+                } else if (stopPolling(data)) {
+                  clearInterval(noticeFunction)
+                  const parentPath = path.substring(0, path.lastIndexOf("/"))
+                  $perAdminApp.getApi().populateNodesForBrowser(parentPath)
+                  $perAdminApp.notifyUser('Success', `${data.sourcePath} was successfully ${deactivate?'un':''}published.`)
+                }
+              })
+          }, 500);
+        })
+        .then(() => resolve())
+        .catch(error => {
+          clearInterval(noticeFunction)
+          $perAdminApp.notifyUser('Errors', `were encountered when ${deactivate?'un':''}publishing ${data.sourcePath}. Please check with your admin.`)
+          if (error.response && error.response.data && error.response.data.message) {
+            reject(error.response.data.message)
+          }
+          reject(error)
+        })
+    })
   }
 
 

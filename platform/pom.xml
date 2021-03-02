@@ -15,13 +15,12 @@
     <name>Peregrine CMS - Platform Parent</name>
 
     <modules>
+        <module>login</module>
         <module>commons</module>
         <module>commons-test</module>
         <module>base</module>
         <module>distribution</module>
         <module>felib</module>
-        <module>login</module>
-        <module>replication</module>
     </modules>
 
 </project>

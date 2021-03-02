@@ -42,7 +42,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static com.peregrine.admin.replication.ReplicationUtil.queryContainsStringUnderResource;
+import static com.peregrine.replication.ReplicationUtil.queryContainsStringUnderResource;
 
 @RunWith(SlingAnnotationsTestRunner.class)
 public class ReferencesJTest {
