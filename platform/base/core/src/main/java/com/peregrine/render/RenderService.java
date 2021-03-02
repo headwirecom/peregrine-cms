@@ -11,7 +11,7 @@ public interface RenderService {
      * @return Byte Array of the rendered resource
      * @throws RenderException If the rendering failed
      */
-    public byte[] renderRawInternally(Resource resource, String extension) throws RenderException;
+    byte[] renderRawInternally(Resource resource, String extension) throws RenderException;
 
     /**
      * Renders the given resource inside this sling instance and returns its byte stream
@@ -20,15 +20,11 @@ public interface RenderService {
      * @return String content of the rendered resource
      * @throws RenderException If the rendering failed
      */
-    public String renderInternally(Resource resource, String extension) throws RenderException;
+    String renderInternally(Resource resource, String extension) throws RenderException;
 
-    public static class RenderException
+    class RenderException
         extends Exception
     {
-        public RenderException(String message) {
-            super(message);
-        }
-
         public RenderException(String message, Throwable cause) {
             super(message, cause);
         }

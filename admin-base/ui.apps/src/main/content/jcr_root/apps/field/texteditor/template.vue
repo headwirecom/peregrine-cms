@@ -24,8 +24,7 @@
   -->
 <template>
   <div class="text-editor-wrapper">
-    <admin-components-richtoolbar
-        :key="`key-${key}`"
+    <richtoolbar
         class="on-right-panel"
         :show-always-active="false"
         :responsive="false"
@@ -48,8 +47,10 @@
 
 <script>
 import {set} from '../../../../../js/utils'
+import Richtoolbar from '../../admin/components/richtoolbar/template.vue'
 
 export default {
+  components: {Richtoolbar},
   mixins: [VueFormGenerator.abstractField],
   data() {
     return {
