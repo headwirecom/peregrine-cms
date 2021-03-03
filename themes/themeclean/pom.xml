@@ -65,7 +65,7 @@
         <sling.plugin.version>2.1.10</sling.plugin.version>
         <content.plugin.version>0.0.24</content.plugin.version>
         <vault.plugin.version>0.0.10</vault.plugin.version>
-        <dependency.plugin.version>3.0.0</dependency.plugin.version>
+        <dependency.plugin.version>3.1.2</dependency.plugin.version>
         <build.helper.plugin.version>3.0.0</build.helper.plugin.version>
         <vcmio.plugin.version>1.5.0</vcmio.plugin.version>
 
