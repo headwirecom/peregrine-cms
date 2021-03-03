@@ -54,7 +54,7 @@
         <source.plugin.version>3.0.1</source.plugin.version>
         <resource.plugin.version>3.0.2</resource.plugin.version>
         <jar.plugin.version>3.0.2</jar.plugin.version>
-        <enforcer.plugin.version>1.4.1</enforcer.plugin.version>
+        <enforcer.plugin.version>3.0.0-M3</enforcer.plugin.version>
         <compiler.plugin.version>3.6.1</compiler.plugin.version>
         <bundle.plugin.version>2.5.4</bundle.plugin.version>
         <clean.plugin.version>3.0.0</clean.plugin.version>
@@ -65,7 +65,7 @@
         <sling.plugin.version>2.1.10</sling.plugin.version>
         <content.plugin.version>0.0.24</content.plugin.version>
         <vault.plugin.version>0.0.10</vault.plugin.version>
-        <dependency.plugin.version>3.0.0</dependency.plugin.version>
+        <dependency.plugin.version>3.1.2</dependency.plugin.version>
         <build.helper.plugin.version>3.0.0</build.helper.plugin.version>
         <vcmio.plugin.version>1.5.0</vcmio.plugin.version>
 
