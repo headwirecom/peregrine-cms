@@ -32,7 +32,7 @@ import static com.peregrine.commons.util.PerConstants.*;
 public abstract class PerPageRecognizerBase extends PageRecognizerBase {
 
     public PerPageRecognizerBase() {
-        super(PAGE_PRIMARY_TYPE, PAGE_CONTENT_TYPE, EXCLUDE_FROM_SITEMAP);
+        super(PAGE_PRIMARY_TYPE, PAGE_CONTENT_TYPE, EXCLUDE_PAGE_FROM_SITEMAP, EXCLUDE_TREE_FROM_SITEMAP);
     }
 
 }
