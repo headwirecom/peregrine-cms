@@ -282,7 +282,7 @@ export default {
             },
             children: function() {
                 if ( this.pt.children ) {
-                    return this.pt.children.filter(this.checkIfAllowed)
+                    return this.pt.children.filter( child => this.checkIfAllowed(child) )
                 }
             },
             parentPath: function() {
@@ -524,13 +524,11 @@ export default {
             },
 
             checkIfAllowed: function(node) {
-                const { resourceType } = node
-                if(this.model.showFilter === 'true' && this.filter) {
-                    if(node.excludeFromSitemap === 'true') return false
-                    return ['per:Page', 'per:Asset', 'per:Object', 'per:ObjectDefinition'].indexOf(resourceType) >= 0
+                if(this.model.showFilter && this.model.showFilter === 'true' && this.filter) {
+                    if(node.excludeFromSitemap && node.excludeFromSitemap === 'true') return false
+                    return ['per:Page', 'per:Asset', 'per:Object', 'per:ObjectDefinition'].indexOf(node.resourceType) >= 0
                 }
-
-                return ['per:Page', 'per:Asset', 'per:Object', 'per:ObjectDefinition', 'nt:file', 'sling:Folder', 'sling:OrderedFolder', 'sling:OrderedFolder'].indexOf(resourceType) >= 0
+                return ['per:Asset', 'nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page', 'sling:OrderedFolder', 'per:Object', 'per:ObjectDefinition'].indexOf(node.resourceType) >= 0
             },
 
             showInfo: function(me, target) {
