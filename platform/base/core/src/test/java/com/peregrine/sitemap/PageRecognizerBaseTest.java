@@ -46,7 +46,7 @@ public class PageRecognizerBaseTest extends SlingResourcesTest {
         assertFalse(model.isPage(candidate));
         page.putProperty(SLING_RESOURCE_TYPE, RESOURCE_TYPE);
         assertTrue(model.isPage(candidate));
-        page.putProperty(model.getExcludePageFromSiteMapPropertyName(), true);
+        page.putProperty(model.getExcludeFromSiteMapPropertyName(), true);
         assertFalse(model.isPage(candidate));
     }
 

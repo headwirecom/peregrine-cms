@@ -36,22 +36,22 @@ public abstract class PageRecognizerBase implements PageRecognizer {
 
     private final String pagePrimaryType;
     private final String pageContentPrimaryType;
-    private final String excludePageFromSiteMapPropertyName;
+    private final String excludeFromSiteMapPropertyName;
     private final String excludeTreeFromSiteMapPropertyName;
 
     protected PageRecognizerBase(
             final String pagePrimaryType,
             final String pageContentPrimaryType,
-            final String excludePageFromSiteMapPropertyName,
+            final String excludeFromSiteMapPropertyName,
             final String excludeTreeFromSiteMapPropertyName) {
         this.pagePrimaryType = pagePrimaryType;
         this.pageContentPrimaryType = pageContentPrimaryType;
-        this.excludePageFromSiteMapPropertyName = excludePageFromSiteMapPropertyName;
+        this.excludeFromSiteMapPropertyName = excludeFromSiteMapPropertyName;
         this.excludeTreeFromSiteMapPropertyName = excludeTreeFromSiteMapPropertyName;
     }
 
     public final boolean isPage(final Page candidate) {
-        return isAPageBasically(candidate) && !isExcludedByProperty(excludePageFromSiteMapPropertyName, candidate);
+        return isAPageBasically(candidate) && !isExcludedByProperty(excludeFromSiteMapPropertyName, candidate);
     }
 
     public final boolean isBucket(final Page candidate) {
@@ -95,8 +95,8 @@ public abstract class PageRecognizerBase implements PageRecognizer {
         return pageContentPrimaryType;
     }
 
-    public String getExcludePageFromSiteMapPropertyName() {
-        return excludePageFromSiteMapPropertyName;
+    public String getExcludeFromSiteMapPropertyName() {
+        return excludeFromSiteMapPropertyName;
     }
 
 }
