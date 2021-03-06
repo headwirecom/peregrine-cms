@@ -78,17 +78,16 @@ export default {
       this.dragging = false
     },
     upload(files) {
+      const $api = $perAdminApp.getApi()
       this.files.uploaded = []
       $perAdminApp.stateAction('uploadFiles', {
         path: this.path,
         files: files,
         cb: this.setProgress
-      }).then((data) => {
-        $perAdminApp.getApi().populateNodesForBrowser(this.path, 'pathBrowser')
-        for (let i = 0; i < files.length; i++) {
-          this.files.uploaded.push(files[i])
-        }
-        this.$emit('upload-done', this.files.uploaded)
+      }).then((uploadedFiles) => {
+        return $api.populateNodesForBrowser(this.path, 'pathBrowser').then(() =>  uploadedFiles)
+      }).then((uploadedFiles) => {
+        this.$emit('upload-done', uploadedFiles)
       })
     },
     setProgress(percentCompleted) {

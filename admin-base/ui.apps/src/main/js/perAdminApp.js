@@ -366,7 +366,7 @@ function loadContentImpl(initialPath, firstTime, fromPopState) {
                                             continue;
                                         } else {
                                             rendered.push(params[i])
-                                        } 
+                                        }
                                         if(i === 0) {
                                             suffix += '/'
                                         } else {
@@ -505,11 +505,14 @@ function stateActionImpl(name, target) {
                 const action = stateAction($perAdminApp, target)
                 Promise.resolve(action).then(result => {
                     exitWaitState()
-                    if(result && result.startsWith('Uncaught (in promise')) {
+                    if(result
+                        && typeof result === 'string'
+                        && (result.startsWith('Uncaught (in promise') || result.error))
+                    {
                         notifyUserImpl('error', result)
-                        reject()
+                        reject(result)
                     } else {
-                        resolve()
+                            resolve(result)
                     }
                 }).catch(error => {
                     exitWaitState()
