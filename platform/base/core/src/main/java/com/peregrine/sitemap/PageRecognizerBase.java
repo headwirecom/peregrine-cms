@@ -51,14 +51,14 @@ public abstract class PageRecognizerBase implements PageRecognizer {
     }
 
     public final boolean isPage(final Page candidate) {
-        return isAPageBasically(candidate) && !isExcludedByProperty(excludeFromSiteMapPropertyName, candidate);
+        return hasAllPageMarkers(candidate) && !isExcludedByProperty(excludeFromSiteMapPropertyName, candidate);
     }
 
     public final boolean isBucket(final Page candidate) {
-        return isAPageBasically(candidate) && !isExcludedByProperty(excludeTreeFromSiteMapPropertyName, candidate);
+        return hasAllPageMarkers(candidate) && !isExcludedByProperty(excludeTreeFromSiteMapPropertyName, candidate);
     }
 
-    private boolean isAPageBasically(final Page candidate) {
+    private boolean hasAllPageMarkers(final Page candidate) {
         if (!isUnfrozenPrimaryType(candidate, pagePrimaryType)) {
             return false;
         }
