@@ -434,9 +434,6 @@ export default {
       return obj;
     },
     node() {
-      if (this.nodeType === NodeType.OBJECT) {
-        return this.rawCurrentObject.data
-      }
       return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, this.currentObject);
     },
     allowOperations() {
