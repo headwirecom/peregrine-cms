@@ -188,7 +188,7 @@
 
       <template v-else-if="isTab(Tab.PUBLISHING)">
         <span class="panel-title">{{getActiveTabName}}</span>
-        <admin-components-publishinginfo v-bind:node="node" v-if="node"/>
+        <admin-components-publishinginfo v-bind:node="nodeFromPath" v-if="nodeFromPath"/>
 
         <div v-if="allowOperations && node" class="action-list">
           <div class="action" :title="`Open Web Publishing ${nodeType} Dialog`" @click="openPublishingModal()">
@@ -433,11 +433,14 @@ export default {
       }
       return obj;
     },
+    nodeFromPath() {
+      return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, this.currentObject);
+    },
     node() {
       if (this.nodeType === NodeType.OBJECT) {
         return this.rawCurrentObject.data
       }
-      return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, this.currentObject);
+      return this.nodeFromPath;
     },
     allowOperations() {
       return this.currentObject.split('/').length > 4;
