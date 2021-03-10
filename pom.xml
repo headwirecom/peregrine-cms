@@ -412,13 +412,6 @@
                 <scope>provided</scope>
             </dependency>
 
-            <!-- <dependency>
-                <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.compendium</artifactId>
-                <version>${org.osgi.compendium.version}</version>
-                <scope>provided</scope>
-            </dependency> -->
-
             <!-- Web Application API -->
             <dependency>
                 <groupId>javax.servlet</groupId>
