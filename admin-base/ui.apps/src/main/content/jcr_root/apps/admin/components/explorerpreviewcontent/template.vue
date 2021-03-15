@@ -542,6 +542,9 @@ export default {
       if (this.stateToolsEdit) {
         this.onEdit()
       }
+    },
+    stateToolsEdit(edit) {
+      this.edit = edit
     }
   },
   created() {
