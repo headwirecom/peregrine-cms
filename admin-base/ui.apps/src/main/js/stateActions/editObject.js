@@ -22,36 +22,61 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('editObject').setLevelDebug()
+import {LoggerFactory} from '../logger'
+import {deepClone, get, set} from '../utils'
 
-import { set } from '../utils'
+let log = LoggerFactory.logger('editObject').setLevelDebug()
 
 export default function(me, target) {
 
     log.fine(target)
 
     let checksum = ''
+    set(me.getView(), '/state/tools/save/confirmed', false)
 
-    me.beforeStateAction( function(name) {
-        if(name !== 'saveObjectEdit') {
+    me.beforeStateAction((name) => {
+        const confirmed = get(me.getView(), '/state/tools/save/confirmed',
+            false)
+        const currentObject = deepClone(
+            me.getNodeFromView('/state/tools/object'))
+
+        if (name !== 'saveObjectEdit') {
             // if there was no change skip asking to save
-            if(checksum === JSON.stringify(me.getNodeFromView('/state/tools/object/data'))) {
+            const newChecksum = JSON.stringify(
+                me.getNodeFromView('/state/tools/object/data'))
+            if (confirmed || checksum === newChecksum) {
                 return true
-            }
-            const yes = confirm('save edit?')
-            if(yes) {
-                const currentObject = me.getNodeFromView("/state/tools/object")
-                me.stateAction('saveObjectEdit', { data: currentObject.data, path: currentObject.show })
+            } else {
+                return new Promise((resolve) => {
+                    $perAdminApp.askUser(
+                        'Save Object Edit?',
+                        'Would you like to save your object edits?',
+                        {
+                            yesText: 'Save',
+                            noText: 'Cancel',
+                            yes() {
+                                me.stateAction('saveObjectEdit', {
+                                    data: currentObject.data,
+                                    path: currentObject.show
+                                })
+                                resolve()
+                            },
+                            no() {
+                                resolve()
+                            }
+                        }
+                    )
+                })
             }
         }
         return true
     })
 
     let view = me.getView()
-    Vue.set(me.getNodeFromView('/state/tools'), 'edit', true)
+    set(me.getView(), `/state/tools/edit`, false)
     me.getApi().populateObject(target.selected, '/state/tools/object', 'data').then( () => {
         checksum = JSON.stringify(me.getNodeFromView('/state/tools/object/data'))
         set(view, '/state/tools/object/show', target.selected)
+        set(me.getView(), `/state/tools/edit`, true)
     })
 }

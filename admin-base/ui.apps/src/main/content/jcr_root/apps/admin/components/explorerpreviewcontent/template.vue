@@ -308,7 +308,7 @@
 
 <script>
 import {IconLib, MimeType, NodeType, SUFFIX_PARAM_SEPARATOR} from '../../../../../../js/constants'
-import {deepClone, get} from '../../../../../../js/utils'
+import {deepClone, get, set} from '../../../../../../js/utils'
 import NodeNameValidation from '../../../../../../js/mixins/NodeNameValidation'
 import ReferenceUtil from '../../../../../../js/mixins/ReferenceUtil'
 import Icon from '../icon/template.vue'
@@ -512,11 +512,19 @@ export default {
     },
     activationSensitiveClass() {
       return this.selfOrAnyDescendantActivated ? 'operationDisabledOnActivatedItem' : null;
+    },
+    stateToolsEdit() {
+      const stateTools = $perAdminApp.getNodeFromViewOrNull('/state/tools')
+      if (stateTools) {
+        return stateTools.edit
+      } else {
+        return false
+      }
     }
   },
   watch: {
-    edit(newVal) {
-      $perAdminApp.getNodeFromView('/state/tools').edit = newVal;
+    edit(val) {
+      $perAdminApp.getNodeFromViewOrNull('/state/tools').edit = val
     },
     activeTab : function(tab) {
       if (tab === 'versions'){
@@ -531,6 +539,12 @@ export default {
       } else if (this.activeTab === 'references'){
         this.showReferencedBy()
       }
+      if (this.stateToolsEdit) {
+        this.onEdit()
+      }
+    },
+    stateToolsEdit(edit) {
+      this.edit = edit
     }
   },
   created() {
@@ -626,6 +640,10 @@ export default {
     onEdit() {
       this.edit = true
       this.formGenerator.original = deepClone(this.node)
+
+      if (this.nodeType === NodeType.OBJECT) {
+        $perAdminApp.stateAction('editObject', {selected: this.currentObject})
+      }
     },
     onCancel() {
       const payload = {selected: this.currentObject}
@@ -861,6 +879,7 @@ export default {
           data[key] = targetNode;
         }
       }
+      set($perAdminApp.getView(), '/state/tools/save/confirmed', true)
       $perAdminApp.stateAction('saveObjectEdit', {data: data, path: show}).then(() => {
         $perAdminApp.getNodeFromView('/state/tools')._deleted = {}
       });
