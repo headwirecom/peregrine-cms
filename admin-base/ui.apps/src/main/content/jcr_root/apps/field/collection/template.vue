@@ -27,9 +27,10 @@
     <label>{{schema.title}} </label>
     <ul v-if="!schema.preview" class="collapsible" v-bind:class="schema.multifield ? 'multifield' : 'singlefield'" ref="collapsible">
         <li v-for="(item, index) in value" v-bind:class="getItemClass(item, index)" v-bind:key="item.path"> {{item._opDelete}}
-            <div 
-              class="collapsible-header" 
-              draggable="true" 
+            <div
+              ref="header"
+              class="collapsible-header"
+              draggable="true"
               v-on:dragstart = "onDragStart(item, index, $event)"
               v-on:dragover.prevent  ="onDragOver"
               v-on:dragenter.prevent ="onDragEnter"
@@ -37,9 +38,10 @@
               v-on:drop.prevent      ="onDrop(item, index, $event)"
               v-on:click.stop.prevent="onSetActiveItem(index)">
                 <i class="material-icons">drag_handle</i>
-                <span v-if="schema.multifield">{{itemName(item, index)}}</span> 
+                <span v-if="schema.multifield">{{itemName(item, index)}}</span>
                 <input
                   v-else
+                  ref="input"
                   v-model="value[index]">
                 <i class="material-icons delete-icon" v-on:click="onRemoveItem(item, index)">delete</i>
             </div>
@@ -63,7 +65,7 @@
 
         <ul v-if="typeof item === 'object'" class="collection z-depth-1" :key="item.name">
           <vue-form-generator
-            v-if="schema.multifield" 
+            v-if="schema.multifield"
             class="collection-item"
             :schema="schema"
             :model="prepModel(item, schema)"></vue-form-generator>
@@ -148,6 +150,9 @@
             this.prepModel(newChild, this.schema)
             newChild['sling:resourceType'] = this.schema.resourceType
         }
+        if (!this.value) {
+          this.value = []
+        }
         this.value.push(newChild)
         // Vue.set(this.value, this.value.length -1, newChild)
         this.onSetActiveItem(this.value.length - 1)
@@ -167,30 +172,37 @@
         }
       },
       onSetActiveItem(index){
-        if(!this.schema.multifield) return
-        if(index === this.activeItem){
-          $(this.$refs.collapsible).collapsible('close', this.activeItem)
-          this.activeItem = null
-        } else {
-          this.$nextTick(function () {
-            if(this.activeItem !== null){
-              $(this.$refs.collapsible).collapsible('close', this.activeItem)
+        if(!this.schema.multifield) {
+          this.$nextTick(() => {
+            if (this.$refs.input[index]) {
+              this.$refs.input[index].focus()
             }
-            $(this.$refs.collapsible).collapsible('open', index)
-            this.activeItem = index
-            // focus first field of expanded item
-            this.$nextTick(() => {
-              let firstField = this.$refs.collapsible.querySelector('li.active input')
-              if(firstField) firstField.focus()
-            })
           })
+        } else {
+          if(index === this.activeItem){
+            $(this.$refs.collapsible).collapsible('close', this.activeItem)
+            this.activeItem = null
+          } else {
+            this.$nextTick(function () {
+              if(this.activeItem !== null){
+                $(this.$refs.collapsible).collapsible('close', this.activeItem)
+              }
+              $(this.$refs.collapsible).collapsible('open', index)
+              this.activeItem = index
+              // focus first field of expanded item
+              this.$nextTick(() => {
+                let firstField = this.$refs.collapsible.querySelector('li.active input')
+                if(firstField) firstField.focus()
+              })
+            })
+          }
         }
       },
       onDragStart(item, index, ev){
         ev.dataTransfer.setData('text', index)
       },
       onDragOver(ev){
-        const center = ev.target.offsetHeight / 2 
+        const center = ev.target.offsetHeight / 2
         ev.target.classList.toggle('drop-after', ev.offsetY > center )
         ev.target.classList.toggle('drop-before', ev.offsetY < center )
       },
