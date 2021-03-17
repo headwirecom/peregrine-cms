@@ -349,15 +349,11 @@ export default {
 
             replicatedClass(item) {
                 if(item.ReplicationStatus) {
-                    const created = item.created
-                    const modified = item.lastModified ? item.lastModified : created
+                    const modified = item.lastModified || item.created
                     const replicated = item.Replicated
-                    if(replicated > modified) {
-                        return 'item-'+item.ReplicationStatus
-                    } else {
-                        return 'item-'+item.ReplicationStatus+'-modified'
-                    }
+                    return `item-${item.ReplicationStatus}${replicated < modified ? '-modified' : ''}`
                 }
+
                 return 'item-replication-unknown'
             },
 
@@ -538,8 +534,9 @@ export default {
             showInfo: function(me, target) {
                 const tenant = $perAdminApp.getView().state.tenant
                 if(target.startsWith(`/content/${tenant.name}/objects`)) {
-                    const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
-                    $perAdminApp.stateAction('selectObject', { selected: node.path, path: me.model.dataFrom })
+                  const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
+                  set($perAdminApp.getView(), `/state/tools/edit`, false)
+                  $perAdminApp.stateAction('selectObject', { selected: node.path, path: me.model.dataFrom })
                 } else if (target.startsWith(`/content/${tenant.name}/templates`)) {
                     $perAdminApp.stateAction('showTemplateInfo', { selected: target })
                 } else {

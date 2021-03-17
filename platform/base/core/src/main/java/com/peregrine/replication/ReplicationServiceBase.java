@@ -1,5 +1,6 @@
 package com.peregrine.replication;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,8 +14,8 @@ public abstract class ReplicationServiceBase
 {
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
-    String name;
-    String description;
+    private String name;
+    private String description;
 
     /**
      * Initializes the Replication Service with its name and description
@@ -22,10 +23,10 @@ public abstract class ReplicationServiceBase
      * @param description Optional Description of the Service
      * @throws IllegalArgumentException If the name is null or empty
      */
-    protected void init(String name, String description) {
+    protected void init(final String name, final String description) {
         if(isEmpty(name)) { throw new IllegalArgumentException("Replication Name must be provided"); }
         this.name = name;
-        this.description = description == null ? "" : description;
+        this.description = StringUtils.defaultString(description);
     }
 
     @Override

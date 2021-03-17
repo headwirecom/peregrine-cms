@@ -48,6 +48,11 @@
             <artifactId>base.core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>login</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -103,6 +108,11 @@
                                 <embedded>
                                     <groupId>${project.groupId}</groupId>
                                     <artifactId>base.core</artifactId>
+                                    <generateFilter>true</generateFilter>
+                                </embedded>
+                                <embedded>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>login</artifactId>
                                     <generateFilter>true</generateFilter>
                                 </embedded>
                             </embeddeds>

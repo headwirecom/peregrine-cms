@@ -31,4 +31,8 @@ public interface PageRecognizer extends HasName {
 
     boolean isPage(Page candidate);
 
+    default boolean isBucket(Page candidate) {
+        return isPage(candidate);
+    }
+
 }
