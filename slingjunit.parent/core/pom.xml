@@ -33,7 +33,13 @@
     <packaging>bundle</packaging>
     <name>Peregrine Sling-JUnit Testing Bundle</name>
     <description>JUnit tests for Peregrine CMS designed to the run within Sling-JUnit test-runner, /system/sling/junit/.html</description>
-
+    <properties>
+        <exam.version>4.13.3</exam.version>
+        <bundle.filename>${basedir}/target/${project.build.finalName}.jar</bundle.filename>
+        <pax.vm.options>
+            -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5015
+        </pax.vm.options>
+    </properties>
 
     <dependencies>
         <!--    JUnit-->
@@ -177,6 +183,37 @@
             <version>2.0.8</version>
             <scope>test</scope>
         </dependency>
+        <!-- Pax Exam -->
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam</artifactId>
+            <version>${exam.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-cm</artifactId>
+            <version>${exam.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-container-forked</artifactId>
+            <version>${exam.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-junit4</artifactId>
+            <version>${exam.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-link-mvn</artifactId>
+            <version>${exam.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 
@@ -220,6 +257,39 @@
                     <user>${sling.user}</user>
                     <password>${sling.password}</password>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                    <systemPropertyVariables>
+                        <bundle.filename>${bundle.filename}</bundle.filename>
+                        <pax.vm.options>${pax.vm.options}</pax.vm.options>
+                    </systemPropertyVariables>
+                    <!-- pax exam bug, often times out at exit -->
+<!--                    <forkedProcessExitTimeoutInSeconds>1</forkedProcessExitTimeoutInSeconds>-->
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.servicemix.tooling</groupId>
+                <artifactId>depends-maven-plugin</artifactId>
+                <version>1.4.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate-depends-file</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

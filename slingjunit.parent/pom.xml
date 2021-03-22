@@ -34,7 +34,10 @@
     <name>Peregrine Sling-JUnit Parent</name>
     <version>1.0-SNAPSHOT</version>
     <description>Parent for Sling JUnit Tests</description>
-
+    <properties>
+        <starter.min.bundles.count>233</starter.min.bundles.count>
+        <http.port>${sling.port}</http.port>
+    </properties>
 
     <build>
         <plugins>
@@ -75,5 +78,4 @@
         <module>core</module>
         <module>ui.apps</module>
     </modules>
-
 </project>
