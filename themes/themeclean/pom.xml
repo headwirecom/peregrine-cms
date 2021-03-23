@@ -66,7 +66,7 @@
         <content.plugin.version>0.0.24</content.plugin.version>
         <vault.plugin.version>0.0.10</vault.plugin.version>
         <dependency.plugin.version>3.1.2</dependency.plugin.version>
-        <build.helper.plugin.version>3.0.0</build.helper.plugin.version>
+        <build.helper.plugin.version>3.2.0</build.helper.plugin.version>
         <vcmio.plugin.version>1.5.0</vcmio.plugin.version>
 
         <!-- plugin versions to use in generated archetypes -->
@@ -83,7 +83,7 @@
         <archetype.java.version>7</archetype.java.version>
 
         <!-- dependency versions to use in generated archetypes -->
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.2</junit.version>
         <scrannotations.version>1.9.12</scrannotations.version>
         <slingapi.version>2.9.0</slingapi.version>
         <slf4japi.version>1.7.6</slf4japi.version>
