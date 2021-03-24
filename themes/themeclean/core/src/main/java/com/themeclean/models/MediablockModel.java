@@ -1,5 +1,6 @@
 package com.themeclean.models;
 
+import com.peregrine.model.api.ImageInfo;
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
 import javax.inject.Inject;
@@ -8,6 +9,8 @@ import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
+
+import java.awt.Dimension;
 
 /*
     //GEN[:DATA
@@ -393,6 +396,9 @@ public class MediablockModel extends AbstractComponent {
 	@Inject
 	private String bottompadding;
 
+	@Inject
+	@ImageInfo(name="imagesrc")
+	private Dimension imageinfo;
 
 //GEN]
 
@@ -512,6 +518,9 @@ public class MediablockModel extends AbstractComponent {
 		return bottompadding;
 	}
 
+	public Dimension getImageinfo() {
+		return imageinfo;
+	}
 
 //GEN]
 

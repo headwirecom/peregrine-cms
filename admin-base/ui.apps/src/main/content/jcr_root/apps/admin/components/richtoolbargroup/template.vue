@@ -1,6 +1,6 @@
 <template>
   <div class="btn-group" :class="[`group-${vLabel}`]">
-    <admin-components-materializedropdown
+    <materialize-drop-down
         v-if="collapse && items && items.length > 1"
         tag="button"
         class="btn"
@@ -12,13 +12,13 @@
         @mousedown.native.prevent="() => {}"
         @toggle-click="$emit('toggle-click')"
         @item-click="$emit('click', {btn: $event})">
-      <admin-components-icon v-if="icon" :icon="vIcon" :lib="iconLib"/>
+      <icon v-if="icon" :icon="vIcon" :lib="iconLib"/>
       <span class="caret-down"></span>
-    </admin-components-materializedropdown>
+    </materialize-drop-down>
 
     <template v-else>
       <template v-for="(btn, i) in items">
-        <admin-components-richtoolbargroup
+        <richtoolbar-group
             v-if="btn.items && btn.items.length > 1"
             :key="`rich-toolbar-sub-group-${i}`"
             :icon="btn.icon"
@@ -30,7 +30,7 @@
             :items="btn.items"
             :class="btn.class"
             @click="$emit('click', $event)"/>
-        <admin-components-richtoolbarbtn
+        <richtoolbar-btn
             v-else
             :key="getButtonKey(btn, i)"
             :items="btn.items"
@@ -49,9 +49,13 @@
 <script>
 import {IconLib} from '../../../../../../js/constants'
 import {libValidator as iconLibValidator} from '../../../../../../js/validators/icon'
+import RichtoolbarBtn from '../richtoolbarbtn/template.vue'
+import Icon from '../icon/template.vue'
+import MaterializeDropDown from '../materializedropdown/template.vue'
 
 export default {
-  name: 'RichToolbarGroup',
+  name: 'RichtoolbarGroup',
+  components: {RichtoolbarBtn, Icon, MaterializeDropDown},
   props: {
     icon: {
       type: [String, Function]

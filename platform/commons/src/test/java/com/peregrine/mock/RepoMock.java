@@ -2,14 +2,18 @@ package com.peregrine.mock;
 
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.mockito.invocation.InvocationOnMock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jcr.Session;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
 import static com.peregrine.commons.util.PerConstants.SLASH;
@@ -45,7 +49,18 @@ public final class RepoMock {
         init(content);
         init(var);
         bindResolverFactory();
-        when(resourceResolver.map(any())).thenAnswer(invocation -> resourceResolverMap.get(invocation.getArguments()[0]));
+        when(resourceResolver.map(any()))
+                .thenAnswer(invocation -> resourceResolverMap.get(invocation.getArguments()[0]));
+        when(resourceResolver.listChildren(any()))
+                .thenAnswer(invocation -> Optional.of(invocation)
+                            .map(InvocationOnMock::getArguments)
+                            .map(a -> a[0])
+                            .map(Resource.class::cast)
+                            .map(Resource::getPath)
+                            .map(resolvableResources::get)
+                            .map(Resource::listChildren)
+                            .orElseGet(() -> Collections.<Resource>emptyList().iterator())
+                );
     }
 
     private void bindResolverFactory() {
@@ -60,10 +75,10 @@ public final class RepoMock {
     @SuppressWarnings("unchecked")
 	public void mockResourceResolverCreate() {
         try {
-            when(resourceResolver.create(any(ResourceMock.class), anyString(), any(Map.class))).thenAnswer(invocation -> {
+            when(resourceResolver.create(any(Resource.class), anyString(), any(Map.class))).thenAnswer(invocation -> {
                 final Object[] args = invocation.getArguments();
                 int index = 0;
-                final ResourceMock parent = (ResourceMock) args[index++];
+                final Resource parent = (Resource) args[index++];
                 final String name = (String) args[index++];
                 final Map<String, Object> properties = (Map<String, Object>) args[index++];
 
@@ -127,10 +142,6 @@ public final class RepoMock {
 
     public ResourceResolver getResourceResolver() {
         return resourceResolver;
-    }
-
-    public Session getSession() {
-        return session;
     }
 
     public void map(final String url, final String mappedUrl) {

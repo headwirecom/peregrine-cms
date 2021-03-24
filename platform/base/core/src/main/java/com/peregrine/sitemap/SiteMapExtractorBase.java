@@ -57,13 +57,13 @@ public abstract class SiteMapExtractorBase implements SiteMapExtractor {
 
     @Override
     public List<SiteMapEntry> extract(final Resource resource) {
-        final Page page = getProxy(resource);
+        final Page page = new Page(resource);
         final List<SiteMapEntry> result = new LinkedList<>();
-        final Optional<SiteMapEntry> entry = Optional.ofNullable(page)
+        Optional.ofNullable(page)
                 .filter(this::isPage)
-                .map(this::createEntry);
-        entry.ifPresent(result::add);
-        if (entry.isPresent()) {
+                .map(this::createEntry)
+                .ifPresent(result::add);
+        if (isBucket(page)) {
             StreamSupport.stream(resource.getChildren().spliterator(), false)
                     .map(this::extract)
                     .forEach(result::addAll);
@@ -72,13 +72,22 @@ public abstract class SiteMapExtractorBase implements SiteMapExtractor {
         return result;
     }
 
-    protected Page getProxy(final Resource page) {
-        return new Page(page);
+    private boolean isPage(final Page page) {
+        return Optional.of(getConfiguration())
+                .map(SiteMapConfiguration::getPageRecognizer)
+                .map(r -> r.isPage(page))
+                .orElse(true);
     }
 
-    private boolean isPage(final Page page) {
-        final PageRecognizer recognizer = getConfiguration().getPageRecognizer();
-        return isNull(recognizer) || recognizer.isPage(page);
+    private boolean isBucket(final Page page) {
+        if (isNull(page)) {
+            return false;
+        }
+
+        return Optional.of(getConfiguration())
+                .map(SiteMapConfiguration::getPageRecognizer)
+                .map(r -> r.isBucket(page))
+                .orElse(true);
     }
 
     private SiteMapEntry createEntry(final Page page) {

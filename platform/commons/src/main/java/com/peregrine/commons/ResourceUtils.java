@@ -83,6 +83,33 @@ public final class ResourceUtils {
         return resourceResolver.getResource(path);
     }
 
+    public static Resource getOrCreateChild(
+            final Resource parent,
+            final String name,
+            final String resourceTypes)
+            throws PersistenceException {
+        if (isBlank(name)) {
+            return parent;
+        }
+
+        return getOrCreateResource(
+                parent.getResourceResolver(),
+                parent.getPath() + SLASH + name,
+                resourceTypes
+        );
+    }
+
+    public static Resource tryToCreateChildOrGetNull(
+            final Resource parent,
+            final String name,
+            final String resourceTypes) {
+        try {
+            return getOrCreateChild(parent, name, resourceTypes);
+        } catch (final PersistenceException e) {
+            return null;
+        }
+    }
+
     public static String fileNameToJcrName(final String name) {
         if (startsWith(name, _SCORE)) {
             final String nameAfterUnderscore = name.substring(1);
@@ -137,12 +164,14 @@ public final class ResourceUtils {
     }
 
     public static Map<String, Object> filterCopyableProperties(final Map<String, ?> properties) {
-        return Optional.ofNullable(properties)
+        final Map<String, Object> result = new HashMap<>();
+        Optional.ofNullable(properties)
                 .orElseGet(Collections::emptyMap)
                 .entrySet()
                 .stream()
                 .filter(e -> isPropertyCopyable(e.getKey()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .forEach(e -> result.put(e.getKey(), e.getValue()));
+        return result;
     }
 
     public static Map<String, Object> filterPropertiesAllowedOnExistingNode(final Map<String, ?> properties) {
@@ -188,6 +217,13 @@ public final class ResourceUtils {
 
     public static Resource performDeepSafeCopy(final Resource resource, final Resource targetParent) throws PersistenceException {
         return performDeepSafeCopy(resource, targetParent, resource.getName());
+    }
+
+    public static ResourceResolver findResolver(final Collection<Resource> resources) {
+        return resources.stream()
+                .filter(Objects::nonNull)
+                .map(Resource::getResourceResolver)
+                .findFirst().orElse(null);
     }
 
 }

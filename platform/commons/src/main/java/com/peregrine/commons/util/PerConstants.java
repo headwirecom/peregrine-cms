@@ -85,6 +85,7 @@ public class PerConstants {
     public static final String PNG_MIME_TYPE = "image/png";
     public static final String JPEG_MIME_TYPE = "image/jpeg";
     public static final String WEBP_MIME_TYPE = "image/webp";
+    public static final String SVG_MIME_TYPE = "image/svg+xml";
     public static final String JPG_MIME_TYPE = "image/jpg";
 
     public static final String PACKAGES = "packages";
@@ -157,6 +158,7 @@ public class PerConstants {
     public static final String DOMAINS = "domains";
 
     public static final String EXCLUDE_FROM_SITEMAP = "excludeFromSitemap";
+    public static final String EXCLUDE_TREE_FROM_SITEMAP = "excludeTreeFromSitemap";
     public static final String CHANGE_FREQUENCY = "changefreq";
     public static final String PRIORITY = "priority";
 

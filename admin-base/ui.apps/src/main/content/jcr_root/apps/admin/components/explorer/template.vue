@@ -73,7 +73,7 @@
                     <admin-components-action v-if="editable(child)"
                         v-bind:model="{
                             target: child.path,
-                            command: 'editPage',
+                            command: 'editEntity',
                             dblClickTarget: child,
                             dblClickCommand: 'selectPath',
                             tooltipTitle: `${$i18n('edit')} '${child.title || child.name}'`
@@ -94,7 +94,7 @@
                         <admin-components-action v-if="editable(child)"
                             v-bind:model="{
                                 target: child.path,
-                                command: 'editPage',
+                                command: 'editEntity',
                                 tooltipTitle: `${$i18n('edit')} '${child.title || child.name}'`
                             }">
                             <admin-components-iconeditpage></admin-components-iconeditpage>
@@ -225,7 +225,8 @@
             </div>
         </div>
         <admin-components-explorerpreview v-if="hasEdit">
-            <component v-bind:is="model.children[0].component" v-bind:model="model.children[0]"></component>
+            <component v-bind:is="model.children[0].component" v-bind:model="model.children[0]"
+                :onDelete="handleDelete"></component>
         </admin-components-explorerpreview>
     </div>
     </div>
@@ -244,14 +245,8 @@
                     class="btn"
                     v-on:click="onDoneFileUpload">ok</button>
             </div>
-            <!-- <progress class="file-upload-progress" v-bind:value="uploadProgress" max="100"></progress> -->
         </div>
     </div>
-    <!--
-    <template v-for="child in model.children[0].children">
-        <component v-bind:is="child.component" v-bind:model="child"></component>
-    </template>
-    -->
 </div>
 </template>
 
@@ -354,15 +349,11 @@ export default {
 
             replicatedClass(item) {
                 if(item.ReplicationStatus) {
-                    const created = item.created
-                    const modified = item.lastModified ? item.lastModified : created
+                    const modified = item.lastModified || item.created
                     const replicated = item.Replicated
-                    if(replicated > modified) {
-                        return 'item-'+item.ReplicationStatus
-                    } else {
-                        return 'item-'+item.ReplicationStatus+'-modified'
-                    }
+                    return `item-${item.ReplicationStatus}${replicated < modified ? '-modified' : ''}`
                 }
+
                 return 'item-replication-unknown'
             },
 
@@ -543,8 +534,9 @@ export default {
             showInfo: function(me, target) {
                 const tenant = $perAdminApp.getView().state.tenant
                 if(target.startsWith(`/content/${tenant.name}/objects`)) {
-                    const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
-                    $perAdminApp.stateAction('selectObject', { selected: node.path, path: me.model.dataFrom })
+                  const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
+                  set($perAdminApp.getView(), `/state/tools/edit`, false)
+                  $perAdminApp.stateAction('selectObject', { selected: node.path, path: me.model.dataFrom })
                 } else if (target.startsWith(`/content/${tenant.name}/templates`)) {
                     $perAdminApp.stateAction('showTemplateInfo', { selected: target })
                 } else {
@@ -653,25 +645,32 @@ export default {
                 }
             },
 
-            deletePage: function(me, target) {
-                $perAdminApp.askUser('Delete Page', me.$i18n('Are you sure you want to delete this node and all its children?'), {
-                    yes() {
-                        const resourceType = target.resourceType
-                        if(resourceType === 'per:Object') {
-                            $perAdminApp.stateAction('deleteObject', target.path)
-                        } else if(resourceType === 'per:Asset') {
-                            $perAdminApp.stateAction('deleteAsset', target.path)
-                        } else if(resourceType === 'sling:OrderedFolder') {
-                            $perAdminApp.stateAction('deleteFolder', target.path)
-                        } else if(resourceType === 'per:Page') {
-                            $perAdminApp.stateAction('deletePage', target.path)
-                        } else if(resourceType === 'nt:file') {
-                            $perAdminApp.stateAction('deleteFile', target.path)
-                        }else {
-                            $perAdminApp.stateAction('deleteFolder', target.path)
+            handleDelete: function(type, path) {
+                const me = this
+                return new Promise((resolve, reject) => {
+                    $perAdminApp.askUser(`Delete ${type}?`, me.$i18n(`Are you sure you want to delete this node and all its children?`), {
+                        yes() {
+                            $perAdminApp.stateAction(`delete${type.charAt(0).toUpperCase() + type.slice(1)}`, path)
+                            resolve()
                         }
-                    }
+                    })
                 })
+            },
+
+            deletePage: function(me, target) {
+                const { resourceType, path } = target
+                let type = 'folder'
+                if (resourceType === 'per:Object') {
+                    type = 'object'
+                } else if(resourceType === 'per:Asset') {
+                    type = 'asset'
+                } else if(resourceType === 'per:Page') {
+                    type = 'page'
+                } else if(resourceType === 'nt:file') {
+                    type = 'file'
+                }
+
+                this.handleDelete(type, path)
             },
 
             deleteTenant: function(me, target) {
@@ -680,37 +679,6 @@ export default {
                         $perAdminApp.stateAction('deleteTenant', target)
                     }
                 })
-            },
-
-            editReference: function(me, target) {
-                if(target.load) {
-                    $perAdminApp.loadContent(target.load)
-                } else {
-                    me.editPage(me, target.target)
-                }
-            },
-
-            editPage: function(me, target) {
-
-                const view = $perAdminApp.getView()
-                const tenant = view.state.tenant
-                const path = me.pt.path
-
-                if(target.startsWith(`/content/${tenant.name}/pages`)) {
-                    set(view, '/state/tools/page', target)
-                } else if(target.startsWith(`/content/${tenant.name}/templates`)) {
-                    set(view, '/state/tools/template', target)
-                }
-
-                if(target.startsWith(`/content/${tenant.name}/objects`)) {
-                    const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
-                    me.selectedObject = path
-                    $perAdminApp.stateAction('editObject', { selected: node.path, path: me.model.dataFrom })
-                } else if (target.startsWith(`/content/${tenant.name}/templates`)) {
-                    $perAdminApp.stateAction('editTemplate', target )
-                } else {
-                    $perAdminApp.stateAction('editPage', target )
-                }
             },
 
             editFile: function(me, target) {
@@ -738,9 +706,6 @@ export default {
 <style>
     .item-activated {
         color: green;
-    }
-
-    .item-replication-unknown {
     }
 
     .item-deactivated {

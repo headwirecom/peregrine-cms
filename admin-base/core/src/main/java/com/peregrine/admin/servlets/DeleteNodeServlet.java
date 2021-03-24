@@ -44,7 +44,7 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
-import com.peregrine.admin.replication.ReplicationUtil;
+import com.peregrine.replication.ReplicationUtil;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.admin.resource.AdminResourceHandler.DeletionResponse;
 import com.peregrine.admin.resource.AdminResourceHandler.ManagementException;

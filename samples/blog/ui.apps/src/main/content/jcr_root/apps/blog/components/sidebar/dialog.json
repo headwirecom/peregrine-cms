@@ -1,1 +1,0 @@
-{"fields":[{"type":"input","inputType":"text","placeholder":"title","label":"title","model":"title"},{"type":"texteditor","rows":10,"placeholder":"text","label":"text","model":"text"},{"type":"input","inputType":"text","placeholder":"style","label":"style","model":"style"}]}

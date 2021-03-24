@@ -84,7 +84,7 @@ public class AccessServlet extends AbstractBaseServlet {
                 description = "A list of allowed JCR property paths relative to a user's home directory that will be included in the response",
                 required = true
         )
-        String[] profile_include_list() default "preferences/firstLogin";
+        String[] profile_include_list() default { "preferences/firstLogin", "profile/email" };
     }
 
     public static final String USER_ID = "userID";

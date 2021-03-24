@@ -17,7 +17,6 @@ These are the current supported distributions:
 1. Local, in-Peregrine Copies
 1. Remote Sling Distributions (Peregrine to remote Peregrine)
 1. Local File System
-1. S3 Bucket
 1. Default Distribution
 
 **Attention**:
@@ -48,7 +47,7 @@ the call ends with an exception.
 This distributions allows to copy resources to another folder in the JCR of Peregrine.
 This service copies the resource and any references to other resources (like templates)
 to another folder. To make this work you need to configure the service
-**com.peregrine.admin.replication.impl.LocalReplicationService**:
+**com.peregrine.replication.impl.LocalReplicationService**:
 
 |Name|Parameter|Required|Type|Default|Description|
 |:---|:--------|:-------|:---|:------|:----------|
@@ -65,10 +64,10 @@ rendition in the target is obtained.
 
 # Peregrine to Peregrine Copies
 
-This distributions allows to copy resources from one Peregrine to another, remote
+This distribution allows to copy resources from one Peregrine to another, remote
 Peregrine instance using the **Sling Distribution** service. This is mostly used to replicate
 content from an **Author to a Publish** instance but it is not limited to that.
- To configure this distribution service: **com.peregrine.admin.replication.impl.DistributionReplicationService**:
+ To configure this distribution service: **com.peregrine.replication.impl.DistributionReplicationService**:
 
 |Name|Parameter|Required|Type|Default|Description|
 |:---|:--------|:-------|:---|:------|:----------|
@@ -117,9 +116,10 @@ The only things that needs to be adjusted is the URL that points to the **Publis
 on the **Author** and then let the Peregrine Replication Service know about
 that . Do this:
 
-1. Open [OSGi System Console Configuration](http://localhost:8080/system/console/configMgr)
-1. Search for **Forward Agents Factory**
-1. Either select an existing Forward Agents and click on edit or create a new one by clicking the
+1. Open [**OSGi System Console Configuration**](http://localhost:8080/system/console/configMgr)
+1. Search for [**Forward Agents Factory**](http://localhost:8080/system/console/configMgr/org.apache.sling.distribution.agent.impl.ForwardDistributionAgentFactory)
+1. Either select an [existing Forward Agent](http://localhost:8080/system/console/configMgr/org.apache.sling.distribution.agent.impl.ForwardDistributionAgentFactory~publish)
+   and click on edit or create [a new one](http://localhost:8080/system/console/configMgr/org.apache.sling.distribution.agent.impl.ForwardDistributionAgentFactory) by clicking the
 **+** sign on the Factory
 1. Give it a **name**
 1. Look for Property: **Importer Endpoints**
@@ -135,13 +135,13 @@ to adjust is the server name and its port
 
 #### Verification
 
-In the **OSGi System Console Configuration make sure these services are configured:
+In the [**OSGi System Console Configuration**](http://localhost:8080/system/console/configMgr) make sure these services are configured:
 
-* Forward Agent
-* Vault Package Builder Factory
-* Privilege Request Authorization Strategy
-* User Credentials based DistributionTransportSecretProvider
-* Peregrine: Remote Replication Service
+* [Forward Agent](http://localhost:8080/system/console/configMgr/org.apache.sling.distribution.agent.impl.ForwardDistributionAgentFactory~publish)
+* [Vault Package Builder Factory](http://localhost:8080/system/console/configMgr/org.apache.sling.distribution.serialization.impl.vlt.VaultDistributionPackageBuilderFactory~default)
+* [Privilege Request Authorization Strategy](http://localhost:8080/system/console/configMgr/org.apache.sling.distribution.agent.impl.PrivilegeDistributionRequestAuthorizationStrategyFactory~default)
+* User Credentials based [DistributionTransportSecretProvider](http://localhost:8080/system/console/configMgr/org.apache.sling.distribution.transport.impl.UserCredentialsDistributionTransportSecretProvider~default)
+* Peregrine: [Remote Replication Service](http://localhost:8080/system/console/configMgr/com.peregrine.replication.impl.DistributionReplicationService~remote)
 
 **Attention**: make sure the *User Credentials based DistributionTransportSecretProvider* has
 the correct credentials as by default it is set to the default Sling admin password.
@@ -161,7 +161,7 @@ folder):
 
 ![Deep Local FS Export File System Tree](distribution.local.file.system.result.tree.png)
 
-To configure this distribution service: **com.peregrine.admin.replication.impl.LocalFileSystemReplicationService**:
+To configure this distribution service: **com.peregrine.replication.impl.LocalFileSystemReplicationService**:
 
 |Name|Parameter|Required|Type|Default|Description|
 |:---|:--------|:-------|:---|:------|:----------|
@@ -183,27 +183,12 @@ Peregrine comes with a default configuration called **localFS** that will export
 
 ![OSGi System Configuration for Local FS](distribution.local.file.system.configuration.png)
 
-# S3 Bucket
+`Local FS` distribution relies on versions, and the renditions are based on `VersioningResourceResolver`.
+You can read more about it [here](../versioning/index.md). We are basically using this resolver to render stuff from
+the point of view of `Published` versions only.
 
-Peregrine allows the user to setup a distribution of content to an AWS S3 service. In a nutshell
-this service is more or less the same as the **local file system copies** just copying in to an
-S3 rather than writing to a local file.
-
-To configure this distribution service: **com.peregrine.admin.replication.impl.RemoteS3SystemReplicationService**:
-
-|Name|Parameter|Required|Type|Default|Description|
-|:---|:--------|:-------|:---|:------|:----------|
-|Name|name|yes|String|none|Name of the Distribution Service|
-|Description|description|no|String|none|Description of this Service|
-|AWS Access Key|awsAccessKey|yes|String|none|Access Key for the S3 Service|
-|AWS Secret Key|awsSecretKey|yes|String|none|Secret Key for the S3 Service|
-|AWS Region Name|awsRegionName|yes|String|none|Region of your S3 Service|
-|AWS Bucket Name|awsBucketName|yes|String|none|Bucket Name of your S3 Service|
-|Export Extensions|exportExtensions|yes|String|none|List of Extensions to be exported. The format is &lt;extension[~raw]>=&lt;&vert;-split list of primary types that are exported>|
-|Mandatory Renditions|mandatoryRenditions|String|no|Name of the Renditions that are created (if not already done) during the distribution|
-
-Whenever the service tries to push a change to S3 and the connection fails it will retry
-once and if it fails again it will end the distribution.
+In addition to regular resources, `local FS` stores the sitemap under `[..]/content/<tenant>/pages.sitemap.xml`
+location, also using the `VersioningResourceResolver` to process `Published` pages only.
 
 # Default Distribution Mapping
 
@@ -217,7 +202,7 @@ Default Distribution is used like any other distribution but it does not
 actually do a distribution but rather delegate it to the target one.
 
 To configure this Default Replication Mapper Service service:
-**com.peregrine.admin.replication.DefaultReplicationMapperService**:
+**com.peregrine.replication.DefaultReplicationMapperService**:
 
 |Name|Parameter|Required|Type|Default|Description|
 |:---|:--------|:-------|:---|:------|:----------|

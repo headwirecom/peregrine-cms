@@ -1,7 +1,8 @@
 package com.peregrine.slingjunit.localFS;
 
-import com.peregrine.adaption.PerReplicable;
+import com.peregrine.replication.PerReplicable;
 import com.peregrine.replication.Replication;
+import com.peregrine.replication.ReplicationsContainerWithDefault;
 import com.peregrine.slingjunit.ReplicationTestBase;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
@@ -13,8 +14,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.Calendar;
 import static com.peregrine.slingjunit.author.RemoteReplAuthorJTest.STELLA_PNG;
@@ -24,7 +23,8 @@ import static org.junit.Assert.assertFalse;
 
 @RunWith(SlingAnnotationsTestRunner.class)
 public class LocalFSJTest extends ReplicationTestBase {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    public static final String LOCAL_FS = "localFS";
     private Calendar beforeTime;
     @TestReference
     private ResourceResolverFactory resolverFactory;
@@ -34,6 +34,7 @@ public class LocalFSJTest extends ReplicationTestBase {
 //    If possible, remove OSGI configs for unused replication service implementations; remote and local service, before running this test.
 //    Otherwise, since the following line is non-deterministic, it could inject any of the replication services configured.
     @TestReference
+    private ReplicationsContainerWithDefault replications;
     private Replication replication;
     public static String INDEX = "/content/example/pages/index";
     public static String CONTACT = "/content/example/pages/contact";
@@ -48,6 +49,7 @@ public class LocalFSJTest extends ReplicationTestBase {
     @Before
     public void setup(){
         try {
+            replication = replications.get(LOCAL_FS);
             beforeTime = Calendar.getInstance();
             adminResourceResolver = resolverFactory.getAdministrativeResourceResolver(null);
             stellaImgRes = adminResourceResolver.getResource(STELLA_PNG);
@@ -70,7 +72,7 @@ public class LocalFSJTest extends ReplicationTestBase {
     @Test
     public void setupIsCorrect(){
         assertNotNull(replication);
-        assertTrue("localFS".equals(replication.getName()));
+        assertEquals(LOCAL_FS, replication.getName());
         assertNotNull(stellaImgRes);
     }
 

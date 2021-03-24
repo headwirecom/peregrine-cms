@@ -1,6 +1,5 @@
 package com.peregrine.sitemap.impl;
 
-import com.peregrine.SlingResourcesTest;
 import com.peregrine.mock.ResourceMock;
 import com.peregrine.sitemap.*;
 import junitx.util.PrivateAccessor;
@@ -21,7 +20,7 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SiteMapFilesCacheImplTest extends SlingResourcesTest {
+public final class SiteMapFilesCacheImplTest extends SiteStructureTestBase {
 
     private static final String LOCATION = "/var/sitemaps/files";
     private static final String VALUE = "<xml />";
@@ -31,7 +30,7 @@ public final class SiteMapFilesCacheImplTest extends SlingResourcesTest {
     private final List<SiteMapEntry> entries = new LinkedList<>();
 
     @Mock
-    private ResourceResolverFactoryProxy resourceResolverFactory;
+    private VersioningResourceResolverFactory resourceResolverFactory;
 
     @Mock
     private SiteMapStructureCache structureCache;
@@ -62,7 +61,7 @@ public final class SiteMapFilesCacheImplTest extends SlingResourcesTest {
         when(config.maxEntriesCount()).thenReturn(0);
         when(config.maxFileSize()).thenReturn(0);
 
-        when(resourceResolverFactory.getServiceResourceResolver()).thenReturn(resourceResolver);
+        when(resourceResolverFactory.createResourceResolver()).thenReturn(versioningResolver);
 
         model.activate(config);
 
@@ -90,7 +89,7 @@ public final class SiteMapFilesCacheImplTest extends SlingResourcesTest {
     @SuppressWarnings("unchecked")
 	@Test
     public void get_throwLoginException() throws LoginException {
-            when(resourceResolverFactory.getServiceResourceResolver()).thenThrow(LoginException.class);
+            when(resourceResolverFactory.createResourceResolver()).thenThrow(LoginException.class);
         assertNull(model.get(page, 0));
     }
 
@@ -151,7 +150,7 @@ public final class SiteMapFilesCacheImplTest extends SlingResourcesTest {
     public void onCacheRefreshed_catchExceptions() throws LoginException, PersistenceException {
         doThrow(PersistenceException.class).when(resourceResolver).commit();
         model.onCacheRefreshed(page, entries);
-        when(resourceResolverFactory.getServiceResourceResolver()).thenThrow(LoginException.class);
+        when(resourceResolverFactory.createResourceResolver()).thenThrow(LoginException.class);
         model.onCacheRefreshed(page, entries);
         verify(resourceResolver, times(2)).commit();
     }
