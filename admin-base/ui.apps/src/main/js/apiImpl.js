@@ -682,7 +682,7 @@ class PerAdminImpl {
       let data = new FormData()
       data.append('fromTenant', fromName)
       data.append('toTenant', toName)
-      data.append('tenantTitle', new Blob([tenantTitle], {type: 'application/json; charset=utf-8'}))
+      data.append('tenantTitle', json(tenantTitle))
       data.append('tenantUserPwd', tenantUserPwd)
       if (colorPalette) {
         data.append('colorPalette', colorPalette)

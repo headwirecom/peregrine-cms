@@ -43,6 +43,7 @@ import static com.peregrine.commons.util.PerConstants.JSON;
 import static com.peregrine.commons.util.PerConstants.JSON_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.TEXT_MIME_TYPE;
+import static com.peregrine.commons.util.PerConstants.UTF_8;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.POST;
 
@@ -154,9 +155,9 @@ public abstract class AbstractBaseServlet
 
         public Request(SlingHttpServletRequest request, SlingHttpServletResponse response) {
             try {
-                request.setCharacterEncoding("UTF-8");
+                request.setCharacterEncoding(UTF_8);
             } catch( UnsupportedEncodingException uee ) {
-                logger.info("not able to set character decoding to UTF-8");
+                logger.warn("not able to set character encoding to UTF-8");
             }
             this.request = request;
             this.response = response;
