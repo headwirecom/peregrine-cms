@@ -37,20 +37,21 @@
     style="min-height: 300px;background-color:#eceff1;">
     <ol v-if="model.indicators" class="carousel-indicators">
       <li
-        v-for="(slide, index) in model.children"
+        v-for="slide in model.slides"
+        v-bind:key="slide.path"
         :data-target="`#${name}`"
         :data-slide-to="index"></li>
     </ol>
     <div class="carousel-inner" role="listbox">
-      <div v-for="(slide, index) in model.children" :class="`carousel-item ${index === 0 ? 'active' : ''}`">
+      <div v-for="(slide, index) in model.slides" v-bind:key="slide.path" :class="`carousel-item ${index === 0 ? 'active' : ''}`">
         <img v-if="slide.imagePath" :src="slide.imagePath" :alt="slide.alt" />
         <div v-if="slide.heading || slide.text" class="carousel-caption">
-          <h3 v-if="slide.heading" :data-per-inline="`model.children.${index}.heading`">
+          <h3 v-if="slide.heading" :data-per-inline="`model.slides.${index}.heading`">
             {{slide.heading}}
           </h3>
           <p v-if="slide.text"
              v-html="slide.text"
-             :data-per-inline="`model.children.${index}.text`"></p>
+             :data-per-inline="`model.slide.${index}.text`"></p>
         </div>
       </div>
     </div>

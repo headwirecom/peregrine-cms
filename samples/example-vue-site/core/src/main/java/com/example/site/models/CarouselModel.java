@@ -27,6 +27,9 @@ package com.example.site.models;
 
 import com.peregrine.nodetypes.models.Container;
 import com.peregrine.nodetypes.models.IComponent;
+
+import java.util.List;
+
 import javax.inject.Inject;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Default;
@@ -78,6 +81,12 @@ public class CarouselModel extends Container {
 
     @Inject @Default(values = "true")
     private String keyboard;
+
+	@Inject
+	private List<IComponent> slides;
+    public List<IComponent> getSlides() {
+		return slides;
+	}
 
     public String getInterval() {
         return interval;
