@@ -38,9 +38,13 @@ const postConfig = {
 
 let callbacks
 
+function blob(content) {
+  return new Blob([ content ], {type: 'application/json; charset=utf-8'})
+}
+
 function json(data) {
   const content = JSON.stringify(data)
-  return new Blob([content], {type: 'application/json; charset=utf-8'})
+  return blob(content)
 }
 
 function fetch(path) {
@@ -682,7 +686,7 @@ class PerAdminImpl {
       let data = new FormData()
       data.append('fromTenant', fromName)
       data.append('toTenant', toName)
-      data.append('tenantTitle', json(tenantTitle))
+      data.append('tenantTitle', blob(tenantTitle))
       data.append('tenantUserPwd', tenantUserPwd)
       if (colorPalette) {
         data.append('colorPalette', colorPalette)
