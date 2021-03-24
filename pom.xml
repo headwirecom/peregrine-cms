@@ -60,7 +60,7 @@
         <commons-lang3.version>3.5</commons-lang3.version>
         <commons-io.version>2.6</commons-io.version>
         <commons-collections.version>3.2.2</commons-collections.version>
-        <com.fasterxml.jackson.version>2.11.1</com.fasterxml.jackson.version>
+        <com.fasterxml.jackson.version>2.12.1</com.fasterxml.jackson.version>
         <guava.version>15.0</guava.version>
         <!-- <aws-java-sdk-osgi.version>1.11.181</aws-java-sdk-osgi.version> -->
         <metadata-extractor.version>2.15.0</metadata-extractor.version>
@@ -227,13 +227,13 @@
                 <!-- Maven Source Plugin -->
                 <plugin>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>3.0.1</version>
+                    <version>3.2.1</version>
                 </plugin>
                 <!-- Maven Resources Plugin -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.0.2</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <!-- Maven Jar Plugin -->
                 <plugin>
@@ -344,7 +344,7 @@
                 <plugin>
                     <groupId>com.github.eirslett</groupId>
                     <artifactId>frontend-maven-plugin</artifactId>
-                    <version>1.6</version>
+                    <version>1.11.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -367,7 +367,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-scr-plugin</artifactId>
-                    <version>1.21.0</version>
+                    <version>1.26.4</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -746,7 +746,7 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-resources-plugin</artifactId>
-                        <version>3.0.2</version>
+                        <version>3.2.0</version>
                         <inherited>false</inherited>
                         <executions>
                             <execution>

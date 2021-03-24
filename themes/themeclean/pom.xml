@@ -51,8 +51,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <release.plugin.version>2.5.3</release.plugin.version>
-        <source.plugin.version>3.0.1</source.plugin.version>
-        <resource.plugin.version>3.0.2</resource.plugin.version>
+        <source.plugin.version>3.2.1</source.plugin.version>
+        <resource.plugin.version>3.2.0</resource.plugin.version>
         <jar.plugin.version>3.0.2</jar.plugin.version>
         <enforcer.plugin.version>3.0.0-M3</enforcer.plugin.version>
         <compiler.plugin.version>3.6.1</compiler.plugin.version>
@@ -384,7 +384,7 @@
             <dependency>
                 <groupId>org.apache.jackrabbit</groupId>
                 <artifactId>jackrabbit-api</artifactId>
-                <version>2.11.0</version>
+                <version>2.12.1</version>
                 <scope>provided</scope>
             </dependency>
 
