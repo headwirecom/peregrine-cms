@@ -99,7 +99,7 @@
                 <configuration>
                     <installDirectory>${nodepath}</installDirectory>
                 </configuration> 
-                <version>1.4</version>
+                <version>1.11.2</version>
 
                 <executions>
                     <execution>
