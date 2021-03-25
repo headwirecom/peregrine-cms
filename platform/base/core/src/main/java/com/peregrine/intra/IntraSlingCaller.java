@@ -4,6 +4,7 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
 import java.util.Map;
+import java.util.Locale;
 
 public interface IntraSlingCaller {
     public CallerContext createContext();
@@ -26,6 +27,8 @@ public interface IntraSlingCaller {
         public CallerContext setParameterMap(Map<String, Object> parameterMap);
         public String getMethod();
         public CallerContext setMethod(String method);
+        public Locale getLocale();
+        public CallerContext setLocale(Locale locale);
     }
 
     class CallException extends Exception {

@@ -80,6 +80,7 @@ public class NodeServlet extends AbstractBaseServlet {
             byte[] response = intraSlingCaller.call(
                 intraSlingCaller.createContext()
                     .setResourceResolver(request.getRequest().getResourceResolver())
+                    .setLocale(request.getRequest().getLocale())
                     .setPath(resource.getPath())
                     .setExtension(DATA_JSON_EXTENSION)
             );

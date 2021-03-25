@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Locale;
 
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -57,6 +58,7 @@ public class IntraSlingCallerService
             MockSlingHttpServletRequest req = new MockSlingHttpServletRequest(callerContext.getResourceResolver());
             req.setMethod(callerContext.getMethod());
             req.setResource(callerContext.getResource());
+            req.setLocale(callerContext.getLocale());
             MockRequestPathInfo pathInfo = (MockRequestPathInfo) req.getRequestPathInfo();
             pathInfo.setResourcePath(callerContext.getPath());
             pathInfo.setSelectorString(callerContext.getSelectors());
@@ -85,6 +87,7 @@ public class IntraSlingCallerService
     public static class CallerContextImpl implements CallerContext {
         Resource resource;
         ResourceResolver resourceResolver;
+        Locale locale;
         String method = METHOD_GET,
             path,
             selectors,
@@ -121,6 +124,11 @@ public class IntraSlingCallerService
         @Override
         public String getSuffix() {
             return suffix;
+        }
+
+        @Override
+        public Locale getLocale() {
+            return locale;
         }
 
         @Override
@@ -172,6 +180,12 @@ public class IntraSlingCallerService
         public CallerContext setParameterMap(Map<String, Object> parameterMap) {
             if(parameterMap == null) { parameterMap = new HashMap<>(); }
             this.parameterMap = parameterMap;
+            return this;
+        }
+
+        @Override
+        public CallerContext setLocale(Locale locale) {
+            this.locale = locale;
             return this;
         }
 
