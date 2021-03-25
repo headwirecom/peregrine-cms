@@ -36,6 +36,8 @@ Replace the `{number}` in the command below with the PR number for the change yo
 docker run -it -p 8080:8080 peregrinecms/peregrine-cms:pr-{number}
 ```
 
+> if you want to run multiple instances of Peregrine-CMS at the same time you can do so by changing the first number of `-p 8080:8080` to another TCP/IP Port. Try `docker run -it -p 8812:8080 peregrinecms/peregrine-cms:pr-812` and then access the instance with your browser at (<http://localhost:8812>)
+
 ## Run Peregrine-CMS and start a Webserver in the container
 
 ```bash
