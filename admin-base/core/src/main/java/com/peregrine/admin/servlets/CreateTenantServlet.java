@@ -187,25 +187,31 @@ public class CreateTenantServlet extends AbstractBaseServlet {
                 // Create Tenant User as this the creator is Admin
                 User tenantUser;
                 try {
-                    tenantUser = userManager.createUser(
-                        tenantUserId,
-                        userPwd,
-                        () -> tenantUserId,
-                        TENANT_USER_HOME
-                    );
-                    if(tenantUser != null) {
-                        try {
-                            Resource resUser = resourceResolver.getResource(tenantUser.getPath());
-                            Node nodeUser = PerUtil.getNode(resUser);
-                            Node nodeUserPreferences = nodeUser.addNode("preferences");
-                            nodeUserPreferences.setProperty("firstLogin", "true");
-                            adminSession.save();
-                        } catch( RepositoryException re ) {
-                            logger.error("was not able to set firstLogin pereference for user", re);
+                    tenantUser = (User) userManager.getAuthorizable(tenantUserId);
+
+                    if(tenantUser == null) {
+                        tenantUser = userManager.createUser(
+                            tenantUserId,
+                            userPwd,
+                            () -> tenantUserId,
+                            TENANT_USER_HOME
+                        );
+                        if(tenantUser != null) {
+                            try {
+                                Resource resUser = resourceResolver.getResource(tenantUser.getPath());
+                                Node nodeUser = PerUtil.getNode(resUser);
+                                Node nodeUserPreferences = nodeUser.addNode("preferences");
+                                nodeUserPreferences.setProperty("firstLogin", "true");
+                                adminSession.save();
+                            } catch( RepositoryException re ) {
+                                logger.error("was not able to set firstLogin pereference for user", re);
+                            }
+                            if(!isPwdProvided) {
+                                tenantUser.disable(DISABLE_USER_REASON);
+                            }
+                            tenantGroup.addMember(tenantUser);
+                            allTenantsGroup.addMember(tenantUser);
                         }
-                    }
-                    if(tenantUser != null && !isPwdProvided) {
-                        tenantUser.disable(DISABLE_USER_REASON);
                     }
                 } catch (AuthorizableExistsException e) {
                     tenantUser = (User) userManager.getAuthorizable(tenantUserId);
@@ -216,8 +222,6 @@ public class CreateTenantServlet extends AbstractBaseServlet {
                         .setHttpErrorCode(SC_BAD_REQUEST)
                         .setErrorMessage(FAILED_TO_CREATE_TENANT_SECURITY);
                 }
-                tenantGroup.addMember(tenantUser);
-                allTenantsGroup.addMember(tenantUser);
             } else {
                 // We also need to add the current non-admin user to the group so that new site is visible for them
                 Authorizable authorizable = userManager.getAuthorizable(request.getRequest().getUserPrincipal());
