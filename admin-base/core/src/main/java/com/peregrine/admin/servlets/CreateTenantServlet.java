@@ -138,6 +138,7 @@ public class CreateTenantServlet extends AbstractBaseServlet {
         String toTenant = request.getParameter(TO_TENANT_NAME);
         String title = request.getParameter(TO_TENANT_TITLE);
         boolean isAdmin = request.isAdmin();
+
         ResourceResolver resourceResolver = null;
         try {
             logger.trace("Copy Site form: '{}' to: '{}'", fromTenant, toTenant);
@@ -146,6 +147,7 @@ public class CreateTenantServlet extends AbstractBaseServlet {
                 loginService(resourceResolverFactory, PEREGRINE_SERVICE_NAME);
             Session adminSession = resourceResolver.adaptTo(Session.class);
             UserManager userManager = AccessControlUtil.getUserManager(adminSession);
+
             Resource site = resourceManagement
                 .copyTenant(resourceResolver, CONTENT_ROOT, fromTenant, toTenant);
             if(isNotEmpty(title)) {
@@ -158,6 +160,14 @@ public class CreateTenantServlet extends AbstractBaseServlet {
             // Create Tenant Group
             String tenantGroupId = toTenant + GROUP_NAME_SUFFIX;
             String tenantUserId = toTenant + USER_NAME_SUFFIX;
+
+            // check if we re trying to create a user that already exists
+            if(isAdmin && userManager.getAuthorizable(tenantUserId) != null) {
+                return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(FAILED_TO_CREATE_TENANT_SECURITY);
+            }
+            
             Group tenantGroup;
             try {
                 tenantGroup = userManager.createGroup(
@@ -185,9 +195,8 @@ public class CreateTenantServlet extends AbstractBaseServlet {
             allTenantsGroup.addMember(tenantGroup);
             if(isAdmin) {
                 // Create Tenant User as this the creator is Admin
-                User tenantUser;
+                User tenantUser = (User) userManager.getAuthorizable(tenantUserId);
                 try {
-                    tenantUser = (User) userManager.getAuthorizable(tenantUserId);
 
                     if(tenantUser == null) {
                         tenantUser = userManager.createUser(
