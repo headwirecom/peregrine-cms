@@ -966,6 +966,7 @@ export default {
         this.editable.styles.left = `${left + offset.left}px`
         this.editable.styles.width = `${width}px`
         this.editable.styles.height = `${height}px`
+        this.editable.class = 'selected'
       })
     },
 
