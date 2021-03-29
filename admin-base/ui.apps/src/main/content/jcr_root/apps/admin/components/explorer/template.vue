@@ -361,8 +361,12 @@ export default {
                 $perAdminApp.stateAction('replicate', path)
             },
 
+            isFolder(item) {
+                return ["sling:OrderedFolder", "sling:Folder", "nt:folder"].indexOf(item.resourceType) >= 0
+            },
+
             replicable(item) {
-                return true
+                return !this.isFolder(item)
             },
 
             onDragRowStart(item, ev) {
