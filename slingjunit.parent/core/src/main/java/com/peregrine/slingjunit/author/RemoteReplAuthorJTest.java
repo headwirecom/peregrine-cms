@@ -118,7 +118,7 @@ public class RemoteReplAuthorJTest extends ReplicationTestBase {
 
     @Test
     public void authorDistributionServiceUserAccess() {
-        List<String> allList = Arrays.asList("/var/sling/distribution", "/content", "/etc/distribution","/libs/sling/distribution");
+        List<String> allList = Arrays.asList("/var/sling/distribution", "/content");
         testListGranted(allList, "jcr:all", "distribution-agent-user");
     }
 
