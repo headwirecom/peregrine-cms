@@ -27,6 +27,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -42,6 +43,7 @@ import static com.peregrine.commons.util.PerConstants.JSON;
 import static com.peregrine.commons.util.PerConstants.JSON_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.TEXT_MIME_TYPE;
+import static com.peregrine.commons.util.PerConstants.UTF_8;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.POST;
 
@@ -144,11 +146,19 @@ public abstract class AbstractBaseServlet
      * as well as parameters
      */
     public static class Request {
+
+        protected final Logger logger = LoggerFactory.getLogger(getClass());
+
         private final SlingHttpServletRequest request;
         private final SlingHttpServletResponse response;
         private final Map<String, String> parameters;
 
         public Request(SlingHttpServletRequest request, SlingHttpServletResponse response) {
+            try {
+                request.setCharacterEncoding(UTF_8);
+            } catch( UnsupportedEncodingException uee ) {
+                logger.warn("not able to set character encoding to UTF-8");
+            }
             this.request = request;
             this.response = response;
             this.parameters = ServletHelper.obtainParameters(request);

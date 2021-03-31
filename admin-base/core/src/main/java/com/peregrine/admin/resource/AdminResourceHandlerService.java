@@ -263,7 +263,6 @@ public class AdminResourceHandlerService
         cardinality = ReferenceCardinality.MULTIPLE,
         policy = ReferencePolicy.DYNAMIC
     )
-
     void addImageMetadataSelector(ImageMetadataSelector selector) {
         imageMetadataSelectors.add(selector);
     }
@@ -342,10 +341,6 @@ public class AdminResourceHandlerService
                 throw new ManagementException(String.format(PARENT_NOT_FOUND, OBJECT, parentPath, name));
             }
             Node newObject = parent.addNode(name, OBJECT_DEFINITION_PRIMARY_TYPE);
-//            newObject.setProperty(JCR_TITLE, name);
-            // if (!isEmpty(resourceType)) {
-            //     newObject.setProperty(SLING_RESOURCE_TYPE, resourceType);
-            // }
             Node dialog = newObject.addNode("dialog.json", "nt:file");
             Node resNode = dialog.addNode ("jcr:content", "nt:resource");
             resNode.setProperty ("jcr:mimeType", "application/json");
@@ -436,9 +431,10 @@ public class AdminResourceHandlerService
     @Override
     public DeletionResponse deleteResource(ResourceResolver resourceResolver, String path, String primaryType) throws ManagementException {
         final Resource resource = getResource(resourceResolver, path);
-        if (resource == null) {
+        if (isNull(resource)) {
             throw new ManagementException(String.format(RESOURCE_FOR_DELETION_NOT_FOUND, path));
         }
+
         try {
             createRecyclable(resourceResolver, resource);
         } catch (Exception e) {
@@ -448,18 +444,20 @@ public class AdminResourceHandlerService
             // Under these circumstances, the deletion will continue and a warning will be printed to the logs.
             logger.warn(FAILED_CREATE_RECYCLEABLE, path, e);
         }
+
         try {
-            final String primaryTypeValue = resource.getValueMap().get(JCR_PRIMARY_TYPE, EMPTY);
+            final String primaryTypeValue = PerUtil.getPrimaryType(resource);
             if (isNotEmpty(primaryType) && !primaryTypeValue.equals(primaryType)) {
                 throw new ManagementException(String.format(PRIMARY_TYPE_ASKEW_FOR_DELETION, path, primaryType, primaryTypeValue));
             }
 
-            final Resource parent = resource.getParent();
+            final Optional<Resource> parent = Optional.ofNullable(resource.getParent());
             final DeletionResponse response = new DeletionResponse()
                 .setName(resource.getName())
                 .setPath(resource.getPath())
-                .setParentPath(parent != null ? parent.getPath() : "")
+                .setParentPath(parent.map(Resource::getPath).orElse(EMPTY))
                 .setType(StringUtils.defaultIfEmpty(primaryTypeValue, "not-found"));
+            parent.ifPresent(baseResourceHandler::updateModification);
             resourceResolver.delete(resource);
             return response;
         } catch (PersistenceException e) {
