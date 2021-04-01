@@ -27,7 +27,7 @@ package com.peregrine.replication.impl;
 
 import com.peregrine.replication.ReplicationServiceBase;
 import com.peregrine.commons.ResourceUtils;
-import com.peregrine.replication.ReferenceLister;
+import com.peregrine.reference.ReferenceLister;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
 import com.peregrine.render.RenderService;

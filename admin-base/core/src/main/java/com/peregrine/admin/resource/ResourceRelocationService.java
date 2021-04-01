@@ -5,7 +5,7 @@ import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 
 import com.peregrine.commons.util.PerUtil;
-import com.peregrine.replication.ReferenceLister;
+import com.peregrine.reference.ReferenceLister;
 import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -56,7 +56,7 @@ public class ResourceRelocationService
     @Override
     public Resource moveToNewParent(Resource from, Resource toParent, boolean updateReferences) throws PersistenceException {
         Resource answer = null;
-        List<com.peregrine.replication.Reference> references = null;
+        List<com.peregrine.reference.Reference> references = null;
         if(updateReferences) {
             // Look for Referenced By list before we updating
             references = referenceLister.getReferencedByList(from);
@@ -71,7 +71,7 @@ public class ResourceRelocationService
         answer = resourceResolver.move(from.getPath(), toParent.getPath());
         if(references != null) {
             // Update the references
-            for(com.peregrine.replication.Reference reference : references) {
+            for(com.peregrine.reference.Reference reference : references) {
                 Resource propertyResource = reference.getPropertyResource();
                 ModifiableValueMap properties = PerUtil.getModifiableProperties(propertyResource);
                 if(properties.containsKey(reference.getPropertyName())) {
@@ -142,7 +142,7 @@ public class ResourceRelocationService
         if(newName == null || newName.isEmpty()) {
             throw new IllegalArgumentException(NEW_NAME_MUST_BE_SPECIFIED);
         }
-        List<com.peregrine.replication.Reference> references = null;
+        List<com.peregrine.reference.Reference> references = null;
         if(updateReferences) {
             // Look for Referenced By list before we updating
             references = referenceLister.getReferencedByList(from);
@@ -168,7 +168,7 @@ public class ResourceRelocationService
         }
         Resource answer = parent.getChild(newName);
         // Update the references
-        for(com.peregrine.replication.Reference reference : references) {
+        for(com.peregrine.reference.Reference reference : references) {
             Resource propertyResource = reference.getPropertyResource();
             if(propertyResource.getChild(JCR_CONTENT) != null) {
                 properties = PerUtil.getModifiableProperties(propertyResource, true);
