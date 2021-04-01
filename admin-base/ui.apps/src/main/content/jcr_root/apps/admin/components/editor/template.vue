@@ -125,6 +125,12 @@ export default {
           }
       },
         watch: {
+          dataModel(dataModel) {
+          console.log('dataModel:', dataModel);
+        },
+          schema(dataModel) {
+            console.log('schema:', dataModel);
+          },
           'view.state.inline.model'(val) {
               if (!val) return
               this.focusFieldByModel(val)
@@ -209,11 +215,13 @@ export default {
                 const $group = $(this);
                 const $title = $group.find('legend');
                 $title.click(function(e){
-                    $group.find('div').toggle();
-                    $group.toggleClass('active');
+                  const isActive = $group.hasClass('active');
+                  $groups.filter('.active').removeClass('active');
+                  if (!isActive) {
+                    $group.addClass('active');
+                  }
                 })
                 if(i !== 0) {
-                    $group.find('div').hide();
                     $group.removeClass('active');
                 }
                 if(i === 0) $group.addClass('active');
