@@ -125,12 +125,6 @@ export default {
           }
       },
         watch: {
-          dataModel(dataModel) {
-          console.log('dataModel:', dataModel);
-        },
-          schema(dataModel) {
-            console.log('schema:', dataModel);
-          },
           'view.state.inline.model'(val) {
               if (!val) return
               this.focusFieldByModel(val)
