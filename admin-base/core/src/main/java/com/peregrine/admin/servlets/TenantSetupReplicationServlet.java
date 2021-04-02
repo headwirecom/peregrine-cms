@@ -27,8 +27,10 @@ package com.peregrine.admin.servlets;
 
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.commons.util.PerConstants;
+import com.peregrine.commons.util.PerUtil;
 import com.peregrine.replication.Replication;
 import com.peregrine.replication.Replication.ReplicationException;
+import com.peregrine.replication.ReplicationUtil;
 import com.peregrine.replication.ReplicationsContainerWithDefault;
 import com.peregrine.sitemap.SiteMapFilesCache;
 import org.apache.sling.api.resource.Resource;
@@ -51,7 +53,6 @@ import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.commons.util.PerUtil.POST;
-import static java.util.Objects.nonNull;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -111,18 +112,23 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
             return badRequest(String.format("Suffix: '%s' is not a Peregrine Site", path));
         }
 
-        final var toBeReplicatedInitial = extractSiteFeLibs(site, resourceResolver.getResource(FELIBS_ROOT));
+        final PerUtil.ResourceChecker tenantChecker = new ReplicationUtil.TenantOwnedResourceChecker(site);
+        final var toBeReplicatedInitial = extractSiteFeLibs(site, resourceResolver.getResource(FELIBS_ROOT), tenantChecker);
         toBeReplicatedInitial.add(0, site);
         logger.trace("List of Resource to be replicated: '{}'", toBeReplicatedInitial);
         List<Resource> toBeReplicated = new LinkedList<>(toBeReplicatedInitial);
         for (final Resource resource : toBeReplicatedInitial) {
             try {
                 logger.trace("Replication Resource: '{}'", resource);
-                toBeReplicated.addAll(replication.findReferences(resource, true));
+                toBeReplicated.addAll(replication.findReferences(resource, true, tenantChecker));
             } catch (final ReplicationException e) {
                 logger.warn("Replication Failed", e);
                 return badRequestReplicationFailed(e);
             }
+        }
+
+        for (Resource r : toBeReplicated) {
+            logger.error(site.getPath() + " => " + r.getPath());
         }
 
         final String dateLabel = site.getName() + "_" + dateLabelFormat.format(new Date(System.currentTimeMillis()));
@@ -144,16 +150,14 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
     /**
      * Things to search for
      * - /content/<site>/pages/css
-     * - /etc/felibs/<theme>.(css|js)
-     * - /etc/felibs/<site>.(css|js)
-     * - /etc/felibs/<theme dependencies>.(css|js) **/
-    private List<Resource> extractSiteFeLibs(final Resource site, final Resource feLibsRoot) {
+     * - /etc/felibs/<site>.(css|js) **/
+    private List<Resource> extractSiteFeLibs(final Resource site, final Resource feLibsRoot, final PerUtil.ResourceChecker checker) {
         final List<Resource> result = new LinkedList<>();
         logger.trace("Source Site: '{}'", site);
         final String siteName = site.getName();
         final Resource siteFeLibs = feLibsRoot.getChild(siteName);
         logger.trace("Source FeLibs: '{}', Site Name: '{}'", siteFeLibs, siteName);
-        if (nonNull(siteFeLibs)) {
+        if (checker.doAdd(siteFeLibs)) {
             logger.trace("Add Site FE libs: '{}'", siteFeLibs);
             result.add(siteFeLibs);
         }
@@ -164,10 +168,10 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
                 .map(site.getParent()::getChild)
                 .orElse(null);
         logger.trace("Parent Source Resource: '{}'", parentSite);
-        if (nonNull(parentSite)) {
+        if (checker.doAdd(parentSite)) {
             logger.trace("Add Site Parent: '{}'", parentSite);
             result.add(parentSite);
-            result.addAll(extractSiteFeLibs(parentSite, feLibsRoot));
+            result.addAll(extractSiteFeLibs(parentSite, feLibsRoot, checker));
         }
 
         return result;

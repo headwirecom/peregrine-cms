@@ -25,10 +25,10 @@ package com.peregrine.replication;
  * #L%
  */
 
+import com.peregrine.commons.util.PerUtil;
 import org.apache.sling.api.resource.Resource;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -50,7 +50,7 @@ public interface Replication {
         return resources;
     }
 
-    List<Resource> findReferences(Resource source, boolean deep)
+    List<Resource> findReferences(Resource source, boolean deep, final PerUtil.ResourceChecker checker)
             throws ReplicationException;
 
     /**
@@ -60,18 +60,19 @@ public interface Replication {
      *
      * @param source Resource to be replicated
      * @param deep If true the entire sub tree of the resource is replicated
+     * @param checker
      * @return List of replicated resources (the copy)
      *
      * @throws ReplicationException If the replication failed
      */
-    default List<Resource> replicate(final Resource source, final boolean deep)
+    default List<Resource> replicate(final Resource source, final boolean deep, PerUtil.ResourceChecker checker)
         throws ReplicationException {
-        return replicate(findReferences(source, deep));
+        return replicate(findReferences(source, deep, checker));
     }
 
-    default void prepare(final Resource source, final boolean deep)
+    default void prepare(final Resource source, final boolean deep, PerUtil.ResourceChecker checker)
             throws ReplicationException {
-        prepare(findReferences(source, deep));
+        prepare(findReferences(source, deep, checker));
     }
 
     /**

@@ -18,8 +18,7 @@ import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.*;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.*;
 
 public class ReplicationUtil {
 
@@ -224,6 +223,61 @@ public class ReplicationUtil {
 
     public static boolean isSelfOrAnyDescendantReplicated(final Resource resource) {
         return isReplicated(resource) || isAnyDescendantReplicated(resource);
+    }
+
+    public static final class TenantOwnedResourceChecker implements ResourceChecker {
+
+        private static final String CONTENT_PREFIX = "/content/";
+        private static final String FE_LIBS_PREFIX = "/etc/felibs/";
+
+        private final String tenant;
+        private final String contentRoot;
+        private final String contentPrefix;
+        private final String feLibsRoot;
+        private final String feLibsPrefix;
+
+        public TenantOwnedResourceChecker(final String path) {
+            if (startsWith(path, CONTENT_PREFIX) && !CONTENT_PREFIX.equals(path)) {
+                tenant = substringBetween(path, CONTENT_PREFIX, SLASH);
+            } else if (startsWith(path, FE_LIBS_PREFIX) && !FE_LIBS_PREFIX.equals(path)) {
+                tenant = substringBetween(path, FE_LIBS_PREFIX, SLASH);
+            } else {
+                tenant = null;
+            }
+
+            contentRoot = CONTENT_PREFIX + tenant;
+            contentPrefix = contentRoot + SLASH;
+            feLibsRoot = FE_LIBS_PREFIX + tenant;
+            feLibsPrefix = feLibsRoot + SLASH;
+        }
+
+        public TenantOwnedResourceChecker(final Resource tenant) {
+            this(tenant.getPath());
+        }
+
+        @Override
+        public boolean doAdd(final Resource resource) {
+            if (isNull(resource)) {
+                return false;
+            }
+
+            if (isNull(tenant)) {
+                return true;
+            }
+
+            final String path = resource.getPath();
+            if (equalsAny(path, contentRoot, feLibsRoot)) {
+                return true;
+            }
+
+            return startsWithAny(path, contentPrefix, feLibsPrefix);
+        }
+
+        @Override
+        public boolean doAddChildren(Resource resource) {
+            return doAdd(resource);
+        }
+
     }
 
 }
