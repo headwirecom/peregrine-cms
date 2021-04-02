@@ -24,7 +24,7 @@
 package com.peregrine.slingjunit;
 
 import com.peregrine.admin.resource.AdminResourceHandler;
-import com.peregrine.replication.ReferenceLister;
+import com.peregrine.reference.ReferenceLister;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;

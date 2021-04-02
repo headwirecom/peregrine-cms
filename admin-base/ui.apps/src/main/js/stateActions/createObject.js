@@ -36,6 +36,7 @@ export default function(me, target) {
                 api.saveObjectEdit(target.parent + '/' + target.name, target.data).then( () => {
                     if(target.returnTo) {
                         me.loadContent(target.returnTo+'.html/path' +SUFFIX_PARAM_SEPARATOR + target.parent)
+                        me.stateAction('selectObject', { selected: target.parent + '/' + target.name, path: '/state/tools/objects' })
                     } else {
                         me.loadContent('/content/admin/pages/objects.html/path' + SUFFIX_PARAM_SEPARATOR + target.parent)
                     }

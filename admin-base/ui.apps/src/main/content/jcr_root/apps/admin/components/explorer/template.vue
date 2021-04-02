@@ -361,8 +361,12 @@ export default {
                 $perAdminApp.stateAction('replicate', path)
             },
 
+            isFolder(item) {
+                return ["sling:OrderedFolder", "sling:Folder", "nt:folder"].indexOf(item.resourceType) >= 0
+            },
+
             replicable(item) {
-                return true
+                return !this.isFolder(item)
             },
 
             onDragRowStart(item, ev) {
@@ -534,8 +538,9 @@ export default {
             showInfo: function(me, target) {
                 const tenant = $perAdminApp.getView().state.tenant
                 if(target.startsWith(`/content/${tenant.name}/objects`)) {
-                    const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
-                    $perAdminApp.stateAction('selectObject', { selected: node.path, path: me.model.dataFrom })
+                  const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
+                  set($perAdminApp.getView(), `/state/tools/edit`, false)
+                  $perAdminApp.stateAction('selectObject', { selected: node.path, path: me.model.dataFrom })
                 } else if (target.startsWith(`/content/${tenant.name}/templates`)) {
                     $perAdminApp.stateAction('showTemplateInfo', { selected: target })
                 } else {

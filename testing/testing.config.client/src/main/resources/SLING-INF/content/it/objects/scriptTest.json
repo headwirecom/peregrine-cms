@@ -1,6 +1,0 @@
-{
-  "jcr:description": "Script Test",
-  "jcr:primaryType": "sling:OrderedFolder",
-  "jcr:title": "Script Test",
-  "sling:resourceType": "it/objects/script"
-}

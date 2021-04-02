@@ -37,17 +37,28 @@ public abstract class PageRecognizerBase implements PageRecognizer {
     private final String pagePrimaryType;
     private final String pageContentPrimaryType;
     private final String excludeFromSiteMapPropertyName;
+    private final String excludeTreeFromSiteMapPropertyName;
 
     protected PageRecognizerBase(
             final String pagePrimaryType,
             final String pageContentPrimaryType,
-            final String excludeFromSiteMapPropertyName) {
+            final String excludeFromSiteMapPropertyName,
+            final String excludeTreeFromSiteMapPropertyName) {
         this.pagePrimaryType = pagePrimaryType;
         this.pageContentPrimaryType = pageContentPrimaryType;
         this.excludeFromSiteMapPropertyName = excludeFromSiteMapPropertyName;
+        this.excludeTreeFromSiteMapPropertyName = excludeTreeFromSiteMapPropertyName;
     }
 
     public final boolean isPage(final Page candidate) {
+        return hasAllPageMarkers(candidate) && !isExcludedByProperty(excludeFromSiteMapPropertyName, candidate);
+    }
+
+    public final boolean isBucket(final Page candidate) {
+        return hasAllPageMarkers(candidate) && !isExcludedByProperty(excludeTreeFromSiteMapPropertyName, candidate);
+    }
+
+    private boolean hasAllPageMarkers(final Page candidate) {
         if (!isUnfrozenPrimaryType(candidate, pagePrimaryType)) {
             return false;
         }
@@ -64,14 +75,14 @@ public abstract class PageRecognizerBase implements PageRecognizer {
             return false;
         }
 
-        if (Optional.ofNullable(candidate.getProperty(excludeFromSiteMapPropertyName))
+        return isPageImpl(candidate);
+    }
+
+    private Boolean isExcludedByProperty(final String propertyName, final Page candidate) {
+        return Optional.ofNullable(candidate.getProperty(propertyName))
                 .map(String::valueOf)
                 .map(Boolean::parseBoolean)
-                .orElse(false)) {
-            return false;
-        }
-
-        return isPageImpl(candidate);
+                .orElse(false);
     }
 
     protected abstract boolean isPageImpl(final Page candidate);

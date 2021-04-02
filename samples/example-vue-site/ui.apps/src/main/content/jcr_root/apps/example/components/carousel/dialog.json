@@ -38,12 +38,14 @@
     {
       "type": "collection",
       "title": "slides",
-      "model": "children",
+      "model": "slides",
       "resourceType": "example/components/carouselItem",
       "multifield": true,
       "fields" : [
         {
           "type": "pathbrowser",
+          "browserRoot": "/content/example/assets",
+          "placeholder": "imagepath",
           "label": "Image Source",
           "model": "imagePath"
         },

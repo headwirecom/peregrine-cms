@@ -14,10 +14,10 @@ the term Distribution to go along with the Sling parlance.
 
 These are the current supported distributions:
 
-1. Local, in-Peregrine Copies
-1. Remote Sling Distributions (Peregrine to remote Peregrine)
 1. Local File System
+1. Remote Sling Distributions (Peregrine to remote Peregrine)
 1. Default Distribution
+1. Local, in-Peregrine Copies (deprecated)
 
 **Attention**:
 
@@ -42,7 +42,7 @@ The **name** of the distribution service is the name of a service that implement
 *com.peregrine.replication.Replication* interface. If the name could not be found
 the call ends with an exception.
 
-# Local, intra-Peregrine Copies
+# Local, intra-Peregrine Copies (deprecated)
 
 This distributions allows to copy resources to another folder in the JCR of Peregrine.
 This service copies the resource and any references to other resources (like templates)
@@ -95,20 +95,38 @@ are **author, publish, notshared, shared**.
 
 To set up a configuration do:
 
-1. Create an **Author** and **Publish** instance using **percli** service (*percli server start --author* /
-*percli server start --publish*)
-2. Stop both servers with *percli server stop*
-3. Edit **sling/sling.properties** files
-    1. Add this line to the Author: **sling.run.modes=author,notshared**
-    2. Add this line to the Publish: **sling.run.modes=publish,notshared**
+1. Obtain the peregrine-builder
+   1. Follow instructions from https://github.com/peregrine-cms/peregrine-builder
+1. Create project directories 
+   1. mkdir ~/per-projects
+   1. cd ~/per-projects
+   1. mkdir author
+   1. mkdir publish
+1. Copy Peregrine Builder artifacts into ~/per-projects/author and ~/per-projects/publish
+   1. com.peregrine-cms.sling.launchpad-12-SNAPSHOT-oak_tar_fds_far.far
+   1. org.apache.sling.feature.launcher.jar
+1. Initialize author instance (from author folder)
+   ```
+   java -jar org.apache.sling.feature.launcher.jar -f com.peregrine-cms.sling.launchpad-12-SNAPSHOT-oak_tar_fds_far.far -D sling.runmodes=author,notshared,oak_tar_fds -p sling
+   ``` 
+   Note: `-D sling.runmodes=author,notshared,oak_tar_fds` is only needed the first time
+1. Initialize publish instance (from publish folder)
+   ```
+   java -jar org.apache.sling.feature.launcher.jar -f com.peregrine-cms.sling.launchpad-12-SNAPSHOT-oak_tar_fds_far.far -D sling.runmodes=publish,notshared,oak_tar_fds -D org.osgi.service.http.port=8180 -p sling
+   ```
+1. Install Peregrine CMS
+   1. clone https://github.com/headwirecom/peregrine-cms
+   1. install to the running author instance `mvn clean install -P autoInstallPackage`
+   1. installing to the running publish instance `mvn clean install -P autoInstallPackage -Dsling.port=8180`
+1. Server Side Junit Test  
+   Executing the Sling Junit test (RemoteReplAuthorJTest) from author may be useful for determining whether the setup is correct.
+   ```
+   http://localhost:8080/system/sling/junit/com.peregrine.slingjunit.author.RemoteReplAuthorJTest.html
+   ```
 
-or
+The procedure above will configure Peregrine CMS instance based on the sling runmodes. 
+Additional docs below describe the configurations in more detail in case a manual approach is needed or desired.     
 
-1. Start and Stop two Peregrine Sling instance with the Peregrine Sling JAR file
-2. Edit **sling/sling.properties** files
-    1. Add this line to the Author: **sling.run.modes=author,notshared**
-    2. Add this line to the Publish: **sling.run.modes=publish,notshared**
-3. Restart both Peregrine instances
 
 ### Configure Author Instance
 
@@ -150,7 +168,7 @@ the correct credentials as by default it is set to the default Sling admin passw
 
 On the **Publish** site there is nothing to be done
 
-# Local File System Copies
+# Local File System Copies (Default)
 
 This distribution service will replicate the Peregrine content as files in a given target folder. Regular
 resources (not folders) are exported as **.data.json**, assets as **images** including their renditions

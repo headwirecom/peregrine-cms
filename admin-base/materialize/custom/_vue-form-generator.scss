@@ -478,6 +478,7 @@
                 .materialize-textarea {
                     line-height: 1.1em;
                     padding: 1.1em;
+                    overflow-y: auto;
                 }
             }
             &.field-material-checkbox {

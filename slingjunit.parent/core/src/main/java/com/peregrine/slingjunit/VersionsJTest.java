@@ -28,7 +28,7 @@ import com.peregrine.admin.models.PageModel;
 import com.peregrine.admin.models.Recyclable;
 import com.peregrine.admin.resource.AdminResourceHandlerService;
 import com.peregrine.commons.util.PerConstants;
-import com.peregrine.replication.ReferenceLister;
+import com.peregrine.reference.ReferenceLister;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
