@@ -26,7 +26,7 @@ package com.peregrine.replication.impl;
  */
 
 import com.peregrine.replication.ReplicationServiceBase;
-import com.peregrine.replication.ReferenceLister;
+import com.peregrine.reference.ReferenceLister;
 import com.peregrine.replication.Replication;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;

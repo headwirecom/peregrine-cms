@@ -1,4 +1,4 @@
-package com.peregrine.admin.resource;
+package com.peregrine.render.impl;
 
 /*-
  * #%L
@@ -33,8 +33,8 @@ import static com.peregrine.commons.util.PerUtil.listMissingParents;
 import static java.util.Objects.isNull;
 
 import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
-import com.peregrine.replication.Reference;
-import com.peregrine.replication.ReferenceLister;
+import com.peregrine.reference.Reference;
+import com.peregrine.reference.ReferenceLister;
 
 import java.util.*;
 
@@ -72,14 +72,12 @@ public class ReferenceListerService
     @interface Configuration {
         @AttributeDefinition(
             name = "ReferencePrefix",
-            description = "List of Prefixes to find references in a resource",
-            required = true
+            description = "List of Prefixes to find references in a resource"
         )
         String[] referencePrefix() default "/content/";
         @AttributeDefinition(
             name = "ReferencedByRoot",
-            description = "List of Roots to look for the referenced by resources",
-            required = true
+            description = "List of Roots to look for the referenced by resources"
         )
         String[] referencedByRoot() default "/content";
     }
