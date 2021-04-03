@@ -3,6 +3,10 @@ branches:
   - develop-sling12
   - develop
 
+cache:
+  directories:
+  - $HOME/.m2
+  
 services:
 - docker
 
