@@ -56,7 +56,7 @@
         <jar.plugin.version>3.0.2</jar.plugin.version>
         <enforcer.plugin.version>3.0.0-M3</enforcer.plugin.version>
         <compiler.plugin.version>3.6.1</compiler.plugin.version>
-        <bundle.plugin.version>2.5.4</bundle.plugin.version>
+        <bundle.plugin.version>5.1.2</bundle.plugin.version>
         <clean.plugin.version>3.0.0</clean.plugin.version>
         <installer.plugin.version>2.5.2</installer.plugin.version>
         <surfire.plugin.version>2.20</surfire.plugin.version>
