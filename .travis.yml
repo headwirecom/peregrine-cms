@@ -34,7 +34,7 @@ after_script:
 - docker images
 
 before_deploy:
-- echo "$DOCKER_PASSWORD" | docker login -u reusr1 docker login -u "$DOCKER_USERNAME" --password-stdin
+- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 - docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:latest"
 - docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:${branch}"
 
