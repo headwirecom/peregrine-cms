@@ -260,7 +260,7 @@
                 <!-- Maven Compiler Plugin -->
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.7.0</version>
+                    <version>3.8.1</version>
                     <configuration>
                         <!-- Maven Compiler Source and Target are set in the properties 'maven.compiler.source' and 'maven.compiler.target'-->
                         <encoding>UTF-8</encoding>
