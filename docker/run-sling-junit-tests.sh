@@ -19,7 +19,7 @@ fi
 cd ..
 cd slingjunit.parent
 mvn install -PautoInstallPackage
-curl -s -X POST http://admin:admin@localhost:8080/system/sling/junit/.json | jq . | grep "\"failure\":"
+curl -s -X POST http://admin:admin@localhost:8080/system/sling/junit/.json
 cd ../docker
 
 # cleanup docker
