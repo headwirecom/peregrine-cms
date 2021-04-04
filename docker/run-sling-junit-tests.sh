@@ -19,8 +19,8 @@ fi
 cd ..
 cd slingjunit.parent
 mvn install -PautoInstallPackage
-curl -s -X POST http://localhost:8080/system/sling/junit/.json | jq . | grep "\"failure\":"
-cd docker
+curl -s -X POST http://admin:admin@localhost:8080/system/sling/junit/.json | jq . | grep "\"failure\":"
+cd ../docker
 
 # cleanup docker
 docker kill peregrine
