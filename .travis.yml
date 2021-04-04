@@ -1,11 +1,13 @@
+language: java
+
 branches:
   only:
   - develop-sling12
   - develop
 
 before_install:
-  - sudo apt-get install -y npm nodejs
   - nvm ls
+  - nvm use stable
   - node --version
 
 cache:
@@ -17,7 +19,7 @@ services:
   - xvfb
 
 node_js:
-  - 12
+  - node
 
 jdk:
   - openjdk11
