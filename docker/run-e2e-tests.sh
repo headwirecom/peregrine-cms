@@ -1,5 +1,7 @@
 #!/bin/bash
 
+node --version
+
 # run the docker instance we just built
 docker run -d --rm -p 8080:8080 --name peregrine peregrinecms/peregrine-cms:latest
 
