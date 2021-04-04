@@ -8,8 +8,12 @@ cache:
   - $HOME/.m2
   
 services:
-- docker
+  - docker
+  - xvfb
+  - nodejs
 
+node_js:
+  - "12"
 jdk:
   - openjdk11
 
