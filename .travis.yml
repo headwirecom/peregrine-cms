@@ -33,6 +33,7 @@ script:
 - if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then BUILD_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH; else BUILD_BRANCH=$TRAVIS_BRANCH; fi
 - ./travis-build.sh
 - cd docker && ./builddocker.sh
+- ./run-sling-junit-tests.sh
 - ./run-e2e-tests.sh
 - ./pushdocker-travis.sh
 
