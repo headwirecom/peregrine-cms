@@ -1,14 +1,12 @@
 #!/bin/bash
 
-node --version
-
 # run the docker instance we just built
 docker run -d --rm -p 8080:8080 --name peregrine peregrinecms/peregrine-cms:latest
 
 # clone and install the e2e test repository
 git clone https://github.com/peregrine-cms/peregrine-cms-e2e-testing.git
 cd peregrine-cms-e2e-testing
-npm install
+npm ci
 
 # Wait for Sling to fully start up
 STATUS=$(curl -u admin:admin -s --fail  http://localhost:8080/system/console/bundles.json | jq '.s[3:5]' -c)
@@ -25,11 +23,10 @@ fi
 curl -X POST http://admin:admin@localhost:8080/perapi/admin/acceptTermsAndConditions.json
 
 # run the tests
-npm run test
+docker run --net=host -v $PWD:/tests codeceptjs/codeceptjs codeceptjs run --steps
 
-# cleanup directory
+# back to previous directory
 cd ..
-rm -rf peregrine-cms-e2e-testing
 
 # cleanup docker
 docker kill peregrine

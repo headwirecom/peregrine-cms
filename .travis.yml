@@ -5,18 +5,12 @@ branches:
   - develop-sling12
   - develop
 
-before_install:
-  - nvm ls
-  - nvm use stable
-  - node --version
-
 cache:
   directories:
   - $HOME/.m2
   
 services:
   - docker
-  - xvfb
 
 node_js:
   - node
