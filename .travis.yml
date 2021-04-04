@@ -3,6 +3,9 @@ branches:
   - develop-sling12
   - develop
 
+before_install:
+  - sudo snap install node --channel=12/stable --classic
+
 cache:
   directories:
   - $HOME/.m2
@@ -10,10 +13,10 @@ cache:
 services:
   - docker
   - xvfb
-  - nodejs
 
 node_js:
-  - "12"
+  - 12
+
 jdk:
   - openjdk11
 
