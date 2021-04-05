@@ -11,7 +11,7 @@ if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then
   docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
   docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:${TAG}"
   docker tag "$DOCKER_IMAGE-author" "${DOCKER_IMAGE}-author:${TAG}"
-  docker tag "$DOCKER_IMAGE-publish" "${DOCKER_IMAGE}-author:${TAG}"
+  docker tag "$DOCKER_IMAGE-publish" "${DOCKER_IMAGE}-publish:${TAG}"
   docker push ${DOCKER_IMAGE}:${TAG}
   docker push ${DOCKER_IMAGE}-author:${TAG}
   docker push ${DOCKER_IMAGE}-publish:${TAG}
