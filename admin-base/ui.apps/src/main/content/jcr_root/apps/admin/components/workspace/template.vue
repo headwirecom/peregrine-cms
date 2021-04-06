@@ -43,20 +43,20 @@
                 tooltipTitle: state.rightPanelVisible? $i18n('hideComponentsPanel') : $i18n('showComponentsPanel')
             }">
       <i class="material-icons" v-if="state.rightPanelVisible">keyboard_arrow_right</i>
-      <i class="material-icons" v-if="!state.rightPanelVisible">keyboard_arrow_left</i>
+      <i class="material-icons" v-else>keyboard_arrow_left</i>
     </admin-components-action>
 
     <aside v-bind:class="[
         `explorer-preview`,
         `right-panel`,
         {
-          'fullscreen': isFullscreen,
-          'narrow': !isFullscreen,
+          'fullscreen': fullscreen,
+          'narrow': !fullscreen,
         }
       ]">
 
       <button
-          v-if="state.editorVisible && isFullscreen"
+          v-if="state.editorVisible && fullscreen"
           type="button"
           class="toggle-fullscreen"
           title="exit fullscreen"
@@ -64,11 +64,11 @@
         <i class="material-icons">fullscreen_exit</i>
       </button>
       <button
-          v-if="state.editorVisible && !isFullscreen"
+          v-if="state.editorVisible && !fullscreen"
           type="button"
           class="toggle-fullscreen"
           v-bind:title="$i18n('enterFullscreen')"
-          v-on:click.prevent="onEditorFullscreen">
+          v-on:click.prevent="onEditorEnterFullscreen">
         <i class="material-icons">fullscreen</i>
       </button>
 
@@ -102,6 +102,11 @@ import { set } from '../../../../../../js/utils';
 
 export default {
   props: ['model'],
+  data() {
+    return {
+      fullscreen: false
+    };
+  },
   computed: {
     state: function () {
       return $perAdminApp.getView().state;
@@ -112,10 +117,15 @@ export default {
     getRightPanelClasses: function () {
       // rightPanelVisible: true/false
       return `right-panel ${ $perAdminApp.getView().state.rightPanelVisible ? 'visible' : '' }`;
-    },
-    isFullscreen() {
-      return $perAdminApp.getView().state.rightPanelFullscreen || false;
     }
+  },
+  watch: {
+    'state.editorVisible'(val) {
+      this.fullscreen = this.state.rightPanelFullscreen;
+    }
+  },
+  mounted() {
+    this.fullscreen = this.state.rightPanelFullscreen;
   },
   methods: {
     getChildByPath(childName) {
@@ -150,12 +160,14 @@ export default {
       }
     },
 
-    onEditorExitFullscreen() {
-      $perAdminApp.getView().state.rightPanelFullscreen = false;
+    onEditorEnterFullscreen() {
+      this.fullscreen = true;
+      set($perAdminApp.getView(), '/state/rightPanelFullscreen', true);
     },
 
-    onEditorFullscreen() {
-      $perAdminApp.getView().state.rightPanelFullscreen = true;
+    onEditorExitFullscreen() {
+      this.fullscreen = false;
+      set($perAdminApp.getView(), '/state/rightPanelFullscreen', false);
     }
   }
 };
