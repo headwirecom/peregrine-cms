@@ -258,22 +258,24 @@ export default {
             model = model.split('.')
             model.reverse()
             const $field = this.getFieldComponent(this.$refs.vfg, model.pop())
-            const fieldType = $field.field.type
-            this.openFieldGroup($field.$el)
-            this.$nextTick(() => {
-              $field.$el.scrollIntoView()
-              if (['input', 'texteditor', 'material-textarea'].indexOf(fieldType) >= 0) {
-                this.$nextTick(() => {
-                  set(this.view, '/state/inline/rich', this.isRichEditor($field.field))
-                })
-              } else if (fieldType === 'collection') {
-                this.focusCollectionField(model, $field)
-              } else {
-                console.warn('Unsupported field type: ', field.type)
-              }
-            })
+            if ($field && $field.field && $field.field.type) {
+              const fieldType = $field.field.type
+              this.openFieldGroup($field.$el)
+              this.$nextTick(() => {
+                $field.$el.scrollIntoView()
+                if (['input', 'texteditor', 'material-textarea'].indexOf(fieldType) >= 0) {
+                  this.$nextTick(() => {
+                    set(this.view, '/state/inline/rich', this.isRichEditor($field.field))
+                  })
+                } else if (fieldType === 'collection') {
+                  this.focusCollectionField(model, $field)
+                } else {
+                  console.warn('Unsupported field type: ', field.type)
+                }
+              })
 
-            set(this.view, '/state/inline/model', null)
+              set(this.view, '/state/inline/model', null)
+            }
           }, 0)
         },
 
