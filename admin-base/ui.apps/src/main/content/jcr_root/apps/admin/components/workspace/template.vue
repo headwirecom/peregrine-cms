@@ -23,22 +23,37 @@
   #L%
   -->
 <template>
-  <div :class="`peregrine-workspace ${state.rightPanelVisible ? 'right-panel-visible' : ''}`">
+  <div v-bind:class="[
+      `peregrine-workspace`,
+      {
+        'right-panel-visible': state.rightPanelVisible,
+        'editor-visible': state.editorVisible
+      }
+    ]">
     <component
         v-bind:is="getChildByPath('contentview').component"
         v-bind:model="getChildByPath('contentview')">
     </component>
 
-    <aside v-bind:class="[`explorer-preview`, `right-panel`, {'fullscreen': isFullscreen, 'narrow': !isFullscreen, 'collapsed': !state.rightPanelVisible}]">
-      <admin-components-action v-bind:model="{
-                classes: {'hide-right-panel': state.rightPanelVisible, 'show-right-panel': !state.rightPanelVisible},
+    <admin-components-action
+        v-bind:class="['right-panel-toggle', {'hide-right-panel': state.rightPanelVisible, 'show-right-panel': !state.rightPanelVisible}]"
+        v-bind:model="{
                 target: 'rightPanelVisible',
                 command: 'showHide',
                 tooltipTitle: state.rightPanelVisible? $i18n('hideComponentsPanel') : $i18n('showComponentsPanel')
             }">
-        <i class="material-icons" v-if="state.rightPanelVisible">keyboard_arrow_right</i>
-        <i class="material-icons" v-if="!state.rightPanelVisible">keyboard_arrow_left</i>
-      </admin-components-action>
+      <i class="material-icons" v-if="state.rightPanelVisible">keyboard_arrow_right</i>
+      <i class="material-icons" v-if="!state.rightPanelVisible">keyboard_arrow_left</i>
+    </admin-components-action>
+
+    <aside v-bind:class="[
+        `explorer-preview`,
+        `right-panel`,
+        {
+          'fullscreen': isFullscreen,
+          'narrow': !isFullscreen,
+        }
+      ]">
 
       <button
           v-if="state.editorVisible && isFullscreen"

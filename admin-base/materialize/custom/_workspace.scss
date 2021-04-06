@@ -279,20 +279,42 @@
     }
   }
 
-  .show-right-panel {
+  .right-panel-toggle {
+    position: absolute;
+    top: 44px;
     background-color: color("blue-grey", "lighten-5");
     width: 2rem;
-    height: 40px;
-    position: absolute;
+    height: 46px;
     z-index: 1;
-    right: -10px;
     border: 1px solid color("blue-grey", "lighten-4");
     border-right: 0;
+    opacity: .8;
+    transition: right .2s ease-in-out,
+                opacity .2s ease-in-out;
 
-    .material-icons {
-      position: relative;
-      left: -.25rem;
-      font-size: 40px;
+    &:hover {
+      opacity: 1;
+    }
+
+    &.hide-right-panel {
+      right: 340px;
+    }
+
+    &.show-right-panel {
+      right: 0;
+    }
+
+    > a {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      justify-content: center;
+      align-items: center;
+
+      .material-icons {
+        font-size: 30px;
+        color: color("blue-grey", "lighten-1");
+      }
     }
   }
 
@@ -309,22 +331,6 @@
     transition: width .2s ease-in-out;
     background-color: color("blue-grey", "lighten-5");
     border-left: 1px solid color("blue-grey", "lighten-4");
-
-    .hide-right-panel {
-      position: absolute;
-      right: 1rem;
-      top: 1rem;
-      opacity: 0;
-      transition: opacity .1s ease-in-out;
-
-      .material-icons {
-        position: absolute;
-        right: -7px;
-        top: -7px;
-        font-size: 30px;
-        color: color("blue-grey", "lighten-1");
-      }
-    }
 
     .toggle-fullscreen {
       position: absolute;
