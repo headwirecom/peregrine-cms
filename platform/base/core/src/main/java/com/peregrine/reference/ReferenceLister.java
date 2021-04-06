@@ -1,4 +1,4 @@
-package com.peregrine.replication;
+package com.peregrine.reference;
 
 /*-
  * #%L

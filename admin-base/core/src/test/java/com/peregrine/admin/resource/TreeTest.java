@@ -1,7 +1,7 @@
 package com.peregrine.admin.resource;
 
-import com.peregrine.admin.resource.ReferenceListerService.Node;
-import com.peregrine.admin.resource.ReferenceListerService.Tree;
+import com.peregrine.render.impl.ReferenceListerService.Node;
+import com.peregrine.render.impl.ReferenceListerService.Tree;
 import com.peregrine.commons.test.AbstractTest;
 import org.junit.Test;
 import org.slf4j.Logger;
