@@ -3,6 +3,10 @@ branches:
   - develop-sling12
   - develop
 
+cache:
+  directories:
+  - $HOME/.m2
+  
 services:
 - docker
 
@@ -30,7 +34,7 @@ after_script:
 - docker images
 
 before_deploy:
-- docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 - docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:latest"
 - docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:${branch}"
 

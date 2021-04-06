@@ -199,6 +199,11 @@
             <artifactId>xmpcore</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+
         <!-- For Mock Support -->
         <dependency>
             <groupId>org.slf4j</groupId>
