@@ -44,11 +44,17 @@ import javax.servlet.Servlet;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_TENANT_SETUP_REPLICATION;
 
-import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerConstants.FELIBS_ROOT;
+import static com.peregrine.commons.util.PerConstants.PAGES;
+import static com.peregrine.commons.util.PerConstants.SITE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
@@ -125,10 +131,6 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
                 logger.warn("Replication Failed", e);
                 return badRequestReplicationFailed(e);
             }
-        }
-
-        for (Resource r : toBeReplicated) {
-            logger.error(site.getPath() + " => " + r.getPath());
         }
 
         final String dateLabel = site.getName() + "_" + dateLabelFormat.format(new Date(System.currentTimeMillis()));

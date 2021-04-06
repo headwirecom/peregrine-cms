@@ -42,7 +42,8 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.startsWith;
 import static org.apache.commons.lang3.StringUtils.startsWithAny;
-import static org.apache.commons.lang3.StringUtils.substringBetween;
+import static org.apache.commons.lang3.StringUtils.substringAfter;
+import static org.apache.commons.lang3.StringUtils.substringBefore;
 
 public final class ReplicationUtil {
 
@@ -254,25 +255,32 @@ public final class ReplicationUtil {
         private static final String CONTENT_PREFIX = CONTENT_ROOT + SLASH;
         private static final String FE_LIBS_PREFIX = FELIBS_ROOT + SLASH;
 
-        private final String tenant;
+        private final boolean isValid;
         private final String contentRoot;
         private final String contentPrefix;
         private final String feLibsRoot;
         private final String feLibsPrefix;
 
         public TenantOwnedResourceChecker(final String path) {
-            if (startsWith(path, CONTENT_PREFIX) && !CONTENT_PREFIX.equals(path)) {
-                tenant = substringBetween(path, CONTENT_PREFIX, SLASH);
-            } else if (startsWith(path, FE_LIBS_PREFIX) && !FE_LIBS_PREFIX.equals(path)) {
-                tenant = substringBetween(path, FE_LIBS_PREFIX, SLASH);
-            } else {
-                tenant = null;
-            }
-
+            final String tenant = tenantName(path);
+            isValid = isNotBlank(tenant);
             contentRoot = CONTENT_PREFIX + tenant;
             contentPrefix = contentRoot + SLASH;
             feLibsRoot = FE_LIBS_PREFIX + tenant;
             feLibsPrefix = feLibsRoot + SLASH;
+        }
+
+        private static String tenantName(final String path) {
+            final String result;
+            if (startsWith(path, CONTENT_PREFIX) && !CONTENT_PREFIX.equals(path)) {
+                result = substringAfter(path, CONTENT_PREFIX);
+            } else if (startsWith(path, FE_LIBS_PREFIX) && !FE_LIBS_PREFIX.equals(path)) {
+                result = substringAfter(path, FE_LIBS_PREFIX);
+            } else {
+                return null;
+            }
+
+            return substringBefore(result, SLASH);
         }
 
         public TenantOwnedResourceChecker(final Resource tenant) {
@@ -285,7 +293,7 @@ public final class ReplicationUtil {
                 return false;
             }
 
-            if (isNull(tenant)) {
+            if (!isValid) {
                 return true;
             }
 
