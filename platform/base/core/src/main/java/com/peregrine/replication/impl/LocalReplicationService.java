@@ -27,7 +27,10 @@ package com.peregrine.replication.impl;
 
 import com.google.common.collect.Iterables;
 import com.peregrine.commons.ResourceUtils;
-import com.peregrine.commons.util.PerUtil.*;
+import com.peregrine.commons.util.PerUtil;
+import com.peregrine.commons.util.PerUtil.MatchingResourceChecker;
+import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
+import com.peregrine.commons.util.PerUtil.ResourceChecker;
 import com.peregrine.replication.ReplicationServiceBase;
 import com.peregrine.reference.ReferenceLister;
 import com.peregrine.replication.Replication;
@@ -45,12 +48,28 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import static com.peregrine.commons.ResourceUtils.performFlatSafeCopy;
 import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerUtil.*;
-import static com.peregrine.replication.ReplicationUtil.*;
+import static com.peregrine.commons.util.PerUtil.EQUALS;
+import static com.peregrine.commons.util.PerUtil.containsResource;
+import static com.peregrine.commons.util.PerUtil.getParent;
+import static com.peregrine.commons.util.PerUtil.getResource;
+import static com.peregrine.commons.util.PerUtil.listMissingParents;
+import static com.peregrine.commons.util.PerUtil.listMissingResources;
+import static com.peregrine.commons.util.PerUtil.relativePath;
+import static com.peregrine.replication.ReplicationUtil.markAsActivated;
+import static com.peregrine.replication.ReplicationUtil.markAsDeactivated;
+import static com.peregrine.replication.ReplicationUtil.refreshAndCommit;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -148,7 +167,7 @@ public class LocalReplicationService
         final Resource target = resolveLocalTarget(resourceResolver);
         final List<Resource> referenceList = referenceLister.getReferenceList(true, startingResource, deep, source, target, checker);
         final List<Resource> replicationList = new ArrayList<>();
-        final ResourceChecker resourceChecker = new ConjunctionResourceCheckerChain(checker, new MissingOrOutdatedResourceChecker(source, target));
+        final ResourceChecker resourceChecker = new PerUtil.ConjunctionResourceCheckerChain(checker, new MissingOrOutdatedResourceChecker(source, target));
         // Need to check this list of they need to be replicated first
         for(final Resource resource: referenceList) {
             if(resourceChecker.doAdd(resource) && !containsResource(replicationList, resource)) {
