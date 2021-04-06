@@ -23,7 +23,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.peregrine.commons.util.PerConstants.ACTIVATED;
+import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
 import static com.peregrine.commons.util.PerConstants.DEACTIVATED;
+import static com.peregrine.commons.util.PerConstants.FELIBS_ROOT;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATION;
@@ -42,7 +44,7 @@ import static org.apache.commons.lang3.StringUtils.startsWith;
 import static org.apache.commons.lang3.StringUtils.startsWithAny;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
 
-public class ReplicationUtil {
+public final class ReplicationUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReplicationUtil.class);
     private static final String SQL2_STATEMENT = "SELECT * FROM [nt:base] AS s WHERE ISDESCENDANTNODE([%s]) and CONTAINS(s.*, '%s')";
@@ -247,10 +249,10 @@ public class ReplicationUtil {
         return isReplicated(resource) || isAnyDescendantReplicated(resource);
     }
 
-    public static final class TenantOwnedResourceChecker implements ResourceChecker {
+    public static final class TenantOwnedResourceChecker implements PerUtil.ResourceChecker {
 
-        private static final String CONTENT_PREFIX = "/content/";
-        private static final String FE_LIBS_PREFIX = "/etc/felibs/";
+        private static final String CONTENT_PREFIX = CONTENT_ROOT + SLASH;
+        private static final String FE_LIBS_PREFIX = FELIBS_ROOT + SLASH;
 
         private final String tenant;
         private final String contentRoot;
