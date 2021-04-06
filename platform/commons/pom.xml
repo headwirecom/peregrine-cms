@@ -29,7 +29,7 @@
     </parent>
 
     <artifactId>commons</artifactId>
-    <packaging>bundle</packaging>
+    <packaging>jar</packaging>
 
     <name>Peregrine CMS - Platform - Commons</name>
     <description>
@@ -41,35 +41,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Export-Package>
-                            com.peregrine.commons.*
-                        </Export-Package>
-                        <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
-                        <_dsannotations>*</_dsannotations>
-                        <_metatypeannotations>*</_metatypeannotations>
-                        <_removeheaders>
-                            Embed-Dependency,
-                            Private-Package,
-                            Include-Resource
-                        </_removeheaders>
-                    </instructions>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.sling</groupId>
-                <artifactId>maven-sling-plugin</artifactId>
-                <configuration>
-                    <slingUrl>http://${sling.host}:${sling.port}/system/console</slingUrl>
-                    <user>${sling.user}</user>
-                    <password>${sling.password}</password>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>license-maven-plugin</artifactId>
@@ -196,26 +167,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <profiles>
-        <profile>
-            <id>autoInstallBundle</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.sling</groupId>
-                        <artifactId>maven-sling-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>install-bundle</id>
-                                <goals>
-                                    <goal>install</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>

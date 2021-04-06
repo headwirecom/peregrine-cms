@@ -50,6 +50,8 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
+                            com.peregrine.commons,
+                            com.peregrine.commons.*,
                             com.peregrine.adaption,
                             com.peregrine.nodetypes.*,
                             com.peregrine.intra,
@@ -60,7 +62,6 @@
                             com.peregrine.sitemap,
                             com.peregrine.transform,
                             com.peregrine.transform.*,
-                            com.peregrine.commons.util,
                             com.peregrine.model.api,
                             com.peregrine.versions
                         </Export-Package>
