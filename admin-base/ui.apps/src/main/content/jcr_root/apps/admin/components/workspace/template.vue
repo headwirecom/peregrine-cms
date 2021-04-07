@@ -102,11 +102,6 @@ import { set } from '../../../../../../js/utils';
 
 export default {
   props: ['model'],
-  data() {
-    return {
-      //rightPanelFullscreen: false
-    };
-  },
   computed: {
     state: function () {
       return $perAdminApp.getView().state;
@@ -115,7 +110,6 @@ export default {
       return $perAdminApp.getNodeFromView('/state/editorVisible');
     },
     getRightPanelClasses: function () {
-      // rightPanelVisible: true/false
       return `right-panel ${ $perAdminApp.getView().state.rightPanelVisible ? 'visible' : '' }`;
     },
     rightPanelFullscreen: {
