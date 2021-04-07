@@ -50,13 +50,13 @@
         `explorer-preview`,
         `right-panel`,
         {
-          'fullscreen': fullscreen,
-          'narrow': !fullscreen,
+          'fullscreen': rightPanelFullscreen,
+          'narrow': !rightPanelFullscreen,
         }
       ]">
 
       <button
-          v-if="state.editorVisible && fullscreen"
+          v-if="state.editorVisible && rightPanelFullscreen"
           type="button"
           class="toggle-fullscreen"
           title="exit fullscreen"
@@ -64,7 +64,7 @@
         <i class="material-icons">fullscreen_exit</i>
       </button>
       <button
-          v-if="state.editorVisible && !fullscreen"
+          v-if="state.editorVisible && !rightPanelFullscreen"
           type="button"
           class="toggle-fullscreen"
           v-bind:title="$i18n('enterFullscreen')"
@@ -104,7 +104,7 @@ export default {
   props: ['model'],
   data() {
     return {
-      fullscreen: false
+      //rightPanelFullscreen: false
     };
   },
   computed: {
@@ -117,6 +117,14 @@ export default {
     getRightPanelClasses: function () {
       // rightPanelVisible: true/false
       return `right-panel ${ $perAdminApp.getView().state.rightPanelVisible ? 'visible' : '' }`;
+    },
+    rightPanelFullscreen: {
+      get() {
+        return this.state.rightPanelFullscreen;
+      },
+      set(fullscreen) {
+        set($perAdminApp.getView(), '/state/rightPanelFullscreen', fullscreen);
+      }
     }
   },
   watch: {
@@ -161,13 +169,11 @@ export default {
     },
 
     onEditorEnterFullscreen() {
-      this.fullscreen = true;
-      set($perAdminApp.getView(), '/state/rightPanelFullscreen', true);
+      this.rightPanelFullscreen = true;
     },
 
     onEditorExitFullscreen() {
-      this.fullscreen = false;
-      set($perAdminApp.getView(), '/state/rightPanelFullscreen', false);
+      this.rightPanelFullscreen = false;
     }
   }
 };
