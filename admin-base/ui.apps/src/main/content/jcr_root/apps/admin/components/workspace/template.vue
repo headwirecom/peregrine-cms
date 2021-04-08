@@ -97,78 +97,78 @@
 </template>
 
 <script>
-import { set } from '../../../../../../js/utils';
+import {set} from '../../../../../../js/utils'
 
 
 export default {
   props: ['model'],
   computed: {
     state: function () {
-      return $perAdminApp.getView().state;
+      return $perAdminApp.getView().state
     },
     editorVisible: function () {
-      return $perAdminApp.getNodeFromView('/state/editorVisible');
+      return $perAdminApp.getNodeFromView('/state/editorVisible')
     },
     getRightPanelClasses: function () {
-      return `right-panel ${ $perAdminApp.getView().state.rightPanelVisible ? 'visible' : '' }`;
+      return `right-panel ${$perAdminApp.getView().state.rightPanelVisible ? 'visible' : ''}`
     },
     rightPanelFullscreen: {
       get() {
-        return this.state.rightPanelFullscreen;
+        return this.state.rightPanelFullscreen
       },
       set(fullscreen) {
-        set($perAdminApp.getView(), '/state/rightPanelFullscreen', fullscreen);
+        set($perAdminApp.getView(), '/state/rightPanelFullscreen', fullscreen)
       }
     }
   },
   watch: {
     'state.editorVisible'(val) {
-      this.fullscreen = this.state.rightPanelFullscreen;
+      this.fullscreen = this.state.rightPanelFullscreen
     }
   },
   mounted() {
-    this.fullscreen = this.state.rightPanelFullscreen;
+    this.fullscreen = this.state.rightPanelFullscreen
   },
   methods: {
     getChildByPath(childName) {
-      var path = this.model.path + '/' + childName;
+      var path = this.model.path + '/' + childName
       for (var i = 0; i < this.model.children.length; i++) {
         if (this.model.children[i].path === path) {
-          var ret = this.model.children[i];
-          ret.classes = 'col fullheight s4';
-          return ret;
+          var ret = this.model.children[i]
+          ret.classes = 'col fullheight s4'
+          return ret
         }
       }
-      return null;
+      return null
     },
 
     showHide(me, name) {
       $perAdminApp.getView().state.rightPanelVisible = $perAdminApp.getView().state.rightPanelVisible
-          ? false : true;
+          ? false : true
     },
 
     showComponentEdit(me, target) {
 
-      set($perAdminApp.getView(), `/state/editorVisible`, false);
+      set($perAdminApp.getView(), `/state/editorVisible`, false)
       // only trigger state action if another component is selected
       if ($perAdminApp.getNodeFromView('/state/editor/path') !== target) {
         return $perAdminApp.stateAction('editComponent', target).then(() => {
-          set($perAdminApp.getView(), `/state/editorVisible`, true);
-        });
+          set($perAdminApp.getView(), `/state/editorVisible`, true)
+        })
       } else {
         return new Promise((resolve) => {
-          resolve();
-        });
+          resolve()
+        })
       }
     },
 
     onEditorEnterFullscreen() {
-      this.rightPanelFullscreen = true;
+      this.rightPanelFullscreen = true
     },
 
     onEditorExitFullscreen() {
-      this.rightPanelFullscreen = false;
+      this.rightPanelFullscreen = false
     }
   }
-};
+}
 </script>

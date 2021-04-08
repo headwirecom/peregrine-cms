@@ -63,131 +63,131 @@
 </template>
 
 <script>
-import { IgnoreContainers } from '../../../../../../js/constants.js';
+import {IgnoreContainers} from '../../../../../../js/constants.js'
 
 
 export default {
   props: ['model'],
   computed: {
     state() {
-      const state = $perAdminApp.getNodeFromView('/state/componentExplorer');
+      const state = $perAdminApp.getNodeFromView('/state/componentExplorer')
       if (state) {
-        return state;
+        return state
       }
-      Vue.set($perAdminApp.getView().state, 'componentExplorer', { filter: '', group: '' });
-      return $perAdminApp.getNodeFromView('/state/componentExplorer');
+      Vue.set($perAdminApp.getView().state, 'componentExplorer', {filter: '', group: ''})
+      return $perAdminApp.getNodeFromView('/state/componentExplorer')
     },
     filteredList: function () {
-      var currentGroup = this.state.group;
-      if (!this.$root.$data.admin.components) return {};
-      var componentPath = this.$root.$data.pageView.path.split('/');
-      var allowedComponents = ['/apps/' + componentPath[2] + '/'];
-      var list = this.$root.$data.admin.components.data;
-      if (!list || !allowedComponents) return {};
+      var currentGroup = this.state.group
+      if (!this.$root.$data.admin.components) return {}
+      var componentPath = this.$root.$data.pageView.path.split('/')
+      var allowedComponents = ['/apps/' + componentPath[2] + '/']
+      var list = this.$root.$data.admin.components.data
+      if (!list || !allowedComponents) return {}
 
       var sorted = list.sort(function (left, right) {
-        const leftName = (left.group + '-' + left.title).toLowerCase();
-        const rightName = (right.group + '-' + right.title).toLowerCase();
-        if (leftName < rightName) return -1;
-        if (leftName > rightName) return 1;
-        return 0;
-      });
+        const leftName = (left.group + '-' + left.title).toLowerCase()
+        const rightName = (right.group + '-' + right.title).toLowerCase()
+        if (leftName < rightName) return -1
+        if (leftName > rightName) return 1
+        return 0
+      })
 
       // Filter list to local components and with local filter
       return sorted.filter(component => {
-        if (component.group === '.hidden') return false;
-        if ((currentGroup && currentGroup !== '') && component.group !== currentGroup) return false;
+        if (component.group === '.hidden') return false
+        if ((currentGroup && currentGroup !== '') && component.group !== currentGroup) return false
         if (component.title.toLowerCase().indexOf(this.state.filter.toLowerCase())
             == -1) {
-          return false;
+          return false
         }
-        return component.path.startsWith(allowedComponents);
+        return component.path.startsWith(allowedComponents)
 
-      });
+      })
     },
     groupList: function () {
-      if (!this.$root.$data.admin.components) return {};
-      var componentPath = this.$root.$data.pageView.path.split('/');
-      var allowedComponents = ['/apps/' + componentPath[2]];
-      var list = this.$root.$data.admin.components.data;
-      if (!list || !allowedComponents) return {};
+      if (!this.$root.$data.admin.components) return {}
+      var componentPath = this.$root.$data.pageView.path.split('/')
+      var allowedComponents = ['/apps/' + componentPath[2]]
+      var list = this.$root.$data.admin.components.data
+      if (!list || !allowedComponents) return {}
 
       // Filter list to local components
       const ret = list.filter(component => {
-        if (component.group === '.hidden') return false;
-        return component.path.startsWith(allowedComponents);
+        if (component.group === '.hidden') return false
+        return component.path.startsWith(allowedComponents)
 
-      });
-      return ret;
+      })
+      return ret
     },
     groups: function () {
       return this.filteredList.reduce((obj, current) => {
-        if (!current.group) current.group = 'General';
-        if (!obj[current.group]) Vue.set(obj, current.group, []);
-        obj[current.group].push(current);
-        return obj;
-      }, {});
+        if (!current.group) current.group = 'General'
+        if (!obj[current.group]) Vue.set(obj, current.group, [])
+        obj[current.group].push(current)
+        return obj
+      }, {})
     },
     allGroups: function () {
       const ret = this.groupList.reduce((obj, current) => {
-        if (!current.group) current.group = 'General';
-        if (!obj[current.group]) Vue.set(obj, current.group, []);
-        obj[current.group].push(current);
-        return obj;
-      }, {});
+        if (!current.group) current.group = 'General'
+        if (!obj[current.group]) Vue.set(obj, current.group, [])
+        obj[current.group].push(current)
+        return obj
+      }, {})
 
       // make sure the currently selected group is an actual group
       if (!ret[this.state.group]) {
-        this.state.group = '';
+        this.state.group = ''
       }
-      return ret;
+      return ret
     },
     isIgnoreContainersEnabled() {
-      let view = $perAdminApp.getView();
+      let view = $perAdminApp.getView()
       return view.state.tools
           && view.state.tools.workspace
-          && view.state.tools.workspace.ignoreContainers === IgnoreContainers.ENABLED;
+          && view.state.tools.workspace.ignoreContainers === IgnoreContainers.ENABLED
     }
   },
   methods: {
     componentKey(component) {
       if (component.variation) {
-        return component.path + ':' + component.variation;
+        return component.path + ':' + component.variation
       } else {
-        return component.path;
+        return component.path
       }
     },
     isActive(key, groupChildren) {
       return (
           this.state.accordion[key]
-      );
+      )
     },
     displayName(component) {
       if (component.title) {
-        return component.title;
+        return component.title
       } else {
-        return component.path.split('/')[2] + ' ' + component.name;
+        return component.path.split('/')[2] + ' ' + component.name
       }
     },
     onDragStart: function (component, ev) {
       if (ev) {
         if (component.variation) {
-          ev.dataTransfer.setData('text', component.path + ':' + component.variation);
+          ev.dataTransfer.setData('text', component.path + ':' + component.variation)
         } else {
-          ev.dataTransfer.setData('text', component.path);
+          ev.dataTransfer.setData('text', component.path)
         }
-        let view = $perAdminApp.getView();
+        let view = $perAdminApp.getView()
         if (this.isIgnoreContainersEnabled) {
-          Vue.set(view.state.tools.workspace, 'ignoreContainers', IgnoreContainers.ON_HOLD);
-          Vue.set(view.pageView, 'view', view.state.tools.workspace.view);
+          Vue.set(view.state.tools.workspace, 'ignoreContainers', IgnoreContainers.ON_HOLD)
+          Vue.set(view.pageView, 'view', view.state.tools.workspace.view)
         }
       }
     },
     onDragEnd: function (component, ev) {
-      let view = $perAdminApp.getView();
+      let view = $perAdminApp.getView()
       if (this.isIgnoreContainersEnabled) {
-        Vue.set(view.state.tools.workspace, 'ignoreContainers', IgnoreContainers.ENABLED);
-        Vue.set(view.pageView, 'view', IgnoreContainers.ENABLED);
+        Vue.set(view.state.tools.workspace, 'ignoreContainers', IgnoreContainers.ENABLED)
+        Vue.set(view.pageView, 'view', IgnoreContainers.ENABLED)
 
       }
     }
