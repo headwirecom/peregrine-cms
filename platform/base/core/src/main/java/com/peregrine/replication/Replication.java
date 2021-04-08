@@ -28,6 +28,8 @@ package com.peregrine.replication;
 import org.apache.sling.api.resource.Resource;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -44,6 +46,13 @@ public interface Replication {
     /** @return Description of the Service which is given to the Users when they list the Replication Services **/
     String getDescription();
 
+    default List<Resource> filterReferences(final List<Resource> resources) {
+        return resources;
+    }
+
+    List<Resource> findReferences(Resource source, boolean deep)
+            throws ReplicationException;
+
     /**
      * Replicates the given resource with its JCR Content and references
      * and if deep also with its children as well as referenced and missing
@@ -55,8 +64,15 @@ public interface Replication {
      *
      * @throws ReplicationException If the replication failed
      */
-    List<Resource> replicate(Resource source, boolean deep)
-        throws ReplicationException;
+    default List<Resource> replicate(final Resource source, final boolean deep)
+        throws ReplicationException {
+        return replicate(findReferences(source, deep));
+    }
+
+    default void prepare(final Resource source, final boolean deep)
+            throws ReplicationException {
+        prepare(findReferences(source, deep));
+    }
 
     /**
      * Removes the replicated resources (and with it all child resources)
@@ -64,10 +80,14 @@ public interface Replication {
      * @param source Starting Resource to be removed from the Replication Target
      * @return List of removed resources (most likely just the given resource)
      *
-     * @throws ReplicationException If there was an error preveting the deactivation
+     * @throws ReplicationException If there was an error preventing the deactivation
      */
     List<Resource> deactivate(Resource source)
         throws ReplicationException;
+
+    default List<Resource> prepare(final Collection<Resource> resources) throws ReplicationException {
+        return new LinkedList<>(resources);
+    }
 
     /**
      * Replicates all the given resources and only them. This means
@@ -82,6 +102,16 @@ public interface Replication {
      */
     List<Resource> replicate(Collection<Resource> resourceList)
         throws ReplicationException;
+
+    default String storeFile(Resource parent, String name, String content)
+            throws ReplicationException {
+        return null;
+    }
+
+    default String storeFile(Resource parent, String name, byte[] content)
+            throws ReplicationException {
+        return null;
+    }
 
     class ReplicationException
         extends Exception

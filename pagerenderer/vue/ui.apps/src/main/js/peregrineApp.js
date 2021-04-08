@@ -263,11 +263,19 @@ function processLoadedContent(data, path, firstTime, fromPopState) {
             if (domains) {
                 for (var i = 0; i < domains.length; i++) {
                     var domain = domains[i]
-                    if (url.startsWith(domain)) {
+                    // if the URL matches the desired domain, and the domain does not include a path
+                    if (url.startsWith(domain) && !(domain.match(/\w\/\w/) && domain.lastIndexOf('/') > 7)) {
                         newLocation = '/' + path.split('/').slice(4).join('/')
+                        break
+                    } else if (domain.match(/\w\/\w/) && domain.lastIndexOf('/') > 7) {
+                        // domain contains a path
+                        newLocation = path.replace(/\/content(\/\w+)\/pages(\/.+)/,"$1$2")
+                        break
                     }
                 }
             }
+            // hide index.html
+            newLocation = newLocation.replace("/index.html", "")
             if(firstTime) {
                 history.replaceState({peregrinevue: true, path: path}, path, newLocation)
             } else {

@@ -25,57 +25,57 @@
         <sling.password>admin</sling.password>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
 
         <!-- OSGi Dependency Versions -->
         <osgi.core>6.0.0</osgi.core>
         <osgi.annotation.version>6.0.1</osgi.annotation.version>
-        <org.osgi.service.component.annotations.version>1.3.0</org.osgi.service.component.annotations.version>
-        <org.osgi.service.metatype.annotations.version>1.3.0</org.osgi.service.metatype.annotations.version>
-        <org.osgi.compendium.version>4.2.0</org.osgi.compendium.version>
+        <org.osgi.service.component.annotations.version>1.4.0</org.osgi.service.component.annotations.version>
+        <org.osgi.service.metatype.annotations.version>1.4.0</org.osgi.service.metatype.annotations.version>
 
         <!-- Java Frameworks -->
         <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
         <javax.inject.version>1</javax.inject.version>
         <javax.jcr.version>2.0</javax.jcr.version>
-        <slf4j.version>1.7.25</slf4j.version>
+        <slf4j.version>1.7.30</slf4j.version>
 
         <!-- Sling Dependencies Versions -->
-        <org.apache.sling.api.version>2.16.4</org.apache.sling.api.version>
+        <org.apache.sling.api.version>2.23.0</org.apache.sling.api.version>
         <org.apache.sling.jcr.api.version>2.4.0</org.apache.sling.jcr.api.version>
-        <org.apache.sling.jcr.base.version>3.0.2</org.apache.sling.jcr.base.version>
-        <org.apache.sling.commons.mime.version>2.1.10</org.apache.sling.commons.mime.version>
-        <org.apache.sling.settings.version>1.3.8</org.apache.sling.settings.version>
-        <org.apache.sling.commons.osgi.version>2.4.0</org.apache.sling.commons.osgi.version>
-        <org.apache.sling.models.api.version>1.3.4</org.apache.sling.models.api.version>
-        <org.apache.sling.engine.version>2.6.12</org.apache.sling.engine.version>
+        <org.apache.sling.jcr.base.version>3.1.6</org.apache.sling.jcr.base.version>
+        <org.apache.sling.commons.mime.version>2.2.2</org.apache.sling.commons.mime.version>
+        <org.apache.sling.settings.version>1.4.2</org.apache.sling.settings.version>
+        <org.apache.sling.commons.osgi.version>2.4.2</org.apache.sling.commons.osgi.version>
+        <org.apache.sling.models.api.version>1.3.8</org.apache.sling.models.api.version>
+        <org.apache.sling.engine.version>2.7.4</org.apache.sling.engine.version>
         <org.apache.sling.scripting.sightly.compiler.java.version>1.0.18</org.apache.sling.scripting.sightly.compiler.java.version>
-        <org.apache.sling.servlet-helpers.version>1.1.8</org.apache.sling.servlet-helpers.version>
-        <distribution.api.version>0.3.0</distribution.api.version>
+        <org.apache.sling.servlet-helpers.version>1.4.2</org.apache.sling.servlet-helpers.version>
+        <distribution.api.version>0.4.0</distribution.api.version>
         <distribution.api.version.latest>0.3.1-SNAPSHOT</distribution.api.version.latest>
+        <org.apache.sling.xss.version>2.2.8</org.apache.sling.xss.version>
 
         <!-- Third Party Dependencies Versions -->
-        <jackrabbit.version>2.14.4</jackrabbit.version>
-        <commons-lang.version>2.6</commons-lang.version>
-        <commons-lang3.version>3.5</commons-lang3.version>
-        <commons-io.version>2.6</commons-io.version>
+        <jackrabbit.version>2.18.6</jackrabbit.version>
+        <commons-lang3.version>3.11</commons-lang3.version>
+        <commons-io.version>2.8.0</commons-io.version>
         <commons-collections.version>3.2.2</commons-collections.version>
-        <com.fasterxml.jackson.version>2.8.7</com.fasterxml.jackson.version>
+        <com.fasterxml.jackson.version>2.12.1</com.fasterxml.jackson.version>
         <guava.version>15.0</guava.version>
-        <aws-java-sdk-osgi.version>1.11.181</aws-java-sdk-osgi.version>
-        <metadata-extractor.version>2.10.1</metadata-extractor.version>
-        <xmpcore.version>5.1.3</xmpcore.version>
+        <!-- <aws-java-sdk-osgi.version>1.11.181</aws-java-sdk-osgi.version> -->
+        <metadata-extractor.version>2.15.0</metadata-extractor.version>
+        <xmpcore.version>6.1.11</xmpcore.version>
         <tika.version>1.14</tika.version>
 
         <!-- Tests Dependencies Versions -->
-        <junit.version>4.11</junit.version>
+        <junit.version>4.13.2</junit.version>
         <mockito-all.version>1.9.5</mockito-all.version>
-        <jmock-junit4.version>2.8.2</jmock-junit4.version>
+        <jmock-junit4.version>2.12.0</jmock-junit4.version>
         <org.apache.sling.commons.testing.version>2.1.0</org.apache.sling.commons.testing.version>
-        <org.apache.sling.junit.core.version>1.0.26</org.apache.sling.junit.core.version>
-        <org.apache.sling.testing.clients.version>1.0.0</org.apache.sling.testing.clients.version>
-        <org.apache.sling.junit.teleporter.version>1.0.16</org.apache.sling.junit.teleporter.version>
+        <org.apache.sling.junit.core.version>1.1.0</org.apache.sling.junit.core.version>
+        <org.apache.sling.testing.clients.version>2.0.8</org.apache.sling.testing.clients.version>
+        <org.apache.sling.testing.rules.version>2.0.0</org.apache.sling.testing.rules.version>
+        <org.apache.sling.junit.teleporter.version>1.0.22</org.apache.sling.junit.teleporter.version>
 
         <sourceReleaseAssemblyDescriptor>source-release</sourceReleaseAssemblyDescriptor>
 
@@ -87,7 +87,7 @@
         <gpg.useagent>true</gpg.useagent>
 
         <noContent>true</noContent>
-        <org.apache.sling.serviceusermapper.version>1.3.2</org.apache.sling.serviceusermapper.version>
+        <org.apache.sling.serviceusermapper.version>1.5.2</org.apache.sling.serviceusermapper.version>
         <org.apache.sling.event.version>4.2.12</org.apache.sling.event.version>
     </properties>
 
@@ -228,13 +228,13 @@
                 <!-- Maven Source Plugin -->
                 <plugin>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>3.0.1</version>
+                    <version>3.2.1</version>
                 </plugin>
                 <!-- Maven Resources Plugin -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.0.2</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <!-- Maven Jar Plugin -->
                 <plugin>
@@ -245,15 +245,15 @@
                 <!-- Maven Enforcer Plugin -->
                 <plugin>
                     <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>3.0.0-M1</version>
+                    <version>3.0.0-M3</version>
                     <configuration>
                         <rules>
                             <requireMavenVersion>
                                 <version>[2.2.1,)</version>
                             </requireMavenVersion>
                             <requireJavaVersion>
-                                <message>Project must be compiled with Java 8 or higher</message>
-                                <version>1.8.0</version>
+                                <message>Project must be compiled with Java 11 or higher</message>
+                                <version>11</version>
                             </requireJavaVersion>
                         </rules>
                     </configuration>
@@ -261,7 +261,7 @@
                 <!-- Maven Compiler Plugin -->
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.7.0</version>
+                    <version>3.8.1</version>
                     <configuration>
                         <!-- Maven Compiler Source and Target are set in the properties 'maven.compiler.source' and 'maven.compiler.target'-->
                         <encoding>UTF-8</encoding>
@@ -290,7 +290,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>2.18.1</version>
+                    <version>2.22.2</version>
                 </plugin>
                 <!-- Maven Deploy Plugin -->
                 <plugin>
@@ -327,25 +327,25 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>5.1.2</version>
                     <inherited>true</inherited>
                 </plugin>
                 <!-- Maven Dependency Plugin -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>2.10</version>
+                    <version>3.1.2</version>
                 </plugin>
                 <!-- Build Helper Maven Plugin -->
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>1.9.1</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <groupId>com.github.eirslett</groupId>
                     <artifactId>frontend-maven-plugin</artifactId>
-                    <version>1.6</version>
+                    <version>1.11.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -368,7 +368,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-scr-plugin</artifactId>
-                    <version>1.21.0</version>
+                    <version>1.26.4</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -413,13 +413,6 @@
                 <scope>provided</scope>
             </dependency>
 
-            <dependency>
-                <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.compendium</artifactId>
-                <version>${org.osgi.compendium.version}</version>
-                <scope>provided</scope>
-            </dependency>
-
             <!-- Web Application API -->
             <dependency>
                 <groupId>javax.servlet</groupId>
@@ -455,7 +448,7 @@
             <dependency>
                 <groupId>com.google.code.findbugs</groupId>
                 <artifactId>jsr305</artifactId>
-                <version>3.0.0</version>
+                <version>3.0.2</version>
                 <scope>provided</scope>
             </dependency>
 
@@ -529,7 +522,7 @@
             <dependency>
                 <groupId>org.apache.jackrabbit.vault</groupId>
                 <artifactId>org.apache.jackrabbit.vault</artifactId>
-                <version>3.2.6</version>
+                <version>3.4.8</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -549,7 +542,6 @@
                 <artifactId>org.apache.sling.servlet-helpers</artifactId>
                 <version>${org.apache.sling.servlet-helpers.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.apache.sling</groupId>
                 <artifactId>org.apache.sling.event</artifactId>
@@ -562,16 +554,15 @@
                 <version>${org.apache.sling.serviceusermapper.version}</version>
                 <scope>provided</scope>
             </dependency>
-
+            <dependency>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.xss</artifactId>
+                <version>${org.apache.sling.xss.version}</version>
+                <scope>provided</scope>
+            </dependency>
 
 
             <!-- Support -->
-            <dependency>
-                <groupId>commons-lang</groupId>
-                <artifactId>commons-lang</artifactId>
-                <version>${commons-lang.version}</version>
-                <scope>provided</scope>
-            </dependency>
             <dependency>
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons-lang3.version}</version>
@@ -588,6 +579,12 @@
                 <groupId>commons-collections</groupId>
                 <artifactId>commons-collections</artifactId>
                 <version>${commons-collections.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>4.5.13</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -625,13 +622,6 @@
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
                 <groupId>com.google.guava</groupId>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.amazonaws</groupId>
-                <artifactId>aws-java-sdk-osgi</artifactId>
-                <version>${aws-java-sdk-osgi.version}</version>
                 <scope>provided</scope>
             </dependency>
 
@@ -695,7 +685,7 @@
             <dependency>
                 <groupId>org.apache.sling</groupId>
                 <artifactId>org.apache.sling.testing.rules</artifactId>
-                <version>${org.apache.sling.testing.clients.version}</version>
+                <version>${org.apache.sling.testing.rules.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -710,6 +700,7 @@
                 <version>16.0.2</version>
                 <scope>provided</scope>
             </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -718,7 +709,7 @@
             <!-- Plenty of javadoc errors with JDK8: https://stackoverflow.com/a/34591533 -->
             <id>disable-java8-doclint</id>
             <activation>
-                <jdk>[1.8,)</jdk>
+                <jdk>[11,)</jdk>
             </activation>
             <properties>
                 <additionalparam>-Xdoclint:none</additionalparam>
@@ -756,7 +747,7 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-resources-plugin</artifactId>
-                        <version>3.0.2</version>
+                        <version>3.2.0</version>
                         <inherited>false</inherited>
                         <executions>
                             <execution>
@@ -1008,6 +999,7 @@
         <module>admin-base</module>
         <module>samples/example-vue-site</module>
         <module>themes/themeclean</module>
+        <module>slingjunit.parent</module>
         <!--AS TODO: This module causes 'mvn site' to deploy an undeployable package and for now it is taken out -->
         <!--<module>autodocs</module>-->
 <!--        <module>tooling/maven/archetypes/project</module>-->

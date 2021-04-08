@@ -43,7 +43,7 @@
             :class="{active: getActiveSection() === 'tenants'}"
             :below-origin="true"
             :items="tenantDdItems">
-          {{ state.tenant.name }}
+          {{ vTenantTitle }}
         </admin-components-materializedropdown>
       </div>
       <div class="nav-center">
@@ -99,20 +99,29 @@
             <div class="user-circle big" :title="$i18n('profile picture')">
               <i class="material-icons">face</i>
             </div>
-            <table>
-              <tr>
-                <td>Logged in as</td>
-                <td>{{ username }}</td>
-              </tr>
-              <tr>
-                <td>Language</td>
-                <td>{{ language.name }}</td>
-              </tr>
-              <tr>
-                <td>Timezone</td>
-                <td>{{ gmtOffset }}</td>
-              </tr>
-            </table>
+            <div class="user-info">
+              <div class="row logged-in-as">
+                <p class="bold">Logged in as:</p>
+                <icon
+                    icon="clone"
+                    lib="font-awesome"
+                    class="copy-username"
+                    title="Copy username"
+                    @click.native.stop.prevent="copyUsername"/>
+                <div class="username" :title="username">
+                  {{ username }}
+                </div>
+                <input ref="usernameInput" class="username-input" type="hidden" :value="username">
+              </div>
+              <div class="row">
+                <p class="bold">Language:</p>
+                {{ language.name }}
+              </div>
+              <div class="row">
+                <p class="bold">Timezone:</p>
+                {{ gmtOffset }}
+              </div>
+            </div>
           </template>
         </admin-components-materializedropdown>
         <admin-components-materializedropdown
@@ -133,141 +142,176 @@
 </template>
 
 <script>
-  export default {
-    props: ['model'],
-    data() {
-      return {
-        state: $perAdminApp.getView().state,
-        tenants: $perAdminApp.getView().admin.tenants || [],
-        sections: [
-          {name: 'welcome', title: 'Dashboard', mobile: true},
-          {name: 'pages', title: 'Pages'},
-          {name: 'assets', title: 'Assets'},
-          {name: 'objects', title: 'Objects'},
-          {name: 'templates', title: 'Templates'}
-        ],
-        helpSelection: 'Help'
+import Icon from '../icon/template.vue'
+import {Toast} from '../../../../../../js/constants'
+
+export default {
+  components: {
+    Icon
+  },
+  props: ['model'],
+  data() {
+    return {
+      state: $perAdminApp.getView().state,
+      tenants: $perAdminApp.getView().admin.tenants || [],
+      sections: [
+        {name: 'welcome', title: 'Dashboard', mobile: true},
+        {name: 'pages', title: 'Pages'},
+        {name: 'assets', title: 'Assets'},
+        {name: 'objects', title: 'Objects'},
+        {name: 'templates', title: 'Templates'}
+      ],
+      helpSelection: 'Help'
+    }
+  },
+  computed: {
+    hideTenants() {
+      return this.model.hideTenants ? true : $perAdminApp.getView().state.tenant ? false : true
+    },
+    language() {
+      return {name: $perAdminApp.getView().state.language}
+    },
+    languages() {
+      return this.$i18nGetLanguages()
+    },
+    vueRoot() {
+      return this.$root
+    },
+    isExtended() {
+      return this.model.children && this.model.children.length > 0
+    },
+    userPreferences() {
+      return this.$root.$data.state.userPreferences
+    },
+    username() {
+      if (this.userPreferences && this.userPreferences.profile
+          && this.userPreferences.profile.email) {
+        return this.userPreferences.profile.email
+      }
+      return this.$root.$data.state.user
+    },
+    help() {
+      if ($perAdminApp.getView()) {
+        return $perAdminApp.findNodeFromPath($perAdminApp.getView().adminPage,
+            '/jcr:content/tour')
       }
     },
-    computed: {
-      hideTenants() {
-        return this.model.hideTenants ? true : $perAdminApp.getView().state.tenant ? false : true
-      },
-      language() {
-        return {name: $perAdminApp.getView().state.language}
-      },
-      languages() {
-        return this.$i18nGetLanguages()
-      },
-      vueRoot() {
-        return this.$root
-      },
-      isExtended() {
-        return this.model.children && this.model.children.length > 0
-      },
-      username() {
-        return this.$root.$data.state.user
-      },
-      help() {
-        if ($perAdminApp.getView()) {
-          return $perAdminApp.findNodeFromPath($perAdminApp.getView().adminPage,
-              '/jcr:content/tour')
+    moreDdItems() {
+      return [
+        {label: 'help', icon: 'help', disabled: !this.help, click: this.onHelpClick},
+        {label: 'tutorials', icon: 'import_contacts', disabled: true, click: this.onTutorialsClick},
+        {label: '--------------------', disabled: true},
+        {label: this.$i18n('aboutNavBtn'), icon: 'info', click: this.onAboutClick},
+      ]
+    },
+    tenantDdItems() {
+      return [
+        {label: 'Settings', icon: 'settings', click: this.onSettingsClick},
+        {label: 'Change website', icon: 'swap_horiz', click: this.onChangeWebsiteClick}
+      ]
+    },
+    userDdItems() {
+      return [
+        {label: 'Profile', icon: 'account_box', disabled: true},
+        {label: 'Language', icon: 'language', click: this.onLanguageClick},
+        {label: '', disabled: true},
+        {label: 'Logout', icon: 'exit_to_app', click: this.onLogoutClick}
+      ]
+    },
+    gmtOffset() {
+      const offsetInMinutes = new Date().getTimezoneOffset()
+      const offset = offsetInMinutes / 60 * -1
+      const algebraicSign = offset >= 0 ? '+' : '-'
+      return `GMT${algebraicSign}${offset}`
+    },
+    vTenantTitle() {
+      return this.state.tenant.title || this.state.tenant.name
+    }
+  },
+  beforeCreate() {
+    $perAdminApp.getApi().populateTenants().then(() => {
+      this.refreshTenants()
+    })
+  },
+  methods: {
+    getSectionModel(section) {
+      let target = `/content/admin/pages/${section.name}.html`
+      if (this.state.tenant) {
+        if (section.name !== 'welcome') {
+          const path = this.state.tools[section.name]
+          target += path && path.length > 0 ? `/path:${path}`
+              : `/path:${this.state.tenant.roots[section.name]}`
+        } else {
+          target += `/path:/content/${this.state.tenant.name}`
         }
-      },
-      moreDdItems() {
-        return [
-          {label: 'help', icon: 'help', disabled: !this.help, click: this.onHelpClick},
-          {label: 'tutorials', icon: 'import_contacts', disabled: true, click: this.onTutorialsClick},
-          {label: '--------------------', disabled: true},
-          {label: this.$i18n('aboutNavBtn'), icon: 'info', click: this.onAboutClick},
-        ]
-      },
-      tenantDdItems() {
-        return [
-          {label: 'Settings', icon: 'settings', click: this.onSettingsClick},
-          {label: 'Change website', icon: 'swap_horiz', click: this.onChangeWebsiteClick}
-        ]
-      },
-      userDdItems() {
-        return [
-          {label: 'Profile', icon: 'account_box', disabled: true},
-          {label: 'Language', icon: 'language', click: this.onLanguageClick},
-          {label: '', disabled: true},
-          {label: 'Logout', icon: 'exit_to_app', click: this.onLogoutClick}
-        ]
-      },
-      gmtOffset() {
-        const offsetInMinutes = new Date().getTimezoneOffset()
-        const offset = offsetInMinutes / 60 * -1
-        const algebraicSign = offset >= 0 ? '+' : '-'
-        return `GMT${algebraicSign}${offset}`
+      } else {
+        target = '/content/admin/pages/index'
+      }
+      return {
+        command: 'selectPath',
+        title: this.$i18n(section.title),
+        target
       }
     },
-    beforeCreate() {
-      $perAdminApp.getApi().populateTenants().then(() => {
-        this.refreshTenants()
+    onSelectLang({name}) {
+      this.$i18nSetLanguage(name)
+      $perAdminApp.forceFullRedraw()
+    },
+    onSelectTenant(tenant) {
+      $perAdminApp.stateAction('setTenant', tenant)
+    },
+    onHelpClick() {
+      $perAdminApp.action(this, 'showTour', '')
+    },
+    onTutorialsClick() {
+      document.getElementById('peregrine-main').classList.toggle('tutorial-visible')
+    },
+    onAboutClick() {
+      $('#aboutPeregrine').modal('open');
+    },
+    onSettingsClick() {
+      $perAdminApp.action(this, 'configureTenant', {
+        path: '/content/admin/pages/tenants/configure.html/content/' + this.state.tenant.name,
+        name: this.state.tenant.name
       })
     },
-    methods: {
-      getSectionModel(section) {
-        let target = `/content/admin/pages/${section.name}.html`
-        if(this.state.tenant) {
-          if(section.name !== 'welcome') {
-            const path = this.state.tools[section.name]
-            target += path && path.length > 0 ? `/path:${path}` : `/path:${this.state.tenant.roots[section.name]}`
-          } else {
-            target += `/path:/content/${this.state.tenant.name}`
-          }
-        } else {
-          target = '/content/admin/pages/index'
-        }
-        return {
-          command: 'selectPath',
-          title: this.$i18n(section.title),
-          target
-        }
-      },
-      onSelectLang({name}) {
-        this.$i18nSetLanguage(name)
-        $perAdminApp.forceFullRedraw()
-      },
-      onSelectTenant(tenant) {
-        $perAdminApp.stateAction('setTenant', tenant)
-      },
-      onHelpClick() {
-        $perAdminApp.action(this, 'showTour', '')
-      },
-      onTutorialsClick() {
-        document.getElementById('peregrine-main').classList.toggle('tutorial-visible')
-      },
-      onAboutClick() {
-        $('#aboutPeregrine').modal('open');
-      },
-      onSettingsClick() {
-        $perAdminApp.action(this, 'configureTenant', {
-          path: '/content/admin/pages/tenants/configure.html/content/'+this.state.tenant.name, name: this.state.tenant.name
-        })
-      },
-      onChangeWebsiteClick() {
-        $perAdminApp.action(this, 'selectPath', '/content/admin/pages/index')
-      },
-      onLogoutClick() {
-        window.location.href = '/system/sling/logout?resource=/index.html';
-      },
-      onLanguageClick() {
-        this.$refs.languageModal.open();
-      },
-      refreshTenants() {
-        this.tenants = $perAdminApp.getView().admin.tenants || []
-        this.state = $perAdminApp.getView().state
-      },
-      getActiveSection() {
-        const breadcrumbs = $perAdminApp.getView().adminPage.breadcrumbs
-        if (breadcrumbs) {
-          return breadcrumbs[0].path.split('/')[4]
-        }
-        return 'welcome'
+    onChangeWebsiteClick() {
+      $perAdminApp.action(this, 'selectPath', '/content/admin/pages/index')
+    },
+    onLogoutClick() {
+      window.location.href = '/system/sling/logout?resource=/index.html';
+    },
+    onLanguageClick() {
+      this.$refs.languageModal.open();
+    },
+    refreshTenants() {
+      this.tenants = $perAdminApp.getView().admin.tenants || []
+      this.state = $perAdminApp.getView().state
+    },
+    getActiveSection() {
+      const breadcrumbs = $perAdminApp.getView().adminPage.breadcrumbs
+      if (breadcrumbs) {
+        return breadcrumbs[0].path.split('/')[4]
       }
+      return 'welcome'
+    },
+    copyUsername() {
+      let success = false
+      this.$refs.usernameInput.setAttribute('type', 'text')
+      this.$refs.usernameInput.select()
+      try {
+        success = !!document.execCommand('copy')
+      } catch (err) {
+        console.error('error while copying username: ', err)
+      }
+      if (success) {
+        $perAdminApp.toast(`copied username <i>"${this.username}"</i>`, Toast.Level.INFO)
+      } else {
+        $perAdminApp.toast('FAILED to copy username', Toast.Level.WARNING)
+      }
+      this.$refs.usernameInput.setAttribute('type', 'hidden')
+      window.getSelection().removeAllRanges()
     }
   }
+}
 </script>

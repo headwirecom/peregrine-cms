@@ -47,6 +47,7 @@ export default function(me, target) {
                     resolve()
                 }).catch( error => reject(error))
             }
-        }).catch( error => reject(error))
+        })
+        .catch( error => reject(error))
     })
 }

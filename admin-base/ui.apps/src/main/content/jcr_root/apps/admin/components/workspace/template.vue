@@ -23,124 +23,152 @@
   #L%
   -->
 <template>
-    <div :class="`peregrine-workspace ${state.rightPanelVisible ? 'right-panel-visible' : ''}`">
-        <component
-          v-bind:is    = "getChildByPath('contentview').component"
-          v-bind:model = "getChildByPath('contentview')">
-        </component>
+  <div :class="[
+      `peregrine-workspace`,
+      {
+        'right-panel-visible': state.rightPanelVisible,
+        'editor-visible': state.editorVisible
+      }
+    ]">
+    <component
+        :is="getChildByPath('contentview').component"
+        :model="getChildByPath('contentview')">
+    </component>
 
-        <admin-components-action v-if="!state.rightPanelVisible" v-bind:model="{
-            classes: 'show-right-panel',
-            target: 'rightPanelVisible',
-            command: 'showHide',
-            tooltipTitle: $i18n('showComponentsPanel')
-            }"><i class="material-icons">keyboard_arrow_left</i>
-        </admin-components-action>
-
-        <aside v-bind:class="`explorer-preview right-panel ${isFullscreen ? 'fullscreen' : 'narrow'}`">
-            <admin-components-action v-if="!state.editorVisible" v-bind:model="{
-                classes: 'hide-right-panel',
+    <admin-components-action
+        :class="['right-panel-toggle', {'hide-right-panel': state.rightPanelVisible, 'show-right-panel': !state.rightPanelVisible}]"
+        :model="{
                 target: 'rightPanelVisible',
                 command: 'showHide',
-                tooltipTitle: $i18n('hideComponentsPanel')
+                tooltipTitle: state.rightPanelVisible? $i18n('hideComponentsPanel') : $i18n('showComponentsPanel')
             }">
-                <i class="material-icons">highlight_off</i>
-            </admin-components-action>
-            
-            <button 
-              v-if="state.editorVisible && isFullscreen"
-              type="button" 
-              class="toggle-fullscreen" 
-              title="exit fullscreen"
-              v-on:click.prevent="onEditorExitFullscreen">
-              <i class="material-icons">fullscreen_exit</i>
-            </button>
-            <button 
-              v-if="state.editorVisible && !isFullscreen"
-              type="button" 
-              class="toggle-fullscreen" 
-              v-bind:title="$i18n('enterFullscreen')"
-              v-on:click.prevent="onEditorFullscreen">
-              <i class="material-icons">fullscreen</i>
-            </button>
+      <i class="material-icons" v-if="state.rightPanelVisible">keyboard_arrow_right</i>
+      <i class="material-icons" v-else>keyboard_arrow_left</i>
+    </admin-components-action>
 
-            <component
-              v-if         = "state.editorVisible && getChildByPath('editor')"
-              v-bind:is    = "getChildByPath('editor').component"
-              v-bind:model = "getChildByPath('editor')">
-            </component>
+    <aside :class="[
+        `explorer-preview`,
+        `right-panel`,
+        {
+          'fullscreen': rightPanelFullscreen,
+          'narrow': !rightPanelFullscreen,
+        }
+      ]">
 
-            <component
-              v-else-if    = "getChildByPath('right-panel')"
-              v-bind:is    = "getChildByPath('right-panel').component"
-              v-bind:model = "getChildByPath('right-panel')">
-            </component>
+      <button
+          v-if="state.editorVisible && rightPanelFullscreen"
+          type="button"
+          class="toggle-fullscreen"
+          title="exit fullscreen"
+          @click.prevent="onEditorExitFullscreen">
+        <i class="material-icons">fullscreen_exit</i>
+      </button>
+      <button
+          v-if="state.editorVisible && !rightPanelFullscreen"
+          type="button"
+          class="toggle-fullscreen"
+          :title="$i18n('enterFullscreen')"
+          @click.prevent="onEditorEnterFullscreen">
+        <i class="material-icons">fullscreen</i>
+      </button>
 
-            <component
-                v-else-if    = "getChildByPath('components')"
-                v-bind:is    = "getChildByPath('components').component"
-                v-bind:model = "getChildByPath('components')">
-            </component>
+      <component
+          v-if="state.editorVisible && getChildByPath('editor')"
+          :is="getChildByPath('editor').component"
+          :model="getChildByPath('editor')">
+      </component>
 
-            <div v-else>missing panel</div>
+      <component
+          v-else-if="getChildByPath('right-panel')"
+          :is="getChildByPath('right-panel').component"
+          :model="getChildByPath('right-panel')">
+      </component>
 
-        </aside>
-    </div>
+      <component
+          v-else-if="getChildByPath('components')"
+          :is="getChildByPath('components').component"
+          :model="getChildByPath('components')">
+      </component>
+
+      <div v-else>missing panel</div>
+
+    </aside>
+  </div>
 </template>
 
 <script>
-    export default {
-        props: ['model'],
-        computed: {
-            state: function() {
-                return $perAdminApp.getView().state
-            },
-            editorVisible: function() {
-                return $perAdminApp.getNodeFromView('/state/editorVisible')
-            },
-            getRightPanelClasses: function() {
-                // rightPanelVisible: true/false
-                return `right-panel ${$perAdminApp.getView().state.rightPanelVisible ? 'visible' : ''}`
-            },
-            isFullscreen(){
-              return $perAdminApp.getView().state.rightPanelFullscreen || false
-            }
-        },
-        methods: {
-            getChildByPath(childName) {
-                var path = this.model.path+'/'+childName
-                for(var i = 0; i < this.model.children.length; i++) {
-                    if(this.model.children[i].path === path) {
-                        var ret = this.model.children[i]
-                        ret.classes = 'col fullheight s4'
-                        return ret
-                    }
-                }
-                return null
-            },
+import {set} from '../../../../../../js/utils'
 
-            showHide(me, name) {
-                $perAdminApp.getView().state.rightPanelVisible = $perAdminApp.getView().state.rightPanelVisible ? false: true
-            },
 
-            showComponentEdit(me, target) {
-              // only trigger state action if another component is selected
-              if($perAdminApp.getNodeFromView('/state/editor/path') !== target) {
-                return $perAdminApp.stateAction('editComponent', target)
-              } else {
-                  return new Promise((resolve) => {
-                      resolve()
-                  })
-              }
-            },
-
-            onEditorExitFullscreen(){
-              $perAdminApp.getView().state.rightPanelFullscreen = false
-            },
-
-            onEditorFullscreen(){
-              $perAdminApp.getView().state.rightPanelFullscreen = true
-            }
-        }
+export default {
+  props: ['model'],
+  computed: {
+    state: function () {
+      return $perAdminApp.getView().state
+    },
+    editorVisible: function () {
+      return $perAdminApp.getNodeFromView('/state/editorVisible')
+    },
+    getRightPanelClasses: function () {
+      return `right-panel ${$perAdminApp.getView().state.rightPanelVisible ? 'visible' : ''}`
+    },
+    rightPanelFullscreen: {
+      get() {
+        return this.state.rightPanelFullscreen
+      },
+      set(fullscreen) {
+        set($perAdminApp.getView(), '/state/rightPanelFullscreen', fullscreen)
+      }
     }
+  },
+  watch: {
+    'state.editorVisible'(val) {
+      this.fullscreen = this.state.rightPanelFullscreen
+    }
+  },
+  mounted() {
+    this.fullscreen = this.state.rightPanelFullscreen
+  },
+  methods: {
+    getChildByPath(childName) {
+      var path = this.model.path + '/' + childName
+      for (var i = 0; i < this.model.children.length; i++) {
+        if (this.model.children[i].path === path) {
+          var ret = this.model.children[i]
+          ret.classes = 'col fullheight s4'
+          return ret
+        }
+      }
+      return null
+    },
+
+    showHide(me, name) {
+      $perAdminApp.getView().state.rightPanelVisible = $perAdminApp.getView().state.rightPanelVisible
+          ? false : true
+    },
+
+    showComponentEdit(me, target) {
+
+      set($perAdminApp.getView(), `/state/editorVisible`, false)
+      // only trigger state action if another component is selected
+      if ($perAdminApp.getNodeFromView('/state/editor/path') !== target) {
+        return $perAdminApp.stateAction('editComponent', target).then(() => {
+          set($perAdminApp.getView(), `/state/editorVisible`, true)
+        })
+      } else {
+        return new Promise((resolve) => {
+          resolve()
+        })
+      }
+    },
+
+    onEditorEnterFullscreen() {
+      this.rightPanelFullscreen = true
+    },
+
+    onEditorExitFullscreen() {
+      this.rightPanelFullscreen = false
+    }
+  }
+}
 </script>

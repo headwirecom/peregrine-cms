@@ -38,6 +38,12 @@
               @click="setActiveTab(Tab.VERSIONS)"/>
 
           <explorer-preview-nav-item
+              icon="public"
+              :title="'Web Publishing'"
+              :class="{'active': isTab(Tab.PUBLISHING)}"
+              @click="setActiveTab(Tab.PUBLISHING)" />
+
+          <explorer-preview-nav-item
               icon="more_vert"
               :title="'actions'"
               :class="{'active': isTab(Tab.ACTIONS)}"
@@ -52,6 +58,7 @@
       </template>
 
       <template v-else-if="isTab([Tab.INFO, Tab.OG_TAGS])">
+        <span class="panel-title">{{getActiveTabName}}</span>
         <div v-if="hasInfoView && !edit"
              :class="`${nodeType}-info-view`">
           <img v-if="isImage"
@@ -104,9 +111,12 @@
       </template>
 
       <template v-else-if="isTab(Tab.REFERENCES)">
-        <ul :class="['collection', 'with-header', `explorer-${nodeType}-referenced-by`]">
+        <span class="panel-title">{{ getActiveTabName }}</span>
+        <linear-preloader v-if="loading"/>
+        <ul v-else :class="['collection', 'with-header', `explorer-${nodeType}-referenced-by`]">
           <li class="collection-header">
-            referenced in {{ referencedBy.length }} location<span v-if="referencedBy.length !== 1 ">s</span>
+            referenced in {{ referencedBy.length }}
+            location<span v-if="referencedBy.length !== 1 ">s</span>
           </li>
           <li v-for="item in referencedBy" :key="item.path" class="collection-item">
             <span>
@@ -139,6 +149,7 @@
       </template>
 
       <template v-else-if="isTab(Tab.VERSIONS)">
+        <span class="panel-title">{{getActiveTabName}}</span>
         <div v-if="allowOperations" class="action-list">
           <div class="action"
                v-on:click.stop.prevent="createVersion"
@@ -149,7 +160,7 @@
 
           <p v-if="!hasVersions"
              v-bind:title="`no versions created yet`">
-            This {{ nodeType }} has no versions
+            This {{nodeType}} has no versions
           </p>
           <template v-else>
             <div v-for="version in versions"
@@ -158,15 +169,17 @@
                  v-on:click="checkoutVersion(version)"
                  v-bind:title="`Version ${version.name}`">
               <icon v-if="version.base" icon="check_box"/>
-              <icon v-else-if="!version.base" icon="check_box_outline_blank"/>
-              {{ version.name }} -{{ version.created }} {{ version.base ? '(current)' : '' }}
+              <icon v-else-if="!version.base" icon="check_box_outline_blank"/> {{version.name}} {{version.created}}
+              <div v-if="version.labels">
+                <span v-for="label in version.labels" class="chip labelChip" v-bind:key="label">{{label}}</span>
+              </div>
               <span v-if="!version.base" class="deleteVersionWrapper">
                           <action
                               v-bind:model="{
                                 command: 'deleteVersion',
                                 target: {version: version, path: currentObject},
                                 tooltipTitle: 'delete version'}">
-                            <icon icon="delete"/>
+                              <icon icon="delete"/>
                           </action>
                       </span>
             </div>
@@ -175,7 +188,39 @@
         </div>
       </template>
 
+      <template v-else-if="isTab(Tab.PUBLISHING)">
+        <span class="panel-title">{{getActiveTabName}}</span>
+        <admin-components-publishinginfo v-bind:node="nodeFromPath" v-if="nodeFromPath"/>
+
+        <div v-if="allowOperations && node" class="action-list">
+          <div class="action" :title="`Open Web Publishing ${nodeType} Dialog`" @click="openPublishingModal()">
+            <i class="material-icons">publish</i>
+            Publish to Web ({{nodeType}})
+          </div>
+          <div class="action" :title="`Deactivate ${nodeType}`" >
+            <admin-components-action
+                v-bind:model="{
+                    target: node.path,
+                    command: 'unPublishResource',
+                    tooltipTitle: `${$i18n('undo publish')} '${node.title || node.name}'`
+                }">
+              <i class="material-icons">remove_circle_outline</i>
+              Unpublish ({{nodeType}})
+            </admin-components-action>
+          </div>
+        </div>
+      </template>
+
+      <admin-components-publishingmodal
+          v-if="isPublishDialogOpen"
+          v-bind:isOpen="isPublishDialogOpen"
+          v-bind:path="currentObject"
+          v-on:complete="closePublishing"
+          v-bind:modalTitle="`Web Publishing: ${nodeName}`">
+      </admin-components-publishingmodal>
+
       <template v-else-if="isTab(Tab.ACTIONS)">
+        <span class="panel-title">Actions</span>
         <div v-if="allowOperations" class="action-list">
           <div v-if="nodeType === NodeType.PAGE"
                class="action"
@@ -184,21 +229,21 @@
             <icon icon="external-link" :lib="IconLib.FONT_AWESOME"/>
             Open live version
           </div>
-          <div class="action" :title="`rename ${nodeType}`" @click="$refs.renameModal.open()">
+          <div class="action" :title="`rename ${nodeType}`" @click="renameNode()">
             <icon :lib="IconLib.MATERIAL_ICONS" icon="text_format"/>
-            Rename {{ nodeType }}
+            <span :class="activationSensitiveClass">Rename {{ nodeType }}</span>
           </div>
           <div class="action" :title="`move ${nodeType}`" @click="moveNode()">
             <icon icon="compare_arrows"/>
-            Move {{ nodeType }}
+            <span :class="activationSensitiveClass">Move {{ nodeType }}</span>
           </div>
           <div class="action" :title="`copy ${nodeType}`" @click="copyNode()">
             <icon icon="content_copy"/>
             Copy {{ nodeType }}
           </div>
           <div class="action" :title="`delete ${nodeType}`" @click="deleteNode()">
-            <icon icon="delete"/>
-            Delete {{ nodeType }}
+            <icon :icon="selfOrAnyDescendantActivated ? 'delete_forever' : 'delete'" />
+            <span :class="activationSensitiveClass">Delete {{ nodeType }}</span>
           </div>
         </div>
       </template>
@@ -257,13 +302,15 @@
         :onSelect="onCopySelect">
     </path-browser>
 
+
   </div>
 </template>
 
 <script>
 import {IconLib, MimeType, NodeType, SUFFIX_PARAM_SEPARATOR} from '../../../../../../js/constants'
-import {deepClone, get} from '../../../../../../js/utils'
+import {deepClone, get, set} from '../../../../../../js/utils'
 import NodeNameValidation from '../../../../../../js/mixins/NodeNameValidation'
+import ReferenceUtil from '../../../../../../js/mixins/ReferenceUtil'
 import Icon from '../icon/template.vue'
 import PathBrowser from '../pathbrowser/template.vue'
 import MaterializeModal from '../materializemodal/template.vue'
@@ -271,6 +318,7 @@ import ConfirmDialog from '../confirmdialog/template.vue'
 import Action from '../action/template.vue'
 import ExplorerPreviewNavItem from '../explorerpreviewnavitem/template.vue'
 import IconEditPage from '../iconeditpage/template.vue'
+import LinearPreloader from '../linearpreloader/template.vue'
 
 const Tab = {
   INFO: 'info',
@@ -278,7 +326,8 @@ const Tab = {
   REFERENCES: 'references',
   VERSIONS: 'versions',
   COMPONENTS: 'components',
-  ACTIONS: 'actions'
+  ACTIONS: 'actions',
+  PUBLISHING: 'publishing'
 };
 
 const SchemaKey = {
@@ -289,6 +338,7 @@ const SchemaKey = {
 export default {
   name: 'ExplorerPreviewContent',
   components: {
+    LinearPreloader,
     Icon,
     PathBrowser,
     MaterializeModal,
@@ -321,6 +371,10 @@ export default {
     isEdit: {
       type: Boolean,
       default: false
+    },
+    onDelete: {
+      type: Function,
+      default: (type, path) => new Promise()
     }
   },
   data() {
@@ -330,6 +384,7 @@ export default {
       NodeType,
       IconLib,
       activeTab: null,
+      activeTabName: "info",
       edit: false,
       valid: {
         state: true,
@@ -337,6 +392,7 @@ export default {
       },
       isOpen: false,
       isCopyOpen: false,
+      isPublishDialogOpen: false,
       selectedPath: null,
       options: {
         validateAfterLoad: true,
@@ -356,10 +412,11 @@ export default {
       },
       formGenerator: {
         changes: []
-      }
+      },
+      loading: false
     }
   },
-  mixins: [NodeNameValidation],
+  mixins: [NodeNameValidation,ReferenceUtil],
   computed: {
     uNodeType() {
       return this.capFirstLetter(this.nodeType);
@@ -381,11 +438,14 @@ export default {
       }
       return obj;
     },
+    nodeFromPath() {
+      return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, this.currentObject);
+    },
     node() {
       if (this.nodeType === NodeType.OBJECT) {
         return this.rawCurrentObject.data
       }
-      return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, this.currentObject);
+      return this.nodeFromPath;
     },
     allowOperations() {
       return this.currentObject.split('/').length > 4;
@@ -403,7 +463,10 @@ export default {
       return this.hasOgTags || this.hasReferences;
     },
     referencedBy() {
-      return this.trimReferences($perAdminApp.getView().state.referencedBy.referencedBy);
+      if ($perAdminApp.getView().state.referencedBy) {
+        return this.trimReferences($perAdminApp.getView().state.referencedBy.referencedBy);
+      }
+      return []
     },
     versions() {
       return this.hasVersions ? $perAdminApp.getView().state.versions.versions : []
@@ -421,8 +484,7 @@ export default {
       return [NodeType.ASSET].indexOf(this.nodeType) > -1;
     },
     hasVersions() {
-      return $perAdminApp.getView().state.versions
-          ? $perAdminApp.getView().state.versions.has_versions : false
+      return $perAdminApp.getView().state.versions ? $perAdminApp.getView().state.versions.has_versions : false
     },
     nodeName() {
       let nodeName = this.node.name;
@@ -430,21 +492,62 @@ export default {
         nodeName = this.node.path.split('/').slice(-1).pop()
       }
       return nodeName
+    },
+    getActiveTabName(){
+      switch(this.activeTabName) {
+        case 'info':
+          return "Properties & Information"
+        case 'og-tags':
+          return "Open Graph Tags"
+        case 'versions':
+          return "Versioning"
+        case 'publishing':
+          return "Web Publishing"
+        case 'actions':
+          return "Actions"
+        case 'references':
+          return "References"
+      }
+    },
+    selfOrAnyDescendantActivated() {
+      const node = this.node;
+      return node.activated || node.selfOrAnyDescendantActivated;
+    },
+    activationSensitiveClass() {
+      return this.selfOrAnyDescendantActivated ? 'operationDisabledOnActivatedItem' : null;
+    },
+    stateToolsEdit() {
+      const stateTools = $perAdminApp.getNodeFromViewOrNull('/state/tools')
+      if (stateTools) {
+        return stateTools.edit
+      } else {
+        return false
+      }
     }
   },
   watch: {
-    edit(newVal) {
-      $perAdminApp.getNodeFromView('/state/tools').edit = newVal;
+    edit(val) {
+      $perAdminApp.getNodeFromViewOrNull('/state/tools').edit = val
     },
-    activeTab: function (tab) {
-      if (tab === 'versions') {
+    activeTab : function(tab) {
+      if (tab === 'versions'){
         this.showVersions()
+      } else if (tab === 'references'){
+        this.showReferencedBy()
       }
     },
-    currentObject: function (path) {
-      if (this.activeTab === 'versions') {
+    currentObject : function(path) {
+      if (this.activeTab === 'versions'){
         this.showVersions()
+      } else if (this.activeTab === 'references'){
+        this.showReferencedBy()
       }
+      if (this.stateToolsEdit) {
+        this.onEdit()
+      }
+    },
+    stateToolsEdit(edit) {
+      this.edit = edit
     }
   },
   created() {
@@ -456,15 +559,15 @@ export default {
   },
   methods: {
     itemToTarget(path) {
-      const ret = {path, target: path}
+      const ret = { path, target: path }
       const tenant = $perAdminApp.getNodeFromViewOrNull('/state/tenant')
-      if (path.startsWith(`/content/${tenant.name}/pages`)) {
+      if(path.startsWith(`/content/${tenant.name}/pages`)) {
         ret.path = `/content/admin/pages/pages/edit.html/path:${path}`
       } else if (path.startsWith(`/content/${tenant.name}/templates`)) {
         ret.path = `/content/admin/pages/templates/edit.html/path:${path}`
       } else {
         const segments = path.split('/')
-        if (segments.length > 0) {
+        if(segments.length > 0) {
           segments.pop()
         }
         path = segments.join('/')
@@ -527,27 +630,10 @@ export default {
         return {};
       }
     },
-    trimReferences(referenceList) {
-      return referenceList.reduce(
-          (map => (r, a) => (!map.has(a.path) && map.set(a.path,
-              r[r.push({
-                name: a.name,
-                path: a.path,
-                propertyName: a.propertyName,
-                propertyPath: a.propertyPath,
-                count: 0
-              }) - 1]),
-              map.get(a.path).count++, r))(new Map),
-          []
-      );
-    },
     getObjectComponent() {
       let resourceType = this.rawCurrentObject.data['component'];
       if (!resourceType) {
         resourceType = this.rawCurrentObject.data['sling:resourceType'];
-        if (!resourceType) {
-          resourceType = this.rawCurrentObject.data['objectPath'];
-        }
       }
       return resourceType.split('/').join('-');
     },
@@ -557,6 +643,10 @@ export default {
     onEdit() {
       this.edit = true
       this.formGenerator.original = deepClone(this.node)
+
+      if (this.nodeType === NodeType.OBJECT) {
+        $perAdminApp.stateAction('editObject', {selected: this.currentObject})
+      }
     },
     onCancel() {
       const payload = {selected: this.currentObject}
@@ -583,11 +673,11 @@ export default {
       this.valid.state = isValid;
       this.valid.errors = errors;
     },
-    onConfirmDialog(event) {
+    onConfirmDialog (event) {
       if (event === 'confirm') {
         const isValid = this.$refs.renameForm.validate()
         if (isValid) {
-          this.renameNode(this.formmodel.name, this.formmodel.title)
+          this.performRenameNode(this.formmodel.name, this.formmodel.title)
         } else {
           return
         }
@@ -598,11 +688,11 @@ export default {
       this.$refs.renameForm.clearValidationErrors()
       this.$refs.renameModal.close()
     },
-    onReady(event) {
+    onReady (event) {
       this.formmodel.name = this.node.name
       this.formmodel.title = this.node.title
     },
-    renameNode(newName, newTitle) {
+    performRenameNode(newName, newTitle) {
       const that = this;
       $perAdminApp.stateAction(`rename${this.uNodeType}`, {
         path: this.currentObject,
@@ -625,12 +715,39 @@ export default {
         this.setActiveTab(Tab.INFO)
       })
     },
+    openPublishingModal(){
+      console.log("Open Publishing Modal")
+      // this.$refs.publishingModal.open()
+      this.isPublishDialogOpen = true;
+    },
+    unPublishResource(me, path) {
+      $perAdminApp.stateAction('unreplicate', path)
+    },
+    closePublishing(){
+      console.log("Close Publishing Modal")
+      this.isPublishDialogOpen = false;
+    },
+    checkActivationStatusAndPerform(action) {
+      if (this.selfOrAnyDescendantActivated) {
+        $perAdminApp.toast("You cannot perform this operation yet. The resource or one of its children is still published." +
+                    " Please unpublish all of them first.", "warn", 7500);
+      } else {
+        action();
+      }
+    },
+    renameNode() {
+      this.checkActivationStatusAndPerform(() => {
+        this.$refs.renameModal.open();
+      });
+    },
     moveNode() {
-      $perAdminApp.getApi().populateNodesForBrowser(this.path.current, 'pathBrowser')
-          .then(() => {
-            this.isOpen = true;
-          }).catch(() => {
-        $perAdminApp.getApi().populateNodesForBrowser(`/content/${site.tenant}`, 'pathBrowser');
+      this.checkActivationStatusAndPerform(() => {
+        $perAdminApp.getApi().populateNodesForBrowser(this.path.current, 'pathBrowser')
+            .then(() => {
+              this.isOpen = true;
+            }).catch(() => {
+          $perAdminApp.getApi().populateNodesForBrowser(`/content/${site.tenant}`, 'pathBrowser');
+        });
       });
     },
     copyNode() {
@@ -642,18 +759,19 @@ export default {
       });
 
     },
+
     deleteNode() {
-      const really = confirm(`Are you sure you want to delete this ${this.nodeType}?`);
-      if (really) {
-        $perAdminApp.stateAction(`delete${this.uNodeType}`, this.node.path).then(() => {
-          $perAdminApp.stateAction(`unselect${this.uNodeType}`, {})
+      this.checkActivationStatusAndPerform(() => {
+        const me = this
+        this.onDelete(this.nodeType, this.node.path).then(() => {
+          $perAdminApp.stateAction(`unselect${me.uNodeType}`, {})
         }).then(() => {
           const path = $perAdminApp.getNodeFromView('/state/tools/pages')
           $perAdminApp.loadContent(
               '/content/admin/pages/pages.html/path' + SUFFIX_PARAM_SEPARATOR + path)
+          me.isOpen = false
         })
-        this.isOpen = false;
-      }
+      });
     },
     setCurrentPath(path) {
       this.path.current = path;
@@ -664,26 +782,32 @@ export default {
     showVersions() {
       $perAdminApp.getApi().populateVersions(this.currentObject);
     },
-    deleteVersion(me, target) {
-      $perAdminApp.stateAction('deleteVersion', {path: target.path, version: target.version.name});
+    showReferencedBy() {
+      this.loading = true
+      $perAdminApp.getApi()
+          .populateReferencedBy(this.currentObject)
+          .then(() => {
+            this.loading = false
+          })
     },
-    createVersion() {
+    deleteVersion(me, target) {
+      $perAdminApp.stateAction('deleteVersion', { path: target.path, version: target.version.name });
+    },
+    createVersion(){
       $perAdminApp.stateAction('createVersion', this.currentObject);
     },
-    checkoutVersion(version) {
-      if (version.base === true) {
+    checkoutVersion(version){
+      if(version.base === true){
         $perAdminApp.notifyUser('Info', 'You cannot checkout the current version')
         return
       }
       let self = this;
       $perAdminApp.askUser('Restore Version',
-          `Would you like to restore ${version.name}? You may lose work unless you create a new version saving the current state.`,
-          {
+          `Would you like to restore ${version.name}? You may lose work unless you create a new version saving the current state.`, {
             yesText: 'Yes',
             noText: 'No',
             yes() {
-              $perAdminApp.stateAction('restoreVersion',
-                  {path: self.currentObject, versionName: version.name});
+              $perAdminApp.stateAction('restoreVersion', {path: self.currentObject, versionName: version.name});
             },
             no() {
               console.log('no')
@@ -758,6 +882,7 @@ export default {
           data[key] = targetNode;
         }
       }
+      set($perAdminApp.getView(), '/state/tools/save/confirmed', true)
       $perAdminApp.stateAction('saveObjectEdit', {data: data, path: show}).then(() => {
         $perAdminApp.getNodeFromView('/state/tools')._deleted = {}
       });
@@ -766,6 +891,10 @@ export default {
     },
     setActiveTab(clickedTab) {
       this.activeTab = clickedTab;
+      $perAdminApp.action(this, 'setActiveTabName', {activeTab: this.activeTab})
+    },
+    setActiveTabName(me, target){
+      me.activeTabName = target.activeTab
     },
     isTab(arg) {
       if (Array.isArray(arg)) {
@@ -797,5 +926,13 @@ export default {
 <style>
 .deleteVersionWrapper {
   margin-left: auto;
+}
+.labelChip {
+  display: block;
+  width: fit-content;
+  white-space: nowrap;
+}
+.operationDisabledOnActivatedItem {
+  text-decoration: line-through;
 }
 </style>

@@ -112,6 +112,10 @@ class PerApi {
         return impl.populateVersions(page)
     }
 
+    populateReferences(path) {
+        return impl.populateReferences(path)
+    }
+
     setInitialPageEditorState(path) {
         return impl.setInitialPageEditorState(path)
     }
@@ -271,8 +275,8 @@ class PerApi {
         return impl.moveNodeTo(path, component, drop)
     }
 
-    replicate(path) {
-        return impl.replicate(path)
+    replicate(path, deep, deactivate, references) {
+        return impl.replicate(path, deep, deactivate, references)
     }
 
     getPalettes(templateName) {
@@ -309,6 +313,10 @@ class PerApi {
 
     acceptTermsAndConditions() {
         return impl.acceptTermsAndConditions()
+    }
+
+    checkTenantNameAvailability(name) {
+        return impl.checkTenantNameAvailability(name)
     }
 }
 

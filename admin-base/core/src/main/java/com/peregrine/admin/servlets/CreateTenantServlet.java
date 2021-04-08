@@ -138,6 +138,7 @@ public class CreateTenantServlet extends AbstractBaseServlet {
         String toTenant = request.getParameter(TO_TENANT_NAME);
         String title = request.getParameter(TO_TENANT_TITLE);
         boolean isAdmin = request.isAdmin();
+
         ResourceResolver resourceResolver = null;
         try {
             logger.trace("Copy Site form: '{}' to: '{}'", fromTenant, toTenant);
@@ -146,6 +147,7 @@ public class CreateTenantServlet extends AbstractBaseServlet {
                 loginService(resourceResolverFactory, PEREGRINE_SERVICE_NAME);
             Session adminSession = resourceResolver.adaptTo(Session.class);
             UserManager userManager = AccessControlUtil.getUserManager(adminSession);
+
             Resource site = resourceManagement
                 .copyTenant(resourceResolver, CONTENT_ROOT, fromTenant, toTenant);
             if(isNotEmpty(title)) {
@@ -158,6 +160,14 @@ public class CreateTenantServlet extends AbstractBaseServlet {
             // Create Tenant Group
             String tenantGroupId = toTenant + GROUP_NAME_SUFFIX;
             String tenantUserId = toTenant + USER_NAME_SUFFIX;
+
+            // check if we re trying to create a user that already exists
+            if(isAdmin && userManager.getAuthorizable(tenantUserId) != null) {
+                return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(FAILED_TO_CREATE_TENANT_SECURITY);
+            }
+            
             Group tenantGroup;
             try {
                 tenantGroup = userManager.createGroup(
@@ -185,27 +195,32 @@ public class CreateTenantServlet extends AbstractBaseServlet {
             allTenantsGroup.addMember(tenantGroup);
             if(isAdmin) {
                 // Create Tenant User as this the creator is Admin
-                User tenantUser;
+                User tenantUser = (User) userManager.getAuthorizable(tenantUserId);
                 try {
-                    tenantUser = userManager.createUser(
-                        tenantUserId,
-                        userPwd,
-                        () -> tenantUserId,
-                        TENANT_USER_HOME
-                    );
-                    if(tenantUser != null) {
-                        try {
-                            Resource resUser = resourceResolver.getResource(tenantUser.getPath());
-                            Node nodeUser = PerUtil.getNode(resUser);
-                            Node nodeUserPreferences = nodeUser.addNode("preferences");
-                            nodeUserPreferences.setProperty("firstLogin", "true");
-                            adminSession.save();
-                        } catch( RepositoryException re ) {
-                            logger.error("was not able to set firstLogin pereference for user", re);
+
+                    if(tenantUser == null) {
+                        tenantUser = userManager.createUser(
+                            tenantUserId,
+                            userPwd,
+                            () -> tenantUserId,
+                            TENANT_USER_HOME
+                        );
+                        if(tenantUser != null) {
+                            try {
+                                Resource resUser = resourceResolver.getResource(tenantUser.getPath());
+                                Node nodeUser = PerUtil.getNode(resUser);
+                                Node nodeUserPreferences = nodeUser.addNode("preferences");
+                                nodeUserPreferences.setProperty("firstLogin", "true");
+                                adminSession.save();
+                            } catch( RepositoryException re ) {
+                                logger.error("was not able to set firstLogin pereference for user", re);
+                            }
+                            if(!isPwdProvided) {
+                                tenantUser.disable(DISABLE_USER_REASON);
+                            }
+                            tenantGroup.addMember(tenantUser);
+                            allTenantsGroup.addMember(tenantUser);
                         }
-                    }
-                    if(tenantUser != null && !isPwdProvided) {
-                        tenantUser.disable(DISABLE_USER_REASON);
                     }
                 } catch (AuthorizableExistsException e) {
                     tenantUser = (User) userManager.getAuthorizable(tenantUserId);
@@ -216,8 +231,6 @@ public class CreateTenantServlet extends AbstractBaseServlet {
                         .setHttpErrorCode(SC_BAD_REQUEST)
                         .setErrorMessage(FAILED_TO_CREATE_TENANT_SECURITY);
                 }
-                tenantGroup.addMember(tenantUser);
-                allTenantsGroup.addMember(tenantUser);
             } else {
                 // We also need to add the current non-admin user to the group so that new site is visible for them
                 Authorizable authorizable = userManager.getAuthorizable(request.getRequest().getUserPrincipal());
@@ -263,12 +276,12 @@ public class CreateTenantServlet extends AbstractBaseServlet {
                 logger.warn("Setting Site Permissions failed", e);
             }
             setBrandOnTemplate(resourceResolver, toTenant, title);
-            resourceResolver.commit();
             String colorPalette = request.getParameter(COLOR_PALETTE);
             if (isNotEmpty(colorPalette)) {
                 setColorPalette(resourceResolver, request.getParameter(COLOR_PALETTE), fromTenant, toTenant);
-                resourceResolver.commit();
             }
+
+            resourceResolver.commit();
             return new JsonResponse()
                 .writeAttribute(TYPE, SITE)
                 .writeAttribute(STATUS, CREATED)

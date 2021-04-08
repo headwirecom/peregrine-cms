@@ -42,7 +42,12 @@ public class PerConstants {
     public static final String PER_REPLICATION = "per:Replication";
     public static final String PER_REPLICATED_BY = "per:ReplicatedBy";
     public static final String PER_REPLICATED = "per:Replicated";
+    public static final String PER_REPLICATION_STATUS = "per:ReplicationStatus";
     public static final String PER_REPLICATION_REF = "per:ReplicationRef";
+    public static final String PER_REPLICATION_LAST_ACTION = "per:ReplicationLastAction";
+    public static final String ACTIVATED = "activated";
+    public static final String DEACTIVATED = "deactivated";
+    public static final String PUBLISHED_LABEL = "Published";
 
     public static final String SLING_SERVLET_DEFAULT = "sling/servlet/default";
 
@@ -80,6 +85,7 @@ public class PerConstants {
     public static final String PNG_MIME_TYPE = "image/png";
     public static final String JPEG_MIME_TYPE = "image/jpeg";
     public static final String WEBP_MIME_TYPE = "image/webp";
+    public static final String SVG_MIME_TYPE = "image/svg+xml";
     public static final String JPG_MIME_TYPE = "image/jpg";
 
     public static final String PACKAGES = "packages";
@@ -130,6 +136,7 @@ public class PerConstants {
     public static final String SOURCE_PATH = "sourcePath";
     public static final String CREATED = "created";
     public static final String DELETED = "deleted";
+    public static final String ADDED = "added";
     public static final String NODE_TYPE = "nodeType";
     public static final String PARENT_PATH = "parentPath";
     public static final String CONTENT = "content";
@@ -151,6 +158,7 @@ public class PerConstants {
     public static final String DOMAINS = "domains";
 
     public static final String EXCLUDE_FROM_SITEMAP = "excludeFromSitemap";
+    public static final String EXCLUDE_TREE_FROM_SITEMAP = "excludeTreeFromSitemap";
     public static final String CHANGE_FREQUENCY = "changefreq";
     public static final String PRIORITY = "priority";
 

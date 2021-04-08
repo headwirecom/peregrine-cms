@@ -49,7 +49,6 @@ import com.peregrine.commons.servlets.AbstractBaseServlet;
 import java.io.IOException;
 import javax.servlet.Servlet;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -82,8 +81,6 @@ import org.osgi.service.component.annotations.Reference;
 public class UpdateResourceServlet extends AbstractBaseServlet {
 
     public static final String FAILED_TO_UPDATE_PAGE = "Failed to Update Page";
-    @Reference
-    ModelFactory modelFactory;
 
     @Reference
     AdminResourceHandler resourceManagement;

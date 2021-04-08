@@ -26,26 +26,14 @@ package com.peregrine.sitemap.impl;
  */
 
 import com.peregrine.commons.Page;
-import com.peregrine.commons.ResourceUtils;
 import com.peregrine.sitemap.PageRecognizer;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
-
-import java.util.Optional;
-
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
 
 @Component(service = { PageRecognizer.class, PerPageRecognizer.class })
 public final class PerPageRecognizer extends PerPageRecognizerBase {
 
     protected boolean isPageImpl(final Page candidate) {
-        return Optional.ofNullable(candidate)
-                .map(ResourceUtils::getJcrContent)
-                .map(Resource::getValueMap)
-                .map(m -> m.get(PER_REPLICATED, String.class))
-                .map(StringUtils::isNotBlank)
-                .orElse(false);
+        return true;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.peregrine.admin.resource;
 
+import static com.peregrine.commons.ResourceUtils.*;
 import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
 import static com.peregrine.commons.util.PerConstants.ASSET;
 import static com.peregrine.commons.util.PerConstants.ASSETS_ROOT;
@@ -20,7 +21,6 @@ import static com.peregrine.commons.util.PerConstants.JCR_DATA;
 import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
-import static com.peregrine.commons.util.PerConstants.JCR_UUID;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.NODE;
 import static com.peregrine.commons.util.PerConstants.NT_FILE;
@@ -62,10 +62,6 @@ import static com.peregrine.commons.util.PerConstants.SITE_TEMPLATES_PATTERN;
 
 import static com.peregrine.commons.util.PerConstants.TITLE;
 
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
-
 import static com.peregrine.commons.util.PerUtil.convertToMap;
 import static com.peregrine.commons.util.PerUtil.getBoolean;
 import static com.peregrine.commons.util.PerUtil.getChildIndex;
@@ -85,6 +81,8 @@ import static com.peregrine.commons.util.PerUtil.checkResource;
 import static com.peregrine.commons.util.PerUtil.getTenantVarPath;
 import static com.peregrine.commons.util.PerUtil.getTenantRootResource;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isAnyBlank;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -102,6 +100,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.peregrine.adaption.PerAsset;
 import com.peregrine.admin.models.Recyclable;
+import com.peregrine.commons.ResourceUtils;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.rendition.BaseResourceHandler;
 import com.peregrine.replication.ImageMetadataSelector;
@@ -115,9 +114,6 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 import javax.jcr.*;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
@@ -145,11 +141,11 @@ import org.slf4j.LoggerFactory;
 )
 public class AdminResourceHandlerService
     implements AdminResourceHandler {
-    public static final String DELETION_PROPERTY_NAME = "_opDelete";
+    public static final String PN_DELETE_NODE = "_opDelete";
+    public static final String PN_DELETE_PROPS = "_opDeleteProps";
     public static final String MODE_PROPERTY = "mode";
 
     private static final String PARENT_NOT_FOUND = "Could not find %s Parent Resource. Path: '%s', name: '%s'";
-    private static final String RESOURCE_TYPE_UNDEFINED = "Resource Type is not provided. Path: '%s', name: '%s'";
     private static final String NAME_UNDEFINED = "%s Name is not provided. Parent Path: '%s'";
     private static final String TEMPLATE_NOT_FOUND = "Could not find template with path: '%s'";
 
@@ -159,7 +155,6 @@ public class AdminResourceHandlerService
     private static final String FAILED_TO_DELETE = "Failed to Delete Resource: '%s'";
 
     private static final String INSERT_RESOURCE_MISSING = "To Insert a New Node the Reference Resource must be provided";
-    private static final String INSERT_RESOURCE_PROPERTIES_MISSING = "To Insert a New Node the Node Properties must be provided";
     private static final String FAILED_TO_INSERT = "Failed to insert node at: '%s'";
 
     private static final String MOVE_FROM_RESOURCE_MISSING = "To Move a Node the Source Resource must be provided";
@@ -178,7 +173,6 @@ public class AdminResourceHandlerService
     private static final String CONTENT_MIME_TYPE_MUST_BE_PROVIDED_TO_CREATE_DATA_NODE = "Content Mime Type must be provided to create %s";
     private static final String INPUT_STREAM_MUST_BE_PROVIDED_TO_CREATE_DATA_NODE = "Input Stream must be provided to create %s";
     private static final String FAILED_TO_CREATE = "Failed to Create %s in Parent: '%s', name: '%s'";
-    private static final String FAILED_TO_CREATE_RENDITION = "Failed to Create %s Rendition in Parent: '%s', name: '%s'";
     private static final String FAILED_TO_COPY = "Failed to copy source: '%s' on target parent: '%s'";
     private static final String RESOURCE_NOT_FOUND = "Resource not found, Path: '%s'";
     private static final String NO_CONTENT_PROVIDED = "No Content provided, Path: '%s'";
@@ -192,9 +186,6 @@ public class AdminResourceHandlerService
     private static final String OBJECT_LIST_WITH_UNSUPPORTED_ITEM = "Object List was a full list but had an unsupported entry: '%s' (type: '%s')";
 
     private static final String RAW_TAGS = "raw_tags";
-
-    private static final List<String> IGNORED_PROPERTIES_FOR_COPY = new ArrayList<>();
-    private static final List<String> IGNORED_RESOURCE_PROPERTIES_FOR_COPY = new ArrayList<>();
 
     public static final String MISSING_RESOURCE_RESOLVER_FOR_SITE_COPY = "Resource Resolver must be provide to copy a Site";
     public static final String MISSING_PARENT_RESOURCE_FOR_COPY_SITES = "Sites Parent Resource was not provided or does not exist";
@@ -242,7 +233,6 @@ public class AdminResourceHandlerService
     private static final String NO_NEW_PARENT_RESOURCE_PROVIDED = "No new parent resource provided.";
     private static final String NO_JCR_CONTENT_FOR_COPY = "Resource being copied '%s' does not have a jcr:content resource child";
     private static final String COPY_GENERIC_EXCEPTION = "Exception occurred copying '%s' to '%s'";
-    private static final String NO_VAR_RESOURCE = "No resource exists at /var so temp resource could not be created";
     private static final String TEMP = "temp";
     private static final String NO_COPIED_RESOURCE = "Resource copy should've yielded a resource at '%s' but our resource is null";
     private static final String REORDER_EXCEPTION = "Exception occurred trying to order node '%s' before '%s'";
@@ -250,19 +240,6 @@ public class AdminResourceHandlerService
     private static final String NAME_CONSTRAINT_VIOLATION = "The provided name '%s' is not valid.";
 
     private static final Pattern ANCHOR_SITE_REF_PATTERN = Pattern.compile("(<a .*?href=\"/content/)([a-z]+)/");
-
-    static {
-        IGNORED_PROPERTIES_FOR_COPY.add(JCR_PRIMARY_TYPE);
-        IGNORED_PROPERTIES_FOR_COPY.add(JCR_UUID);
-
-        IGNORED_RESOURCE_PROPERTIES_FOR_COPY.add(JCR_UUID);
-        IGNORED_RESOURCE_PROPERTIES_FOR_COPY.add(JCR_CREATED);
-        IGNORED_RESOURCE_PROPERTIES_FOR_COPY.add(JCR_CREATED_BY);
-
-        IGNORED_RESOURCE_PROPERTIES_FOR_COPY.add(PER_REPLICATED);
-        IGNORED_RESOURCE_PROPERTIES_FOR_COPY.add(PER_REPLICATED_BY);
-        IGNORED_RESOURCE_PROPERTIES_FOR_COPY.add(PER_REPLICATION_REF);
-    }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -286,7 +263,6 @@ public class AdminResourceHandlerService
         cardinality = ReferenceCardinality.MULTIPLE,
         policy = ReferencePolicy.DYNAMIC
     )
-
     void addImageMetadataSelector(ImageMetadataSelector selector) {
         imageMetadataSelectors.add(selector);
     }
@@ -365,10 +341,6 @@ public class AdminResourceHandlerService
                 throw new ManagementException(String.format(PARENT_NOT_FOUND, OBJECT, parentPath, name));
             }
             Node newObject = parent.addNode(name, OBJECT_DEFINITION_PRIMARY_TYPE);
-//            newObject.setProperty(JCR_TITLE, name);
-            // if (!isEmpty(resourceType)) {
-            //     newObject.setProperty(SLING_RESOURCE_TYPE, resourceType);
-            // }
             Node dialog = newObject.addNode("dialog.json", "nt:file");
             Node resNode = dialog.addNode ("jcr:content", "nt:resource");
             resNode.setProperty ("jcr:mimeType", "application/json");
@@ -459,9 +431,10 @@ public class AdminResourceHandlerService
     @Override
     public DeletionResponse deleteResource(ResourceResolver resourceResolver, String path, String primaryType) throws ManagementException {
         final Resource resource = getResource(resourceResolver, path);
-        if (resource == null) {
+        if (isNull(resource)) {
             throw new ManagementException(String.format(RESOURCE_FOR_DELETION_NOT_FOUND, path));
         }
+
         try {
             createRecyclable(resourceResolver, resource);
         } catch (Exception e) {
@@ -471,18 +444,20 @@ public class AdminResourceHandlerService
             // Under these circumstances, the deletion will continue and a warning will be printed to the logs.
             logger.warn(FAILED_CREATE_RECYCLEABLE, path, e);
         }
+
         try {
-            final String primaryTypeValue = resource.getValueMap().get(JCR_PRIMARY_TYPE, EMPTY);
+            final String primaryTypeValue = PerUtil.getPrimaryType(resource);
             if (isNotEmpty(primaryType) && !primaryTypeValue.equals(primaryType)) {
                 throw new ManagementException(String.format(PRIMARY_TYPE_ASKEW_FOR_DELETION, path, primaryType, primaryTypeValue));
             }
 
-            final Resource parent = resource.getParent();
+            final Optional<Resource> parent = Optional.ofNullable(resource.getParent());
             final DeletionResponse response = new DeletionResponse()
                 .setName(resource.getName())
                 .setPath(resource.getPath())
-                .setParentPath(parent != null ? parent.getPath() : "")
+                .setParentPath(parent.map(Resource::getPath).orElse(EMPTY))
                 .setType(StringUtils.defaultIfEmpty(primaryTypeValue, "not-found"));
+            parent.ifPresent(baseResourceHandler::updateModification);
             resourceResolver.delete(resource);
             return response;
         } catch (PersistenceException e) {
@@ -553,7 +528,7 @@ public class AdminResourceHandlerService
     }
 
     public boolean hasPermission(ResourceResolver resourceResolver, String jcrActions, String path) {
-        Session session = resourceResolver.adaptTo(Session.class);
+        final Session session = resourceResolver.adaptTo(Session.class);
         try {
             return session.hasPermission(path, jcrActions);
         } catch (RepositoryException e) {
@@ -604,12 +579,18 @@ public class AdminResourceHandlerService
         vh.removeVersion(versionName);
     }
 
+
+    @Override
+    public Version createVersion(ResourceResolver resourceResolver, String path) throws ManagementException {
+        return createVersion(resourceResolver, path, null);
+    }
+
     // jcr 2.0 Chapter 3
     // https://docs.adobe.com/docs/en/spec/jcr/2.0/3_Repository_Model.html
     // jcr 2.0 Chapter 15
     // https://docs.adobe.com/content/docs/en/spec/jcr/2.0/15_Versioning.html#15.2.1%20Version%20Object
     @Override
-    public Version createVersion(ResourceResolver resourceResolver, String path) throws ManagementException {
+    public Version createVersion(ResourceResolver resourceResolver, String path, String... labels) throws ManagementException {
         Resource resource = getResource(resourceResolver, path);
         if (resource == null) {
             throw new ManagementException("Could not find resource for versioning "+ path);
@@ -617,7 +598,7 @@ public class AdminResourceHandlerService
         Node versionableNode = resource.adaptTo(Node.class);
         try {
             VersionManager vm = versionableNode.getSession().getWorkspace().getVersionManager();
-            VersionHistory vh = null;
+            VersionHistory vh;
             try {
                 vh = vm.getVersionHistory(versionableNode.getPath());
             } catch (RepositoryException e) {
@@ -627,6 +608,7 @@ public class AdminResourceHandlerService
                 try {
                     resourceResolver.commit();
                 } catch (PersistenceException ex) {
+                    resourceResolver.revert();
                     logger.error("could not make node versionable", e);
                     return null;
                 }
@@ -636,7 +618,12 @@ public class AdminResourceHandlerService
                 if (vm.isCheckedOut(path)){
                     Version v = vm.checkin(path);
                     vm.checkout(path);
-                    vh.addVersionLabel(v.getName(), "recyclableItem", true);
+                    if (nonNull(labels)) {
+                        for (final String label : labels) {
+                            vh.addVersionLabel(v.getName(), label, true);
+                        }
+                    }
+
                     logger.warn("Version created for {} at {}", path, v.getFrozenNode().getPath());
                     return v;
                 }
@@ -650,12 +637,12 @@ public class AdminResourceHandlerService
     }
 
     @Override
-    public Resource restoreVersion(ResourceResolver resourceResolver, String path, String frozenNodepath, boolean force)
+    public Resource restoreVersion(ResourceResolver resourceResolver, String path, String frozenNodePath, boolean force)
             throws ManagementException {
         resourceResolver.refresh();
         Session jcrSession = resourceResolver.adaptTo(Session.class);
         try {
-            Version restoreVersion = (Version) jcrSession.getNode(frozenNodepath);
+            Version restoreVersion = (Version) jcrSession.getNode(frozenNodePath);
             VersionManager vm = jcrSession.getWorkspace().getVersionManager();
             vm.restore(restoreVersion, force);
             vm.checkout(path);
@@ -672,6 +659,30 @@ public class AdminResourceHandlerService
         VersionManager vm = jcrSession.getWorkspace().getVersionManager();
         vm.restore(path, versionName, removingExisting);
         vm.checkout(path);
+    }
+
+    @Override
+    public boolean deleteVersionLabel(final Resource resource, final String label) {
+        final var resolver = resource.getResourceResolver();
+        final var session = resolver.adaptTo(Session.class);
+        try {
+            final var versionManager = session.getWorkspace().getVersionManager();
+            final String path = resource.getPath();
+            if (!versionManager.isCheckedOut(path)) {
+                return false;
+            }
+
+            final var history = versionManager.getVersionHistory(path);
+            if (isNull(history)) {
+                return false;
+            }
+
+            history.removeVersionLabel(label);
+        } catch (final RepositoryException e) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
@@ -727,19 +738,19 @@ public class AdminResourceHandlerService
         }
     }
 
-
     @Override
     public Resource insertNode(Resource resource, Map<String, Object> properties, boolean addAsChild, boolean orderBefore, String variation) throws ManagementException {
         final Node node = getNode(resource);
-        if (node == null) {
+        if (isNull(node)) {
             throw new ManagementException(INSERT_RESOURCE_MISSING);
         }
+
         try {
-            final Node newNode;
+            final Node parent = addAsChild ? node : node.getParent();
+            final Node newNode = createNode(parent, properties, variation);
             final ResourceResolver resourceResolver = resource.getResourceResolver();
+            baseResourceHandler.updateModification(resourceResolver, newNode);
             if (addAsChild) {
-                newNode = createNode(node, properties, variation);
-                baseResourceHandler.updateModification(resourceResolver, newNode);
                 if (orderBefore) {
                     final Iterator<Resource> i = resource.listChildren();
                     if (i.hasNext()) {
@@ -747,9 +758,6 @@ public class AdminResourceHandlerService
                     }
                 }
             } else {
-                Node parent = node.getParent();
-                newNode = createNode(parent, properties, variation);
-                baseResourceHandler.updateModification(resourceResolver, newNode);
                 resourceRelocation.reorder(resource.getParent(), newNode.getName(), node.getName(), orderBefore);
             }
 
@@ -936,11 +944,12 @@ public class AdminResourceHandlerService
                     addTagsToNewAsset(asset, directory, directoryName, selector);
                 }
             }
-            // Obtain the Asset Dimension and store directly in the meta data folder
-            handleAssetDimensions(asset);
         } catch (ImageProcessingException e) {
             logger.debug(EMPTY, e);
         }
+
+        // Obtain the Asset Dimension and store directly in the meta data folder
+        asset.setDimension();
     }
 
     private void addTagsToNewAssetAsJson(PerAsset asset, Directory directory, String directoryName, ImageMetadataSelector selector) throws PersistenceException, RepositoryException {
@@ -998,7 +1007,6 @@ public class AdminResourceHandlerService
         }
     }
 
-
     // TODO: needs deep clone
     private Node createNode(
         @NotNull final Node parent,
@@ -1018,7 +1026,7 @@ public class AdminResourceHandlerService
         // If found we copy this over into our newly created node
         if (component.startsWith(SLASH)) {
             logger.warn("Component: '{}' started with a slash which is not valid -> ignored", component);
-        } else {
+        } else if (isNotBlank(variation) || properties.isEmpty()) {
             copyPropertiesFromComponentVariation(newNode, variation);
         }
 
@@ -1112,10 +1120,7 @@ public class AdminResourceHandlerService
     private void applyProperties(@NotNull Node node, @NotNull Map properties) throws RepositoryException, ManagementException {
         String prettyJson = prettyPrintJson(properties);
         logger.trace("Apply Properties, Node: '{}', props: '{}'", node, prettyJson);
-        Set<Entry> entrySet = properties.entrySet();
-        entrySet = entrySet.stream()
-            .filter(e -> !IGNORED_PROPERTIES_FOR_COPY.contains(e.getKey()))
-            .collect(Collectors.toSet());
+        final Set<Entry> entrySet = filterPropertiesAllowedOnExistingNode(properties).entrySet();
         for (final Entry entry : entrySet) {
             final String key = toStringOrNull(entry.getKey());
             final Object value = entry.getValue();
@@ -1124,18 +1129,19 @@ public class AdminResourceHandlerService
             if (value instanceof String) {
                 node.setProperty(key, (String) value);
             } else if (value instanceof List) {
-                final List list = (List) value;
-                // Get sub node
+                final Node child;
                 if (node.hasNode(key)) {
-                    applyChildProperties(node.getNode(key), list);
+                    child = node.getNode(key);
                 } else {
-                    applyChildProperties(node, list);
+                    child = node.addNode(key);
                 }
+
+                applyChildrenProperties(child, (List) value);
             }
         }
     }
 
-    private void applyChildProperties(@NotNull Node parent, @NotNull List childProperties) throws RepositoryException, ManagementException {
+    private void applyChildrenProperties(@NotNull Node parent, @NotNull List childProperties) throws RepositoryException, ManagementException {
         // Loop over Array
         int counter = 0;
         for (final Object item : childProperties) {
@@ -1144,6 +1150,7 @@ public class AdminResourceHandlerService
             } else {
                 logger.warn("Array item: '{}' is not an Object and so ignored", item);
             }
+
             counter++;
         }
     }
@@ -1164,29 +1171,28 @@ public class AdminResourceHandlerService
 
         // No name or matching path name (auto generated IDs) -> use position to find target
         final Node target = getNodeAtPosition(parent, position);
-        if (target != null) {
+        if (isNull(target)) {
+            final String path = getPropsFromMap(properties, PATH, EMPTY);
+            final Node sourceNode = findSourceByPath(parent, path.split(SLASH));
+            final Node newNode = addNewNode(parent);
+            if (nonNull(sourceNode) && sourceNode.hasProperty(SLING_RESOURCE_TYPE)) {
+                String componentName = sourceNode.getProperty(SLING_RESOURCE_TYPE).getString();
+                newNode.setProperty(SLING_RESOURCE_TYPE, componentName);
+                logger.trace("Copy Props from Component Variation, component name: '{}'", componentName);
+                copyPropertiesFromComponentVariation(newNode, APPS_ROOT + SLASH + componentName, null);
+            }
+
+            logger.trace("Apply Properties to node: '{}', props: '{}'", newNode, properties);
+            applyProperties(newNode, properties);
+        } else {
             logger.trace("Found Target by position: '{}'", target.getPath());
             // Check if component matches
             final Object sourceComponent = properties.get(COMPONENT);
             final Object targetComponent = target.getProperty(COMPONENT).getString();
-            if (sourceComponent == null || !sourceComponent.equals(targetComponent)) {
-                logger.warn("Source Component: '{}' does not match target: '{}'", sourceComponent, targetComponent);
-            } else {
+            if (nonNull(sourceComponent) && sourceComponent.equals(targetComponent)) {
                 applyProperties(target, properties);
-            }
-        } else {
-            final String path = getPropsFromMap(properties, PATH, EMPTY);
-            final Node sourceNode = findSourceByPath(parent, path.split(SLASH));
-            if (sourceNode != null) {
-                Node newNode = addNewNode(parent);
-                if (sourceNode.hasProperty(SLING_RESOURCE_TYPE)) {
-                    String componentName = sourceNode.getProperty(SLING_RESOURCE_TYPE).getString();
-                    newNode.setProperty(SLING_RESOURCE_TYPE, componentName);
-                    logger.trace("Copy Props from Component Variation, component name: '{}'", componentName);
-                    copyPropertiesFromComponentVariation(newNode, APPS_ROOT + SLASH + componentName, null);
-                }
-                logger.trace("Apply Properties to node: '{}', props: '{}'", newNode, properties);
-                applyProperties(newNode, properties);
+            } else {
+                logger.warn("Source Component: '{}' does not match target: '{}'", sourceComponent, targetComponent);
             }
         }
     }
@@ -1250,7 +1256,7 @@ public class AdminResourceHandlerService
             final PropertyIterator pi = source.getProperties();
             while (pi.hasNext()) {
                 Property property = pi.nextProperty();
-                if (!IGNORED_PROPERTIES_FOR_COPY.contains(property.getName())) {
+                if (isPropertyAllowedOnExistingNode(property.getName())) {
                     if (property.isMultiple()) {
                         target.setProperty(property.getName(), property.getValues(), property.getType());
                     } else {
@@ -1753,7 +1759,7 @@ public class AdminResourceHandlerService
             return null;
         }
 
-        Map<String, Object> newProperties = copyProperties(source.getValueMap());
+        Map<String, Object> newProperties = getCopyableProperties(source);
         logger.trace("Resource Properties: '{}'", newProperties);
         try {
             target = source.getResourceResolver().create(targetParent, toName, newProperties);
@@ -1764,27 +1770,6 @@ public class AdminResourceHandlerService
         }
         logger.trace("New Resource Properties: '{}'", target.getValueMap());
         return target;
-    }
-
-    private Map<String, Object> copyProperties(ValueMap source) {
-        Map<String, Object> answer = new HashMap<>(source);
-        for (String ignore : IGNORED_RESOURCE_PROPERTIES_FOR_COPY) {
-            if (answer.containsKey(ignore)) {
-                answer.remove(ignore);
-            }
-        }
-        return answer;
-    }
-
-    private void removePropertiesForCopy(ModifiableValueMap valueMap) {
-        if (valueMap != null) {
-            for (String ignore : IGNORED_RESOURCE_PROPERTIES_FOR_COPY) {
-                if (valueMap.containsKey(ignore)) {
-                    logger.trace("Removing property '{}' as part of copy", ignore);
-                    valueMap.remove(ignore);
-                }
-            }
-        }
     }
 
     public void updateTitle(Resource resource, String title) {
@@ -1899,7 +1884,7 @@ public class AdminResourceHandlerService
         }
 
         private void copyChild(Resource sourceChild, Resource targetParent, int depth) throws PersistenceException {
-            Map<String, Object> newProperties = copyProperties(sourceChild.getValueMap());
+            Map<String, Object> newProperties = getCopyableProperties(sourceChild);
             if (patternLength > 0) {
                 updatePaths(sourceChild, newProperties);
             }
@@ -1967,7 +1952,7 @@ public class AdminResourceHandlerService
         }
 
         private Resource copyFolder(Resource folder, Resource targetParent, String folderName) {
-            final Map<String, Object> newProperties = copyProperties(folder.getValueMap());
+            final Map<String, Object> newProperties = getCopyableProperties(folder);
             logger.trace("Resource Properties: '{}'", newProperties);
             try {
                 return resourceResolver.create(targetParent, folderName, newProperties);
@@ -2017,7 +2002,20 @@ public class AdminResourceHandlerService
         if (deleteIfContainsMarkerProperty(resource, properties)) {
             return;
         }
+
         ModifiableValueMap updateProperties = getModifiableProperties(resource, false);
+        if (properties.containsKey(PN_DELETE_PROPS)) {
+            final Object value = properties.remove(PN_DELETE_PROPS);
+            if (value instanceof String) {
+                properties.remove(value);
+                updateProperties.remove(value);
+            } else if (value instanceof List) {
+                final var list = (List) value;
+                list.forEach(properties::remove);
+                list.forEach(updateProperties::remove);
+            }
+        }
+
         for (Entry<String, Object> entry : properties.entrySet()) {
             String name = entry.getKey();
             Object value = entry.getValue();
@@ -2029,12 +2027,13 @@ public class AdminResourceHandlerService
                 updateProperties.put(name, value);
             }
         }
+
         baseResourceHandler.updateModification(resource);
     }
 
     private boolean deleteIfContainsMarkerProperty(Resource resource, Map<String, Object> properties) throws ManagementException {
-        if (properties.containsKey(DELETION_PROPERTY_NAME)) {
-            Object value = properties.get(DELETION_PROPERTY_NAME);
+        if (properties.containsKey(PN_DELETE_NODE)) {
+            Object value = properties.get(PN_DELETE_NODE);
             if (value == null || Boolean.TRUE.toString().equalsIgnoreCase(value.toString())) {
                 // This indicates that this node shall be removed
                 try {
@@ -2077,6 +2076,7 @@ public class AdminResourceHandlerService
             childProperties.remove(NAME);
             childProperties.remove(SLING_RESOURCE_TYPE);
             childProperties.remove(JCR_PRIMARY_TYPE);
+            childProperties.remove(PN_DELETE_PROPS);
             child = createNode(parent, childName, NT_UNSTRUCTURED, resourceType);
             // Now update the child with any remaining properties
             writeProperties(childProperties, child);
@@ -2201,7 +2201,7 @@ public class AdminResourceHandlerService
         // Get index of the matching resource child to compare with the index in the list
         int index = getChildIndex(parent, child);
         String name = child.getName();
-        if (getBoolean(itemProperties, DELETION_PROPERTY_NAME, false)) {
+        if (getBoolean(itemProperties, PN_DELETE_NODE, false)) {
             try {
                 logger.trace("Remove List Child: '{}' ('{}')", name, child.getPath());
                 parent.getResourceResolver().delete(child);
@@ -2277,7 +2277,7 @@ public class AdminResourceHandlerService
 
     private Resource copyFolder(Resource folder, Resource targetParent, String folderName) {
         Resource answer = null;
-        Map<String, Object> newProperties = copyProperties(folder.getValueMap());
+        Map<String, Object> newProperties = getCopyableProperties(folder);
         logger.trace("Resource Properties: '{}'", newProperties);
         try {
             answer = folder.getResourceResolver().create(targetParent, folderName, newProperties);
@@ -2324,25 +2324,6 @@ public class AdminResourceHandlerService
         return newPage;
     }
 
-    public void handleAssetDimensions(PerAsset perAsset) throws RepositoryException, IOException {
-        InputStream is = perAsset.getRenditionStream((String) null);
-        // Ignore images that do not have a jcr:data element aka stream
-        if (is != null) {
-            ImageInputStream iis = ImageIO.createImageInputStream(is);
-            Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
-            while (readers.hasNext()) {
-                ImageReader reader = readers.next();
-                reader.setInput(iis);
-                int minIndex = reader.getMinIndex();
-                int width = reader.getWidth(minIndex);
-                int height = reader.getHeight(minIndex);
-                perAsset.addTag("per-data", "width", width);
-                perAsset.addTag("per-data", "height", height);
-                break;
-            }
-        }
-    }
-
     private String getPropsFromMap(Map source, String key, String defaultValue) {
         String answer = defaultValue;
         Object temp = source.get(key);
@@ -2371,51 +2352,48 @@ public class AdminResourceHandlerService
         String originalPath = resourceToCopy.getPath();
         String parentPath = newParent.getPath();
         String newPath = parentPath + SLASH + newName;
-        ValueMap copyProps = resourceToCopy.getValueMap();
-        Resource copiedResource = null;
+        Map<String, Object> copyProps = ResourceUtils.getCopyableProperties(resourceToCopy);
 
-        if(!deep) {
+        if (!deep) {
             Resource pageContentResource = resourceToCopy.getChild(JCR_CONTENT);
             if(pageContentResource == null) {
                 throw new ManagementException(String.format(NO_JCR_CONTENT_FOR_COPY, originalPath));
             }
             try {
-                copiedResource = resourceResolver.create(newParent, newName, copyProps);
-                resourceResolver.copy(pageContentResource.getPath(), copiedResource.getPath());
+                final Resource copiedResource = resourceResolver.create(newParent, newName, copyProps);
+                ResourceUtils.performDeepSafeCopy(pageContentResource, copiedResource);
                 return copiedResource;
             } catch (PersistenceException e) {
                 throw new ManagementException(String.format(COPY_GENERIC_EXCEPTION, originalPath, newPath), e);
             }
         }
-        else {
-            //For deep copies, we're actually copying the resource to a temp location and then moving it to its destination
-            //to get around renaming and cyclical reference issues
-            final String tenantVarPath = getTenantVarPath(resourceToCopy);
-            Resource tenantVarResource = resourceResolver.getResource(tenantVarPath);
 
-            try {
-                if(tenantVarResource == null) {
-                    logger.debug("Tenant var path does not exist, creating: '{}'", tenantVarPath);
-                    tenantVarResource = resourceResolver.create(getTenantRootResource(resourceToCopy), "var",
-                            Collections.singletonMap("jcr:primaryType", (Object) "sling:Folder"));
-                }
+        //For deep copies, we're actually copying the resource to a temp location and then moving it to its destination
+        //to get around renaming and cyclical reference issues
+        final String tenantVarPath = getTenantVarPath(resourceToCopy);
+        Resource tenantVarResource = resourceResolver.getResource(tenantVarPath);
 
-                //Create a temp location with a random (enough) path
-                String tempResourceName = TEMP + System.currentTimeMillis() + new Random().nextInt(Integer.MAX_VALUE);
-                Resource tempResource = resourceResolver.create(tenantVarResource, tempResourceName, new HashMap<>());
-                //Make a resource with the new name under the temp location
-                Resource tempCopy = resourceResolver.create(tempResource, newName, copyProps);
-                //Copy all the children of the original resource to the temp copy
-                for(Resource child : resourceToCopy.getChildren()) {
-                    resourceResolver.copy(child.getPath(), tempCopy.getPath());
-                }
-                //Move the temp copy to the new parent location
-                copiedResource = resourceResolver.move(tempCopy.getPath(), parentPath);
-                //Clean up the temp location
-                resourceResolver.delete(tempResource);
-            } catch (PersistenceException e) {
-                throw new ManagementException(String.format(COPY_GENERIC_EXCEPTION, originalPath, newPath), e);
+
+        Resource copiedResource;
+        try {
+            if(tenantVarResource == null) {
+                logger.debug("Tenant var path does not exist, creating: '{}'", tenantVarPath);
+                tenantVarResource = resourceResolver.create(getTenantRootResource(resourceToCopy), "var",
+                        Collections.singletonMap("jcr:primaryType", "sling:Folder"));
             }
+
+            //Create a temp location with a random (enough) path
+            String tempResourceName = TEMP + System.currentTimeMillis() + new Random().nextInt(Integer.MAX_VALUE);
+            Resource tempResource = resourceResolver.create(tenantVarResource, tempResourceName, new HashMap<>());
+            //Make a resource with the new name under the temp location
+            //Copy all the children of the original resource to the temp copy
+            Resource tempCopy = ResourceUtils.performDeepSafeCopy(resourceToCopy, tempResource, newName);
+            //Move the temp copy to the new parent location
+            copiedResource = resourceResolver.move(tempCopy.getPath(), parentPath);
+            //Clean up the temp location
+            resourceResolver.delete(tempResource);
+        } catch (PersistenceException e) {
+            throw new ManagementException(String.format(COPY_GENERIC_EXCEPTION, originalPath, newPath), e);
         }
 
         if(copiedResource == null) {
@@ -2434,7 +2412,6 @@ public class AdminResourceHandlerService
             if(StringUtils.isNotBlank(newTitle)) {
                 modifiableProperties.put(JCR_TITLE, newTitle);
             }
-            removePropertiesForCopy(modifiableProperties);
         }
 
         //Handle reordering
@@ -2450,25 +2427,20 @@ public class AdminResourceHandlerService
         return copiedResource;
     }
 
-    private String getNameForCopy(Resource resourceToCopy, Resource newParent, String newName) throws ManagementException{
-        if(StringUtils.isNotBlank(newName)) {
-            if(newParent.getChild(newName) == null) {
-                return newName;
-            }
-            else {
-                throw new ManagementException(String.format(RESOURCE_NAME_COLLISION, newParent.getName(), newName));
-            }
-        }
-        newName = resourceToCopy.getName();
-        if(newParent.getChild(newName) == null) {
-            return newName;
+    private String getNameForCopy(Resource resourceToCopy, Resource newParent, String newName) {
+        String result = Optional.ofNullable(newName)
+                .filter(StringUtils::isNotBlank)
+                .orElseGet(resourceToCopy::getName);
+        if (isNull(newParent.getChild(result))) {
+            return result;
         }
 
         int i = 1;
-        while(newParent.getChild(newName+i) != null) {
+        while (nonNull(newParent.getChild(result + i))) {
             i++;
         }
-        return newName+i;
+
+        return result + i;
     }
 
     /**

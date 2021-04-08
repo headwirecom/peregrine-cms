@@ -79,6 +79,8 @@ import createObjectFolderWizard from './stateActions/createObjectFolderWizard'
 import createObjectDefinitionWizard from './stateActions/createObjectDefinitionWizard'
 import savePageProperties from './stateActions/savePageProperties'
 import replicate from './stateActions/replicate'
+import publish from './stateActions/publish'
+import unreplicate from './stateActions/unreplicate'
 import moveTemplate from './stateActions/moveTemplate'
 import renameObject from './stateActions/renameObject'
 import moveObject from './stateActions/moveObject'
@@ -157,6 +159,8 @@ actions['createObjectDefinitionWizard'] = createObjectDefinitionWizard
 actions['renameObject'] = renameObject
 actions['savePageProperties'] = savePageProperties
 actions['replicate'] = replicate
+actions['publish'] = publish
+actions['unreplicate'] = unreplicate
 actions['moveObject'] = moveObject
 actions['showTemplateInfo'] = showPageInfo
 actions['saveTemplateProperties'] = savePageProperties

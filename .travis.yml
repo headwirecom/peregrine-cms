@@ -1,14 +1,17 @@
 branches:
   only:
-  - master
+  - develop-sling12
   - develop
-  - feature/tenantstate
 
+cache:
+  directories:
+  - $HOME/.m2
+  
 services:
 - docker
 
 jdk:
-  - openjdk8
+  - openjdk11
 
 env:
   global:
@@ -20,28 +23,29 @@ env:
 before_script:
 - branch="$(echo ${TRAVIS_BRANCH} | tr '/' '-' | tr '[:upper:]' '[:lower:]')"
 - version="$(awk '$2 == "APP_VERSION" { print $3; exit }' docker/Dockerfile)"
-- tag="${branch}-${version}"
 
 script:
+- if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then BUILD_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH; else BUILD_BRANCH=$TRAVIS_BRANCH; fi
+- ./travis-build.sh
 - cd docker && ./builddocker.sh
+- ./pushdocker-travis.sh
 
 after_script:
 - docker images
 
 before_deploy:
-- docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 - docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:latest"
 - docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:${branch}"
-- docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:${tag}"
 
 deploy:
   # Stable release
   provider: script
-  script: docker push ${DOCKER_IMAGE}:${tag}
-  on:
-    branch: master
-  # Development release
-  provider: script
-  script: docker push ${DOCKER_IMAGE}:${branch} && docker push ${DOCKER_IMAGE}:latest
+  script: docker push ${DOCKER_IMAGE}:latest
   on:
     branch: develop
+  # Development release
+  provider: script
+  script: docker push ${DOCKER_IMAGE}:${branch}
+  on:
+    branch: develop-sling12

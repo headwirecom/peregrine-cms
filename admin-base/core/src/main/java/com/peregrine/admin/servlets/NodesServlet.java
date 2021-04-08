@@ -26,6 +26,7 @@ package com.peregrine.admin.servlets;
  */
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_NODES;
+import static com.peregrine.admin.servlets.ReferenceListerServlet.IS_STALE;
 import static com.peregrine.commons.util.PerConstants.ALLOWED_OBJECTS;
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.COMPONENT;
@@ -60,6 +61,8 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+import com.peregrine.replication.PerReplicable;
+import com.peregrine.replication.ReplicationUtil;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.commons.util.PerUtil;
 import java.io.IOException;
@@ -72,9 +75,7 @@ import javax.servlet.Servlet;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
-import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * List all the resources part of the given Path
@@ -101,16 +102,14 @@ public class NodesServlet extends AbstractBaseServlet {
     public static final String ACTIVATED = "activated";
     public static final String DEACTIVATED = "deactivated";
     public static final String REPLICATION_STATUS = "ReplicationStatus";
+    public static final String ANY_DESCENDANT_ACTIVATED = "anyDescendantActivated";
     public static final String RESOURCE_TYPE = "resourceType";
     public static final String JCR_PREFIX = "jcr:";
     public static final String PER_PREFIX = "per:";
 
     private static final String[] OMIT_PREFIXES = new String[] {JCR_PREFIX, PER_PREFIX};
 
-    private static DateFormat formatter = new SimpleDateFormat(ECMA_DATE_FORMAT, ECMA_DATE_FORMAT_LOCALE);
-
-    @Reference
-    ModelFactory modelFactory;
+    public static DateFormat DATE_FORMATTER = new SimpleDateFormat(ECMA_DATE_FORMAT, ECMA_DATE_FORMAT_LOCALE);
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
@@ -145,10 +144,6 @@ public class NodesServlet extends AbstractBaseServlet {
         }
     }
 
-    private void convertResource(JsonResponse json, Resource resource) throws IOException {
-        convertResource(json, resource, false);
-    }
-
     private boolean hasNonJcrContentChild(Resource res) {
         for (Resource child : res.getChildren()) {
             if(!JCR_CONTENT.equals(child.getName())) {
@@ -164,7 +159,7 @@ public class NodesServlet extends AbstractBaseServlet {
             path += "/" + segments[i];
         }
         logger.debug("looking up {}", path);
-        Resource res = rs.getResource(path);
+        Resource res = rs.resolve(path);
         json.writeAttribute(NAME,res.getName());
         json.writeAttribute(PATH,res.getPath());
         json.writeAttribute(HAS_CHILDREN, hasNonJcrContentChild(res));
@@ -234,6 +229,8 @@ public class NodesServlet extends AbstractBaseServlet {
                             logger.debug("No Content Child found for: '{}'", child.getPath());
                         }
                     }
+
+                    json.writeAttribute(ANY_DESCENDANT_ACTIVATED, ReplicationUtil.isAnyDescendantReplicated(child));
                     json.writeClose();
                 }
             }
@@ -274,6 +271,12 @@ public class NodesServlet extends AbstractBaseServlet {
             }
             json.writeAttribute(REPLICATION_STATUS, status);
         }
+        // TODO refactor code above to use PerReplicable when writing replication properties
+        PerReplicable sourceRepl = resource.adaptTo(PerReplicable.class);
+        json.writeAttribute(ACTIVATED, sourceRepl.isReplicated());
+        if (sourceRepl.getLastModified()!=null && sourceRepl.getReplicated()!= null) {
+            json.writeAttribute(IS_STALE, sourceRepl.isStale());
+        }
     }
 
     private String writeIfFound(JsonResponse json, String propertyName, ValueMap properties) throws IOException {
@@ -284,7 +287,7 @@ public class NodesServlet extends AbstractBaseServlet {
         Object value = properties.get(propertyName);
         String data;
         if(value instanceof Calendar) {
-            data = formatter.format(((Calendar) value).getTime());
+            data = DATE_FORMATTER.format(((Calendar) value).getTime());
         } else {
             data = properties.get(propertyName, String.class);
         }

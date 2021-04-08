@@ -2,16 +2,15 @@ package com.peregrine.commons.servlets;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.request.RequestDispatcherOptions;
+import org.apache.sling.api.resource.NonExistingResource;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
@@ -28,10 +27,10 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -44,6 +43,7 @@ import static com.peregrine.commons.util.PerConstants.JSON;
 import static com.peregrine.commons.util.PerConstants.JSON_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.TEXT_MIME_TYPE;
+import static com.peregrine.commons.util.PerConstants.UTF_8;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.POST;
 
@@ -146,11 +146,19 @@ public abstract class AbstractBaseServlet
      * as well as parameters
      */
     public static class Request {
-        private SlingHttpServletRequest request;
-        private SlingHttpServletResponse response;
-        private Map<String, String> parameters = new HashMap<>();
+
+        protected final Logger logger = LoggerFactory.getLogger(getClass());
+
+        private final SlingHttpServletRequest request;
+        private final SlingHttpServletResponse response;
+        private final Map<String, String> parameters;
 
         public Request(SlingHttpServletRequest request, SlingHttpServletResponse response) {
+            try {
+                request.setCharacterEncoding(UTF_8);
+            } catch( UnsupportedEncodingException uee ) {
+                logger.warn("not able to set character encoding to UTF-8");
+            }
             this.request = request;
             this.response = response;
             this.parameters = ServletHelper.obtainParameters(request);
@@ -177,6 +185,33 @@ public abstract class AbstractBaseServlet
 
         public String getParameter(String name) {
             return getParameter(name, null);
+        }
+
+        /**
+         *
+         * @param name Name of array in request
+         * @param delimiter If the array has one element in request body and the values joined with a delimiter such as ','
+         *  Otherwise set to null if array in request body is transported in the standard way (e.g. name[0], name[1], etc).
+         * @return returns a string array from the request body, or null.
+         */
+        public String[] getParameterValues(String name, String delimiter){
+            if(delimiter == null){
+                return request.getParameterValues(name);
+            }
+            String[] valueToParse = request.getParameterValues(name);
+            if (valueToParse != null && valueToParse.length == 1){
+                return valueToParse[0].split(delimiter);
+            }
+            return null;
+        }
+
+        /**
+         *
+         * @param name Name of array in request
+         * @return returns a string array from the request body, or null.
+         */
+        public String[] getParameterValues(String name){
+            return request.getParameterValues(name);
         }
 
         public String getParameter(String name, String defaultValue) {
@@ -218,7 +253,13 @@ public abstract class AbstractBaseServlet
 
         public Resource getResource() { return request.getResource(); }
 
-        public Resource getResourceByPath(String path) { return request.getResourceResolver().getResource(path); }
+        public Resource getResourceByPath(String path) {
+            Resource resource = request.getResourceResolver().resolve(path);
+            if(resource instanceof NonExistingResource) {
+                return request.getResourceResolver().getResource(path);
+            }
+            return resource;
+        }
 
         public String getSelector() { return request.getRequestPathInfo().getSelectorString(); }
 

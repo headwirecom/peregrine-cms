@@ -27,7 +27,8 @@ package com.peregrine.commons.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.CaseFormat;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +52,6 @@ public class PerUtil {
 
     public static final String RENDITIONS = "renditions";
     public static final String METADATA = "metadata";
-//    public static final String TEMPLATE = "template";
 
     public static final String PER_VENDOR = "headwire.com, Inc";
     public static final String PER_PREFIX = "Peregrine: ";
@@ -67,6 +67,8 @@ public class PerUtil {
     private static final Logger LOG = LoggerFactory.getLogger(PerUtil.class);
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    private static final ResourceChecker ADD_ALL_RESOURCE_CHECKER = new AddAllResourceChecker();
 
     /** @return True if the given text is either null or empty **/
     public static boolean isEmpty(String text) {
@@ -204,7 +206,12 @@ public class PerUtil {
                 }
             }
         }
+
         return answer;
+    }
+
+    public static Map<String, Map<String, String>> splitIntoParameterMap(String entry, String keySeparator, String valueSeparator, String parameterSeparator) {
+        return splitIntoParameterMap(new String[]{ entry }, keySeparator, valueSeparator, parameterSeparator);
     }
 
     /**
@@ -333,6 +340,10 @@ public class PerUtil {
                 .orElse(null);
     }
 
+    public static boolean isJcrContent(final String path) {
+        return PerConstants.JCR_CONTENT.equals(StringUtils.substringAfterLast(SLASH + path, SLASH));
+    }
+
     public static boolean isJcrContent(final Resource resource) {
         return PerConstants.JCR_CONTENT.equals(resource.getName());
     }
@@ -342,6 +353,18 @@ public class PerUtil {
             return resource;
         }
 
+        return getProperJcrContent(resource);
+    }
+
+    public static String getJcrContent(final String path) {
+        if (isJcrContent(path)) {
+            return path;
+        }
+
+        return path + SLASH + PerConstants.JCR_CONTENT;
+    }
+
+    public static Resource getProperJcrContent(final Resource resource) {
         return resource.getChild(PerConstants.JCR_CONTENT);
     }
 
@@ -410,18 +433,18 @@ public class PerUtil {
      * Goes recursively through the resource tree and adds all resources that are selected by the resource checker.
      * The JCR Content is traversed by default (except when the Resource Checker prevents it) but the other children
      * only when the deep flag is set true
-     *
-     * @param startingResource Root resource of the search
-     * @param response List of resources where the missing resources are added to
+     *  @param startingResource Root resource of the search
      * @param resourceChecker Resource Checker instance that decides which resource is deemed missing and defines
      *                         if children resources are traversed
      * @param deep If true this goes down recursively any children
+     * @param response List of resources where the missing resources are added to
      */
     public static <C extends Collection<Resource>> C listMissingResources(
             final Resource startingResource,
-            final C response,
             final ResourceChecker resourceChecker,
-            final boolean deep) {
+            final boolean deep,
+            final C response
+    ) {
         ResourceChecker childResourceChecker = resourceChecker;
         if (isNull(startingResource) || isNull(resourceChecker) || isNull(response)) {
             return response;
@@ -433,7 +456,7 @@ public class PerUtil {
             }
             // If this is JCR Content we need to add all children
             if (isJcrContent(startingResource)) {
-                childResourceChecker = new AddAllResourceChecker();
+                childResourceChecker = ADD_ALL_RESOURCE_CHECKER;
             }
         }
 
@@ -443,11 +466,26 @@ public class PerUtil {
 
         for (final Resource child : startingResource.getChildren()) {
             if (deep || isJcrContent(child)) {
-                listMissingResources(child, response, childResourceChecker, true);
+                listMissingResources(child, childResourceChecker, true, response);
             }
         }
 
         return response;
+    }
+
+    public static <C extends Collection<Resource>> C listMissingResources(
+            final Resource startingResource,
+            final boolean deep,
+            final C response
+    ) {
+        return listMissingResources(startingResource, ADD_ALL_RESOURCE_CHECKER, deep, response);
+    }
+
+    public static List<Resource> listMissingResources(
+            final Resource startingResource,
+            final boolean deep
+    ) {
+        return listMissingResources(startingResource, deep, new LinkedList<>());
     }
 
     public static boolean containsResource(final Collection<Resource> resources, final Resource check) {
@@ -465,37 +503,7 @@ public class PerUtil {
         return false;
     }
 
-    //AS TODO: This seems to be a duplicate of the method above?
-//    public static void listMatchingResources(Resource startingResource, List<Resource> response, ResourceChecker resourceChecker, boolean deep) {
-//        ResourceChecker childResourceChecker = resourceChecker;
-//        if(startingResource != null && resourceChecker != null && response != null) {
-//            if(resourceChecker.doAdd(startingResource)) {
-//                response.add(startingResource);
-//                // If this is JCR Content we need to add all children
-//                if(startingResource.getName().equals(PerConstants.JCR_CONTENT)) {
-//                    childResourceChecker = new AddAllResourceChecker();
-//                }
-//            }
-//            if(resourceChecker.doAddChildren(startingResource)) {
-//                for(Resource child : startingResource.getChildren()) {
-//                    if(child.getName().equals(PerConstants.JCR_CONTENT)) {
-//                        listMatchingResources(child, response, childResourceChecker, true);
-//                    } else if(deep) {
-//                        listMatchingResources(child, response, childResourceChecker, true);
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    public static boolean containsResource(List<Resource> resourceList, Resource resource) {
-//        for(Resource item: resourceList) {
-//            if(item.getPath().equals(resource.getPath())) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
+
 
     /**
      * Lists all the missing parents compared to the parents on the source
@@ -558,11 +566,11 @@ public class PerUtil {
                 .orElse(null);
     }
 
-    public static boolean isPropertyEqual(final Resource resource, final String propertyName, final String value) {
+    public static boolean isPropertyEqual(final Resource resource, final String propertyName, final String... value) {
         return Optional.ofNullable(resource)
                 .map(r -> getProperties(r, false))
                 .map(p -> p.get(propertyName, String.class))
-                .map(v -> v.equals(value))
+                .map(v -> Arrays.stream(value).anyMatch(v::equals))
                 .orElse(false);
     }
 
@@ -572,7 +580,7 @@ public class PerUtil {
      * @param resourceType Sling Resource Type to test. If null or empty this method returns false
      * @return true if the resource contains a Sling Resource Type that matches the given value
      */
-    public static boolean isResourceType(final Resource resource, final String resourceType) {
+    public static boolean isResourceType(final Resource resource, final String... resourceType) {
         return isPropertyEqual(resource, SLING_RESOURCE_TYPE, resourceType);
     }
 
@@ -582,8 +590,17 @@ public class PerUtil {
      * @param primaryType Primary Type to test. If null or empty this method returns false
      * @return true if the resource contains a Primary Type that matches the given value
      */
-    public static boolean isPrimaryType(final Resource resource, final String primaryType) {
+    public static boolean isPrimaryType(final Resource resource, final String... primaryType) {
         return isPropertyEqual(resource, JCR_PRIMARY_TYPE, primaryType);
+    }
+
+    public static boolean isUnfrozenPrimaryType(final Resource resource, final String... primaryType) {
+        if (isPrimaryType(resource, primaryType)) {
+            return true;
+        }
+
+        return isPrimaryType(resource, JcrConstants.NT_FROZENNODE)
+                && isPropertyEqual(resource, JcrConstants.JCR_FROZENPRIMARYTYPE, primaryType);
     }
 
     /**
@@ -911,41 +928,32 @@ public class PerUtil {
         public boolean doAddChildren(final Resource resource) { return true; }
     }
 
-    /** Checks all resources **/
-    public static class AddAllResourceChecker
-        implements ResourceChecker
-    {
-        @Override
-        public boolean doAdd(final Resource resource) {
-            return true;
-        }
-        @Override
-        public boolean doAddChildren(Resource resource) { return true; }
-    }
-
     /**
      * Extracts the tenant name from the resource
      * @param resource a resource
      * @return tenant name on success, and <code>null</code> otherwise
      */
     public static String getTenantNameFromResource(Resource resource) {
-        String tenantName = null;
-
         while (resource != null) {
             try {
                 Node node = resource.adaptTo(Node.class);
-                if (node.getDepth() == 2) {
-                    tenantName = node.getName();
+                final String name = resource.getName();
+                final int depth = node.getDepth();
+                if (depth == 2) {
+                    return name;
                 }
-                if (node.getDepth() == 1 && !"content".equals(node.getName())) {
+
+                if (depth == 1 && !"content".equals(name)) {
                     return null;
                 }
+
                 resource = resource.getParent();
             } catch (RepositoryException e) {
                 LOG.error("Error getting tenant name from resource: '{}'", resource);
             }
         }
-        return tenantName;
+
+        return null;
     }
 
     /**
@@ -1000,4 +1008,20 @@ public class PerUtil {
 
        return tenantRoot;
     }
+
+    /** Checks all resources **/
+    public static final class AddAllResourceChecker implements ResourceChecker {
+
+        @Override
+        public boolean doAdd(final Resource resource) {
+            return true;
+        }
+
+        @Override
+        public boolean doAddChildren(Resource resource) {
+            return true;
+        }
+
+    }
+
 }

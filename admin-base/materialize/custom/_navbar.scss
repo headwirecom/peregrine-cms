@@ -139,6 +139,66 @@ nav {
             background-color: var(--pcms-orange-hover);
           }
         }
+
+        .user-info {
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          line-height: 2rem;
+
+          .row {
+            margin: .2rem 1rem .2rem 0;
+            padding-left: 1rem;
+
+            &:first-child {
+              margin-top: 0;
+            }
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+
+            > p {
+              margin: 0 0 0 -5px;
+              font-weight: bold;
+            }
+
+            &.logged-in-as {
+              position: relative;
+
+              &:hover {
+                .copy-username {
+                  opacity: 1;
+                }
+              }
+            }
+          }
+
+          .copy-username {
+            position: absolute;
+            top: 3px;
+            right: 0;
+            color: #333;
+            font-size: 13px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity .1s linear;
+
+            &:hover {
+              color: var(--pcms-orange);
+            }
+          }
+
+          .username {
+            width: 100%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+          }
+
+          .username-input {
+            opacity: 0;
+          }
+        }
       }
 
       .more-link {

@@ -51,10 +51,7 @@ public final class ResourceUtilsTest extends SlingResourcesTest {
     @Test
     public void getOrCreateResource_resourceGetsCreated() throws PersistenceException {
         when(resourceResolver.getResource(path)).thenReturn(null);
-        when(resourceResolver.create(eq(jcrContent), eq(NN_RESOURCE), any())).thenAnswer(invocation -> {
-            when(resourceResolver.getResource(path)).thenReturn(resource);
-            return resource;
-        });
+        repo.mockResourceResolverCreate();
         final Resource resource = ResourceUtils.getOrCreateResource(resourceResolver, path, null);
         assertEquals(this.resource, resource);
     }

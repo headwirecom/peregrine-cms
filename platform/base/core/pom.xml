@@ -53,12 +53,16 @@
                             com.peregrine.adaption,
                             com.peregrine.nodetypes.*,
                             com.peregrine.intra,
+                            com.peregrine.reference,
                             com.peregrine.render,
                             com.peregrine.rendition,
                             com.peregrine.replication,
+                            com.peregrine.sitemap,
                             com.peregrine.transform,
                             com.peregrine.transform.*,
-                            com.peregrine.commons.util
+                            com.peregrine.commons.util,
+                            com.peregrine.model.api,
+                            com.peregrine.versions
                         </Export-Package>
                         <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
                         <Sling-Model-Packages>com.peregrine.models,com.peregrine.nodetypes.models</Sling-Model-Packages>
@@ -127,7 +131,9 @@
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
+            <artifactId>org.osgi.service.event</artifactId>
+            <version>1.4.0</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -160,6 +166,10 @@
             <artifactId>org.apache.sling.models.api</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.distribution.api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-api</artifactId>
         </dependency>
@@ -171,11 +181,6 @@
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.engine</artifactId>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.apache.sling</groupId>-->
-            <!--<artifactId>org.apache.sling.commons.testing</artifactId>-->
-            <!--<scope>compile</scope>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.event</artifactId>
@@ -201,16 +206,16 @@
         </dependency>
 
         <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-        </dependency>
-        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
         </dependency>
 
         <dependency>
@@ -222,14 +227,6 @@
             <artifactId>guava</artifactId>
             <groupId>com.google.guava</groupId>
         </dependency>
-
-        <!--AS TODO: Is that really needed -->
-        <!--<dependency>-->
-            <!--<artifactId>org.apache.felix.http.jetty</artifactId>-->
-            <!--<version>3.4.2</version>-->
-            <!--<groupId>org.apache.felix</groupId>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

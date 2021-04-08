@@ -25,21 +25,6 @@ public abstract class AbstractTest {
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
-/*
-    Add these two methods to your class if you want to log the start and end of the test class
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        LOGGER.info("\n\n---------------------- Start Test Class --------------\n\n");
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        LOGGER.info("\n\n---------------------- End Test Class --------------\n\n");
-    }
-
-*/
-
     public abstract Logger getLogger();
 
     @Before

@@ -25,11 +25,12 @@
 const fs = require('fs-extra')
 const marked = require('marked')
 const xmlescape = require('xml-escape');
+const p = require('path')
 
 var path = '../../docs/public'
 
 function content(title, html, order) {
-html = xmlescape(html)
+html = xmlescape(html).split(".md&quot;&gt;").join(".html&quot;&gt;")
 return `<?xml version="1.0" encoding="UTF-8"?>
 <jcr:root 
    xmlns:sling="http://sling.apache.org/jcr/sling/1.0" 
@@ -83,13 +84,20 @@ function findOrder(commands) {
 }
 
 function makeContent(root, path) {
+  var isIndex = path.endsWith("/index.md");
+  var title;
+  if (isIndex) {
+    title = path.slice(0, path.lastIndexOf('/'))
+    title = title.slice(title.lastIndexOf('/') + 1)
+  } else {
+    title = path.slice(path.lastIndexOf('/') + 1)
+    title = title.slice(0, title.lastIndexOf('.md'))
+  }
 
   var md = fs.readFileSync(path).toString()
-  var title = path.slice(0, path.lastIndexOf('/'))
-  title = title.slice(title.lastIndexOf('/') + 1)
-  md = md.replace(/!\[(.*)\]\((.*)\)/g, function (math, p1, p2, string) {
-    return '![' + p1 + '](' + title + '/' + p2 + ')'
-  })
+    .replace(/!\[(.*)\]\((.*)\)/g, function (math, p1, p2, string) {
+      return '![' + p1 + '](' + title + '/' + p2 + ')'
+    })
 
   var order = ''
   // trim commands
@@ -103,14 +111,12 @@ function makeContent(root, path) {
   var res = content(title, out, order)
 
   var relPath = 'target/classes/content/docs/pages/public' + path.slice(root.length)
-  relPath = relPath.replace('index.md', '.content.xml')
-  console.log(relPath)
-  fs.mkdirsSync(relPath.replace('.content.xml', title))
-  fs.writeFileSync(relPath, res)
+  console.log(`${relPath}`)
+  fs.mkdirsSync(`${relPath}/..`)
+  fs.writeFileSync(isIndex ? p.join(`${relPath}`, '../.content.xml') : relPath.replace(".md", ".xml"), res)
 }
 
 function copyImage(root, path) {
-
   var image = fs.readFileSync(path)
   var title = path.slice(0, path.lastIndexOf('/'))
   var name = path.slice(path.lastIndexOf('/'))

@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static com.peregrine.commons.util.PerConstants.EXCLUDE_TREE_FROM_SITEMAP;
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 import static org.junit.Assert.assertFalse;
@@ -26,7 +27,7 @@ public class PageRecognizerBaseTest extends SlingResourcesTest {
     }
 
     public PageRecognizerBaseTest() {
-        this(new PageRecognizerBase(PRIMARY_TYPE, CONTENT_TYPE, EXCLUDE_SITE_MAP_PROPERTY) {
+        this(new PageRecognizerBase(PRIMARY_TYPE, CONTENT_TYPE, EXCLUDE_SITE_MAP_PROPERTY, EXCLUDE_TREE_FROM_SITEMAP) {
             @Override
             protected boolean isPageImpl(final Page candidate) {
                 return true;
