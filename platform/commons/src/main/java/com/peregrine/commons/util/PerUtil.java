@@ -348,20 +348,27 @@ public class PerUtil {
         return PerConstants.JCR_CONTENT.equals(resource.getName());
     }
 
+    private static boolean isDescendantOfJcrContent(final String path) {
+        return StringUtils.contains(path, SLASH + JCR_CONTENT + SLASH);
+    }
+
+    public static boolean isJcrContentOrDescendant(final String path) {
+        return isJcrContent(path) || isDescendantOfJcrContent(path);
+    }
+
+    public static boolean isJcrContentOrDescendant(final Resource resource) {
+        return Optional.ofNullable(resource)
+                .map(Resource::getPath)
+                .map(PerUtil::isJcrContentOrDescendant)
+                .orElse(false);
+    }
+
     public static Resource getJcrContent(final Resource resource) {
         if (isJcrContent(resource)) {
             return resource;
         }
 
         return getProperJcrContent(resource);
-    }
-
-    public static String getJcrContent(final String path) {
-        if (isJcrContent(path)) {
-            return path;
-        }
-
-        return path + SLASH + PerConstants.JCR_CONTENT;
     }
 
     public static Resource getProperJcrContent(final Resource resource) {

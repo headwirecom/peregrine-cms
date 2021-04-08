@@ -1,6 +1,7 @@
 package com.peregrine.replication;
 
 import com.peregrine.adaption.PerBase;
+import org.apache.sling.api.resource.Resource;
 
 import java.util.Calendar;
 
@@ -15,6 +16,8 @@ import java.util.Calendar;
  *
  */
 public interface PerReplicable extends PerBase {
+
+    Resource getMainResource();
 
     /**
      * @return true if the resource has been replicated
@@ -40,16 +43,4 @@ public interface PerReplicable extends PerBase {
      * @return A string property describing the last replication action (either activated, deactivated, null)
      */
     String getLastReplicationAction();
-
-    boolean ensureReplicableMixin();
-
-    /**
-     * Call this method to mark the value of per:ReplicationLastAction as "activated"
-     */
-    void setLastReplicationActionAsActivated();
-
-    /**
-     * Call this method to mark the value of per:ReplicationLastAction as "deactivated"
-     */
-    void setLastReplicationActionAsDeactivated();
 }

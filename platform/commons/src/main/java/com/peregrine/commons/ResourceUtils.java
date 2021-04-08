@@ -6,13 +6,14 @@ import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.*;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.peregrine.commons.Strings.COLON;
 import static com.peregrine.commons.Strings._SCORE;
-import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.commons.util.PerConstants.*;
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.contains;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -194,6 +195,42 @@ public final class ResourceUtils {
             final String name
     ) throws PersistenceException {
         return resourceResolver.create(targetParent, name, getCopyableProperties(resource));
+    }
+
+    /**
+     * Copy of a Single Resource rather than the ResourceResolver's copy which copies the entire sub tree
+     *
+     * @param resource Source to be copied
+     * @param targetParent Parent Resource which the copy will be added to
+     * @param pathMapping Path Mappings used to check and rewrite references
+     * @return The newly created (copied) resource
+     *
+     * @throws PersistenceException If the resource could not be created like it already exists or parent missing
+     */
+    public static Resource performFlatSafeCopy(
+            final ResourceResolver resourceResolver,
+            final Resource resource,
+            final Resource targetParent,
+            final Function<Object, String> pathMapping
+    ) throws PersistenceException {
+        final String name = resource.getName();
+        final Resource answer = targetParent.getChild(name);
+        if (nonNull(answer)) {
+            return answer;
+        }
+
+        final Map<String, Object> properties = Optional.ofNullable(resource)
+                .map(ResourceUtils::getCopyableProperties)
+                .orElseGet(Collections::emptyMap);
+        for (final Map.Entry<String, Object> e : properties.entrySet()) {
+            Optional.ofNullable(e.getValue())
+                    .filter(v -> v instanceof String)
+                    .map(String.class::cast)
+                    .map(pathMapping)
+                    .ifPresent(e::setValue);
+        }
+
+        return resourceResolver.create(targetParent, name, properties);
     }
 
     public static Resource performDeepSafeCopy(

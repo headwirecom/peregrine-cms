@@ -27,6 +27,9 @@ package com.peregrine.admin.servlets;
 
 import com.peregrine.replication.PerReplicable;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.replication.Replication;
+import com.peregrine.replication.Replication.ReplicationException;
+import com.peregrine.replication.ReplicationsContainerWithDefault;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
@@ -36,17 +39,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import static com.peregrine.admin.servlets.ReplicationServlet.REPLICATION_FAILED;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.PATH;
-import static com.peregrine.commons.util.PerUtil.AddAllResourceChecker;
 import static java.util.Objects.isNull;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 
 public abstract class ReplicationServletBase extends AbstractBaseServlet {
 
+    public static final String REPLICATION_NOT_FOUND_FOR_NAME = "Replication not found for name: ";
+    public static final String REPLICATION_FAILED = "Replication Failed";
     public static final String REPLICATES = "replicates";
-    public static final AddAllResourceChecker ADD_ALL_RESOURCE_CHECKER = new AddAllResourceChecker();
 
     @Override
     protected final Response handleRequest(final Request request) throws IOException {
@@ -57,34 +59,52 @@ public abstract class ReplicationServletBase extends AbstractBaseServlet {
 
         final String sourcePath = request.getParameter(PATH);
         final ResourceResolver resourceResolver = request.getResourceResolver();
-        final Resource source = resourceResolver.getResource(sourcePath);
-        if (isNull(source)) {
+        final Resource resource = resourceResolver.getResource(sourcePath);
+        if (isNull(resource)) {
             return new ErrorResponse()
                     .setHttpErrorCode(SC_BAD_REQUEST)
                     .setErrorMessage(String.format("Suffix: '%s' is not a resource", sourcePath));
         }
 
-        return performReplication(request, source, resourceResolver);
+        final String replicationName = request.getParameter(NAME);
+        final Replication replication = getReplications().getOrDefault(replicationName);
+        if (isNull(replication)) {
+            return new ErrorResponse()
+                    .setHttpErrorCode(SC_BAD_REQUEST)
+                    .setErrorMessage(REPLICATION_NOT_FOUND_FOR_NAME + replicationName);
+        }
+
+        try {
+            return performReplication(replication, request, resource, resourceResolver);
+        } catch (final ReplicationException e) {
+            return badRequestReplicationFailed(e);
+        }
     }
 
+    protected abstract ReplicationsContainerWithDefault getReplications();
+
     protected abstract Response performReplication(
+            Replication replication,
             Request request,
             Resource resource,
             ResourceResolver resourceResolver
-    ) throws IOException;
+    ) throws IOException, ReplicationException;
 
     protected static ErrorResponse badRequestReplicationFailed(final Exception e) throws IOException {
+        return badRequest(REPLICATION_FAILED).setException(e);
+    }
+
+    protected static ErrorResponse badRequest(final String message) throws IOException {
         return new ErrorResponse()
                 .setHttpErrorCode(SC_BAD_REQUEST)
-                .setErrorMessage(REPLICATION_FAILED)
-                .setException(e);
+                .setErrorMessage(message);
     }
 
     protected static Stream<Resource> streamReplicableResources(final Collection<Resource> resources) {
         return resources.stream()
                 .map(r -> r.adaptTo(PerReplicable.class))
                 .filter(Objects::nonNull)
-                .map(PerReplicable::getContentResource)
+                .map(PerReplicable::getMainResource)
                 .filter(Objects::nonNull);
     }
 
