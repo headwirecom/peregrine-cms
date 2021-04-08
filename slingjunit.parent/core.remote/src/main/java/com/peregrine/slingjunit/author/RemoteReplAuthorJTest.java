@@ -64,7 +64,6 @@ public class RemoteReplAuthorJTest extends ReplicationTestBase {
             "com.peregrine-cms.distribution:test-distribution=distribution-agent-user"
     };
     private static String USER_MAPPING = "user.mapping";
-    public static String STELLA_PNG = "/content/example/assets/images/Stella.png";
     private static String CONTACT_PATH = "/content/example/pages/contact";
     private static String COMPONENT_PATH= "/content/example/pages/contact/jcr:content/n3736dc36-9cc3-49d7-a7d4-bf4d94e0ea2f";
     private static String REMOTE = "remote";

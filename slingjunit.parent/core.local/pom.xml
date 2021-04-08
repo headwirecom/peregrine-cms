@@ -29,9 +29,9 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>slingjunit.core</artifactId>
+    <artifactId>slingjunit.core.local</artifactId>
     <packaging>bundle</packaging>
-    <name>Peregrine Sling-JUnit Common Tests Bundle</name>
+    <name>Peregrine Sling-JUnit 'local' Runmode Tests</name>
     <description>JUnit tests for Peregrine CMS designed to the run within Sling-JUnit test-runner, /system/sling/junit/.html</description>
 
 
@@ -61,6 +61,18 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>pagerender-server.core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>admin.core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>slingjunit.core</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

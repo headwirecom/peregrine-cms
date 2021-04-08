@@ -29,10 +29,10 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>slingjunit.ui.apps</artifactId>
+    <artifactId>slingjunit.package.remote</artifactId>
     <packaging>content-package</packaging>
 
-    <name>Peregrine Sling-JUnit Testing Package</name>
+    <name>Peregrine Sling-JUnit Testing Package (Remote Runmode)</name>
     <description>JUnit tests for Peregrine CMS designed to the run within Sling-JUnit test-runner, /system/sling/junit/.html</description>
 
     <properties>
@@ -41,12 +41,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.sling</groupId>
-            <artifactId>org.apache.sling.junit.core</artifactId>
-        </dependency>
-        <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>slingjunit.core</artifactId>
+            <artifactId>slingjunit.core.remote</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
@@ -93,31 +89,19 @@
                 </configuration>
                 <executions>
                     <execution>
+                        <id>remote-junit-test-package</id>
                         <goals>
                             <goal>package</goal>
                         </goals>
                         <configuration>
-                            <embeddedTarget>/apps/slingjunit/install</embeddedTarget>
+                            <embeddedTarget>/apps/slingjunit/install.author</embeddedTarget>
                             <embeddeds>
                                 <embedded>
-                                    <groupId>org.apache.sling</groupId>
-                                    <artifactId>org.apache.sling.junit.core</artifactId>
-                                    <generateFilter>true</generateFilter>
-                                </embedded>
-                                <embedded>
                                     <groupId>${project.groupId}</groupId>
-                                    <artifactId>slingjunit.core</artifactId>
+                                    <artifactId>slingjunit.core.remote</artifactId>
                                     <generateFilter>true</generateFilter>
                                 </embedded>
                             </embeddeds>
-                            <dependencies>
-                                <dependency>
-                                    <group>${project.groupId}</group>
-                                    <name>ui.apps</name>
-                                    <version>${project.version}</version>
-                                </dependency>
-                            </dependencies>
-                            <!-- ATTENTION: Do not include this package as sub package which would yield an endless loop -->
                         </configuration>
                     </execution>
                 </executions>

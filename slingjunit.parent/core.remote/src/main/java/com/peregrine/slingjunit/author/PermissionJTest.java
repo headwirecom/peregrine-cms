@@ -34,13 +34,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static com.peregrine.slingjunit.VersionsJTest.EXAMPLE_SITE_ROOT;
 import static org.junit.Assert.*;
 
 @RunWith(SlingAnnotationsTestRunner.class)
 public class PermissionJTest {
 
+    static final public String EXAMPLE_SITE_ROOT = "/content/example";
     private final Logger logger = LoggerFactory.getLogger(getClass());
     @TestReference
     AdminResourceHandler resourceManagement;

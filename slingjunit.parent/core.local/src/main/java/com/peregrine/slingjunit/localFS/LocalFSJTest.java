@@ -16,7 +16,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import java.io.File;
 import java.util.Calendar;
-import static com.peregrine.slingjunit.author.RemoteReplAuthorJTest.STELLA_PNG;
 import static org.apache.jackrabbit.JcrConstants.JCR_LASTMODIFIED;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertFalse;
