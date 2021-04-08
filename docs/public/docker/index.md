@@ -15,7 +15,9 @@ Linux path (not the mounted folders from Windows).
 ```bash
 docker run -it -p 8080:8080 peregrinecms/peregrine-cms:develop-sling12
 ```
+
 this command runs a docker container
+
 - `-it`: log output to stdout in the container is forwarded to your console and console blocks until you hit `ctrl-c` to stop the container
 - `-p 8080:8080`: Your local port 8080 is forwarded to the container port 8080
 
@@ -26,6 +28,7 @@ Use your browser to go to Peregrine-CMS (<http://localhost:8080>)
 ```bash
 docker pull peregrinecms/peregrine-cms:develop-sling12
 ```
+
 - `pull`: checks and pulls a new version from docker hub for the docker image
 
 ## Check out a PR with docker
@@ -43,22 +46,43 @@ docker run -it -p 8080:8080 peregrinecms/peregrine-cms:pr-{number}
 ```bash
 docker run -rm -it -p 8080:8080 -p 8000:8000 --name peregrine peregrinecms/peregrine-cms:develop-sling12
 ```
+
 - `--name peregrine`: we give our container a name (use `docker ps` to see all your running docker containers)
-- ` -rm`: the additional `-rm` removes the docker container when we stop it and frees the name of the container
+- `-rm`: the additional `-rm` removes the docker container when we stop it and frees the name of the container
 - `-p 8000:8000`: in addition to port 8080, also forward port 8000 to the docker container
 
 in a second shell/command line run
+
 ```bash
 docker exec -it peregrine bash
 ```
-in the docker container `peregrine` **exec**ute `bash` 
+
+in the docker container `peregrine` **exec**ute `bash`
 
 once in the shell in the container run the following commands:
-```
+
+```bash
 cd /apps/sling/staticreplication
 npx httpserver -p 8000
 ```
-We change the shell to the location where peregrine stores the html files at replication and then start a nodejs based webserver at that location. 
 
+We change the shell to the location where peregrine stores the html files at replication and then start a nodejs based webserver at that location.
 
 Use your browser to go to the website (<http://localhost:8000>) or Peregrine-CMS (<http://localhost:8080>)
+
+## Run Peregrine-CMS with an author and publish (stage and live) instance
+
+```bash
+docker run -d --rm --network=host --name peregrine-author peregrinecms/peregrine-cms-author:develop-sling12
+docker run -d --rm -p 8180:8080 --name peregrine-publish peregrinecms/peregrine-cms-publish:develop-sling12
+```
+
+> `--network=host` makes the author docker instance use the host
+network interface. By default, remote replication in peregrine 
+expects a publisher to be available on port 8180.
+
+to stop the instances use
+
+```bash
+docker kill peregrine-author peregrine-publish
+```

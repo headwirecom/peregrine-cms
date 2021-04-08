@@ -27,7 +27,7 @@ before_script:
 script:
 - if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then BUILD_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH; else BUILD_BRANCH=$TRAVIS_BRANCH; fi
 - ./travis-build.sh
-- cd docker && ./builddocker.sh
+- cd docker && ./builddocker.sh && ./builddocker-remote-replication.sh
 - ./pushdocker-travis.sh
 
 after_script:
