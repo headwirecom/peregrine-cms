@@ -708,6 +708,34 @@
             > .form-group {
                 padding: 0.75rem;
             }
+
+          &.active {
+            position: relative;
+            min-height: 100px;
+
+            legend {
+
+                +.form-group {
+                    background-color: #eceff1;
+
+                }
+
+                &:after {
+                    content: 'Empty';
+                    position: absolute;
+                    top: 60px;
+                    left: 0;
+                    width: 100%;
+                    text-align: center;
+                }
+            }
+          }
+
+            &:not(.active) {
+                .form-group {
+                    display: none;
+                }
+            }
         }
     }
 

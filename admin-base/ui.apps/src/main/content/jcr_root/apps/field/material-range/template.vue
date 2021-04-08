@@ -5,7 +5,7 @@
       <span v-if="isBlank" class="strike"></span>
     </button>
     <input
-        v-if="value !== null"
+        v-if="!isBlank"
         ref="range"
         type="range"
         class="range"
@@ -47,6 +47,7 @@
 
 <script>
 import {IconLib, Toast} from '../../../../../js/constants'
+
 
 function isDefined(value) {
   return value || value === 0 || value === '0'
@@ -135,10 +136,12 @@ export default {
 
         if (value < this.min) {
           event.preventDefault()
-          this.toast.min = $perAdminApp.toast(`Number too low (>= ${this.min})`, Toast.Level.INFO)
+          this.toast.min = $perAdminApp.toast(`Number too low (>= ${this.min})`,
+              Toast.Level.INFO)
         } else if (value > this.max) {
           event.preventDefault()
-          this.toast.max = $perAdminApp.toast(`Number too high (<= ${this.max})`, Toast.Level.INFO)
+          this.toast.max = $perAdminApp.toast(`Number too high (<= ${this.max})`,
+              Toast.Level.INFO)
         }
       }
     },
