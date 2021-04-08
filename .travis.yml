@@ -2,8 +2,11 @@ branches:
   only:
   - develop-sling12
   - develop
-  - feature/tenantstate
 
+cache:
+  directories:
+  - $HOME/.m2
+  
 services:
 - docker
 
@@ -22,13 +25,16 @@ before_script:
 - version="$(awk '$2 == "APP_VERSION" { print $3; exit }' docker/Dockerfile)"
 
 script:
+- if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then BUILD_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH; else BUILD_BRANCH=$TRAVIS_BRANCH; fi
+- ./travis-build.sh
 - cd docker && ./builddocker.sh
+- ./pushdocker-travis.sh
 
 after_script:
 - docker images
 
 before_deploy:
-- docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 - docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:latest"
 - docker tag "$DOCKER_IMAGE" "${DOCKER_IMAGE}:${branch}"
 

@@ -42,9 +42,7 @@ import java.io.IOException;
 import javax.servlet.Servlet;
 import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * Forwards the Request to .data.json page rendering and replacing any
@@ -64,9 +62,6 @@ import org.osgi.service.component.annotations.Reference;
 )
 @SuppressWarnings("serial")
 public class ContentServlet extends AbstractBaseServlet {
-
-    @Reference
-    ModelFactory modelFactory;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {

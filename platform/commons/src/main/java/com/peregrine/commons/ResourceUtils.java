@@ -1,16 +1,12 @@
 package com.peregrine.commons;
 
+import com.peregrine.commons.util.PerConstants;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceUtil;
+import org.apache.jackrabbit.JcrConstants;
+import org.apache.sling.api.resource.*;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.peregrine.commons.Strings.COLON;
 import static com.peregrine.commons.Strings._SCORE;
@@ -25,6 +21,21 @@ import static org.apache.commons.lang3.StringUtils.substringAfter;
 import static org.apache.commons.lang3.StringUtils.substringBefore;
 
 public final class ResourceUtils {
+
+    private static final Set<String> NONCOPYABLE_PROPERTIES = Arrays.asList(
+            JcrConstants.JCR_BASEVERSION,
+            JcrConstants.JCR_CREATED,
+            JcrConstants.JCR_ISCHECKEDOUT,
+            JcrConstants.JCR_PREDECESSORS,
+            JcrConstants.JCR_UUID,
+            JcrConstants.JCR_VERSIONHISTORY,
+            PerConstants.JCR_CREATED_BY,
+            PerConstants.PER_REPLICATED,
+            PerConstants.PER_REPLICATED_BY,
+            PerConstants.PER_REPLICATION_LAST_ACTION,
+            PerConstants.PER_REPLICATION_REF,
+            PerConstants.PER_REPLICATION_STATUS
+    ).stream().collect(Collectors.toSet());
 
     private ResourceUtils() {
         throw new UnsupportedOperationException();
@@ -72,6 +83,33 @@ public final class ResourceUtils {
         return resourceResolver.getResource(path);
     }
 
+    public static Resource getOrCreateChild(
+            final Resource parent,
+            final String name,
+            final String resourceTypes)
+            throws PersistenceException {
+        if (isBlank(name)) {
+            return parent;
+        }
+
+        return getOrCreateResource(
+                parent.getResourceResolver(),
+                parent.getPath() + SLASH + name,
+                resourceTypes
+        );
+    }
+
+    public static Resource tryToCreateChildOrGetNull(
+            final Resource parent,
+            final String name,
+            final String resourceTypes) {
+        try {
+            return getOrCreateChild(parent, name, resourceTypes);
+        } catch (final PersistenceException e) {
+            return null;
+        }
+    }
+
     public static String fileNameToJcrName(final String name) {
         if (startsWith(name, _SCORE)) {
             final String nameAfterUnderscore = name.substring(1);
@@ -115,6 +153,77 @@ public final class ResourceUtils {
         }
 
         return list;
+    }
+
+    public static boolean isPropertyCopyable(final String name) {
+        return !NONCOPYABLE_PROPERTIES.contains(name);
+    }
+
+    public static boolean isPropertyAllowedOnExistingNode(final String name) {
+        return !JCR_PRIMARY_TYPE.equals(name) && isPropertyCopyable(name);
+    }
+
+    public static Map<String, Object> filterCopyableProperties(final Map<String, ?> properties) {
+        final Map<String, Object> result = new HashMap<>();
+        Optional.ofNullable(properties)
+                .orElseGet(Collections::emptyMap)
+                .entrySet()
+                .stream()
+                .filter(e -> isPropertyCopyable(e.getKey()))
+                .forEach(e -> result.put(e.getKey(), e.getValue()));
+        return result;
+    }
+
+    public static Map<String, Object> filterPropertiesAllowedOnExistingNode(final Map<String, ?> properties) {
+        final Map<String, Object> result = filterCopyableProperties(properties);
+        result.remove(JCR_PRIMARY_TYPE);
+        return result;
+    }
+
+    public static Map<String, Object> getCopyableProperties(final Resource resource) {
+        return Optional.ofNullable(resource)
+                .map(Resource::getValueMap)
+                .map(ResourceUtils::filterCopyableProperties)
+                .orElseGet(Collections::emptyMap);
+    }
+
+    public static Resource performFlatSafeCopy(
+            final ResourceResolver resourceResolver,
+            final Resource resource,
+            final Resource targetParent,
+            final String name
+    ) throws PersistenceException {
+        return resourceResolver.create(targetParent, name, getCopyableProperties(resource));
+    }
+
+    public static Resource performDeepSafeCopy(
+            final ResourceResolver resourceResolver,
+            final Resource resource,
+            final Resource targetParent,
+            final String name
+    ) throws PersistenceException {
+        final Resource result = performFlatSafeCopy(resourceResolver, resource, targetParent, name);
+        for (final Resource child : resource.getChildren()) {
+            performDeepSafeCopy(resourceResolver, child, result, child.getName());
+        }
+
+        return result;
+    }
+
+    public static Resource performDeepSafeCopy(final Resource resource, final Resource targetParent, final String name) throws PersistenceException {
+        final ResourceResolver resourceResolver = targetParent.getResourceResolver();
+        return performDeepSafeCopy(resourceResolver, resource, targetParent, name);
+    }
+
+    public static Resource performDeepSafeCopy(final Resource resource, final Resource targetParent) throws PersistenceException {
+        return performDeepSafeCopy(resource, targetParent, resource.getName());
+    }
+
+    public static ResourceResolver findResolver(final Collection<Resource> resources) {
+        return resources.stream()
+                .filter(Objects::nonNull)
+                .map(Resource::getResourceResolver)
+                .findFirst().orElse(null);
     }
 
 }

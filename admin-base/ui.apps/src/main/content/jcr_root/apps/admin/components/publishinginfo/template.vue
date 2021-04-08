@@ -37,7 +37,7 @@
             <td>{{publishActionDate}}</td>            
           </tr>
           <tr>
-            <th>by</th>
+            <th>By</th>
             <td>{{node.ReplicatedBy}}</td>            
           </tr>
 

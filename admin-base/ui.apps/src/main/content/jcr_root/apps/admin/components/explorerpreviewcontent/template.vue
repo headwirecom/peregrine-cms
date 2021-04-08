@@ -111,10 +111,12 @@
       </template>
 
       <template v-else-if="isTab(Tab.REFERENCES)">
-        <span class="panel-title">{{getActiveTabName}}</span>
-        <ul :class="['collection', 'with-header', `explorer-${nodeType}-referenced-by`]">
+        <span class="panel-title">{{ getActiveTabName }}</span>
+        <linear-preloader v-if="loading"/>
+        <ul v-else :class="['collection', 'with-header', `explorer-${nodeType}-referenced-by`]">
           <li class="collection-header">
-            referenced in {{ referencedBy.length }} location<span v-if="referencedBy.length !== 1 ">s</span>
+            referenced in {{ referencedBy.length }}
+            location<span v-if="referencedBy.length !== 1 ">s</span>
           </li>
           <li v-for="item in referencedBy" :key="item.path" class="collection-item">
             <span>
@@ -188,7 +190,7 @@
 
       <template v-else-if="isTab(Tab.PUBLISHING)">
         <span class="panel-title">{{getActiveTabName}}</span>
-        <admin-components-publishinginfo v-bind:node="node" v-if="node"/>
+        <admin-components-publishinginfo v-bind:node="nodeFromPath" v-if="nodeFromPath"/>
 
         <div v-if="allowOperations && node" class="action-list">
           <div class="action" :title="`Open Web Publishing ${nodeType} Dialog`" @click="openPublishingModal()">
@@ -306,7 +308,7 @@
 
 <script>
 import {IconLib, MimeType, NodeType, SUFFIX_PARAM_SEPARATOR} from '../../../../../../js/constants'
-import {deepClone, get} from '../../../../../../js/utils'
+import {deepClone, get, set} from '../../../../../../js/utils'
 import NodeNameValidation from '../../../../../../js/mixins/NodeNameValidation'
 import ReferenceUtil from '../../../../../../js/mixins/ReferenceUtil'
 import Icon from '../icon/template.vue'
@@ -316,6 +318,7 @@ import ConfirmDialog from '../confirmdialog/template.vue'
 import Action from '../action/template.vue'
 import ExplorerPreviewNavItem from '../explorerpreviewnavitem/template.vue'
 import IconEditPage from '../iconeditpage/template.vue'
+import LinearPreloader from '../linearpreloader/template.vue'
 
 const Tab = {
   INFO: 'info',
@@ -335,6 +338,7 @@ const SchemaKey = {
 export default {
   name: 'ExplorerPreviewContent',
   components: {
+    LinearPreloader,
     Icon,
     PathBrowser,
     MaterializeModal,
@@ -367,6 +371,10 @@ export default {
     isEdit: {
       type: Boolean,
       default: false
+    },
+    onDelete: {
+      type: Function,
+      default: (type, path) => new Promise()
     }
   },
   data() {
@@ -404,7 +412,8 @@ export default {
       },
       formGenerator: {
         changes: []
-      }
+      },
+      loading: false
     }
   },
   mixins: [NodeNameValidation,ReferenceUtil],
@@ -429,11 +438,14 @@ export default {
       }
       return obj;
     },
+    nodeFromPath() {
+      return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, this.currentObject);
+    },
     node() {
       if (this.nodeType === NodeType.OBJECT) {
         return this.rawCurrentObject.data
       }
-      return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, this.currentObject);
+      return this.nodeFromPath;
     },
     allowOperations() {
       return this.currentObject.split('/').length > 4;
@@ -503,11 +515,19 @@ export default {
     },
     activationSensitiveClass() {
       return this.selfOrAnyDescendantActivated ? 'operationDisabledOnActivatedItem' : null;
+    },
+    stateToolsEdit() {
+      const stateTools = $perAdminApp.getNodeFromViewOrNull('/state/tools')
+      if (stateTools) {
+        return stateTools.edit
+      } else {
+        return false
+      }
     }
   },
   watch: {
-    edit(newVal) {
-      $perAdminApp.getNodeFromView('/state/tools').edit = newVal;
+    edit(val) {
+      $perAdminApp.getNodeFromViewOrNull('/state/tools').edit = val
     },
     activeTab : function(tab) {
       if (tab === 'versions'){
@@ -522,6 +542,12 @@ export default {
       } else if (this.activeTab === 'references'){
         this.showReferencedBy()
       }
+      if (this.stateToolsEdit) {
+        this.onEdit()
+      }
+    },
+    stateToolsEdit(edit) {
+      this.edit = edit
     }
   },
   created() {
@@ -617,6 +643,10 @@ export default {
     onEdit() {
       this.edit = true
       this.formGenerator.original = deepClone(this.node)
+
+      if (this.nodeType === NodeType.OBJECT) {
+        $perAdminApp.stateAction('editObject', {selected: this.currentObject})
+      }
     },
     onCancel() {
       const payload = {selected: this.currentObject}
@@ -729,19 +759,18 @@ export default {
       });
 
     },
+
     deleteNode() {
       this.checkActivationStatusAndPerform(() => {
-        const really = confirm(`Are you sure you want to delete this ${this.nodeType}?`);
-        if (really) {
-          $perAdminApp.stateAction(`delete${this.uNodeType}`, this.node.path).then(() => {
-            $perAdminApp.stateAction(`unselect${this.uNodeType}`, {})
-          }).then(() => {
-            const path = $perAdminApp.getNodeFromView('/state/tools/pages')
-            $perAdminApp.loadContent(
-                '/content/admin/pages/pages.html/path' + SUFFIX_PARAM_SEPARATOR + path)
-          })
-          this.isOpen = false;
-        }
+        const me = this
+        this.onDelete(this.nodeType, this.node.path).then(() => {
+          $perAdminApp.stateAction(`unselect${me.uNodeType}`, {})
+        }).then(() => {
+          const path = $perAdminApp.getNodeFromView('/state/tools/pages')
+          $perAdminApp.loadContent(
+              '/content/admin/pages/pages.html/path' + SUFFIX_PARAM_SEPARATOR + path)
+          me.isOpen = false
+        })
       });
     },
     setCurrentPath(path) {
@@ -754,7 +783,12 @@ export default {
       $perAdminApp.getApi().populateVersions(this.currentObject);
     },
     showReferencedBy() {
-      $perAdminApp.getApi().populateReferencedBy(this.currentObject);
+      this.loading = true
+      $perAdminApp.getApi()
+          .populateReferencedBy(this.currentObject)
+          .then(() => {
+            this.loading = false
+          })
     },
     deleteVersion(me, target) {
       $perAdminApp.stateAction('deleteVersion', { path: target.path, version: target.version.name });
@@ -848,6 +882,7 @@ export default {
           data[key] = targetNode;
         }
       }
+      set($perAdminApp.getView(), '/state/tools/save/confirmed', true)
       $perAdminApp.stateAction('saveObjectEdit', {data: data, path: show}).then(() => {
         $perAdminApp.getNodeFromView('/state/tools')._deleted = {}
       });
@@ -894,6 +929,8 @@ export default {
 }
 .labelChip {
   display: block;
+  width: fit-content;
+  white-space: nowrap;
 }
 .operationDisabledOnActivatedItem {
   text-decoration: line-through;

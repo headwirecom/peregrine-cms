@@ -1,6 +1,0 @@
-{
-  "jcr:primaryType": "sling:OsgiConfig",
-  "enabled":true,
-  "transformationName":"vips:greyscale",
-  "note": "This Image Transformation drops the color from an image (works only for JPEG images)"
-}

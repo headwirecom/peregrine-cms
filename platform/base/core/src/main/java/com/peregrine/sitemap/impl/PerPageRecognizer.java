@@ -26,29 +26,14 @@ package com.peregrine.sitemap.impl;
  */
 
 import com.peregrine.commons.Page;
-import com.peregrine.commons.util.PerUtil;
 import com.peregrine.sitemap.PageRecognizer;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
-
-import java.util.Optional;
-
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
 
 @Component(service = { PageRecognizer.class, PerPageRecognizer.class })
 public final class PerPageRecognizer extends PerPageRecognizerBase {
 
     protected boolean isPageImpl(final Page candidate) {
-        // would love to use
-        // com.peregrine.admin.replication.ReplicationUtil.isReplicated
-        // but this will introduce a cyclic dependency
-        return Optional.ofNullable(candidate)
-                .map(PerUtil::getProperJcrContent)
-                .map(Resource::getValueMap)
-                .map(m -> m.get(PER_REPLICATION_REF, String.class))
-                .map(StringUtils::isNotBlank)
-                .orElse(false);
+        return true;
     }
 
 }

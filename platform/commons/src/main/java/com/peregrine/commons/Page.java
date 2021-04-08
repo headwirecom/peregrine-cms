@@ -33,6 +33,7 @@ import org.apache.sling.api.resource.ValueMap;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Optional;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -43,11 +44,17 @@ public final class Page extends ResourceWrapper {
     private final Resource content;
     private final ValueMap contentProperties;
 
+    public Page(final Resource page, final Resource content) {
+        super(page);
+        properties = page.getValueMap();
+        this.content = content;
+        contentProperties = Optional.ofNullable(content)
+                .map(Resource::getValueMap)
+                .orElse(null);
+    }
+
     public Page(final Resource resource) {
-        super(resource);
-        properties = resource.getValueMap();
-        content = resource.getChild(PerConstants.JCR_CONTENT);
-        contentProperties = isNull(content) ? null : content.getValueMap();
+        this(resource, resource.getChild(PerConstants.JCR_CONTENT));
     }
 
     public boolean hasContent() {

@@ -23,12 +23,14 @@
  * #L%
  */
 import { LoggerFactory } from '../logger'
+import {set} from '../utils'
 let log = LoggerFactory.logger('saveObjectEdit').setLevelDebug()
 
 export default function(me, target) {
 
     log.fine(target)
 
+    set(me.getView(), '/state/tools/save/confirmed', false)
     return new Promise( (resolve, reject) => {
         me.getApi().saveObjectEdit(target.path, target.data).then( () => {
             resolve()

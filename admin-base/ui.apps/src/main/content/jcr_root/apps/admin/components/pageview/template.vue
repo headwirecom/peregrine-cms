@@ -6,10 +6,11 @@
       :is-edit="isEditPage"
       :nodeType="NodeType.PAGE"
       :browserRoot="`${getBasePath()}/pages`"
-      :currentPath="`${getBasePath()}/pages`">
+      :currentPath="`${getBasePath()}/pages`"
+      :onDelete="onDelete">
     <admin-components-componentexplorer
         v-if="isEditPage"
-        :model="{text: 'Components', source: '/admin/components'}"/>
+        :model="{text: 'Components', source: '/admin/components'}" />
   </admin-components-explorerpreviewcontent>
 </template>
 
@@ -18,7 +19,16 @@
   import {set} from '../../../../../../js/utils';
 
   export default {
-    props: ['model'],
+    props: {
+      model: {
+        type: Object,
+        required: true
+      },
+      onDelete: {
+        type: Function,
+        default: (type, path) => new Promise()
+      }
+    },
     data() {
       return {
         NodeType: NodeType

@@ -39,8 +39,13 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import java.util.Calendar;
 import java.util.Objects;
+import java.util.Optional;
 
-import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED;
+import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED_BY;
+import static com.peregrine.commons.util.PerConstants.SITE_PRIMARY_TYPE;
+import static java.util.Objects.nonNull;
 
 /**
  * Common Base Class for Peregrine Object Wrappers
@@ -53,16 +58,26 @@ public abstract class PerBaseImpl implements PerBase {
     Logger logger = LoggerFactory.getLogger(getClass());
 
     /** The Resource this instance wraps **/
-    private Resource resource;
+    private final Resource resource;
     /** Reference to its JCR Content resource if the resource have on otherwise it is null **/
-    private Resource jcrContent;
+    private final Resource jcrContent;
+    private final ValueMap properties;
+    protected final Optional<ValueMap> optionalProperties;
+    private final ModifiableValueMap modifiableProperties;
 
-    public PerBaseImpl(Resource resource) {
-        if(resource == null) {
-            throw new IllegalArgumentException(RESOURCE_MUST_BE_PROVIDED);
-        }
+    public PerBaseImpl(final Resource resource) {
+        Objects.requireNonNull(resource, "Resource must be provided");
         this.resource = resource;
-        jcrContent = getContentResource();
+        jcrContent = resource.getChild(JCR_CONTENT);
+        if (hasContent()) {
+            properties = jcrContent.getValueMap();
+            modifiableProperties = jcrContent.adaptTo(ModifiableValueMap.class);
+        } else {
+            properties = null;
+            modifiableProperties = null;
+        }
+
+        optionalProperties = Optional.ofNullable(properties);
     }
 
     @Override
@@ -92,7 +107,7 @@ public abstract class PerBaseImpl implements PerBase {
 
     @Override
     public boolean hasContent() {
-        return getContentResource() != null;
+        return nonNull(jcrContent);
     }
 
     @Override
@@ -102,47 +117,33 @@ public abstract class PerBaseImpl implements PerBase {
 
     @Override
     public Resource getContentResource() {
-        if(jcrContent == null) {
-            jcrContent = resource.getChild(JCR_CONTENT);
-        }
         return jcrContent;
     }
 
     @Override
     public ValueMap getProperties() {
-        Resource content = getContentResource();
-        return content != null ?
-            content.getValueMap() :
-            null;
+        return properties;
     }
 
     @Override
     public ModifiableValueMap getModifiableProperties() {
-        Resource content = getContentResource();
-        return content != null ?
-            content.adaptTo(ModifiableValueMap.class) :
-            null;
+        return modifiableProperties;
     }
 
     @Override
     public <T> T getContentProperty(String propertyName, Class<T> type) {
-        T answer = null;
-        ValueMap properties = getProperties();
-        if(properties != null) {
-            answer = properties.get(propertyName, type);
-        }
-        return answer;
+        return optionalProperties
+                .map(properties -> properties.get(propertyName, type))
+                .orElse(null);
     }
 
     @Override
     public <T> T getContentProperty(String propertyName, T defaultValue) {
-        T answer = null;
-        if(defaultValue != null) {
-            answer = getContentProperty(propertyName, (Class<T>) defaultValue.getClass());
-        }
-        return answer == null ?
-            defaultValue :
-            answer;
+        return Optional.ofNullable(defaultValue)
+                .map(Object::getClass)
+                .map(t -> (Class<T>)t)
+                .map(t -> getContentProperty(propertyName,  t))
+                .orElse(defaultValue);
     }
 
     @Override
@@ -176,14 +177,19 @@ public abstract class PerBaseImpl implements PerBase {
 
     @Override
     public <AdapterType> AdapterType adaptTo(Class<AdapterType> type) {
-        if(type.equals(Resource.class)) {
+        if(Resource.class.equals(type)) {
             return (AdapterType) resource;
-        } else if(type.equals(ResourceResolver.class)) {
-            return (AdapterType) resource.getResourceResolver();
-        } else if(type.equals(Session.class)) {
-            return (AdapterType) resource.getResourceResolver().adaptTo(Session.class);
-        } else {
-            return null;
         }
+
+        final ResourceResolver resourceResolver = resource.getResourceResolver();
+        if(ResourceResolver.class.equals(type)) {
+            return (AdapterType) resourceResolver;
+        }
+
+        if(Session.class.equals(type)) {
+            return (AdapterType) resourceResolver.adaptTo(Session.class);
+        }
+
+        return null;
     }
 }

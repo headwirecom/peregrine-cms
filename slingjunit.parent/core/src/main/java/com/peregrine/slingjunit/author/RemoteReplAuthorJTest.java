@@ -1,8 +1,9 @@
 package com.peregrine.slingjunit.author;
 
 
-import com.peregrine.adaption.PerReplicable;
+import com.peregrine.replication.PerReplicable;
 import com.peregrine.replication.Replication;
+import com.peregrine.replication.ReplicationsContainer;
 import com.peregrine.slingjunit.ReplicationTestBase;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
@@ -42,16 +43,18 @@ public class RemoteReplAuthorJTest extends ReplicationTestBase {
     @TestReference
     private ResourceResolverFactory resolverFactory;
 
-    @TestReference(name="remote")
     Replication replication;
 
     @TestReference
     private ConfigurationAdmin configAdmin;
 
+    @TestReference
+    private ReplicationsContainer replicationsContainer;
+
     private static String MAPPER_DISTRIBUTION_EVENT_PID = "org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended~distributionEventHandler";
     private static String[] DIST_EVENT_VALUES = {
             "com.peregrine-cms.admin.core:peregrine-distribution-sub-service=distribution-agent-user",
-            "com.peregrine-cms.replication.core:peregrine-distribution-sub-service=distribution-agent-user"
+            "com.peregrine-cms.base.core:peregrine-distribution-sub-service=distribution-agent-user"
     };
 
     private static String MAPPER_DISTRIBUTION_SERVICE_PID = "org.apache.sling.serviceusermapping.impl.ServiceUserMapperImpl.amended~distributionAgentService";
@@ -64,12 +67,14 @@ public class RemoteReplAuthorJTest extends ReplicationTestBase {
     public static String STELLA_PNG = "/content/example/assets/images/Stella.png";
     private static String CONTACT_PATH = "/content/example/pages/contact";
     private static String COMPONENT_PATH= "/content/example/pages/contact/jcr:content/n3736dc36-9cc3-49d7-a7d4-bf4d94e0ea2f";
+    private static String REMOTE = "remote";
     private Resource stellaImgRes;
 
 
     @Before
     public void setup(){
         try {
+            replication = replicationsContainer.get(REMOTE);
             beforeTime = Calendar.getInstance();
             adminResourceResolver = resolverFactory.getAdministrativeResourceResolver(null);
             assertNotNull(replication);
@@ -113,7 +118,7 @@ public class RemoteReplAuthorJTest extends ReplicationTestBase {
 
     @Test
     public void authorDistributionServiceUserAccess() {
-        List<String> allList = Arrays.asList("/var/sling/distribution", "/content", "/etc/distribution","/libs/sling/distribution");
+        List<String> allList = Arrays.asList("/var/sling/distribution", "/content");
         testListGranted(allList, "jcr:all", "distribution-agent-user");
     }
 

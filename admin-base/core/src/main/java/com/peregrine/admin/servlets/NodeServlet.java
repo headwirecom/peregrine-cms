@@ -46,7 +46,6 @@ import java.nio.charset.Charset;
 import javax.servlet.Servlet;
 
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -67,9 +66,6 @@ import org.osgi.service.component.annotations.Reference;
 )
 @SuppressWarnings("serial")
 public class NodeServlet extends AbstractBaseServlet {
-
-    @Reference
-    ModelFactory modelFactory;
 
     @Reference
     @SuppressWarnings("unused")

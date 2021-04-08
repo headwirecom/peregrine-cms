@@ -50,7 +50,10 @@ import static com.peregrine.commons.util.PerUtil.POST;
 import static com.peregrine.commons.util.PerUtil.getResource;
 import static com.peregrine.commons.util.PerUtil.getStringOrNull;
 import static com.peregrine.commons.util.PerUtil.isPrimaryType;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static org.apache.commons.lang3.StringUtils.*;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -67,7 +70,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.Servlet;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.factory.ModelFactory;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -89,96 +92,72 @@ import org.osgi.service.component.annotations.Reference;
 @SuppressWarnings("serial")
 public class InsertNodeAt extends AbstractBaseServlet {
 
+    private static final String INNER_JCR_CONTENT = SLASH + JCR_CONTENT + SLASH;
+    private static final String APPS_PREFIX = APPS_ROOT + SLASH;
     private static final String FAILED_TO_CREATE_INTERMEDIATE_RESOURCES = "Failed to create intermediate resources";
     private static final String RESOURCE_NOT_FOUND_BY_PATH = "Resource not found by Path";
 
-    @Reference
-    ModelFactory modelFactory;
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @Reference
-    ResourceRelocation resourceRelocation;
+    private ResourceRelocation resourceRelocation;
 
     @Reference
-    AdminResourceHandler resourceManagement;
+    private AdminResourceHandler resourceManagement;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        String path = request.getParameter(PATH);
-        Resource resource = getResource(request.getResourceResolver(), path);
-        //AS This is a fix for missing intermediary nodes from templates
-        if(resource == null) {
-            int index = path.lastIndexOf(JCR_CONTENT);
-            if(index > 0 && index < path.length() - JCR_CONTENT.length()) {
-                // We found jcr:content. Now we check if that is a page and if so traverse down the path and create all nodes until we reach the parent
-                String pagePath = path.substring(0, index - 1);
-                Resource page = getResource(request.getResourceResolver(), pagePath);
-                if(page != null) {
-                    if(isPrimaryType(page, PAGE_PRIMARY_TYPE)) {
-                        // Now we can traverse
-                        String rest = path.substring(index);
-                        logger.debug("Rest of Page Path: '{}'", rest);
-                        String[] nodeNames = rest.split("/");
-                        Resource intermediate = page;
-                        for(String nodeName : nodeNames) {
-                            if(nodeName != null && !nodeName.isEmpty()) {
-                                Resource temp = intermediate.getChild(nodeName);
-                                logger.debug("Node Child Name: '{}', parent resource: '{}', resource found: '{}'", nodeName, intermediate.getPath(), temp == null ? "null" : temp.getPath());
-                                if(temp == null) {
-                                    try {
-                                        intermediate = resourceManagement
-                                            .createNode(intermediate, nodeName, NT_UNSTRUCTURED, null);
-                                    } catch(ManagementException e) {
-                                        return new ErrorResponse()
-                                            .setHttpErrorCode(SC_BAD_REQUEST)
-                                            .setErrorMessage(FAILED_TO_CREATE_INTERMEDIATE_RESOURCES)
-                                            .setRequestPath(path);
-                                    }
-                                } else {
-                                    intermediate = temp;
-                                }
-                            }
-                        }
-                        resource = getResource(request.getResourceResolver(), path);
-                    }
-                }
-            }
+        final String path = request.getParameter(PATH);
+        final Resource resource;
+        try {
+            resource = getOrCreateResource(request.getResourceResolver(), path);
+        } catch(ManagementException e) {
+            return new ErrorResponse()
+                    .setHttpErrorCode(SC_BAD_REQUEST)
+                    .setErrorMessage(FAILED_TO_CREATE_INTERMEDIATE_RESOURCES)
+                    .setRequestPath(path);
         }
+
         //AS End of Patch
-        if(resource == null) {
+        if(isNull(resource)) {
             return new ErrorResponse()
                 .setHttpErrorCode(SC_BAD_REQUEST)
                 .setErrorMessage(RESOURCE_NOT_FOUND_BY_PATH)
                 .setRequestPath(path);
         }
+
         String type = request.getParameter(TYPE);
         // Next Block is only here to be backwards compatible
-        if(type == null || type.isEmpty()) {
+        if (isEmpty(type)) {
             type = request.getParameter(DROP, NOT_PROVIDED);
         }
-        boolean addAsChild = ORDER_CHILD_TYPE.equals(type) || type.startsWith(INTO);
-        boolean addBefore = ORDER_BEFORE_TYPE.equals(type) || type.endsWith(BEFORE_POSTFIX);
+
+        final boolean addAsChild = ORDER_CHILD_TYPE.equals(type) || type.startsWith(INTO);
+        final boolean addBefore = ORDER_BEFORE_TYPE.equals(type) || type.endsWith(BEFORE_POSTFIX);
         String component = request.getParameter(COMPONENT);
-        if(component != null && component.startsWith(APPS_ROOT + SLASH)) {
-            component = component.substring(component.indexOf('/', 1) + 1);
+        if(startsWith(component, APPS_PREFIX)) {
+            component = substringAfter(component, APPS_PREFIX);
         }
-        Map<String, Object> properties = new HashMap<>();
-        String data = request.getParameter(CONTENT);
-        if(data != null && !data.isEmpty()) {
-            ObjectMapper mapper = new ObjectMapper();
+
+        final Map<String, Object> properties = new HashMap<>();
+        final String data = request.getParameter(CONTENT);
+        if(isNotEmpty(data)) {
             properties.putAll(mapper.readValue(data, Map.class));
         }
-        if(component != null && !component.isEmpty()) {
+
+        if(isNotEmpty(component)) {
             // Component overrides the Json component if provided
             properties.put(COMPONENT, component);
         } else {
             component = getStringOrNull(properties, COMPONENT);
-            if(component != null) {
+            if(nonNull(component)) {
                 properties.put(COMPONENT, ServletHelper.componentNameToPath(component));
             }
         }
-        String variation = request.getParameter(VARIATION);
+
+        final String variation = request.getParameter(VARIATION);
         try {
-            Resource newResource = resourceManagement
+            final Resource newResource = resourceManagement
                 .insertNode(resource, properties, addAsChild, addBefore, variation);
             newResource.getResourceResolver().commit();
             return new RedirectResponse((addAsChild ? path : resource.getParent().getPath()) + MODEL_JSON);
@@ -188,6 +167,44 @@ public class InsertNodeAt extends AbstractBaseServlet {
                 .setErrorMessage(e.getMessage())
                 .setException(e);
         }
+    }
+
+    private Resource getOrCreateResource(final ResourceResolver resourceResolver, final String path) throws ManagementException {
+        Resource resource = getResource(resourceResolver, path);
+        //AS This is a fix for missing intermediary nodes from templates
+        if(nonNull(resource)) {
+            return resource;
+        }
+
+        if(!contains(path, INNER_JCR_CONTENT)) {
+            return null;
+        }
+
+        // We found jcr:content. Now we check if that is a page and if so traverse down the path and create all nodes until we reach the parent
+        final String pagePath = substringBeforeLast(path, INNER_JCR_CONTENT);
+        final Resource page = getResource(resourceResolver, pagePath);
+        if(!isPrimaryType(page, PAGE_PRIMARY_TYPE)) {
+            return null;
+        }
+
+        // Now we can traverse
+        final String rest = substringAfter(path, pagePath + SLASH);
+        logger.debug("Rest of Page Path: '{}'", rest);
+        resource = page;
+        for(String nodeName : rest.split(SLASH)) {
+            if(isNotEmpty(nodeName)) {
+                final Resource temp = resource.getChild(nodeName);
+                logger.debug("Node Child Name: '{}', parent resource: '{}', resource found: '{}'", nodeName, resource.getPath(), temp == null ? "null" : temp.getPath());
+                if(isNull(temp)) {
+                    resource = resourceManagement
+                        .createNode(resource, nodeName, NT_UNSTRUCTURED, null);
+                } else {
+                    resource = temp;
+                }
+            }
+        }
+
+        return resource;
     }
 }
 

@@ -44,9 +44,9 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
-import com.peregrine.adaption.PerReplicable;
+import com.peregrine.replication.PerReplicable;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
-import com.peregrine.replication.ReferenceLister;
+import com.peregrine.reference.ReferenceLister;
 import java.io.IOException;
 import java.util.List;
 import javax.servlet.Servlet;
@@ -87,7 +87,7 @@ public class ReferencedByListerServlet extends AbstractBaseServlet {
         String sourcePath = request.getParameter (PATH);
         Resource source = request.getResourceResolver().getResource(sourcePath);
         if(source != null) {
-            List<com.peregrine.replication.Reference> references = referenceLister.getReferencedByList(source);
+            List<com.peregrine.reference.Reference> references = referenceLister.getReferencedByList(source);
             JsonResponse answer = new JsonResponse();
             answer.writeAttribute(SOURCE_NAME, source.getName());
             answer.writeAttribute(SOURCE_PATH, source.getPath());
@@ -103,7 +103,7 @@ public class ReferencedByListerServlet extends AbstractBaseServlet {
                 answer.writeAttribute(IS_STALE, sourceRepl.isStale());
             }
             answer.writeArray(REFERENCED_BY);
-            for(com.peregrine.replication.Reference child : references) {
+            for(com.peregrine.reference.Reference child : references) {
                 answer.writeObject();
                 answer.writeAttribute(NAME, child.getResource().getName());
                 answer.writeAttribute(PATH, child.getResource().getPath());

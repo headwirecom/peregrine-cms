@@ -3,7 +3,8 @@
       :model="model"
       :nodeType="NodeType.ASSET"
       :browserRoot="`${getBasePath()}/assets`"
-      :currentPath="`${getBasePath()}/assets`">
+      :currentPath="`${getBasePath()}/assets`"
+      :onDelete="onDelete">
   </admin-components-explorerpreviewcontent>
 </template>
 
@@ -11,7 +12,16 @@
   import {NodeType} from '../../../../../../js/constants';
 
   export default {
-    props: ['model'],
+    props: {
+      model: {
+        type: Object,
+        required: true
+      },
+      onDelete: {
+        type: Function,
+        default: (type, path) => new Promise()
+      }
+    },
     data() {
       return {
         NodeType: NodeType
