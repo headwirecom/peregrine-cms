@@ -23,7 +23,7 @@
   #L%
   -->
 <template>
-  <div v-bind:class="[
+  <div :class="[
       `peregrine-workspace`,
       {
         'right-panel-visible': state.rightPanelVisible,
@@ -31,13 +31,13 @@
       }
     ]">
     <component
-        v-bind:is="getChildByPath('contentview').component"
-        v-bind:model="getChildByPath('contentview')">
+        :is="getChildByPath('contentview').component"
+        :model="getChildByPath('contentview')">
     </component>
 
     <admin-components-action
-        v-bind:class="['right-panel-toggle', {'hide-right-panel': state.rightPanelVisible, 'show-right-panel': !state.rightPanelVisible}]"
-        v-bind:model="{
+        :class="['right-panel-toggle', {'hide-right-panel': state.rightPanelVisible, 'show-right-panel': !state.rightPanelVisible}]"
+        :model="{
                 target: 'rightPanelVisible',
                 command: 'showHide',
                 tooltipTitle: state.rightPanelVisible? $i18n('hideComponentsPanel') : $i18n('showComponentsPanel')
@@ -46,7 +46,7 @@
       <i class="material-icons" v-else>keyboard_arrow_left</i>
     </admin-components-action>
 
-    <aside v-bind:class="[
+    <aside :class="[
         `explorer-preview`,
         `right-panel`,
         {
@@ -60,34 +60,34 @@
           type="button"
           class="toggle-fullscreen"
           title="exit fullscreen"
-          v-on:click.prevent="onEditorExitFullscreen">
+          @click.prevent="onEditorExitFullscreen">
         <i class="material-icons">fullscreen_exit</i>
       </button>
       <button
           v-if="state.editorVisible && !rightPanelFullscreen"
           type="button"
           class="toggle-fullscreen"
-          v-bind:title="$i18n('enterFullscreen')"
-          v-on:click.prevent="onEditorEnterFullscreen">
+          :title="$i18n('enterFullscreen')"
+          @click.prevent="onEditorEnterFullscreen">
         <i class="material-icons">fullscreen</i>
       </button>
 
       <component
           v-if="state.editorVisible && getChildByPath('editor')"
-          v-bind:is="getChildByPath('editor').component"
-          v-bind:model="getChildByPath('editor')">
+          :is="getChildByPath('editor').component"
+          :model="getChildByPath('editor')">
       </component>
 
       <component
           v-else-if="getChildByPath('right-panel')"
-          v-bind:is="getChildByPath('right-panel').component"
-          v-bind:model="getChildByPath('right-panel')">
+          :is="getChildByPath('right-panel').component"
+          :model="getChildByPath('right-panel')">
       </component>
 
       <component
           v-else-if="getChildByPath('components')"
-          v-bind:is="getChildByPath('components').component"
-          v-bind:model="getChildByPath('components')">
+          :is="getChildByPath('components').component"
+          :model="getChildByPath('components')">
       </component>
 
       <div v-else>missing panel</div>

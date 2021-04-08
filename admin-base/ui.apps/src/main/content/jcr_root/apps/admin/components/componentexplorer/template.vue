@@ -27,33 +27,33 @@
     <span class="panel-title">{{ $i18n('Components') }}</span>
     <input type="text"
            v-model="state.filter"
-           v-bind:placeholder="$i18n('filterComponents')"
+           :placeholder="$i18n('filterComponents')"
            tabindex="1"
            autofocus/>
     <select class="browser-default" v-model="state.group">
       <option value="">{{ $i18n('allGroups') }}</option>
-      <option v-for="(group, key) in allGroups" v-bind:value="key" v-bind:key="key">{{
+      <option v-for="(group, key) in allGroups" :value="key" :key="key">{{
           key
         }}
       </option>
     </select>
     <ul>
       <li
-          v-for="(group, key) in groups" v-bind:key="key">
+          v-for="(group, key) in groups" :key="key">
         <div>
           <ul class="collection">
             <li
                 class="collection-item" style="cursor: move;"
                 v-for="component in group"
-                v-bind:key="componentKey(component)"
-                v-on:dragstart="onDragStart(component, $event)"
-                v-on:dragend="onDragEnd(component, $event)"
+                :key="componentKey(component)"
+                @dragstart="onDragStart(component, $event)"
+                @dragend="onDragEnd(component, $event)"
                 draggable="true">
               <div>
                 <i class="material-icons">drag_handle</i>
                 <span>{{ displayName(component) }}</span>
               </div>
-              <img v-if="component.thumbnail" v-bind:src="component.thumbnail">
+              <img v-if="component.thumbnail" :src="component.thumbnail">
             </li>
           </ul>
         </div>

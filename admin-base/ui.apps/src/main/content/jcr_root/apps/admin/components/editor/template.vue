@@ -30,23 +30,23 @@
         <div v-if="!hasSchema">this component does not have a dialog defined</div>
         <vue-form-generator
             ref="vfg"
-            v-bind:schema="schema"
-            v-bind:model="dataModel"
-            v-bind:options="formOptions"/>
+            :schema="schema"
+            :model="dataModel"
+            :options="formOptions"/>
       </template>
     </div>
     <div class="editor-panel-buttons">
       <button v-if="!isRootComponent" class="waves-effect waves-light btn btn-raised"
-              v-bind:title="$i18n('deleteComponent')" v-on:click.stop.prevent="onDelete">
+              :title="$i18n('deleteComponent')" @click.stop.prevent="onDelete">
         <i class="material-icons">delete</i>
       </button>
-      <button class="waves-effect waves-light btn btn-raised" v-bind:title="$i18n('cancel')"
-              v-on:click.stop.prevent="onCancel">
+      <button class="waves-effect waves-light btn btn-raised" :title="$i18n('cancel')"
+              @click.stop.prevent="onCancel">
         <i class="material-icons">close</i>
       </button>
       <template>
         <button v-if="hasSchema" class="waves-effect waves-light btn btn-raised"
-                v-bind:title="$i18n('save')" v-on:click.stop.prevent="onOk">
+                :title="$i18n('save')" @click.stop.prevent="onOk">
           <i class="material-icons">check</i>
         </button>
         <button v-else class="btn btn-raised disabled" style="opacity: 0">
