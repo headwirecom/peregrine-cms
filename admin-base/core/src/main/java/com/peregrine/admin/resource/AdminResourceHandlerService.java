@@ -340,18 +340,39 @@ public class AdminResourceHandlerService
             if (parent == null) {
                 throw new ManagementException(String.format(PARENT_NOT_FOUND, OBJECT, parentPath, name));
             }
+
             Node newObject = parent.addNode(name, OBJECT_DEFINITION_PRIMARY_TYPE);
-            Node dialog = newObject.addNode("dialog.json", "nt:file");
-            Node resNode = dialog.addNode ("jcr:content", "nt:resource");
-            resNode.setProperty ("jcr:mimeType", "application/json");
-            resNode.setProperty ("jcr:encoding", "UTF-8");
-            resNode.setProperty ("jcr:data", new StringBufferInputStream("{ \"fields\": [] }"));
+
+            addDefaultDialog(newObject);
+            addDefaultJsonSchema(newObject);
+            addDefaultUISchema(newObject);
+
             baseResourceHandler.updateModification(resourceResolver, newObject);
             return adaptNodeToResource(resourceResolver, newObject);
         } catch (RepositoryException e) {
             logger.debug("Failed to create Object Definition. Parent Path: '{}', Name: '{}'", parentPath, name);
             throw new ManagementException(String.format(FAILED_TO_HANDLE, OBJECT, parentPath, name), e);
         }
+    }
+
+    private void addFile(Node parent, String name, String data) throws RepositoryException {
+        Node file = parent.addNode(name, "nt:file");
+        Node fileNode = file.addNode("jcr:content", "nt:resource");
+        fileNode.setProperty("jcr:mimeType", "application/json");
+        fileNode.setProperty("jcr:encoding", "UTF-8");
+        fileNode.setProperty("jcr:data", new StringBufferInputStream(data));
+    }
+
+    private void addDefaultDialog(Node parent) throws RepositoryException {
+        addFile(parent, "dialog.json", "{ \"fields\": [] }");
+    }
+
+    private void addDefaultJsonSchema(Node parent) throws RepositoryException {
+        addFile(parent, "json-schema.json", "{\"type\": \"object\",\"properties\": { } }");
+    }
+
+    private void addDefaultUISchema(Node parent) throws RepositoryException {
+        addFile(parent, "ui-schema.json", "{ \"type\": \"VerticalLayout\", \"elements\": [] }");
     }
 
     @Override
