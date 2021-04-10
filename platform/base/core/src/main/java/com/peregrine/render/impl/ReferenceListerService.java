@@ -37,6 +37,7 @@ import com.peregrine.reference.Reference;
 import com.peregrine.reference.ReferenceLister;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -50,6 +51,8 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.jcr.query.Query;
 
 /**
  * Lists References from and to a given Page
@@ -87,6 +90,9 @@ public class ReferenceListerService
     private List<String> referencePrefixList = new ArrayList<>();
     private List<String> referencedByRootList = new ArrayList<>();
 
+    private final Pattern JCR_CONTENT_SUFFIX = Pattern.compile("\\/" + JCR_CONTENT + ".+");
+    private final String REFERENCED_BY_QUERY = "select * from [nt:base] where isdescendantnode('%s') and contains(*, '%s')";
+
     @Override
     public List<Resource> getReferenceList(boolean transitive, Resource resource, boolean deep) {
         return getReferenceList(transitive, resource, deep, null, null);
@@ -105,15 +111,27 @@ public class ReferenceListerService
         if (isNull(resource)) {
             return Collections.emptyList();
         }
-
-        final List<Reference> answer = new ArrayList<>();
+        final List<Reference> result = new ArrayList<>();
         final ResourceResolver resourceResolver = resource.getResourceResolver();
-        final String path = resource.getPath();
-        referencedByRootList.stream()
-                .map(resourceResolver::getResource)
-                .filter(Objects::nonNull)
-                .forEach(r -> traverseTreeReverse(r, path, answer));
-        return answer;
+        for (String referencedByRoot: referencedByRootList) {
+            Iterator<Resource> referencingResources = resourceResolver.findResources(
+                    String.format(REFERENCED_BY_QUERY, referencedByRoot, resource.getPath()),
+                    Query.JCR_SQL2);
+
+            while (referencingResources.hasNext()) {
+                Resource referencingResource = referencingResources.next();
+                String referencingPath = referencingResource.getPath();
+                String parentPath = stripJcrContentSuffix(referencingPath);
+                Resource parentResource = resourceResolver.resolve(parentPath);
+                Reference ref = new Reference(parentResource, "", referencingResource);
+                result.add(ref);
+            }
+        }
+        return result;
+    }
+
+    private String stripJcrContentSuffix(String path){
+        return JCR_CONTENT_SUFFIX.matcher(path).replaceFirst("");
     }
 
     /**
@@ -235,6 +253,7 @@ public class ReferenceListerService
             }
         }
     }
+
 
     /**
      * Check the given resource's properties to look for a property value that contains the given reference path.
