@@ -309,22 +309,11 @@ function loadContentImpl(path, firstTime, fromPopState, onPage = false) {
         axios.get(dataUrl).then(function (response) {
             log.fine('got data for', path)
     
-            // if(response.data.template) {
-            //
-            //     var pageData = response.data
-            //
-            //     axios.get(response.data.template+'.data.json').then(function(response) {
-            //
-            //         var templateData = response.data
-            //         var mergedData = merge(templateData, pageData)
-            //         //merging nav, footer and content together with pageData
-            //         processLoadedContent(mergedData, path, firstTime, fromPopState)
-            //     }).catch(function(error) {
-            //         log.error("error getting %s %j", dataUrl, error);
-            //     })
-            // } else {
-            processLoadedContent(response.data, path, firstTime, fromPopState)
-            // }
+            if (response.data.serverSide === true){
+                document.location = `${response.data.pagePath}.html`
+            } else {
+                processLoadedContent(response.data, path, firstTime, fromPopState)
+            }
     
         }).catch(function(error) {
             log.error("error getting %s %j", dataUrl, error);
