@@ -9,8 +9,7 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -54,6 +53,19 @@ public final class ResourceUtilsTest extends SlingResourcesTest {
         repo.mockResourceResolverCreate();
         final Resource resource = ResourceUtils.getOrCreateResource(resourceResolver, path, null);
         assertEquals(this.resource, resource);
+    }
+
+    @Test
+    public void performFlatSafeCopy_targetExists() throws PersistenceException {
+        final Resource copy = ResourceUtils.performFlatSafeCopy(resourceResolver, resource, jcrContent, Object::toString);
+        assertEquals(resource, copy);
+    }
+
+    @Test
+    public void performFlatSafeCopy_newTarget() throws PersistenceException {
+        repo.mockResourceResolverCreate();
+        final Resource copy = ResourceUtils.performFlatSafeCopy(resourceResolver, resource, parent, Object::toString);
+        assertNotNull(copy);
     }
 
 }

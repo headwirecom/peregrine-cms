@@ -20,8 +20,8 @@ public final class NonEmptyPerPageRecognizerTest extends PageRecognizerBaseTest 
     @Test
     public void isPage() {
         super.isPage();
-        parent.putProperty(JCR_PRIMARY_TYPE, model.getPagePrimaryType());
-        parent.putProperty(SLING_RESOURCE_TYPE, RESOURCE_TYPE);
+        parent.setPrimaryType(model.getPagePrimaryType());
+        parent.setResourceType(RESOURCE_TYPE);
         assertFalse(model.isPage(new Page(parent)));
     }
 
