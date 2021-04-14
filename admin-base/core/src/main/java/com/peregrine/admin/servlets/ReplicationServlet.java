@@ -25,7 +25,6 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.replication.PerReplicable;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.commons.util.PerConstants;
 import com.peregrine.replication.Replication;
@@ -33,6 +32,7 @@ import com.peregrine.replication.Replication.ReplicationException;
 import com.peregrine.replication.ReplicationsContainerWithDefault;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -43,15 +43,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_DO_REPLICATION;
-import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.commons.util.PerUtil.POST;
 import static com.peregrine.commons.util.PerUtil.listMissingResources;
 import static java.lang.Boolean.parseBoolean;
-import static java.util.Objects.isNull;
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -80,11 +77,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 public final class ReplicationServlet extends ReplicationServletBase {
 
     public static final String DEACTIVATE = "deactivate";
-    public static final String REPLICATION_NOT_FOUND_FOR_NAME = "Replication not found for name: ";
-    public static final String REPLICATION_FAILED = "Replication Failed";
-    public static final String REPLICATES = "replicates";
     public static final String RESOURCES = "resources";
-    public static final String SUFFIX_IS_NOT_RESOURCE = "Suffix: '%s' is not a resource";
 
     @Reference
     private ReplicationsContainerWithDefault replications;
@@ -92,67 +85,58 @@ public final class ReplicationServlet extends ReplicationServletBase {
     @Reference
     private AdminResourceHandler resourceManagement;
 
+    protected ReplicationsContainerWithDefault getReplications() {
+        return replications;
+    }
+
     @Override
     protected Response performReplication(
+            final Replication replication,
             final Request request,
             final Resource resource,
             final ResourceResolver resourceResolver
-    ) throws IOException {
-        final String replicationName = request.getParameter(NAME);
-        final Replication replication = replications.getOrDefault(replicationName);
-        if (isNull(replication)) {
-            return new ErrorResponse()
-                    .setHttpErrorCode(SC_BAD_REQUEST)
-                    .setErrorMessage(REPLICATION_NOT_FOUND_FOR_NAME + replicationName);
+    ) throws IOException, ReplicationException {
+        if (parseBoolean(request.getParameter(DEACTIVATE))) {
+            return performDeactivation(replication, resource);
         }
 
-        final PerReplicable replicable = resource.adaptTo(PerReplicable.class);
-        if (isNull(replicable)) {
-            return prepareResponse(resource, Collections.emptyList());
+        final boolean deep = parseBoolean(request.getParameter("deep"));
+        List<Resource> toBeReplicated = listMissingResources(resource, deep, new LinkedList<>());
+        for (final Resource r : Optional.of(RESOURCES)
+                .map(request::getParameterValues)
+                .map(Arrays::stream)
+                .orElseGet(Stream::empty)
+                .map(resourceResolver::getResource)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList())) {
+            listMissingResources(r, deep, toBeReplicated);
         }
 
-        replicable.ensureReplicableMixin();
-        try {
-            if (parseBoolean(request.getParameter(DEACTIVATE))) {
-                replicable.setLastReplicationActionAsDeactivated();
-                final var replicatedStuff = replication.deactivate(resource);
-                for (final Resource r : streamReplicableResources(replicatedStuff)
-                        .collect(Collectors.toList())) {
-                    resourceManagement.deleteVersionLabel(r, PerConstants.PUBLISHED_LABEL);
-                }
+        toBeReplicated = replication.prepare(toBeReplicated);
+        streamReplicableResources(toBeReplicated)
+                .map(Resource::getPath)
+                .forEach(p -> {
+                    try {
+                        resourceManagement.createVersion(resourceResolver, p, PerConstants.PUBLISHED_LABEL);
+                    } catch (final AdminResourceHandler.ManagementException e) {
+                        logger.trace("Unable to create a version for path: {} ", p, e);
+                    }
+                });
+        return prepareResponse(resource, replication.replicate(toBeReplicated));
+    }
 
-                return prepareResponse(resource, replicatedStuff);
-            }
-
-            replicable.setLastReplicationActionAsActivated();
-            final boolean deep = parseBoolean(request.getParameter("deep"));
-            List<Resource> toBeReplicated = listMissingResources(resource, deep);
-            for (final Resource r : Optional.of(RESOURCES)
-                    .map(request::getParameterValues)
-                    .map(Arrays::stream)
-                    .orElseGet(Stream::empty)
-                    .map(resourceResolver::getResource)
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList())){
-                listMissingResources(r, deep, toBeReplicated);
-            }
-
-            toBeReplicated = replication.prepare(toBeReplicated);
-            // Replication can be local or remote and so the commit of the changes is done inside the Replication Service
-            streamReplicableResources(toBeReplicated)
-                    .map(Resource::getPath)
-                    .forEach(p -> {
-                        try {
-                            resourceManagement.createVersion(resourceResolver, p, PerConstants.PUBLISHED_LABEL);
-                        } catch (final AdminResourceHandler.ManagementException e) {
-                            logger.trace("Unable to create a version for path: {} ", p, e);
-                        }
-                    });
-
-            return prepareResponse(resource, replication.replicate(toBeReplicated));
-        } catch (final ReplicationException e) {
-            return badRequestReplicationFailed(e);
+    @NotNull
+    private Response performDeactivation(
+            final Replication replication,
+            final Resource resource
+    ) throws ReplicationException, IOException {
+        final var replicatedStuff = replication.deactivate(resource);
+        for (final Resource r : streamReplicableResources(replicatedStuff)
+                .collect(Collectors.toList())) {
+            resourceManagement.deleteVersionLabel(r, PerConstants.PUBLISHED_LABEL);
         }
+
+        return prepareResponse(resource, replicatedStuff);
     }
 
 }
