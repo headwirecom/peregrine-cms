@@ -166,7 +166,7 @@ public abstract class PerBaseImpl implements PerBase {
                 if( nt.getName().equals(SITE_PRIMARY_TYPE)){
                     return resource;
                 } else {
-                    return getSiteResource(resource.getParent());
+                    return Objects.nonNull(resource.getParent()) ? getSiteResource(resource.getParent()) : null;
                 }
             } catch (RepositoryException e) {
                 logger.error("Error getting root per:Site resource ", e);
