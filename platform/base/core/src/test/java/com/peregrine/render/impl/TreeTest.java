@@ -1,8 +1,7 @@
-package com.peregrine.admin.resource;
+package com.peregrine.render.impl;
 
-import com.peregrine.render.impl.ReferenceListerService.Node;
-import com.peregrine.render.impl.ReferenceListerService.Tree;
-import com.peregrine.commons.test.AbstractTest;
+import com.peregrine.reference.impl.ReferenceListerService.Node;
+import com.peregrine.reference.impl.ReferenceListerService.Tree;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,15 +9,9 @@ import org.slf4j.LoggerFactory;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class TreeTest
-    extends AbstractTest
-{
-    private static final Logger logger = LoggerFactory.getLogger(TreeTest.class.getName());
+public final class TreeTest {
 
-    @Override
-    public Logger getLogger() {
-        return logger;
-    }
+    private static final Logger logger = LoggerFactory.getLogger(TreeTest.class.getName());
 
     @Test
     public void testStringFormat() {
@@ -35,11 +28,11 @@ public class TreeTest
     public void testSimpleTreeCreation() {
         Tree tree = new Tree();
         Node child = new Node(tree, "a");
-        Node grandChild = new Node(child, "b");
+        new Node(child, "b");
         logger.info("Tree 1: '{}'", tree);
         assertTrue("Grand Child not found", tree.contains("/a/b"));
 
-        Node grandChild2 = new Node(child, "b2");
+        new Node(child, "b2");
         logger.info("Tree 2: '{}'", tree);
         assertTrue("Grand Child (2) not found", tree.contains("/a/b2"));
     }
@@ -63,4 +56,5 @@ public class TreeTest
         logger.info("Tree 4: '{}'", tree);
         assertTrue("Added 3rd level+ child not found", tree.contains("/a2/b/d/e/f"));
     }
+
 }
