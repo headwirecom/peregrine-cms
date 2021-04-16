@@ -37,11 +37,13 @@ import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
 import com.peregrine.reference.Reference;
 import com.peregrine.reference.ReferenceLister;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.LinkedList;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
@@ -93,8 +95,8 @@ public class ReferenceListerService
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private List<String> referencePrefixList = new ArrayList<>();
-    private List<String> referencedByRootList = new ArrayList<>();
+    private final List<String> referencePrefixList = new LinkedList<>();
+    private final List<String> referencedByRootList = new LinkedList<>();
 
     @Override
     public List<Resource> getReferenceList(boolean transitive, Resource resource, boolean deep) {
@@ -113,7 +115,7 @@ public class ReferenceListerService
 
     @Override
     public List<Resource> getReferenceList(boolean transitive, Resource resource, boolean deep, Resource source, Resource target, PerUtil.ResourceChecker checker) {
-        List<Resource> answer = new ArrayList<>();
+        List<Resource> answer = new LinkedList<>();
         TraversingContext context = new TraversingContext(checker).setTransitive(transitive).setDeep(deep);
         checkResource(resource, context, answer, source, target);
         return answer;
@@ -124,7 +126,7 @@ public class ReferenceListerService
         if (isNull(resource)) {
             return Collections.emptyList();
         }
-        final List<Reference> result = new ArrayList<>();
+        final List<Reference> result = new LinkedList<>();
         final ResourceResolver resourceResolver = resource.getResourceResolver();
         for (String referencedByRoot: referencedByRootList) {
             final String path = resource.getPath();
@@ -247,20 +249,15 @@ public class ReferenceListerService
     void modified(Configuration configuration) { setup(configuration); }
 
     private void setup(Configuration configuration) {
-        String[] prefixes = configuration.referencePrefix();
-        referencePrefixList = new ArrayList<>();
-        for(String prefix: prefixes) {
-            if(prefix != null && !prefix.isEmpty()) {
-                log.debug("Add Reference Prefix: '{}'", prefix);
-                referencePrefixList.add(prefix);
-            }
-        }
-        String[] roots = configuration.referencedByRoot();
-        referencedByRootList = new ArrayList<>();
-        for(String root: roots) {
-            if(root != null && !root.isEmpty()) {
-                log.debug("Add Referenced By Root: '{}'", root);
-                referencedByRootList.add(root);
+        configure(configuration.referencePrefix(), referencePrefixList);
+        configure(configuration.referencedByRoot(), referencedByRootList);
+    }
+
+    private void configure(final String[] source, final Collection<String> target) {
+        target.clear();
+        for (final String value: source) {
+            if (StringUtils.isNotEmpty(value)) {
+                target.add(value);
             }
         }
     }
