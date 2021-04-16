@@ -36,7 +36,12 @@ import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
 import com.peregrine.reference.Reference;
 import com.peregrine.reference.ReferenceLister;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import org.apache.sling.api.resource.Resource;
@@ -85,13 +90,14 @@ public class ReferenceListerService
         String[] referencedByRoot() default "/content";
     }
 
+    private static final Pattern JCR_CONTENT_SUFFIX = Pattern.compile("\\/" + JCR_CONTENT + ".+");
+    private static final String REFERENCED_BY_QUERY = "select * from [nt:base] as s where isdescendantnode('%s') " +
+            "and contains(s.*, '\"%s\"') and not s.* like '%%%s/%%'";
+
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private List<String> referencePrefixList = new ArrayList<>();
     private List<String> referencedByRootList = new ArrayList<>();
-
-    private final Pattern JCR_CONTENT_SUFFIX = Pattern.compile("\\/" + JCR_CONTENT + ".+");
-    private final String REFERENCED_BY_QUERY = "select * from [nt:base] where isdescendantnode('%s') and contains(*, '%s')";
 
     @Override
     public List<Resource> getReferenceList(boolean transitive, Resource resource, boolean deep) {
@@ -114,9 +120,11 @@ public class ReferenceListerService
         final List<Reference> result = new ArrayList<>();
         final ResourceResolver resourceResolver = resource.getResourceResolver();
         for (String referencedByRoot: referencedByRootList) {
+            final String path = resource.getPath();
             Iterator<Resource> referencingResources = resourceResolver.findResources(
-                    String.format(REFERENCED_BY_QUERY, referencedByRoot, resource.getPath()),
-                    Query.JCR_SQL2);
+                    String.format(REFERENCED_BY_QUERY, referencedByRoot, path, path),
+                    Query.JCR_SQL2
+            );
 
             while (referencingResources.hasNext()) {
                 Resource referencingResource = referencingResources.next();
