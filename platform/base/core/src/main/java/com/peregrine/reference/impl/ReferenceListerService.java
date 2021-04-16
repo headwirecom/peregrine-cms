@@ -26,6 +26,7 @@ package com.peregrine.reference.impl;
  */
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerUtil.containsResource;
 import static com.peregrine.commons.util.PerUtil.listMissingParents;
 import static com.peregrine.commons.util.PerUtil.stripJcrContentAndDescendants;
 import static java.util.Objects.isNull;
@@ -236,19 +237,6 @@ public class ReferenceListerService
                 }
             }
         }
-    }
-
-    /** Checks if the given list already contains the given resource by path **/
-    private boolean containsResource(List<Resource> resources, Resource check) {
-        boolean answer = false;
-        String checkPath = check.getPath();
-        for(Resource item: resources) {
-            if(item.getPath().equals(checkPath)) {
-                answer = true;
-                break;
-            }
-        }
-        return answer;
     }
 
     @Activate
