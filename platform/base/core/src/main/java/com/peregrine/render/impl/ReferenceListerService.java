@@ -37,6 +37,7 @@ import com.peregrine.reference.Reference;
 import com.peregrine.reference.ReferenceLister;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -50,6 +51,8 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.jcr.query.Query;
 
 /**
  * Lists References from and to a given Page
@@ -87,6 +90,9 @@ public class ReferenceListerService
     private List<String> referencePrefixList = new ArrayList<>();
     private List<String> referencedByRootList = new ArrayList<>();
 
+    private final Pattern JCR_CONTENT_SUFFIX = Pattern.compile("\\/" + JCR_CONTENT + ".+");
+    private final String REFERENCED_BY_QUERY = "select * from [nt:base] where isdescendantnode('%s') and contains(*, '%s')";
+
     @Override
     public List<Resource> getReferenceList(boolean transitive, Resource resource, boolean deep) {
         return getReferenceList(transitive, resource, deep, null, null);
@@ -105,15 +111,27 @@ public class ReferenceListerService
         if (isNull(resource)) {
             return Collections.emptyList();
         }
-
-        final List<Reference> answer = new ArrayList<>();
+        final List<Reference> result = new ArrayList<>();
         final ResourceResolver resourceResolver = resource.getResourceResolver();
-        final String path = resource.getPath();
-        referencedByRootList.stream()
-                .map(resourceResolver::getResource)
-                .filter(Objects::nonNull)
-                .forEach(r -> traverseTreeReverse(r, path, answer));
-        return answer;
+        for (String referencedByRoot: referencedByRootList) {
+            Iterator<Resource> referencingResources = resourceResolver.findResources(
+                    String.format(REFERENCED_BY_QUERY, referencedByRoot, resource.getPath()),
+                    Query.JCR_SQL2);
+
+            while (referencingResources.hasNext()) {
+                Resource referencingResource = referencingResources.next();
+                String referencingPath = referencingResource.getPath();
+                String parentPath = stripJcrContentSuffix(referencingPath);
+                Resource parentResource = resourceResolver.resolve(parentPath);
+                Reference ref = new Reference(parentResource, "", referencingResource);
+                result.add(ref);
+            }
+        }
+        return result;
+    }
+
+    private String stripJcrContentSuffix(String path){
+        return JCR_CONTENT_SUFFIX.matcher(path).replaceFirst("");
     }
 
     /**
@@ -218,69 +236,6 @@ public class ReferenceListerService
             }
         }
         return answer;
-    }
-
-    /**
-     * This traverses the resource's children to look for referenced by resources. Call is ignored
-     * if resource or reference path is not defined
-     * @param resource Parent resource
-     * @param referencePath Reference Path to look for
-     * @param response List of resources found
-     */
-    private void traverseTreeReverse(Resource resource, String referencePath, List<Reference> response) {
-        if(resource != null && isNotEmpty(referencePath)) {
-            for(Resource child : resource.getChildren()) {
-                parsePropertiesReverse(child, referencePath, response);
-                traverseTreeReverse(child, referencePath, response);
-            }
-        }
-    }
-
-    /**
-     * Check the given resource's properties to look for a property value that contains the given reference path.
-     * Call is ignored if resource or reference path is not defined
-     * @param resource Resource to be checked
-     * @param referencePath Reference Path to look for
-     * @param response List of resources found
-     */
-    private void parsePropertiesReverse(Resource resource, String referencePath, List<Reference> response) {
-        if(resource != null && isNotEmpty(referencePath)) {
-            ValueMap properties = resource.getValueMap();
-            for(Map.Entry<String, Object> entry : properties.entrySet()) {
-                String name = entry.getKey();
-                String value = entry.getValue() + "";
-                if(referencePath.equals(value)) {
-                    // Find the node
-                    boolean found = false;
-                    Resource temp = resource;
-                    while(true) {
-                        if(temp.getName().equals(JCR_CONTENT)) {
-                            Resource parent = temp.getParent();
-                            if(parent != null) {
-                                if(!response.contains(parent)) {
-                                    response.add(new Reference(parent, name, resource));
-                                }
-                                found = true;
-                            } else {
-                                log.warn("JCR Content Node: '{}' found but no parent", temp.getPath());
-                            }
-                            break;
-                        } else {
-                            temp = temp.getParent();
-                            if(temp == null) {
-                                break;
-                            }
-                        }
-                    }
-                    if(!found) {
-                        // No JCR Content node found so just use this one
-                        if(!response.contains(resource)) {
-                            response.add(new Reference(resource, name, resource));
-                        }
-                    }
-                }
-            }
-        }
     }
 
     @Activate
