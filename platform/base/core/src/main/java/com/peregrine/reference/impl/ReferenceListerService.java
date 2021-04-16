@@ -161,20 +161,20 @@ public final class ReferenceListerService implements ReferenceLister {
                 return;
             }
 
-            Resource jcrContent = resource.getChild(JCR_CONTENT);
-            if(!context.isDeep()) {
-                if(jcrContent != null) {
-                    context.addDeepLimit(jcrContent.getPath());
-                    parseProperties(jcrContent, context, response, source, target);
-                    // Loop of all its children
-                    traverseTree(jcrContent, context, response, source, target);
-                }
-            } else {
+            if(context.isDeep()) {
                 Iterable<Resource> children = resource.getChildren();
                 for(Resource child : children) {
                     parseProperties(child, context, response, source, target);
                     // Loop of all its children
                     traverseTree(child, context, response, source, target);
+                }
+            } else {
+                Resource jcrContent = resource.getChild(JCR_CONTENT);
+                if (jcrContent != null) {
+                    context.addDeepLimit(jcrContent.getPath());
+                    parseProperties(jcrContent, context, response, source, target);
+                    // Loop of all its children
+                    traverseTree(jcrContent, context, response, source, target);
                 }
             }
         }

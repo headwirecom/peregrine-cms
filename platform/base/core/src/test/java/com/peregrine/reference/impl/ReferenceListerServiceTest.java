@@ -47,8 +47,19 @@ import static org.mockito.Mockito.when;
 	@Test
 	public void getReferenceList() {
 		resource.putProperty("reference", siblingPage.getPath());
+		child.putProperty("reference", page.getPath());
 		var references = model.getReferenceList(true, page, true);
 		assertTrue(references.contains(siblingPage));
+		assertTrue(references.contains(page));
+		references = model.getReferenceList(true, page, false);
+		assertTrue(references.contains(siblingPage));
+		assertTrue(references.contains(page));
+		references = model.getReferenceList(false, page, true);
+		assertTrue(references.contains(siblingPage));
+		assertFalse(references.contains(page));
+		references = model.getReferenceList(false, page, false);
+		assertTrue(references.contains(siblingPage));
+		assertFalse(references.contains(page));
 	}
 
 	@Test
