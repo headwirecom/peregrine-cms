@@ -64,12 +64,12 @@ public class PerUtil {
     public static final String RESOURCE_RESOLVER_FACTORY_CANNOT_BE_NULL = "Resource Resolver Factory cannot be null";
     public static final String SERVICE_NAME_CANNOT_BE_EMPTY = "Service Name cannot be empty";
 
+    public static final String SL_JCR_CONTENT_SL = SLASH + JCR_CONTENT + SLASH;
+
+    public static final ResourceChecker ADD_ALL_RESOURCE_CHECKER = new AddAllResourceChecker();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final Logger LOG = LoggerFactory.getLogger(PerUtil.class);
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-    private static final ResourceChecker ADD_ALL_RESOURCE_CHECKER = new AddAllResourceChecker();
-    public static final String SL_JCR_CONTENT_SL = SLASH + JCR_CONTENT + SLASH;
 
     /** @return True if the given text is either null or empty **/
     public static boolean isEmpty(String text) {
@@ -874,6 +874,24 @@ public class PerUtil {
         boolean doAdd(Resource resource);
         /** @return False if the resource's children should not be considered **/
         boolean doAddChildren(Resource resource);
+    }
+
+    public static final class ConjunctionResourceCheckerChain extends LinkedList<ResourceChecker> implements ResourceChecker {
+
+        public ConjunctionResourceCheckerChain(final ResourceChecker... items) {
+            for (final ResourceChecker rc : items) {
+                add(rc);
+            }
+        }
+
+        public boolean doAdd(final Resource resource) {
+            return stream().allMatch(rc -> rc.doAdd(resource));
+        }
+
+        public boolean doAddChildren(final Resource resource) {
+            return stream().allMatch(rc -> rc.doAddChildren(resource));
+        }
+
     }
 
     /** Checks all resources that are either missing or are outdated on the target **/

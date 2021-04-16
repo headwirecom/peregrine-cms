@@ -34,6 +34,7 @@ import static com.peregrine.commons.util.PerUtil.stripJcrContentAndDescendants;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
+import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
 import com.peregrine.reference.Reference;
 import com.peregrine.reference.ReferenceLister;
@@ -101,13 +102,23 @@ public class ReferenceListerService
 
     @Override
     public List<Resource> getReferenceList(boolean transitive, Resource resource, boolean deep) {
-        return getReferenceList(transitive, resource, deep, null, null);
+        return getReferenceList(transitive, resource, deep, PerUtil.ADD_ALL_RESOURCE_CHECKER);
+    }
+
+    @Override
+    public List<Resource> getReferenceList(boolean transitive, Resource resource, boolean deep, PerUtil.ResourceChecker checker) {
+        return getReferenceList(transitive, resource, deep, null, null, checker);
     }
 
     @Override
     public List<Resource> getReferenceList(boolean transitive, Resource resource, boolean deep, Resource source, Resource target) {
+        return getReferenceList(transitive, resource, deep, source, target, PerUtil.ADD_ALL_RESOURCE_CHECKER);
+    }
+
+    @Override
+    public List<Resource> getReferenceList(boolean transitive, Resource resource, boolean deep, Resource source, Resource target, PerUtil.ResourceChecker checker) {
         List<Resource> answer = new ArrayList<>();
-        TraversingContext context = new TraversingContext().setTransitive(transitive).setDeep(deep);
+        TraversingContext context = new TraversingContext(checker).setTransitive(transitive).setDeep(deep);
         checkResource(resource, context, answer, source, target);
         return answer;
     }
@@ -148,8 +159,12 @@ public class ReferenceListerService
      * @param target Optional root resource of the target
      */
     private void checkResource(Resource resource, TraversingContext context, List<Resource> response, Resource source, Resource target) {
-        if(resource != null) {
+        if(resource != null && context.doAdd(resource)) {
             parseProperties(resource, context, response, source, target);
+            if(!context.doAddChildren(resource)) {
+                return;
+            }
+
             Resource jcrContent = resource.getChild(JCR_CONTENT);
             if(!context.isDeep()) {
                 if(jcrContent != null) {
@@ -178,7 +193,7 @@ public class ReferenceListerService
      * @param target Optional root resource of the target
      */
     private void traverseTree(Resource resource, TraversingContext context, List<Resource> response, Resource source, Resource target) {
-        if(resource != null) {
+        if(resource != null && context.doAddChildren(resource)) {
             for(Resource child : resource.getChildren()) {
                 parseProperties(child, context, response, source, target);
                 traverseTree(child, context, response, source, target);
@@ -201,25 +216,24 @@ public class ReferenceListerService
             String value = item + "";
             for(String prefix: referencePrefixList) {
                 if(value.startsWith(prefix)) {
-                    String resourcePath = value;
-                    log.trace("Found Reference Resource Path: '{}'", resourcePath);
-                    Resource child = null;
-                    if(resourcePath.startsWith("/")) {
+                    log.trace("Found Reference Resource Path: '{}'", value);
+                    final Resource child;
+                    if(value.startsWith("/")) {
                         child = resource.getResourceResolver().getResource(value);
                     } else {
-                        child = resource.getChild(resourcePath);
+                        child = resource.getChild(value);
                     }
-                    if(child != null) {
+                    if(child != null && context.doAdd(child)) {
                         // Check if the resource is not already listed in there
                         if(containsResource(response, child)) {
                             log.trace("Resource is already in the list: '{}'", child);
                         } else {
-                            if(source  != null && target != null) {
+                            if(source != null && target != null) {
                                 listMissingParents(child, response, source, new MissingOrOutdatedResourceChecker(source, target));
                             }
                             log.trace("Found Reference Resource: '{}'", child);
                             response.add(child);
-                            if(context.isTransitive()) {
+                            if(context.isTransitive() && context.doAddChildren(child)) {
                                 checkResource(child, context, response, source, target);
                             }
                         }
@@ -272,13 +286,16 @@ public class ReferenceListerService
      * Traversing context providing necessary flags as well as defining which resource are processed
      * It also makes sure that we don't end up in an endless loop with cyclic references
      **/
-    private static class TraversingContext {
+    private static class TraversingContext implements PerUtil.ResourceChecker {
+        private final PerUtil.ResourceChecker checker;
         private boolean transitive = false;
         private boolean deep = false;
         private Set<String> deepLimits = new TreeSet<>();
         private Tree visited = new Tree();
 
-        public TraversingContext() {};
+        public TraversingContext(final PerUtil.ResourceChecker checker) {
+            this.checker = isNull(checker) ? PerUtil.ADD_ALL_RESOURCE_CHECKER : checker;
+        }
 
         public TraversingContext setTransitive(boolean transitive) {
             this.transitive = transitive;
@@ -310,24 +327,25 @@ public class ReferenceListerService
          *         are in the deep limited paths and not visited yet
          */
         public boolean proceed(Resource resource) {
-            boolean answer = false;
             if(resource != null) {
                 String path = resource.getPath();
-                if(!visited.contains(path)) {
+                if(!visited.contains(path) && checker.doAdd(resource)) {
                     visited.addChildByPath(path);
+                    if(!checker.doAddChildren(resource)) {
+                        return false;
+                    }
                     if(!deep) {
                         for(String limit : deepLimits) {
                             if(path.startsWith(limit)) {
-                                answer = true;
-                                break;
+                                return true;
                             }
                         }
                     } else {
-                        answer = true;
+                        return true;
                     }
                 }
             }
-            return answer;
+            return false;
         }
 
         /**
@@ -341,6 +359,17 @@ public class ReferenceListerService
             }
             return this;
         }
+
+        @Override
+        public boolean doAdd(Resource resource) {
+            return checker.doAdd(resource);
+        }
+
+        @Override
+        public boolean doAddChildren(Resource resource) {
+            return checker.doAddChildren(resource);
+        }
+
     }
 
     /**
@@ -416,7 +445,6 @@ public class ReferenceListerService
      */
     public static class Node {
         private String segment;
-        private Node parent;
         private List<Node> children;
 
         /**
@@ -443,7 +471,6 @@ public class ReferenceListerService
          */
         void setParent(Node parent) {
             if(parent == null) { throw new IllegalArgumentException("Parent Node must be defined"); }
-            this.parent = parent;
             parent.addChild(this);
         }
 
