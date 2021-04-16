@@ -1,12 +1,17 @@
 package com.peregrine.reference.impl;
 
 import com.peregrine.SlingResourcesTest;
+import com.peregrine.mock.PageContentMock;
+import com.peregrine.mock.PageMock;
+import com.peregrine.mock.ResourceMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static com.peregrine.commons.util.PerConstants.SLASH;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
@@ -17,12 +22,21 @@ import static org.mockito.Mockito.when;
 	private ReferenceListerService.Configuration configuration;
 
 	private final ReferenceListerService model = new ReferenceListerService();
+	private final PageMock siblingPage = new PageMock();
+	final ResourceMock child = new ResourceMock();
 
 	@Before
 	public void setUp() {
-		when(configuration.referencedByRoot()).thenReturn(new String[] { "/content/", null });
+		when(configuration.referencedByRoot()).thenReturn(new String[] { "/content/", null, EMPTY });
 		when(configuration.referencePrefix()).thenReturn(new String[] { "/content", null });
 		model.activate(configuration);
+
+		siblingPage.setPath(parent.getPath() + SLASH + "sibling");
+		parent.addChild(siblingPage);
+		final PageContentMock content = siblingPage.getContent();
+		final String name = "resource";
+		child.setPath(content.getPath() + SLASH + name);
+		content.addChild(name, child);
 	}
 
 	@Test
@@ -32,6 +46,9 @@ import static org.mockito.Mockito.when;
 
 	@Test
 	public void getReferenceList() {
+		resource.putProperty("reference", siblingPage.getPath());
+		var references = model.getReferenceList(true, page, true);
+		assertTrue(references.contains(siblingPage));
 	}
 
 	@Test
