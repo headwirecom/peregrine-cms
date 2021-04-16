@@ -70,9 +70,7 @@ import javax.jcr.query.Query;
     immediate = true
 )
 @Designate(ocd = ReferenceListerService.Configuration.class)
-public class ReferenceListerService
-    implements ReferenceLister
-{
+public final class ReferenceListerService implements ReferenceLister {
     @ObjectClassDefinition(
         name = "Peregrine: Reference List Provider",
         description = "Provides a list of referenced resources for a given resource"
