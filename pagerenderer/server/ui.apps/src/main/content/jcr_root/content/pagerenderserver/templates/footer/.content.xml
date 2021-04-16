@@ -8,12 +8,15 @@
 
   <jcr:content
     jcr:primaryType="per:PageContent"
-    jcr:title="Blank"
+    jcr:title="Footer"
     sling:resourceType="pagerenderserver/components/page">
 
     <content jcr:primaryType="nt:unstructured"
              mobilecolspan="12"
              sling:resourceType="pagerenderserver/components/container" />
+    <footer jcr:primaryType="nt:unstructured"
+             mobilecolspan="12"
+             sling:resourceType="pagerenderserver/components/footer" />
 
   </jcr:content>
 </jcr:root>

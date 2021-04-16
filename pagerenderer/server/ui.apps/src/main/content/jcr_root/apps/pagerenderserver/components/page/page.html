@@ -34,7 +34,7 @@
 <body>
 <sly data-sly-include="tracker-bodystart.html"></sly>
 <div id="peregrine-app">
-    ${helper.path}    
+    <!--/* ${helper.path} */-->
     <div data-sly-list.item="${pageMerge.getMergedResources}" data-per-path="${helper.model.path}">
         <sly data-sly-resource="${item.path}"></sly>
     </div>     
