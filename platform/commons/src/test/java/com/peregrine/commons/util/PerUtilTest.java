@@ -47,4 +47,14 @@ public class PerUtilTest
         logger.info("Component Name: '{}'", componentName);
         assertEquals("Component Name Extraction failed", "one-two-three--four-five", componentName);
     }
+
+    @Test
+    public void stripJcrContentAndDescendants() {
+        assertEquals("/content/page", PerUtil.stripJcrContentAndDescendants("/content/page/jcr:content/child"));
+        assertEquals("/content/page", PerUtil.stripJcrContentAndDescendants("/content/page/jcr:content/"));
+        assertEquals("/content/page", PerUtil.stripJcrContentAndDescendants("/content/page/jcr:content"));
+        assertEquals("/content/page/", PerUtil.stripJcrContentAndDescendants("/content/page/"));
+        assertEquals("/content/page", PerUtil.stripJcrContentAndDescendants("/content/page"));
+    }
+
 }

@@ -30,7 +30,9 @@ import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerUtil.isEmpty;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static com.peregrine.commons.util.PerUtil.listMissingParents;
+import static com.peregrine.commons.util.PerUtil.stripJcrContentAndDescendants;
 import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
 import com.peregrine.reference.Reference;
@@ -42,7 +44,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.regex.Pattern;
 
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -90,7 +91,6 @@ public class ReferenceListerService
         String[] referencedByRoot() default "/content";
     }
 
-    private static final Pattern JCR_CONTENT_SUFFIX = Pattern.compile("\\/" + JCR_CONTENT + ".+");
     private static final String REFERENCED_BY_QUERY = "select * from [nt:base] as s where isdescendantnode('%s') " +
             "and contains(s.*, '\"%s\"') and not s.* like '%%%s/%%'";
 
@@ -129,17 +129,13 @@ public class ReferenceListerService
             while (referencingResources.hasNext()) {
                 Resource referencingResource = referencingResources.next();
                 String referencingPath = referencingResource.getPath();
-                String parentPath = stripJcrContentSuffix(referencingPath);
+                String parentPath = stripJcrContentAndDescendants(referencingPath);
                 Resource parentResource = resourceResolver.resolve(parentPath);
-                Reference ref = new Reference(parentResource, "", referencingResource);
+                Reference ref = new Reference(parentResource, EMPTY, referencingResource);
                 result.add(ref);
             }
         }
         return result;
-    }
-
-    private String stripJcrContentSuffix(String path){
-        return JCR_CONTENT_SUFFIX.matcher(path).replaceFirst("");
     }
 
     /**
