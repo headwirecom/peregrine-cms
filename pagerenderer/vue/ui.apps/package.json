@@ -18,6 +18,7 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
+    "@vue/composition-api": "^1.0.0-rc.6",
     "axios": "^0.18.1",
     "bootstrap": "^4.3.1",
     "fs-extra": "^7.0.1",
