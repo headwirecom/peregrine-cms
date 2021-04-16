@@ -23,20 +23,26 @@ import static org.mockito.Mockito.when;
 
 	private final ReferenceListerService model = new ReferenceListerService();
 	private final PageMock siblingPage = new PageMock();
-	final ResourceMock child = new ResourceMock();
+	private final ResourceMock siblingPageResource = setParentAndGetNewChild(siblingPage, parent);
+	private final PageMock childPage = new PageMock();
+	private final ResourceMock childPageResource = setParentAndGetNewChild(childPage, page);
+
+	private static ResourceMock setParentAndGetNewChild(final PageMock page, final ResourceMock parent) {
+		page.setPath(parent.getPath() + SLASH + "sibling");
+		parent.addChild(page);
+		final PageContentMock siblingPageContent = page.getContent();
+		final String name = "resource";
+		final ResourceMock resource = new ResourceMock();
+		resource.setPath(siblingPageContent.getPath() + SLASH + name);
+		siblingPageContent.addChild(name, resource);
+		return resource;
+	}
 
 	@Before
 	public void setUp() {
 		when(configuration.referencedByRoot()).thenReturn(new String[] { "/content/", null, EMPTY });
 		when(configuration.referencePrefix()).thenReturn(new String[] { "/content", null });
 		model.activate(configuration);
-
-		siblingPage.setPath(parent.getPath() + SLASH + "sibling");
-		parent.addChild(siblingPage);
-		final PageContentMock content = siblingPage.getContent();
-		final String name = "resource";
-		child.setPath(content.getPath() + SLASH + name);
-		content.addChild(name, child);
 	}
 
 	@Test
@@ -46,19 +52,24 @@ import static org.mockito.Mockito.when;
 
 	@Test
 	public void getReferenceList() {
-		resource.putProperty("reference", siblingPage.getPath());
-		child.putProperty("reference", page.getPath());
+		resource.putProperty("reference", parent.getPath());
+		siblingPageResource.putProperty("reference", page.getPath());
+		childPageResource.putProperty("reference", siblingPage.getPath());
 		var references = model.getReferenceList(true, page, true);
+		assertTrue(references.contains(parent));
 		assertTrue(references.contains(siblingPage));
 		assertTrue(references.contains(page));
 		references = model.getReferenceList(true, page, false);
-		assertTrue(references.contains(siblingPage));
-		assertTrue(references.contains(page));
+		assertTrue(references.contains(parent));
+		assertFalse(references.contains(siblingPage));
+		assertFalse(references.contains(page));
 		references = model.getReferenceList(false, page, true);
+		assertTrue(references.contains(parent));
 		assertTrue(references.contains(siblingPage));
 		assertFalse(references.contains(page));
 		references = model.getReferenceList(false, page, false);
-		assertTrue(references.contains(siblingPage));
+		assertTrue(references.contains(parent));
+		assertFalse(references.contains(siblingPage));
 		assertFalse(references.contains(page));
 	}
 
