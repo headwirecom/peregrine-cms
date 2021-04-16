@@ -291,3 +291,16 @@ export function createDebouncer() {
         })
     }
 }
+
+export function chainPromises(operation, first){
+  return new Promise(function(resolve, reject){
+    let last = first;
+    let next;
+    while(i<maxRequests){
+      next = last.then(operation)
+      last = next
+      i++
+    }
+    return next
+  });
+}

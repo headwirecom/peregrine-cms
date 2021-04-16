@@ -26,7 +26,8 @@
 
 import {LoggerFactory} from './logger'
 import {stripNulls} from './utils'
-import {Field} from './constants';
+import {Field} from './constants'
+import Notifier from './utils/notifier'
 
 let logger = LoggerFactory.logger('apiImpl').setLevelDebug()
 
@@ -37,9 +38,13 @@ const postConfig = {
 
 let callbacks
 
+function blob(content) {
+  return new Blob([ content ], {type: 'application/json; charset=utf-8'})
+}
+
 function json(data) {
   const content = JSON.stringify(data)
-  return new Blob([content], {type: 'application/json; charset=utf-8'})
+  return blob(content)
 }
 
 function fetch(path) {
@@ -153,7 +158,7 @@ function populateView(path, name, data) {
 
 function translateFields(fields) {
   const $i18n = Vue.prototype.$i18n
-  if(!$i18n) return fields
+  if (!$i18n) return fields
   if (!fields || fields.length <= 0) {
     return
   }
@@ -186,7 +191,7 @@ function translateFields(fields) {
         fields[i].textOn = $i18n(field.textOn)
         fields[i].textOff = $i18n(field.textOff)
       } else if (field.type === Field.SELECT) {
-        const values = fields[i].values;
+        const values = fields[i].values
         for (let j = 0; j < values.length; j++) {
           const name = values[j].name
           const t = $i18n(name)
@@ -206,6 +211,7 @@ class PerAdminImpl {
 
   constructor(cb) {
     callbacks = cb
+    this.$notifier = new Notifier($perAdminApp)
   }
 
   populateTools() {
@@ -230,12 +236,14 @@ class PerAdminImpl {
               // alert('please login to continue')
               window.location = '/'
             }
-            return populateView('/state', 'userPreferences', data.preferences )
-              .then( () => { 
-                if(data.profile) {
-                  return populateView('/state/userPreferences', 'profile', data.profile )}
-              }
-            )
+            return populateView('/state', 'userPreferences', data.preferences)
+                .then(() => {
+                      if (data.profile) {
+                        return populateView('/state/userPreferences', 'profile',
+                            data.profile)
+                      }
+                    }
+                )
           })
         })
   }
@@ -289,7 +297,7 @@ class PerAdminImpl {
 
   populateComponentDefinitionFromNode(path) {
     return new Promise((resolve, reject) => {
-      var name;
+      var name
       fetch('/admin/componentDefinition.json' + path)
           .then((data) => {
             name = data.name
@@ -332,7 +340,7 @@ class PerAdminImpl {
                     let visible = data.model.groups[j].fields[i].visible
                     if (visible) {
                       data.model.groups[j].fields[i].visible = function (model) {
-                        return exprEval.Parser.evaluate(visible, this);
+                        return exprEval.Parser.evaluate(visible, this)
                       }
                     }
                   }
@@ -360,7 +368,7 @@ class PerAdminImpl {
                             name = next.data['jcr:title']
                           }
                           if (next.parent) {
-                            name = next.parent + '-' + name;
+                            name = next.parent + '-' + name
                           }
                           data.model.fields[i].values.push(
                               {value: val, name: name})
@@ -386,7 +394,7 @@ class PerAdminImpl {
                   const visible = data.model.fields[i].visible
                   if (visible) {
                     data.model.fields[i].visible = function (model) {
-                      return exprEval.Parser.evaluate(visible, this);
+                      return exprEval.Parser.evaluate(visible, this)
                     }
                   }
                 }
@@ -419,7 +427,7 @@ class PerAdminImpl {
                     const visible = data.ogTags.fields[i].visible
                     if (visible) {
                       data.ogTags.fields[i].visible = function (ogTags) {
-                        return exprEval.Parser.evaluate(visible, this);
+                        return exprEval.Parser.evaluate(visible, this)
                       }
                     }
                   }
@@ -428,7 +436,8 @@ class PerAdminImpl {
                 translateFields(data.model.fields)
               }
             } else {
-              logger.warn(`no dialog.json file given for component "${name}"`)
+              logger.warn(
+                  `no dialogger.json file given for component "${name}"`)
             }
 
             Promise.all(promises).then(() => {
@@ -456,21 +465,22 @@ class PerAdminImpl {
             //       .then(() => populateView('/admin', 'tenants', data.tenants))
             //       .then(() => resolve())
             // } else {
-              populateView('/admin', 'tenants', data.tenants)
-                  .then(() => resolve())
+            populateView('/admin', 'tenants', data.tenants)
+                .then(() => resolve())
             // }
           })
     })
   }
 
   populateBackupInfo(backup) {
-    let tenantName = backup ? backup.tenant : '';
-    if(tenantName === '' || tenantName === 'undefined') {
-      const tenant = $perAdminApp.getNodeFromViewWithDefault("/state/tenant", {});
-      tenantName = tenant ? tenant.name : '';
+    let tenantName = backup ? backup.tenant : ''
+    if (tenantName === '' || tenantName === 'undefined') {
+      const tenant = $perAdminApp.getNodeFromViewWithDefault('/state/tenant',
+          {})
+      tenantName = tenant ? tenant.name : ''
     }
     fetch('/admin/backupTenant.json/content/' + tenantName)
-        .then((data) => populateView('/state/tools', 'backup', data));
+        .then((data) => populateView('/state/tools', 'backup', data))
   }
 
   populatePageView(path) {
@@ -494,15 +504,16 @@ class PerAdminImpl {
   populateReferences(path) {
     return new Promise((resolve, reject) => {
       fetch(`/admin/ref.json${path}`)
-        .then(function(result) {
+          .then(function (result) {
             populateView('/state', 'references', result)
                 .then(() => resolve())
-        })
-        .catch(error => {
-            if (error.response && error.response.data && error.response.data.message) {
-                reject(error.response.data.message)
+          })
+          .catch(error => {
+            if (error.response && error.response.data
+                && error.response.data.message) {
+              reject(error.response.data.message)
             }
-        })
+          })
     })
   }
 
@@ -516,149 +527,158 @@ class PerAdminImpl {
     })
   }
 
-
   populateRecyclebin(page = 0) {
     let tenant = getOrCreate(callbacks.getView(), '/state/tenant').name
     if (tenant == undefined) {
-        tenant = callbacks.getView().state.tenant.name
+      tenant = callbacks.getView().state.tenant.name
     }
     if (page instanceof Object) {
-        page = 0;
+      page = 0
     }
     return new Promise((resolve, reject) => {
-        fetch(`/admin/listRecyclables.json/content/${tenant}?page=${page}`)
-            .then(function(result) {
-                 populateView('/admin', 'recyclebin', result)
-                    .then(() => resolve())
-            })
-            .catch(error => {
-                $perAdminApp.notifyUser('error', `${error}. Unable to load Recycle Bin`)
-            })
+      fetch(`/admin/listRecyclables.json/content/${tenant}?page=${page}`)
+          .then(function (result) {
+            populateView('/admin', 'recyclebin', result)
+                .then(() => resolve())
+          })
+          .catch(error => {
+            $perAdminApp.notifyUser('error',
+                `${error}. Unable to load Recycle Bin`)
+          })
     })
   }
 
   populateVersions(page) {
     if (page) {
-        return new Promise((resolve, reject) => {
-          fetch(`/admin/listVersions.json${page}`)
-            .then(function(result) {
-                populateView('/state', 'versions', result)
-                    .then(() => resolve())
+      return new Promise((resolve, reject) => {
+        fetch(`/admin/listVersions.json${page}`)
+            .then(function (result) {
+              populateView('/state', 'versions', result)
+                  .then(() => resolve())
             })
             .catch(error => {
-                if (error.response && error.response.data && error.response.data.message) {
-                    reject(error.response.data.message)
-                }
+              if (error.response && error.response.data
+                  && error.response.data.message) {
+                reject(error.response.data.message)
+              }
             })
-        })
+      })
     }
   }
 
   recycleItem(item) {
-      return new Promise((resolve, reject) => {
-        let data = new FormData()
-        updateWithForm('/admin/restoreRecyclable.json' + item.recyclebinItemPath, data)
-            .then( (data) => callbacks.getApi().populateRecyclebin(0) )
-            .then(() => resolve())
-            .catch(error => {
-                if (error.response && error.response.data && error.response.data.message) {
-                    reject(error.response.data.message)
-                }
-                reject(error)
-            })
-      })
+    return new Promise((resolve, reject) => {
+      let data = new FormData()
+      updateWithForm('/admin/restoreRecyclable.json' + item.recyclebinItemPath,
+          data)
+          .then((data) => callbacks.getApi().populateRecyclebin(0))
+          .then(() => resolve())
+          .catch(error => {
+            if (error.response && error.response.data
+                && error.response.data.message) {
+              reject(error.response.data.message)
+            }
+            reject(error)
+          })
+    })
   }
 
   deleteRecyclable(path) {
-        return new Promise((resolve, reject) => {
-            let data = new FormData()
-            updateWithForm('/admin/deleteNode.json' + path, data)
-                .then( (data) => callbacks.getApi().populateRecyclebin(0))
-                .then(() => resolve())
-                .catch(error => {
-                    if (error.response && error.response.data && error.response.data.message) {
-                        reject(error.response.data.message)
-                    }
-                    reject(error)
-                })
-        })
+    return new Promise((resolve, reject) => {
+      let data = new FormData()
+      updateWithForm('/admin/deleteNode.json' + path, data)
+          .then((data) => callbacks.getApi().populateRecyclebin(0))
+          .then(() => resolve())
+          .catch(error => {
+            if (error.response && error.response.data
+                && error.response.data.message) {
+              reject(error.response.data.message)
+            }
+            reject(error)
+          })
+    })
   }
 
   deleteVersion(info) {
-        return new Promise((resolve, reject) => {
-            let data = new FormData()
-            data.append('action', 'deleteVersion')
-            data.append('version', info.version)
-            updateWithForm('/admin/manageVersions.json' + info.path, data)
-                .then( (data) => callbacks.getApi().populateVersions(info.path))
-                .then(() => resolve())
-                .catch(error => {
-                    if (error.response && error.response.data && error.response.data.message) {
-                        reject(error.response.data.message)
-                    }
-                    reject(error)
-                })
-        })
+    return new Promise((resolve, reject) => {
+      let data = new FormData()
+      data.append('action', 'deleteVersion')
+      data.append('version', info.version)
+      updateWithForm('/admin/manageVersions.json' + info.path, data)
+          .then((data) => callbacks.getApi().populateVersions(info.path))
+          .then(() => resolve())
+          .catch(error => {
+            if (error.response && error.response.data
+                && error.response.data.message) {
+              reject(error.response.data.message)
+            }
+            reject(error)
+          })
+    })
   }
 
   createVersion(path) {
-      return new Promise((resolve, reject) => {
-          let data = new FormData()
-          data.append('action', 'createVersion')
-          updateWithForm('/admin/manageVersions.json' + path, data)
-              .then( (data) => callbacks.getApi().populateVersions(path))
-              .then(() => resolve())
-              .catch(error => {
-                  if (error.response && error.response.data && error.response.data.message) {
-                      reject(error.response.data.message)
-                  }
-                  reject(error)
-              })
-      })
+    return new Promise((resolve, reject) => {
+      let data = new FormData()
+      data.append('action', 'createVersion')
+      updateWithForm('/admin/manageVersions.json' + path, data)
+          .then((data) => callbacks.getApi().populateVersions(path))
+          .then(() => resolve())
+          .catch(error => {
+            if (error.response && error.response.data
+                && error.response.data.message) {
+              reject(error.response.data.message)
+            }
+            reject(error)
+          })
+    })
   }
 
   restoreVersion(path, versionName) {
-        return new Promise((resolve, reject) => {
-            let data = new FormData()
-            data.append('action', 'restoreVersion')
-            data.append('version', versionName)
-            updateWithForm('/admin/manageVersions.json' + path, data)
-                .then( (data) => callbacks.getApi().populateVersions(path))
-                .then( function(){
-                    if (path.includes("/assets/")) {
-                        $perAdminApp.loadContent("/content/admin/pages/assets")
-                    } else {
-                         callbacks.getApi().populatePageView(path)
-                            .then(function(){
-                                const editView = document.getElementById('editview')
-                                if (editView) {
-                                    editView.contentWindow.$peregrineApp.loadContent(path+ '.html')
-                                }
-                            })
-                            .then(function(){
-                                let nodes = ''
-                                const pagesRgx = new RegExp('^\/content\/[^\/]+\/pages\/');
-                                const templatesRgx = new RegExp('^\/content\/[^\/]+\/templates\/');
-                                if (pagesRgx.test(path)) {
-                                    nodes = $perAdminApp.getView().state.tools.pages
-                                } else if (templatesRgx.test(path)){
-                                    nodes = $perAdminApp.getView().state.tools.templates
-                                }
-                                if (nodes != '') {
-                                    $perAdminApp.getApi().populateNodesForBrowser(nodes)
-                                }
-                            })
+    return new Promise((resolve, reject) => {
+      let data = new FormData()
+      data.append('action', 'restoreVersion')
+      data.append('version', versionName)
+      updateWithForm('/admin/manageVersions.json' + path, data)
+          .then((data) => callbacks.getApi().populateVersions(path))
+          .then(function () {
+            if (path.includes('/assets/')) {
+              $perAdminApp.loadContent('/content/admin/pages/assets')
+            } else {
+              callbacks.getApi().populatePageView(path)
+                  .then(function () {
+                    const editView = document.getElementById('editview')
+                    if (editView) {
+                      editView.contentWindow.$peregrineApp.loadContent(
+                          path + '.html')
                     }
-                })
-                .then( () => resolve())
-                .catch(error => {
-                    if (error.response && error.response.data && error.response.data.message) {
-                        reject(error.response.data.message)
-                    } else {
-                        reject(error)
+                  })
+                  .then(function () {
+                    let nodes = ''
+                    const pagesRgx = new RegExp('^\/content\/[^\/]+\/pages\/')
+                    const templatesRgx = new RegExp(
+                        '^\/content\/[^\/]+\/templates\/')
+                    if (pagesRgx.test(path)) {
+                      nodes = $perAdminApp.getView().state.tools.pages
+                    } else if (templatesRgx.test(path)) {
+                      nodes = $perAdminApp.getView().state.tools.templates
                     }
-                })
-        })
+                    if (nodes != '') {
+                      $perAdminApp.getApi().populateNodesForBrowser(nodes)
+                    }
+                  })
+            }
+          })
+          .then(() => resolve())
+          .catch(error => {
+            if (error.response && error.response.data
+                && error.response.data.message) {
+              reject(error.response.data.message)
+            } else {
+              reject(error)
+            }
+          })
+    })
   }
 
   createTenant(fromName, toName, tenantTitle, tenantUserPwd, colorPalette) {
@@ -666,7 +686,7 @@ class PerAdminImpl {
       let data = new FormData()
       data.append('fromTenant', fromName)
       data.append('toTenant', toName)
-      data.append('tenantTitle', tenantTitle)
+      data.append('tenantTitle', blob(tenantTitle))
       data.append('tenantUserPwd', tenantUserPwd)
       if (colorPalette) {
         data.append('colorPalette', colorPalette)
@@ -676,11 +696,12 @@ class PerAdminImpl {
               callbacks.getView().state.tools.pages))
           .then(() => resolve())
           .catch(error => {
-              if (error.response && error.response.data && error.response.data.message) {
-                  reject(error.response.data.message)
-              }
-              reject(error)
-            })
+            if (error.response && error.response.data
+                && error.response.data.message) {
+              reject(error.response.data.message)
+            }
+            reject(error)
+          })
     })
   }
 
@@ -745,8 +766,8 @@ class PerAdminImpl {
           .then((data) => this.populateNodesForBrowser(path))
           .then(() => resolve())
           .catch(error => {
-              logger.error('Failed to change name: ' + error)
-              reject('Unable to change name. ' + error)
+            logger.error('Failed to change name: ' + error)
+            reject('Unable to change name. ' + error)
           })
     })
   }
@@ -784,7 +805,7 @@ class PerAdminImpl {
   }
 
   deleteTenant(target) {
-    const name = target.name;
+    const name = target.name
     const root = '/content'
     const data = new FormData()
     data.append('name', name)
@@ -801,8 +822,8 @@ class PerAdminImpl {
           .then((data) => this.populateNodesForBrowser(path))
           .then(() => resolve())
           .catch(error => {
-              logger.error('Failed to change name: ' + error)
-              reject('Unable to change name. ' + error)
+            logger.error('Failed to change name: ' + error)
+            reject('Unable to change name. ' + error)
           })
     })
   }
@@ -848,8 +869,9 @@ class PerAdminImpl {
   createObjectDefinition(parentPath, name) {
     let data = new FormData()
     data.append('name', name)
-    return updateWithForm('/admin/createObjectDefinition.json' + parentPath, data)
-    .then(() => this.populateNodesForBrowser(parentPath))
+    return updateWithForm('/admin/createObjectDefinition.json' + parentPath,
+        data)
+        .then(() => this.populateNodesForBrowser(parentPath))
   }
 
   moveTemplate(path, to, type) {
@@ -891,102 +913,74 @@ class PerAdminImpl {
         .then(() => this.populateNodesForBrowser(path))
   }
 
-  uploadFiles(path, files, cb) {
-    const config = {
-      onUploadProgress: progressEvent => {
-        const percentCompleted = Math.floor(
-            (progressEvent.loaded * 100) / progressEvent.total);
-        cb(percentCompleted)
-      }
+  uploadFiles(path, files, callback) {
+    const me = this
+    let uploaded = []
+
+    function onUploadProgress(progressEvent) {
+      callback(Math.floor((progressEvent.loaded * 100) / progressEvent.total))
     }
-    const data = new FormData()
-    const fileNamesNotUploaded = []
-    return this.populateNodesForBrowser(path).then(() => {
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i]
-        const available = this.nameAvailable(file.name, path)
-        if (available) {
-          data.append(file.name, file, file.name)
+
+    function addFile(file) {
+      return new Promise((resolve, reject) => {
+        if (me.nameAvailable(file.name, path)) {
+          resolve(file)
         } else {
-          if (files.length == 1) {
-            // if user is uploading 1 assets && name not available,
-            // Then ask user whether to 'keep both' or 'replace'
-            $perAdminApp.askUser('File exists',
-                'Select to replace the existing one, or keep both', {
-                  yesText: 'Replace',
-                  noText: 'Keep both',
-                  yes() {
-                    const $api = $perAdminApp.getApi()
-                    logger.info(
-                        'user selected \'replace\' upload file ' + file.name)
-                    const replaceData = new FormData()
-                    replaceData.append(file.name, file, file.name)
-                    return updateWithFormAndConfig(
-                        '/admin/uploadFiles.json' + path, replaceData, config)
-                        .then(() => $api.populateNodesForBrowser(path))
-                        .catch(error => {
-                          log.error('Failed to upload: ' + error)
-                          reject('Unable to upload due to an error. ' + error)
-                        })
-                  },
-                  no() {
-                    logger.info(
-                        'user selected \'keep both\' make the uploaded file name unique and upload')
-                    const $api = $perAdminApp.getApi()
-                    let localNamePart = file.name
-                    let extensionPart = ''
-                    const indexOfLasDot = file.name.lastIndexOf('.');
-                    let newFileName
-                    if (indexOfLasDot > 0) {
-                      // filename has a dot
-                      localNamePart = file.name.substring(0, indexOfLasDot);
-                      extensionPart = file.name.substring(indexOfLasDot,
-                          file.name.length);
-                    }
-                    let i = 1
-                    do {
-                      newFileName = localNamePart + i++ + extensionPart
-                    } while (!$api.nameAvailable(newFileName, path));
-                    const keepbothData = new FormData()
-                    keepbothData.append(newFileName, file, newFileName)
-                    return updateWithFormAndConfig(
-                        '/admin/uploadFiles.json' + path, keepbothData, config)
-                        .then(() => $api.populateNodesForBrowser(path))
-                        .catch(error => {
-                          log.error('Failed to upload: ' + error)
-                          reject('Unable to upload due to an error. ' + error)
-                        })
-                  }
-                })
-          } else {
-            fileNamesNotUploaded.push(file.name)
-          }
+          me.onFileExists(file, path).then((file) => {
+            resolve(file)
+          })
         }
-      }
-      if (fileNamesNotUploaded.length > 0) {
-        $perAdminApp.notifyUser('Info',
-            'Some assets were not uploaded. Asset exists in this location: ' +
-            fileNamesNotUploaded.toString())
-      }
-//    if there are eny entries
-      if (!data.entries().next().done) {
-        return updateWithFormAndConfig('/admin/uploadFiles.json' + path, data,
-            config)
-            .then(() => this.populateNodesForBrowser(path))
-            .catch(error => {
-              log.error('Failed to upload: ' + error)
-              reject('Unable to upload due to an error. ' + error)
+      })
+    }
+
+    function fileListToFormData(fileList) {
+      const formData = new FormData()
+      fileList.forEach((file) => formData.append(file.name, file, file.name))
+      return formData
+    }
+
+    return this.populateNodesForBrowser(path)
+        .then(() => {
+          const promises = []
+          files = Array.from(files)
+          let chain = Promise.resolve()
+          Array.from(files).forEach((file) => {
+            chain = chain.then((newFiles) => {
+              const promise = addFile(file)
+              promises.push(promise)
+              return promise
             })
-      }
-    })
+          })
+          return chain.then((data) => Promise.all(promises))
+        })
+        .then((addedFiles) => {
+          if (addedFiles.length > 0) {
+            const uri = `/admin/uploadFiles.json${path}`
+            const formData = fileListToFormData(addedFiles)
+            const config = {onUploadProgress}
+            return updateWithFormAndConfig(uri, formData, config)
+                .then((data) => ({addedFiles, data}))
+          }
+        })
+        .then(({addedFiles, data}) => {
+          if (data && data.assets) {
+            return this.populateNodesForBrowser(path).then(() => addedFiles)
+          } else {
+            throw 'updateWithFormAndConfig has been rejected'
+          }
+        })
+        .catch(error => {
+          logger.error(`Failed to upload: ${error}`)
+          return {errors: {msg: 'Unable to upload', error}}
+        })
   }
 
   nameAvailable(value, path) {
     if (!value || value.length === 0) {
       return false
     } else {
-      const folder = $perAdminApp.findNodeFromPath(
-          $perAdminApp.getView().admin.nodes, path)
+      const nodes = $perAdminApp.getView().admin.nodes
+      const folder = $perAdminApp.findNodeFromPath(nodes, path)
       for (let i = 0; i < folder.children.length; i++) {
         if (folder.children[i].name === value) {
           return false
@@ -994,6 +988,41 @@ class PerAdminImpl {
       }
     }
     return true
+  }
+
+  onFileExists(file, path) {
+    const me = this
+    return new Promise((resolve, reject) => {
+      $perAdminApp.askUser(
+          `File "${file.name}" already exists`,
+          'Do you want to replace the original or keep both?',
+          {
+            yesText: 'Replace',
+            noText: 'Keep both',
+            yes() {
+              logger.info(`onFileExists: user selected 'replace'`)
+              resolve(file)
+            },
+            no() {
+              logger.info('onFileExists: user selected \'keep both\'')
+              resolve(me.createFileCopy(file, path))
+            }
+          }
+      )
+    })
+  }
+
+  createFileCopy(file, path) {
+    const split = file.name.split('.')
+    const extension = split.pop()
+    const rawName = split.join('.')
+    let name = `${rawName}-copy.${extension}`
+    let counter = 2
+    while (!this.nameAvailable(name, path)) {
+      name = `${rawName}-copy-${counter}.${extension}`
+      counter++
+    }
+    return new File([file], name, {type: file.type})
   }
 
   fetchExternalImage(path, url, name, config) {
@@ -1012,6 +1041,7 @@ class PerAdminImpl {
     return new Promise((resolve, reject) => {
       populateView('/state', 'editorVisible', false)
       populateView('/state', 'rightPanelVisible', true)
+      populateView('/state', 'rightPanelFullscreen', false)
       populateView('/state', 'editor', {})
 
       try {
@@ -1019,15 +1049,16 @@ class PerAdminImpl {
         const pagePath = page.split('/')
         const type = pagePath[3]
         pagePath.pop()
-        if(type === 'pages') {
+        if (type === 'pages') {
           callbacks.getView().state.tools.pages = pagePath.join('/')
-        } else if(type === 'templates') {
+        } else if (type === 'templates') {
           callbacks.getView().state.tools.templates = pagePath.join('/')
         }
-        return $perAdminApp.stateAction('showPageInfo', { selected: page }).then( () => {
-          resolve()
-        })
-      } catch(error) {
+        return $perAdminApp.stateAction('showPageInfo', {selected: page}).then(
+            () => {
+              resolve()
+            })
+      } catch (error) {
         logger.error('setting of path in initial page editor state failed')
         logger.error(error)
         reject()
@@ -1063,12 +1094,12 @@ class PerAdminImpl {
       formData.append('content', json(nodeData))
 
       updateWithForm('/admin/updateResource.json' + path + node.path, formData)
-      // .then( (data) => this.populateNodesForBrowser(parentPath) )
-      .then(() => resolve())
-      .catch( error => {
-         logger.error('Failed to save page: ' + error)
-         reject('Unable to save change. '+ error)
-       })
+          // .then( (data) => this.populateNodesForBrowser(parentPath) )
+          .then(() => resolve())
+          .catch(error => {
+            logger.error('Failed to save page: ' + error)
+            reject('Unable to save change. ' + error)
+          })
     })
   }
 
@@ -1106,7 +1137,7 @@ class PerAdminImpl {
 
   insertNodeAt(path, component, drop, variation) {
     logger.fine(arguments)
-    let formData = new FormData();
+    let formData = new FormData()
     formData.append('component', component)
     formData.append('drop', drop)
     if (variation) {
@@ -1139,72 +1170,81 @@ class PerAdminImpl {
     logger.fine(
         'Move Node To: path: ' + path + ', component: ' + component + ', drop: '
         + drop)
-    let formData = new FormData();
+    let formData = new FormData()
     formData.append('component', component)
     formData.append('drop', drop)
     return updateWithForm('/admin/moveNodeTo.json' + path, formData)
   }
 
-  replicate(path, deep=false, deactivate=false, resources=[]) {
+  replicate(path, deep = false, deactivate = false, resources = []) {
     const timeNow = Date.now() - 1000
     let noticeFunction = undefined
     let count = 0
     console.log(`time now = ${timeNow}`)
     return new Promise((resolve, reject) => {
-      let formData = new FormData();
+      let formData = new FormData()
       formData.append('deep', deep)
       formData.append('deactivate', deactivate)
       resources.forEach((ref) => formData.append('resources', ref))
       updateWithForm('/admin/repl.json' + path, formData)
-        .then(respData => {
-          count = 0
-          noticeFunction = setInterval(function() {
-            function stopPolling(data) {
-              const lastAction = data['per:ReplicationLastAction']
-              const activated = data['activated']
-              const ref = data['per:ReplicationRef']
-              const replicated = data['per:Replicated']
-              let stopPolling = false
-              if (lastAction === "deactivated" && activated === false && !ref) {
-                return true
-              }
-
-              if (lastAction === "activated" && activated === true
-                      && replicated && timeNow < Date.parse(replicated)
-                      && ref !== "distribution pending") {
-                return true
-              }
-
-              return false
-            }
-
-            return fetch(`/admin/listReplicationStatus.json${respData.sourcePath}`)
-              .then(data => {
-                if (count++ >= 25) {
-                  clearInterval(noticeFunction)
-                  $perAdminApp.notifyUser('Error', `Action timed out when ${deactivate?'un':''}publishing ${data.sourcePath}.`)
-                  reject()
-                } else if (stopPolling(data)) {
-                  clearInterval(noticeFunction)
-                  const parentPath = path.substring(0, path.lastIndexOf("/"))
-                  $perAdminApp.getApi().populateNodesForBrowser(parentPath)
-                  $perAdminApp.notifyUser('Success', `${data.sourcePath} was successfully ${deactivate?'un':''}published.`)
+          .then(respData => {
+            count = 0
+            noticeFunction = setInterval(function () {
+              function stopPolling(data) {
+                const lastAction = data['per:ReplicationLastAction']
+                const activated = data['activated']
+                const ref = data['per:ReplicationRef']
+                const replicated = data['per:Replicated']
+                let stopPolling = false
+                if (lastAction === 'deactivated' && activated === false
+                    && !ref) {
+                  return true
                 }
-              })
-          }, 500);
-        })
-        .then(() => resolve())
-        .catch(error => {
-          clearInterval(noticeFunction)
-          $perAdminApp.notifyUser('Errors', `were encountered when ${deactivate?'un':''}publishing ${data.sourcePath}. Please check with your admin.`)
-          if (error.response && error.response.data && error.response.data.message) {
-            reject(error.response.data.message)
-          }
-          reject(error)
-        })
+
+                if (lastAction === 'activated' && activated === true
+                    && replicated && timeNow < Date.parse(replicated)
+                    && ref !== 'distribution pending') {
+                  return true
+                }
+
+                return false
+              }
+
+              return fetch(
+                  `/admin/listReplicationStatus.json${respData.sourcePath}`)
+                  .then(data => {
+                    if (count++ >= 25) {
+                      clearInterval(noticeFunction)
+                      $perAdminApp.notifyUser('Error',
+                          `Action timed out when ${deactivate ? 'un'
+                              : ''}publishing ${data.sourcePath}.`)
+                      reject()
+                    } else if (stopPolling(data)) {
+                      clearInterval(noticeFunction)
+                      const parentPath = path.substring(0,
+                          path.lastIndexOf('/'))
+                      $perAdminApp.getApi().populateNodesForBrowser(parentPath)
+                      $perAdminApp.notifyUser('Success',
+                          `${data.sourcePath} was successfully ${deactivate
+                              ? 'un' : ''}published.`)
+                    }
+                  })
+            }, 500)
+          })
+          .then(() => resolve())
+          .catch(error => {
+            clearInterval(noticeFunction)
+            $perAdminApp.notifyUser('Errors',
+                `were encountered when ${deactivate ? 'un'
+                    : ''}publishing ${data.sourcePath}. Please check with your admin.`)
+            if (error.response && error.response.data
+                && error.response.data.message) {
+              reject(error.response.data.message)
+            }
+            reject(error)
+          })
     })
   }
-
 
   getPalettes(templateName) {
     return fetch(`/admin/nodes.json/content/${templateName}/pages/css/palettes`)
@@ -1230,40 +1270,41 @@ class PerAdminImpl {
   }
 
   tenantSetupReplication(path, withSite) {
-    let formData = new FormData();
+    let formData = new FormData()
     formData.append('withSite', withSite)
     return updateWithForm('/admin/tenantSetupReplication.json' + path, formData)
   }
 
   backupTenant(path) {
-    let formData = new FormData();
+    let formData = new FormData()
     return updateWithForm('/admin/backupTenant.json' + path, formData)
   }
 
   downloadBackupTenant(path) {
-    return fetch('/admin/downloadBackupTenant.zip' + path + ".zip")
+    return fetch('/admin/downloadBackupTenant.zip' + path + '.zip')
   }
 
   uploadBackupTenant(path, files, cb) {
     const config = {
       onUploadProgress: progressEvent => {
         const percentCompleted = Math.floor(
-            (progressEvent.loaded * 100) / progressEvent.total);
+            (progressEvent.loaded * 100) / progressEvent.total)
         cb(percentCompleted)
       }
     }
     const data = new FormData()
-    if(files.length > 0) {
+    if (files.length > 0) {
       const file = files[0]
       data.append('file', file, file.name)
-      data.append('force', 'true');
+      data.append('force', 'true')
     }
     if (!data.entries().next().done) {
-      return updateWithFormAndConfig('/admin/uploadBackupTenant.json' + path, data,
+      return updateWithFormAndConfig('/admin/uploadBackupTenant.json' + path,
+          data,
           config)
           .then(() => this.populateNodesForBrowser(path))
           .catch(error => {
-//            log.error('Failed to upload: ' + error)
+//            logger.error('Failed to upload: ' + error)
             reject('Unable to upload due to an error. ' + error)
           })
     }
@@ -1271,13 +1312,14 @@ class PerAdminImpl {
   }
 
   restoreTenant(path) {
-    let formData = new FormData();
+    let formData = new FormData()
     return updateWithForm('/admin/restoreTenant.json' + path, formData)
   }
-  
+
   acceptTermsAndConditions() {
-    let formData = new FormData();
-    return updateWithForm('/admin/acceptTermsAndConditions.json', formData).then( ()=> {
+    let formData = new FormData()
+    return updateWithForm('/admin/acceptTermsAndConditions.json',
+        formData).then(() => {
       return this.populateUser()
     })
   }

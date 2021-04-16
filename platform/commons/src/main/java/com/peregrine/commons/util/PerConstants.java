@@ -159,6 +159,7 @@ public class PerConstants {
     public static final String DOMAINS = "domains";
 
     public static final String EXCLUDE_FROM_SITEMAP = "excludeFromSitemap";
+    public static final String EXCLUDE_TREE_FROM_SITEMAP = "excludeTreeFromSitemap";
     public static final String CHANGE_FREQUENCY = "changefreq";
     public static final String PRIORITY = "priority";
 

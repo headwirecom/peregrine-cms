@@ -1,6 +1,7 @@
 package com.peregrine.replication;
 
 import com.peregrine.commons.ResourceUtils;
+import com.peregrine.reference.ReferenceLister;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;

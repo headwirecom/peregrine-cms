@@ -115,13 +115,23 @@
   },
   {
     "type": "materialswitch",
-    "label": "Exclude from Sitemap",
+    "label": "Exclude Page from Sitemap",
     "model": "excludeFromSitemap",
     "textOn": "yes",
     "textOff": "no",
     "valueOn": "true",
     "valueOff": "false",
-    "hint": "This property indicates if the Page should be hidden from the Sitemap."
+    "hint": "This property indicates if the Page should be hidden from the Sitemap. It will not affect its children. If you'd like to affect the children - use the property below."
+  },
+  {
+    "type": "materialswitch",
+    "label": "Exclude Tree from Sitemap",
+    "model": "excludeTreeFromSitemap",
+    "textOn": "yes",
+    "textOff": "no",
+    "valueOn": "true",
+    "valueOff": "false",
+    "hint": "This property indicates if the whole Sub-Tree under this Page should be hidden from the Sitemap. It will not affect the Page though. If you'd like to affect the Page - use the property above."
   },
   {
     "type": "material-select",

@@ -44,7 +44,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 import com.peregrine.replication.PerReplicable;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
-import com.peregrine.replication.ReferenceLister;
+import com.peregrine.reference.ReferenceLister;
 import java.io.IOException;
 import java.util.List;
 import javax.servlet.Servlet;

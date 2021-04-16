@@ -1,22 +1,24 @@
 package com.peregrine.mock;
 
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.SLASH;
+import javax.jcr.RepositoryException;
+
+import static com.peregrine.commons.util.PerConstants.*;
 import static org.mockito.Mockito.when;
 
 public class PageMock extends ResourceMock {
 
-    private final ResourceMock content;
+    private final PageContentMock content;
 
     public PageMock(final String name) {
         super(name);
-        content = new ResourceMock(concatenateToDerivedName(name, "'s ", JCR_CONTENT));
-        when(mock.getResourceType()).thenReturn(PAGE_PRIMARY_TYPE);
-        when(mock.isResourceType(PAGE_PRIMARY_TYPE)).thenReturn(true);
-
+        content = new PageContentMock(concatenateToDerivedName(name, "'s ", JCR_CONTENT));
+        setPrimaryType(PAGE_PRIMARY_TYPE);
+        setResourceType(PAGE_PRIMARY_TYPE);
         addChild(JCR_CONTENT, content);
         content.setParent(this);
+        try {
+            when(node.canAddMixin(PER_REPLICATION)).thenReturn(true);
+        } catch (final RepositoryException e) { }
     }
 
     public PageMock() {
@@ -28,7 +30,7 @@ public class PageMock extends ResourceMock {
         content.setPath(path + SLASH + JCR_CONTENT);
     }
 
-    public ResourceMock getContent() {
+    public PageContentMock getContent() {
         return content;
     }
 }

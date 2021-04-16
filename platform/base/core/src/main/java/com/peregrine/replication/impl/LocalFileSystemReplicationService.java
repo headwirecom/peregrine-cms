@@ -13,9 +13,9 @@ package com.peregrine.replication.impl;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -26,11 +26,10 @@ package com.peregrine.replication.impl;
  */
 
 import com.peregrine.render.RenderService;
-import com.peregrine.replication.ReferenceLister;
+import com.peregrine.reference.ReferenceLister;
 import com.peregrine.replication.Replication;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -52,18 +51,16 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
+import static com.peregrine.commons.IOUtils.*;
 import static com.peregrine.commons.TextUtils.replacePlaceholders;
-import static com.peregrine.replication.ReplicationUtil.updateReplicationProperties;
 import static com.peregrine.commons.Chars._SCORE;
 import static com.peregrine.commons.ResourceUtils.jcrNameToFileName;
 import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerUtil.getJcrContent;
-import static com.peregrine.commons.util.PerUtil.intoList;
-import static com.peregrine.commons.util.PerUtil.isNotEmpty;
-import static com.peregrine.commons.util.PerUtil.splitIntoMap;
+import static com.peregrine.commons.util.PerUtil.*;
+import static com.peregrine.replication.ReplicationUtil.markAsActivated;
+import static com.peregrine.replication.ReplicationUtil.markAsDeactivated;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
  * This class replicates resources to a local file system folder
@@ -81,14 +78,12 @@ public class LocalFileSystemReplicationService
     public static final int CREATE_LEAF_STRATEGY = 1;
     public static final int CREATE_ALL_STRATEGY = 2;
     public static final String LOCAL_FILE_SYSTEM = "local-file-system://";
-    public static final String FAILED_TO_CREATED_FOLDER = "Failed to create folder: '%s'";
-    public static final String FAILED_TO_DELETE_FILE = "Failed to delete file: '%s'";
+    public static final String FAILED_TO_CREATE_FOLDER = "Failed to create folder '%s' under '%s'";
     public static final String FAILED_STORE_RENDERING_MISSING_PARENT_FOLDER = "Failed to Store Rendering as Parent Folder does not exist or is not a directory: '%s'";
     public static final String FAILED_STORE_RENDERING_FILE_IS_DIRECTORY = "Failed to Store Rendering as target file is a directory:: '%s'";
     public static final String FAILED_TO_STORE_RENDERING = "Failed to write raw rending content to file: '%s'";
     public static final String SUPPORTED_TYPES_EMPTY = "Supported Types is empty for Extension: '%s'";
     public static final String COULD_NOT_CREATE_LEAF_FOLDER = "Could not create leaf folder: '%s'";
-    public static final String EXPORT_FOLDER = "exportFolder";
     public static final String REPLICATION_TARGET_FOLDER_CANNOT_BE_EMPTY = "Replication Target Folder cannot be empty";
     public static final String COULD_NOT_CREATE_ALL_FOLDERS = "Could not create all folders: '%s'";
     public static final String REPLICATION_FOLDER_NOT_CREATED = "Replication Target Folder: '%s' does not exist and will not be created";
@@ -137,16 +132,16 @@ public class LocalFileSystemReplicationService
         String[] mandatoryRenditions();
     }
 
+    private File targetFolder;
+    private final List<ExportExtension> exportExtensions = new ArrayList<>();
+    private List<String> mandatoryRenditions = new ArrayList<>();
+
     @Activate
     @SuppressWarnings("unused")
     void activate(BundleContext context, Configuration configuration) { setup(context, configuration); }
     @Modified
     @SuppressWarnings("unused")
     void modified(BundleContext context, Configuration configuration) { setup(context, configuration); }
-
-    private File targetFolder;
-    private final List<ExportExtension> exportExtensions = new ArrayList<>();
-    private List<String> mandatoryRenditions = new ArrayList<>();
 
     private void setup(BundleContext context, Configuration configuration) {
         log.trace("Create Local FS Replication Service Name: '{}'", configuration.name());
@@ -208,9 +203,6 @@ public class LocalFileSystemReplicationService
     @Reference
     @SuppressWarnings("unused")
     private RenderService renderService;
-    @Reference
-    @SuppressWarnings("unused")
-    ResourceResolverFactory resourceResolverFactory;
 
     @Override
     RenderService getRenderService() {
@@ -232,26 +224,17 @@ public class LocalFileSystemReplicationService
     File createTargetFolder(final String path) throws ReplicationException {
         File answer = targetFolder;
         for (final String name: path.split(SLASH)) {
-            if (StringUtils.isNotEmpty(name)) {
-                answer = createTargetFolder(answer, jcrNameToFileName(name));
+            if (nonNull(answer) && StringUtils.isNotEmpty(name)) {
+                final String fileName = jcrNameToFileName(name);
+                answer = createChildDirectory(answer, fileName, fileName + _SCORE);
             }
         }
 
+        if (isNull(answer)) {
+            throw new ReplicationException(String.format(FAILED_TO_CREATE_FOLDER, path, targetFolder.getAbsolutePath()));
+        }
+
         return answer;
-    }
-
-    private File createTargetFolder(final File parent, final String name) throws ReplicationException {
-        File answer = new File(parent, name);
-        if (answer.exists() && !answer.isDirectory()) {
-            // File exists but is not a folder (like an image or so) -> create a folder with '_' at the end
-            answer = new File(parent, name + _SCORE);
-        }
-
-        if ((answer.exists() && answer.isDirectory()) || answer.mkdir()) {
-            return answer;
-        }
-
-        throw new ReplicationException(String.format(FAILED_TO_CREATED_FOLDER, answer.getAbsolutePath()));
     }
 
     @Override
@@ -306,12 +289,12 @@ public class LocalFileSystemReplicationService
         }
 
         final String localFileSystemPath = LOCAL_FILE_SYSTEM + file.getAbsolutePath();
-        updateReplicationProperties(getJcrContent(parent), localFileSystemPath, null);
+        markAsActivated(getJcrContent(parent), localFileSystemPath);
         return localFileSystemPath;
     }
 
     @Override
-    void removeReplica(Resource resource, final List<Pattern> namePattern, final boolean isFolder) throws ReplicationException {
+    void removeReplica(Resource resource, final Pattern namePattern, final boolean isFolder) throws ReplicationException {
         final String resourceName = resource.getName();
         final File directory = new File(targetFolder, resource.getParent().getPath());
         if(!directory.exists() || !directory.isDirectory()) {
@@ -324,15 +307,7 @@ public class LocalFileSystemReplicationService
                         return true;
                     }
 
-                    if (isNull(namePattern)) {
-                        return name.startsWith(resourceName);
-                    }
-
-                    for (final Pattern pattern : namePattern) {
-                        return pattern.matcher(name).matches() && file.getName().startsWith(resourceName);
-                    }
-
-                    return false;
+                    return name.startsWith(resourceName) && (isNull(namePattern) || namePattern.matcher(name).matches());
                 }
         );
         if (isNull(filesToBeDeletedFiles)) {
@@ -341,25 +316,12 @@ public class LocalFileSystemReplicationService
 
         for (final File toBeDeleted : filesToBeDeletedFiles) {
             log.trace("Delete File: '{}'", toBeDeleted.getAbsolutePath());
-            if (!deleteFile(toBeDeleted)) {
+            if (!deleteFileOrDirectory(toBeDeleted)) {
                 throw new ReplicationException(String.format(FAILED_TO_DELETE_FILE, toBeDeleted.getAbsolutePath()));
             }
 
-            updateReplicationProperties(getJcrContent(resource), EMPTY, null);
+            markAsDeactivated(getJcrContentOrSelf(resource));
         }
-    }
-
-    private boolean deleteFile(File file) {
-        if(file.isDirectory()) {
-            for(File child: file.listFiles()) {
-                if(!deleteFile(child)) {
-                    log.warn(String.format(FAILED_TO_DELETE_FILE, file.getAbsolutePath()));
-                    return false;
-                }
-            }
-        }
-
-        return file.delete();
     }
 
     private File createFileWithParentAndName(final Resource parent, final String name) throws ReplicationException {
