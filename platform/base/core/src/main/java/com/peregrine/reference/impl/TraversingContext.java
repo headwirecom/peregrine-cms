@@ -19,7 +19,6 @@ final class TraversingContext implements PerUtil.ResourceChecker {
 	private boolean transitive = false;
 	private boolean deep = false;
 	private Set<String> deepLimits = new TreeSet<>();
-	private Tree visited = new Tree();
 
 	public TraversingContext(final PerUtil.ResourceChecker checker) {
 		this.checker = isNull(checker) ? PerUtil.ADD_ALL_RESOURCE_CHECKER : checker;
@@ -47,38 +46,6 @@ final class TraversingContext implements PerUtil.ResourceChecker {
 	 **/
 	public boolean isDeep() {
 		return deep;
-	}
-
-	/**
-	 * Checks the resource if it should be checked. If will not
-	 * be checked if not deep but outside of the marked deep paths
-	 * or if already visited. If not visited then this method will
-	 * add them to the visited list
-	 *
-	 * @param resource Resource to be checked
-	 * @return TRUE if we are going deep and are not visited yet or
-	 * are in the deep limited paths and not visited yet
-	 */
-	public boolean proceed(Resource resource) {
-		if (resource != null) {
-			String path = resource.getPath();
-			if (!visited.contains(path) && checker.doAdd(resource)) {
-				visited.addChildByPath(path);
-				if (!checker.doAddChildren(resource)) {
-					return false;
-				}
-				if (!deep) {
-					for (String limit : deepLimits) {
-						if (path.startsWith(limit)) {
-							return true;
-						}
-					}
-				} else {
-					return true;
-				}
-			}
-		}
-		return false;
 	}
 
 	/**
