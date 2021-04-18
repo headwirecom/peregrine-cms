@@ -27,8 +27,10 @@ package com.peregrine.admin.servlets;
 
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.commons.util.PerConstants;
+import com.peregrine.commons.util.PerUtil;
 import com.peregrine.replication.Replication;
 import com.peregrine.replication.Replication.ReplicationException;
+import com.peregrine.replication.ReplicationUtil;
 import com.peregrine.replication.ReplicationsContainerWithDefault;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -38,7 +40,11 @@ import org.osgi.service.component.annotations.Reference;
 
 import javax.servlet.Servlet;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -101,7 +107,8 @@ public final class ReplicationServlet extends ReplicationServletBase {
         }
 
         final boolean deep = parseBoolean(request.getParameter("deep"));
-        List<Resource> toBeReplicated = listMissingResources(resource, deep, new LinkedList<>());
+        final PerUtil.ResourceChecker tenantChecker = new ReplicationUtil.TenantOwnedResourceChecker(resource);
+        List<Resource> toBeReplicated = listMissingResources(resource, tenantChecker, deep, new LinkedList<>());
         for (final Resource r : Optional.of(RESOURCES)
                 .map(request::getParameterValues)
                 .map(Arrays::stream)
@@ -109,7 +116,7 @@ public final class ReplicationServlet extends ReplicationServletBase {
                 .map(resourceResolver::getResource)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList())) {
-            listMissingResources(r, deep, toBeReplicated);
+            listMissingResources(r, tenantChecker, deep, toBeReplicated);
         }
 
         toBeReplicated = replication.prepare(toBeReplicated);

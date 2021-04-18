@@ -1,6 +1,7 @@
 package com.peregrine.replication;
 
 import com.peregrine.commons.ResourceUtils;
+import com.peregrine.commons.util.PerUtil;
 import com.peregrine.reference.ReferenceLister;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Activate;
@@ -136,10 +137,10 @@ public class DefaultReplicationMapperService
     }
 
     @Override
-    public List<Resource> findReferences(Resource source, boolean deep) {
+    public List<Resource> findReferences(Resource source, boolean deep, PerUtil.ResourceChecker checker) {
         log.trace("Starting Resource: '{}'", source.getPath());
-        final List<Resource> referenceList = referenceLister.getReferenceList(true, source, deep);
-        final List<Resource> replicationList = listMissingResources(source, deep);
+        final List<Resource> referenceList = referenceLister.getReferenceList(true, source, deep, checker);
+        final List<Resource> replicationList = listMissingResources(source, checker, deep, new LinkedList<>());
         replicationList.add(0, source);
         replicationList.addAll(0, referenceList);
         try {

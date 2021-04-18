@@ -129,20 +129,21 @@ public abstract class FileReplicationServiceBase extends ReplicationServiceBase 
     }
 
     @Override
-    public List<Resource> findReferences(Resource startingResource, boolean deep) {
+    public List<Resource> findReferences(Resource startingResource, boolean deep, ResourceChecker checker) {
         log.trace("Replicate Resource: '{}', deep: '{}'", startingResource, deep);
-        List<Resource> referenceList = getReferenceLister().getReferenceList(true, startingResource, true);
+        List<Resource> referenceList = getReferenceLister().getReferenceList(true, startingResource, true, checker);
         List<Resource> replicationList = new ArrayList<>();
         // Need to check this list of they need to be replicated first
+        final ResourceChecker combinedChecker = new PerUtil.ConjunctionResourceCheckerChain(EXCLUDED_RESOURCES_RESOURCE_CHECKER, checker);
         referenceList.stream()
-                .filter(EXCLUDED_RESOURCES_RESOURCE_CHECKER::doAdd)
+                .filter(combinedChecker::doAdd)
                 .forEach(replicationList::add);
         // This only returns the referenced resources. Now we need to check if there are any JCR Content nodes to be added as well
         for(Resource reference: replicationList) {
-            PerUtil.listMissingResources(reference, EXCLUDED_RESOURCES_RESOURCE_CHECKER, false, replicationList);
+            PerUtil.listMissingResources(reference, combinedChecker, false, replicationList);
         }
 
-        return filterReferences(PerUtil.listMissingResources(startingResource, EXCLUDED_RESOURCES_RESOURCE_CHECKER, deep, replicationList));
+        return filterReferences(PerUtil.listMissingResources(startingResource, combinedChecker, deep, replicationList));
     }
 
     @Override
