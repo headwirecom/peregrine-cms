@@ -28,7 +28,6 @@ package com.peregrine.reference.impl;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerUtil.containsResource;
 import static com.peregrine.commons.util.PerUtil.listMissingParents;
-import static com.peregrine.commons.util.PerUtil.stripJcrContentAndDescendants;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
@@ -40,8 +39,9 @@ import com.peregrine.reference.ReferenceLister;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
@@ -128,20 +128,21 @@ public final class ReferenceListerService implements ReferenceLister {
         final ResourceResolver resourceResolver = resource.getResourceResolver();
         for (String referencedByRoot: referencedByRootList) {
             final String path = resource.getPath();
-            Iterator<Resource> referencingResources = resourceResolver.findResources(
+            final Iterator<Resource> referencingResources = resourceResolver.findResources(
                     String.format(REFERENCED_BY_QUERY, referencedByRoot, path, path),
                     Query.JCR_SQL2
             );
-
             while (referencingResources.hasNext()) {
-                Resource referencingResource = referencingResources.next();
-                String referencingPath = referencingResource.getPath();
-                String parentPath = stripJcrContentAndDescendants(referencingPath);
-                Resource parentResource = resourceResolver.resolve(parentPath);
-                Reference ref = new Reference(parentResource, EMPTY, referencingResource);
-                result.add(ref);
+                final Resource referencingResource = referencingResources.next();
+                Optional.ofNullable(referencingResource)
+                        .map(Resource::getPath)
+                        .map(PerUtil::stripJcrContentAndDescendants)
+                        .map(resourceResolver::resolve)
+                        .map(r -> new Reference(r, EMPTY, referencingResource))
+                        .ifPresent(result::add);
             }
         }
+
         return result;
     }
 

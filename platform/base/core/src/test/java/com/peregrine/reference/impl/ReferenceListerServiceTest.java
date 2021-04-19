@@ -4,19 +4,24 @@ import com.peregrine.SlingResourcesTest;
 import com.peregrine.mock.PageContentMock;
 import com.peregrine.mock.PageMock;
 import com.peregrine.mock.ResourceMock;
+import org.apache.sling.api.resource.Resource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.stream.Collectors;
+
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-	public final class ReferenceListerServiceTest extends SlingResourcesTest {
+public final class ReferenceListerServiceTest extends SlingResourcesTest {
 
 	@Mock
 	private ReferenceListerService.Configuration configuration;
@@ -75,6 +80,15 @@ import static org.mockito.Mockito.when;
 
 	@Test
 	public void getReferencedByList() {
+		assertTrue(model.getReferencedByList(null).isEmpty());
+		when(resourceResolver.findResources(anyString(), anyString()))
+				.thenReturn(
+						resources.stream()
+								.map(Resource.class::cast)
+								.collect(Collectors.toList())
+								.iterator()
+				);
+		assertFalse(model.getReferencedByList(resource).isEmpty());
 	}
 
 }
