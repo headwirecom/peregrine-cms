@@ -1,5 +1,6 @@
 package com.peregrine.slingjunit.localFS;
 
+import com.peregrine.commons.util.PerUtil;
 import com.peregrine.replication.PerReplicable;
 import com.peregrine.replication.Replication;
 import com.peregrine.replication.ReplicationsContainerWithDefault;
@@ -89,7 +90,7 @@ public class LocalFSJTest extends ReplicationTestBase {
         assertFalse(stellaImgRepl.isReplicated());
         try {
             // publish the file
-            replication.replicate(stellaImgRes, true);
+            replication.replicate(stellaImgRes, true, PerUtil.ADD_ALL_RESOURCE_CHECKER);
             assertFileExists(STATIC_HOME+STELLA_PNG);
             assertTrue(stellaImgRepl.isReplicated());
             // touch the asset modified date after publishing
@@ -127,8 +128,8 @@ public class LocalFSJTest extends ReplicationTestBase {
         assertNotNull(contactRepl);
 
         try {
-            replication.replicate(indexPageRes, true);
-            replication.replicate(contactPageRes, true);
+            replication.replicate(indexPageRes, true, PerUtil.ADD_ALL_RESOURCE_CHECKER);
+            replication.replicate(contactPageRes, true, PerUtil.ADD_ALL_RESOURCE_CHECKER);
         } catch (Replication.ReplicationException e) {
             fail(e.getMessage());
         }

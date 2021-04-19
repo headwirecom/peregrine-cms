@@ -55,6 +55,7 @@ import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.commons.util.PerUtil.getProperties;
 import static com.peregrine.commons.util.PerUtil.isPrimaryType;
+import static java.util.Objects.nonNull;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -273,9 +274,11 @@ public class NodesServlet extends AbstractBaseServlet {
         }
         // TODO refactor code above to use PerReplicable when writing replication properties
         PerReplicable sourceRepl = resource.adaptTo(PerReplicable.class);
-        json.writeAttribute(ACTIVATED, sourceRepl.isReplicated());
-        if (sourceRepl.getLastModified()!=null && sourceRepl.getReplicated()!= null) {
-            json.writeAttribute(IS_STALE, sourceRepl.isStale());
+        if (nonNull(sourceRepl)) {
+            json.writeAttribute(ACTIVATED, sourceRepl.isReplicated());
+            if (sourceRepl.getLastModified() != null && sourceRepl.getReplicated() != null) {
+                json.writeAttribute(IS_STALE, sourceRepl.isStale());
+            }
         }
     }
 

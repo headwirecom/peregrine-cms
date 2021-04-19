@@ -15,8 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
-import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.mock.MockTools.fullName;
 import static com.peregrine.mock.MockTools.setParentChildRelationships;
 import static org.mockito.Matchers.any;
@@ -31,6 +30,8 @@ public final class RepoMock {
     private final ResourceMock root = new ResourceMock("Repository Root");
     private final ResourceMock content = new ResourceMock("Content Root");
     private final ResourceMock var = new ResourceMock("Var Root");
+    private final ResourceMock live = new ResourceMock("Live Root");
+    private final ResourceMock feLibs = new ResourceMock("FE Libs");
 
     private final ResourceResolverFactory resolverFactory = mock(ResourceResolverFactory.class, fullName(this, "Resolver Factory"));
     private final ResourceResolver resourceResolver = mock(ResourceResolver.class, fullName(this, "Resource Resolver"));
@@ -43,11 +44,17 @@ public final class RepoMock {
         root.setPath(SLASH);
         content.setPath(CONTENT_ROOT);
         var.setPath("/var");
+        live.setPath("/live");
+        feLibs.setPath(FELIBS_ROOT);
         setParentChildRelationships(root, content);
         setParentChildRelationships(root, var);
+        setParentChildRelationships(root, live);
+        setParentChildRelationships(root, feLibs);
         init(root);
         init(content);
         init(var);
+        init(live);
+        init(feLibs);
         bindResolverFactory();
         when(resourceResolver.map(any()))
                 .thenAnswer(invocation -> resourceResolverMap.get(invocation.getArguments()[0]));
@@ -61,6 +68,7 @@ public final class RepoMock {
                             .map(Resource::listChildren)
                             .orElseGet(() -> Collections.<Resource>emptyList().iterator())
                 );
+        when(resourceResolver.adaptTo(Session.class)).thenReturn(session);
     }
 
     private void bindResolverFactory() {
@@ -134,6 +142,14 @@ public final class RepoMock {
 
     public ResourceMock getVar() {
         return var;
+    }
+
+    public ResourceMock getLive() {
+        return live;
+    }
+
+    public ResourceMock getFeLibs() {
+        return feLibs;
     }
 
     public ResourceResolverFactory getResolverFactory() {
