@@ -172,7 +172,6 @@ public final class ReferenceListerService implements ReferenceLister {
             } else {
                 Resource jcrContent = resource.getChild(JCR_CONTENT);
                 if (jcrContent != null) {
-                    context.addDeepLimit(jcrContent.getPath());
                     parseProperties(jcrContent, context, response, source, target);
                     // Loop of all its children
                     traverseTree(jcrContent, context, response, source, target);
