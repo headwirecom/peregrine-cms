@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:oak="http://jackrabbit.apache.org/oak/ns/1.0"
+          async="async"
+          compatVersion="{Long}2"
+          functionName="lucene-refBy"
+          jcr:primaryType="oak:QueryIndexDefinition"
+          type="lucene"
+          excludedPaths="[/jcr:system]" >
+    <indexRules jcr:primaryType="nt:unstructured">
+        <nt:base jcr:primaryType="nt:unstructured">
+            <properties jcr:primaryType="nt:unstructured">
+                    <prop
+                            jcr:primaryType="nt:unstructured"
+                            name="^[^\\/]*$"
+                            isRegexp="{Boolean}true"
+                            analyzed="{Boolean}true"
+                            nodeScopeIndex="{Boolean}true"
+                            type="String"/>
+            </properties>
+        </nt:base>
+    </indexRules>
+    <analyzers jcr:primaryType="nt:unstructured">
+        <default jcr:primaryType="nt:unstructured">
+            <tokenizer
+                    jcr:primaryType="nt:unstructured"
+                    name="Pattern"
+                    pattern="/[:/_a-zA-Z0-9-]*"
+                    group="0"/>
+        </default>
+    </analyzers>
+</jcr:root>

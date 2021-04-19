@@ -64,11 +64,12 @@ public class PerUtil {
     public static final String RESOURCE_RESOLVER_FACTORY_CANNOT_BE_NULL = "Resource Resolver Factory cannot be null";
     public static final String SERVICE_NAME_CANNOT_BE_EMPTY = "Service Name cannot be empty";
 
-    public static final ResourceChecker ADD_ALL_RESOURCE_CHECKER = new AddAllResourceChecker();
+    public static final String SL_JCR_CONTENT_SL = SLASH + JCR_CONTENT + SLASH;
 
+    public static final ResourceChecker ADD_ALL_RESOURCE_CHECKER = new AddAllResourceChecker();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final Logger LOG = LoggerFactory.getLogger(PerUtil.class);
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     /** @return True if the given text is either null or empty **/
     public static boolean isEmpty(String text) {
@@ -349,11 +350,23 @@ public class PerUtil {
     }
 
     private static boolean isDescendantOfJcrContent(final String path) {
-        return StringUtils.contains(path, SLASH + JCR_CONTENT + SLASH);
+        return StringUtils.contains(path, SL_JCR_CONTENT_SL);
     }
 
     public static boolean isJcrContentOrDescendant(final String path) {
         return isJcrContent(path) || isDescendantOfJcrContent(path);
+    }
+
+    public static String stripJcrContentAndDescendants(final String path) {
+        if (isJcrContent(path)) {
+            return getParent(path);
+        }
+
+        if (isDescendantOfJcrContent(path)) {
+            return StringUtils.substringBefore(path, SL_JCR_CONTENT_SL);
+        }
+
+        return path;
     }
 
     public static boolean isJcrContentOrDescendant(final Resource resource) {
