@@ -27,6 +27,7 @@ package com.peregrine.replication.impl;
 
 import com.google.common.collect.Iterables;
 import com.peregrine.commons.ResourceUtils;
+import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.MatchingResourceChecker;
 import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
 import com.peregrine.commons.util.PerUtil.ResourceChecker;
@@ -160,13 +161,13 @@ public class LocalReplicationService
     private ReferenceLister referenceLister;
 
     @Override
-    public List<Resource> findReferences(final Resource startingResource, final boolean deep) throws ReplicationException {
+    public List<Resource> findReferences(final Resource startingResource, final boolean deep, ResourceChecker checker) throws ReplicationException {
         ResourceResolver resourceResolver = startingResource.getResourceResolver();
         final Resource source = resolveLocalSource(resourceResolver);
         final Resource target = resolveLocalTarget(resourceResolver);
-        final List<Resource> referenceList = referenceLister.getReferenceList(true, startingResource, deep, source, target);
+        final List<Resource> referenceList = referenceLister.getReferenceList(true, startingResource, deep, source, target, checker);
         final List<Resource> replicationList = new ArrayList<>();
-        final ResourceChecker resourceChecker = new MissingOrOutdatedResourceChecker(source, target);
+        final ResourceChecker resourceChecker = new PerUtil.ConjunctionResourceCheckerChain(checker, new MissingOrOutdatedResourceChecker(source, target));
         // Need to check this list of they need to be replicated first
         for(final Resource resource: referenceList) {
             if(resourceChecker.doAdd(resource) && !containsResource(replicationList, resource)) {

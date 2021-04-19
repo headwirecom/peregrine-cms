@@ -1,6 +1,10 @@
 package com.peregrine.replication;
 
-import org.apache.sling.api.resource.*;
+import com.peregrine.commons.util.PerUtil;
+import org.apache.sling.api.resource.ModifiableValueMap;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,16 +16,36 @@ import javax.jcr.nodetype.NodeTypeIterator;
 import javax.jcr.nodetype.NodeTypeManager;
 import javax.jcr.query.Query;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 
-import static com.peregrine.commons.util.PerConstants.*;
-import static com.peregrine.commons.util.PerUtil.*;
+import static com.peregrine.commons.util.PerConstants.ACTIVATED;
+import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
+import static com.peregrine.commons.util.PerConstants.DEACTIVATED;
+import static com.peregrine.commons.util.PerConstants.FELIBS_ROOT;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATION;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_LAST_ACTION;
+import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
+import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
+import static com.peregrine.commons.util.PerUtil.isJcrContent;
+import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.equalsAny;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.startsWith;
+import static org.apache.commons.lang3.StringUtils.startsWithAny;
+import static org.apache.commons.lang3.StringUtils.substringAfter;
+import static org.apache.commons.lang3.StringUtils.substringBefore;
 
-public class ReplicationUtil {
+public final class ReplicationUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReplicationUtil.class);
     private static final String SQL2_STATEMENT = "SELECT * FROM [nt:base] AS s WHERE ISDESCENDANTNODE([%s]) and CONTAINS(s.*, '%s')";
@@ -224,6 +248,68 @@ public class ReplicationUtil {
 
     public static boolean isSelfOrAnyDescendantReplicated(final Resource resource) {
         return isReplicated(resource) || isAnyDescendantReplicated(resource);
+    }
+
+    public static final class TenantOwnedResourceChecker implements PerUtil.ResourceChecker {
+
+        private static final String CONTENT_PREFIX = CONTENT_ROOT + SLASH;
+        private static final String FE_LIBS_PREFIX = FELIBS_ROOT + SLASH;
+
+        private final boolean isValid;
+        private final String contentRoot;
+        private final String contentPrefix;
+        private final String feLibsRoot;
+        private final String feLibsPrefix;
+
+        public TenantOwnedResourceChecker(final String path) {
+            final String tenant = tenantName(path);
+            isValid = isNotBlank(tenant);
+            contentRoot = CONTENT_PREFIX + tenant;
+            contentPrefix = contentRoot + SLASH;
+            feLibsRoot = FE_LIBS_PREFIX + tenant;
+            feLibsPrefix = feLibsRoot + SLASH;
+        }
+
+        private static String tenantName(final String path) {
+            final String result;
+            if (startsWith(path, CONTENT_PREFIX) && !CONTENT_PREFIX.equals(path)) {
+                result = substringAfter(path, CONTENT_PREFIX);
+            } else if (startsWith(path, FE_LIBS_PREFIX) && !FE_LIBS_PREFIX.equals(path)) {
+                result = substringAfter(path, FE_LIBS_PREFIX);
+            } else {
+                return null;
+            }
+
+            return substringBefore(result, SLASH);
+        }
+
+        public TenantOwnedResourceChecker(final Resource tenant) {
+            this(tenant.getPath());
+        }
+
+        @Override
+        public boolean doAdd(final Resource resource) {
+            if (isNull(resource)) {
+                return false;
+            }
+
+            if (!isValid) {
+                return true;
+            }
+
+            final String path = resource.getPath();
+            if (equalsAny(path, contentRoot, feLibsRoot)) {
+                return true;
+            }
+
+            return startsWithAny(path, contentPrefix, feLibsPrefix);
+        }
+
+        @Override
+        public boolean doAddChildren(Resource resource) {
+            return doAdd(resource);
+        }
+
     }
 
 }
