@@ -214,7 +214,7 @@ public class PageMerge implements Use {
             if(key.equals(COMPONENT) && value.equals(NT_UNSTRUCTURED)) continue;
             if(value instanceof Map) {
 
-            } else if(value instanceof ArrayList) {
+            } else if(value instanceof ArrayList && res.containsKey(key)) {
                 mergeArrays((ArrayList) res.get(key), (ArrayList) value);
             } else {
                 res.put(key, value);
