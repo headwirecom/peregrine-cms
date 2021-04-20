@@ -1,0 +1,22 @@
+{
+  "res1": {
+    "jcr:primaryType": "nt:unstructured",
+    "value": "text"
+  },
+  "res2": {
+    "jcr:primaryType": "nt:unstructured",
+    "value": "texttext"
+  },
+  "res3": {
+    "jcr:primaryType": "nt:unstructured",
+    "value": "texttexttext"
+  },
+  "res4": {
+    "jcr:primaryType": "nt:unstructured",
+    "value": [
+      "text",
+      "texttext",
+      "texttexttext"
+    ]
+  }
+}
