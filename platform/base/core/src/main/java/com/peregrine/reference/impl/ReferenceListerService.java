@@ -28,6 +28,7 @@ package com.peregrine.reference.impl;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerUtil.containsResource;
 import static com.peregrine.commons.util.PerUtil.listMissingParents;
+import static com.peregrine.commons.util.PerUtil.stripJcrContentAndDescendants;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
@@ -36,12 +37,9 @@ import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
 import com.peregrine.reference.Reference;
 import com.peregrine.reference.ReferenceLister;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
@@ -89,7 +87,8 @@ public final class ReferenceListerService implements ReferenceLister {
     }
 
     private static final String REFERENCED_BY_QUERY = "select * from [nt:base] as s where isdescendantnode('%s') " +
-            "and contains(s.*, '\"%s\"') and not s.* like '%%%s/%%'";
+            "and contains(s.*, '%s')";
+    static final String REFERENCE_REGEX_TEMPLATE = "(^|[\" ])%s($|[\" .])";
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -126,24 +125,65 @@ public final class ReferenceListerService implements ReferenceLister {
         }
         final List<Reference> result = new LinkedList<>();
         final ResourceResolver resourceResolver = resource.getResourceResolver();
+        final String path = resource.getPath();
+
+        // The following regex matches e.g.
+        //   /path
+        //   "/path"
+        //   "/path.html"
+        // But does not match
+        //   /path/child
+        //   something/path
+        Pattern pathRegex =
+                Pattern.compile(String.format(REFERENCE_REGEX_TEMPLATE, path));
+
+        Predicate<String> containsReference = s -> pathRegex.matcher(s).find();
+
         for (String referencedByRoot: referencedByRootList) {
-            final String path = resource.getPath();
-            final Iterator<Resource> referencingResources = resourceResolver.findResources(
+            Iterator<Resource> referencingResources = resourceResolver.findResources(
                     String.format(REFERENCED_BY_QUERY, referencedByRoot, path, path),
                     Query.JCR_SQL2
             );
+
             while (referencingResources.hasNext()) {
-                final Resource referencingResource = referencingResources.next();
-                Optional.ofNullable(referencingResource)
-                        .map(Resource::getPath)
-                        .map(PerUtil::stripJcrContentAndDescendants)
-                        .map(resourceResolver::resolve)
-                        .map(r -> new Reference(r, EMPTY, referencingResource))
-                        .ifPresent(result::add);
+                Resource referencingResource = referencingResources.next();
+                if (!resourceHasStringValueMatchingPredicate(referencingResource, containsReference)) {
+                    continue;
+                }
+                String referencingPath = referencingResource.getPath();
+                String parentPath = stripJcrContentAndDescendants(referencingPath);
+                Resource parentResource = resourceResolver.resolve(parentPath);
+                Reference ref = new Reference(parentResource, EMPTY, referencingResource);
+                result.add(ref);
             }
         }
-
         return result;
+    }
+
+    /**
+     * Method looks through all the properties of the given resource and returns true
+     * if any value is a string (or an array of strings) that matches the given predicate.
+     *
+     * @param resource Resource to check
+     * @param predicate Predicate to apply to all properties
+     * @return
+     */
+    boolean resourceHasStringValueMatchingPredicate(Resource resource, Predicate<String> predicate) {
+        return resource
+                .getValueMap()
+                .values()
+                .stream()
+                .anyMatch(value -> {
+                    if (value instanceof String) {
+                        String valueAsString = (String) value;
+                        return predicate.test(valueAsString);
+                    } else if (value instanceof String[]) {
+                        String[] valueAsArray = (String[]) value;
+                        return Arrays.stream(valueAsArray)
+                                .anyMatch(predicate);
+                    }
+                    return false;
+                });
     }
 
     /**
