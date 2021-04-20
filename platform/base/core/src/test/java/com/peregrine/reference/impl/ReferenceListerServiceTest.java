@@ -88,6 +88,7 @@ public final class ReferenceListerServiceTest extends SlingResourcesTest {
 								.collect(Collectors.toList())
 								.iterator()
 				);
+		parent.putProperty("reference", resource.getPath());
 		assertFalse(model.getReferencedByList(resource).isEmpty());
 	}
 
