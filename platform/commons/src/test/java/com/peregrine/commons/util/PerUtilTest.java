@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -55,6 +56,23 @@ public class PerUtilTest
         assertEquals("/content/page", PerUtil.stripJcrContentAndDescendants("/content/page/jcr:content"));
         assertEquals("/content/page/", PerUtil.stripJcrContentAndDescendants("/content/page/"));
         assertEquals("/content/page", PerUtil.stripJcrContentAndDescendants("/content/page"));
+    }
+
+    @Test
+    public void mapHasStringValueMatchingPredicate() {
+        Predicate<String> hasLength5 = s -> s.length() == 5;
+        assertFalse(PerUtil.mapHasStringValueMatchingPredicate(
+                Map.of("k", "1"),
+                hasLength5));
+        assertTrue(PerUtil.mapHasStringValueMatchingPredicate(
+                Map.of("k", "12345"),
+                hasLength5));
+        assertFalse(PerUtil.mapHasStringValueMatchingPredicate(
+                Map.of("k", new String[] { "1", "2", "3", "4", "5"}),
+                hasLength5));
+        assertTrue(PerUtil.mapHasStringValueMatchingPredicate(
+                Map.of("k", new String[] { "1", "12345", "123", "12", "1234"}),
+                hasLength5));
     }
 
 }

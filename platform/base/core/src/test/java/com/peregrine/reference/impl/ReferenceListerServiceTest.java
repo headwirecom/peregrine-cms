@@ -77,18 +77,4 @@ public final class ReferenceListerServiceTest extends SlingResourcesTest {
 		assertFalse(references.contains(siblingPage));
 		assertFalse(references.contains(page));
 	}
-
-	@Test
-	public void getReferencedByList() {
-		assertTrue(model.getReferencedByList(null).isEmpty());
-		when(resourceResolver.findResources(anyString(), anyString()))
-				.thenReturn(
-						resources.stream()
-								.map(Resource.class::cast)
-								.collect(Collectors.toList())
-								.iterator()
-				);
-		assertFalse(model.getReferencedByList(resource).isEmpty());
-	}
-
 }

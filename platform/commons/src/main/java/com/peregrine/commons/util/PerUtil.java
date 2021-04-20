@@ -39,6 +39,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 
 import static com.peregrine.commons.util.PerConstants.*;
@@ -213,6 +214,33 @@ public class PerUtil {
 
     public static Map<String, Map<String, String>> splitIntoParameterMap(String entry, String keySeparator, String valueSeparator, String parameterSeparator) {
         return splitIntoParameterMap(new String[]{ entry }, keySeparator, valueSeparator, parameterSeparator);
+    }
+
+
+    /**
+     * Method looks through all the properties of the given resource and returns true
+     * if any value is a string that matches the given predicate or an array of strings
+     * one of which matches the predicate.
+     *
+     * @param map Map to check
+     * @param predicate Predicate to test against
+     * @return
+     */
+    public static boolean mapHasStringValueMatchingPredicate(Map<String, Object> map, Predicate<String> predicate) {
+        return map
+                .values()
+                .stream()
+                .anyMatch(value -> {
+                    if (value instanceof String) {
+                        String valueAsString = (String) value;
+                        return predicate.test(valueAsString);
+                    } else if (value instanceof String[]) {
+                        String[] valueAsArray = (String[]) value;
+                        return Arrays.stream(valueAsArray)
+                                .anyMatch(predicate);
+                    }
+                    return false;
+                });
     }
 
     /**
