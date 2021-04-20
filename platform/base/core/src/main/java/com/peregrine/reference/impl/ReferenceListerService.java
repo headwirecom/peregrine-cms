@@ -147,14 +147,15 @@ public final class ReferenceListerService implements ReferenceLister {
 
             while (referencingResources.hasNext()) {
                 Resource referencingResource = referencingResources.next();
-                PerUtil.mapHasStringValueMatchingPredicate(referencingResource.getValueMap(), containsReference);
-                if (!PerUtil.mapHasStringValueMatchingPredicate(referencingResource.getValueMap(), containsReference)) {
+                List<String> referencingProperties =
+                        PerUtil.keysInMapHavingStringValueMatchingPredicate(referencingResource.getValueMap(), containsReference);
+                if (referencingProperties.isEmpty()) {
                     continue;
                 }
                 String referencingPath = referencingResource.getPath();
                 String parentPath = stripJcrContentAndDescendants(referencingPath);
                 Resource parentResource = resourceResolver.resolve(parentPath);
-                Reference ref = new Reference(parentResource, EMPTY, referencingResource);
+                Reference ref = new Reference(parentResource, referencingProperties.get(0), referencingResource);
                 result.add(ref);
             }
         }

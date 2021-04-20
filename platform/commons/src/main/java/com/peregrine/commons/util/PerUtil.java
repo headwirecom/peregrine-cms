@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 import static com.peregrine.commons.util.PerConstants.*;
 import static java.util.Objects.isNull;
@@ -218,19 +219,20 @@ public class PerUtil {
 
 
     /**
-     * Method looks through all the properties of the given resource and returns true
-     * if any value is a string that matches the given predicate or an array of strings
-     * one of which matches the predicate.
+     * Method looks through all the properties of the given resource and returns keys
+     * for which the corresponding value matches the given predicate or the value is
+     * an array of strings one of which matches the predicate.
      *
      * @param map Map to check
      * @param predicate Predicate to test against
      * @return
      */
-    public static boolean mapHasStringValueMatchingPredicate(Map<String, Object> map, Predicate<String> predicate) {
+    public static List<String> keysInMapHavingStringValueMatchingPredicate(Map<String, Object> map, Predicate<String> predicate) {
         return map
-                .values()
+                .entrySet()
                 .stream()
-                .anyMatch(value -> {
+                .filter(entry -> {
+                    Object value = entry.getValue();
                     if (value instanceof String) {
                         String valueAsString = (String) value;
                         return predicate.test(valueAsString);
@@ -240,7 +242,9 @@ public class PerUtil {
                                 .anyMatch(predicate);
                     }
                     return false;
-                });
+                })
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
     }
 
     /**

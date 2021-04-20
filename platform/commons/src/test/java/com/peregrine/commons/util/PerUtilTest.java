@@ -1,7 +1,9 @@
 package com.peregrine.commons.util;
 
 import com.peregrine.commons.test.AbstractTest;
+import net.bytebuddy.matcher.CollectionSizeMatcher;
 import org.apache.sling.api.resource.Resource;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -59,20 +62,20 @@ public class PerUtilTest
     }
 
     @Test
-    public void mapHasStringValueMatchingPredicate() {
+    public void keysInMapHavingStringValueMatchingPredicate() {
         Predicate<String> hasLength5 = s -> s.length() == 5;
-        assertFalse(PerUtil.mapHasStringValueMatchingPredicate(
+        assertThat(PerUtil.keysInMapHavingStringValueMatchingPredicate(
                 Map.of("k", "1"),
-                hasLength5));
-        assertTrue(PerUtil.mapHasStringValueMatchingPredicate(
+                hasLength5), hasItems());
+        assertThat(PerUtil.keysInMapHavingStringValueMatchingPredicate(
                 Map.of("k", "12345"),
-                hasLength5));
-        assertFalse(PerUtil.mapHasStringValueMatchingPredicate(
+                hasLength5), hasItems("k"));
+        assertThat(PerUtil.keysInMapHavingStringValueMatchingPredicate(
                 Map.of("k", new String[] { "1", "2", "3", "4", "5"}),
-                hasLength5));
-        assertTrue(PerUtil.mapHasStringValueMatchingPredicate(
+                hasLength5), hasItems());
+        assertThat(PerUtil.keysInMapHavingStringValueMatchingPredicate(
                 Map.of("k", new String[] { "1", "12345", "123", "12", "1234"}),
-                hasLength5));
+                hasLength5), hasItems("k"));
     }
 
 }
