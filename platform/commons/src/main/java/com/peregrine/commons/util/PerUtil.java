@@ -39,7 +39,9 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 import static com.peregrine.commons.util.PerConstants.*;
 import static java.util.Objects.isNull;
@@ -213,6 +215,36 @@ public class PerUtil {
 
     public static Map<String, Map<String, String>> splitIntoParameterMap(String entry, String keySeparator, String valueSeparator, String parameterSeparator) {
         return splitIntoParameterMap(new String[]{ entry }, keySeparator, valueSeparator, parameterSeparator);
+    }
+
+
+    /**
+     * Method looks through all the properties of the given resource and returns keys
+     * for which the corresponding value matches the given predicate or the value is
+     * an array of strings one of which matches the predicate.
+     *
+     * @param map Map to check
+     * @param predicate Predicate to test against
+     * @return
+     */
+    public static List<String> keysInMapHavingStringValueMatchingPredicate(Map<String, Object> map, Predicate<String> predicate) {
+        return map
+                .entrySet()
+                .stream()
+                .filter(entry -> {
+                    Object value = entry.getValue();
+                    if (value instanceof String) {
+                        String valueAsString = (String) value;
+                        return predicate.test(valueAsString);
+                    } else if (value instanceof String[]) {
+                        String[] valueAsArray = (String[]) value;
+                        return Arrays.stream(valueAsArray)
+                                .anyMatch(predicate);
+                    }
+                    return false;
+                })
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
     }
 
     /**

@@ -5,6 +5,7 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.testing.mock.sling.junit.SlingContext;
 import static  org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -33,7 +34,12 @@ public class ReferenceListerServiceSlingMockTest {
     }
 
     @Test
-    public void testResourceHasStringValueMatchingRegexPredicate() {
+    public void testReferencedByEmpty() {
+    	assertTrue(service.getReferencedByList(null).isEmpty());
+    }
+    
+    @Test
+    public void testReferencedBy() {
         context.load().json("/referenceLister-tree.json", "/content");
         Resource index = context.resourceResolver().getResource("/content/tenant/pages/index");
 

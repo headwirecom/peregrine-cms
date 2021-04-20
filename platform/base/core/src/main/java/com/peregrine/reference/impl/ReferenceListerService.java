@@ -147,44 +147,21 @@ public final class ReferenceListerService implements ReferenceLister {
 
             while (referencingResources.hasNext()) {
                 Resource referencingResource = referencingResources.next();
-                if (!resourceHasStringValueMatchingPredicate(referencingResource, containsReference)) {
+                List<String> referencingProperties =
+                        PerUtil.keysInMapHavingStringValueMatchingPredicate(referencingResource.getValueMap(), containsReference);
+                if (referencingProperties.isEmpty()) {
                     continue;
                 }
                 String referencingPath = referencingResource.getPath();
                 String parentPath = stripJcrContentAndDescendants(referencingPath);
                 Resource parentResource = resourceResolver.resolve(parentPath);
-                Reference ref = new Reference(parentResource, EMPTY, referencingResource);
+                Reference ref = new Reference(parentResource, referencingProperties.get(0), referencingResource);
                 result.add(ref);
             }
         }
         return result;
     }
 
-    /**
-     * Method looks through all the properties of the given resource and returns true
-     * if any value is a string (or an array of strings) that matches the given predicate.
-     *
-     * @param resource Resource to check
-     * @param predicate Predicate to apply to all properties
-     * @return
-     */
-    private boolean resourceHasStringValueMatchingPredicate(Resource resource, Predicate<String> predicate) {
-        return resource
-                .getValueMap()
-                .values()
-                .stream()
-                .anyMatch(value -> {
-                    if (value instanceof String) {
-                        String valueAsString = (String) value;
-                        return predicate.test(valueAsString);
-                    } else if (value instanceof String[]) {
-                        String[] valueAsArray = (String[]) value;
-                        return Arrays.stream(valueAsArray)
-                                .anyMatch(predicate);
-                    }
-                    return false;
-                });
-    }
 
     /**
      * Check the given Resource if it has a reference
