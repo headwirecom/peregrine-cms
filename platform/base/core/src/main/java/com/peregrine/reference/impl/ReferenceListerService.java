@@ -88,7 +88,7 @@ public final class ReferenceListerService implements ReferenceLister {
 
     private static final String REFERENCED_BY_QUERY = "select * from [nt:base] as s where isdescendantnode('%s') " +
             "and contains(s.*, '%s')";
-    static final String REFERENCE_REGEX_TEMPLATE = "(^|[\" ])%s($|[\" .])";
+    private static final String REFERENCE_REGEX_TEMPLATE = "(^|[\" ])%s($|[\" .])";
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -168,7 +168,7 @@ public final class ReferenceListerService implements ReferenceLister {
      * @param predicate Predicate to apply to all properties
      * @return
      */
-    boolean resourceHasStringValueMatchingPredicate(Resource resource, Predicate<String> predicate) {
+    private boolean resourceHasStringValueMatchingPredicate(Resource resource, Predicate<String> predicate) {
         return resource
                 .getValueMap()
                 .values()

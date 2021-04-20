@@ -1,16 +1,20 @@
 package com.peregrine.reference.impl;
 
+import com.peregrine.reference.Reference;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.testing.mock.sling.junit.SlingContext;
+import static  org.hamcrest.MatcherAssert.assertThat;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
+import java.util.List;
 
-import static com.peregrine.reference.impl.ReferenceListerService.REFERENCE_REGEX_TEMPLATE;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
 
 public class ReferenceListerServiceSlingMockTest {
 
@@ -19,33 +23,33 @@ public class ReferenceListerServiceSlingMockTest {
 
     ReferenceListerService service = new ReferenceListerService();
 
-    @Test
-    public void testResourceHasStringValueMatchingSimplePredicate() {
-        context.load().json("/referenceLister-tree1.json", "/content");
-        Predicate<String> pred = "texttext"::equals;
-        assertFalse(service.resourceHasStringValueMatchingPredicate(
-                context.resourceResolver().getResource("/content/res1"), pred));
-        assertTrue(service.resourceHasStringValueMatchingPredicate(
-                context.resourceResolver().getResource("/content/res2"), pred));
-        assertFalse(service.resourceHasStringValueMatchingPredicate(
-                context.resourceResolver().getResource("/content/res3"), pred));
-        assertTrue(service.resourceHasStringValueMatchingPredicate(
-                context.resourceResolver().getResource("/content/res4"), pred));
+    @Before
+    public void init() {
+        ReferenceListerService.Configuration configuration = mock(ReferenceListerService.Configuration.class);
+
+        when(configuration.referencedByRoot()).thenReturn(new String[] { "/content" });
+        when(configuration.referencePrefix()).thenReturn(new String[] { "/content" });
+        service.activate(configuration);
     }
 
     @Test
     public void testResourceHasStringValueMatchingRegexPredicate() {
-        context.load().json("/referenceLister-tree2.json", "/content");
-        Pattern pattern = Pattern.compile(String.format(REFERENCE_REGEX_TEMPLATE, "/content/tenant/pages/index"));
-        Predicate<String> pred = s -> pattern.matcher(s).find();
-        assertTrue(service.resourceHasStringValueMatchingPredicate(
-                context.resourceResolver().getResource("/content/res1"), pred));
-        assertFalse(service.resourceHasStringValueMatchingPredicate(
-                context.resourceResolver().getResource("/content/res2"), pred));
-        assertTrue(service.resourceHasStringValueMatchingPredicate(
-                context.resourceResolver().getResource("/content/res3"), pred));
-        assertFalse(service.resourceHasStringValueMatchingPredicate(
-                context.resourceResolver().getResource("/content/res4"), pred));
+        context.load().json("/referenceLister-tree.json", "/content");
+        Resource index = context.resourceResolver().getResource("/content/tenant/pages/index");
+
+        Resource spiedIndex = spy(index);
+        when(spiedIndex.getResourceResolver()).thenAnswer(invocationOnMock -> {
+            ResourceResolver rr = spy(context.resourceResolver());
+            when(rr.findResources(anyString(), anyString()))
+                    .thenReturn(context.resourceResolver().getResource("/content").getChildren().iterator());
+            return rr;
+        });
+
+        List<Reference> referencedByList = service.getReferencedByList(spiedIndex);
+        assertThat(referencedByList.size(), is(2));
+        assertThat(referencedByList.get(0).getResource().getPath(), is("/content/res1"));
+        assertThat(referencedByList.get(1).getResource().getPath(), is("/content/res3"));
+
     }
 
 }

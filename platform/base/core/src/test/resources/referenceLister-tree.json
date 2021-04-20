@@ -14,5 +14,14 @@
   "res4": {
     "jcr:primaryType": "nt:unstructured",
     "value": "<a href=\"/content/tenant/pages/index/child.html\">child</a>"
+  },
+  "tenant": {
+    "jcr:primaryType": "nt:unstructured",
+    "pages" :  {
+      "jcr:primaryType": "nt:unstructured",
+      "index": {
+        "jcr:primaryType": "nt:unstructured"
+      }
+    }
   }
 }
