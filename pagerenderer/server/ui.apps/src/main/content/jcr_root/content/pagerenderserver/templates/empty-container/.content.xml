@@ -8,7 +8,7 @@
 
   <jcr:content
     jcr:primaryType="per:PageContent"
-    jcr:title="htl test template. has only an empty container for authoring"
+    jcr:title="Blank"
     sling:resourceType="pagerenderserver/components/page">
 
     <content jcr:primaryType="nt:unstructured"

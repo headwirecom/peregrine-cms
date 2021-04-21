@@ -31,7 +31,7 @@
     <artifactId>pagerender-server.core</artifactId>
     <packaging>bundle</packaging>
 
-    <name>peregrine server page renderer - Core</name>
+    <name>Peregrine CMS - Page Render Server - Core</name>
     <description>
         OSGi Bundle for the Page Render Server module.
     </description>

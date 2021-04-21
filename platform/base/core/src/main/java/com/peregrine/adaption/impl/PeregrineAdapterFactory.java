@@ -131,6 +131,10 @@ public class PeregrineAdapterFactory
         }
 
         if(PerReplicable.class.equals(type)) {
+            if (StringUtils.startsWith(primaryType, "rep:")) {
+                return null;
+            }
+
             return (AdapterType) new PerReplicableImpl(resource);
         }
 

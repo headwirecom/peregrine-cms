@@ -125,9 +125,9 @@ public class DistributionReplicationService
     private ReferenceLister referenceLister;
 
     @Override
-    public List<Resource> findReferences(Resource startingResource, boolean deep) {
+    public List<Resource> findReferences(Resource startingResource, boolean deep, PerUtil.ResourceChecker checker) {
         log.trace("Starting Resource: '{}'", startingResource.getPath());
-        List<Resource> referenceList = referenceLister.getReferenceList(true, startingResource, true);
+        List<Resource> referenceList = referenceLister.getReferenceList(true, startingResource, true, checker);
         log.trace("Reference List: '{}'", referenceList);
         List<Resource> replicationList = new ArrayList<>();
         // Need to check this list of they need to be replicated first
@@ -136,9 +136,9 @@ public class DistributionReplicationService
         }
         // This only returns the referenced resources. Now we need to check if there are any JCR Content nodes to be added as well
         for(Resource reference: new ArrayList<>(replicationList)) {
-            PerUtil.listMissingResources(reference, false, replicationList);
+            PerUtil.listMissingResources(reference, checker, false, replicationList);
         }
-        PerUtil.listMissingResources(startingResource, deep, replicationList);
+        PerUtil.listMissingResources(startingResource, checker, deep, replicationList);
         log.trace("List for Replication: '{}'", replicationList);
         return replicationList;
     }

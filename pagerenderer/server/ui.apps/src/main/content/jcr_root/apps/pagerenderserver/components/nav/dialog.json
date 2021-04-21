@@ -1,0 +1,66 @@
+{ "fields":[
+  {
+    "type": "pathbrowser",
+    "browserRoot": "/content/pagerenderserver/assets",
+    "placeholder": "logo",
+    "label": "Logo",
+    "model": "logo"
+  },
+  {
+    "type": "material-range",
+    "placeholder": "logosize",
+    "label": "Logo Size",
+    "model": "logosize",
+    "min": 1,
+    "max": 300
+  },
+  {
+    "type": "input",
+    "inputType": "text",
+    "placeholder": "logoalttext",
+    "label": "Logo Alt Text",
+    "model": "logoalttext"
+  },
+  {
+    "type": "pathbrowser",
+    "browserRoot": "/content/pagerenderserver/pages",
+    "placeholder": "page to home",
+    "label": "Homepage Url",
+    "model": "link"
+  },
+  {
+    "type": "input",
+    "inputType": "text",
+    "placeholder": "Header Display Text",
+    "label": "Header Display Text",
+    "model": "headertext"
+  },
+  {
+    "type": "collection",
+    "multifield": true,
+    "fieldLabel": [
+      "text",
+      "value"
+    ],
+    "fields": [
+      {
+        "type": "input",
+        "inputType": "text",
+        "placeholder": "text",
+        "label": "Link Text",
+        "model": "text"
+      },
+      {
+        "type": "pathbrowser",
+        "browserRoot": "/content/pagerenderserver/pages",
+        "placeholder": "link",
+        "label": "Link Url",
+        "model": "link"
+      }
+    ],
+    "placeholder": "links",
+    "label": "Links",
+    "model": "links"
+  }
+  ]
+}
