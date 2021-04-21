@@ -53,6 +53,11 @@
             <artifactId>login</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>distribution</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -113,6 +118,11 @@
                                 <embedded>
                                     <groupId>${project.groupId}</groupId>
                                     <artifactId>login</artifactId>
+                                    <generateFilter>true</generateFilter>
+                                </embedded>
+                                <embedded>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>distribution</artifactId>
                                     <generateFilter>true</generateFilter>
                                 </embedded>
                             </embeddeds>
