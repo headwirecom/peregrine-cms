@@ -12,10 +12,17 @@ public final class SiteMock extends PageMock {
 
     public SiteMock(final String name) {
         setPrimaryType(SITE_PRIMARY_TYPE);
+        setResourceType(SITE_PRIMARY_TYPE);
         setPaths(CONTENT_ROOT + SLASH + name + SLASH + PAGES, this, pages);
         setPaths(CONTENT_ROOT + SLASH + name + SLASH + TEMPLATES, this, templates);
         setParentChildRelationships(this, pages);
         setParentChildRelationships(this, templates);
+    }
+
+    public SiteMock(final RepoMock repo, final String name) {
+        this(name);
+        repo.init(this);
+        setParentChildRelationships(repo.getContent(), this);
     }
 
     public PageMock getPages() {
