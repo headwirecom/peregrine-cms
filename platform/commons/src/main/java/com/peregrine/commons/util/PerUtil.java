@@ -386,6 +386,14 @@ public class PerUtil {
                 .orElse(null);
     }
 
+    public static Resource getBaseResource(final Resource resource) {
+        if (isJcrContent(resource)) {
+            return resource.getParent();
+        }
+
+        return resource;
+    }
+
     /**
      * Gets the Modifiable Value Map of the Resource JCR Content
      *
