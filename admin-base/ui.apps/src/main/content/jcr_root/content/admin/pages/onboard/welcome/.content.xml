@@ -42,7 +42,7 @@
         sling:resourceType="admin/components/row">
 
         <col2 jcr:primaryType="nt:unstructured"
-          sling:resourceType="admin/components/col" classes="col s12 m12 l12 xl7">
+          sling:resourceType="admin/components/col" classes="col s7 m12 l12 xl12">
 
           <text1 jcr:primaryType="nt:unstructured"
             sling:resourceType="pagerendervue/components/base"
@@ -65,8 +65,8 @@
           </create>
 
           <createHp jcr:primaryType="nt:unstructured"
-            sling:resourceType="admin/components/action" title="Create your ~ page"
-            command="selectPath" target="/content/admin/pages/pages/createtenant.html/path:/content" classes="btn">
+            sling:resourceType="admin/components/createtilda" 
+            mode="button">
           </createHp>
         </col2>
 

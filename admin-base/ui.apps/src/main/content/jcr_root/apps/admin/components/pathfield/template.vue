@@ -51,7 +51,7 @@
                     ret.push( { name: segments[i], path: segments.slice(0, i+1).join('/') } )
                 }
                 return ret;
-            }
+            }            
         }
     }
 </script>
