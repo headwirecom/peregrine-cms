@@ -825,12 +825,15 @@ export default {
       this.isOpen = false;
     },
     save() {
+      let promise
       if (this.nodeType === NodeType.OBJECT) {
-        this.saveObject();
+        promise = this.saveObject();
       } else {
-        $perAdminApp.stateAction(`save${this.uNodeType}Properties`, this.node);
+        promise = $perAdminApp.stateAction(`save${this.uNodeType}Properties`, this.node);
         this.edit = false;
       }
+
+      promise.then(() => $perAdminApp.getApi().populateNodesForBrowser(this.node.path.split('/').slice(0, -1).join('/')))
     },
     saveObject() {
       let data = this.node;
@@ -871,11 +874,12 @@ export default {
         }
       }
       set($perAdminApp.getView(), '/state/tools/save/confirmed', true)
-      $perAdminApp.stateAction('saveObjectEdit', {data: data, path: show}).then(() => {
+      const result = $perAdminApp.stateAction('saveObjectEdit', {data: data, path: show}).then(() => {
         $perAdminApp.getNodeFromView('/state/tools')._deleted = {}
       });
       $perAdminApp.stateAction('selectObject', {selected: show})
       this.edit = false;
+      return result
     },
     setActiveTab(clickedTab) {
       this.activeTab = clickedTab;
