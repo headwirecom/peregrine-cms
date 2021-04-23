@@ -30,7 +30,6 @@ public final class ResourceUtils {
             JcrConstants.JCR_PREDECESSORS,
             JcrConstants.JCR_UUID,
             JcrConstants.JCR_VERSIONHISTORY,
-            JcrConstants.JCR_PREDECESSORS,
             PerConstants.JCR_CREATED_BY,
             PerConstants.PER_REPLICATED,
             PerConstants.PER_REPLICATED_BY,
