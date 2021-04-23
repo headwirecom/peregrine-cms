@@ -48,8 +48,6 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 )
 public final class ReplicationsContainerWithDefaultImpl implements ReplicationsContainerWithDefault {
 
-    public static final String DEFAULT_REPL = "defaultRepl";
-
     @Reference
     private ReplicationsContainer replications;
 
@@ -67,8 +65,7 @@ public final class ReplicationsContainerWithDefaultImpl implements ReplicationsC
 
     @Override
     public Replication getDefault() {
-        return Optional.of(DEFAULT_REPL)
-                .map(this::get)
+        return Optional.ofNullable(get("defaultRepl"))
                 .orElse(defaultReplicationMapper);
     }
 

@@ -28,16 +28,12 @@ package com.peregrine.adaption.impl;
 import com.peregrine.adaption.Filter;
 import com.peregrine.adaption.PerPage;
 import com.peregrine.adaption.PerPageManager;
-import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED;
-import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED_BY;
 import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.TEMPLATE;
@@ -217,21 +213,6 @@ public class PerPageImpl extends PerBaseImpl implements PerPage {
     public PerPage getPrevious() {
         Resource resource = getResource();
         return findPrevious(resource);
-    }
-
-    @Override
-    public void markAsModified() {
-        Resource resource = getResource();
-        String user = resource.getResourceResolver().getUserID();
-        Calendar now = Calendar.getInstance();
-        // Update Content Properties
-        ModifiableValueMap properties = getModifiableProperties();
-        properties.put(JCR_LAST_MODIFIED_BY, user);
-        properties.put(JCR_LAST_MODIFIED, now);
-        // Update Page
-        properties = resource.adaptTo(ModifiableValueMap.class);
-        properties.put(JCR_LAST_MODIFIED_BY, user);
-        properties.put(JCR_LAST_MODIFIED, now);
     }
 
     private Resource getLastChild(Resource res) {
