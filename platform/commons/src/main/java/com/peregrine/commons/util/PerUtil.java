@@ -387,6 +387,22 @@ public class PerUtil {
     }
 
     /**
+     * We define the notion of a <code>base</code> for a given <code>resource</code> here as the parent of
+     * <code>jcr:content</code> or the <code>resource</code> itself otherwise.
+     *
+     * @param resource the <code>resource</code> for which we want to extract the <code>base</code>
+     * @return the parent resource, if the <code>resource</code> is <code>jcr:content</code>,
+     * or the <code>resource</code> itself otherwise (it's its own <code>base</code> then)
+     */
+    public static Resource getBaseResource(final Resource resource) {
+        if (isJcrContent(resource)) {
+            return resource.getParent();
+        }
+
+        return resource;
+    }
+
+    /**
      * Gets the Modifiable Value Map of the Resource JCR Content
      *
      * @param resource Resource to look for the properties. If this is not the jcr:content node
