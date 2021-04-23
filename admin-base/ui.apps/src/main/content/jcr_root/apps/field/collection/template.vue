@@ -27,35 +27,36 @@
     <label>{{ schema.title }} </label>
     <ul v-if="!schema.preview"
         class="collapsible"
-        v-bind:class="schema.multifield ? 'multifield' : 'singlefield'"
+        :class="schema.multifield ? 'multifield' : 'singlefield'"
         ref="collapsible">
       <li v-for="(item, index) in value"
           class="collection-item"
-          v-bind:class="getItemClass(item, index)"
-          v-bind:key="`collection-item-${index}`"
+          :class="getItemClass(item, index)"
+          :key="`collection-item-${index}`"
           ref="item"
-          draggable="true"
-          v-on:dragstart="onDragStart(item, index, $event)"
-          v-on:dragover.prevent="onDragOver($event, index)"
-          v-on:dragenter.prevent="onDragEnter"
-          v-on:dragleave.prevent="onDragLeave($event, index)"
-          v-on:drop.prevent="onDrop($event, index, item)"> {{ item._opDelete }}
+          draggable="false"> {{ item._opDelete }}
         <div
             ref="header"
             class="collapsible-header"
-            v-on:click.stop.prevent="onSetActiveItem(index)">
+            draggable="true"
+            @dragstart="onDragStart(item, index, $event)"
+            @dragover.prevent="onDragOver($event, index)"
+            @dragenter.prevent="onDragEnter"
+            @dragleave.prevent="onDragLeave($event, index)"
+            @drop.prevent="onDrop($event, index, item)"
+            @click.stop.prevent="onSetActiveItem(index)">
           <i class="material-icons">drag_handle</i>
           <span v-if="schema.multifield">{{ itemName(item, index) }}</span>
           <input
               v-else
               ref="input"
               v-model="value[index]">
-          <i class="material-icons delete-icon" v-on:click="onRemoveItem(item, index)">delete</i>
+          <i class="material-icons delete-icon" @click="onRemoveItem(item, index)">delete</i>
         </div>
         <transition
-            v-on:enter="enter"
-            v-on:leave="leave"
-            v-bind:css="false">
+            @enter="enter"
+            @leave="leave"
+            :css="false">
           <div v-if="schema.multifield && activeItem === index" class="collapsible-body">
             <vue-form-generator
                 :schema="schema"
@@ -63,7 +64,7 @@
           </div>
         </transition>
       </li>
-      <button type="button" class="btn-flat btn-add-item" v-on:click="onAddItem">
+      <button type="button" class="btn-flat btn-add-item" @click="onAddItem">
         <i class="material-icons">add</i>
       </button>
     </ul>
@@ -232,6 +233,9 @@ export default {
       $item.classList.remove('drop-after', 'drop-before')
       this.$refs.item.forEach((item) => item.classList.remove('dragging'))
       this.onReorder(oldIndex, index)
+      this.$nextTick(() => {
+        this.onSetActiveItem(index)
+      })
     },
     /**
      * https://stackoverflow.com/a/5306832/4622620

@@ -72,7 +72,7 @@
         <mockito-all.version>1.9.5</mockito-all.version>
         <jmock-junit4.version>2.12.0</jmock-junit4.version>
         <org.apache.sling.commons.testing.version>2.1.0</org.apache.sling.commons.testing.version>
-        <org.apache.sling.junit.core.version>1.1.0</org.apache.sling.junit.core.version>
+        <org.apache.sling.junit.core.version>1.1.2</org.apache.sling.junit.core.version>
         <org.apache.sling.testing.clients.version>2.0.8</org.apache.sling.testing.clients.version>
         <org.apache.sling.testing.rules.version>2.0.0</org.apache.sling.testing.rules.version>
         <org.apache.sling.junit.teleporter.version>1.0.22</org.apache.sling.junit.teleporter.version>
@@ -499,12 +499,6 @@
                 <groupId>org.apache.sling</groupId>
                 <artifactId>org.apache.sling.engine</artifactId>
                 <version>${org.apache.sling.engine.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.sling</groupId>
-                <artifactId>org.apache.sling.event</artifactId>
-                <version>4.2.12</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
