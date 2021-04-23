@@ -1,26 +1,16 @@
 package com.peregrine;
 
-import com.peregrine.mock.PageMock;
-import com.peregrine.mock.RepoMock;
-import com.peregrine.mock.ResourceMock;
+import com.peregrine.mock.*;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.request.RequestPathInfo;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.mockito.Mockito;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.peregrine.commons.Chars.DOT;
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.mock.MockTools.*;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.StringUtils.substringAfter;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.apache.commons.lang3.StringUtils.*;
 
 public class SlingResourcesTest {
 
@@ -33,13 +23,12 @@ public class SlingResourcesTest {
 
     protected final ResourceMock parent = new ResourceMock("Parent");
     protected final PageMock page = new PageMock("Page");
-    protected final ResourceMock jcrContent = page.getContent();
+    protected final PageContentMock jcrContent = page.getContent();
     protected final ResourceMock resource = new ResourceMock("Resource");
 
     protected final PageMock component = new PageMock("Per Component");
 
-    protected final SlingHttpServletRequest request = mock(SlingHttpServletRequest.class, fullName(this, "Request"));
-    protected final RequestPathInfo requestPathInfo = Mockito.mock(RequestPathInfo.class);
+    protected final SlingHttpServletRequestMock request = new SlingHttpServletRequestMock(fullName(this, "Request"));
 
     protected final RepoMock repo;
     protected final ResourceMock contentRoot;
@@ -76,7 +65,7 @@ public class SlingResourcesTest {
         component.setPath(SLASH_APPS_SLASH + RESOURCE_TYPE);
         resource.setResourceType(RESOURCE_TYPE);
         init(component);
-        bindRequest();
+        request.bind(resource);
     }
 
     public SlingResourcesTest(final String rootPath) {
@@ -87,31 +76,12 @@ public class SlingResourcesTest {
         this(CONTENT_ROOT);
     }
 
-    private void bindRequest() {
-        when(request.getResource()).thenReturn(resource);
-        when(request.getResourceResolver()).thenReturn(resourceResolver);
-        when(request.getRequestPathInfo()).thenReturn(requestPathInfo);
-        final String path = resource.getPath();
-        when(requestPathInfo.getResourcePath()).thenReturn(path);
-        when(requestPathInfo.getExtension()).thenReturn(HTML);
-    }
-
     protected <Mock extends ResourceMock> Mock init(final Mock mock) {
         return repo.init(mock);
     }
 
     protected PageMock init(final PageMock mock) {
         return repo.init(mock);
-    }
-
-    protected void setSelectors(final String... selectors) {
-        when(requestPathInfo.getSelectors()).thenReturn(selectors);
-        when(requestPathInfo.getSelectorString()).thenReturn(StringUtils.join(selectors, DOT));
-    }
-
-    protected void setSelectorsString(final String selectorsString) {
-        when(requestPathInfo.getSelectors()).thenReturn(selectorsString.split("\\."));
-        when(requestPathInfo.getSelectorString()).thenReturn(selectorsString);
     }
 
 }

@@ -25,11 +25,13 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.replication.DefaultReplicationMapper;
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.commons.util.PerConstants;
-import com.peregrine.replication.PerReplicable;
+import com.peregrine.commons.util.PerUtil;
+import com.peregrine.replication.Replication;
 import com.peregrine.replication.Replication.ReplicationException;
+import com.peregrine.replication.ReplicationUtil;
+import com.peregrine.replication.ReplicationsContainerWithDefault;
 import com.peregrine.sitemap.SiteMapFilesCache;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -42,7 +44,10 @@ import javax.servlet.Servlet;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_TENANT_SETUP_REPLICATION;
 
@@ -54,8 +59,6 @@ import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static com.peregrine.commons.util.PerUtil.POST;
-import static java.util.Objects.nonNull;
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -90,7 +93,7 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
     private final SimpleDateFormat dateLabelFormat = new SimpleDateFormat("yyyy-MM-dd@HH.mm.ss");
 
     @Reference
-    private DefaultReplicationMapper defaultReplicationMapper;
+    private ReplicationsContainerWithDefault replications;
 
     @Reference
     private AdminResourceHandler resourceManagement;
@@ -98,30 +101,32 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
     @Reference
     private SiteMapFilesCache siteMapFilesCache;
 
+    protected ReplicationsContainerWithDefault getReplications() {
+        return replications;
+    }
+
     @Override
     protected Response performReplication(
+            final Replication replication,
             final Request request,
             final Resource site,
             final ResourceResolver resourceResolver
-    ) throws IOException {
+    ) throws IOException, ReplicationException {
         final String path = site.getPath();
         // Make sure that the Resource is a Site
         if (!SITE_PRIMARY_TYPE.equals(site.getResourceType())) {
-            return new ErrorResponse()
-                    .setHttpErrorCode(SC_BAD_REQUEST)
-                    .setErrorMessage(String.format("Suffix: '%s' is not a Peregrine Site", path));
+            return badRequest(String.format("Suffix: '%s' is not a Peregrine Site", path));
         }
 
-        final var toBeReplicatedInitial = extractSiteFeLibs(site, resourceResolver.getResource(FELIBS_ROOT));
+        final PerUtil.ResourceChecker tenantChecker = new ReplicationUtil.TenantOwnedResourceChecker(site);
+        final var toBeReplicatedInitial = extractSiteFeLibs(site, resourceResolver.getResource(FELIBS_ROOT), tenantChecker);
         toBeReplicatedInitial.add(0, site);
         logger.trace("List of Resource to be replicated: '{}'", toBeReplicatedInitial);
-        final var toBeReplicated = new LinkedList<>(toBeReplicatedInitial);
+        List<Resource> toBeReplicated = new LinkedList<>(toBeReplicatedInitial);
         for (final Resource resource : toBeReplicatedInitial) {
             try {
                 logger.trace("Replication Resource: '{}'", resource);
-                var references = defaultReplicationMapper.findReferences(resource, true);
-                references = defaultReplicationMapper.prepare(references);
-                toBeReplicated.addAll(references);
+                toBeReplicated.addAll(replication.findReferences(resource, true, tenantChecker));
             } catch (final ReplicationException e) {
                 logger.warn("Replication Failed", e);
                 return badRequestReplicationFailed(e);
@@ -129,10 +134,7 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
         }
 
         final String dateLabel = site.getName() + "_" + dateLabelFormat.format(new Date(System.currentTimeMillis()));
-        streamReplicableResources(toBeReplicated)
-                .map(r -> r.adaptTo(PerReplicable.class))
-                .filter(Objects::nonNull)
-                .forEach(PerReplicable::ensureReplicableMixin);
+        toBeReplicated = replication.prepare(toBeReplicated);
         streamReplicableResources(toBeReplicated)
                 .map(Resource::getPath)
                 .forEach(p -> {
@@ -142,28 +144,22 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
                         logger.trace("Unable to create a version for path: {} ", p, e);
                     }
                 });
-        try {
-            var replicatedStuff = defaultReplicationMapper.replicate(toBeReplicated);
-            siteMapFilesCache.build(path + SLASH + PAGES);
-            return prepareResponse(site, replicatedStuff);
-        } catch (final ReplicationException e) {
-            return badRequestReplicationFailed(e);
-        }
+        final var replicatedStuff = replication.replicate(toBeReplicated);
+        siteMapFilesCache.build(path + SLASH + PAGES);
+        return prepareResponse(site, replicatedStuff);
     }
 
     /**
      * Things to search for
      * - /content/<site>/pages/css
-     * - /etc/felibs/<theme>.(css|js)
-     * - /etc/felibs/<site>.(css|js)
-     * - /etc/felibs/<theme dependencies>.(css|js) **/
-    private List<Resource> extractSiteFeLibs(final Resource site, final Resource feLibsRoot) {
+     * - /etc/felibs/<site>.(css|js) **/
+    private List<Resource> extractSiteFeLibs(final Resource site, final Resource feLibsRoot, final PerUtil.ResourceChecker checker) {
         final List<Resource> result = new LinkedList<>();
         logger.trace("Source Site: '{}'", site);
         final String siteName = site.getName();
         final Resource siteFeLibs = feLibsRoot.getChild(siteName);
         logger.trace("Source FeLibs: '{}', Site Name: '{}'", siteFeLibs, siteName);
-        if (nonNull(siteFeLibs)) {
+        if (checker.doAdd(siteFeLibs)) {
             logger.trace("Add Site FE libs: '{}'", siteFeLibs);
             result.add(siteFeLibs);
         }
@@ -174,12 +170,13 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
                 .map(site.getParent()::getChild)
                 .orElse(null);
         logger.trace("Parent Source Resource: '{}'", parentSite);
-        if (nonNull(parentSite)) {
+        if (checker.doAdd(parentSite)) {
             logger.trace("Add Site Parent: '{}'", parentSite);
             result.add(parentSite);
-            result.addAll(extractSiteFeLibs(parentSite, feLibsRoot));
+            result.addAll(extractSiteFeLibs(parentSite, feLibsRoot, checker));
         }
 
         return result;
     }
+
 }

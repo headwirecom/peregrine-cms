@@ -64,11 +64,11 @@ public class PerUtil {
     public static final String RESOURCE_RESOLVER_FACTORY_CANNOT_BE_NULL = "Resource Resolver Factory cannot be null";
     public static final String SERVICE_NAME_CANNOT_BE_EMPTY = "Service Name cannot be empty";
 
+    public static final ResourceChecker ADD_ALL_RESOURCE_CHECKER = new AddAllResourceChecker();
+
     private static final Logger LOG = LoggerFactory.getLogger(PerUtil.class);
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-    private static final ResourceChecker ADD_ALL_RESOURCE_CHECKER = new AddAllResourceChecker();
 
     /** @return True if the given text is either null or empty **/
     public static boolean isEmpty(String text) {
@@ -348,20 +348,27 @@ public class PerUtil {
         return PerConstants.JCR_CONTENT.equals(resource.getName());
     }
 
+    private static boolean isDescendantOfJcrContent(final String path) {
+        return StringUtils.contains(path, SLASH + JCR_CONTENT + SLASH);
+    }
+
+    public static boolean isJcrContentOrDescendant(final String path) {
+        return isJcrContent(path) || isDescendantOfJcrContent(path);
+    }
+
+    public static boolean isJcrContentOrDescendant(final Resource resource) {
+        return Optional.ofNullable(resource)
+                .map(Resource::getPath)
+                .map(PerUtil::isJcrContentOrDescendant)
+                .orElse(false);
+    }
+
     public static Resource getJcrContent(final Resource resource) {
         if (isJcrContent(resource)) {
             return resource;
         }
 
         return getProperJcrContent(resource);
-    }
-
-    public static String getJcrContent(final String path) {
-        if (isJcrContent(path)) {
-            return path;
-        }
-
-        return path + SLASH + PerConstants.JCR_CONTENT;
     }
 
     public static Resource getProperJcrContent(final Resource resource) {
@@ -377,6 +384,22 @@ public class PerUtil {
         return Optional.ofNullable(getJcrContentOrSelf(resource))
                 .map(Resource::getValueMap)
                 .orElse(null);
+    }
+
+    /**
+     * We define the notion of a <code>base</code> for a given <code>resource</code> here as the parent of
+     * <code>jcr:content</code> or the <code>resource</code> itself otherwise.
+     *
+     * @param resource the <code>resource</code> for which we want to extract the <code>base</code>
+     * @return the parent resource, if the <code>resource</code> is <code>jcr:content</code>,
+     * or the <code>resource</code> itself otherwise (it's its own <code>base</code> then)
+     */
+    public static Resource getBaseResource(final Resource resource) {
+        if (isJcrContent(resource)) {
+            return resource.getParent();
+        }
+
+        return resource;
     }
 
     /**
@@ -854,6 +877,24 @@ public class PerUtil {
         boolean doAdd(Resource resource);
         /** @return False if the resource's children should not be considered **/
         boolean doAddChildren(Resource resource);
+    }
+
+    public static final class ConjunctionResourceCheckerChain extends LinkedList<ResourceChecker> implements ResourceChecker {
+
+        public ConjunctionResourceCheckerChain(final ResourceChecker... items) {
+            for (final ResourceChecker rc : items) {
+                add(rc);
+            }
+        }
+
+        public boolean doAdd(final Resource resource) {
+            return stream().allMatch(rc -> rc.doAdd(resource));
+        }
+
+        public boolean doAddChildren(final Resource resource) {
+            return stream().allMatch(rc -> rc.doAddChildren(resource));
+        }
+
     }
 
     /** Checks all resources that are either missing or are outdated on the target **/

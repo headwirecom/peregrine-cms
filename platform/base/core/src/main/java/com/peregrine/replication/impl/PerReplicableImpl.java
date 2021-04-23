@@ -2,35 +2,23 @@ package com.peregrine.replication.impl;
 
 import com.peregrine.adaption.impl.PerBaseImpl;
 import com.peregrine.replication.PerReplicable;
-import com.peregrine.commons.util.PerUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.api.resource.ModifiableValueMap;
-import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.jcr.nodetype.NodeType;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Optional;
 
 import static com.peregrine.commons.util.PerConstants.*;
 
 public class PerReplicableImpl extends PerBaseImpl implements PerReplicable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(PerReplicableImpl.class);
+    private final ValueMap vm;
 
-    private ValueMap vm;
-    private ModifiableValueMap modifiableValueMap;
-
-    public PerReplicableImpl(Resource resource) {
+    public PerReplicableImpl(final Resource resource) {
         super(resource);
         vm = Optional.ofNullable(getProperties())
                 .orElseGet(resource::getValueMap);
-        modifiableValueMap = Optional.ofNullable(getModifiableProperties())
-                .orElseGet(() -> resource.adaptTo(ModifiableValueMap.class));
     }
 
     private <T> T getProperty(final String name, final Class<T> type) {
@@ -41,8 +29,13 @@ public class PerReplicableImpl extends PerBaseImpl implements PerReplicable {
         return getProperty(name, String.class);
     }
 
-    private Calendar getCalendarProperty(String jcrLastModified) {
-        return getProperty(jcrLastModified, Calendar.class);
+    private Calendar getCalendarProperty(String name) {
+        return getProperty(name, Calendar.class);
+    }
+
+    @Override
+    public Resource getMainResource() {
+        return Optional.ofNullable(getContentResource()).orElseGet(this::getResource);
     }
 
     /**
@@ -90,49 +83,4 @@ public class PerReplicableImpl extends PerBaseImpl implements PerReplicable {
         return getStringProperty(PER_REPLICATION_LAST_ACTION);
     }
 
-    @Override
-    public boolean ensureReplicableMixin() {
-        final Resource resource = hasContent() ? getContentResource() : getResource();
-        if (PerUtil.isPrimaryType(resource, NT_UNSTRUCTURED,
-                ASSET_CONTENT_TYPE,
-                "per:NpmPackageConfig",
-                OBJECT_PRIMARY_TYPE,
-                OBJECT_DEFINITION_PRIMARY_TYPE,
-                PAGE_PRIMARY_TYPE,
-                PAGE_CONTENT_TYPE)) {
-            return true;
-        }
-        final Node node = resource.adaptTo(Node.class);
-        try {
-            if (!Arrays.stream(node.getMixinNodeTypes())
-                    .map(NodeType::getName)
-                    .anyMatch(PER_REPLICATION::equals)) {
-                node.addMixin(PER_REPLICATION);
-                node.getSession().save();
-            }
-
-            return true;
-        } catch (final RepositoryException e) {
-            return false;
-        }
-    }
-
-    @Override
-    public void setLastReplicationActionAsActivated() {
-        setLastAction(ACTIVATED);
-    }
-
-    @Override
-    public void setLastReplicationActionAsDeactivated(){
-        setLastAction(DEACTIVATED);
-    }
-
-    private void setLastAction(String value){
-        this.modifiableValueMap.put(PER_REPLICATION_LAST_ACTION, value);
-        try {
-            this.getResource().getResourceResolver().commit();
-        } catch (PersistenceException e) {
-            LOG.error("Could not set replication status to pending", e);
-        }
-    }
 }
