@@ -532,15 +532,11 @@ export default {
     activeTab : function(tab) {
       if (tab === 'versions'){
         this.showVersions()
-      } else if (tab === 'references'){
-        this.showReferencedBy()
       }
     },
     currentObject : function(path) {
-      if (this.activeTab === 'versions'){
+      if (this.activeTab === 'versions') {
         this.showVersions()
-      } else if (this.activeTab === 'references'){
-        this.showReferencedBy()
       }
       if (this.stateToolsEdit) {
         this.onEdit()
@@ -781,14 +777,6 @@ export default {
     },
     showVersions() {
       $perAdminApp.getApi().populateVersions(this.currentObject);
-    },
-    showReferencedBy() {
-      this.loading = true
-      $perAdminApp.getApi()
-          .populateReferencedBy(this.currentObject)
-          .then(() => {
-            this.loading = false
-          })
     },
     deleteVersion(me, target) {
       $perAdminApp.stateAction('deleteVersion', { path: target.path, version: target.version.name });
