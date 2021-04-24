@@ -41,7 +41,15 @@
             v-bind:modalTitle="getBtnText" >
 
             <p>Members typically use their ~ page to describe themselves or their work.            
-            Your personal ~ homepage is one step away </p>
+            Your personal ~ homepage is a few steps away. Fill out a few details. </p>
+            
+            <vue-form-generator
+                :model="formmodel"
+                :schema="nameSchema"
+                :options="formOptions"
+                ref="tildaForm">
+            </vue-form-generator>
+
             <template slot="footer">
                 <admin-components-confirmdialog
                     v-on:confirm-dialog="confirmDialog"
@@ -52,7 +60,7 @@
         <div v-if="model.mode === 'modal' && !hasTilda">
             <div class="row">
                 <div class="col s12">
-                    <h1>{{$i18n('Profile')}}</h1>
+                    <h2>{{$i18n('Create Profile')}}</h2>
                     <button
                         v-if="!hasTilda"
                         v-on:click="openTildaModal" 
@@ -74,7 +82,84 @@
                 return {
                     btnText: "~homepage",
                     editPath: "/content/admin/pages/homepage.html",
-                    btnClasses: "btn"
+                    btnClasses: "btn",
+                    formmodel: {
+                        tildaPageUri: '',
+                        firstName: '',
+                        lastName: '',
+                        pronouns: '',
+                        org: '',
+                        title: '',
+                    },
+                    formOptions: {
+                        validationErrorClass: "has-error",
+                        validationSuccessClass: "has-success",
+                        validateAfterChanged: true,
+                        focusFirstField: true
+                    },
+                    nameChanged: false,
+                    nameSchema: {
+                        fields: [
+                            {
+                                type: "input",
+                                inputType: "text",
+                                label: "First Name",
+                                model: "firstName",
+                                required: true,
+                                onChanged: (model, newVal, oldVal, field) => {
+                                    this.formmodel.firstName = newVal;
+                                }
+                            },
+                            {
+                                type: "input",
+                                inputType: "text",
+                                label: "Last Name",
+                                model: "lastName",
+                                required: true,
+                                onChanged: (model, newVal, oldVal, field) => {
+                                    this.formmodel.lastName = newVal;
+                                }
+                            },
+                            {
+                                type: "input",
+                                inputType: "text",
+                                label: "~page URI",
+                                model: "tildaPageUri",
+                                required: true,
+                                onChanged: (model, newVal, oldVal, field) => {
+                                    this.formmodel.tildaPageUri = $perAdminApp.normalizeString(newVal);
+                                },
+                                validator: [this.nameAvailable, this.validPageName]
+                            },
+                            {
+                                type: "input",
+                                inputType: "text",
+                                label: "Pronouns",
+                                model: "pronouns",
+                                onChanged: (model, newVal, oldVal, field) => {
+                                    this.formmodel.pronouns = newVal;
+                                }
+                            },
+                            {
+                                type: "input",
+                                inputType: "text",
+                                label: "Organization",
+                                model: "org",
+                                onChanged: (model, newVal, oldVal, field) => {
+                                    this.formmodel.org = newVal;
+                                },
+                            },
+                            {
+                                type: "input",
+                                inputType: "text",
+                                label: "Title/Position",
+                                model: "title",
+                                onChanged: (model, newVal, oldVal, field) => {
+                                    this.formmodel.title = newVal;
+                                },
+                            },
+                        ]
+                    }                    
             }
         },
         computed: {
@@ -89,12 +174,40 @@
             confirmDialog($event){
                 if ($event == 'confirm') {
                     console.log("submit new ~ page")
+                    console.log(this.formmodel)
                 }
                 this.$refs.createtildamodal.close()
             },
             openTildaModal(){
                 this.$refs.createtildamodal.open()
+            },
+            validPageName: function(event) {
+                let value = event
+                if (event && event instanceof Object && event.data) {
+                    value = event.data
+                }
+                if(!value || value.length === 0) {
+                    return [this.$i18n('Name is required.')]
+                }
+                let regExMatch = /[^0-9a-zA-Z_-]/
+                let errorMsg = 'Page names may only contain letters, numbers, underscores, and dashes'
+                if (this.uNodeType === "Asset") {
+                    regExMatch = /[^0-9a-z.A-Z_-]/
+                    errorMsg = 'Assets names may only contain letters, numbers, underscores, and dashes'
+                }
+
+                if (value.match(regExMatch)) {
+                    return [this.$i18n(errorMsg)]
+                }
+                return [];
+            },
+            nameAvailable: function(value) {
+                // TODO 
+                // name is available by checking with user-uri service
+                // user-uri is available if no other ~<name> already exists
+                return []
             }
+
         },
         mounted() {
             if (this.model.mode === "modal" && !this.hasTilda) {

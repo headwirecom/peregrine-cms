@@ -99,7 +99,7 @@ public class UserPreferencesServlet extends AbstractBaseServlet {
         return answer;
     }
 
-    private Resource getUserHome(final Request request) {
+    protected Resource getUserHome(final Request request) {
 
         final ResourceResolver resolver = request.getResourceResolver();
         Resource resource = null;
@@ -113,7 +113,7 @@ public class UserPreferencesServlet extends AbstractBaseServlet {
         return resource;
     }
 
-    private UserManager getUserManager(final Request request) {
+    protected UserManager getUserManager(final Request request) {
 
         ResourceResolver resourceResolver = null;
         UserManager userManager = null;

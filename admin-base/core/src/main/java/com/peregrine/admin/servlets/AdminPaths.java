@@ -41,6 +41,7 @@ public interface AdminPaths {
     String RESOURCE_TYPE_LIST_VERSIONS = API_PREFIX + "listVersions";
     String RESOURCE_TYPE_RESTORE_RECYCLABLE = API_PREFIX + "restoreRecyclable";
     String RESOURCE_TYPE_USER_PREFERENCES = API_PREFIX + "userPreferences";
+    String RESOURCE_TYPE_USER_HOMEPAGE = API_PREFIX + "userHomepage";
     String RESOURCE_TYPE_LIST_REPLICATION = API_PREFIX + "listRepl";
     String RESOURCE_TYPE_DO_REPLICATION = API_PREFIX + "repl";
     String RESOURCE_TYPE_TENANT_SETUP_REPLICATION = API_PREFIX + "tenantSetupReplication";
