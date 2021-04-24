@@ -39,8 +39,8 @@ import static org.junit.Assert.*;
 @RunWith(SlingAnnotationsTestRunner.class)
 public class PermissionJTest {
 
-    static final public String EXAMPLE_SITE_ROOT = "/content/example";
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    public static final String EXAMPLE_SITE_ROOT = "/content/example";
+
     @TestReference
     AdminResourceHandler resourceManagement;
     @TestReference

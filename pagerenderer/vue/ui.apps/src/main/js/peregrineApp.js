@@ -308,8 +308,7 @@ function loadContentImpl(path, firstTime, fromPopState, onPage = false) {
     } else {
         axios.get(dataUrl).then(function (response) {
             log.fine('got data for', path)
-    
-            if (response.data.serverSide === true){
+            if (response.hasOwnProperty('data') && response.data.serverSide === true) {
                 document.location = `${response.data.pagePath}.html`
             } else {
                 processLoadedContent(response.data, path, firstTime, fromPopState)
