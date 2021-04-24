@@ -516,7 +516,7 @@
             <dependency>
                 <groupId>org.apache.jackrabbit.vault</groupId>
                 <artifactId>org.apache.jackrabbit.vault</artifactId>
-                <version>3.4.8</version>
+                <version>3.4.10</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
