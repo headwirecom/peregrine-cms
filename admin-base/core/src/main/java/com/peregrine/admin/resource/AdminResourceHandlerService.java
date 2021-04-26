@@ -101,7 +101,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.peregrine.adaption.PerAsset;
 import com.peregrine.admin.models.Recyclable;
 import com.peregrine.commons.ResourceUtils;
-import com.peregrine.commons.util.PerConstants;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.rendition.BaseResourceHandler;
 import com.peregrine.replication.ImageMetadataSelector;
