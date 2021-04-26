@@ -634,6 +634,10 @@ export default {
                 $perAdminApp.stateAction('sourceImageWizard', me.pt.path)
             },
 
+            adobeStockImage: function(me, target) {
+                $perAdminApp.stateAction('adobeStockImageWizard', me.pt.path )
+            },
+
             canBeDeleted: function(obj) {
                 return !(obj.activated || obj.anyDescendantActivated);
             },
