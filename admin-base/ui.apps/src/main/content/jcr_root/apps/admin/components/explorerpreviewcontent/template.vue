@@ -197,7 +197,7 @@
             <i class="material-icons">publish</i>
             Publish to Web ({{nodeType}})
           </div>
-          <div class="action" :title="`Deactivate ${nodeType}`" >
+          <div v-if="nodeFromPath.activated" class="action" :title="`Deactivate ${nodeType}`" >
             <admin-components-action
                 v-bind:model="{
                     target: node.path,
