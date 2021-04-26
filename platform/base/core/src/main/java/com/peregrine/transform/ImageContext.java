@@ -91,7 +91,7 @@ public class ImageContext {
         return this;
     }
 
-    /** @returns the Image Input Stream which is not null **/
+    /** @return the Image Input Stream which is not null **/
     public InputStream getImageStream() {
         return imageStream;
     }

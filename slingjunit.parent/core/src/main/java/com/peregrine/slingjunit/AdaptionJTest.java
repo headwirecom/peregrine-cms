@@ -177,7 +177,7 @@ public class AdaptionJTest {
 
      template: /content/pagerenderserver/templates/base
      page: /content/pagerenderserver/pages/index
-     Passes if List<Resource> actualResources has
+     Passes if List&lt;Resource&gt; actualResources has
         content resources inherited from the $template
         content resources from the $page
         overrides template content with page content if their relative paths are the same

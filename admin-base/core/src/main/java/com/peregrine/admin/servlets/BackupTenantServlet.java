@@ -77,8 +77,8 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  *    ui.apps/src/main/content/jcr_root/api/definitions/admin.yaml
  *
  * It is invoked like this:
- *      curl -X GET "http://localhost:8080/perapi/admin/backupTenant.json/<tenant name>"
- *      curl -X POST "http://localhost:8080/perapi/admin/backupTenant.json/<tenant name>"
+ *      curl -X GET "http://localhost:8080/perapi/admin/backupTenant.json/&lt;tenant name&gt;"
+ *      curl -X POST "http://localhost:8080/perapi/admin/backupTenant.json/&lt;tenant name&gt;"
  */
 
 @Component(

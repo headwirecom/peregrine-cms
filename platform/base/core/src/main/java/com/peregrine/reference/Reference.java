@@ -35,16 +35,16 @@ import org.apache.sling.api.resource.Resource;
  * Example with Content:
  * /a
  *   /b
- *     /myResource             <- Resource
+ *     /myResource             &lt;- Resource
  *       /jcr:content
- *         /myReference        <- Property Resource
- *           - myPropertyRef   <- Property (which name is provided here)
+ *         /myReference        &lt;- Property Resource
+ *           - myPropertyRef   &lt;- Property (which name is provided here)
  *
  * Example w/o Content
  * /a
  *   /b
- *     /myResource             <- Resource and Property Resource
- *        - myPropertyRef      <- Property (which name is provided here)
+ *     /myResource             &lt;- Resource and Property Resource
+ *        - myPropertyRef      &lt;- Property (which name is provided here)
  *
  * Created by Andreas Schaefer on 5/25/17.
  */

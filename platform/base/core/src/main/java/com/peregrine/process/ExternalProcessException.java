@@ -48,7 +48,7 @@ public class ExternalProcessException
         super(message, cause);
     }
 
-    /** @eturn List of commands provided to the process **/
+    /** @return List of commands provided to the process **/
     public List<String> getCommand() {
         return command;
     }
