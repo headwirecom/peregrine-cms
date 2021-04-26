@@ -101,6 +101,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.peregrine.adaption.PerAsset;
 import com.peregrine.admin.models.Recyclable;
 import com.peregrine.commons.ResourceUtils;
+import com.peregrine.commons.util.PerConstants;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.rendition.BaseResourceHandler;
 import com.peregrine.replication.ImageMetadataSelector;
@@ -356,11 +357,11 @@ public class AdminResourceHandlerService
     }
 
     private void addFile(Node parent, String name, String data) throws RepositoryException {
-        Node file = parent.addNode(name, "nt:file");
-        Node fileNode = file.addNode("jcr:content", "nt:resource");
-        fileNode.setProperty("jcr:mimeType", "application/json");
-        fileNode.setProperty("jcr:encoding", "UTF-8");
-        fileNode.setProperty("jcr:data", new StringBufferInputStream(data));
+        Node file = parent.addNode(name, JcrConstants.NT_FILE);
+        Node fileNode = file.addNode(JCR_CONTENT, JcrConstants.NT_RESOURCE);
+        fileNode.setProperty(JcrConstants.JCR_MIMETYPE, "application/json");
+        fileNode.setProperty(JcrConstants.JCR_ENCODING, "UTF-8");
+        fileNode.setProperty(JcrConstants.JCR_DATA, new StringBufferInputStream(data));
     }
 
     private void addDefaultDialog(Node parent) throws RepositoryException {
