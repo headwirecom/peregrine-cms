@@ -34,6 +34,7 @@ import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED;
 import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED_BY;
 import static com.peregrine.commons.util.PerConstants.PNG_MIME_TYPE;
 import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
+import static java.util.Objects.isNull;
 
 /**
  * Created by Andreas Schaefer on 7/6/17.
@@ -197,24 +198,22 @@ public class BaseResourceHandlerService
 
     /** @param resource Adds / Update the Last Modified and Last Modified By property on this resource **/
     @Override
-    public void updateModification(Resource resource) {
-        if(resource != null) {
-            String user = resource.getResourceResolver().getUserID();
-            Calendar now = Calendar.getInstance();
-            ModifiableValueMap properties = getModifiableProperties(resource, false);
+    public void updateModification(final Resource resource) {
+        if (isNull(resource)) {
+            return;
+        }
+
+        String user = resource.getResourceResolver().getUserID();
+        Calendar now = Calendar.getInstance();
+        final Resource base = PerUtil.getBaseResource(resource);
+        ModifiableValueMap properties = getModifiableProperties(base, false);
+        properties.put(JCR_LAST_MODIFIED_BY, user);
+        properties.put(JCR_LAST_MODIFIED, now);
+        Resource jcrContent = PerUtil.getProperJcrContent(base);
+        if (jcrContent != null) {
+            properties = getModifiableProperties(jcrContent, false);
             properties.put(JCR_LAST_MODIFIED_BY, user);
             properties.put(JCR_LAST_MODIFIED, now);
-            PerPage page = resource.adaptTo(PerPage.class);
-            if(page != null) {
-                page.markAsModified();
-            } else {
-                Resource jcrContent = PerUtil.getResource(resource, JCR_CONTENT);
-                if(jcrContent != null) {
-                    properties = getModifiableProperties(jcrContent, false);
-                    properties.put(JCR_LAST_MODIFIED_BY, user);
-                    properties.put(JCR_LAST_MODIFIED, now);
-                }
-            }
         }
     }
 }

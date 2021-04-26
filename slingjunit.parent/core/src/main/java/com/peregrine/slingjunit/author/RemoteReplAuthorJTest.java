@@ -1,6 +1,7 @@
 package com.peregrine.slingjunit.author;
 
 
+import com.peregrine.commons.util.PerUtil;
 import com.peregrine.replication.PerReplicable;
 import com.peregrine.replication.Replication;
 import com.peregrine.replication.ReplicationsContainer;
@@ -137,7 +138,7 @@ public class RemoteReplAuthorJTest extends ReplicationTestBase {
         PerReplicable stellaImgRepl = stellaImgRes.adaptTo(PerReplicable.class);
         assertFalse(stellaImgRepl.isReplicated());
         try {
-            replication.replicate(stellaImgRes, true);
+            replication.replicate(stellaImgRes, true, PerUtil.ADD_ALL_RESOURCE_CHECKER);
             assertPublishedStatus(STELLA_PNG, 200);
             assertTrue(stellaImgRepl.isReplicated());
 

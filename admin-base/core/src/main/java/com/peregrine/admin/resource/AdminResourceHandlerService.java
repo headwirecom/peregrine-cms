@@ -2039,6 +2039,10 @@ public class AdminResourceHandlerService
 
         for (Entry<String, Object> entry : properties.entrySet()) {
             String name = entry.getKey();
+            if (!isPropertyCopyable(name)) {
+                continue;
+            }
+
             Object value = entry.getValue();
             if (value instanceof Map) {
                 applyChildProperties(resource, name, (Map) value);
