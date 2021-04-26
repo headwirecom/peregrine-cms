@@ -73,7 +73,11 @@
 
     <modules>
         <module>core</module>
-        <module>ui.apps</module>
+        <module>core.remote</module>
+        <module>core.local</module>
+        <module>package.common</module>
+        <module>package.remote</module>
+        <module>package.local</module>
     </modules>
 
 </project>

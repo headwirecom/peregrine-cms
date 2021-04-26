@@ -31,4 +31,5 @@
   <filter root="/apps/pagerenderserver">
     <exclude pattern="/apps/pagerenderserver/install/.*"/>
   </filter>
+  <filter root="/apps/nt/unstructured"/>
 </workspaceFilter>

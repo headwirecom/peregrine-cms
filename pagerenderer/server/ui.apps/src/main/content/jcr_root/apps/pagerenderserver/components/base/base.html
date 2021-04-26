@@ -1,4 +1,6 @@
-<sly data-sly-use.helper="apps.pagerenderserver.components.base.Helper"/>
-<div data-per-path="${helper.model.path}">${helper.model}
+<sly data-sly-use.helper="com.peregrine.pagerender.server.helpers.BaseHelper"/>
+
+<div data-per-path="${helper.model.path}">
     ${properties.text @ context='html'}
+    ${properties.text ? '': 'placeholder text'}
 </div>

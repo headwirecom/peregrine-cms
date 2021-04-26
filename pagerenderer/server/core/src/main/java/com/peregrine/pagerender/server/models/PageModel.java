@@ -45,6 +45,8 @@ import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.Optional;
 import org.apache.sling.models.factory.ModelFactory;
 
+import java.util.Objects;
+
 /**
  * Created by rr on 12/2/2016.
  */
@@ -71,11 +73,9 @@ public class PageModel extends Container {
         Resource page = res.getParent();
         if(page != null) {
             Resource parentPage = page.getParent();
-            if(parentPage != null) {
-                if(PAGE_PRIMARY_TYPE.equals(parentPage.getResourceType())) {
-                    Resource child = parentPage.getChild(JCR_CONTENT);
-                    return child;
-                }
+            if(Objects.nonNull(parentPage) && Objects.nonNull(parentPage.getChild(JCR_CONTENT))) {
+                Resource child = parentPage.getChild(JCR_CONTENT);
+                return child;
             }
         }
         return null;
@@ -126,7 +126,9 @@ public class PageModel extends Container {
     public String[] getSiteCSS() {
         if(siteCSS == null) {
             String[] value = (String[]) getInheritedProperty(SITE_CSS);
-            if(value != null && value.length != 0) return value;
+            if(value != null && value.length != 0) {
+                return value;
+            }
             if(getTemplate() != null) {
                 PageModel templatePageModel = getTemplatePageModel();
                 if(templatePageModel != null) {

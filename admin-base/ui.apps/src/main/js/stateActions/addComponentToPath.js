@@ -61,19 +61,22 @@ export default function(me, target) {
         processed = true;
         return me.getApi().insertNodeAt(target.pagePath+targetNode.path, componentPath, target.drop, variation)
             .then( (data) => {
-                        if(targetNodeUpdate.fromTemplate === true) {
-                            return me.getApi().populatePageView(me.getNodeFromView('/pageView/path'))
-                        } else {
-                            if(target.drop.startsWith('into')) {
-                                Vue.set(targetNodeUpdate, 'children', data.children)
-                            }
-                            else if(target.drop === 'before' || target.drop === 'after')
-                            {
-                                Vue.set(targetNodeUpdate, 'children', data.children)
-                            }
-                            log.fine(data)
-                        }
-                    })
+                if(view.pageView.page.serverSide) {
+                    me.action(me.getApp().$children[0], 'refreshEditor', view.pageView.page)
+                    return me.getApi().populatePageView(me.getNodeFromView('/pageView/path'))
+                } else if(targetNodeUpdate.fromTemplate === true) {
+                    return me.getApi().populatePageView(me.getNodeFromView('/pageView/path'))
+                } else {
+                    if(target.drop.startsWith('into')) {
+                        Vue.set(targetNodeUpdate, 'children', data.children)
+                    }
+                    else if(target.drop === 'before' || target.drop === 'after')
+                    {
+                        Vue.set(targetNodeUpdate, 'children', data.children)
+                    }
+                    log.fine(data)
+                }
+            })
     }
 
     // copy/paste?
