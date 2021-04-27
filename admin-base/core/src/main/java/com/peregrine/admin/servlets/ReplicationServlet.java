@@ -68,7 +68,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  *    ui.apps/src/main/content/jcr_root/perapi/definitions/admin.yaml
  *
  * It is invoked like this:
- *      curl -X POST "http://localhost:8080/perapi/admin/repl.json/content/themeclean" -H  "accept: application/json" -H  "content-type: application/x-www-form-urlencoded" -d "name=defaultRepl&deep=false"
+ *      curl -X POST "http://localhost:8080/perapi/admin/repl.json/content/themeclean" -H  "accept: application/json" -H  "content-type: application/x-www-form-urlencoded" -d "name=defaultRepl&quot;deep=false"
  */
 @Component(
     service = Servlet.class,

@@ -1,0 +1,23 @@
+<sly data-sly-use.container="com.peregrine.pagerender.server.models.Container">
+<div data-per-path="${container.path}"> 
+
+    <div    data-per-path="${container.path}" 
+            data-per-droptarget="true" 
+            data-per-location="after" 
+            class="per-drop-target">
+        container start
+    </div>
+    
+    <sly data-sly-list.item="${container.getCombinedResources}">
+        <sly data-sly-resource="${item.path}"></sly>
+    </sly>
+
+    <div    data-per-path="${container.path}" 
+            data-per-droptarget="true" 
+            data-per-location="before" 
+            class="per-drop-target">
+        container end
+    </div>
+
+</div>
+</sly>

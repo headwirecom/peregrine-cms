@@ -25,25 +25,10 @@ package com.peregrine.nodetypes.merge;
  * #L%
  */
 
-import static com.peregrine.commons.util.PerConstants.COMPONENT;
-import static com.peregrine.commons.util.PerConstants.JACKSON;
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
-import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.PATH;
-import static java.util.regex.Pattern.compile;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
-import javax.script.Bindings;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.scripting.SlingScriptHelper;
 import org.apache.sling.models.factory.ExportException;
 import org.apache.sling.models.factory.MissingExporterException;
@@ -51,6 +36,27 @@ import org.apache.sling.models.factory.ModelFactory;
 import org.apache.sling.scripting.sightly.pojo.Use;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.script.Bindings;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
+
+import static com.peregrine.commons.util.PerConstants.COMPONENT;
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
+import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.PATH;
+import static java.util.regex.Pattern.compile;
+import static org.apache.sling.api.scripting.SlingBindings.RESOLVER;
+import static org.apache.sling.api.scripting.SlingBindings.RESOURCE;
 
 /**
  * Created by rr on 5/8/2017.
@@ -63,15 +69,17 @@ public class PageMerge implements Use {
     private static ThreadLocal<RenderContext> renderContext = new ThreadLocal<>();
 
     public static final String FROM_TEMPLATE = "fromTemplate";
+    public static final String CHILDREN = "children";
     public static final String REQUEST = "request";
     public static final String SLING = "sling";
     public static final String TEMPLATE = "template";
+    public static final String MODEL_FACTORY = "modelFactory";
     public static final String REGEX_TEMPLATES = "(?<=\\/content\\/)([a-zA-Z0-9\\\\s\\\\_-])*(?=\\/templates)";
 
     private ModelFactory modelFactory;
-
+    private ResourceResolver resolver;
     private SlingHttpServletRequest request;
-
+    private Resource resource;
     public static RenderContext getRenderContext() {
         return renderContext.get();
     }
@@ -83,6 +91,56 @@ public class PageMerge implements Use {
             res = res.getParent();
         }
         return toJSON(getMerged(res));
+    }
+
+    public List<Resource> getMergedResources(){
+        List<Resource> pageResources = new ArrayList<>();
+        if (Objects.isNull(resource)){
+            resource = request.getResource();
+        }
+        if(resource.getName().equals(JCR_CONTENT)) {
+            resource = resource.getParent();
+        }
+        Map resourceMap = getMerged(resource);
+        // MAP to List
+        List<Map> maps = (ArrayList) resourceMap.get(CHILDREN);
+        for (Map map : maps) {
+            getChildren(map, pageResources);
+        }
+        return pageResources;
+    }
+
+    private void getChildren(Map map, List resources) {
+        String templatePath = getTemplatePath();
+        String relativePath = (String) map.get("path");
+        String basePath = resource.getPath();
+
+        if (Objects.nonNull(resolver.getResource(basePath+relativePath))){
+            // if resource is from the template and the resource is not a type of container
+            // then the base path should point to the template
+            resources.add(resolver.getResource(basePath+relativePath));
+
+        } else if (Objects.nonNull(resolver.getResource(templatePath+relativePath))){
+            // if resource is from the template and the resource is type of container
+            // then the base path should point to the page
+            resources.add(resolver.getResource(templatePath+relativePath));
+        } else {
+            // otherwise try to add content resource inherited from parent templates
+            Resource templateContent = this.resolver.getResource(basePath+relativePath);
+            Resource templateResource = this.resolver.getResource(templatePath);
+            while (Objects.isNull(templateContent) && Objects.nonNull(templateResource)){
+                // while loop logic. Enter if templateContent is null, but templateResource is non null.
+                // then try to resolve the templateContent from template parents content
+                // exit while loop when templateContent is resolved or templateResource becomes null
+                templateResource = templateResource.getParent();
+                if (Objects.nonNull(templateResource)) {
+                    templateContent = resolver.getResource(templateResource.getPath()+relativePath);
+                }
+            }
+            if (Objects.nonNull(templateContent)){
+                resources.add(templateContent);
+            }
+        }
     }
 
     public String getMergedForScript() {
@@ -111,7 +169,7 @@ public class PageMerge implements Use {
                 }
             }
             if(templatePath != null) {
-                Map template = getMerged(request.getResourceResolver().getResource(templatePath));
+                Map template = getMerged(this.resolver.getResource(templatePath));
                 flagFromTemplate(template);
                 return merge(template, page);
             }
@@ -138,6 +196,11 @@ public class PageMerge implements Use {
                 }
             }
         }
+    }
+
+    private String getTemplatePath(){
+        Resource jcrContent = this.resource.getChild(JCR_CONTENT);
+        return jcrContent.getValueMap().get(TEMPLATE, String.class);
     }
 
     private Map merge(Map template, Map page) {
@@ -203,8 +266,16 @@ public class PageMerge implements Use {
     @Override
     public void init(final Bindings bindings) {
         request = (SlingHttpServletRequest) bindings.get(REQUEST);
-        SlingScriptHelper sling = (SlingScriptHelper) bindings.get(SLING);
-        modelFactory = sling.getService(ModelFactory.class);
+        resource = (Resource) bindings.get(RESOURCE);
         renderContext.set(new RenderContext(request));
+        resolver = (ResourceResolver) bindings.get(RESOLVER);
+        SlingScriptHelper sling = (SlingScriptHelper) bindings.get(SLING);
+        if (Objects.nonNull(sling)) {
+            // the typical path
+            modelFactory = sling.getService(ModelFactory.class);
+        } else if ( Objects.nonNull(bindings.get(MODEL_FACTORY))) {
+            // for unit testing
+            modelFactory = (ModelFactory) bindings.get(MODEL_FACTORY);
+        }
     }
 }

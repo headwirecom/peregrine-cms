@@ -25,19 +25,28 @@ package com.peregrine.pagerender.server.models;
  * #L%
  */
 
-import static com.peregrine.commons.util.PerConstants.JACKSON;
-import static com.peregrine.commons.util.PerConstants.JSON;
-import static com.peregrine.pagerender.server.models.PageRenderServerConstants.PR_SERVER_COMPONENT_CONTAINER_TYPE;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.peregrine.adaption.PerPage;
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
-import java.util.List;
-import javax.inject.Inject;
-import javax.inject.Named;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.api.wrappers.CompositeValueMap;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
+import javax.annotation.PostConstruct;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import static com.peregrine.commons.util.PerConstants.JACKSON;
+import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.JSON;
+import static com.peregrine.pagerender.server.models.PageRenderServerConstants.PR_SERVER_COMPONENT_CONTAINER_TYPE;
 
 /**
  * Created by rr on 12/2/2016.
@@ -51,6 +60,14 @@ import org.apache.sling.models.annotations.Model;
     extensions = JSON)
 public class Container extends AbstractComponent {
 
+    private ResourceResolver resolver;
+    private String pagePath;
+    private Resource page;
+    private PerPage templatePage;
+    private PerPage perPage;
+    private String relativePath;
+    private Resource templateContainer;
+
     @Inject
     @Named(".")
     private List<IComponent> children;
@@ -63,5 +80,48 @@ public class Container extends AbstractComponent {
     @JsonIgnore(value = false)
     public List<IComponent> getChildren() {
         return children;
+    }
+
+    public List<Resource> getCombinedResources(){
+        if (Objects.isNull(resolver)){
+            setup();
+        }
+        List<Resource> merged = new ArrayList<>();
+        // get template container children, add them to the list
+            if(Objects.nonNull(templateContainer)){
+                templateContainer.getChildren().forEach(resource -> merged.add(resource));
+            }
+        // get page container children
+        this.getResource().getChildren().forEach(resource -> {
+            merged.add(resource);
+        });
+        return merged;
+    }
+
+    public ValueMap getCombinedProperties(){
+        if (Objects.isNull(resolver)){
+            setup();
+        }
+        ValueMap contentVM = this.getResource().getValueMap();
+        if (Objects.nonNull(templateContainer)){
+            ValueMap templateVM = templateContainer.getValueMap();
+            return new CompositeValueMap(contentVM, templateVM, true);
+        } else {
+            return contentVM;
+        }
+    }
+
+
+    void setup() {
+        resolver = this.getResource().getResourceResolver();
+        pagePath = this.getResource().getPath().substring(0, this.getResource().getPath().indexOf(JCR_CONTENT));
+        page = resolver.getResource(pagePath);
+        perPage = page.adaptTo(PerPage.class);
+        templatePage = perPage.getTemplate();
+        relativePath = this.getPath();
+        // find the container under the template
+        if (Objects.nonNull(templatePage)) {
+            templateContainer = resolver.getResource(templatePage.getPath() + relativePath);
+        }
     }
 }

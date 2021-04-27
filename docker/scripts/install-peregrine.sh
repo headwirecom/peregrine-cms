@@ -16,6 +16,7 @@ PKG_ORDER=( \
   base.ui.apps-1.0-SNAPSHOT.zip \
   felib.ui.apps-1.0-SNAPSHOT.zip \
   pagerender-vue.ui.apps-1.0-SNAPSHOT.zip \
+  pagerender-server.ui.apps-1.0-SNAPSHOT.zip \
   admin.ui.apps-1.0-SNAPSHOT.zip \
   admin.ui.materialize-1.0-SNAPSHOT.zip \
   admin.sling.ui.apps-1.0-SNAPSHOT.zip \
