@@ -252,8 +252,8 @@
           v-if="publishDialogPath"
           :isOpen="publishDialogPath"
           :path="publishDialogPath"
-          @complete="closePublishing"
-          :modalTitle="`Web Publishing: ${publishDialogPath.split('/').pop()}`" />
+          :modalTitle="`Web Publishing: ${publishDialogPath.split('/').pop()}`"
+          @complete="closePublishing" />
 </div>
 </template>
 
