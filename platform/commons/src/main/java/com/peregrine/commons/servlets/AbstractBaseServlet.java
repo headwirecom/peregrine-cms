@@ -304,12 +304,12 @@ public abstract class AbstractBaseServlet
             return null;
         }
 
-        /** @return Writes the content to a given Output Stream **/
+        /** Writes the content to a given Output Stream **/
         public void writeTo(OutputStream outputStream) throws IOException {
             throw new UnsupportedOperationException(WRITE_TO_IS_NOT_SUPPORTED);
         }
 
-        /** @return The Servlet handles the output by itself **/
+        /** The Servlet handles the output by itself **/
         public void handleDirect(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException, ServletException {
             throw new UnsupportedOperationException(HANDLE_DIRECT_IS_NOT_SUPPORTED);
         }

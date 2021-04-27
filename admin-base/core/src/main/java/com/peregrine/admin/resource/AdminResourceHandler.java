@@ -163,7 +163,7 @@ public interface AdminResourceHandler {
      * @param resourceResolver Resource Resolver to manage resources and cannot be null
      * @param path Absolute path of the resource
      * @return true if the resource is checked-out or false if the resource is checked-in (and frozen)
-     * @throws RepositoryException If version management fails
+     * @throws ManagementException If version management fails
      */
     boolean isCheckedOut(ResourceResolver resourceResolver, String path) throws ManagementException;
 
@@ -220,16 +220,14 @@ public interface AdminResourceHandler {
      * @param resourceResolver Resource Resolver
      * @param path of a resource to restore (recycle)
      * @return Null or a List recyclable (restorable) items
-     * @throws ManagementException if there's an error
      */
-    List<Recyclable> getRecyclables(ResourceResolver resourceResolver, String path) ;
+    List<Recyclable> getRecyclables(ResourceResolver resourceResolver, String path);
 
     /**
      * Get a Recyclable item
      * @param resourceResolver Resource Resolver
      * @param path of item from the recycle bin to restore
      * @return Null or a Recyclable item
-     * @throws ManagementException if there's an error
      */
     Recyclable getRecyclable(ResourceResolver resourceResolver, String path);
 
@@ -310,7 +308,6 @@ public interface AdminResourceHandler {
      * Updates the jcr:title of a given JCR:CONTENT resource
      * @param resource Resource to get new title. It must exist and be JCR:CONTENT
      * @param jcrTitle as String
-     * @return void
      */
     void updateTitle(Resource resource, String jcrTitle);
 
@@ -318,7 +315,6 @@ public interface AdminResourceHandler {
      * Updates the title of a given JCR:CONTENT resource (Assets)
      * @param resource Asset Resource to get new title. It must exist and be JCR:CONTENT
      * @param title as String
-     * @return void
      */
     void updateOrCreateAssetTitle(Resource resource, String title);
 
@@ -373,7 +369,6 @@ public interface AdminResourceHandler {
      * @param resourceResolver Resource Resolver to obtain the resources
      * @param tenantsParentPath Absolute Path to Tenants
      * @param name Name of the Tenant to delete
-     * @return
      * @throws ManagementException
      */
     void deleteTenant(ResourceResolver resourceResolver, String tenantsParentPath, String name) throws ManagementException;

@@ -38,6 +38,7 @@ import com.peregrine.commons.util.PerConstants;
 import com.peregrine.nodetypes.models.IComponent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -78,11 +79,9 @@ public class PageModel extends Container {
         Resource page = res.getParent();
         if(page != null) {
             Resource parentPage = page.getParent();
-            if(parentPage != null) {
-                if(PAGE_PRIMARY_TYPE.equals(parentPage.getResourceType())) {
-                    Resource child = parentPage.getChild(JCR_CONTENT);
-                    return child;
-                }
+            if(Objects.nonNull(parentPage) && Objects.nonNull(parentPage.getChild(JCR_CONTENT))) {
+                Resource child = parentPage.getChild(JCR_CONTENT);
+                return child;
             }
         }
         return null;

@@ -31,7 +31,7 @@
     <artifactId>pagerender-server.core</artifactId>
     <packaging>bundle</packaging>
 
-    <name>peregrine server page renderer - Core</name>
+    <name>Peregrine CMS - Page Render Server - Core</name>
     <description>
         OSGi Bundle for the Page Render Server module.
     </description>
@@ -128,8 +128,9 @@
         </dependency>
 
         <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
+            <artifactId>commons-lang3</artifactId>
+            <groupId>org.apache.commons</groupId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -145,6 +146,19 @@
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.scripting.sightly.compiler.java</artifactId>
+            <version>1.0.18</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

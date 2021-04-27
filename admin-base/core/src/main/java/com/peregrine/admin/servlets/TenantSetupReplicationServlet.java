@@ -73,7 +73,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
  *
  * It is invoked like this:
  *      curl -X POST "http://localhost:8080/perapi/admin/tenantSetupReplication.json/content/themeclean" -H\
- *      "accept: application/json" -H  "content-type: application/x-www-form-urlencoded" -d "name=defaultRepl&deep=false"
+ *      "accept: application/json" -H  "content-type: application/x-www-form-urlencoded" -d "name=defaultRepl&quot;deep=false"
  */
 @Component(
     service = Servlet.class,

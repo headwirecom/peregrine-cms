@@ -60,6 +60,16 @@ public interface PerBase
     ValueMap getProperties();
     /** @return Modifiable Value Map of the Content Resource if the page has a content **/
     ModifiableValueMap getModifiableProperties();
+    /**
+     *
+     * @return the parent site/tenant per:Site resource
+     */
+    Resource getSiteResource();
+    /**
+     *
+     * @return the parent site/tenant per:Site/jcr:content properties
+     */
+    ValueMap getSiteProperties();
 
     /**
      * Provide Content Property

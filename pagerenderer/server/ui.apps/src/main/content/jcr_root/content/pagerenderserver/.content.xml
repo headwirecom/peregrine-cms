@@ -27,5 +27,11 @@
   xmlns:jcr="http://www.jcp.org/jcr/1.0"
   jcr:primaryType="per:Site"
   jcr:title="Pagerender-Server Site"
-  internal="false"
-  template="false"/>
+  internal="true"
+  template="false">
+  <jcr:content
+    jcr:primaryType="nt:unstructured"
+    siteCSS="[https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css,/etc/felibs/pagerenderserver/css/server.css]"
+    siteJS="[https://code.jquery.com/jquery-3.1.1.slim.min.js,https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js,https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js]"
+    />
+</jcr:root>
