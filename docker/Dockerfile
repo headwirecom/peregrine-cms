@@ -1,7 +1,5 @@
 FROM adoptopenjdk/openjdk11:latest
 
-ENV APP_VERSION 2.0.0
-
 WORKDIR /app
 
 RUN apt update -q \
@@ -15,8 +13,6 @@ RUN apt update -q \
 
 ENV PATH "/usr/local/lib/nodejs/node-v10.16.0-linux-x64/bin:$PATH"
 
-COPY files/* /app/binaries/
-COPY scripts/*.sh /app/scripts/
 
 # Start - Use repository/package pinning to upgrade libvips from version 8.4 to 8.6
 COPY overlay/etc/apt/preferences.d/* /etc/apt/preferences.d/
@@ -26,6 +22,8 @@ RUN echo "deb http://archive.ubuntu.com/ubuntu/ focal main restricted" >> /etc/a
     && apt --only-upgrade install -y libvips libvips-tools
 # End 
 
+COPY files/node-v10.16.0-linux-x64.tar.xz /app/binaries/node-v10.16.0-linux-x64.tar.xz
+
 RUN mkdir -p /usr/local/lib/nodejs \
     && tar -xf /app/binaries/node-v10.16.0-linux-x64.tar.xz -C /usr/local/lib/nodejs \
     && echo $PATH \
@@ -34,10 +32,17 @@ RUN mkdir -p /usr/local/lib/nodejs \
     && echo npx: $(npx -v) \
     && apt-get purge -y --auto-remove && rm -rf /var/lib/apt/lists/* && rm -rf /etc/apt/sources.list.d/temp.list;
 
-RUN scripts/install-sling.sh
-RUN scripts/install-peregrine.sh
+ARG runmode=none
+ENV APP_VERSION 2.0.0
+ENV RUNMODE=${runmode}
 
-ENTRYPOINT /app/scripts/start.sh && tail -qF /app/sling/logs/error.log
+COPY files/* /app/binaries/
+COPY scripts/*.sh /app/scripts/
+
+RUN scripts/install-sling.sh
+RUN scripts/install-peregrine.sh ${RUNMODE}
+
+ENTRYPOINT /app/scripts/start.sh ${RUNMODE} && tail -qF /app/sling/logs/error.log
 
 #HEALTHCHECK --interval=15s --retries=20 \
 #  CMD /app/healthcheck.sh

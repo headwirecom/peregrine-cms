@@ -1,4 +1,4 @@
-package com.peregrine.render.impl;
+package com.peregrine.reference.impl;
 
 /*-
  * #%L
@@ -26,8 +26,6 @@ package com.peregrine.render.impl;
  */
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerUtil.isEmpty;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static com.peregrine.commons.util.PerUtil.listMissingParents;
 import static java.util.Objects.isNull;
@@ -37,7 +35,11 @@ import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
 import com.peregrine.reference.Reference;
 import com.peregrine.reference.ReferenceLister;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -63,9 +65,8 @@ import org.slf4j.LoggerFactory;
     immediate = true
 )
 @Designate(ocd = ReferenceListerService.Configuration.class)
-public class ReferenceListerService
-    implements ReferenceLister
-{
+public final class ReferenceListerService implements ReferenceLister {
+
     @ObjectClassDefinition(
         name = "Peregrine: Reference List Provider",
         description = "Provides a list of referenced resources for a given resource"
@@ -146,7 +147,6 @@ public class ReferenceListerService
             Resource jcrContent = resource.getChild(JCR_CONTENT);
             if(!context.isDeep()) {
                 if(jcrContent != null) {
-                    context.addDeepLimit(jcrContent.getPath());
                     parseProperties(jcrContent, context, response, source, target);
                     // Loop of all its children
                     traverseTree(jcrContent, context, response, source, target);
@@ -323,245 +323,4 @@ public class ReferenceListerService
         }
     }
 
-    /**
-     * Traversing context providing necessary flags as well as defining which resource are processed
-     * It also makes sure that we don't end up in an endless loop with cyclic references
-     **/
-    private static class TraversingContext implements PerUtil.ResourceChecker {
-        private final PerUtil.ResourceChecker checker;
-        private boolean transitive = false;
-        private boolean deep = false;
-        private Set<String> deepLimits = new TreeSet<>();
-        private Tree visited = new Tree();
-
-        public TraversingContext(final PerUtil.ResourceChecker checker) {
-            this.checker = isNull(checker) ? PerUtil.ADD_ALL_RESOURCE_CHECKER : checker;
-        }
-
-        public TraversingContext setTransitive(boolean transitive) {
-            this.transitive = transitive;
-            return this;
-        }
-
-        public TraversingContext setDeep(boolean deep) {
-            this.deep = deep;
-            return this;
-        }
-
-        /** @return True if references in references should be listed as well **/
-        public boolean isTransitive() {
-            return transitive;
-        }
-
-        /** @return True if all children are traversed **/
-        public boolean isDeep() {
-            return deep;
-        }
-
-        /**
-         * Checks the resource if it should be checked. If will not
-         * be checked if not deep but outside of the marked deep paths
-         * or if already visited. If not visited then this method will
-         * add them to the visited list
-         * @param resource Resource to be checked
-         * @return TRUE if we are going deep and are not visited yet or
-         *         are in the deep limited paths and not visited yet
-         */
-        public boolean proceed(Resource resource) {
-            if(resource != null) {
-                String path = resource.getPath();
-                if(!visited.contains(path) && checker.doAdd(resource)) {
-                    visited.addChildByPath(path);
-                    if(!checker.doAddChildren(resource)) {
-                        return false;
-                    }
-                    if(!deep) {
-                        for(String limit : deepLimits) {
-                            if(path.startsWith(limit)) {
-                                return true;
-                            }
-                        }
-                    } else {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        /**
-         * Adds an exempt starting path if traversing is not deep
-         * @param path Exempt path to be added. In order to make this work the value
-         *             must start with a slash
-         */
-        public TraversingContext addDeepLimit(String path) {
-            if(isNotEmpty(path) && !deepLimits.contains(path)) {
-                deepLimits.add(path);
-            }
-            return this;
-        }
-
-        @Override
-        public boolean doAdd(Resource resource) {
-            return checker.doAdd(resource);
-        }
-
-        @Override
-        public boolean doAddChildren(Resource resource) {
-            return checker.doAddChildren(resource);
-        }
-
-    }
-
-    /**
-     *  Root Object of a Folder Name Base Tree. It allows to
-     *  add children by a JCR Node Path
-     **/
-    public static class Tree
-        extends Node
-    {
-        public Tree() {
-            super(null, SLASH);
-        }
-
-        void setParent(Node parent) {}
-
-        /**
-         * Checks if the given path exists in this tree
-         * @param path JCR Resource Path to be checked
-         * @return True if for all JCR resources of the path there is a corresponding node
-         */
-        public boolean contains(String path) {
-            boolean answer = false;
-            if(isNotEmpty(path)) {
-                answer = true;
-                String[] tokens = path.split(SLASH);
-                Node node = this;
-                for(String token: tokens) {
-                    if(isNotEmpty(token)) {
-                        Node child = node.getChild(token);
-                        if(child != null) {
-                            node = child;
-                        } else {
-                            answer = false;
-                            break;
-                        }
-                    }
-                }
-            }
-            return answer;
-        }
-
-        /**
-         * Creates a node for a resources in the given path if they don't already exist
-         * @param path JCR Resource Path separated by a slash
-         * @return This tree instance
-         */
-        public Tree addChildByPath(String path) {
-            if(isEmpty(path)) { throw new IllegalArgumentException("Child Path must be provided"); }
-            String[] tokens = path.split(SLASH);
-            Node node = this;
-            for(String token: tokens) {
-                if(isNotEmpty(token)) {
-                    Node child = node.getChild(token);
-                    if(child != null) {
-                        node = child;
-                    } else {
-                        node = node.addChild(token);
-                    }
-                }
-            }
-            return this;
-        }
-
-        @Override
-        public String toString() {
-            return "Tree(" + super.toString() + ")";
-        }
-    }
-
-    /**
-     * Node Entry of the Folder Tree
-     * This represents a JCR Resource in a path
-     */
-    public static class Node {
-        private String segment;
-        private List<Node> children;
-
-        /**
-         * Creates a node with a given parent and name
-         * @param parent Parent Node of this node. This node will be added as child to this parent here
-         * @param segment Resource Name
-         */
-        public Node(Node parent, String segment) {
-            setParent(parent);
-            if(isEmpty(segment)) {
-                throw new IllegalArgumentException("Node Segment must be defined");
-            }
-            this.segment = segment;
-        }
-
-        /** Resource Name **/
-        public String getSegment() {
-            return segment;
-        }
-
-        /**
-         * Sets the given Node as parent and adds itself as child to that parent **
-         * @parent Parent Node which cannot be null
-         */
-        void setParent(Node parent) {
-            if(parent == null) { throw new IllegalArgumentException("Parent Node must be defined"); }
-            parent.addChild(this);
-        }
-
-        /** @return A node with the given resource name if found otherwise null **/
-        public Node getChild(String segment) {
-            Node answer = null;
-            if(children != null && isNotEmpty(segment)) {
-                for(Node child: children) {
-                    if(child.getSegment().equals(segment)) {
-                        answer = child;
-                        break;
-                    }
-                }
-            }
-            return answer;
-        }
-
-        /**
-         * Adds the given Node as child
-         * @param child Node to be added as child which cannot be null
-         * @return Child node which is either the given one or the one that is already added as child with that resource name
-         */
-        public Node addChild(Node child) {
-            if(child == null) { throw new IllegalArgumentException("Cannot add undefined child"); }
-            if(children == null) { children = new ArrayList<>(); }
-            Node myChild = getChild(child.segment);
-            if(myChild == null) {
-                children.add(child);
-                return child;
-            } else {
-                return myChild;
-            }
-        }
-
-        /**
-         * Creates a new child and adds it as child to this node as parent
-         * @param segment Resource Name of the new child
-         * @return Node that was created and added if not found otherwise the child with the given resource name
-         */
-        public Node addChild(String segment) {
-            Node child = getChild(segment);
-            if(child == null) {
-                child = new Node(this, segment);
-            }
-            return child;
-        }
-
-        @Override
-        public String toString() {
-            return "Node(" + segment + ") {" + (children == null ? "" : children.toString()) + "}";
-        }
-    }
 }

@@ -7,26 +7,37 @@ A prebuilt Peregrine Docker image is available on [Docker Hub](https://hub.docke
 
 # Running Peregrine in Docker
 
-1. Pull down the Docker image.
+1. Pull down the Docker images.
 
         $ docker pull peregrinecms/peregrine-cms:latest
+        $ docker pull peregrinecms/peregrine-cms:latest-author
+        $ docker pull peregrinecms/peregrine-cms:latest-publish
 
 2. Run the container.
 
-        $ docker run -it -p 8080:8080 peregrinecms/peregrine-cms:latest
+        $ docker run -it -p 8080:8080 peregrinecms/peregrine-cms:latest 
 
-3. Open a browser and visit http://localhost:8080. Login with `admin` / ` admin`.
+
+3. Open a browser and visit http://localhost:8080 and login with `admin` / ` admin`.
 
 
 # Building the Image
 
 If you prefer to build the Peregrine image yourself, simply run:
+
     $ ./travis-build.sh
     $ cd docker
-    $ ./builddocker.sh
+    $ ./builddocker.sh #local
+    $ ./builddocker-remote-replication.sh #author and publish
 
 Launch the locally built docker image 
+
     $ docker run -it -p 8080:8080 peregrinecms/peregrine-cms:latest
+
+or for the remote (author/publish) use-case
+
+    $ docker run -d --rm -p 8080:8080 --name peregrine-author peregrinecms/peregrine-cms:latest-author 
+    $ docker run -d --rm -p 8180:8080 --name peregrine-publish peregrinecms/peregrine-cms:latest-publish 
 
 # Verifying Container Startup
 
