@@ -247,6 +247,13 @@
             </div>
         </div>
     </div>
+
+      <admin-components-publishingmodal
+          v-if="publishDialogPath"
+          :isOpen="publishDialogPath"
+          :path="publishDialogPath"
+          :modalTitle="`Web Publishing: ${publishDialogPath.split('/').pop()}`"
+          @complete="closePublishing" />
 </div>
 </template>
 
@@ -263,7 +270,8 @@ export default {
                 isDraggingUiEl: false,
                 isFileUploadVisible: false,
                 uploadProgress: 0,
-                filter: true
+                filter: true,
+                publishDialogPath: null
             }
         },
 
@@ -358,7 +366,11 @@ export default {
             },
 
             replicate(me, path) {
-                $perAdminApp.stateAction('replicate', path)
+                me.publishDialogPath = path
+            },
+
+            closePublishing() {
+                this.publishDialogPath = null
             },
 
             isFolder(item) {
