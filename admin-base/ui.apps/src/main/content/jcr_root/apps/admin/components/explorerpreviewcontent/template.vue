@@ -197,9 +197,9 @@
             <i class="material-icons">publish</i>
             Publish to Web ({{nodeType}})
           </div>
-          <div class="action" :title="`Deactivate ${nodeType}`" >
-            <admin-components-action
-                v-bind:model="{
+          <div :class="classForActionDisabledOnDeactivatedResource" :title="`Deactivate ${nodeType}`" >
+            <admin-components-action v-if="nodeFromPath.activated"
+                :model="{
                     target: node.path,
                     command: 'unPublishResource',
                     tooltipTitle: `${$i18n('undo publish')} '${node.title || node.name}'`
@@ -207,6 +207,10 @@
               <i class="material-icons">remove_circle_outline</i>
               Unpublish ({{nodeType}})
             </admin-components-action>
+            <span v-else>
+              <i class="material-icons">remove_circle_outline</i>
+              <span>Unpublish ({{nodeType}})</span>
+            </span>
           </div>
         </div>
       </template>
@@ -229,21 +233,21 @@
             <icon icon="external-link" :lib="IconLib.FONT_AWESOME"/>
             Open live version
           </div>
-          <div class="action" :title="`rename ${nodeType}`" @click="renameNode()">
+          <div :class="classForActionDisabledOnActivatedResource" :title="`rename ${nodeType}`" @click="renameNode()">
             <icon :lib="IconLib.MATERIAL_ICONS" icon="text_format"/>
-            <span :class="activationSensitiveClass">Rename {{ nodeType }}</span>
+            <span>Rename {{ nodeType }}</span>
           </div>
-          <div class="action" :title="`move ${nodeType}`" @click="moveNode()">
+          <div :class="classForActionDisabledOnActivatedResource" :title="`move ${nodeType}`" @click="moveNode()">
             <icon icon="compare_arrows"/>
-            <span :class="activationSensitiveClass">Move {{ nodeType }}</span>
+            <span>Move {{ nodeType }}</span>
           </div>
           <div class="action" :title="`copy ${nodeType}`" @click="copyNode()">
             <icon icon="content_copy"/>
             Copy {{ nodeType }}
           </div>
-          <div class="action" :title="`delete ${nodeType}`" @click="deleteNode()">
+          <div :class="classForActionDisabledOnActivatedResource" :title="`delete ${nodeType}`" @click="deleteNode()">
             <icon :icon="selfOrAnyDescendantActivated ? 'delete_forever' : 'delete'" />
-            <span :class="activationSensitiveClass">Delete {{ nodeType }}</span>
+            <span>Delete {{ nodeType }}</span>
           </div>
         </div>
       </template>
@@ -513,8 +517,11 @@ export default {
       const node = this.node;
       return node.activated || node.selfOrAnyDescendantActivated;
     },
-    activationSensitiveClass() {
-      return this.selfOrAnyDescendantActivated ? 'operationDisabledOnActivatedItem' : null;
+    classForActionDisabledOnActivatedResource() {
+      return this.selfOrAnyDescendantActivated ? 'action operationDisabledOnActivatedItem' : 'action';
+    },
+    classForActionDisabledOnDeactivatedResource() {
+      return this.selfOrAnyDescendantActivated ? 'action' : 'action operationDisabledOnActivatedItem';
     },
     stateToolsEdit() {
       const stateTools = $perAdminApp.getNodeFromViewOrNull('/state/tools')
@@ -921,6 +928,7 @@ export default {
   white-space: nowrap;
 }
 .operationDisabledOnActivatedItem {
-  text-decoration: line-through;
+  opacity: 0.4;
+  cursor: default!important;
 }
 </style>
