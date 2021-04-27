@@ -71,11 +71,6 @@
             </resource>
 
             <resource>
-                <directory>${basedir}/node_modules/quill/dist</directory>
-                <targetPath>etc/felibs/admin/dependencies/quill</targetPath>
-            </resource>
-
-            <resource>
                 <directory>${basedir}/node_modules/jquery/dist</directory>
                 <targetPath>etc/felibs/admin/dependencies/jquery</targetPath>
             </resource>
