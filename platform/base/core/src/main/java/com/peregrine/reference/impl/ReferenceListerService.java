@@ -30,7 +30,6 @@ import static com.peregrine.commons.util.PerUtil.containsResource;
 import static com.peregrine.commons.util.PerUtil.listMissingParents;
 import static com.peregrine.commons.util.PerUtil.stripJcrContentAndDescendants;
 import static java.util.Objects.isNull;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
@@ -148,7 +147,7 @@ public final class ReferenceListerService implements ReferenceLister {
             while (referencingResources.hasNext()) {
                 Resource referencingResource = referencingResources.next();
                 List<String> referencingProperties =
-                        PerUtil.keysInMapHavingStringValueMatchingPredicate(referencingResource.getValueMap(), containsReference);
+                        PerUtil.findKeysForMatchingValues(referencingResource.getValueMap(), containsReference);
                 if (referencingProperties.isEmpty()) {
                     continue;
                 }

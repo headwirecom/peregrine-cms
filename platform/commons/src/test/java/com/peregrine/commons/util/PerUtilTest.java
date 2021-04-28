@@ -1,9 +1,7 @@
 package com.peregrine.commons.util;
 
 import com.peregrine.commons.test.AbstractTest;
-import net.bytebuddy.matcher.CollectionSizeMatcher;
 import org.apache.sling.api.resource.Resource;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,16 +62,16 @@ public class PerUtilTest
     @Test
     public void keysInMapHavingStringValueMatchingPredicate() {
         Predicate<String> hasLength5 = s -> s.length() == 5;
-        assertThat(PerUtil.keysInMapHavingStringValueMatchingPredicate(
+        assertThat(PerUtil.findKeysForMatchingValues(
                 Map.of("k", "1"),
                 hasLength5), hasItems());
-        assertThat(PerUtil.keysInMapHavingStringValueMatchingPredicate(
+        assertThat(PerUtil.findKeysForMatchingValues(
                 Map.of("k", "12345"),
                 hasLength5), hasItems("k"));
-        assertThat(PerUtil.keysInMapHavingStringValueMatchingPredicate(
+        assertThat(PerUtil.findKeysForMatchingValues(
                 Map.of("k", new String[] { "1", "2", "3", "4", "5"}),
                 hasLength5), hasItems());
-        assertThat(PerUtil.keysInMapHavingStringValueMatchingPredicate(
+        assertThat(PerUtil.findKeysForMatchingValues(
                 Map.of("k", new String[] { "1", "12345", "123", "12", "1234"}),
                 hasLength5), hasItems("k"));
     }

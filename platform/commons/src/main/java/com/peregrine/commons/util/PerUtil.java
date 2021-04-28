@@ -227,7 +227,7 @@ public class PerUtil {
      * @param predicate Predicate to test against
      * @return
      */
-    public static List<String> keysInMapHavingStringValueMatchingPredicate(Map<String, Object> map, Predicate<String> predicate) {
+    public static List<String> findKeysForMatchingValues(Map<String, Object> map, Predicate<String> predicate) {
         return map
                 .entrySet()
                 .stream()
