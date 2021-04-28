@@ -39,7 +39,9 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 import static com.peregrine.commons.util.PerConstants.*;
 import static java.util.Objects.isNull;
@@ -64,11 +66,12 @@ public class PerUtil {
     public static final String RESOURCE_RESOLVER_FACTORY_CANNOT_BE_NULL = "Resource Resolver Factory cannot be null";
     public static final String SERVICE_NAME_CANNOT_BE_EMPTY = "Service Name cannot be empty";
 
-    public static final ResourceChecker ADD_ALL_RESOURCE_CHECKER = new AddAllResourceChecker();
+    public static final String SL_JCR_CONTENT_SL = SLASH + JCR_CONTENT + SLASH;
 
+    public static final ResourceChecker ADD_ALL_RESOURCE_CHECKER = new AddAllResourceChecker();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final Logger LOG = LoggerFactory.getLogger(PerUtil.class);
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     /** @return True if the given text is either null or empty **/
     public static boolean isEmpty(String text) {
@@ -214,6 +217,36 @@ public class PerUtil {
         return splitIntoParameterMap(new String[]{ entry }, keySeparator, valueSeparator, parameterSeparator);
     }
 
+
+    /**
+     * Method looks through all the properties of the given resource and returns keys
+     * for which the corresponding value matches the given predicate or the value is
+     * an array of strings one of which matches the predicate.
+     *
+     * @param map Map to check
+     * @param predicate Predicate to test against
+     * @return
+     */
+    public static List<String> keysInMapHavingStringValueMatchingPredicate(Map<String, Object> map, Predicate<String> predicate) {
+        return map
+                .entrySet()
+                .stream()
+                .filter(entry -> {
+                    Object value = entry.getValue();
+                    if (value instanceof String) {
+                        String valueAsString = (String) value;
+                        return predicate.test(valueAsString);
+                    } else if (value instanceof String[]) {
+                        String[] valueAsArray = (String[]) value;
+                        return Arrays.stream(valueAsArray)
+                                .anyMatch(predicate);
+                    }
+                    return false;
+                })
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }
+
     /**
      * Provides the relative path of a resource to a given root
      * @param root Root Resource
@@ -349,11 +382,23 @@ public class PerUtil {
     }
 
     private static boolean isDescendantOfJcrContent(final String path) {
-        return StringUtils.contains(path, SLASH + JCR_CONTENT + SLASH);
+        return StringUtils.contains(path, SL_JCR_CONTENT_SL);
     }
 
     public static boolean isJcrContentOrDescendant(final String path) {
         return isJcrContent(path) || isDescendantOfJcrContent(path);
+    }
+
+    public static String stripJcrContentAndDescendants(final String path) {
+        if (isJcrContent(path)) {
+            return getParent(path);
+        }
+
+        if (isDescendantOfJcrContent(path)) {
+            return StringUtils.substringBefore(path, SL_JCR_CONTENT_SL);
+        }
+
+        return path;
     }
 
     public static boolean isJcrContentOrDescendant(final Resource resource) {

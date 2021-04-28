@@ -24,12 +24,15 @@
 package com.peregrine.slingjunit;
 
 import com.peregrine.admin.resource.AdminResourceHandler;
+import com.peregrine.reference.Reference;
 import com.peregrine.reference.ReferenceLister;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.junit.annotations.SlingAnnotationsTestRunner;
 import org.apache.sling.junit.annotations.TestReference;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,6 +44,8 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static com.peregrine.replication.ReplicationUtil.queryContainsStringUnderResource;
 
@@ -92,6 +97,14 @@ public class ReferencesJTest {
         }
         assertTrue(hasImageRef);
         assertTrue(hasPageLinkRef);
+    }
+
+    @Test
+    public void checkReferencedBy() {
+        Resource image = resourceResolver.getResource(IMAGE_PATH);
+        List<Reference> referencedBy = referenceLister.getReferencedByList(image);
+        MatcherAssert.assertThat(referencedBy, hasSize(1));
+        MatcherAssert.assertThat(referencedBy.get(0).getResource().getPath(), is(CONTACT_PATH));
     }
 
     @Before
