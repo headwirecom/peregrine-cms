@@ -60,13 +60,13 @@
         <div v-if="model.mode === 'modal' && !hasTilda">
             <div class="row">
                 <div class="col s12">
-                    <h2>{{$i18n('Create Profile')}}</h2>
+                    <h2>{{userName}} {{$i18n('profile')}}</h2>
                     <button
                         v-if="!hasTilda"
                         v-on:click="openTildaModal" 
-                        title="Create ~homepage" 
+                        title="Create your ~page" 
                         class="btn">
-                        Create ~homepage
+                        {{$i18n('Create your')}} ~{{$i18n('page')}}
                     </button>
                 </div>
             </div>
@@ -75,13 +75,15 @@
 </template>
 
 <script>
+    import {createDebouncer} from '../../../../../../js/utils'
+    const uriAvailableDebouncer = createDebouncer()
     export default {
         props: ['model'],
         data:
             function() {
                 return {
-                    btnText: "~homepage",
-                    editPath: "/content/admin/pages/homepage.html",
+                    btnText: "~page",
+                    editPath: "/admin/pages/homepage.html",
                     btnClasses: "btn",
                     formmodel: {
                         tildaPageUri: '',
@@ -97,7 +99,6 @@
                         validateAfterChanged: true,
                         focusFirstField: true
                     },
-                    nameChanged: false,
                     nameSchema: {
                         fields: [
                             {
@@ -123,13 +124,13 @@
                             {
                                 type: "input",
                                 inputType: "text",
-                                label: "~page URI",
+                                label: "~Page URI",
                                 model: "tildaPageUri",
-                                required: true,
+                                required: true,                           
                                 onChanged: (model, newVal, oldVal, field) => {
                                     this.formmodel.tildaPageUri = $perAdminApp.normalizeString(newVal);
                                 },
-                                validator: [this.nameAvailable, this.validPageName]
+                                validator: [this.validPageName, this.nameAvailable]
                             },
                             {
                                 type: "input",
@@ -168,44 +169,78 @@
             },
             hasTilda: function(){
                 return $perAdminApp.getView().state.userPreferences.tildaPage === "true"
+            },
+            userName: function(){
+                return $perAdminApp.getView().state.user
             }
         },
         methods: {
             confirmDialog($event){
-                if ($event == 'confirm') {
-                    console.log("submit new ~ page")
+                const errors = []
+                if ($event == 'confirm'){                    
+                    errors.push(this.nameAvailable(this.formmodel.tildaPageUri))
+                    console.log(errors)
                     console.log(this.formmodel)
+                    console.log(this.$refs.tildaForm)
                 }
-                this.$refs.createtildamodal.close()
+                if (!errors || errors.length == 0){
+                    // submit async to create ~page
+                    // if promise resolves then close
+                    // if there was an error do not close
+                    this.$refs.createtildamodal.close()
+                }
             },
             openTildaModal(){
                 this.$refs.createtildamodal.open()
             },
-            validPageName: function(event) {
+            validPageName: function(event){
                 let value = event
-                if (event && event instanceof Object && event.data) {
+                if (event && event instanceof Object && event.data){
                     value = event.data
                 }
-                if(!value || value.length === 0) {
-                    return [this.$i18n('Name is required.')]
+                const errors = []
+                if (!value || value.length === 0){
+                    errors.push(this.$i18n('Page URI is required. '))
+                } 
+                if (value.length < 3) {
+                    errors.push(this.$i18n('Must be at least 3 characters long. '))
                 }
-                let regExMatch = /[^0-9a-zA-Z_-]/
-                let errorMsg = 'Page names may only contain letters, numbers, underscores, and dashes'
-                if (this.uNodeType === "Asset") {
-                    regExMatch = /[^0-9a-z.A-Z_-]/
-                    errorMsg = 'Assets names may only contain letters, numbers, underscores, and dashes'
+                if (value.length > 40) {
+                    errors.push(this.$i18n('Must not be longer than 40 characters. '))
                 }
-
-                if (value.match(regExMatch)) {
-                    return [this.$i18n(errorMsg)]
+                if (value.match(/[^0-9a-z-]/)){
+                    errors.push(this.$i18n('May only contain lowercase, numbers, and dashes. '))
                 }
-                return [];
+                if (!value.match(/[a-z]/)){
+                    errors.push(this.$i18n('Must contain at least one letter. '))
+                }
+                return errors;
             },
-            nameAvailable: function(value) {
-                // TODO 
-                // name is available by checking with user-uri service
+            nameAvailable: function(value){
+                // check whether name is available by checking with user-uri service
                 // user-uri is available if no other ~<name> already exists
-                return []
+                console.log(value)
+                let errors = this.validPageName(value)
+                if (errors && errors.length == 0){
+                    errors = []
+                    errors = uriAvailableDebouncer.call(() => $perAdminApp.getApi().checkUserPageAvailability(value), 375)
+                        .then(res => {
+                            const errorsBE = []
+                            if (res.nameValid) {
+                                if (!res.nameAvailable) {
+                                    errorsBE.push(this.$i18n('This uri is not available.'))
+                                }
+                            } else {
+                                errorsBE.push(this.$i18n('This uri is invalid. '))
+                            }
+                            return errorsBE
+                        })
+                         //nameValid   
+                        .catch(() => [])
+                } else {
+                    errors.push(this.$i18n('This name is not valid. '))
+                }
+                return errors
             }
 
         },

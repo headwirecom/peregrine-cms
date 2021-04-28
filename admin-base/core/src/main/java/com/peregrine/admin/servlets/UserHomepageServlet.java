@@ -3,9 +3,7 @@ package com.peregrine.admin.servlets;
 /*-
  * #%L
  * admin base - Core
- * %%
- * Copyright (C) 2017 headwire inc.
- * %%
+ *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -25,20 +23,27 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
+import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.admin.resource.NodeNameValidation;
+import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
+import javax.jcr.query.Query;
 import javax.servlet.Servlet;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Objects;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_USER_HOMEPAGE;
-import static com.peregrine.commons.util.PerUtil.EQUALS;
-import static com.peregrine.commons.util.PerUtil.GET;
-import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
-import static com.peregrine.commons.util.PerUtil.POST;
+import static com.peregrine.admin.util.AdminConstants.PEREGRINE_SERVICE_NAME;
+import static com.peregrine.commons.util.PerUtil.*;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -60,14 +65,33 @@ import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
         SLING_SERVLET_RESOURCE_TYPES + EQUALS + RESOURCE_TYPE_USER_HOMEPAGE
     }
 )
+@Designate(ocd = UserHomepageServlet.Configuration.class)
 @SuppressWarnings("serial")
 public class UserHomepageServlet extends UserPreferencesServlet {
 
     @Reference
     private NodeNameValidation nodeNameValidation;
+    @Reference
+    private ResourceResolverFactory resourceResolverFactory;
+    @Reference
+    private AdminResourceHandler resourceManagement;
 
-    private static final String URI_CANDIDATE_PARAM = "tildaPageUri";
-    private static final String xpathStatement = "/jcr:root/home/users//*/profile[@jcr:primaryType='per:Page' and @tildaUri='%s']";
+    public static final String URI_CANDIDATE_PARAM = "tildaPageUri";
+    private static final String SQL2_STATEMENT = "SELECT * FROM [nt:base] AS s WHERE ISDESCENDANTNODE([/home/users]) and s.tildaPageUri='%s'";
+    private static final String FAILED_TO_GET_SERVICE_RESOLVER = "Unable to get Peregrine Service Resolver";
+
+    @ObjectClassDefinition(
+        name = "Peregrine: User ~ Page Servlet",
+        description = "Validates and Initializes User ~Page URI Candidates"
+    )
+    @interface Configuration {
+        @AttributeDefinition(
+            name = "Template for User ~Page",
+            description = "Specify the template path to be used when initializing new user ~page's",
+            required = true
+        )
+        String userTildaPageTemplatePath() default "/content/pagerenderserver/templates/empty-container";
+    }
 
     /**
      *
@@ -77,28 +101,52 @@ public class UserHomepageServlet extends UserPreferencesServlet {
      */
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        Resource home = getUserHome(request);
         String nameToCheck = request.getParameter(URI_CANDIDATE_PARAM);
         if (Objects.isNull(nameToCheck)) {
             return new ErrorResponse().setHttpErrorCode(SC_BAD_REQUEST);
         }
         JsonResponse answer = new JsonResponse();
-        if (request.isGet() ) {
-            // get uri candidate param, and check whether that is available
-
-            answer.writeAttribute("name", nameToCheck);
-            answer.writeAttribute("nameValid", uriAvailable(nameToCheck));
-        } else if (request.isPost()) {
+        // get uri candidate param, and check whether valid
+        boolean candidateNameValid = uriValid(nameToCheck);
+        answer.writeAttribute("name", nameToCheck);
+        answer.writeAttribute("nameValid", candidateNameValid);
+        if (candidateNameValid) {
+            // check availability for valid names
+            try {
+                answer.writeAttribute("nameAvailable", uriAvailable(request, nameToCheck));
+            } catch (LoginException e) {
+                return new ErrorResponse()
+                    .setHttpErrorCode(SC_BAD_REQUEST)
+                    .setErrorMessage(FAILED_TO_GET_SERVICE_RESOLVER)
+                    .setException(e);
+            }
+        } else {
+            answer.writeAttribute("nameAvailable", false);
+        }
+        if (request.isPost()) {
             // confirm again uri candidate is available
             // create or update user page node under user's home
+
         }
 
 
         return answer;
     }
 
-    boolean uriAvailable(String name){
+    boolean uriValid(String name){
         return nodeNameValidation.isValidUserHomepageName(name);
+    }
+
+    boolean uriAvailable(Request request, String name) throws LoginException {
+        ResourceResolver serviceResolver = getServiceResolver(request);
+        Iterator<Resource> usersWithName = serviceResolver.findResources(String.format(SQL2_STATEMENT, name), Query.JCR_SQL2);
+        return !usersWithName.hasNext();
+    }
+
+    ResourceResolver getServiceResolver(Request request) throws LoginException {
+        return request.isAdmin() ?
+            request.getResourceResolver() :
+            loginService(resourceResolverFactory, PEREGRINE_SERVICE_NAME);
     }
 //Resource getUserHome(final Request request)
 //UserManager getUserManager(final Request request)

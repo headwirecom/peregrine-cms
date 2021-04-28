@@ -1327,6 +1327,10 @@ class PerAdminImpl {
   checkTenantNameAvailability(name) {
     return fetch('/admin/tenants/name/available.json?name=' + name)
   }
+
+  checkUserPageAvailability(uri) {
+    return fetch('/admin/userHomepage.json?tildaPageUri=' + uri)
+  }
 }
 
 export default PerAdminImpl

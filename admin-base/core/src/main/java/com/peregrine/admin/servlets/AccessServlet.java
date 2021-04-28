@@ -86,8 +86,9 @@ public class AccessServlet extends AbstractBaseServlet {
         )
         String[] profile_include_list() default { 
             "preferences/firstLogin",
+            "profile/email",
             "preferences/tildaPage", 
-            "profile/email" 
+            "profile/tildaPageUri" 
         };
     }
 
