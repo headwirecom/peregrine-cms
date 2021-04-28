@@ -75,4 +75,7 @@ public interface ReferenceLister {
      *         available on the target side
      */
     List<Resource> getReferenceList(boolean transitive, Resource resource, boolean deep, Resource source, Resource target);
+
+    boolean isReferenced(Resource resource);
+
 }

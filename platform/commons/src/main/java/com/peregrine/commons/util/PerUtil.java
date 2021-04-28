@@ -227,23 +227,19 @@ public class PerUtil {
      * @param predicate Predicate to test against
      * @return
      */
-    public static List<String> keysInMapHavingStringValueMatchingPredicate(Map<String, Object> map, Predicate<String> predicate) {
-        return map
-                .entrySet()
-                .stream()
+    public static List<String> findKeysForMatchingValues(final Map<String, Object> map, final Predicate<String> predicate) {
+        return map.entrySet().stream()
                 .filter(entry -> {
-                    Object value = entry.getValue();
+                    final Object value = entry.getValue();
                     if (value instanceof String) {
-                        String valueAsString = (String) value;
-                        return predicate.test(valueAsString);
+                        return predicate.test((String) value);
                     } else if (value instanceof String[]) {
-                        String[] valueAsArray = (String[]) value;
-                        return Arrays.stream(valueAsArray)
+                        return Arrays.stream((String[]) value)
                                 .anyMatch(predicate);
                     }
+
                     return false;
-                })
-                .map(Map.Entry::getKey)
+                }).map(Map.Entry::getKey)
                 .collect(Collectors.toList());
     }
 
