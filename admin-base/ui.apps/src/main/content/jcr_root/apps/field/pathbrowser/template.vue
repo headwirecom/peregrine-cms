@@ -28,14 +28,17 @@
         <input
           :id="getFieldID(schema)"
           type="text"
-          :value="sanitizedValue"
+          :value="value"
           :disabled="disabled"
           :maxlength="schema.max"
           :placeholder="schema.placeholder"
           :readonly="schema.readonly"
-          @input="value = $event.target.value" />
+          :title="value"
+          @input="onInputInput"
+          @focus="editing = true"
+          @blur="editing = false"/>
         <button v-if="!schema.readonly" :disabled="disabled" v-on:click.stop.prevent="browse" class="btn-flat">
-          <i class="material-icons">insert_drive_file</i>
+          <icon v-bind="buttonIcon"/>
         </button>
         <img v-if="isImage(value)" :src="sanitizedValue" />
         <path-browser-component
@@ -49,7 +52,7 @@
             :setCurrentPath="setCurrentPath"
             :setSelectedPath="setSelectedPath"
             :onCancel="onCancel"
-            :onSelect="onSelect">
+            @select="onSelect">
         </path-browser-component>
       </template>
       <p v-else>{{value}}</p>
@@ -57,13 +60,17 @@
 </template>
 
 <script>
-  import {PathBrowser} from '../../../../../js/constants';
-  import PathBrowserComponent from '../../admin/components/pathbrowser/template.vue';
+import {IconLib, PathBrowser} from '../../../../../js/constants'
+import {getBasePath} from '../../../../../js/mixins'
+
+import PathBrowserComponent from '../../admin/components/pathbrowser/template.vue'
+import Icon from '../../admin/components/icon/template.vue'
+
 
   export default {
         props: ['model'],
-        components: {PathBrowserComponent},
-        mixins: [ VueFormGenerator.abstractField ],
+        components: {Icon, PathBrowserComponent},
+        mixins: [ VueFormGenerator.abstractField , getBasePath],
         data () {
             return {
                 isOpen: false,
@@ -71,7 +78,8 @@
                 browserType: PathBrowser.Type.ASSET,
                 currentPath: '/assets',
                 selectedPath: null,
-                withLinkTab: true
+                withLinkTab: true,
+                editing: false
             }
         },
         computed: {
@@ -82,27 +90,29 @@
 				set (newValue) {
 					this.value = newValue
 				}
-			}
+			},
+          buttonIcon() {
+            return this.model.buttonIcon || {icon: 'insert_drive_file', lib: IconLib.MATERIAL_ICONS};
+          }
 		},
       created() {
           this.browserRoot = this.getBasePath() + this.browserRoot
           this.currentPath = this.getBasePath() + this.currentPath
       },
       methods: {
-            getBasePath() {
-              const view = $perAdminApp.getView()
-              let tenant = { name: 'example' }
-              if (view.state.tenant) {
-                tenant = view.state.tenant
-              }
-              return `/content/${tenant.name}`
-            },
+           onInputInput(event) {
+             if (!this.editing) {
+               this.value = event.target.value
+             }
+           },
             onCancel(){
                 this.isOpen = false
             },
             onSelect() {
                 this.value = this.selectedPath
+                this.$emit('select', this.selectedPath);
                 this.isOpen = false
+              console.log(this.value,' # ', this.sanitizedValue)
             },
             setCurrentPath(path){
                 this.currentPath = path
@@ -142,19 +152,19 @@
                 this.currentPath = currentPath
                 this.selectedPath = selectedPath
 
-                let options = this.schema.browserOptions
-                if(options && options.withLink !== null && options.withLink !== undefined){
-                    this.withLinkTab = !!options.withLink
-                } else {
-                    this.withLinkTab = !(type === PathBrowser.Type.IMAGE)
-                }
-                $perAdminApp.getApi().populateNodesForBrowser(currentPath, 'pathBrowser')
-                    .then( () => {
-                        this.isOpen = true
-                    }).catch( (err) => {
-                        $perAdminApp.getApi().populateNodesForBrowser('/content', 'pathBrowser')
-                    })
-            }
-        }
+      let options = this.schema.browserOptions
+      if (options && options.withLink !== null && options.withLink !== undefined) {
+        this.withLinkTab = !!options.withLink
+      } else {
+        this.withLinkTab = !(type === PathBrowser.Type.IMAGE)
+      }
+      $perAdminApp.getApi().populateNodesForBrowser(currentPath, 'pathBrowser')
+          .then((path, name, data) => {
+            this.isOpen = true
+          }).catch((err) => {
+        $perAdminApp.getApi().populateNodesForBrowser('/content', 'pathBrowser')
+      })
     }
+  }
+}
 </script>
