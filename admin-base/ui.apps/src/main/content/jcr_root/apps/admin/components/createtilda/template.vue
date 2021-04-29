@@ -43,6 +43,10 @@
             <p>Members typically use their ~ page to describe themselves or their work.            
             Your personal ~ homepage is a few steps away. Fill out a few details. </p>
             
+            <div style="color: #EF5350;" v-if="errorResponse">
+                <span>{{errorResponse}}</span>
+            </div>
+
             <vue-form-generator v-on:validated="onValidated"
                 :model      ="formmodel"
                 :schema     ="nameSchema"
@@ -87,6 +91,7 @@
                     btnClasses: "btn",
                     validated: false,
                     validationErrors: [],
+                    errorResponse: "",
                     formmodel: {
                         tildaPageUri: '',
                         firstName: '',
@@ -188,15 +193,10 @@
                                 self.$refs.createtildamodal.close()
                             })
                             .catch(error => {
-                                console.log(error)
+                                console.log(error.response)
+                                this.errorResponse = error.response.data.message
                             })
-                        // submit async to create ~page
-                        // if promise resolves then close
-                        // if there was an error do not close
-
-                        // this.
                     }
-
                 }
             },
             openTildaModal(){

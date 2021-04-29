@@ -212,7 +212,7 @@ public class UserHomepageServlet extends AbstractBaseServlet {
     Resource createUserPage(Request request, JsonResponse response) throws LoginException, AdminResourceHandler.ManagementException, IOException {
         final Resource userHome = getUserHome(request);
         Resource userPreferences = userHome.getChild(PREFERENCES);
-        String userpageTitle = userParamMap.get(USER_GIVEN)+" "+userParamMap.get(USER_GIVEN);
+        String userpageTitle = userParamMap.get(USER_GIVEN)+" "+userParamMap.get(USER_FAMILY);
         final Resource userPage = resourceManagement.createPage(
             request.getResourceResolver(),
             userHome.getPath(),
