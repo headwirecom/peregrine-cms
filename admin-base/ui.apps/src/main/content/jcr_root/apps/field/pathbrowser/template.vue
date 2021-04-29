@@ -11,9 +11,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -38,7 +38,7 @@
           <i class="material-icons">insert_drive_file</i>
         </button>
         <img v-if="isImage(value)" :src="sanitizedValue" />
-        <admin-components-pathbrowser
+        <path-browser-component
             v-if="isOpen"
             :isOpen="isOpen"
             :browserRoot="browserRoot"
@@ -50,7 +50,7 @@
             :setSelectedPath="setSelectedPath"
             :onCancel="onCancel"
             :onSelect="onSelect">
-        </admin-components-pathbrowser>
+        </path-browser-component>
       </template>
       <p v-else>{{value}}</p>
     </div>
@@ -58,9 +58,11 @@
 
 <script>
   import {PathBrowser} from '../../../../../js/constants';
+  import PathBrowserComponent from '../../admin/components/pathbrowser/template.vue';
 
   export default {
         props: ['model'],
+        components: {PathBrowserComponent},
         mixins: [ VueFormGenerator.abstractField ],
         data () {
             return {
@@ -141,8 +143,8 @@
                 this.selectedPath = selectedPath
 
                 let options = this.schema.browserOptions
-                if(options && options.withLink){
-                    this.withLinkTab = options.withLink
+                if(options && options.withLink !== null && options.withLink !== undefined){
+                    this.withLinkTab = !!options.withLink
                 } else {
                     this.withLinkTab = !(type === PathBrowser.Type.IMAGE)
                 }
