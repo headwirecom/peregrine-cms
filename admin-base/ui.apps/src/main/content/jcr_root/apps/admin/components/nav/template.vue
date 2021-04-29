@@ -270,7 +270,7 @@ export default {
       $('#aboutPeregrine').modal('open');
     },
     onProfileClick() {
-      $perAdminApp.action(this, 'selectPath', '/content/admin/pages/homepage')
+      $perAdminApp.action(this, 'selectPath', '/admin/pages/homepage')
     },
     onSettingsClick() {
       $perAdminApp.action(this, 'configureTenant', {

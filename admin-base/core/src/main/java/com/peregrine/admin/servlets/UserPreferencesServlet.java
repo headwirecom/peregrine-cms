@@ -38,6 +38,7 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import java.io.IOException;
+import java.util.Objects;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -74,24 +75,29 @@ import static com.peregrine.admin.util.AdminConstants.PEREGRINE_SERVICE_NAME;
 public class UserPreferencesServlet extends AbstractBaseServlet {
 
     @Reference
-    ResourceResolverFactory resourceResolverFactory;
-
+    protected ResourceResolverFactory resourceResolverFactory;
+    private ResourceResolver resourceResolver;
+    public static final String PREFERENCES = "preferences";
     @Override
     protected Response handleRequest(Request request) throws IOException {
         Resource home = getUserHome(request);
         if(home != null) {
             try {
                 Node preferences = null;
-                if(home.getChild("preferences") != null) {
-                    preferences = home.getChild("preferences").adaptTo(Node.class);
+                if(home.getChild(PREFERENCES) != null) {
+                    preferences = home.getChild(PREFERENCES).adaptTo(Node.class);
                 } else {
-                    preferences = home.adaptTo(Node.class).addNode("preferences");
+                    preferences = home.adaptTo(Node.class).addNode(PREFERENCES);
                 }
                 preferences.setProperty("firstLogin", "false");
                 request.getResourceResolver().adaptTo(Session.class).save();
             } catch( RepositoryException re) {
                 logger.error("Error updating user preferences", re);
                 // TODO: handle this
+            } finally {
+                if (Objects.nonNull(resourceResolver)){
+                    resourceResolver.close();
+                }
             }
         }
         JsonResponse answer = new JsonResponse();
@@ -99,7 +105,7 @@ public class UserPreferencesServlet extends AbstractBaseServlet {
         return answer;
     }
 
-    protected Resource getUserHome(final Request request) {
+    private Resource getUserHome(final Request request) {
 
         final ResourceResolver resolver = request.getResourceResolver();
         Resource resource = null;
@@ -113,9 +119,9 @@ public class UserPreferencesServlet extends AbstractBaseServlet {
         return resource;
     }
 
-    protected UserManager getUserManager(final Request request) {
+    private UserManager getUserManager(final Request request) {
 
-        ResourceResolver resourceResolver = null;
+        resourceResolver = null;
         UserManager userManager = null;
 
         try {

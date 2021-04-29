@@ -322,6 +322,10 @@ class PerApi {
     checkUserPageAvailability(uri) {
         return impl.checkUserPageAvailability(uri)
     }
+
+    intializeUserPage(initialProps) {
+        return impl.intializeUserPage(initialProps)
+    }
 }
 
 export default PerApi

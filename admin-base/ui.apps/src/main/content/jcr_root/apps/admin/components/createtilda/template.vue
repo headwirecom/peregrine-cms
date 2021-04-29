@@ -26,7 +26,7 @@
     <span>
         <span class="createtildabtn">
             <admin-components-action
-                v-if="model.mode === 'button'"
+                v-if="model.mode === 'button' "
                 v-bind:model="{
                     target: editPath,
                     title: getBtnText,
@@ -43,11 +43,11 @@
             <p>Members typically use their ~ page to describe themselves or their work.            
             Your personal ~ homepage is a few steps away. Fill out a few details. </p>
             
-            <vue-form-generator
-                :model="formmodel"
-                :schema="nameSchema"
-                :options="formOptions"
-                ref="tildaForm">
+            <vue-form-generator v-on:validated="onValidated"
+                :model      ="formmodel"
+                :schema     ="nameSchema"
+                :options    ="formOptions"
+                ref         ="tildaForm">
             </vue-form-generator>
 
             <template slot="footer">
@@ -85,6 +85,8 @@
                     btnText: "~page",
                     editPath: "/admin/pages/homepage.html",
                     btnClasses: "btn",
+                    validated: false,
+                    validationErrors: [],
                     formmodel: {
                         tildaPageUri: '',
                         firstName: '',
@@ -176,18 +178,25 @@
         },
         methods: {
             confirmDialog($event){
-                const errors = []
-                if ($event == 'confirm'){                    
-                    errors.push(this.nameAvailable(this.formmodel.tildaPageUri))
-                    console.log(errors)
-                    console.log(this.formmodel)
-                    console.log(this.$refs.tildaForm)
-                }
-                if (!errors || errors.length == 0){
-                    // submit async to create ~page
-                    // if promise resolves then close
-                    // if there was an error do not close
-                    this.$refs.createtildamodal.close()
+                let errors = []
+                if ($event == 'confirm'){   
+                    if (this.validationErrors.length == 0) {
+                        const self = this
+                        $perAdminApp.getApi().intializeUserPage(this.formmodel)
+                            .then((response) => {
+                                $perAdminApp.getApi().populateUser()
+                                self.$refs.createtildamodal.close()
+                            })
+                            .catch(error => {
+                                console.log(error)
+                            })
+                        // submit async to create ~page
+                        // if promise resolves then close
+                        // if there was an error do not close
+
+                        // this.
+                    }
+
                 }
             },
             openTildaModal(){
@@ -219,7 +228,6 @@
             nameAvailable: function(value){
                 // check whether name is available by checking with user-uri service
                 // user-uri is available if no other ~<name> already exists
-                console.log(value)
                 let errors = this.validPageName(value)
                 if (errors && errors.length == 0){
                     errors = []
@@ -241,6 +249,10 @@
                     errors.push(this.$i18n('This name is not valid. '))
                 }
                 return errors
+            },
+            onValidated(isValid, errors) {
+                this.validated = isValid
+                this.validationErrors = errors
             }
 
         },
