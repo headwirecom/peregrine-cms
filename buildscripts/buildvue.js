@@ -8,7 +8,7 @@ const buble     = require('rollup-plugin-buble')
 const commonjs  = require('rollup-plugin-commonjs')
 const camelcase = require('camelcase')
 
-console.log('=== building vue files ========================================')
+console.log('========== building vue files ==========')
 
 var felibName = ''
 if(process.argv.length >= 3) {
@@ -23,12 +23,22 @@ console.log('building felib', felibName)
 var basePath = './src/main/content/jcr_root/apps'
 var distBasePath = './target/classes/etc/felibs/'+felibName
 
+const timestampTokenFile = path.resolve(distBasePath, '../../../../', '.timestamp.buildvue.token')
+
 /** creatte the target directories
  *
  */
 fs.mkdirsSync(distBasePath)
 fs.mkdirsSync(distBasePath+'/css')
 fs.mkdirsSync(distBasePath+'/js')
+
+let timestamp
+
+try {
+    timestamp = parseInt(fs.readFileSync(timestampTokenFile, 'utf-8'))
+} catch (e) {
+    timestamp = 0;
+}
 
 /**
  * compile a single file
@@ -160,29 +170,34 @@ function updateIndexFiles() {
  * @param extFilter
  * @returns {Array}
  */
-function readDirs(basePath, path, extFilter) {
+function readDirs(basePath, path, extFilter, mTimeMin = 0) {
     var ret = new Array()
     var files = fs.readdirSync(path)
     files.forEach( function(file) {
         var filePath = path + '/' + file;
         if(filePath.endsWith(extFilter)) {
-            ret.push(filePath.slice(basePath.length))
+            const fileStats = fs.statSync(filePath)
+            if (fileStats.mtime.getTime() > mTimeMin) {
+                ret.push(filePath.slice(basePath.length))
+            }
         }
         var stats = fs.statSync(filePath)
         if(stats.isDirectory()) {
-            ret = ret.concat(readDirs(basePath, filePath, extFilter))
+            ret = ret.concat(readDirs(basePath, filePath, extFilter, mTimeMin))
         }
     })
     return ret;
 }
 
 // find all the vue files in this project
-var vueFiles = readDirs(basePath, basePath, '.vue')
+var vueFiles = readDirs(basePath, basePath, '.vue', timestamp)
+//var allFiles = readDirs(basePath, basePath, '.vue')
 var compiling = []
 // for each of the files compile it
 for(let i = 0; i < vueFiles.length; i++) {
     compileComponent(vueFiles[i])
 }
 
+fs.writeFileSync(timestampTokenFile, `${Date.now()}`, 'utf-8');
 
 
