@@ -26,6 +26,7 @@ package com.peregrine.reference.impl;
  */
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerUtil.containsResource;
 import static com.peregrine.commons.util.PerUtil.findKeysForMatchingValues;
 import static com.peregrine.commons.util.PerUtil.listMissingParents;
@@ -185,6 +186,10 @@ public final class ReferenceListerService implements ReferenceLister {
 
             while (referencingResources.hasNext()) {
                 final Resource referrer = referencingResources.next();
+                if (referrer.getPath().startsWith(path + SLASH)) {
+                    continue;
+                }
+
                 if (!findKeysForMatchingValues(referrer.getValueMap(), containsReference).isEmpty()) {
                     return true;
                 }
