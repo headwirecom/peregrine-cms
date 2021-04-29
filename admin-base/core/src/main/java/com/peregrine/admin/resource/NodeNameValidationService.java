@@ -3,6 +3,8 @@ package com.peregrine.admin.resource;
 import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Component;
 
+import java.util.Objects;
+
 @Component(
         service = NodeNameValidation.class,
         immediate = true
@@ -26,5 +28,14 @@ public class NodeNameValidationService implements NodeNameValidation {
                 !name.startsWith(" ") &&
                 !name.equals(".") &&
                 !name.equals("..");
+    }
+
+    @Override
+    public boolean isValidUserHomepageName(String name) {
+        return Objects.nonNull(name) &&
+                name.length() >= 3 &&
+                name.length() <= 40 &&
+                name.matches(".*[a-z0-9].*") &&
+                StringUtils.containsOnly(name, "abcdefghijklmnopqrstuvwxyz\\-0123456789");
     }
 }

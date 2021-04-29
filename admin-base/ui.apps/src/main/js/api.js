@@ -318,6 +318,14 @@ class PerApi {
     checkTenantNameAvailability(name) {
         return impl.checkTenantNameAvailability(name)
     }
+
+    checkUserPageAvailability(uri) {
+        return impl.checkUserPageAvailability(uri)
+    }
+
+    intializeUserPage(initialProps) {
+        return impl.intializeUserPage(initialProps)
+    }
 }
 
 export default PerApi

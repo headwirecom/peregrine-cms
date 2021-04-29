@@ -44,6 +44,7 @@ import javax.servlet.Servlet;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_ACCESS;
 import static com.peregrine.admin.util.AdminConstants.PEREGRINE_SERVICE_NAME;
@@ -84,12 +85,17 @@ public class AccessServlet extends AbstractBaseServlet {
                 description = "A list of allowed JCR property paths relative to a user's home directory that will be included in the response",
                 required = true
         )
-        String[] profile_include_list() default { "preferences/firstLogin", "profile/email" };
+        String[] profile_include_list() default { 
+            "preferences/firstLogin",
+            "profile/email",
+            "preferences/tildaPage", 
+            "profile/tildaPageUri" 
+        };
     }
 
     public static final String USER_ID = "userID";
     public static final String AUTH_TYPE = "authType";
-
+    private ResourceResolver resourceResolver;
     private List<String> profileIncludeList = new ArrayList<>();
 
     @Reference
@@ -106,7 +112,7 @@ public class AccessServlet extends AbstractBaseServlet {
         }
 
         convertResource(jsonResponse, getUserHome(request));
-
+        closeResourceResolver();
         return jsonResponse;
     }
 
@@ -126,7 +132,7 @@ public class AccessServlet extends AbstractBaseServlet {
 
     private UserManager getUserManager(final Request request) {
 
-        ResourceResolver resourceResolver = null;
+        resourceResolver = null;
         UserManager userManager = null;
 
         try {
@@ -141,6 +147,18 @@ public class AccessServlet extends AbstractBaseServlet {
         }
 
         return userManager;
+    }
+
+    /**
+     * If you call methods getUserManager or getUserHome
+     * or use methods that open the resourceResolver
+     *
+     * It is your responsibility to close it.
+     */
+    protected void closeResourceResolver(){
+        if (Objects.nonNull(this.resourceResolver)){
+            this.resourceResolver.close();
+        }
     }
 
     private void convertResource(JsonResponse json, Resource resource) throws IOException {

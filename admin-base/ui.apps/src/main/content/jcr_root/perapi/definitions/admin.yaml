@@ -1158,6 +1158,34 @@ paths:
           description: Missing 'name' parameter error
           schema:
             $ref: "#/definitions/Error"
+  'userHomepage.json':
+    get:
+      description: Checks whether the user ~ page is available
+      parameters:
+        - name: tildaPageUri
+          type: string
+          in: query
+          description: the name of the user ~page uri to be checked
+          required: true
+      responses:
+        200:
+          description: returns json object with a 'result' marker field
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Candidate name of a user ~page uri
+              nameValid:
+                type: boolean
+                description: whether ~ page uri candidate is valid
+              nameAvailable:
+                type: boolean
+                description: whether ~ page uri candidate is available        
+        400:
+          description: Missing 'name' parameter error
+          schema:
+            $ref: "#/definitions/Error"            
 definitions:
   Error:
     type: object

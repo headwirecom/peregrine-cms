@@ -34,4 +34,11 @@ public interface NodeNameValidation {
      */
     boolean isValidNodeName(String name);
 
+
+    /**
+     * Checks whether the provided name contains only characters that are allowed in tilda page names.
+     * @param name the name to validate
+     * @return true if the name does not contain any invalid characters or sequences; false otherwise
+     */
+    boolean isValidUserHomepageName(String name);
 }

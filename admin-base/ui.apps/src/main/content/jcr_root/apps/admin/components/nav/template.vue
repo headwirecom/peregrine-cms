@@ -212,7 +212,7 @@ export default {
     },
     userDdItems() {
       return [
-        {label: 'Profile', icon: 'account_box', disabled: true},
+        {label: 'Profile', icon: 'account_box', click: this.onProfileClick},
         {label: 'Language', icon: 'language', click: this.onLanguageClick},
         {label: '', disabled: true},
         {label: 'Logout', icon: 'exit_to_app', click: this.onLogoutClick}
@@ -268,6 +268,9 @@ export default {
     },
     onAboutClick() {
       $('#aboutPeregrine').modal('open');
+    },
+    onProfileClick() {
+      $perAdminApp.action(this, 'selectPath', '/admin/pages/homepage')
     },
     onSettingsClick() {
       $perAdminApp.action(this, 'configureTenant', {

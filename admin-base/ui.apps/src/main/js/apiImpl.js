@@ -1304,7 +1304,6 @@ class PerAdminImpl {
           config)
           .then(() => this.populateNodesForBrowser(path))
           .catch(error => {
-//            logger.error('Failed to upload: ' + error)
             reject('Unable to upload due to an error. ' + error)
           })
     }
@@ -1326,6 +1325,18 @@ class PerAdminImpl {
 
   checkTenantNameAvailability(name) {
     return fetch('/admin/tenants/name/available.json?name=' + name)
+  }
+
+  checkUserPageAvailability(uri) {
+    return fetch('/admin/userHomepage.json?tildaPageUri=' + uri)
+  }
+
+  intializeUserPage(initialProps) {
+    console.log(initialProps)
+    console.log(json(initialProps))
+    const data = new FormData()
+    data.append('content', JSON.stringify(initialProps))
+    return updateWithForm('/admin/userHomepage.json?tildaPageUri=' + initialProps['tildaPageUri'], data)
   }
 }
 
