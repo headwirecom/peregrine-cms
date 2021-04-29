@@ -1,0 +1,14 @@
+<sly data-sly-use.profile="com.peregrine.pagerender.server.models.ProfileModel"/>
+
+<h1>
+    ${profile.firstName} ${profile.lastName} 
+</h1>
+<div data-sly-test="${profile.pronouns}"><em>${profile.pronouns}</em></div>
+
+<p>
+    <a data-sly-test.link="${profile.tildaPageUri}" href="${profile.tildaPageUri}">${profile.tildaPageUri}</a>    
+</p>
+<p>
+    <div data-sly-test="${profile.positionTitle}">${profile.positionTitle}</div>
+    <div data-sly-test="${profile.organization}">${profile.organization}</div>
+</p> 

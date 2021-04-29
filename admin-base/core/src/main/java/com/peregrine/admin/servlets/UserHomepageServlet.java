@@ -38,6 +38,8 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.Query;
 import javax.servlet.Servlet;
@@ -47,7 +49,7 @@ import java.util.*;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_USER_HOMEPAGE;
 import static com.peregrine.admin.servlets.UserPreferencesServlet.PREFERENCES;
 import static com.peregrine.admin.util.AdminConstants.PEREGRINE_SERVICE_NAME;
-import static com.peregrine.commons.util.PerConstants.CONTENT;
+import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.*;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
@@ -83,6 +85,7 @@ public class UserHomepageServlet extends AbstractBaseServlet {
     private ResourceResolver serviceResolver;
     private Map<String,String> userParamMap;
     private static String templatePath;
+    private static String profileComponentPath;
     public static final String PROFILE = "profile";
     public static final String USER_GIVEN = "firstName";
     public static final String USER_FAMILY = "lastName";
@@ -107,6 +110,7 @@ public class UserHomepageServlet extends AbstractBaseServlet {
             required = true
         )
         String userTildaPageTemplatePath() default "/content/pagerenderserver/templates/empty-container";
+        String userProfileComponentPath() default "pagerenderserver/components/profile";
     }
 
     /**
@@ -161,7 +165,7 @@ public class UserHomepageServlet extends AbstractBaseServlet {
                         .setHttpErrorCode(SC_BAD_REQUEST)
                         .setErrorMessage(FAILED_TO_GET_SERVICE_RESOLVER)
                         .setException(e);
-                } catch (AdminResourceHandler.ManagementException e) {
+                } catch (AdminResourceHandler.ManagementException | RepositoryException e) {
                     return new ErrorResponse()
                         .setHttpErrorCode(SC_BAD_REQUEST)
                         .setErrorMessage(MGT_ERROR)
@@ -209,7 +213,7 @@ public class UserHomepageServlet extends AbstractBaseServlet {
         }
     }
 
-    Resource createUserPage(Request request, JsonResponse response) throws LoginException, AdminResourceHandler.ManagementException, IOException {
+    Resource createUserPage(Request request, JsonResponse response) throws LoginException, AdminResourceHandler.ManagementException, IOException, RepositoryException {
         final Resource userHome = getUserHome(request);
         Resource userPreferences = userHome.getChild(PREFERENCES);
         String userpageTitle = userParamMap.get(USER_GIVEN)+" "+userParamMap.get(USER_FAMILY);
@@ -231,9 +235,14 @@ public class UserHomepageServlet extends AbstractBaseServlet {
         if (Objects.nonNull(request.getParameter(USER_PRONOUNS))){
             response.writeAttribute(USER_PRONOUNS, request.getParameter(USER_PRONOUNS));
         }
+
+        Resource jcrContent = userPage.getChild(JCR_CONTENT);
+        Node content = jcrContent.adaptTo(Node.class).addNode(CONTENT);
+        Node profileNode = content.addNode(PROFILE);
+        profileNode.setProperty(SLING_RESOURCE_TYPE, profileComponentPath);
         resourceManagement.updateResource(
             request.getResourceResolver(),
-            userPage.getPath(),
+            profileNode.getPath(),
             request.getParameter(CONTENT));
 
         userPreferences.adaptTo(ModifiableValueMap.class).put(TILDA_PAGE, true);
@@ -275,6 +284,7 @@ public class UserHomepageServlet extends AbstractBaseServlet {
     @Modified
     void setup(UserHomepageServlet.Configuration config){
         templatePath = config.userTildaPageTemplatePath();
+        profileComponentPath = config.userProfileComponentPath();
     }
 }
 

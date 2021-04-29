@@ -1,0 +1,45 @@
+{ "fields":[
+  {
+    "type": "input",
+    "inputType": "text",
+    "placeholder": "First Name",
+    "label": "Given Name",
+    "model": "firstName"
+  },
+  {
+    "type": "input",
+    "inputType": "text",
+    "placeholder": "Last Name",
+    "label": "Family Name",
+    "model": "lastName"
+  },
+  {
+    "type": "input",
+    "inputType": "text",
+    "placeholder": "your-uri",
+    "label": "~ Page URI",
+    "model": "tildaPageUri"
+  },
+  {
+    "type": "input",
+    "inputType": "text",
+    "placeholder": "Company",
+    "label": "Organization",
+    "model": "organization"
+  },
+  {
+    "type": "input",
+    "inputType": "text",
+    "placeholder": "Your position",
+    "label": "Title",
+    "model": "positionTitle"
+  },
+  {
+    "type": "input",
+    "inputType": "text",
+    "placeholder": "Your pronouns",
+    "label": "Pronouns",
+    "model": "pronouns"
+  }
+  ]
+}
