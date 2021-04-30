@@ -164,6 +164,7 @@ public class ResourceMock extends ResourceWrapper {
     private void updateResourceResolverGetResource() {
         if (resourceResolver != null) {
             when(resourceResolver.getResource(path)).thenReturn(this);
+            when(resourceResolver.resolve(path)).thenReturn(this);
         }
     }
 

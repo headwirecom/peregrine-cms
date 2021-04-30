@@ -1,0 +1,27 @@
+{
+  "res1": {
+    "jcr:primaryType": "nt:unstructured",
+    "value": "/content/tenant/pages/index"
+  },
+  "res2": {
+    "jcr:primaryType": "nt:unstructured",
+    "value": "/content/tenant/pages/index/child"
+  },
+  "res3": {
+    "jcr:primaryType": "nt:unstructured",
+    "value": "<a href=\"/content/tenant/pages/index.html\">index</a>"
+  },
+  "res4": {
+    "jcr:primaryType": "nt:unstructured",
+    "value": "<a href=\"/content/tenant/pages/index/child.html\">child</a>"
+  },
+  "tenant": {
+    "jcr:primaryType": "nt:unstructured",
+    "pages" :  {
+      "jcr:primaryType": "nt:unstructured",
+      "index": {
+        "jcr:primaryType": "nt:unstructured"
+      }
+    }
+  }
+}
