@@ -152,8 +152,7 @@ public final class ReferenceListerService implements ReferenceLister {
 
             while (referencingResources.hasNext()) {
                 Resource referencingResource = referencingResources.next();
-                final List<String> referencingProperties =
-                        findKeysForMatchingValues(referencingResource.getValueMap(), containsReference);
+                List<String> referencingProperties = findKeysForMatchingValues(referencingResource.getValueMap(), containsReference);
                 if (referencingProperties.isEmpty()) {
                     continue;
                 }
