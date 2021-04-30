@@ -385,6 +385,10 @@ public class PerUtil {
         return isDescendantOfJcrContent(resource.getPath());
     }
 
+    private static boolean isDescendantOfJcrContent(final Resource resource) {
+        return isDescendantOfJcrContent(resource.getPath());
+    }
+
     public static boolean isJcrContentOrDescendant(final String path) {
         return isJcrContent(path) || isDescendantOfJcrContent(path);
     }
