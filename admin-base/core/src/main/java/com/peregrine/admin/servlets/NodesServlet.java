@@ -47,6 +47,7 @@ import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
+import static com.peregrine.commons.util.PerConstants.PUBLISHED_LABEL;
 import static com.peregrine.commons.util.PerConstants.TAGS;
 import static com.peregrine.commons.util.PerConstants.TITLE;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
@@ -74,6 +75,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import javax.servlet.Servlet;
+
+import com.peregrine.versions.VersioningResourceResolver;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
@@ -129,7 +132,8 @@ public class NodesServlet extends AbstractBaseServlet {
         String[] segments = path.split("/");
         logger.debug("lookup path {}, {}", path, segments.length);
         JsonResponse answer = new JsonResponse();
-        convertResource(answer, request.getResourceResolver(), segments, 1, path);
+        final ResourceResolver resolver = request.getResourceResolver();
+        convertResource(answer, resolver, segments, 1, path, new VersioningResourceResolver(resolver, PUBLISHED_LABEL));
         return answer;
     }
 
@@ -159,7 +163,7 @@ public class NodesServlet extends AbstractBaseServlet {
         return false;
     }
 
-    private void convertResource(JsonResponse json, ResourceResolver rs, String[] segments, int pos, String fullPath) throws IOException {
+    private void convertResource(JsonResponse json, ResourceResolver rs, String[] segments, int pos, String fullPath, VersioningResourceResolver versionsResolver) throws IOException {
         String path = "";
         for(int i = 1; i <= pos; i++) {
             path += "/" + segments[i];
@@ -176,7 +180,7 @@ public class NodesServlet extends AbstractBaseServlet {
             String childPath = child.getPath();
             if(fullPath.startsWith(childPath+'/') || fullPath.equals(childPath)) {
                 json.writeObject();
-                convertResource(json, rs, segments, pos+1, fullPath);
+                convertResource(json, rs, segments, pos+1, fullPath, versionsResolver);
                 json.writeClose();
             } else {
                 if(!JCR_CONTENT.equals(child.getName())) {
@@ -238,6 +242,7 @@ public class NodesServlet extends AbstractBaseServlet {
 
                     json.writeAttribute(ANY_DESCENDANT_ACTIVATED, ReplicationUtil.isAnyDescendantReplicated(child));
                     json.writeAttribute("isReferenced", referenceLister.isReferenced(child));
+                    json.writeAttribute("isReferencedInPublish", referenceLister.isReferenced(versionsResolver.wrap(child)));
                     json.writeClose();
                 }
             }

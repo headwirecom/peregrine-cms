@@ -197,8 +197,8 @@
             <i class="material-icons">publish</i>
             Publish to Web ({{nodeType}})
           </div>
-          <div :class="classForActionDisabledOnDeactivatedResource" :title="`Deactivate ${nodeType}`" >
-            <admin-components-action v-if="nodeFromPath.activated"
+          <div :class="classForUnpublishOp" :title="`Deactivate ${nodeType}`" >
+            <admin-components-action v-if="nodeFromPath.activated && !nodeFromPath.isReferencedInPublish"
                 :model="{
                     target: node.path,
                     command: 'unPublishResource',
@@ -520,8 +520,8 @@ export default {
     classForActionDisabledOnActivatedResource() {
       return this.selfOrAnyDescendantActivated ? 'action operationDisabledOnActivatedItem' : 'action';
     },
-    classForActionDisabledOnDeactivatedResource() {
-      return this.selfOrAnyDescendantActivated ? 'action' : 'action operationDisabledOnActivatedItem';
+    classForUnpublishOp() {
+      return this.node.activated && !this.node.isReferencedInPublish ? 'action' : 'action operationDisabledOnActivatedItem';
     },
     stateToolsEdit() {
       const stateTools = $perAdminApp.getNodeFromViewOrNull('/state/tools')
