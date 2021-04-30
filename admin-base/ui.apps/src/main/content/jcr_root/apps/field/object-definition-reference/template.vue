@@ -39,7 +39,7 @@ export default {
   },
   methods: {
     onSelect(selectedPath) {
-      console.log('onSelect:', selectedPath)
+      this.value = selectedPath;
     }
   }
 }

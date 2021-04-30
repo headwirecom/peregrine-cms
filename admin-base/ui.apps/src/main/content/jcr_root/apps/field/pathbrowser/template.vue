@@ -112,7 +112,6 @@ import Icon from '../../admin/components/icon/template.vue'
                 this.value = this.selectedPath
                 this.$emit('select', this.selectedPath);
                 this.isOpen = false
-              console.log(this.value,' # ', this.sanitizedValue)
             },
             setCurrentPath(path){
                 this.currentPath = path
