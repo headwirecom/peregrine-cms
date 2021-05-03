@@ -381,6 +381,10 @@ public class PerUtil {
         return StringUtils.contains(path, SL_JCR_CONTENT_SL);
     }
 
+    private static boolean isDescendantOfJcrContent(final Resource resource) {
+        return isDescendantOfJcrContent(resource.getPath());
+    }
+
     public static boolean isJcrContentOrDescendant(final String path) {
         return isJcrContent(path) || isDescendantOfJcrContent(path);
     }
@@ -436,11 +440,16 @@ public class PerUtil {
      * or the <code>resource</code> itself otherwise (it's its own <code>base</code> then)
      */
     public static Resource getBaseResource(final Resource resource) {
-        if (isJcrContent(resource)) {
-            return resource.getParent();
+        Resource parent = resource;
+        while (isDescendantOfJcrContent(parent)) {
+            parent = parent.getParent();
         }
 
-        return resource;
+        if (isJcrContent(parent)) {
+            return parent.getParent();
+        }
+
+        return parent;
     }
 
     /**
