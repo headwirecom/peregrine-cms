@@ -669,13 +669,16 @@ export default {
             },
 
             canBeDeleted: function(obj) {
-                return !(obj.activated || obj.anyDescendantActivated);
+                return !(obj.activated || obj.anyDescendantActivated || obj.isReferenced);
             },
 
             deleteTenantOrPage: function(me, target) {
-                if (!me.canBeDeleted(target)) {
-                    $perAdminApp.toast("You cannot delete this yet. The resource or one of its children is still published." +
-                                       " Please unpublish all of them first.", "warn", 7500)
+                if (target.activated) {
+                    $perAdminApp.toast("The resource is still published. Please unpublish itfirst.", "warn", 7500)
+                } else if (target.anyDescendantActivated) {
+                    $perAdminApp.toast("One of the children of this resource is still published. Please unpublish all of them first.", "warn", 7500)
+                } else if (target.isReferenced) {
+                    $perAdminApp.toast("The resource is referenced somewhere. Please remove the references first.", "warn", 7500)
                 } else if(me.path === '/content') {
                     me.deleteTenant(me, target)
                 } else {

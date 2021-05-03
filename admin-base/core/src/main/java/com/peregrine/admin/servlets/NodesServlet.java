@@ -62,6 +62,7 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
+import com.peregrine.reference.ReferenceLister;
 import com.peregrine.replication.PerReplicable;
 import com.peregrine.replication.ReplicationUtil;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
@@ -77,6 +78,7 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * List all the resources part of the given Path
@@ -104,6 +106,7 @@ public class NodesServlet extends AbstractBaseServlet {
     public static final String DEACTIVATED = "deactivated";
     public static final String REPLICATION_STATUS = "ReplicationStatus";
     public static final String ANY_DESCENDANT_ACTIVATED = "anyDescendantActivated";
+    public static final String IS_REFERENCED = "isReferenced";
     public static final String RESOURCE_TYPE = "resourceType";
     public static final String JCR_PREFIX = "jcr:";
     public static final String PER_PREFIX = "per:";
@@ -111,6 +114,9 @@ public class NodesServlet extends AbstractBaseServlet {
     private static final String[] OMIT_PREFIXES = new String[] {JCR_PREFIX, PER_PREFIX};
 
     public static DateFormat DATE_FORMATTER = new SimpleDateFormat(ECMA_DATE_FORMAT, ECMA_DATE_FORMAT_LOCALE);
+
+    @Reference
+    private ReferenceLister referenceLister;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
@@ -232,6 +238,7 @@ public class NodesServlet extends AbstractBaseServlet {
                     }
 
                     json.writeAttribute(ANY_DESCENDANT_ACTIVATED, ReplicationUtil.isAnyDescendantReplicated(child));
+                    json.writeAttribute(IS_REFERENCED, referenceLister.isReferenced(child));
                     json.writeClose();
                 }
             }

@@ -26,7 +26,9 @@ package com.peregrine.reference.impl;
  */
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
+import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerUtil.containsResource;
+import static com.peregrine.commons.util.PerUtil.findKeysForMatchingValues;
 import static com.peregrine.commons.util.PerUtil.listMissingParents;
 import static com.peregrine.commons.util.PerUtil.stripJcrContentAndDescendants;
 import static java.util.Objects.isNull;
@@ -36,7 +38,11 @@ import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
 import com.peregrine.reference.Reference;
 import com.peregrine.reference.ReferenceLister;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -146,11 +152,11 @@ public final class ReferenceListerService implements ReferenceLister {
 
             while (referencingResources.hasNext()) {
                 Resource referencingResource = referencingResources.next();
-                List<String> referencingProperties =
-                        PerUtil.findKeysForMatchingValues(referencingResource.getValueMap(), containsReference);
+                List<String> referencingProperties = findKeysForMatchingValues(referencingResource.getValueMap(), containsReference);
                 if (referencingProperties.isEmpty()) {
                     continue;
                 }
+
                 String referencingPath = referencingResource.getPath();
                 String parentPath = stripJcrContentAndDescendants(referencingPath);
                 Resource parentResource = resourceResolver.resolve(parentPath);
@@ -161,6 +167,36 @@ public final class ReferenceListerService implements ReferenceLister {
         return result;
     }
 
+    @Override
+    public boolean isReferenced(final Resource resource) {
+        if (isNull(resource)) {
+            return false;
+        }
+
+        final ResourceResolver resourceResolver = resource.getResourceResolver();
+        final String path = resource.getPath();
+        final Pattern pathRegex = Pattern.compile(String.format(REFERENCE_REGEX_TEMPLATE, path));
+        final Predicate<String> containsReference = s -> pathRegex.matcher(s).find();
+        for (String referencedByRoot: referencedByRootList) {
+            final Iterator<Resource> referencingResources = resourceResolver.findResources(
+                    String.format(REFERENCED_BY_QUERY, referencedByRoot, path, path),
+                    Query.JCR_SQL2
+            );
+
+            while (referencingResources.hasNext()) {
+                final Resource referrer = referencingResources.next();
+                if (referrer.getPath().startsWith(path + SLASH)) {
+                    continue;
+                }
+
+                if (!findKeysForMatchingValues(referrer.getValueMap(), containsReference).isEmpty()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 
     /**
      * Check the given Resource if it has a reference
