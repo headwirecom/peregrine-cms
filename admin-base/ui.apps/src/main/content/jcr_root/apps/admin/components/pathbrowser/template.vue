@@ -11,9 +11,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -111,7 +111,7 @@
                     <li v-if="isFolder(item)"
                         v-on:click.stop.prevent="navigateFolder(item)"
                         :class="isSelected(item.path) ? 'selected' : ''">
-                      <template v-if="!isBrowserTypeImage">
+                      <template v-if="allowFolderSelection">
                         <input name="selectedItem"
                                type="radio"
                                class="with-gap"
@@ -131,7 +131,7 @@
                                :checked="isSelected(item.path)"/>
                         <label></label>
                       </template>
-                      <i class="material-icons">image</i>
+                      <icon v-bind="getFileIcon(item)"/>
                       <span>{{ item.name }}</span>
                     </li>
                   </template>
@@ -285,11 +285,12 @@
                             v-bind:style="`width: ${cardSize}px; height: ${cardSize}px`"
                             v-on:click.stop.prevent="selectItem(item)">
                           <div class="item-content">
-                            <i
+                            <icon v-bind="getFileIcon(item)"/>
+                            <!-- i
                                 class="material-icons"
                                 :style="`font-size: ${cardIconSize(cardSize)}px`">{{
-                                getFileIcon()
-                              }}</i>
+                                getFileIcon(item)
+                              }}</i-->
                             <br/>
                             <span class="truncate">{{ item.name }}</span>
                           </div>
@@ -374,9 +375,9 @@
                 <div v-if="isFolder(preview)" class="preview-folder">
                   <admin-components-iconopenfolder></admin-components-iconopenfolder>
                 </div>
-                <template v-if="isFile(preview)">
-                  <img v-if="true" class="preview-image" v-bind:src="preview.path"/>
-                  <i v-else class="material-icons preview-file">insert_file_drive</i>
+                <template v-else>
+                  <img v-if="isImage(preview)" class="preview-image" v-bind:src="preview.path" :alt="preview.name"/>
+                  <icon v-bind="getFileIcon(preview)"/>
                 </template>
                 <dl class="preview-data">
                   <dt>Name</dt>
@@ -405,7 +406,7 @@
                       class="modal-action waves-effect waves-light btn-flat">
                 cancel
               </button>
-              <button v-on:click="onSelect"
+              <button v-on:click="$emit('select', selectedPath)"
                       class="modal-action waves-effect waves-light btn-flat">
                 select
               </button>
@@ -423,12 +424,15 @@
 </template>
 
 <script>
-import FileDropper from '../filedropper/template.vue';
-import {IconLib, PathBrowser} from '../../../../../../js/constants';
+import {IconLib, PathBrowser} from '../../../../../../js/constants'
+
+import FileDropper from '../filedropper/template.vue'
+import Icon from '../icon/template.vue'
 
 export default {
   name: 'PathBrowser',
   components: {
+    Icon,
     FileDropper
   },
   props: {
@@ -458,7 +462,6 @@ export default {
       type: Number
     },
     onCancel: Function,
-    onSelect: Function,
   },
   watch: {
     cardSize: function (newCardSize) {
@@ -542,11 +545,17 @@ export default {
         return 144
       }
     },
+    allowFolderSelection() {
+      return !this.isBrowserTypeImage && !this.isBrowserTypeObjectDefinition
+    },
     isBrowserTypeImage() {
       return this.isType(PathBrowser.Type.IMAGE)
     },
     isBrowserTypeAsset() {
       return this.isType(PathBrowser.Type.ASSET) || this.isType(PathBrowser.Type.IMAGE)
+    },
+    isBrowserTypeObjectDefinition() {
+      return this.isType(PathBrowser.Type.OBJECT_DEFINITION)
     },
     showRel() {
       return !this.selectedPath || (
@@ -560,8 +569,14 @@ export default {
       return false
     },
     isImage(item) {
-      return ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'timage/tiff',
-        'image/svg+xml'].indexOf(item.mimeType) >= 0
+      return [
+        'image/png',
+        'image/jpeg',
+        'image/jpg',
+        'image/gif',
+        'timage/tiff',
+        'image/svg+xml'
+      ].indexOf(item.mimeType) >= 0
     },
     isImageExtension(item) {
       if (item.path) {
@@ -570,8 +585,20 @@ export default {
         return false
       }
     },
-    getFileIcon() {
-      return 'insert_drive_file'
+    getFileExt(item) {
+      return item.name.split('.').pop()
+    },
+    getFileIcon(item) {
+      const ext = this.getFileExt(item)
+      if (this.isImage(item)) {
+        return {icon: 'image', lib: IconLib.MATERIAL_ICONS}
+      } else if (ext === 'xml') {
+        return {icon: 'file-code', lib: IconLib.FONT_AWESOME}
+      } else if (this.getFileExt(item) === 'json') {
+        return {icon: '{&#8230;}', lib: IconLib.PLAIN_TEXT}
+      } else {
+        return {icon: 'insert_drive_file', lib: IconLib.MATERIAL_ICONS}
+      }
     },
     getFolderIcon() {
       return this.isType(PathBrowser.Type.ASSET) ? 'folder_open' : 'description'
@@ -654,14 +681,23 @@ export default {
       return this.browserType !== PathBrowser.Type.PAGE
     },
     isFolder(item) {
-      return ['per:Page', 'nt:folder', 'sling:Folder', 'sling:OrderedFolder'].indexOf(
-          item.resourceType) >= 0
+      return [
+        'per:Page',
+        'nt:folder',
+        'sling:Folder',
+        'sling:OrderedFolder',
+        'per:ObjectDefinition'
+      ].indexOf(item.resourceType) >= 0
     },
     isSelected(path) {
       return this.selectedPath === path
     },
+    hasPreview(item) {
+
+    },
     navigateFolder(item) {
-      $perAdminApp.getApi().populateNodesForBrowser(item.path, 'pathBrowser')
+      $perAdminApp.getApi()
+            .populateNodesForBrowser(item.path, 'pathBrowser')
           .then(() => {
             this.previewType = 'current'
             this.setCurrentPath(item.path)
@@ -673,6 +709,7 @@ export default {
       if (this.isSelectable(item)) {
         this.previewType = 'selected'
         this.setSelectedPath(item.path)
+
       }
     },
     selectLink(ev) {
@@ -708,3 +745,27 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.browse-list .icon {
+  height:36px;
+  width: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bolder;
+  color: #000000;
+}
+
+.col-preview .icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bolder;
+  color: #000000;
+  width: 100%;
+  font-size: 4rem;
+  padding: .5rem;
+  height: 6rem;
+}
+</style>
