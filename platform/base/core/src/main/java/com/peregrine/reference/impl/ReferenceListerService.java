@@ -26,8 +26,9 @@ package com.peregrine.reference.impl;
  */
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerUtil.isNotEmpty;
+import static com.peregrine.commons.util.PerUtil.containsResource;
 import static com.peregrine.commons.util.PerUtil.listMissingParents;
+import static com.peregrine.commons.util.PerUtil.stripJcrContentAndDescendants;
 import static java.util.Objects.isNull;
 
 import com.peregrine.commons.util.PerUtil;
@@ -35,12 +36,11 @@ import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
 import com.peregrine.reference.Reference;
 import com.peregrine.reference.ReferenceLister;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
@@ -54,6 +54,8 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jcr.query.Query;
+
 /**
  * Lists References from and to a given Page
  *
@@ -66,7 +68,6 @@ import org.slf4j.LoggerFactory;
 )
 @Designate(ocd = ReferenceListerService.Configuration.class)
 public final class ReferenceListerService implements ReferenceLister {
-
     @ObjectClassDefinition(
         name = "Peregrine: Reference List Provider",
         description = "Provides a list of referenced resources for a given resource"
@@ -84,10 +85,14 @@ public final class ReferenceListerService implements ReferenceLister {
         String[] referencedByRoot() default "/content";
     }
 
+    private static final String REFERENCED_BY_QUERY = "select * from [nt:base] as s where isdescendantnode('%s') " +
+            "and contains(s.*, '%s')";
+    private static final String REFERENCE_REGEX_TEMPLATE = "(^|[\" ])%s($|[\" .])";
+
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private List<String> referencePrefixList = new ArrayList<>();
-    private List<String> referencedByRootList = new ArrayList<>();
+    private final List<String> referencePrefixList = new LinkedList<>();
+    private final List<String> referencedByRootList = new LinkedList<>();
 
     @Override
     public List<Resource> getReferenceList(boolean transitive, Resource resource, boolean deep) {
@@ -106,7 +111,7 @@ public final class ReferenceListerService implements ReferenceLister {
 
     @Override
     public List<Resource> getReferenceList(boolean transitive, Resource resource, boolean deep, Resource source, Resource target, PerUtil.ResourceChecker checker) {
-        List<Resource> answer = new ArrayList<>();
+        List<Resource> answer = new LinkedList<>();
         TraversingContext context = new TraversingContext(checker).setTransitive(transitive).setDeep(deep);
         checkResource(resource, context, answer, source, target);
         return answer;
@@ -117,16 +122,45 @@ public final class ReferenceListerService implements ReferenceLister {
         if (isNull(resource)) {
             return Collections.emptyList();
         }
-
-        final List<Reference> answer = new ArrayList<>();
+        final List<Reference> result = new LinkedList<>();
         final ResourceResolver resourceResolver = resource.getResourceResolver();
         final String path = resource.getPath();
-        referencedByRootList.stream()
-                .map(resourceResolver::getResource)
-                .filter(Objects::nonNull)
-                .forEach(r -> traverseTreeReverse(r, path, answer));
-        return answer;
+
+        // The following regex matches e.g.
+        //   /path
+        //   "/path"
+        //   "/path.html"
+        // But does not match
+        //   /path/child
+        //   something/path
+        Pattern pathRegex =
+                Pattern.compile(String.format(REFERENCE_REGEX_TEMPLATE, path));
+
+        Predicate<String> containsReference = s -> pathRegex.matcher(s).find();
+
+        for (String referencedByRoot: referencedByRootList) {
+            Iterator<Resource> referencingResources = resourceResolver.findResources(
+                    String.format(REFERENCED_BY_QUERY, referencedByRoot, path, path),
+                    Query.JCR_SQL2
+            );
+
+            while (referencingResources.hasNext()) {
+                Resource referencingResource = referencingResources.next();
+                List<String> referencingProperties =
+                        PerUtil.findKeysForMatchingValues(referencingResource.getValueMap(), containsReference);
+                if (referencingProperties.isEmpty()) {
+                    continue;
+                }
+                String referencingPath = referencingResource.getPath();
+                String parentPath = stripJcrContentAndDescendants(referencingPath);
+                Resource parentResource = resourceResolver.resolve(parentPath);
+                Reference ref = new Reference(parentResource, referencingProperties.get(0), referencingResource);
+                result.add(ref);
+            }
+        }
+        return result;
     }
+
 
     /**
      * Check the given Resource if it has a reference
@@ -144,19 +178,19 @@ public final class ReferenceListerService implements ReferenceLister {
                 return;
             }
 
-            Resource jcrContent = resource.getChild(JCR_CONTENT);
-            if(!context.isDeep()) {
-                if(jcrContent != null) {
-                    parseProperties(jcrContent, context, response, source, target);
-                    // Loop of all its children
-                    traverseTree(jcrContent, context, response, source, target);
-                }
-            } else {
+            if(context.isDeep()) {
                 Iterable<Resource> children = resource.getChildren();
                 for(Resource child : children) {
                     parseProperties(child, context, response, source, target);
                     // Loop of all its children
                     traverseTree(child, context, response, source, target);
+                }
+            } else {
+                Resource jcrContent = resource.getChild(JCR_CONTENT);
+                if (jcrContent != null) {
+                    parseProperties(jcrContent, context, response, source, target);
+                    // Loop of all its children
+                    traverseTree(jcrContent, context, response, source, target);
                 }
             }
         }
@@ -221,82 +255,6 @@ public final class ReferenceListerService implements ReferenceLister {
         }
     }
 
-    /** Checks if the given list already contains the given resource by path **/
-    private boolean containsResource(List<Resource> resources, Resource check) {
-        boolean answer = false;
-        String checkPath = check.getPath();
-        for(Resource item: resources) {
-            if(item.getPath().equals(checkPath)) {
-                answer = true;
-                break;
-            }
-        }
-        return answer;
-    }
-
-    /**
-     * This traverses the resource's children to look for referenced by resources. Call is ignored
-     * if resource or reference path is not defined
-     * @param resource Parent resource
-     * @param referencePath Reference Path to look for
-     * @param response List of resources found
-     */
-    private void traverseTreeReverse(Resource resource, String referencePath, List<Reference> response) {
-        if(resource != null && isNotEmpty(referencePath)) {
-            for(Resource child : resource.getChildren()) {
-                parsePropertiesReverse(child, referencePath, response);
-                traverseTreeReverse(child, referencePath, response);
-            }
-        }
-    }
-
-    /**
-     * Check the given resource's properties to look for a property value that contains the given reference path.
-     * Call is ignored if resource or reference path is not defined
-     * @param resource Resource to be checked
-     * @param referencePath Reference Path to look for
-     * @param response List of resources found
-     */
-    private void parsePropertiesReverse(Resource resource, String referencePath, List<Reference> response) {
-        if(resource != null && isNotEmpty(referencePath)) {
-            ValueMap properties = resource.getValueMap();
-            for(Map.Entry<String, Object> entry : properties.entrySet()) {
-                String name = entry.getKey();
-                String value = entry.getValue() + "";
-                if(referencePath.equals(value)) {
-                    // Find the node
-                    boolean found = false;
-                    Resource temp = resource;
-                    while(true) {
-                        if(temp.getName().equals(JCR_CONTENT)) {
-                            Resource parent = temp.getParent();
-                            if(parent != null) {
-                                if(!response.contains(parent)) {
-                                    response.add(new Reference(parent, name, resource));
-                                }
-                                found = true;
-                            } else {
-                                log.warn("JCR Content Node: '{}' found but no parent", temp.getPath());
-                            }
-                            break;
-                        } else {
-                            temp = temp.getParent();
-                            if(temp == null) {
-                                break;
-                            }
-                        }
-                    }
-                    if(!found) {
-                        // No JCR Content node found so just use this one
-                        if(!response.contains(resource)) {
-                            response.add(new Reference(resource, name, resource));
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     @Activate
     @SuppressWarnings("unused")
     void activate(Configuration configuration) { setup(configuration); }
@@ -305,20 +263,15 @@ public final class ReferenceListerService implements ReferenceLister {
     void modified(Configuration configuration) { setup(configuration); }
 
     private void setup(Configuration configuration) {
-        String[] prefixes = configuration.referencePrefix();
-        referencePrefixList = new ArrayList<>();
-        for(String prefix: prefixes) {
-            if(prefix != null && !prefix.isEmpty()) {
-                log.debug("Add Reference Prefix: '{}'", prefix);
-                referencePrefixList.add(prefix);
-            }
-        }
-        String[] roots = configuration.referencedByRoot();
-        referencedByRootList = new ArrayList<>();
-        for(String root: roots) {
-            if(root != null && !root.isEmpty()) {
-                log.debug("Add Referenced By Root: '{}'", root);
-                referencedByRootList.add(root);
+        configure(configuration.referencePrefix(), referencePrefixList);
+        configure(configuration.referencedByRoot(), referencedByRootList);
+    }
+
+    private void configure(final String[] source, final Collection<String> target) {
+        target.clear();
+        for (final String value: source) {
+            if (StringUtils.isNotEmpty(value)) {
+                target.add(value);
             }
         }
     }
