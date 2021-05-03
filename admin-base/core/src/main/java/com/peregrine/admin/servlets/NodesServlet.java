@@ -106,6 +106,7 @@ public class NodesServlet extends AbstractBaseServlet {
     public static final String DEACTIVATED = "deactivated";
     public static final String REPLICATION_STATUS = "ReplicationStatus";
     public static final String ANY_DESCENDANT_ACTIVATED = "anyDescendantActivated";
+    public static final String IS_REFERENCED = "isReferenced";
     public static final String RESOURCE_TYPE = "resourceType";
     public static final String JCR_PREFIX = "jcr:";
     public static final String PER_PREFIX = "per:";
@@ -237,7 +238,7 @@ public class NodesServlet extends AbstractBaseServlet {
                     }
 
                     json.writeAttribute(ANY_DESCENDANT_ACTIVATED, ReplicationUtil.isAnyDescendantReplicated(child));
-                    json.writeAttribute("isReferenced", referenceLister.isReferenced(child));
+                    json.writeAttribute(IS_REFERENCED, referenceLister.isReferenced(child));
                     json.writeClose();
                 }
             }
