@@ -676,6 +676,12 @@
                 <version>1.4</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.testing.sling-mock.junit4</artifactId>
+                <version>3.0.2</version>
+                <scope>test</scope>
+            </dependency>
 
             <!-- IT Tests Support -->
             <dependency>
