@@ -28,15 +28,16 @@ let log = LoggerFactory.logger('selectAsset').setLevelDebug()
 import { set } from '../utils'
 
 export default function(me, target) {
-
     log.fine(target)
-
-    let view = me.getView()
-    return new Promise( (resolve, reject) => {
-        me.getApi().populateComponentDefinitionFromNode('/apps/admin/components/assetview')
-        .then( () => {
-            set(view, '/state/tools/asset/show', target.selected)
-            resolve()
-        })
+    const api = me.getApi()
+    const view = me.getView()
+    const { selected } = target
+    return new Promise((resolve, reject) => {
+        api.populateComponentDefinitionFromNode('/apps/admin/components/assetview')
+        .then(() => api.populateReferencedBy(selected))
+        .then(() => {
+            set(view, '/state/tools/asset/show', selected)
+            resolve(selected)
+        }).catch(reject)
     })
 }
