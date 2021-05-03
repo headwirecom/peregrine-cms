@@ -11,9 +11,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -28,17 +28,20 @@
         <input
           :id="getFieldID(schema)"
           type="text"
-          :value="sanitizedValue"
+          :value="value"
           :disabled="disabled"
           :maxlength="schema.max"
           :placeholder="schema.placeholder"
           :readonly="schema.readonly"
-          @input="value = $event.target.value" />
+          :title="value"
+          @input="onInputInput"
+          @focus="editing = true"
+          @blur="editing = false"/>
         <button v-if="!schema.readonly" :disabled="disabled" v-on:click.stop.prevent="browse" class="btn-flat">
-          <i class="material-icons">insert_drive_file</i>
+          <icon v-bind="buttonIcon"/>
         </button>
         <img v-if="isImage(value)" :src="sanitizedValue" />
-        <admin-components-pathbrowser
+        <path-browser-component
             v-if="isOpen"
             :isOpen="isOpen"
             :browserRoot="browserRoot"
@@ -49,19 +52,25 @@
             :setCurrentPath="setCurrentPath"
             :setSelectedPath="setSelectedPath"
             :onCancel="onCancel"
-            :onSelect="onSelect">
-        </admin-components-pathbrowser>
+            @select="onSelect">
+        </path-browser-component>
       </template>
       <p v-else>{{value}}</p>
     </div>
 </template>
 
 <script>
-  import {PathBrowser} from '../../../../../js/constants';
+import {IconLib, PathBrowser} from '../../../../../js/constants'
+import {getBasePath} from '../../../../../js/mixins'
+
+import PathBrowserComponent from '../../admin/components/pathbrowser/template.vue'
+import Icon from '../../admin/components/icon/template.vue'
+
 
   export default {
         props: ['model'],
-        mixins: [ VueFormGenerator.abstractField ],
+        components: {Icon, PathBrowserComponent},
+        mixins: [ VueFormGenerator.abstractField , getBasePath],
         data () {
             return {
                 isOpen: false,
@@ -69,7 +78,8 @@
                 browserType: PathBrowser.Type.ASSET,
                 currentPath: '/assets',
                 selectedPath: null,
-                withLinkTab: true
+                withLinkTab: true,
+                editing: false
             }
         },
         computed: {
@@ -80,26 +90,27 @@
 				set (newValue) {
 					this.value = newValue
 				}
-			}
+			},
+          buttonIcon() {
+            return this.model.buttonIcon || {icon: 'insert_drive_file', lib: IconLib.MATERIAL_ICONS};
+          }
 		},
       created() {
           this.browserRoot = this.getBasePath() + this.browserRoot
           this.currentPath = this.getBasePath() + this.currentPath
       },
       methods: {
-            getBasePath() {
-              const view = $perAdminApp.getView()
-              let tenant = { name: 'example' }
-              if (view.state.tenant) {
-                tenant = view.state.tenant
-              }
-              return `/content/${tenant.name}`
-            },
+           onInputInput(event) {
+             if (!this.editing) {
+               this.value = event.target.value
+             }
+           },
             onCancel(){
                 this.isOpen = false
             },
             onSelect() {
                 this.value = this.selectedPath
+                this.$emit('select', this.selectedPath);
                 this.isOpen = false
             },
             setCurrentPath(path){
@@ -140,19 +151,19 @@
                 this.currentPath = currentPath
                 this.selectedPath = selectedPath
 
-                let options = this.schema.browserOptions
-                if(options && options.withLink){
-                    this.withLinkTab = options.withLink
-                } else {
-                    this.withLinkTab = !(type === PathBrowser.Type.IMAGE)
-                }
-                $perAdminApp.getApi().populateNodesForBrowser(currentPath, 'pathBrowser')
-                    .then( () => {
-                        this.isOpen = true
-                    }).catch( (err) => {
-                        $perAdminApp.getApi().populateNodesForBrowser('/content', 'pathBrowser')
-                    })
-            }
-        }
+      let options = this.schema.browserOptions
+      if (options && options.withLink !== null && options.withLink !== undefined) {
+        this.withLinkTab = !!options.withLink
+      } else {
+        this.withLinkTab = !(type === PathBrowser.Type.IMAGE)
+      }
+      $perAdminApp.getApi().populateNodesForBrowser(currentPath, 'pathBrowser')
+          .then((path, name, data) => {
+            this.isOpen = true
+          }).catch((err) => {
+        $perAdminApp.getApi().populateNodesForBrowser('/content', 'pathBrowser')
+      })
     }
+  }
+}
 </script>

@@ -61,7 +61,7 @@
         :img-height="browser.img.height"
         @update-img-height="browser.img.height = $event"
         :onCancel="onBrowserCancel"
-        :onSelect="onBrowserSelect"/>
+        @select="onBrowserSelect"/>
   </div>
 </template>
 
