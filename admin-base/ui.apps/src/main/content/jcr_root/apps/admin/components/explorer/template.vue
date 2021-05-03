@@ -674,7 +674,7 @@ export default {
 
             deleteTenantOrPage: function(me, target) {
                 if (target.activated) {
-                    $perAdminApp.toast("The resource is still published. Please unpublish itfirst.", "warn", 7500)
+                    $perAdminApp.toast("The resource is still published. Please unpublish it first.", "warn", 7500)
                 } else if (target.anyDescendantActivated) {
                     $perAdminApp.toast("One of the children of this resource is still published. Please unpublish all of them first.", "warn", 7500)
                 } else if (target.isReferenced) {

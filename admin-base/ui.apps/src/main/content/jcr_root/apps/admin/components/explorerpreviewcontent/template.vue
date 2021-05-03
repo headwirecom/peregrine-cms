@@ -197,9 +197,8 @@
             <i class="material-icons">publish</i>
             Publish to Web ({{nodeType}})
           </div>
-          <div :class="classForActionDisabledOnDeactivatedResource" :title="`Deactivate ${nodeType}`" >
-            <admin-components-action v-if="nodeFromPath.activated"
-                :model="{
+          <div v-if="nodeFromPath.activated && !isReferencedInPublish" class="action" :title="`Deactivate ${nodeType}`">
+            <admin-components-action :model="{
                     target: node.path,
                     command: 'unPublishResource',
                     tooltipTitle: `${$i18n('undo publish')} '${node.title || node.name}'`
@@ -207,7 +206,9 @@
               <i class="material-icons">remove_circle_outline</i>
               Unpublish ({{nodeType}})
             </admin-components-action>
-            <span v-else>
+          </div>
+          <div v-else class="action operationDisabledOnActivatedItem" :title="`Deactivate ${nodeType}`">
+            <span>
               <i class="material-icons">remove_circle_outline</i>
               <span>Unpublish ({{nodeType}})</span>
             </span>
@@ -417,7 +418,8 @@ export default {
       formGenerator: {
         changes: []
       },
-      loading: false
+      loading: false,
+      isReferencedInPublish: true
     }
   },
   mixins: [NodeNameValidation,ReferenceUtil],
@@ -520,9 +522,6 @@ export default {
     classForActionDisabledOnActivatedResource() {
       return this.selfOrAnyDescendantActivated ? 'action operationDisabledOnActivatedItem' : 'action';
     },
-    classForActionDisabledOnDeactivatedResource() {
-      return this.selfOrAnyDescendantActivated ? 'action' : 'action operationDisabledOnActivatedItem';
-    },
     stateToolsEdit() {
       const stateTools = $perAdminApp.getNodeFromViewOrNull('/state/tools')
       if (stateTools) {
@@ -537,13 +536,19 @@ export default {
       $perAdminApp.getNodeFromViewOrNull('/state/tools').edit = val
     },
     activeTab : function(tab) {
-      if (tab === 'versions'){
+      if (tab === 'versions') {
         this.showVersions()
+      }
+      if (tab === 'publishing') {
+        this.updateIsReferencedInPublish()
       }
     },
     currentObject : function(path) {
       if (this.activeTab === 'versions') {
         this.showVersions()
+      }
+      if (this.activeTab === 'publishing') {
+        this.updateIsReferencedInPublish()
       }
       if (this.stateToolsEdit) {
         this.onEdit()
@@ -917,6 +922,20 @@ export default {
 
         window.open(`${primaryDomain}${pagePath}.html`, `${tenant}-live-version`)
       }
+    },
+    updateIsReferencedInPublish() {
+      this.isReferencedInPublish = true;
+      const path = this.currentObject;
+      if (!path) {
+        return;
+      }
+
+      $perAdminApp.getApi().isReferencedInPublish(path)
+        .then(data => {
+          this.isReferencedInPublish = data.result;
+        }).catch(() => {
+          this.isReferencedInPublish = false;
+        });
     }
   }
 }

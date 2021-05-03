@@ -2,7 +2,13 @@ package com.peregrine.versions;
 
 import com.google.common.collect.Iterators;
 import com.peregrine.commons.util.PerUtil;
-import org.apache.sling.api.resource.*;
+import org.apache.sling.api.resource.LoginException;
+import org.apache.sling.api.resource.NonExistingResource;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceUtil;
+import org.apache.sling.api.resource.SyntheticResource;
 import org.apache.sling.api.wrappers.ResourceResolverWrapper;
 
 import javax.jcr.Node;
@@ -11,16 +17,21 @@ import javax.jcr.Session;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionManager;
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import static com.peregrine.commons.Strings.SLASH;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.*;
+import static org.apache.commons.lang3.StringUtils.startsWith;
+import static org.apache.commons.lang3.StringUtils.substringAfterLast;
+import static org.apache.commons.lang3.StringUtils.substringBeforeLast;
 
 public final class VersioningResourceResolver extends ResourceResolverWrapper {
 
@@ -103,13 +114,7 @@ public final class VersioningResourceResolver extends ResourceResolverWrapper {
         final VersionedResource versionedResource = (VersionedResource) wrappedResource;
         final Resource parentVersion = versionedResource.getVersion();
         if (isNull(parentVersion)) {
-            final Resource resource = versionedResource.getResource();
-            final Iterable<Resource> iterable = () -> resolver.listChildren(resource);
-            return StreamSupport.stream(iterable.spliterator(), false)
-                    .map(this::wrap)
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList())
-                    .iterator();
+            return wrap(resolver.listChildren(versionedResource.getResource()));
         }
 
         final String parentPath = parent.getPath();
@@ -174,6 +179,10 @@ public final class VersioningResourceResolver extends ResourceResolverWrapper {
         }
 
         return null;
+    }
+
+    private Iterator<Resource> wrap(final Iterator<Resource> iterator) {
+        return Iterators.filter(Iterators.transform(iterator, this::wrap), Objects::nonNull);
     }
 
     private boolean forceVersion(final Resource resource) {
@@ -267,7 +276,7 @@ public final class VersioningResourceResolver extends ResourceResolverWrapper {
 
     @Override
     public Iterator<Resource> findResources(final String query, final String language) {
-        return Iterators.transform(resolver.findResources(query, language), this::wrap);
+        return wrap(resolver.findResources(query, language));
     }
 
     @Override

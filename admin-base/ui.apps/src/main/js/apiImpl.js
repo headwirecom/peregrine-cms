@@ -1326,6 +1326,10 @@ class PerAdminImpl {
   checkTenantNameAvailability(name) {
     return fetch('/admin/tenants/name/available.json?name=' + name)
   }
+
+  isReferencedInPublish(path) {
+    return fetch(`/admin/isReferencedInPublish.json${path}`)
+  }
 }
 
 export default PerAdminImpl
