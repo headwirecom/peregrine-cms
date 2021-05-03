@@ -289,7 +289,7 @@
         :setCurrentPath="setCurrentPath"
         :setSelectedPath="setSelectedPath"
         :onCancel="onMoveCancel"
-        :onSelect="onMoveSelect">
+        @select="onMoveSelect">
     </path-browser>
 
     <path-browser
@@ -303,7 +303,7 @@
         :setCurrentPath="setCurrentPath"
         :setSelectedPath="setSelectedPath"
         :onCancel="onCopyCancel"
-        :onSelect="onCopySelect">
+        @select="onCopySelect">
     </path-browser>
 
 
