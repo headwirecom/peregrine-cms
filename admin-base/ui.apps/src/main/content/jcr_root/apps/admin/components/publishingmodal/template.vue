@@ -26,9 +26,10 @@
 
 <template>
     <admin-components-materializemodal
+        idOverride="publishingmodal"
         ref="materializemodal"
         v-on:complete="$emit('complete',$event)"
-        v-bind:modalTitle="modalTitle" >
+        v-bind:modalTitle="modalTitle">
 
         <table>           
             <tbody v-if="references">

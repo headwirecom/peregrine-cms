@@ -64,7 +64,8 @@
         type: String,
         default: '10%'
       },
-      modalTitle: String
+      modalTitle: String,
+      idOverride: String
     },
     data() {
       return {
@@ -73,7 +74,7 @@
     },
     computed: {
       id() {
-        return `materializemodal-${this._uid}`
+        return this.idOverride || `materializemodal-${this._uid}`
       }
     },
     mounted() {
