@@ -131,6 +131,7 @@ public final class ReferenceListerService implements ReferenceLister {
         final List<Reference> result = new LinkedList<>();
         final ResourceResolver resourceResolver = resource.getResourceResolver();
         final String path = resource.getPath();
+        final String strippedPath = stripJcrContentAndDescendants(path);
 
         // The following regex matches e.g.
         //   /path
@@ -152,13 +153,17 @@ public final class ReferenceListerService implements ReferenceLister {
 
             while (referencingResources.hasNext()) {
                 Resource referencingResource = referencingResources.next();
+                String referencingPath = referencingResource.getPath();
+                String parentPath = stripJcrContentAndDescendants(referencingPath);
+                if (strippedPath.equals(parentPath)) {
+                    continue;
+                }
+
                 List<String> referencingProperties = findKeysForMatchingValues(referencingResource.getValueMap(), containsReference);
                 if (referencingProperties.isEmpty()) {
                     continue;
                 }
 
-                String referencingPath = referencingResource.getPath();
-                String parentPath = stripJcrContentAndDescendants(referencingPath);
                 Resource parentResource = resourceResolver.resolve(parentPath);
                 Reference ref = new Reference(parentResource, referencingProperties.get(0), referencingResource);
                 result.add(ref);
