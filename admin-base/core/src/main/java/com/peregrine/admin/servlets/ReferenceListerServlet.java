@@ -72,7 +72,6 @@ public class ReferenceListerServlet extends AbstractBaseServlet {
 
     public static final String GIVEN_PATH_DOES_NOT_YIELD_A_RESOURCE = "Given Path does not yield a resource";
     public static final String REFERENCES = "references";
-    public static final String IS_STALE = "is_stale";
 
     @Reference
     private ReferenceLister referenceLister;

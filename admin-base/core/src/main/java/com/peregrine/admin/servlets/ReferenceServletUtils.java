@@ -34,7 +34,6 @@ import java.util.Calendar;
 
 import static com.peregrine.admin.servlets.NodesServlet.ACTIVATED;
 import static com.peregrine.admin.servlets.NodesServlet.DATE_FORMATTER;
-import static com.peregrine.admin.servlets.ReferenceListerServlet.IS_STALE;
 import static com.peregrine.admin.util.AdminConstants.SOURCE_NAME;
 import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED;
 import static com.peregrine.commons.util.PerConstants.NAME;
@@ -44,6 +43,8 @@ import static com.peregrine.commons.util.PerConstants.SOURCE_PATH;
 import static java.util.Objects.nonNull;
 
 public final class ReferenceServletUtils {
+
+    public static final String IS_STALE = "is_stale";
 
     public static void addBasicProps(final Resource resource, final JsonResponse target) throws IOException {
         target.writeAttribute(NAME, resource.getName());
