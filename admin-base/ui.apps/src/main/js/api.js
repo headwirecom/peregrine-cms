@@ -92,8 +92,8 @@ class PerApi {
         return impl.populatePageView(path)
     }
 
-    populateReferencedBy(path) {
-        return impl.populateReferencedBy(path)
+    populateReferencedBy(path, sameTenant = false) {
+        return impl.populateReferencedBy(path, sameTenant)
     }
 
     populateTenants() {

@@ -46,6 +46,8 @@ public interface ReferenceLister {
      */
     List<Reference> getReferencedByList(Resource resource);
 
+    List<Reference> getReferencedByList(Resource resource, PerUtil.ResourceChecker checker);
+
     List<Resource> getReferenceList(boolean transitive, Resource resource, boolean deep, PerUtil.ResourceChecker checker);
 
     /**

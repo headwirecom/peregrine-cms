@@ -30,6 +30,7 @@ import static com.peregrine.admin.servlets.ReferenceServletUtils.addBasicProps;
 import static com.peregrine.admin.servlets.ReferenceServletUtils.addBasicSourceProps;
 import static com.peregrine.admin.servlets.ReferenceServletUtils.addReplicationProps;
 import static com.peregrine.admin.servlets.ReferenceServletUtils.badRequest;
+import static com.peregrine.admin.servlets.ReferenceServletUtils.getChecker;
 import static com.peregrine.commons.util.PerConstants.JSON;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
@@ -90,7 +91,7 @@ public class ReferencedByListerServlet extends AbstractBaseServlet {
         final JsonResponse answer = new JsonResponse();
         addBasicSourceProps(source, answer);
         addReplicationProps(source, answer);
-        final List<com.peregrine.reference.Reference> references = referenceLister.getReferencedByList(source);
+        final List<com.peregrine.reference.Reference> references = referenceLister.getReferencedByList(source, getChecker(request));
         answer.writeArray(REFERENCED_BY);
         for (final com.peregrine.reference.Reference reference : references) {
             answer.writeObject();

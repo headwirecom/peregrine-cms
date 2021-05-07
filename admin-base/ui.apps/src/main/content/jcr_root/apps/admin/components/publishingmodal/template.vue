@@ -176,7 +176,7 @@ export default {
                     })
                 }
             })        
-        $perAdminApp.getApi().populateReferencedBy(this.path)
+        $perAdminApp.getApi().populateReferencedBy(this.path, true)
             .then(function(){
                 me.referencedBy = me.trimReferences($perAdminApp.getView().state.referencedBy.referencedBy)
                 if(me.referencedBy){

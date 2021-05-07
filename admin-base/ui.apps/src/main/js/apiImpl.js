@@ -495,8 +495,8 @@ class PerAdminImpl {
         })
   }
 
-  populateReferencedBy(path) {
-    return fetch('/admin/refBy.json' + path)
+  populateReferencedBy(path, sameTenant = false) {
+    return fetch(`/admin/refBy.json${path}${sameTenant ? '?sameTenant=true' : ''}`)
         .then((data) => populateView('/state', 'referencedBy', data))
   }
 
