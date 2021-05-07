@@ -52,11 +52,11 @@ public class PerUtilTest
 
     @Test
     public void stripJcrContentAndDescendants() {
-        assertEquals("/content/page", PerUtil.stripJcrContentAndDescendants("/content/page/jcr:content/child"));
-        assertEquals("/content/page", PerUtil.stripJcrContentAndDescendants("/content/page/jcr:content/"));
-        assertEquals("/content/page", PerUtil.stripJcrContentAndDescendants("/content/page/jcr:content"));
-        assertEquals("/content/page/", PerUtil.stripJcrContentAndDescendants("/content/page/"));
-        assertEquals("/content/page", PerUtil.stripJcrContentAndDescendants("/content/page"));
+        assertEquals("/content/page", PerUtil.getBasePath("/content/page/jcr:content/child"));
+        assertEquals("/content/page", PerUtil.getBasePath("/content/page/jcr:content/"));
+        assertEquals("/content/page", PerUtil.getBasePath("/content/page/jcr:content"));
+        assertEquals("/content/page/", PerUtil.getBasePath("/content/page/"));
+        assertEquals("/content/page", PerUtil.getBasePath("/content/page"));
     }
 
     @Test

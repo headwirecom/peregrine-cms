@@ -389,7 +389,10 @@ public class PerUtil {
         return isJcrContent(path) || isDescendantOfJcrContent(path);
     }
 
-    public static String stripJcrContentAndDescendants(final String path) {
+    /**
+     * @see PerUtil#getBaseResource(Resource)
+     * */
+    public static String getBasePath(final String path) {
         if (isJcrContent(path)) {
             return getParent(path);
         }
@@ -438,6 +441,8 @@ public class PerUtil {
      * @param resource the <code>resource</code> for which we want to extract the <code>base</code>
      * @return the parent resource, if the <code>resource</code> is <code>jcr:content</code>,
      * or the <code>resource</code> itself otherwise (it's its own <code>base</code> then)
+     *
+     * @see PerUtil#getBasePath(String)
      */
     public static Resource getBaseResource(final Resource resource) {
         Resource parent = resource;
