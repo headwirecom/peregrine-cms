@@ -500,9 +500,9 @@ class PerAdminImpl {
         .then((data) => populateView('/state', 'referencedBy', data))
   }
 
-  populateReferences(path) {
+  populateReferences(path, sameTenant = false) {
     return new Promise((resolve, reject) => {
-      fetch(`/admin/ref.json${path}`)
+      fetch(`/admin/ref.json${path}${sameTenant ? '?sameTenant=true' : ''}`)
           .then(function (result) {
             populateView('/state', 'references', result)
                 .then(() => resolve())

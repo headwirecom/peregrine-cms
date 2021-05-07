@@ -112,8 +112,8 @@ class PerApi {
         return impl.populateVersions(page)
     }
 
-    populateReferences(path) {
-        return impl.populateReferences(path)
+    populateReferences(path, sameTenant = false) {
+        return impl.populateReferences(path, sameTenant)
     }
 
     setInitialPageEditorState(path) {

@@ -27,7 +27,9 @@ package com.peregrine.admin.servlets;
 
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.commons.servlets.AbstractBaseServlet.JsonResponse;
+import com.peregrine.commons.util.PerUtil;
 import com.peregrine.replication.PerReplicable;
+import com.peregrine.replication.ReplicationUtil;
 import org.apache.sling.api.resource.Resource;
 
 import java.io.IOException;
@@ -46,6 +48,7 @@ import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 
 public final class ReferenceServletUtils {
 
+    public static final String SAME_TENANT = "sameTenant";
     public static final String IS_STALE = "is_stale";
     public static final String GIVEN_PATH_DOES_NOT_YIELD_A_RESOURCE = "Given Path does not yield a resource";
 
@@ -82,6 +85,16 @@ public final class ReferenceServletUtils {
         if (nonNull(lastModified) && nonNull(replicated)) {
             target.writeAttribute(IS_STALE, replicable.isStale());
         }
+    }
+
+    public static PerUtil.ResourceChecker getChecker(final AbstractBaseServlet.Request request) {
+        if (!request.getBooleanParameter(SAME_TENANT, false)) {
+            return PerUtil.ADD_ALL_RESOURCE_CHECKER;
+        }
+
+        final String path = request.getParameter(PATH);
+        final Resource resource = request.getResourceResolver().getResource(path);
+        return new ReplicationUtil.TenantOwnedResourceChecker(resource);
     }
 
 }

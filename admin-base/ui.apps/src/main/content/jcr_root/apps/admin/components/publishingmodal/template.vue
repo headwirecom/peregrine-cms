@@ -167,7 +167,7 @@ export default {
     },
     mounted() {
         const me = this
-        $perAdminApp.getApi().populateReferences(this.path)
+        $perAdminApp.getApi().populateReferences(this.path, true)
             .then(function(){
                 Vue.set(me.references, 'publish', true)
                 if(me.references.references != undefined){
