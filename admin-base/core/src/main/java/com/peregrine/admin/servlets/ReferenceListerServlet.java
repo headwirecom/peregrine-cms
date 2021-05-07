@@ -29,12 +29,13 @@ import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_REF;
 import static com.peregrine.admin.servlets.ReferenceServletUtils.addBasicProps;
 import static com.peregrine.admin.servlets.ReferenceServletUtils.addBasicSourceProps;
 import static com.peregrine.admin.servlets.ReferenceServletUtils.addReplicationProps;
+import static com.peregrine.admin.servlets.ReferenceServletUtils.badRequest;
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static java.util.Objects.isNull;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_SELECTORS;
@@ -70,7 +71,6 @@ import org.osgi.service.component.annotations.Reference;
 @SuppressWarnings("serial")
 public class ReferenceListerServlet extends AbstractBaseServlet {
 
-    public static final String GIVEN_PATH_DOES_NOT_YIELD_A_RESOURCE = "Given Path does not yield a resource";
     public static final String REFERENCES = "references";
 
     @Reference
@@ -78,29 +78,26 @@ public class ReferenceListerServlet extends AbstractBaseServlet {
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        String sourcePath = request.getParameter("path");
-        Resource source = request.getResourceResolver().getResource(sourcePath);
-        if(source != null) {
-            List<Resource> references = referenceLister.getReferenceList(true, source, true);
-            JsonResponse answer = new JsonResponse();
-            addBasicSourceProps(source, answer);
-            addReplicationProps(source, answer);
-            answer.writeArray(REFERENCES);
-            for (final Resource reference : references) {
-                answer.writeObject();
-                addBasicProps(reference, answer);
-                addReplicationProps(reference, answer);
-                answer.writeClose();
-            }
-
-            answer.writeClose();
-            return answer;
-        } else {
-            return new ErrorResponse()
-                .setHttpErrorCode(SC_BAD_REQUEST)
-                .setErrorMessage(GIVEN_PATH_DOES_NOT_YIELD_A_RESOURCE)
-                .setRequestPath(sourcePath);
+        final String sourcePath = request.getParameter(PATH);
+        final Resource source = request.getResourceResolver().getResource(sourcePath);
+        if (isNull(source)) {
+            return badRequest(sourcePath);
         }
-    }
-}
 
+        final JsonResponse answer = new JsonResponse();
+        addBasicSourceProps(source, answer);
+        addReplicationProps(source, answer);
+        final List<Resource> references = referenceLister.getReferenceList(true, source, true);
+        answer.writeArray(REFERENCES);
+        for (final Resource reference : references) {
+            answer.writeObject();
+            addBasicProps(reference, answer);
+            addReplicationProps(reference, answer);
+            answer.writeClose();
+        }
+
+        answer.writeClose();
+        return answer;
+    }
+
+}

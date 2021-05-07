@@ -25,6 +25,7 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
+import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.commons.servlets.AbstractBaseServlet.JsonResponse;
 import com.peregrine.replication.PerReplicable;
 import org.apache.sling.api.resource.Resource;
@@ -41,10 +42,19 @@ import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
 import static com.peregrine.commons.util.PerConstants.SOURCE_PATH;
 import static java.util.Objects.nonNull;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 
 public final class ReferenceServletUtils {
 
     public static final String IS_STALE = "is_stale";
+    public static final String GIVEN_PATH_DOES_NOT_YIELD_A_RESOURCE = "Given Path does not yield a resource";
+
+    public static AbstractBaseServlet.ErrorResponse badRequest(final String path) throws IOException {
+        return new AbstractBaseServlet.ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(GIVEN_PATH_DOES_NOT_YIELD_A_RESOURCE)
+                .setRequestPath(path);
+    }
 
     public static void addBasicProps(final Resource resource, final JsonResponse target) throws IOException {
         target.writeAttribute(NAME, resource.getName());
