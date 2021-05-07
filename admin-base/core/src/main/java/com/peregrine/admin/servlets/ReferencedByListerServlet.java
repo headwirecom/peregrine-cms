@@ -26,13 +26,11 @@ package com.peregrine.admin.servlets;
  */
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_REF_BY;
-import static com.peregrine.admin.servlets.NodesServlet.ACTIVATED;
-import static com.peregrine.admin.servlets.NodesServlet.DATE_FORMATTER;
-import static com.peregrine.admin.servlets.ReferenceListerServlet.IS_STALE;
-import static com.peregrine.admin.util.AdminConstants.SOURCE_NAME;
-import static com.peregrine.admin.util.AdminConstants.SOURCE_PATH;
-import static com.peregrine.commons.util.PerConstants.*;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
+import static com.peregrine.admin.servlets.ReferenceServletUtils.addBasicProps;
+import static com.peregrine.admin.servlets.ReferenceServletUtils.addBasicSourceProps;
+import static com.peregrine.admin.servlets.ReferenceServletUtils.addReplicationProps;
+import static com.peregrine.commons.util.PerConstants.JSON;
+import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -44,7 +42,6 @@ import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVL
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
-import com.peregrine.replication.PerReplicable;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.reference.ReferenceLister;
 import java.io.IOException;
@@ -84,44 +81,24 @@ public class ReferencedByListerServlet extends AbstractBaseServlet {
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
-        String sourcePath = request.getParameter (PATH);
+        String sourcePath = request.getParameter(PATH);
         Resource source = request.getResourceResolver().getResource(sourcePath);
         if(source != null) {
             List<com.peregrine.reference.Reference> references = referenceLister.getReferencedByList(source);
             JsonResponse answer = new JsonResponse();
-            answer.writeAttribute(SOURCE_NAME, source.getName());
-            answer.writeAttribute(SOURCE_PATH, source.getPath());
-            PerReplicable sourceRepl = source.adaptTo(PerReplicable.class);
-            answer.writeAttribute(ACTIVATED, sourceRepl.isReplicated());
-            if (sourceRepl.getReplicated() != null && sourceRepl.getReplicated() != null) {
-                answer.writeAttribute(PER_REPLICATED, DATE_FORMATTER.format(sourceRepl.getReplicated().getTime().getTime()));
-            }
-            if (sourceRepl.getLastModified()!=null){
-                answer.writeAttribute(JCR_LAST_MODIFIED, DATE_FORMATTER.format(sourceRepl.getLastModified().getTime()));
-            }
-            if (sourceRepl.getLastModified()!=null && sourceRepl.getReplicated()!= null) {
-                answer.writeAttribute(IS_STALE, sourceRepl.isStale());
-            }
+            addBasicSourceProps(source, answer);
+            addReplicationProps(source, answer);
             answer.writeArray(REFERENCED_BY);
-            for(com.peregrine.reference.Reference child : references) {
+            for(com.peregrine.reference.Reference reference : references) {
                 answer.writeObject();
-                answer.writeAttribute(NAME, child.getResource().getName());
-                answer.writeAttribute(PATH, child.getResource().getPath());
-                answer.writeAttribute(PROPERTY_NAME, child.getPropertyName());
-                answer.writeAttribute(PROPERTY_PATH, child.getPropertyResource().getPath());
-                PerReplicable childRepl = child.getResource().adaptTo(PerReplicable.class);
-                answer.writeAttribute(ACTIVATED, childRepl.isReplicated());
-                if (childRepl.getLastModified()!=null){
-                    answer.writeAttribute(JCR_LAST_MODIFIED, DATE_FORMATTER.format(childRepl.getLastModified().getTime()));
-                }
-                if (childRepl.getReplicated()!=null){
-                    answer.writeAttribute(PER_REPLICATED, DATE_FORMATTER.format(childRepl.getReplicated().getTime()));
-                }
-                if (childRepl.getLastModified()!=null && childRepl.getReplicated()!= null) {
-                    answer.writeAttribute(IS_STALE, childRepl.isStale());
-                }
+                final Resource refResource = reference.getResource();
+                addBasicProps(refResource, answer);
+                addReplicationProps(refResource, answer);
+                answer.writeAttribute(PROPERTY_NAME, reference.getPropertyName());
+                answer.writeAttribute(PROPERTY_PATH, reference.getPropertyResource().getPath());
                 answer.writeClose();
             }
+
             return answer;
         } else {
             return new ErrorResponse()
