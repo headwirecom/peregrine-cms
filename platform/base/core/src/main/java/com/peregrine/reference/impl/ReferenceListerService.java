@@ -25,14 +25,15 @@ package com.peregrine.reference.impl;
  * #L%
  */
 
+import static com.peregrine.commons.ResourceUtils.isContentOf;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerUtil.containsResource;
 import static com.peregrine.commons.util.PerUtil.findKeysForMatchingValues;
+import static com.peregrine.commons.util.PerUtil.getBaseResource;
 import static com.peregrine.commons.util.PerUtil.listMissingParents;
-import static com.peregrine.commons.util.PerUtil.stripJcrContentAndDescendants;
 import static java.util.Objects.isNull;
 
+import com.google.common.collect.Iterators;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.commons.util.PerUtil.MissingOrOutdatedResourceChecker;
 import com.peregrine.reference.Reference;
@@ -48,7 +49,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -128,10 +128,24 @@ public final class ReferenceListerService implements ReferenceLister {
         if (isNull(resource)) {
             return Collections.emptyList();
         }
-        final List<Reference> result = new LinkedList<>();
-        final ResourceResolver resourceResolver = resource.getResourceResolver();
-        final String path = resource.getPath();
 
+        final List<Reference> result = new LinkedList<>();
+        final Predicate<String> containsReference = containsReferencePredicate(resource);
+        for (final String searchPath: referencedByRootList) {
+            final Iterator<Resource> referrers = findReferrers(resource, searchPath);
+            while (referrers.hasNext()) {
+                final Resource referrer = referrers.next();
+                final List<String> referencingProps = findKeysForMatchingValues(referrer.getValueMap(), containsReference);
+                if (!referencingProps.isEmpty()) {
+                    result.add(new Reference(getBaseResource(referrer), referencingProps.get(0), referrer));
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private Predicate<String> containsReferencePredicate(final Resource resource) {
         // The following regex matches e.g.
         //   /path
         //   "/path"
@@ -139,32 +153,17 @@ public final class ReferenceListerService implements ReferenceLister {
         // But does not match
         //   /path/child
         //   something/path
-        Pattern pathRegex =
-                Pattern.compile(String.format(REFERENCE_REGEX_TEMPLATE, path));
+        final Pattern regex = Pattern.compile(String.format(REFERENCE_REGEX_TEMPLATE, resource.getPath()));
+        return s -> regex.matcher(s).find();
+    }
 
-        Predicate<String> containsReference = s -> pathRegex.matcher(s).find();
-
-        for (String referencedByRoot: referencedByRootList) {
-            Iterator<Resource> referencingResources = resourceResolver.findResources(
-                    String.format(REFERENCED_BY_QUERY, referencedByRoot, path, path),
-                    Query.JCR_SQL2
-            );
-
-            while (referencingResources.hasNext()) {
-                Resource referencingResource = referencingResources.next();
-                List<String> referencingProperties = findKeysForMatchingValues(referencingResource.getValueMap(), containsReference);
-                if (referencingProperties.isEmpty()) {
-                    continue;
-                }
-
-                String referencingPath = referencingResource.getPath();
-                String parentPath = stripJcrContentAndDescendants(referencingPath);
-                Resource parentResource = resourceResolver.resolve(parentPath);
-                Reference ref = new Reference(parentResource, referencingProperties.get(0), referencingResource);
-                result.add(ref);
-            }
-        }
-        return result;
+    private Iterator<Resource> findReferrers(final Resource resource, final String searchPath) {
+        final String path = resource.getPath();
+        final Iterator<Resource> iterator = resource.getResourceResolver().findResources(
+                String.format(REFERENCED_BY_QUERY, searchPath, path, path),
+                Query.JCR_SQL2
+        );
+        return Iterators.filter(iterator, ref -> !isContentOf(ref, resource));
     }
 
     @Override
@@ -173,22 +172,11 @@ public final class ReferenceListerService implements ReferenceLister {
             return false;
         }
 
-        final ResourceResolver resourceResolver = resource.getResourceResolver();
-        final String path = resource.getPath();
-        final Pattern pathRegex = Pattern.compile(String.format(REFERENCE_REGEX_TEMPLATE, path));
-        final Predicate<String> containsReference = s -> pathRegex.matcher(s).find();
-        for (String referencedByRoot: referencedByRootList) {
-            final Iterator<Resource> referencingResources = resourceResolver.findResources(
-                    String.format(REFERENCED_BY_QUERY, referencedByRoot, path, path),
-                    Query.JCR_SQL2
-            );
-
-            while (referencingResources.hasNext()) {
-                final Resource referrer = referencingResources.next();
-                if (referrer.getPath().startsWith(path + SLASH)) {
-                    continue;
-                }
-
+        final Predicate<String> containsReference = containsReferencePredicate(resource);
+        for (final String searchPath: referencedByRootList) {
+            final Iterator<Resource> referrers = findReferrers(resource, searchPath);
+            while (referrers.hasNext()) {
+                final Resource referrer = referrers.next();
                 if (!findKeysForMatchingValues(referrer.getValueMap(), containsReference).isEmpty()) {
                     return true;
                 }
