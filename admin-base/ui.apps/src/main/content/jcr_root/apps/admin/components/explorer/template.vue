@@ -170,7 +170,7 @@
                             <i class="material-icons">add_circle</i> {{$i18n('add page')}}
                     </admin-components-action>
                 </li>
-                <li class="collection-item" v-if="isObjects(path)">
+                <li class="collection-item" v-if="isObjects(path) || isInsideObjectDefinition(path)">
                     <admin-components-action
                         v-bind:model="{
                             target: '',
@@ -190,7 +190,7 @@
                             <i class="material-icons">add_circle</i> {{$i18n('add template')}}
                     </admin-components-action>
                 </li>
-                <li class="collection-item" v-if="isObjectDefinitions(path)">
+                <li class="collection-item" v-if="isObjectDefinitions(path) && !isInsideObjectDefinition(path)">
                     <admin-components-action
                         v-bind:model="{
                             target: '',
@@ -341,6 +341,10 @@ export default {
 
             isObjectDefinitions(path) {
                 return path.startsWith(`/content/${this.getTenant().name}/object-definitions`)
+            },
+
+            isInsideObjectDefinition(path) {
+                return path.startsWith(`/content/${this.getTenant().name}/object-definitions/`);
             },
 
             isTemplates(path) {
@@ -643,6 +647,9 @@ export default {
                 const path = me.pt.path
                 if(path.startsWith(`/content/${tenant.name}/objects`)) {
                     $perAdminApp.stateAction('createObjectWizard', { path: path, target: target })
+                } else if (this.isInsideObjectDefinition(path)) {
+                    const emptyFile = new File([''], 'test-123.json');
+                    $perAdminApp.getApi().uploadFiles(path, [emptyFile]).then(console.log);
                 }
             },
 
