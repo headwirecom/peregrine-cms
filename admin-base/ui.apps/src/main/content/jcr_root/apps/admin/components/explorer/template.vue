@@ -170,7 +170,7 @@
                             <i class="material-icons">add_circle</i> {{$i18n('add page')}}
                     </admin-components-action>
                 </li>
-                <li class="collection-item" v-if="isObjects(path) || isInsideObjectDefinition(path)">
+                <li class="collection-item" v-if="isObjects(path)">
                     <admin-components-action
                         v-bind:model="{
                             target: '',
@@ -190,7 +190,7 @@
                             <i class="material-icons">add_circle</i> {{$i18n('add template')}}
                     </admin-components-action>
                 </li>
-                <li class="collection-item" v-if="isObjectDefinitions(path) && !isInsideObjectDefinition(path)">
+                <li class="collection-item" v-if="isObjectDefinitions(path)">
                     <admin-components-action
                         v-bind:model="{
                             target: '',
@@ -198,6 +198,16 @@
                             tooltipTitle: `${$i18n('add object definition')}`
                         }">
                             <i class="material-icons">add_circle</i> {{$i18n('add object definition')}}
+                    </admin-components-action>
+                </li>
+                <li class="collection-item" v-if="isInsideObjectDefinition(path)">
+                    <admin-components-action
+                        v-bind:model="{
+                            target: '',
+                            command: 'addObjectDefinitionFile',
+                            tooltipTitle: `${$i18n('add file')}`
+                        }">
+                            <i class="material-icons">add_circle</i> {{$i18n('add file')}}
                     </admin-components-action>
                 </li>
             </ul>
@@ -340,7 +350,8 @@ export default {
             },
 
             isObjectDefinitions(path) {
-                return path.startsWith(`/content/${this.getTenant().name}/object-definitions`)
+                return !this.isInsideObjectDefinition(path) 
+                    && path.startsWith(`/content/${this.getTenant().name}/object-definitions`)
             },
 
             isInsideObjectDefinition(path) {
@@ -647,9 +658,6 @@ export default {
                 const path = me.pt.path
                 if(path.startsWith(`/content/${tenant.name}/objects`)) {
                     $perAdminApp.stateAction('createObjectWizard', { path: path, target: target })
-                } else if (this.isInsideObjectDefinition(path)) {
-                    const emptyFile = new File([''], 'test-123.json');
-                    $perAdminApp.getApi().uploadFiles(path, [emptyFile]).then(console.log);
                 }
             },
 
@@ -658,6 +666,15 @@ export default {
                 const path = me.pt ? me.pt.path : `/content/${tenant.name}/object-definitions`
                 if(path.startsWith(`/content/${tenant.name}/object-definitions`)) {
                     $perAdminApp.stateAction('createObjectDefinitionWizard', { path: path, target: target })
+                }
+            },
+
+            addObjectDefinitionFile(me, target) {
+                const tenant = $perAdminApp.getView().state.tenant;
+                const path  = me.pt ? me.pt.path : `/content/${tenant.name}/object-definitions`;
+
+                if (this.isInsideObjectDefinition(path)) {
+                    $perAdminApp.stateAction('createObjectDefinitionFileWizard', {path, target});
                 }
             },
 

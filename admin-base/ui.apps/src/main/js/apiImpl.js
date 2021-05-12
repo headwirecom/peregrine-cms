@@ -25,7 +25,7 @@
 // var axios = require('axios')
 
 import {LoggerFactory} from './logger'
-import {stripNulls} from './utils'
+import {objectToFormData, stripNulls} from './utils'
 import {Field} from './constants'
 import Notifier from './utils/notifier'
 
@@ -95,18 +95,48 @@ function updateWithForm(path, data) {
 function updateWithFormAndConfig(path, data, config) {
   //AS TODO: How to merge config into postConfig or the other way around?
   // config.withCredentials: true
-  logger.fine('Update with Form and Config, path: ' + path + ', data: ' + data)
-  return axios.post(API_BASE + path, data, config)
-      .then((response) => {
-        logger.fine(
-            'Update with Form and Config, response data: ' + response.data)
-        return response.data
-      })
-      .catch((error) => {
-        logger.error('Update with Form and Config request to',
-            error.response.request.path, 'failed')
-        throw error
-      })
+  logger.fine('Update with Form and Config, path: ' + path + ', data: ' + data);
+
+  return postFormData(API_BASE + path, data, config);
+}
+
+/**
+ *
+ * @param {string} url
+ * @param {FormData} data
+ * @param {AxiosRequestOptions} config
+ * @returns
+ */
+function postFormData(url, data, config = null) {
+  
+  if (!url) {
+    return logger.error('missing url!', url, data, config);
+  }
+  
+  let formData;
+
+  if (!data) {
+    logger.warn('sending empty form-data request!?');
+  } else if (!(data instanceof FormData)) {
+    logger.fine('data is not FormData instance. fixing that for you', data);
+    formData = objectToFormData(data);
+  } else {
+    formData = data;
+  }
+
+  logger.fine('postFormData: ', url, data, config);
+
+  return axios
+     .post(url, formData, config)
+     .then(({data}) => {
+      logger.fine('postFormData, response data: ' + data);
+      
+      return data;
+    })
+    .catch((error) => {
+      logger.error('postFormData ', error.response.request.path, 'failed');
+      throw error;
+    });
 }
 
 function getOrCreate(obj, path) {
@@ -1329,6 +1359,10 @@ class PerAdminImpl {
 
   isReferencedInPublish(path) {
     return fetch(`/admin/isReferencedInPublish.json${path}`)
+  }
+
+  _postFormDataImpl(url, data, config) {
+    return postFormData(url, data, config);
   }
 }
 
