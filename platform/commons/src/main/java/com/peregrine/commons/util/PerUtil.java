@@ -39,7 +39,9 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 import static com.peregrine.commons.util.PerConstants.*;
 import static java.util.Objects.isNull;
@@ -64,11 +66,12 @@ public class PerUtil {
     public static final String RESOURCE_RESOLVER_FACTORY_CANNOT_BE_NULL = "Resource Resolver Factory cannot be null";
     public static final String SERVICE_NAME_CANNOT_BE_EMPTY = "Service Name cannot be empty";
 
+    public static final String SL_JCR_CONTENT_SL = SLASH + JCR_CONTENT + SLASH;
+
+    public static final ResourceChecker ADD_ALL_RESOURCE_CHECKER = new AddAllResourceChecker();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final Logger LOG = LoggerFactory.getLogger(PerUtil.class);
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-    private static final ResourceChecker ADD_ALL_RESOURCE_CHECKER = new AddAllResourceChecker();
 
     /** @return True if the given text is either null or empty **/
     public static boolean isEmpty(String text) {
@@ -214,6 +217,32 @@ public class PerUtil {
         return splitIntoParameterMap(new String[]{ entry }, keySeparator, valueSeparator, parameterSeparator);
     }
 
+
+    /**
+     * Method looks through all the properties of the given resource and returns keys
+     * for which the corresponding value matches the given predicate or the value is
+     * an array of strings one of which matches the predicate.
+     *
+     * @param map Map to check
+     * @param predicate Predicate to test against
+     * @return
+     */
+    public static List<String> findKeysForMatchingValues(final Map<String, Object> map, final Predicate<String> predicate) {
+        return map.entrySet().stream()
+                .filter(entry -> {
+                    final Object value = entry.getValue();
+                    if (value instanceof String) {
+                        return predicate.test((String) value);
+                    } else if (value instanceof String[]) {
+                        return Arrays.stream((String[]) value)
+                                .anyMatch(predicate);
+                    }
+
+                    return false;
+                }).map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }
+
     /**
      * Provides the relative path of a resource to a given root
      * @param root Root Resource
@@ -349,11 +378,30 @@ public class PerUtil {
     }
 
     private static boolean isDescendantOfJcrContent(final String path) {
-        return StringUtils.contains(path, SLASH + JCR_CONTENT + SLASH);
+        return StringUtils.contains(path, SL_JCR_CONTENT_SL);
+    }
+
+    private static boolean isDescendantOfJcrContent(final Resource resource) {
+        return isDescendantOfJcrContent(resource.getPath());
     }
 
     public static boolean isJcrContentOrDescendant(final String path) {
         return isJcrContent(path) || isDescendantOfJcrContent(path);
+    }
+
+    /**
+     * @see PerUtil#getBaseResource(Resource)
+     * */
+    public static String getBasePath(final String path) {
+        if (isJcrContent(path)) {
+            return getParent(path);
+        }
+
+        if (isDescendantOfJcrContent(path)) {
+            return StringUtils.substringBefore(path, SL_JCR_CONTENT_SL);
+        }
+
+        return path;
     }
 
     public static boolean isJcrContentOrDescendant(final Resource resource) {
@@ -384,6 +432,29 @@ public class PerUtil {
         return Optional.ofNullable(getJcrContentOrSelf(resource))
                 .map(Resource::getValueMap)
                 .orElse(null);
+    }
+
+    /**
+     * We define the notion of a <code>base</code> for a given <code>resource</code> here as the parent of
+     * <code>jcr:content</code> or the <code>resource</code> itself otherwise.
+     *
+     * @param resource the <code>resource</code> for which we want to extract the <code>base</code>
+     * @return the parent resource, if the <code>resource</code> is <code>jcr:content</code>,
+     * or the <code>resource</code> itself otherwise (it's its own <code>base</code> then)
+     *
+     * @see PerUtil#getBasePath(String)
+     */
+    public static Resource getBaseResource(final Resource resource) {
+        Resource parent = resource;
+        while (isDescendantOfJcrContent(parent)) {
+            parent = parent.getParent();
+        }
+
+        if (isJcrContent(parent)) {
+            return parent.getParent();
+        }
+
+        return parent;
     }
 
     /**
@@ -861,6 +932,24 @@ public class PerUtil {
         boolean doAdd(Resource resource);
         /** @return False if the resource's children should not be considered **/
         boolean doAddChildren(Resource resource);
+    }
+
+    public static final class ConjunctionResourceCheckerChain extends LinkedList<ResourceChecker> implements ResourceChecker {
+
+        public ConjunctionResourceCheckerChain(final ResourceChecker... items) {
+            for (final ResourceChecker rc : items) {
+                add(rc);
+            }
+        }
+
+        public boolean doAdd(final Resource resource) {
+            return stream().allMatch(rc -> rc.doAdd(resource));
+        }
+
+        public boolean doAddChildren(final Resource resource) {
+            return stream().allMatch(rc -> rc.doAddChildren(resource));
+        }
+
     }
 
     /** Checks all resources that are either missing or are outdated on the target **/

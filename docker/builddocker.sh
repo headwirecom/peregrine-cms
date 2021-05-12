@@ -7,4 +7,13 @@
 
 ./fetchfiles.sh
 
-docker build --no-cache --tag=${DOCKER_IMAGE} .
+export RUNMODE=$1
+export DOCKER_IMAGE_WITH_TYPE=${DOCKER_IMAGE}-$2
+if [ -z "$1" ]
+  then
+    export RUNMODE=none
+    export DOCKER_IMAGE_WITH_TYPE=${DOCKER_IMAGE}
+fi
+
+echo build docker image for runmode ${RUNMODE} using tag ${DOCKER_IMAGE_WITH_TYPE}
+docker build --tag=${DOCKER_IMAGE_WITH_TYPE} --build-arg runmode=$RUNMODE .

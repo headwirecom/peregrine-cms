@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<jcr:root
+  xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+  xmlns:jcr="http://www.jcp.org/jcr/1.0"
+  xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+  jcr:primaryType="per:Page">
+
+  <jcr:content
+    jcr:primaryType="per:PageContent"
+    jcr:title="Nav and Footer"
+    sling:resourceType="pagerenderserver/components/page">
+
+    <nav jcr:primaryType="nt:unstructured"
+             mobilecolspan="12"
+             sling:resourceType="pagerenderserver/components/nav" />
+    <content jcr:primaryType="nt:unstructured"
+             mobilecolspan="12"
+             sling:resourceType="pagerenderserver/components/container" />
+    <footer jcr:primaryType="nt:unstructured"
+             mobilecolspan="12"
+             sling:resourceType="pagerenderserver/components/footer" />
+             
+  </jcr:content>
+</jcr:root>

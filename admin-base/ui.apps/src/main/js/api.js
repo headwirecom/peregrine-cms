@@ -318,6 +318,10 @@ class PerApi {
     checkTenantNameAvailability(name) {
         return impl.checkTenantNameAvailability(name)
     }
+
+    isReferencedInPublish(path) {
+        return impl.isReferencedInPublish(path)
+    }
 }
 
 export default PerApi

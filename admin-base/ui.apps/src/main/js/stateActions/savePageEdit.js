@@ -38,7 +38,8 @@ export default function(me, target) {
             delete view.state.editor;
             set(view, '/state/editorVisible', false)
             if(view.pageView.page.serverSide) {
-                me.action(me.getApp().$children[0], 'refreshEditor', view.pageView.page).then( () => { resolve() })
+                me.action(me.getApp().$children[0], 'refreshEditor', view.pageView.page)
+                resolve()
             } else {
                 resolve()
             }

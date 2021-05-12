@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
 public abstract class ReplicationTestBase  {
 
     private static String PUBLISH_DOMAIN = "http://localhost:8180";
-
+    public static String STELLA_PNG = "/content/example/assets/images/Stella.png";
 
     protected Calendar beforeTime;
     protected void setPublishDomain(String publishDomain) {

@@ -25,6 +25,7 @@ package com.peregrine.reference;
  * #L%
  */
 
+import com.peregrine.commons.util.PerUtil;
 import org.apache.sling.api.resource.Resource;
 
 import java.util.List;
@@ -45,6 +46,8 @@ public interface ReferenceLister {
      */
     List<Reference> getReferencedByList(Resource resource);
 
+    List<Resource> getReferenceList(boolean transitive, Resource resource, boolean deep, PerUtil.ResourceChecker checker);
+
     /**
      * Provides a list of resources referenced directly or indirectly by
      * the given resource
@@ -55,6 +58,8 @@ public interface ReferenceLister {
      * @return List of resources referenced which might be empty
      */
     List<Resource> getReferenceList(boolean transitive, Resource resource, boolean deep);
+
+    List<Resource> getReferenceList(boolean transitive, Resource resource, boolean deep, Resource source, Resource target, PerUtil.ResourceChecker checker);
 
     /**
      * Provides a list of resources referenced directly or indirectly by
@@ -70,4 +75,7 @@ public interface ReferenceLister {
      *         available on the target side
      */
     List<Resource> getReferenceList(boolean transitive, Resource resource, boolean deep, Resource source, Resource target);
+
+    boolean isReferenced(Resource resource);
+
 }

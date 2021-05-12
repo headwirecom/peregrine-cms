@@ -45,5 +45,6 @@ public interface AdminPaths {
     String RESOURCE_TYPE_DO_REPLICATION = API_PREFIX + "repl";
     String RESOURCE_TYPE_TENANT_SETUP_REPLICATION = API_PREFIX + "tenantSetupReplication";
     String RESOURCE_TYPE_IS_TENANT_NAME_AVAILABLE = API_PREFIX + "tenants/name/available";
+    String RESOURCE_TYPE_IS_REFERENCED_IN_PUBLISH = API_PREFIX + "isReferencedInPublish";
 
 }

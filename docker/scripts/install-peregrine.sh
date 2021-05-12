@@ -7,7 +7,7 @@ PACKAGE_DIR=/app/binaries
 SAVE_PWD=`pwd`
 
 echo "Starting Sling for the first time..."
-/app/scripts/start.sh
+/app/scripts/start.sh $1
 
 echo "Installing Sling Packager"
 npm install @peregrinecms/slingpackager -g
@@ -16,6 +16,7 @@ PKG_ORDER=( \
   base.ui.apps-1.0-SNAPSHOT.zip \
   felib.ui.apps-1.0-SNAPSHOT.zip \
   pagerender-vue.ui.apps-1.0-SNAPSHOT.zip \
+  pagerender-server.ui.apps-1.0-SNAPSHOT.zip \
   admin.ui.apps-1.0-SNAPSHOT.zip \
   admin.ui.materialize-1.0-SNAPSHOT.zip \
   admin.sling.ui.apps-1.0-SNAPSHOT.zip \
@@ -29,6 +30,19 @@ do
   echo "Installing package '${pkg}' in defined order..."
   slingpackager -v upload --install ${PACKAGE_DIR}/$pkg
 done
+
+# Wait for Sling to be fully ready again
+# added an extra sleep to make sure the last package install is completed (sling jobs may take a bit to run)
+sleep 5     
+STATUS=$(curl -u admin:admin -s --fail  http://localhost:8080/system/console/bundles.json | jq '.s[3:5]' -c)
+if [ "$STATUS" != "[0,0]" ]; then
+  while [ "$STATUS" != "[0,0]" ]
+  do    
+    echo "Sling still starting. Waiting for all bundles to be ready.."
+    sleep 5
+    STATUS=$(curl -u admin:admin -s --fail  http://localhost:8080/system/console/bundles.json | jq '.s[3:5]' -c)
+  done
+fi
 
 #echo "Stopping Peregrine..."
 #kill `ps -ef | grep org.apache.sling.feature.launcher.jar | grep -v grep | awk '{print $2}'`

@@ -1,0 +1,31 @@
+<nav 
+    data-sly-use.navModel="com.peregrine.pagerender.server.models.NavModel"
+    data-per-path="${navModel.path}" 
+    class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" data-sly-attribute.href="${navModel.link @ extension = 'html'}">
+        <img 
+            src="${navModel.logo}" 
+            data-sly-test.logoTest="${navModel.logo}" 
+            data-sly-attribute.alt="${navModel.logoalttext}"
+            style="width: ${navModel.logosize ? navModel.logosize : '80' @ context='styleToken'}px;">
+        <sly data-sly-test="${!logoTest}">${navModel.logoalttext ? navModel.logoalttext : "Nav"}</sly>
+        <span data-sly-test="${navModel.headertext}" style="margin-left: 30px;">${navModel.headertext}</span>
+    </a>
+    <button 
+        class="navbar-toggler navbar-toggler-right" 
+        type="button" 
+        data-toggle="collapse" 
+        data-target="#navbarSupportedContent" 
+        aria-controls="navbarSupportedContent" 
+        aria-expanded="false" 
+        aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto" data-sly-list.link="${navModel.links}">
+            <li class="nav-item">
+                <a class="nav-link" data-sly-attribute.href="${link.valueMap.link @ extension='html'}">${link.valueMap.text}</a>
+            </li>
+        </ul>
+    </div>
+</nav>

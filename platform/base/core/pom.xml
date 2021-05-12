@@ -50,6 +50,8 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
+                            com.peregrine.commons,
+                            com.peregrine.commons.*,
                             com.peregrine.adaption,
                             com.peregrine.nodetypes.*,
                             com.peregrine.intra,
@@ -60,7 +62,6 @@
                             com.peregrine.sitemap,
                             com.peregrine.transform,
                             com.peregrine.transform.*,
-                            com.peregrine.commons.util,
                             com.peregrine.model.api,
                             com.peregrine.versions
                         </Export-Package>
@@ -94,7 +95,8 @@
                         </Sling-Nodetypes>
 
                         <Sling-Initial-Content>
-                            SLING-INF/apps/per/sitemaps;path:=/apps/per/sitemaps;overwrite=true
+                            SLING-INF/apps/per/sitemaps;path:=/apps/per/sitemaps;overwrite=true,
+                            SLING-INF/content/startup;path:=/content/startup;overwrite=true
                         </Sling-Initial-Content>
                     </instructions>
                 </configuration>
@@ -251,6 +253,16 @@
             <artifactId>org.apache.sling.scripting.sightly.compiler.java</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.scripting.sightly</artifactId>
+            <version>1.4.6-1.4.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.scripting.sightly.runtime</artifactId>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
@@ -265,6 +277,10 @@
         <dependency>
             <groupId>junit-addons</groupId>
             <artifactId>junit-addons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.testing.sling-mock.junit4</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

@@ -25,6 +25,7 @@ package com.peregrine.replication.impl;
  * #L%
  */
 
+import com.peregrine.commons.util.PerUtil;
 import com.peregrine.replication.ReplicationServiceBase;
 import com.peregrine.reference.ReferenceLister;
 import com.peregrine.replication.Replication;
@@ -113,7 +114,7 @@ public class ModPageSpeedCacheInvalidationService
     private ReferenceLister referenceLister;
 
     @Override
-    public List<Resource> findReferences(Resource source, boolean deep)
+    public List<Resource> findReferences(Resource source, boolean deep, PerUtil.ResourceChecker checker)
     {
         // no op
         return Collections.emptyList();

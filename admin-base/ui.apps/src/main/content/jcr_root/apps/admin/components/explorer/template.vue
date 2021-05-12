@@ -77,7 +77,8 @@
                             dblClickTarget: child,
                             dblClickCommand: 'selectPath',
                             tooltipTitle: `${$i18n('edit')} '${child.title || child.name}'`
-                        }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.title ? child.title : child.name}}
+                        }">
+                      <icon v-bind="nodeTypeToIcon(child)"/> {{child.title ? child.title : child.name}}
                     </admin-components-action>
 
                     <admin-components-action v-if="!editable(child)"
@@ -85,7 +86,8 @@
                             target: child,
                             command: 'selectPath',
                             tooltipTitle: `${$i18n('select')} '${child.title || child.name}'`
-                        }"><i class="material-icons">{{nodeTypeToIcon(child.resourceType)}}</i> {{child.title ? child.title : child.name}}
+                        }">
+                      <icon v-bind="nodeTypeToIcon(child)"/> {{child.title ? child.title : child.name}}
                     </admin-components-action>
 
                     <admin-components-extensions v-bind:model="{id: 'admin.components.explorer', item: child}"></admin-components-extensions>
@@ -247,15 +249,26 @@
             </div>
         </div>
     </div>
+
+      <admin-components-publishingmodal
+          v-if="publishDialogPath"
+          :isOpen="publishDialogPath"
+          :path="publishDialogPath"
+          :modalTitle="`Web Publishing: ${publishDialogPath.split('/').pop()}`"
+          @complete="closePublishing" />
 </div>
 </template>
 
 <script>
 
 import {getCurrentDateTime, set} from '../../../../../../js/utils'
+import {IconLib} from '../../../../../../js/constants'
+
+import Icon from '../icon/template.vue'
 
 export default {
-        props: ['model'],
+  components: {Icon},
+  props: ['model'],
 
         data() {
             return {
@@ -263,7 +276,8 @@ export default {
                 isDraggingUiEl: false,
                 isFileUploadVisible: false,
                 uploadProgress: 0,
-                filter: true
+                filter: true,
+                publishDialogPath: null
             }
         },
 
@@ -358,7 +372,11 @@ export default {
             },
 
             replicate(me, path) {
-                $perAdminApp.stateAction('replicate', path)
+                me.publishDialogPath = path
+            },
+
+            closePublishing() {
+                this.publishDialogPath = null
             },
 
             isFolder(item) {
@@ -516,16 +534,32 @@ export default {
                 return path + '.json'
             },
 
-            nodeTypeToIcon: function(nodeType) {
-                if(nodeType === 'per:Page')             return 'description'
-                if(nodeType === 'per:Object')           return 'layers'
-                if(nodeType === 'per:ObjectDefinition') return 'insert_drive_file'
-                if(nodeType === 'nt:file')              return 'insert_drive_file'
-                if(nodeType === 'per:Asset')            return 'image'
-                if(nodeType === 'sling:Folder')         return 'folder'
-                if(nodeType === 'sling:OrderedFolder')  return 'folder'
-                return 'unknown'
-            },
+          nodeTypeToIcon: function (item) {
+            if (item.resourceType === 'per:Page') return {icon: 'description', lib: IconLib.MATERIAL_ICONS}
+            if (item.resourceType === 'per:Object') return {icon: 'layers', lib: IconLib.MATERIAL_ICONS}
+            if (item.resourceType === 'per:ObjectDefinition') return {
+              icon: 'insert_drive_file',
+              lib: IconLib.MATERIAL_ICONS
+            }
+            if (item.resourceType === 'nt:file') return this.fileExtToIcon(item)
+            if (item.resourceType === 'per:Asset') return {icon: 'image', lib: IconLib.MATERIAL_ICONS}
+            if (item.resourceType === 'sling:Folder') return {icon: 'folder', lib: IconLib.MATERIAL_ICONS}
+            if (item.resourceType === 'sling:OrderedFolder') return {icon: 'folder', lib: IconLib.MATERIAL_ICONS}
+            return {icon: '█', lib: IconLib.PLAIN_TEXT}
+          },
+
+          fileExtToIcon(item) {
+            let ext = ''
+            if (item.name) {
+              ext = item.name.split('.').pop()
+            }
+
+            if (ext === 'json') {
+              return {icon: '{&#8230;}', lib: IconLib.PLAIN_TEXT}
+            } else {
+              return {icon: 'insert_drive_file', lib: IconLib.MATERIAL_ICONS}
+            }
+          },
 
             checkIfAllowed: function(node) {
                 if(this.model.showFilter && this.model.showFilter === 'true' && this.filter) {
@@ -635,13 +669,16 @@ export default {
             },
 
             canBeDeleted: function(obj) {
-                return !(obj.activated || obj.anyDescendantActivated);
+                return !(obj.activated || obj.anyDescendantActivated || obj.isReferenced);
             },
 
             deleteTenantOrPage: function(me, target) {
-                if (!me.canBeDeleted(target)) {
-                    $perAdminApp.toast("You cannot delete this yet. The resource or one of its children is still published." +
-                                       " Please unpublish all of them first.", "warn", 7500)
+                if (target.activated) {
+                    $perAdminApp.toast("The resource is still published. Please unpublish it first.", "warn", 7500)
+                } else if (target.anyDescendantActivated) {
+                    $perAdminApp.toast("One of the children of this resource is still published. Please unpublish all of them first.", "warn", 7500)
+                } else if (target.isReferenced) {
+                    $perAdminApp.toast("The resource is referenced somewhere. Please remove the references first.", "warn", 7500)
                 } else if(me.path === '/content') {
                     me.deleteTenant(me, target)
                 } else {
@@ -725,4 +762,16 @@ export default {
         justify-content: center;
         align-items: center;
     }
+</style>
+
+<style scoped>
+.icon.label {
+  height: 24px;
+  width: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bolder;
+  color: #000000;
+}
 </style>

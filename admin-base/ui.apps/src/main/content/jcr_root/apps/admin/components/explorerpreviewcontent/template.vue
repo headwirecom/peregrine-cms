@@ -197,9 +197,8 @@
             <i class="material-icons">publish</i>
             Publish to Web ({{nodeType}})
           </div>
-          <div class="action" :title="`Deactivate ${nodeType}`" >
-            <admin-components-action
-                v-bind:model="{
+          <div v-if="nodeFromPath.activated && !isReferencedInPublish" class="action" :title="`Deactivate ${nodeType}`">
+            <admin-components-action :model="{
                     target: node.path,
                     command: 'unPublishResource',
                     tooltipTitle: `${$i18n('undo publish')} '${node.title || node.name}'`
@@ -207,6 +206,12 @@
               <i class="material-icons">remove_circle_outline</i>
               Unpublish ({{nodeType}})
             </admin-components-action>
+          </div>
+          <div v-else class="action operationDisabledOnActivatedItem" :title="`Deactivate ${nodeType}`">
+            <span>
+              <i class="material-icons">remove_circle_outline</i>
+              <span>Unpublish ({{nodeType}})</span>
+            </span>
           </div>
         </div>
       </template>
@@ -229,21 +234,21 @@
             <icon icon="external-link" :lib="IconLib.FONT_AWESOME"/>
             Open live version
           </div>
-          <div class="action" :title="`rename ${nodeType}`" @click="renameNode()">
+          <div :class="classForActionDisabledOnActivatedResource" :title="`rename ${nodeType}`" @click="renameNode()">
             <icon :lib="IconLib.MATERIAL_ICONS" icon="text_format"/>
-            <span :class="activationSensitiveClass">Rename {{ nodeType }}</span>
+            <span>Rename {{ nodeType }}</span>
           </div>
-          <div class="action" :title="`move ${nodeType}`" @click="moveNode()">
+          <div :class="classForActionDisabledOnActivatedResource" :title="`move ${nodeType}`" @click="moveNode()">
             <icon icon="compare_arrows"/>
-            <span :class="activationSensitiveClass">Move {{ nodeType }}</span>
+            <span>Move {{ nodeType }}</span>
           </div>
           <div class="action" :title="`copy ${nodeType}`" @click="copyNode()">
             <icon icon="content_copy"/>
             Copy {{ nodeType }}
           </div>
-          <div class="action" :title="`delete ${nodeType}`" @click="deleteNode()">
+          <div :class="classForActionDisabledOnActivatedResource" :title="`delete ${nodeType}`" @click="deleteNode()">
             <icon :icon="selfOrAnyDescendantActivated ? 'delete_forever' : 'delete'" />
-            <span :class="activationSensitiveClass">Delete {{ nodeType }}</span>
+            <span>Delete {{ nodeType }}</span>
           </div>
         </div>
       </template>
@@ -285,7 +290,7 @@
         :setCurrentPath="setCurrentPath"
         :setSelectedPath="setSelectedPath"
         :onCancel="onMoveCancel"
-        :onSelect="onMoveSelect">
+        @select="onMoveSelect">
     </path-browser>
 
     <path-browser
@@ -299,7 +304,7 @@
         :setCurrentPath="setCurrentPath"
         :setSelectedPath="setSelectedPath"
         :onCancel="onCopyCancel"
-        :onSelect="onCopySelect">
+        @select="onCopySelect">
     </path-browser>
 
 
@@ -413,7 +418,8 @@ export default {
       formGenerator: {
         changes: []
       },
-      loading: false
+      loading: false,
+      isReferencedInPublish: true
     }
   },
   mixins: [NodeNameValidation,ReferenceUtil],
@@ -513,8 +519,8 @@ export default {
       const node = this.node;
       return node.activated || node.selfOrAnyDescendantActivated;
     },
-    activationSensitiveClass() {
-      return this.selfOrAnyDescendantActivated ? 'operationDisabledOnActivatedItem' : null;
+    classForActionDisabledOnActivatedResource() {
+      return this.selfOrAnyDescendantActivated ? 'action operationDisabledOnActivatedItem' : 'action';
     },
     stateToolsEdit() {
       const stateTools = $perAdminApp.getNodeFromViewOrNull('/state/tools')
@@ -530,17 +536,19 @@ export default {
       $perAdminApp.getNodeFromViewOrNull('/state/tools').edit = val
     },
     activeTab : function(tab) {
-      if (tab === 'versions'){
+      if (tab === 'versions') {
         this.showVersions()
-      } else if (tab === 'references'){
-        this.showReferencedBy()
+      }
+      if (tab === 'publishing') {
+        this.updateIsReferencedInPublish()
       }
     },
     currentObject : function(path) {
-      if (this.activeTab === 'versions'){
+      if (this.activeTab === 'versions') {
         this.showVersions()
-      } else if (this.activeTab === 'references'){
-        this.showReferencedBy()
+      }
+      if (this.activeTab === 'publishing') {
+        this.updateIsReferencedInPublish()
       }
       if (this.stateToolsEdit) {
         this.onEdit()
@@ -782,14 +790,6 @@ export default {
     showVersions() {
       $perAdminApp.getApi().populateVersions(this.currentObject);
     },
-    showReferencedBy() {
-      this.loading = true
-      $perAdminApp.getApi()
-          .populateReferencedBy(this.currentObject)
-          .then(() => {
-            this.loading = false
-          })
-    },
     deleteVersion(me, target) {
       $perAdminApp.stateAction('deleteVersion', { path: target.path, version: target.version.name });
     },
@@ -837,12 +837,15 @@ export default {
       this.isOpen = false;
     },
     save() {
+      let promise
       if (this.nodeType === NodeType.OBJECT) {
-        this.saveObject();
+        promise = this.saveObject();
       } else {
-        $perAdminApp.stateAction(`save${this.uNodeType}Properties`, this.node);
+        promise = $perAdminApp.stateAction(`save${this.uNodeType}Properties`, this.node);
         this.edit = false;
       }
+
+      promise.then(() => $perAdminApp.getApi().populateNodesForBrowser(this.node.path.split('/').slice(0, -1).join('/')))
     },
     saveObject() {
       let data = this.node;
@@ -883,11 +886,12 @@ export default {
         }
       }
       set($perAdminApp.getView(), '/state/tools/save/confirmed', true)
-      $perAdminApp.stateAction('saveObjectEdit', {data: data, path: show}).then(() => {
+      const result = $perAdminApp.stateAction('saveObjectEdit', {data: data, path: show}).then(() => {
         $perAdminApp.getNodeFromView('/state/tools')._deleted = {}
       });
       $perAdminApp.stateAction('selectObject', {selected: show})
       this.edit = false;
+      return result
     },
     setActiveTab(clickedTab) {
       this.activeTab = clickedTab;
@@ -918,6 +922,20 @@ export default {
 
         window.open(`${primaryDomain}${pagePath}.html`, `${tenant}-live-version`)
       }
+    },
+    updateIsReferencedInPublish() {
+      this.isReferencedInPublish = true;
+      const path = this.currentObject;
+      if (!path) {
+        return;
+      }
+
+      $perAdminApp.getApi().isReferencedInPublish(path)
+        .then(data => {
+          this.isReferencedInPublish = data.result;
+        }).catch(() => {
+          this.isReferencedInPublish = false;
+        });
     }
   }
 }
@@ -933,6 +951,7 @@ export default {
   white-space: nowrap;
 }
 .operationDisabledOnActivatedItem {
-  text-decoration: line-through;
+  opacity: 0.4;
+  cursor: default!important;
 }
 </style>

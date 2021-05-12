@@ -10,7 +10,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
+import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -47,4 +49,31 @@ public class PerUtilTest
         logger.info("Component Name: '{}'", componentName);
         assertEquals("Component Name Extraction failed", "one-two-three--four-five", componentName);
     }
+
+    @Test
+    public void stripJcrContentAndDescendants() {
+        assertEquals("/content/page", PerUtil.getBasePath("/content/page/jcr:content/child"));
+        assertEquals("/content/page", PerUtil.getBasePath("/content/page/jcr:content/"));
+        assertEquals("/content/page", PerUtil.getBasePath("/content/page/jcr:content"));
+        assertEquals("/content/page/", PerUtil.getBasePath("/content/page/"));
+        assertEquals("/content/page", PerUtil.getBasePath("/content/page"));
+    }
+
+    @Test
+    public void keysInMapHavingStringValueMatchingPredicate() {
+        Predicate<String> hasLength5 = s -> s.length() == 5;
+        assertThat(PerUtil.findKeysForMatchingValues(
+                Map.of("k", "1"),
+                hasLength5), hasItems());
+        assertThat(PerUtil.findKeysForMatchingValues(
+                Map.of("k", "12345"),
+                hasLength5), hasItems("k"));
+        assertThat(PerUtil.findKeysForMatchingValues(
+                Map.of("k", new String[] { "1", "2", "3", "4", "5"}),
+                hasLength5), hasItems());
+        assertThat(PerUtil.findKeysForMatchingValues(
+                Map.of("k", new String[] { "1", "12345", "123", "12", "1234"}),
+                hasLength5), hasItems("k"));
+    }
+
 }

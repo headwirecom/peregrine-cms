@@ -1,11 +1,24 @@
 package com.peregrine.commons;
 
 import com.peregrine.commons.util.PerConstants;
+import com.peregrine.commons.util.PerUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
-import org.apache.sling.api.resource.*;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceUtil;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -261,6 +274,22 @@ public final class ResourceUtils {
                 .filter(Objects::nonNull)
                 .map(Resource::getResourceResolver)
                 .findFirst().orElse(null);
+    }
+
+    public static boolean isDescendant(final String path, final String ancestorPath) {
+        return StringUtils.startsWith(path, ancestorPath + SLASH);
+    }
+
+    public static boolean isDescendant(final Resource resource, final Resource ancestor) {
+        return isDescendant(resource.getPath(), ancestor.getPath());
+    }
+
+    public static boolean isContentOf(final Resource resource, final Resource ancestor) {
+        if (PerUtil.isJcrContentOrDescendant(ancestor)) {
+            return isDescendant(resource, ancestor);
+        }
+
+        return isDescendant(resource.getPath(), ancestor.getPath() + SLASH + JCR_CONTENT);
     }
 
 }

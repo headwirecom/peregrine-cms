@@ -49,7 +49,8 @@
         <org.apache.sling.commons.osgi.version>2.4.2</org.apache.sling.commons.osgi.version>
         <org.apache.sling.models.api.version>1.3.8</org.apache.sling.models.api.version>
         <org.apache.sling.engine.version>2.7.4</org.apache.sling.engine.version>
-        <org.apache.sling.scripting.sightly.compiler.java.version>1.0.18</org.apache.sling.scripting.sightly.compiler.java.version>
+        <org.apache.sling.scripting.sightly.compiler.java.version>1.2.2-1.4.0</org.apache.sling.scripting.sightly.compiler.java.version>
+        <org.apache.sling.scripting.sightly.runtime.version>1.2.4-1.4.0</org.apache.sling.scripting.sightly.runtime.version>
         <org.apache.sling.servlet-helpers.version>1.4.2</org.apache.sling.servlet-helpers.version>
         <distribution.api.version>0.4.0</distribution.api.version>
         <distribution.api.version.latest>0.3.1-SNAPSHOT</distribution.api.version.latest>
@@ -72,7 +73,7 @@
         <mockito-all.version>1.9.5</mockito-all.version>
         <jmock-junit4.version>2.12.0</jmock-junit4.version>
         <org.apache.sling.commons.testing.version>2.1.0</org.apache.sling.commons.testing.version>
-        <org.apache.sling.junit.core.version>1.1.0</org.apache.sling.junit.core.version>
+        <org.apache.sling.junit.core.version>1.1.2</org.apache.sling.junit.core.version>
         <org.apache.sling.testing.clients.version>2.0.8</org.apache.sling.testing.clients.version>
         <org.apache.sling.testing.rules.version>2.0.0</org.apache.sling.testing.rules.version>
         <org.apache.sling.junit.teleporter.version>1.0.22</org.apache.sling.junit.teleporter.version>
@@ -140,7 +141,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.4</version>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
                         <id>aggregate</id>
@@ -151,7 +152,9 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <reportOutputDirectory>${project.build.outputDirectory}/content/apidocs</reportOutputDirectory>
+<!--                    <reportOutputDirectory>${project.build.outputDirectory}/content/apidocs</reportOutputDirectory>-->
+                    <failOnError>false</failOnError>
+                    <debug>true</debug>
                     <destDir>cms</destDir>
                 </configuration>
             </plugin>
@@ -240,7 +243,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.0.2</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <!-- Maven Enforcer Plugin -->
                 <plugin>
@@ -296,7 +299,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <version>${jmock-junit4.version}</version>
+                    <version>2.8.2</version>
                     <configuration>
                         <retryFailedDeploymentCount>10</retryFailedDeploymentCount>
                     </configuration>
@@ -369,6 +372,11 @@
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-scr-plugin</artifactId>
                     <version>1.26.4</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-project-info-reports-plugin</artifactId>
+                    <version>3.1.1</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -502,12 +510,6 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
-                <groupId>org.apache.sling</groupId>
-                <artifactId>org.apache.sling.event</artifactId>
-                <version>4.2.12</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.jackrabbit</groupId>
                 <artifactId>jackrabbit-api</artifactId>
                 <version>${jackrabbit.version}</version>
@@ -522,7 +524,7 @@
             <dependency>
                 <groupId>org.apache.jackrabbit.vault</groupId>
                 <artifactId>org.apache.jackrabbit.vault</artifactId>
-                <version>3.4.8</version>
+                <version>3.4.10</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -535,6 +537,12 @@
                 <groupId>org.apache.sling</groupId>
                 <artifactId>org.apache.sling.scripting.sightly.compiler.java</artifactId>
                 <version>${org.apache.sling.scripting.sightly.compiler.java.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.scripting.sightly.runtime</artifactId>
+                <version>${org.apache.sling.scripting.sightly.runtime.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -668,6 +676,12 @@
                 <version>1.4</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.testing.sling-mock.junit4</artifactId>
+                <version>3.0.2</version>
+                <scope>test</scope>
+            </dependency>
 
             <!-- IT Tests Support -->
             <dependency>
@@ -703,6 +717,31 @@
 
         </dependencies>
     </dependencyManagement>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.2.0</version>
+                <reportSets>
+                    <reportSet>
+                        <id>aggregate</id>
+                        <inherited>false</inherited>
+                        <reports>
+                            <report>aggregate</report>
+                        </reports>
+                    </reportSet>
+                    <reportSet>
+                        <id>default</id>
+                        <reports>
+                            <report>javadoc</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
 
     <profiles>
         <profile>
@@ -996,6 +1035,7 @@
         <module>buildscripts</module>
         <module>platform</module>
         <module>pagerenderer/vue</module>
+        <module>pagerenderer/server</module>
         <module>admin-base</module>
         <module>samples/example-vue-site</module>
         <module>themes/themeclean</module>

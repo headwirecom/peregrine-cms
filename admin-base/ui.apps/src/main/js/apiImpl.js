@@ -139,7 +139,7 @@ function populateView(path, name, data) {
     } else {
       obj[name] = data
     }
-    resolve()
+    resolve(path, name, data)
   })
 
 }
@@ -284,8 +284,7 @@ class PerAdminImpl {
   }
 
   populateNodesForBrowser(path, target = 'nodes', includeParents = false) {
-    return fetch(
-        '/admin/nodes.json' + path + '?includeParents=' + includeParents)
+    return fetch('/admin/nodes.json' + path + '?includeParents=' + includeParents)
         .then((data) => populateView('/admin', target, data))
   }
 
@@ -1326,6 +1325,10 @@ class PerAdminImpl {
 
   checkTenantNameAvailability(name) {
     return fetch('/admin/tenants/name/available.json?name=' + name)
+  }
+
+  isReferencedInPublish(path) {
+    return fetch(`/admin/isReferencedInPublish.json${path}`)
   }
 }
 

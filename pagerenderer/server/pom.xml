@@ -30,6 +30,7 @@
     <artifactId>pagerender-server.parent</artifactId>
     <packaging>pom</packaging>
 
+    <name>Peregrine CMS - Page Render Server Parent</name>
     <description>Peregrine Server Page Renderer Parent POM</description>
 
     <!--

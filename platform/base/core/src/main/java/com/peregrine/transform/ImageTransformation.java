@@ -44,7 +44,7 @@ public interface ImageTransformation {
     /** @return The Transformation Name **/
     public String getTransformationName();
 
-        /** @erturn The Default Transformation Name **/
+    /** @return The Default Transformation Name **/
     public String getDefaultTransformationName();
 
     /** @return True if the Transformation is enabled **/
