@@ -207,6 +207,10 @@ function translateFields(fields) {
   }
 }
 
+function fetchRef(service, path, sameTenant = false) {
+  return fetch(`/admin/${service}.json${path}?${new URLSearchParams({ sameTenant })}`)
+}
+
 class PerAdminImpl {
 
   constructor(cb) {
@@ -496,13 +500,13 @@ class PerAdminImpl {
   }
 
   populateReferencedBy(path, sameTenant = false) {
-    return fetch(`/admin/refBy.json${path}${sameTenant ? '?sameTenant=true' : ''}`)
+    return fetchRef('refBy', path, sameTenant)
         .then((data) => populateView('/state', 'referencedBy', data))
   }
 
   populateReferences(path, sameTenant = false) {
     return new Promise((resolve, reject) => {
-      fetch(`/admin/ref.json${path}${sameTenant ? '?sameTenant=true' : ''}`)
+      fetchRef('ref', path, sameTenant)
           .then(function (result) {
             populateView('/state', 'references', result)
                 .then(() => resolve())
