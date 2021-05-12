@@ -130,6 +130,8 @@ export default {
             $perAdminApp.stateAction('editObject', {selected: node.path, path: me.model.dataFrom})
           } else if (target.startsWith(`/content/${tenant.name}/templates`)) {
             $perAdminApp.stateAction('editTemplate', target)
+          } else if (target.startsWith(`/content/${tenant.name}/object-definition`)){
+            $perAdminApp.loadContent(`/content/admin/object-definitions/edit.html/path: ${target}`)
           } else {
             $perAdminApp.stateAction('editPage', target)
           }

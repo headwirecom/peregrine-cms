@@ -76,11 +76,12 @@ export const Icon = {
 }
 
 export const NodeType = {
-  PAGE: 'page',
-  TEMPLATE: 'template',
-  ASSET: 'asset',
-  OBJECT: 'object'
-}
+         PAGE: 'page',
+         TEMPLATE: 'template',
+         ASSET: 'asset',
+         OBJECT: 'object',
+         FILE: 'file',
+       };
 export const MimeType = {
   Image: {
     PNG: 'image/png',

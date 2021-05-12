@@ -4,7 +4,7 @@
       :model="model"
       :tab="tab"
       :is-edit="isEditPage"
-      :nodeType="NodeType.PAGE"
+      :nodeType="NodeType.FILE"
       :browserRoot="`${getBasePath()}/pages`"
       :currentPath="`${getBasePath()}/pages`">
     <admin-components-componentexplorer

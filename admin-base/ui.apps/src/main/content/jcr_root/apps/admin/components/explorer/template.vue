@@ -510,11 +510,11 @@ export default {
             },
 
             editable: function(child) {
-                return ['per:Page', 'per:Object'].indexOf(child.resourceType) >= 0
+                return ['per:Page', 'per:Object', 'nt:file'].indexOf(child.resourceType) >= 0
             },
 
             composumEditable: function(child) {
-                return ['nt:file'].indexOf(child.resourceType) >= 0
+                return [].indexOf(child.resourceType) >= 0
             },
 
             viewable: function(child) {
