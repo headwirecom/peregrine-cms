@@ -30,32 +30,27 @@
       @on-complete="onComplete"
       color="#37474f"
     >
-      <tab-content title="Select a supported file-format">
-        <ul class="collection">
-          <li
-            v-for="(format, i) in supportedFormats"
-            :key="`format-${i}`"
-            class="collection-item"
-            :class="{
-              'grey lighten-2': formmodel.format === format.ext,
-              disabled: format.disabled,
-            }"
-            @click.stop.prevent="formmodel.format = format.ext"
-          >
-            {{ format.label }}
-            <small class="text-muted">&nbsp;&nbsp;({{ format.ext }})</small>
-          </li>
-        </ul>
-      </tab-content>
       <tab-content
         title="choose name"
         :before-change="beforeChooseNameTabChange"
       >
+        <div class="card">
+          <icon icon="info-circle" :lib="IconLib.FONT_AWESOME" />
+          Supported file extensions:
+          <ul>
+            <li
+              v-for="extension in supportedExtensions"
+              :key="extension"
+            >
+              {{ extension }}
+            </li>
+          </ul>
+        </div>
         <vue-form-generator
+          ref="nameTab"
           :model="formmodel"
           :schema="schemas.name"
           :options="formOptions"
-          ref="nameTab"
         >
         </vue-form-generator>
       </tab-content>
@@ -64,17 +59,18 @@
 </template>
 
 <script>
-import { isValidObjectName, nameAvailable } from '../../../../../../js/mixins';
+import { nameAvailable } from '../../../../../../js/mixins';
+import Icon from '../icon/template.vue';
+import { IconLib } from '../../../../../../js/constants';
 
 export default {
-  mixins: [isValidObjectName, nameAvailable],
+  components: { Icon },
+  mixins: [nameAvailable],
   props: ['model'],
   data() {
     return {
-      supportedFormats: [
-        { label: 'JSON', ext: '.json' },
-        { label: 'Text', ext: '.txt', disabled: true },
-      ],
+      IconLib,
+      supportedExtensions: ['.json'],
       formmodel: {
         path: $perAdminApp.getNodeFromView(this.model.dataFrom),
         format: '',
@@ -95,31 +91,50 @@ export default {
               label: 'Filename',
               model: 'name',
               required: true,
-              validator: [this.nameAvailable, this.validObjectName],
+              placeholder: 'my-file-name.json',
+              validator: [this.nameAvailable, this.isSupportedExtension],
             },
           ],
         },
       },
     };
   },
-  created() {
-    this.formmodel.format = this.supportedFormats[0].ext;
-  },
   methods: {
-    onComplete: function() {
-      const { name, path, format } = this.formmodel;
-      $perAdminApp.stateAction('createObjectDefinitionFile', {
-        parent: path,
-        name: name + format,
-        format,
-        data: this.formmodel,
-        returnTo: this.model.returnTo,
-      });
+    isSupportedExtension(value) {
+      if (!value || value.length === 0 || value.indexOf('.') <= -1) {
+        return ['file extension missing'];
+      }
+
+      const ext = `.${value.split('.').pop()}`;
+
+      if (!this.supportedExtensions.includes(ext)) {
+        return ['file extension not supported'];
+      }
+
+      return [];
     },
 
     beforeChooseNameTabChange: function() {
       return this.$refs.nameTab.validate();
     },
+
+    onComplete: function() {
+      const { name, path } = this.formmodel;
+
+      $perAdminApp.stateAction('createObjectDefinitionFile', {
+        parent: path,
+        name: name,
+        data: this.formmodel,
+        returnTo: this.model.returnTo,
+      });
+    },
   },
 };
 </script>
+
+<style scoped>
+.card {
+  padding: 1rem;
+  background-color: #f6f6f6;
+}
+</style>
