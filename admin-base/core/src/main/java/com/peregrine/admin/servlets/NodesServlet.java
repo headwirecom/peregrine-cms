@@ -26,7 +26,7 @@ package com.peregrine.admin.servlets;
  */
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_NODES;
-import static com.peregrine.admin.servlets.ReferenceListerServlet.IS_STALE;
+import static com.peregrine.admin.servlets.ReferenceServletUtils.IS_STALE;
 import static com.peregrine.commons.util.PerConstants.ALLOWED_OBJECTS;
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.COMPONENT;

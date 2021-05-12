@@ -92,8 +92,8 @@ class PerApi {
         return impl.populatePageView(path)
     }
 
-    populateReferencedBy(path) {
-        return impl.populateReferencedBy(path)
+    populateReferencedBy(path, sameTenant = false) {
+        return impl.populateReferencedBy(path, sameTenant)
     }
 
     populateTenants() {
@@ -112,8 +112,8 @@ class PerApi {
         return impl.populateVersions(page)
     }
 
-    populateReferences(path) {
-        return impl.populateReferences(path)
+    populateReferences(path, sameTenant = false) {
+        return impl.populateReferences(path, sameTenant)
     }
 
     setInitialPageEditorState(path) {

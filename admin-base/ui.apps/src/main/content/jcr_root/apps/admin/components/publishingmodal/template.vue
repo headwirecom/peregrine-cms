@@ -167,7 +167,7 @@ export default {
     },
     mounted() {
         const me = this
-        $perAdminApp.getApi().populateReferences(this.path)
+        $perAdminApp.getApi().populateReferences(this.path, true)
             .then(function(){
                 Vue.set(me.references, 'publish', true)
                 if(me.references.references != undefined){
@@ -176,7 +176,7 @@ export default {
                     })
                 }
             })        
-        $perAdminApp.getApi().populateReferencedBy(this.path)
+        $perAdminApp.getApi().populateReferencedBy(this.path, true)
             .then(function(){
                 me.referencedBy = me.trimReferences($perAdminApp.getView().state.referencedBy.referencedBy)
                 if(me.referencedBy){

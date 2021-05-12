@@ -125,6 +125,11 @@ public final class ReferenceListerService implements ReferenceLister {
 
     @Override
     public List<Reference> getReferencedByList(final Resource resource) {
+        return getReferencedByList(resource, PerUtil.ADD_ALL_RESOURCE_CHECKER);
+    }
+
+    @Override
+    public List<Reference> getReferencedByList(final Resource resource, final PerUtil.ResourceChecker checker) {
         if (isNull(resource)) {
             return Collections.emptyList();
         }
@@ -135,9 +140,11 @@ public final class ReferenceListerService implements ReferenceLister {
             final Iterator<Resource> referrers = findReferrers(resource, searchPath);
             while (referrers.hasNext()) {
                 final Resource referrer = referrers.next();
-                final List<String> referencingProps = findKeysForMatchingValues(referrer.getValueMap(), containsReference);
-                if (!referencingProps.isEmpty()) {
-                    result.add(new Reference(getBaseResource(referrer), referencingProps.get(0), referrer));
+                if (checker.doAdd(referrer)) {
+                    final List<String> referencingProps = findKeysForMatchingValues(referrer.getValueMap(), containsReference);
+                    if (!referencingProps.isEmpty()) {
+                        result.add(new Reference(getBaseResource(referrer), referencingProps.get(0), referrer));
+                    }
                 }
             }
         }
