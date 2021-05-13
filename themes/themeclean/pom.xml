@@ -57,7 +57,7 @@
         <enforcer.plugin.version>3.0.0-M3</enforcer.plugin.version>
         <compiler.plugin.version>3.8.1</compiler.plugin.version>
         <bundle.plugin.version>5.1.2</bundle.plugin.version>
-        <clean.plugin.version>3.0.0</clean.plugin.version>
+        <clean.plugin.version>3.1.0</clean.plugin.version>
         <installer.plugin.version>2.5.2</installer.plugin.version>
         <surfire.plugin.version>2.20</surfire.plugin.version>
         <failsafe.plugin.version>2.22.2</failsafe.plugin.version>
