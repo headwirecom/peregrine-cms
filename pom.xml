@@ -54,7 +54,7 @@
         <org.apache.sling.servlet-helpers.version>1.4.2</org.apache.sling.servlet-helpers.version>
         <distribution.api.version>0.4.0</distribution.api.version>
         <distribution.api.version.latest>0.3.1-SNAPSHOT</distribution.api.version.latest>
-        <org.apache.sling.xss.version>2.2.12</org.apache.sling.xss.version>
+        <org.apache.sling.xss.version>2.2.8</org.apache.sling.xss.version>
 
         <!-- Third Party Dependencies Versions -->
         <jackrabbit.version>2.18.6</jackrabbit.version>
