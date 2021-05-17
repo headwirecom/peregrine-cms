@@ -34,25 +34,42 @@
         title="choose name"
         :before-change="beforeChooseNameTabChange"
       >
-        <div class="card">
-          <icon icon="info-circle" :lib="IconLib.FONT_AWESOME" />
-          Supported file extensions:
-          <ul>
-            <li
-              v-for="extension in supportedExtensions"
-              :key="extension"
-            >
-              {{ extension }}
-            </li>
-          </ul>
-        </div>
         <vue-form-generator
-          ref="nameTab"
+          ref="chooseNameVfg"
           :model="formmodel"
           :schema="schemas.name"
           :options="formOptions"
         >
         </vue-form-generator>
+      </tab-content>
+
+      <tab-content title="Write content">
+        <div>
+          <div class="template-load-buttons">
+            <h5>Insert template</h5>
+            <button
+              v-for="(template, i) in templates"
+              :key="`template-${i}`"
+              type="button"
+              class="btn waves-effect waves-light"
+              @click="insertTemplate(template)"
+            >
+              {{ template.name }}
+            </button>
+          </div>
+          <div class="codemirror-wrapper">
+            <span v-if="showInitialInfo" class="initial-info">
+              Click or choose a template to start editing
+            </span>
+            <codemirror
+              v-model="formmodel.content"
+              ref="coremirror"
+              @click.native="onCodemirrorClick"
+            >
+              Click to edit
+            </codemirror>
+          </div>
+        </div>
       </tab-content>
     </form-wizard>
   </div>
@@ -60,21 +77,23 @@
 
 <script>
 import { nameAvailable } from '../../../../../../js/mixins';
-import Icon from '../icon/template.vue';
 import { IconLib } from '../../../../../../js/constants';
+import Icon from '../icon/template.vue';
+import * as templates from './templates';
 
 export default {
+  name: 'CreateObjectDefinitionFileWizard',
   components: { Icon },
-  mixins: [nameAvailable],
+  mixins: [nameAvailable('.json')],
   props: ['model'],
   data() {
     return {
       IconLib,
-      supportedExtensions: ['.json'],
+      showInitialInfo: true,
       formmodel: {
         path: $perAdminApp.getNodeFromView(this.model.dataFrom),
-        format: '',
         name: '',
+        content: '{}',
       },
       formOptions: {
         validationErrorClass: 'has-error',
@@ -92,33 +111,24 @@ export default {
               model: 'name',
               required: true,
               placeholder: 'my-file-name.json',
-              validator: [this.nameAvailable, this.isSupportedExtension],
+              validator: [this.nameAvailable],
             },
           ],
         },
       },
+      templates: [
+        { name: 'schema', content: templates.schema },
+        { name: 'ui-schema', content: templates.uiSchema },
+      ],
     };
   },
   methods: {
-    isSupportedExtension(value) {
-      if (!value || value.length === 0 || value.indexOf('.') <= -1) {
-        return ['file extension missing'];
-      }
-
-      const ext = `.${value.split('.').pop()}`;
-
-      if (!this.supportedExtensions.includes(ext)) {
-        return ['file extension not supported'];
-      }
-
-      return [];
+    beforeChooseNameTabChange() {
+      return this.$refs.chooseNameVfg.validate();
     },
 
-    beforeChooseNameTabChange: function() {
-      return this.$refs.nameTab.validate();
-    },
-
-    onComplete: function() {
+    onComplete() {
+      this.formmodel.name += '.json';
       const { name, path } = this.formmodel;
 
       $perAdminApp.stateAction('createObjectDefinitionFile', {
@@ -128,13 +138,37 @@ export default {
         returnTo: this.model.returnTo,
       });
     },
+
+    onCodemirrorClick() {
+      this.showInitialInfo = false;
+    },
+
+    insertTemplate(template) {
+      this.showInitialInfo = false;
+      this.formmodel.content = template.content;
+    },
   },
 };
 </script>
 
 <style scoped>
-.card {
-  padding: 1rem;
-  background-color: #f6f6f6;
+.codemirror-wrapper {
+  position: relative;
+}
+
+.initial-info {
+  position: absolute;
+  top: 1rem;
+  left: 4rem;
+  z-index: 999;
+  color: silver;
+}
+
+.template-load-buttons {
+  margin-bottom: 1rem;
+}
+
+.template-load-buttons .btn {
+  margin-right: .25rem;
 }
 </style>
