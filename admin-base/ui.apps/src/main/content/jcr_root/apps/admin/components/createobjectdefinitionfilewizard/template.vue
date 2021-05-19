@@ -72,7 +72,7 @@
         </div>
       </tab-content>
       <tab-content title="verify">
-        <pre v-html="JSON.stringify(formmodel, null, 2)"></pre>
+        <pre>{{ prettyFormmodel }}</pre>
       </tab-content>
     </form-wizard>
   </div>
@@ -83,6 +83,7 @@ import { nameAvailable } from '../../../../../../js/mixins';
 import { IconLib } from '../../../../../../js/constants';
 import Icon from '../icon/template.vue';
 import * as templates from './templates';
+import { deepClone } from '../../../../../../js/utils';
 
 export default {
   name: 'CreateObjectDefinitionFileWizard',
@@ -124,6 +125,14 @@ export default {
         { name: 'ui-schema', content: templates.uiSchema },
       ],
     };
+  },
+  computed: {
+    prettyFormmodel() {
+      const prettyFormmodel = deepClone(this.formmodel);
+      prettyFormmodel.content = JSON.parse(prettyFormmodel.content, null, 2);
+
+      return prettyFormmodel;
+    },
   },
   methods: {
     beforeChooseNameTabChange() {
