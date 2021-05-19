@@ -22,7 +22,6 @@
  * under the License.
  * #L%
  */
-import { Toast } from '../constants';
 import { LoggerFactory } from '../logger';
 
 let log = LoggerFactory.logger('createObjectDefinitionFile').setLevelDebug();
@@ -44,17 +43,11 @@ export default function(me, target) {
     '@TypeHint': 'nt:file',
   };
 
-  return api
-    ._postFormData(path, payload)
-    .then((data) => {
-      me.loadContent(
-        `/content/admin/pages/object-definitions.html/path:${path}`
-      );
-      return data;
-    })
-    .then((data) => {
-      console.log(me.toast);
-      me.toast(`File "${name}" created.`, Toast.Level.SUCCESS);
-      return data;
-    });
+  /* eslint-disable no-underscore-dangle */
+  return api._postFormData(path, payload).then((data) => {
+    me.loadContent(
+      `/content/admin/pages/object-definitions.html/path:${path}`
+    );
+    return data;
+  });
 }

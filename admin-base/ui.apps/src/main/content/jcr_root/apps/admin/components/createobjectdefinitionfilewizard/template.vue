@@ -71,6 +71,9 @@
           </div>
         </div>
       </tab-content>
+      <tab-content title="verify">
+        <pre v-html="JSON.stringify(formmodel, null, 2)"></pre>
+      </tab-content>
     </form-wizard>
   </div>
 </template>
@@ -169,6 +172,6 @@ export default {
 }
 
 .template-load-buttons .btn {
-  margin-right: .25rem;
+  margin-right: 0.25rem;
 }
 </style>
