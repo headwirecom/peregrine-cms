@@ -43,7 +43,10 @@
         </vue-form-generator>
       </tab-content>
 
-      <tab-content title="Write content">
+      <tab-content
+        title="Write content"
+        :before-change="beforeContentTabChange"
+      >
         <div>
           <div class="template-load-buttons">
             <h5>Insert template</h5>
@@ -70,9 +73,12 @@
             </codemirror>
           </div>
         </div>
+        <div class="errors help-block" v-if="contentError">
+          <span>Invalid JSON</span>
+        </div>
       </tab-content>
       <tab-content title="verify">
-        <pre>{{ prettyFormmodel }}</pre>
+        <pre>{{ formmodel }}</pre>
       </tab-content>
     </form-wizard>
   </div>
@@ -83,7 +89,6 @@ import { nameAvailable } from '../../../../../../js/mixins';
 import { IconLib } from '../../../../../../js/constants';
 import Icon from '../icon/template.vue';
 import * as templates from './templates';
-import { deepClone } from '../../../../../../js/utils';
 
 export default {
   name: 'CreateObjectDefinitionFileWizard',
@@ -94,6 +99,7 @@ export default {
     return {
       IconLib,
       showInitialInfo: true,
+      contentError: false,
       formmodel: {
         path: $perAdminApp.getNodeFromView(this.model.dataFrom),
         name: '',
@@ -120,23 +126,31 @@ export default {
           ],
         },
       },
-      templates: [
-        { name: 'schema', content: templates.schema },
-        { name: 'ui-schema', content: templates.uiSchema },
-      ],
+      templates: [{ name: 'ui-schema', content: templates.uiSchema }],
     };
   },
-  computed: {
-    prettyFormmodel() {
-      const prettyFormmodel = deepClone(this.formmodel);
-      prettyFormmodel.content = JSON.parse(prettyFormmodel.content, null, 2);
-
-      return prettyFormmodel;
+  watch: {
+    'formmodel.content'(content) {
+      try {
+        this.contentError = !JSON.parse(content);
+      } catch (e) {
+        this.contentError = true;
+      }
     },
   },
   methods: {
     beforeChooseNameTabChange() {
       return this.$refs.chooseNameVfg.validate();
+    },
+
+    beforeContentTabChange() {
+      try {
+        this.contentError = !JSON.parse(this.formmodel.content);
+      } catch (e) {
+        this.contentError = true;
+      }
+
+      return !this.contentError;
     },
 
     onComplete() {
