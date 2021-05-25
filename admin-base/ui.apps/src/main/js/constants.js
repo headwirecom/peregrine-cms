@@ -23,16 +23,16 @@
  * #L%
  */
 
-export const DATA_EXTENSION = '.data.json'
+export const DATA_EXTENSION = '.data.json';
 
-export const COMPONENT_PREFIX = 'cmp'
+export const COMPONENT_PREFIX = 'cmp';
 
-export const SUFFIX_PARAM_SEPARATOR = ':'
+export const SUFFIX_PARAM_SEPARATOR = ':';
 
 export const EditorTypes = {
   TEMPLATE: 'template-editor',
-  PAGE: 'page-editor'
-}
+  PAGE: 'page-editor',
+};
 
 export const PathBrowser = {
   Type: {
@@ -40,22 +40,22 @@ export const PathBrowser = {
     ASSET: 'asset',
     IMAGE: 'image',
     OBJECT: 'object',
-    OBJECT_DEFINITION: 'objectDefinition'
+    OBJECT_DEFINITION: 'objectDefinition',
   },
   Root: {
-    OBJECT_DEFINITION:  '/object-definitions'
-  }
-}
+    OBJECT_DEFINITION: '/object-definitions',
+  },
+};
 export const IgnoreContainers = {
   ENABLED: 'ignore-containers',
   ON_HOLD: 'on-hold',
-  DISABLED: ''
-}
+  DISABLED: '',
+};
 export const Field = {
   SWITCH: 'materialswitch',
   SELECT: 'material-select',
-  MULTI_SELECT: 'material-multiselect'
-}
+  MULTI_SELECT: 'material-multiselect',
+};
 export const Icon = {
   LABEL: 'label',
   SETTINGS: 'settings',
@@ -72,16 +72,16 @@ export const Icon = {
   CANCEL: 'close',
   CREATE: 'create',
   MORE_VERT: 'more_vert',
-  VERSIONS: 'restore_page'
-}
+  VERSIONS: 'restore_page',
+};
 
 export const NodeType = {
-         PAGE: 'page',
-         TEMPLATE: 'template',
-         ASSET: 'asset',
-         OBJECT: 'object',
-         FILE: 'file',
-       };
+  PAGE: 'page',
+  TEMPLATE: 'template',
+  ASSET: 'asset',
+  OBJECT: 'object',
+  FILE: 'file',
+};
 export const MimeType = {
   Image: {
     PNG: 'image/png',
@@ -89,29 +89,27 @@ export const MimeType = {
     JPEG: 'image/jpeg',
     GIF: 'image/gif',
     TIFF: 'image/tiff',
-    SVG: 'image/svg+xml'
-  }
-}
+    SVG: 'image/svg+xml',
+  },
+};
 
 export const Admin = {
   Page: {
     EDIT: '/content/admin/pages/pages/edit.html',
-    PAGES: '/content/admin/pages/pages.html'
-  }
-}
+    PAGES: '/content/admin/pages/pages.html',
+  },
+};
 
-export const NodeTree ={
-  SUPPORTED_RESOURCE_TYPES: [
-      'per:Page'
-  ]
-}
+export const NodeTree = {
+  SUPPORTED_RESOURCE_TYPES: ['per:Page'],
+};
 
 export const Attribute = {
   INLINE: 'data-per-inline',
   PATH: 'data-per-path',
   DROPTARGET: 'data-per-droptarget',
-  LOCATION: 'data-per-location'
-}
+  LOCATION: 'data-per-location',
+};
 
 export const Key = {
   A: 65,
@@ -123,23 +121,24 @@ export const Key = {
   ARROW_UP: 38,
   ARROW_RIGHT: 39,
   ARROW_DOWN: 40,
-  ESC: 27
-}
+  ESC: 27,
+};
 
 export const IconLib = {
   MATERIAL_ICONS: 'material-icons',
   FONT_AWESOME: 'font-awesome',
-  PLAIN_TEXT: 'plain-text'
-}
+  PLAIN_TEXT: 'plain-text',
+};
 
 export const DropDown = {
-  DIVIDER: '--------------------------'
-}
+  DIVIDER: '--------------------------',
+};
 
 export const Toast = {
   Level: {
     INFO: 'info',
     WARNING: 'warn',
-    ERROR: 'error'
-  }
-}
+    ERROR: 'error',
+    SUCCESS: 'success',
+  },
+};

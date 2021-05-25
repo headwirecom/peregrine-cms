@@ -61,11 +61,21 @@
     }
 
     pre {
-      background-color: color("blue-grey", "lighten-5");
-      border: 1px solid color("blue-grey", "lighten-4");
-      color: color("blue-grey", "darken-2");
-      padding: 0.75rem;
+      &:not(.CodeMirror-line) {
+        background-color: color("blue-grey", "lighten-5");
+        border: 1px solid color("blue-grey", "lighten-4");
+        color: color("blue-grey", "darken-2");
+        padding: 0.75rem;
+      }
+      &.CodeMirror-line {
+        padding-left: 35px !important;
+      }
     }
+  }
+
+  .CodeMirror-linenumber.CodeMirror-gutter-elt {
+    background: #e1e1e1;
+    color: #717171;
   }
 
   .wizard-header {

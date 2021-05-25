@@ -322,6 +322,10 @@ class PerApi {
     isReferencedInPublish(path) {
         return impl.isReferencedInPublish(path)
     }
+
+    _postFormData(url, data, config) {
+        return impl._postFormDataImpl(url, data, config);
+    }
 }
 
 export default PerApi

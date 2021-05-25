@@ -72,5 +72,14 @@
         content: 'error';
       }
     }
+
+    &.success {
+      background-color: var(--success-bg);
+      color: var(--success-color);
+
+      &:before {
+        content: 'check';
+      }
+    }
   }
 }
