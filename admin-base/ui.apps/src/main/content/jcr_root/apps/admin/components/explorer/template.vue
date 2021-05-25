@@ -67,7 +67,7 @@
                                 tooltipTitle: `${$i18n('select')} '${child.title || child.name}'`
                             }">
                         <i v-if="child.hasChildren" class="material-icons">folder</i>
-                        <i v-else class="material-icons">folder_open</i>
+                        <i v-else-if="!isInsideObjectDefinition" class="material-icons">folder_open</i>
                     </admin-components-action>
 
                     <admin-components-action v-if="editable(child)"
@@ -109,6 +109,7 @@
                                 tooltipTitle: `${$i18n('editFile')} '${child.title || child.name}'`
                             }">
                             <admin-components-iconeditpage></admin-components-iconeditpage>
+                            FLÖT
                         </admin-components-action>
 
                         <admin-components-action v-if="replicable(child)"

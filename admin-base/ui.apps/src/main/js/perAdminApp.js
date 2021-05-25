@@ -780,351 +780,350 @@ function sessionKeepAlive() {
  *
  */
 var PerAdminApp = {
+  eventBus: new Vue(),
 
-    eventBus: new Vue(),
+  /**
+   *
+   * initialize the peregrine administation console with a view object
+   *
+   * @memberOf PerAdminApp
+   * @method
+   * @param {Object} perAdminAppView - the basic view object with all the root level nodes defined
+   */
+  init(perAdminAppView) {
+    view = perAdminAppView;
+    api = new PeregrineApi(new PerAdminImpl(PerAdminApp));
+    sessionKeepAlive();
+  },
 
-    /**
-     *
-     * initialize the peregrine administation console with a view object
-     *
-     * @memberOf PerAdminApp
-     * @method
-     * @param {Object} perAdminAppView - the basic view object with all the root level nodes defined
-     */
-    init(perAdminAppView) {
-        view = perAdminAppView
-        api = new PeregrineApi(new PerAdminImpl(PerAdminApp))
-        sessionKeepAlive();
-    },
+  /**
+   * returns a list of all loggers. This is mostly used by the debug console to display/manage the loggers
+   *
+   * @memberOf PerAdminApp
+   * @method
+   * @return {*}
+   */
+  getLoggers() {
+    return LoggerFactory.getLoggers();
+  },
 
-    /**
-     * returns a list of all loggers. This is mostly used by the debug console to display/manage the loggers
-     *
-     * @memberOf PerAdminApp
-     * @method
-     * @return {*}
-     */
-    getLoggers() {
-        return LoggerFactory.getLoggers()
-    },
+  /**
+   *
+   * get a named logger
+   *
+   * @memberOf PerAdminApp
+   * @method
+   * @param {string} name - the name of the logger to fetch, always returns a logger
+   * @return {Logger}
+   */
+  getLogger(name) {
+    if (!name) return logger;
+    logger.fine('getting logger for', name);
+    return LoggerFactory.logger(name);
+  },
 
-    /**
-     *
-     * get a named logger
-     *
-     * @memberOf PerAdminApp
-     * @method
-     * @param {string} name - the name of the logger to fetch, always returns a logger
-     * @return {Logger}
-     */
-    getLogger(name) {
-        if(!name) return logger
-        logger.fine('getting logger for',name)
-        return LoggerFactory.logger(name)
-    },
+  /**
+   * convenience method to get the api
+   *
+   * @memberOf PerAdminApp
+   * @method
+   * @return {*}
+   */
+  getApi() {
+    return api;
+  },
 
-    /**
-     * convenience method to get the api
-     *
-     * @memberOf PerAdminApp
-     * @method
-     * @return {*}
-     */
-    getApi() {
-        return api
-    },
+  /**
+   * convenience method to get the view the admin console is based on
+   *
+   * @memberOf PerAdminApp
+   * @method
+   * @return {*}
+   */
+  getView() {
+    return view;
+  },
 
-    /**
-     * convenience method to get the view the admin console is based on
-     *
-     * @memberOf PerAdminApp
-     * @method
-     * @return {*}
-     */
-    getView() {
-        return view
-    },
+  /**
+   * load content (eg go to another page)
+   *
+   * @memberOf PerAdminApp
+   * @method
+   * @param {string} path - the path to load the content from
+   * @param {boolean} firstTime - is vuejs already instantiated?
+   */
+  loadContent(path, firstTime = false) {
+    loadContentImpl(path, firstTime);
+  },
 
-    /**
-     * load content (eg go to another page)
-     *
-     * @memberOf PerAdminApp
-     * @method
-     * @param {string} path - the path to load the content from
-     * @param {boolean} firstTime - is vuejs already instantiated?
-     */
-    loadContent(path, firstTime = false) {
-        loadContentImpl(path, firstTime)
-    },
+  /**
+   * loads a component by name. pcms only defines components with a camel cased name
+   * cmp{component-name}. In order to keep the amount of components within the vue
+   * scope as low as possible this method needs to be called with the component name
+   * for vuejs to actually know about it.
+   *
+   * In the future this method may be used to lazy load the js file for a component
+   *
+   * @memberOf PerAdminApp
+   * @method
+   * @param name
+   */
+  loadComponent(name) {
+    loadComponentImpl(name);
+  },
 
-    /**
-     * loads a component by name. pcms only defines components with a camel cased name
-     * cmp{component-name}. In order to keep the amount of components within the vue
-     * scope as low as possible this method needs to be called with the component name
-     * for vuejs to actually know about it.
-     *
-     * In the future this method may be used to lazy load the js file for a component
-     *
-     * @memberOf PerAdminApp
-     * @method
-     * @param name
-     */
-    loadComponent(name) {
-        loadComponentImpl(name)
-    },
+  /**
+   * Finds a component by the given name.
+   *
+   * This is helpful if we need to find a component based on a name and execute a method
+   * on the component (currently used by the editor before the editing dialog is presented
+   * to alter the schema and before a save to trim/rewrite what we save into the backend)
+   *
+   * @memberOf PerAdminApp
+   * @method
+   * @param name
+   */
+  getComponentByName(name) {
+    return getComponentByNameImpl(name);
+  },
 
-    /**
-     * Finds a component by the given name.
-     *
-     * This is helpful if we need to find a component based on a name and execute a method
-     * on the component (currently used by the editor before the editing dialog is presented
-     * to alter the schema and before a save to trim/rewrite what we save into the backend)
-     *
-     * @memberOf PerAdminApp
-     * @method
-     * @param name
-     */
-    getComponentByName(name) {
-        return getComponentByNameImpl(name)
-    },
+  /**
+   * Used to handle admin user interface actions (also see admin-component-action).
+   *
+   * This method will search for a vue component of the current page starting at `component` and all its
+   * parents for a component that contains a method with the name `command`. If no method can be found
+   * in the parents then it will search the whole vue tree.
+   *
+   * Once a method is found it is called with command(me, target)
+   *
+   * `me` is the actual vue component, `target` is the target object provided to this method
+   *
+   * @memberOf PerAdminApp
+   * @method
+   * @param {Vue} component - the vue component calling this action
+   * @param {string} command - the method(command) to find in the vue structure
+   * @param {Object} target - data to handle the action
+   */
+  action(component, command, target) {
+    return actionImpl(component, command, target);
+  },
 
-    /**
-     * Used to handle admin user interface actions (also see admin-component-action).
-     *
-     * This method will search for a vue component of the current page starting at `component` and all its
-     * parents for a component that contains a method with the name `command`. If no method can be found
-     * in the parents then it will search the whole vue tree.
-     *
-     * Once a method is found it is called with command(me, target)
-     *
-     * `me` is the actual vue component, `target` is the target object provided to this method
-     *
-     * @memberOf PerAdminApp
-     * @method
-     * @param {Vue} component - the vue component calling this action
-     * @param {string} command - the method(command) to find in the vue structure
-     * @param {Object} target - data to handle the action
-     */
-    action(component, command, target) {
-        return actionImpl(component, command, target)
-    },
+  /**
+   * trigger a registered state action with the provided target information
+   *
+   * @memberOf PerAdminApp
+   * @method
+   * @param name
+   * @param target
+   */
+  stateAction(name, target) {
+    return stateActionImpl(name, target);
+  },
 
-    /**
-     * trigger a registered state action with the provided target information
-     *
-     * @memberOf PerAdminApp
-     * @method
-     * @param name
-     * @param target
-     */
-    stateAction(name, target) {
-        return stateActionImpl(name, target)
-    },
+  /**
+   * get a node from the given objec with the given path
+   *
+   * @memberOf PerAdminApp
+   * @method
+   * @param node
+   * @param path
+   */
+  getNodeFrom(node, path) {
+    return getNodeFromImpl(node, path);
+  },
 
-    /**
-     * get a node from the given objec with the given path
-     *
-     * @memberOf PerAdminApp
-     * @method
-     * @param node
-     * @param path
-     */
-    getNodeFrom(node, path) {
-        return getNodeFromImpl(node, path)
-    },
+  /**
+   * get a node from the current view object with the given path
+   *
+   * @memberOf PerAdminApp
+   * @method
+   * @param path
+   */
+  getNodeFromView(path) {
+    return getNodeFromImpl(this.getView(), path);
+  },
 
-    /**
-     * get a node from the current view object with the given path
-     *
-     * @memberOf PerAdminApp
-     * @method
-     * @param path
-     */
-    getNodeFromView(path) {
-        return getNodeFromImpl(this.getView(), path)
-    },
+  /**
+   * get a node from the current view object with the given path or null if not defined
+   *
+   * @memberOf PerAdminApp
+   * @method
+   * @param path
+   */
+  getNodeFromViewOrNull(path) {
+    return getNodeFromOrNullImpl(this.getView(), path);
+  },
 
-    /**
-     * get a node from the current view object with the given path or null if not defined
-     *
-     * @memberOf PerAdminApp
-     * @method
-     * @param path
-     */
-    getNodeFromViewOrNull(path) {
-        return getNodeFromOrNullImpl(this.getView(), path)
-    },
+  /**
+   *
+   * get a node from the current view object with the given path and set value as the
+   * default if not yet defined
+   *
+   * @memberOf PerAdminApp
+   * @method
+   * @param path
+   * @param value
+   */
+  getNodeFromViewWithDefault(path, value) {
+    return getNodeFromWithDefaultImpl(this.getView(), path, value);
+  },
 
-    /**
-     *
-     * get a node from the current view object with the given path and set value as the
-     * default if not yet defined
-     *
-     * @memberOf PerAdminApp
-     * @method
-     * @param path
-     * @param value
-     */
-    getNodeFromViewWithDefault(path, value) {
-        return getNodeFromWithDefaultImpl(this.getView(), path, value)
-    },
+  /**
+   *
+   *  find a node with a property path that is equal to path. This also looks at all the
+   *  children of the node.
+   *
+   * @memberOf PerAdminApp
+   * @method
+   * @param node
+   * @param path
+   */
+  findNodeFromPath(node, path) {
+    return findNodeFromPathImpl(node, path);
+  },
 
-    /**
-     *
-     *  find a node with a property path that is equal to path. This also looks at all the
-     *  children of the node.
-     *
-     * @memberOf PerAdminApp
-     * @method
-     * @param node
-     * @param path
-     */
-    findNodeFromPath(node, path) {
-        return findNodeFromPathImpl(node, path)
-    },
+  /**
+   * get the backing application that has been created for peregrine (vue object)
+   *
+   * @memberOf PerAdminApp
+   * @method
+   * @return {*}
+   */
+  getApp() {
+    return app;
+  },
 
-    /**
-     * get the backing application that has been created for peregrine (vue object)
-     *
-     * @memberOf PerAdminApp
-     * @method
-     * @return {*}
-     */
-    getApp() {
-        return app;
-    },
+  /**
+   * modal with the given title and message to notify the user, calls the callback on close if provided
+   *
+   *
+   * @memberOf PerAdminApp
+   * @method
+   * @param title
+   * @param message
+   * @param options
+   */
+  notifyUser(title, message, options) {
+    notifyUserImpl(title, message, options);
+  },
 
-    /**
-     * modal with the given title and message to notify the user, calls the callback on close if provided
-     *
-     *
-     * @memberOf PerAdminApp
-     * @method
-     * @param title
-     * @param message
-     * @param options
-     */
-    notifyUser(title, message, options) {
-        notifyUserImpl(title, message, options)
-    },
+  /**
+   * toast with the given title and message to notify the user, calls the callback on close if provided
+   *
+   *
+   * @memberOf PerAdminApp
+   * @method
+   * @param message
+   * @param className
+   * @param displayLength
+   * @param callback
+   */
+  toast(message, className, displayLength = 4000, callback = null) {
+    return toastImpl(message, className, displayLength, callback);
+  },
 
-    /**
-     * toast with the given title and message to notify the user, calls the callback on close if provided
-     *
-     *
-     * @memberOf PerAdminApp
-     * @method
-     * @param message
-     * @param className
-     * @param displayLength
-     * @param callback
-     */
-    toast(message, className, displayLength=4000, callback=null) {
-        return toastImpl(message, className, displayLength, callback)
-    },
+  /**
+   * modal with the given title and message to ask the user, calls the callback on close if provided
+   *
+   *
+   * @memberOf PerAdminApp
+   * @method
+   * @param title
+   * @param message
+   * @param options
+   */
+  askUser(title, message, options) {
+    askUserImpl(title, message, options);
+  },
 
-    /**
-     * modal with the given title and message to ask the user, calls the callback on close if provided
-     *
-     *
-     * @memberOf PerAdminApp
-     * @method
-     * @param title
-     * @param message
-     * @param options
-     */
-    askUser(title, message, options) {
-        askUserImpl(title, message, options)
-    },
+  /**
+   * modal with the given title and message to ask the user and a field for user input,
+   * calls the callback on close if provided
+   *
+   *
+   * @memberOf PerAdminApp
+   * @method
+   * @param title
+   * @param message
+   * @param options
+   */
+  promptUser(title, message, options) {
+    promptUserImpl(title, message, options);
+  },
 
-    /**
-     * modal with the given title and message to ask the user and a field for user input,
-     * calls the callback on close if provided
-     *
-     *
-     * @memberOf PerAdminApp
-     * @method
-     * @param title
-     * @param message
-     * @param options
-     */
-    promptUser(title, message, options) {
-        promptUserImpl(title, message, options)
-    },
+  /**
+   * returns true if the editor is currently in preview mode
+   *
+   * @memberOf PerAdminApp
+   * @method
+   */
+  isPreviewMode() {
+    return isPreviewModeImpl();
+  },
 
+  /**
+   * returns the OS? Used for some browser dependent code
+   *
+   * @memberOf PerAdminApp
+   * @method
+   */
+  getOSBrowser() {
+    return getOSBrowserImpl();
+  },
 
-    /**
-     * returns true if the editor is currently in preview mode
-     *
-     * @memberOf PerAdminApp
-     * @method
-     */
-    isPreviewMode() {
-        return isPreviewModeImpl()
-    },
+  /**
+   * allows for an extension to be registered to implement custom UI code in the admin console
+   *
+   * @memberOf PerAdminApp
+   * @method
+   * @param id
+   * @param name
+   */
+  registerExtension(id, name) {
+    registerExtensionImpl(id, name);
+  },
 
-    /**
-     * returns the OS? Used for some browser dependent code
-     *
-     * @memberOf PerAdminApp
-     * @method
-     */
-    getOSBrowser(){
-        return getOSBrowserImpl()
-    },
+  /**
+   * entry point for front end to grab extensions to the UI
+   *
+   * @memberOf PerAdminApp
+   * @method
+   * @param id
+   */
+  getExtension(id) {
+    return getExtensionImpl(id);
+  },
 
-
-    /**
-     * allows for an extension to be registered to implement custom UI code in the admin console
-     *
-     * @memberOf PerAdminApp
-     * @method
-     * @param id
-     * @param name
-     */
-    registerExtension(id, name) {
-        registerExtensionImpl(id, name)
-    },
-
-    /**
-     * entry point for front end to grab extensions to the UI
-     *
-     * @memberOf PerAdminApp
-     * @method
-     * @param id
-     */
-    getExtension(id) {
-        return getExtensionImpl(id)
-    },
-
-    getExperiences() {
-        const experiences = this.getNodeFromView('/state/currentExperiences')
-        if(!experiences) {
-            Vue.set(this.getView().state, 'currentExperiences', [])
-            return this.getNodeFromView('/state/currentExperiences')
-        }
-        return experiences
-    },
-
-    loadi18n() {
-        loadi18nImpl()
-    },
-
-    forceFullRedraw() {
-        this.getView().adminPage = JSON.parse(JSON.stringify(this.getView().adminPage))
-    },
-
-    beforeStateAction(fun) {
-        beforeStateActionImpl(fun)
-    },
-
-    normalizeString(val, separator='-') {
-        return val.normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .replace(/\W/g, separator)
-            .toLowerCase();
+  getExperiences() {
+    const experiences = this.getNodeFromView('/state/currentExperiences');
+    if (!experiences) {
+      Vue.set(this.getView().state, 'currentExperiences', []);
+      return this.getNodeFromView('/state/currentExperiences');
     }
+    return experiences;
+  },
 
-}
+  loadi18n() {
+    loadi18nImpl();
+  },
+
+  forceFullRedraw() {
+    this.getView().adminPage = JSON.parse(
+      JSON.stringify(this.getView().adminPage)
+    );
+  },
+
+  beforeStateAction(fun) {
+    beforeStateActionImpl(fun);
+  },
+
+  normalizeString(val, separator = '-') {
+    return val
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\W/g, separator)
+      .toLowerCase();
+  },
+};
 
 export default PerAdminApp

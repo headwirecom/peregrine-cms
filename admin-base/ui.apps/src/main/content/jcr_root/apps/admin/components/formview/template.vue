@@ -8,79 +8,76 @@
           :disabled="handle.disabled"
           class="handle"
           :class="{ active: selected === handle.id }"
-          v-on:click="select(handle.id)"
+          v-on:click="selected = handle.name"
         >
           {{ handle.label }}
         </button>
+        <button
+          type="button"
+          class="btn btn-raised waves-effect waves-light right"
+          @click="onSave"
+        >
+          Save
+        </button>
       </div>
-      <!-- div :class="`content active-tab-index-1`" v-if="selected === Tab.FIELDS"> <ul class="collection"> <li v-for="field in fields" v-bind:key="field" class="collection-item" draggable="true" > <admin-components-draghandle /> <admin-components-action v-bind:model="{ target: '', command: 'selectField', tooltipTitle: `select`, }" > <i class="material-icons">folder_open</i> {{ field }} </admin-components-action> </li> <li class="collection-item"> <admin-components-action v-bind:model="{ target: '', command: 'addField', tooltipTitle: `${$i18n('add field')}`, }" > <i class="material-icons">add_circle</i> {{ $i18n('add field') }} </admin-components-action> </li> </ul> </div> <div :class="`content active-tab-index-2`" v-if="selected === Tab.FORM"> <ul class="collection"> <li class="collection-item"> <admin-components-action v-bind:model="{ target: '', command: 'addField', tooltipTitle: `${$i18n('add field')}`, }" > Categorization <ul class="collection"> <li class="collection-item"> Category: Hello </li> </ul> </admin-components-action> </li> </ul> </div -->
-      <div
-        :class="`content active-tab-index-3`"
-        v-if="selected === Tab.CODE_VIEW"
-      >
-        <div><codemirror v-model="schemaAsFile"></codemirror></div>
+      <!-- div :class="`content active-tab-index-1`" v-if="selected === 'fields'"> <ul class="collection"> <li v-for="field in fields" v-bind:key="field" class="collection-item" draggable="true" > <admin-components-draghandle /> <admin-components-action v-bind:model="{ target: '', command: 'selectField', tooltipTitle: `select`, }" > <i class="material-icons">folder_open</i> {{ field }} </admin-components-action> </li> <li class="collection-item"> <admin-components-action v-bind:model="{ target: '', command: 'addField', tooltipTitle: `${$i18n('add field')}`, }" > <i class="material-icons">add_circle</i> {{ $i18n('add field') }} </admin-components-action> </li> </ul> </div> <div :class="`content active-tab-index-2`" v-if="selected === 'form'"> <ul class="collection"> <li class="collection-item"> <admin-components-action v-bind:model="{ target: '', command: 'addField', tooltipTitle: `${$i18n('add field')}`, }" > Categorization <ul class="collection"> <li class="collection-item"> Category: Hello </li> </ul> </admin-components-action> </li> </ul> </div -->
+      <div :class="`content active-tab-index-3`" v-if="selected === 'code'">
+        <div>
+          <codemirror v-model="content" />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-const Tab = {
-  FIELDS: 1,
-  FORM: 2,
-  CODE_VIEW: 3,
-};
+import { get } from '../../../../../../js/utils';
+import { toast, view, api } from '../../../../../../js/mixins';
 
 export default {
+  mixins: [toast, view, api],
   props: ['model'],
   data() {
     return {
-      Tab,
       tabs: {
         handles: [
-          { id: Tab.FIELDS, label: 'Fields', disabled: true },
-          { id: Tab.FORM, label: 'Form', disabled: true },
-          { id: Tab.CODE_VIEW, label: 'Code View' },
+          { id: 'fields', label: 'Fields', disabled: true },
+          { id: 'form', label: 'Form', disabled: true },
+          { id: 'code', label: 'Code View' },
         ],
       },
-      selected: Tab.CODE_VIEW,
-      fields: [
-        '#/properties/number',
-        '#/properties/street_name',
-        '#/properties/street_type',
-      ],
-      schema: {
-        type: 'object',
-        properties: {
-          number: { type: 'number' },
-          street_name: { type: 'string' },
-          street_type: {
-            type: 'string',
-            enum: ['Street', 'Avenue', 'Boulevard'],
-          },
-        },
-      },
+      selected: 'code',
+      content: '',
     };
   },
   computed: {
-    schemaAsFile() {
-      return JSON.stringify(this.schema, true, 2);
+    path() {
+      return get(this.view, '/state/tools/objectdefinitioneditor', null);
     },
   },
+  created() {
+    if (this.path) {
+      axios
+        .get(this.path)
+        .then(({ data }) => (this.content = JSON.stringify(data, null, 2)))
+        .catch((e) => {
+          console.error(e);
+          this.sendFileNotFoundToast();
+        });
+    } else {
+      this.sendFileNotFoundToast();
+    }
+  },
   methods: {
-    select(index) {
-      this.selected = index;
+    getContent(...args) {
+      return $perAdminApp.getContent(...args);
     },
-    selectField() {},
-    addField(me, command) {
-      const name = 'field-' + me.fields.length;
-      me.fields.push(`#/properties/${name}`);
-      me.schema.properties[name] = {
-        type: 'string',
-      };
+    sendFileNotFoundToast() {
+      this.toast(`File not found!`, 'error');
     },
+    onSave() {
+      //todo: save func.
+    }
   },
 };
 </script>
-
-<style></style>

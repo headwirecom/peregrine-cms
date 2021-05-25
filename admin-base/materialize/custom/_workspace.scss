@@ -20,6 +20,10 @@
     transition: width .2s ease-in-out;
     overflow: hidden;
 
+    .CodeMirror {
+      height: 100%;
+    }
+
     #editable {
       pointer-events: none;
       position: absolute;
