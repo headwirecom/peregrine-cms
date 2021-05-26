@@ -159,7 +159,6 @@ export default {
         {name: 'pages', title: 'Pages'},
         {name: 'assets', title: 'Assets'},
         {name: 'objects', title: 'Objects'},
-        {name: 'object-definitions', title: 'Object Definitions'}, //TODO: should we keep this?D
         {name: 'templates', title: 'Templates'},
       ],
       helpSelection: 'Help'
