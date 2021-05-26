@@ -155,11 +155,12 @@ export default {
 
     onComplete() {
       this.formmodel.name += '.json';
-      const { name, path } = this.formmodel;
+      const { name, path, content } = this.formmodel;
 
       $perAdminApp.stateAction('createObjectDefinitionFile', {
         parent: path,
-        name: name,
+        name,
+        content,
         data: this.formmodel,
         returnTo: this.model.returnTo,
       });

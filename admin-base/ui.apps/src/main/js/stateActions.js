@@ -100,6 +100,7 @@ import uploadBackupTenant from "./stateActions/uploadBackupTenant";
 import restoreTenant from "./stateActions/restoreTenant";
 import acceptTermsAndConditions from './stateActions/acceptTermsAndConditions'
 import editObjectDefinitionFile from './stateActions/editObjectDefinitionFile';
+import saveObjectDefinitionFile from './stateActions/saveObjectDefinitionFile';
 
 let log = LoggerFactory.logger('actions').setLevelDebug()
 
@@ -183,6 +184,7 @@ actions['uploadBackupTenant'] = uploadBackupTenant
 actions['restoreTenant'] = restoreTenant
 actions['acceptTermsAndConditions'] = acceptTermsAndConditions
 actions['editObjectDefinitionFile'] = editObjectDefinitionFile;
+actions['saveObjectDefinitionFile'] = saveObjectDefinitionFile;
 
 
 function noopAction(me, target) {

@@ -29,7 +29,7 @@ let log = LoggerFactory.logger('createObjectDefinitionFile').setLevelDebug();
 export default function(me, target) {
   log.fine(target);
 
-  const { parent: path, name, format } = target;
+  const { parent: path, name, format, content } = target;
 
   const api = me.getApi();
   let fileOptions = { type: 'text/plain' };
@@ -39,7 +39,7 @@ export default function(me, target) {
   }
 
   const payload = {
-    '*': new File([new Blob(['{}'], fileOptions)], name),
+    '*': new File([new Blob([content], fileOptions)], name),
     '@TypeHint': 'nt:file',
   };
 

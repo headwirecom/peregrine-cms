@@ -8,13 +8,13 @@
           :disabled="handle.disabled"
           class="handle"
           :class="{ active: selected === handle.id }"
-          v-on:click="selected = handle.name"
+          v-on:click="selected = handle.id"
         >
           {{ handle.label }}
         </button>
         <button
           type="button"
-          class="btn btn-raised waves-effect waves-light right"
+          class="btn btn-raised waves-effect waves-light save-btn"
           @click="onSave"
         >
           Save
@@ -32,10 +32,10 @@
 
 <script>
 import { get } from '../../../../../../js/utils';
-import { toast, view, api } from '../../../../../../js/mixins';
+import { toast, view, api, stateAction } from '../../../../../../js/mixins';
 
 export default {
-  mixins: [toast, view, api],
+  mixins: [toast, view, api, stateAction],
   props: ['model'],
   data() {
     return {
@@ -76,8 +76,20 @@ export default {
       this.toast(`File not found!`, 'error');
     },
     onSave() {
-      //todo: save func.
-    }
+      const { path, content } = this;
+
+      this.stateAction('saveObjectDefinitionFile', {
+        path,
+        content,
+        format: '.json',
+      });
+    },
   },
 };
 </script>
+
+<style scoped>
+.save-btn {
+  margin-left: auto;
+}
+</style>
