@@ -200,6 +200,16 @@
                             <i class="material-icons">add_circle</i> {{$i18n('add object definition')}}
                     </admin-components-action>
                 </li>
+                <li class="collection-item" v-if="isInsideObjectDefinition(path)">
+                    <admin-components-action
+                        v-bind:model="{
+                            target: '',
+                            command: 'addObjectDefinitionFile',
+                            tooltipTitle: `${$i18n('add ui-schema')}`
+                        }">
+                            <i class="material-icons">add_circle</i> {{$i18n('add ui-schema')}}
+                    </admin-components-action>
+                </li>
             </ul>
             <div style="width: inherit; position: absolute; bottom: .5em;" v-if="model.showFilter ==='true'">
                 <div style="padding-left: 3em; padding-right: 1em;">
@@ -340,7 +350,12 @@ export default {
             },
 
             isObjectDefinitions(path) {
-                return path.startsWith(`/content/${this.getTenant().name}/object-definitions`)
+                return !this.isInsideObjectDefinition(path) 
+                    && path.startsWith(`/content/${this.getTenant().name}/object-definitions`)
+            },
+
+            isInsideObjectDefinition(path) {
+                return path.startsWith(`/content/${this.getTenant().name}/object-definitions/`);
             },
 
             isTemplates(path) {
@@ -651,6 +666,15 @@ export default {
                 const path = me.pt ? me.pt.path : `/content/${tenant.name}/object-definitions`
                 if(path.startsWith(`/content/${tenant.name}/object-definitions`)) {
                     $perAdminApp.stateAction('createObjectDefinitionWizard', { path: path, target: target })
+                }
+            },
+
+            addObjectDefinitionFile(me, target) {
+                const tenant = $perAdminApp.getView().state.tenant;
+                const path  = me.pt ? me.pt.path : `/content/${tenant.name}/object-definitions`;
+
+                if (this.isInsideObjectDefinition(path)) {
+                    $perAdminApp.stateAction('createObjectDefinitionFileWizard', {path, target});
                 }
             },
 

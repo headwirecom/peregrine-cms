@@ -549,12 +549,19 @@ td, th{
         color: #fff;
       }
     }
+
+    &.disabled {
+      opacity: .5;
+      pointer-events: none;
+      user-select: none;
+    }
   }
   a.collection-item{
     display: block;
     transition: .25s;
     color: $collection-link-color;
-    &:not(.active) {
+
+    &:not(.active):not(.disabled) {
       &:hover {
         background-color: $collection-hover-bg-color;
       }
