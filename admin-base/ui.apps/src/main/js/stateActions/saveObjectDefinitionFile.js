@@ -28,7 +28,7 @@ export default function(me, target) {
 
   /* eslint-disable no-underscore-dangle */
   return api
-    ._postFormData(parentPath, deletePayload)
+    ._postFormData(path, deletePayload)
     .then(() => api._postFormData(parentPath, payload))
     .then((data) => {
       me.loadContent(
