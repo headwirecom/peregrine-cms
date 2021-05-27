@@ -59,7 +59,13 @@ export default {
     if (this.path) {
       axios
         .get(this.path)
-        .then(({ data }) => (this.content = JSON.stringify(data, null, 2)))
+        .then(({ data, headers }) => {
+          if (headers['content-type'] === 'application/json') {
+            this.content = JSON.stringify(data, null, 2);
+          } else {
+            this.content = data;
+          }
+        })
         .catch((e) => {
           console.error(e);
           this.sendFileNotFoundToast();

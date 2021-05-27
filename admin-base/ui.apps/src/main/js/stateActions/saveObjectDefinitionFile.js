@@ -26,7 +26,6 @@ export default function(me, target) {
     '@TypeHint': 'nt:file',
   };
 
-  /* eslint-disable no-underscore-dangle */
   return api
     ._postFormData(path, deletePayload)
     .then(() => api._postFormData(parentPath, payload))
