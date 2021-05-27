@@ -57,14 +57,20 @@ export default {
   },
   created() {
     if (this.path) {
-      axios
-        .get(this.path)
-        .then(({ data, headers }) => {
-          if (headers['content-type'] === 'application/json') {
-            this.content = JSON.stringify(data, null, 2);
-          } else {
-            this.content = data;
-          }
+      axios({
+        url: this.path,
+        headers: {
+          'Content-Type': 'text/plain',
+        },
+        responseType: 'text',
+        transformResponse: [
+          (data) => {
+            return data;
+          },
+        ],
+      })
+        .then(({ data }) => {
+          this.content = data;
         })
         .catch((e) => {
           console.error(e);
