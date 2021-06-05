@@ -25,7 +25,7 @@
 <template>
   <div class="container">
     <form-wizard
-      :title="'Create File'"
+      :title="'Create UI-Schema'"
       :subtitle="''"
       @on-complete="onComplete"
       color="#37474f"
@@ -43,7 +43,10 @@
         </vue-form-generator>
       </tab-content>
 
-      <tab-content title="Write content">
+      <tab-content
+        title="Write content"
+        :before-change="beforeContentTabChange"
+      >
         <div>
           <div class="template-load-buttons">
             <h5>Insert template</h5>
@@ -70,6 +73,12 @@
             </codemirror>
           </div>
         </div>
+        <div class="errors help-block" v-if="contentError">
+          <span>Invalid JSON</span>
+        </div>
+      </tab-content>
+      <tab-content title="verify">
+        <pre>{{ formmodel }}</pre>
       </tab-content>
     </form-wizard>
   </div>
@@ -90,6 +99,7 @@ export default {
     return {
       IconLib,
       showInitialInfo: true,
+      contentError: false,
       formmodel: {
         path: $perAdminApp.getNodeFromView(this.model.dataFrom),
         name: '',
@@ -107,24 +117,40 @@ export default {
             {
               type: 'input',
               inputType: 'text',
-              label: 'Filename',
+              label: 'ui-schema name',
               model: 'name',
               required: true,
-              placeholder: 'my-file-name.json',
+              placeholder: 'my-file-name',
               validator: [this.nameAvailable],
             },
           ],
         },
       },
-      templates: [
-        { name: 'schema', content: templates.schema },
-        { name: 'ui-schema', content: templates.uiSchema },
-      ],
+      templates: [{ name: 'ui-schema', content: templates.uiSchema }],
     };
+  },
+  watch: {
+    'formmodel.content'(content) {
+      try {
+        this.contentError = !JSON.parse(content);
+      } catch (e) {
+        this.contentError = true;
+      }
+    },
   },
   methods: {
     beforeChooseNameTabChange() {
       return this.$refs.chooseNameVfg.validate();
+    },
+
+    beforeContentTabChange() {
+      try {
+        this.contentError = !JSON.parse(this.formmodel.content);
+      } catch (e) {
+        this.contentError = true;
+      }
+
+      return !this.contentError;
     },
 
     onComplete() {
@@ -169,6 +195,6 @@ export default {
 }
 
 .template-load-buttons .btn {
-  margin-right: .25rem;
+  margin-right: 0.25rem;
 }
 </style>

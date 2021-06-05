@@ -205,9 +205,9 @@
                         v-bind:model="{
                             target: '',
                             command: 'addObjectDefinitionFile',
-                            tooltipTitle: `${$i18n('add file')}`
+                            tooltipTitle: `${$i18n('add ui-schema')}`
                         }">
-                            <i class="material-icons">add_circle</i> {{$i18n('add file')}}
+                            <i class="material-icons">add_circle</i> {{$i18n('add ui-schema')}}
                     </admin-components-action>
                 </li>
             </ul>
