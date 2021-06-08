@@ -1,52 +1,31 @@
 <template>
   <div class="peregrine-content-view">
-    <div class="tabs-wrapper horizontal">
-      <div class="handles-wrapper">
-        <button
-          v-for="handle in tabs.handles"
-          :key="`handle-${handle.id}`"
-          :disabled="handle.disabled"
-          class="handle"
-          :class="{ active: selected === handle.id }"
-          v-on:click="selected = handle.id"
-        >
-          {{ handle.label }}
-        </button>
-        <button
-          type="button"
-          class="btn btn-raised waves-effect waves-light save-btn"
-          @click="onSave"
-        >
-          Save
-        </button>
-      </div>
-      <!-- div :class="`content active-tab-index-1`" v-if="selected === 'fields'"> <ul class="collection"> <li v-for="field in fields" v-bind:key="field" class="collection-item" draggable="true" > <admin-components-draghandle /> <admin-components-action v-bind:model="{ target: '', command: 'selectField', tooltipTitle: `select`, }" > <i class="material-icons">folder_open</i> {{ field }} </admin-components-action> </li> <li class="collection-item"> <admin-components-action v-bind:model="{ target: '', command: 'addField', tooltipTitle: `${$i18n('add field')}`, }" > <i class="material-icons">add_circle</i> {{ $i18n('add field') }} </admin-components-action> </li> </ul> </div> <div :class="`content active-tab-index-2`" v-if="selected === 'form'"> <ul class="collection"> <li class="collection-item"> <admin-components-action v-bind:model="{ target: '', command: 'addField', tooltipTitle: `${$i18n('add field')}`, }" > Categorization <ul class="collection"> <li class="collection-item"> Category: Hello </li> </ul> </admin-components-action> </li> </ul> </div -->
-      <div :class="`content active-tab-index-3`" v-if="selected === 'code'">
-        <div>
-          <codemirror v-model="content" />
-        </div>
-      </div>
-    </div>
+    <codemirror v-model="content" />
   </div>
 </template>
 
 <script>
+import { SUFFIX_PARAM_SEPARATOR } from '../../../../../../js/constants';
 import { get } from '../../../../../../js/utils';
 import { toast, view, api, stateAction } from '../../../../../../js/mixins';
+
+const axiosPlainTextOptions = {
+  headers: {
+    'Content-Type': 'text/plain',
+  },
+  responseType: 'text',
+  transformResponse: [
+    (data) => {
+      return data;
+    },
+  ],
+};
 
 export default {
   mixins: [toast, view, api, stateAction],
   props: ['model'],
   data() {
     return {
-      tabs: {
-        handles: [
-          { id: 'fields', label: 'Fields', disabled: true },
-          { id: 'form', label: 'Form', disabled: true },
-          { id: 'code', label: 'Code View' },
-        ],
-      },
-      selected: 'code',
       content: '',
     };
   },
@@ -57,18 +36,16 @@ export default {
   },
   created() {
     if (this.path) {
-      axios({
-        url: this.path,
-        headers: {
-          'Content-Type': 'text/plain',
-        },
-        responseType: 'text',
-        transformResponse: [
-          (data) => {
-            return data;
-          },
-        ],
-      })
+      this.loadFileContent();
+    } else {
+      this.sendFileNotFoundToast();
+    }
+  },
+  methods: {
+    loadFileContent() {
+      const options = Object.assign({ url: this.path }, axiosPlainTextOptions);
+
+      axios(options)
         .then(({ data }) => {
           this.content = data;
         })
@@ -76,17 +53,12 @@ export default {
           console.error(e);
           this.sendFileNotFoundToast();
         });
-    } else {
-      this.sendFileNotFoundToast();
-    }
-  },
-  methods: {
-    getContent(...args) {
-      return $perAdminApp.getContent(...args);
     },
+
     sendFileNotFoundToast() {
       this.toast(`File not found!`, 'error');
     },
+
     onSave() {
       const { path, content } = this;
 
@@ -95,6 +67,21 @@ export default {
         content,
         format: '.json',
       });
+    },
+
+    selectPathInNav(me, target) {
+      if (target.path === me.path) {
+        return $perAdminApp.stateAction('selectToolsNodesPath', {
+          selected: target.path,
+          path: '/state/tools/objectdefinitioneditor',
+        });
+      } else {
+        return $perAdminApp.loadContent(
+          `/content/admin/pages/object-definitions.html/path${SUFFIX_PARAM_SEPARATOR}${
+            target.path
+          }`
+        );
+      }
     },
   },
 };

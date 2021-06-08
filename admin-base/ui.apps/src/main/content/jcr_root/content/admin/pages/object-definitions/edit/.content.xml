@@ -46,6 +46,10 @@
         sling:resourceType="admin/components/subnav"
         classes="navcenter">
 
+        <pathfield jcr:primaryType="nt:unstructured" 
+          sling:resourceType="admin/components/pathfield" 
+          dataFrom="/state/tools/objectdefinitioneditor"/>
+
       </subnav>
 
     </nav>

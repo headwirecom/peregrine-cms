@@ -79,7 +79,7 @@
             @validated="onValidated()"
             @model-updated="onModelUpdate">
         </vue-form-generator>
-        <div class="explorer-confirm-dialog">
+        <div v-if="!nodeType === NodeType.OBJECT_DEFINITION_FILE" class="explorer-confirm-dialog">
           <template v-if="edit">
             <button
                 class="btn btn-raised waves-effect waves-light right"
@@ -408,7 +408,7 @@ export default {
         ogTags: [NodeType.PAGE, NodeType.TEMPLATE],
         references: [NodeType.ASSET, NodeType.PAGE, NodeType.TEMPLATE, NodeType.OBJECT],
         selectStateAction: [NodeType.ASSET, NodeType.OBJECT],
-        showProp: [NodeType.ASSET, NodeType.OBJECT],
+        showProp: [NodeType.ASSET, NodeType.OBJECT, NodeType.OBJECT_DEFINITION_FILE],
         allowMove: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET]
       },
       path: {
@@ -436,7 +436,9 @@ export default {
     currentObject() {
       const obj = this.rawCurrentObject;
       if (this.nodeTypeGroups.showProp.indexOf(this.nodeType) > -1) {
-        if (obj && obj.hasOwnProperty('show')) {
+        if (this.nodeType === NodeType.OBJECT_DEFINITION_FILE) {
+          return obj;
+        } else if (obj && obj.hasOwnProperty('show')) {
           return obj.show;
         } else {
           return null;
@@ -630,12 +632,16 @@ export default {
       return schema;
     },
     getSchemaByActiveTab() {
-      if (this.activeTab === Tab.INFO) {
-        return this.getSchema(SchemaKey.MODEL);
-      } else if (this.activeTab === Tab.OG_TAGS) {
-        return this.getSchema(SchemaKey.OG_TAGS);
+      if (this.nodeType === NodeType.OBJECT_DEFINITION_FILE) {
+        return this.getGeneratedFileSchema();
       } else {
-        return {};
+        if (this.activeTab === Tab.INFO) {
+          return this.getSchema(SchemaKey.MODEL);
+        } else if (this.activeTab === Tab.OG_TAGS) {
+          return this.getSchema(SchemaKey.OG_TAGS);
+        } else {
+          return {};
+        }
       }
     },
     getObjectComponent() {
@@ -936,6 +942,37 @@ export default {
         }).catch(() => {
           this.isReferencedInPublish = false;
         });
+    },
+
+    getGeneratedFileSchema() {
+      return {
+        fields: [
+          {
+            type: 'input',
+            inputType: 'text',
+            label: 'Name',
+            model: 'name',
+            readonly: true,
+            preview: true
+          },
+          {
+            type: 'material-datetime',
+            inputType: 'text',
+            label: 'Created',
+            model: 'created',
+            readonly: true,
+            preview: true
+          },
+          {
+            type: 'input',
+            inputType: 'text',
+            label: 'Created by',
+            model: 'createdBy',
+            readonly: true,
+            preview: true
+          },
+        ]
+      };
     }
   }
 }

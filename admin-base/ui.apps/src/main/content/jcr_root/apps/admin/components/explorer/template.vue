@@ -593,6 +593,8 @@ export default {
                   $perAdminApp.stateAction('selectObject', { selected: node.path, path: me.model.dataFrom })
                 } else if (target.startsWith(`/content/${tenant.name}/templates`)) {
                     $perAdminApp.stateAction('showTemplateInfo', { selected: target })
+                } else if (target.startsWith(`/content/${tenant.name}/object-definitions`)) {
+                    $perAdminApp.stateAction('selectFile', { selected: target, path: '/state/tools/objectdefinitionfile' })
                 } else {
                     $perAdminApp.stateAction('showPageInfo', { selected: target })
                 }
@@ -624,6 +626,9 @@ export default {
                 if($perAdminApp.getNodeFromView('/state/tools/asset/show')) {
                     $perAdminApp.stateAction('unselectAsset', { })
                 }
+
+                $perAdminApp.stateAction('unselectFile', {path: '/state/tools/objectdefinitionfile'})
+
                 const payload = { selected: target.path, path: me.model.dataFrom }
                 $perAdminApp.stateAction('selectToolsNodesPath', payload).then( () => {
                     $('div.brand-logo span').last().click() //TODO: quick and dirty solution!!!!
