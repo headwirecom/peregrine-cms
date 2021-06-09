@@ -70,7 +70,10 @@
       sling:resourceType="admin/components/explorer" dataFrom="/state/tools/objectdefinitions"
       selectionFrom="/state/tools/objectdefinition/show">
 
-      <edit jcr:primaryType="nt:unstructured" sling:resourceType="admin/components/objectdefinitionfilepreview">
+      <edit jcr:primaryType="nt:unstructured" 
+        browserRoot="object-definitions" 
+        currentPath="object-definitions" 
+        sling:resourceType="admin/components/filepreview">
 
       </edit>
     </explorer>

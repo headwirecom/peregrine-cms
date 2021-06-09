@@ -79,7 +79,7 @@
             @validated="onValidated()"
             @model-updated="onModelUpdate">
         </vue-form-generator>
-        <div v-if="!nodeType === NodeType.OBJECT_DEFINITION_FILE" class="explorer-confirm-dialog">
+        <div v-if="!nodeType === NodeType.FILE" class="explorer-confirm-dialog">
           <template v-if="edit">
             <button
                 class="btn btn-raised waves-effect waves-light right"
@@ -408,7 +408,7 @@ export default {
         ogTags: [NodeType.PAGE, NodeType.TEMPLATE],
         references: [NodeType.ASSET, NodeType.PAGE, NodeType.TEMPLATE, NodeType.OBJECT],
         selectStateAction: [NodeType.ASSET, NodeType.OBJECT],
-        showProp: [NodeType.ASSET, NodeType.OBJECT, NodeType.OBJECT_DEFINITION_FILE],
+        showProp: [NodeType.ASSET, NodeType.OBJECT, NodeType.FILE],
         allowMove: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET]
       },
       path: {
@@ -436,7 +436,7 @@ export default {
     currentObject() {
       const obj = this.rawCurrentObject;
       if (this.nodeTypeGroups.showProp.indexOf(this.nodeType) > -1) {
-        if (this.nodeType === NodeType.OBJECT_DEFINITION_FILE) {
+        if (this.nodeType === NodeType.FILE) {
           return obj;
         } else if (obj && obj.hasOwnProperty('show')) {
           return obj.show;
@@ -632,7 +632,7 @@ export default {
       return schema;
     },
     getSchemaByActiveTab() {
-      if (this.nodeType === NodeType.OBJECT_DEFINITION_FILE) {
+      if (this.nodeType === NodeType.FILE) {
         return this.getGeneratedFileSchema();
       } else {
         if (this.activeTab === Tab.INFO) {

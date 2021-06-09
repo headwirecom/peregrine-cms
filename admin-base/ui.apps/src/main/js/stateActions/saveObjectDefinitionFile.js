@@ -1,4 +1,5 @@
 import { LoggerFactory } from '../logger';
+import { set } from '../utils';
 
 let log = LoggerFactory.logger('saveObjectDefinitionFile').setLevelDebug();
 
@@ -30,6 +31,7 @@ export default function(me, target) {
     ._postFormData(path, deletePayload)
     .then(() => api._postFormData(parentPath, payload))
     .then((data) => {
+      set(me.getView(), '/state/tools/file', path);
       me.loadContent(
         `/content/admin/pages/object-definitions.html/path:${parentPath}`
       );

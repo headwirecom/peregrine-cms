@@ -10,6 +10,7 @@ export default function(me, target) {
   const view = me.getView();
 
   set(view, '/state/tools/objectdefinitioneditor', target);
+  set(view, '/state/tools/file', target);
 
   return new Promise((resolve) => {
     me.loadContent(

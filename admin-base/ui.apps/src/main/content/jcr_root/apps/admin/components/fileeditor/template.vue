@@ -6,8 +6,8 @@
 
 <script>
 import { SUFFIX_PARAM_SEPARATOR } from '../../../../../../js/constants';
+import { api, stateAction, toast, view } from '../../../../../../js/mixins';
 import { get } from '../../../../../../js/utils';
-import { toast, view, api, stateAction } from '../../../../../../js/mixins';
 
 const axiosPlainTextOptions = {
   headers: {
@@ -31,7 +31,7 @@ export default {
   },
   computed: {
     path() {
-      return get(this.view, '/state/tools/objectdefinitioneditor', null);
+      return get(this.view, '/state/tools/file', null);
     },
   },
   created() {
@@ -71,17 +71,24 @@ export default {
 
     selectPathInNav(me, target) {
       if (target.path === me.path) {
-        return $perAdminApp.stateAction('selectToolsNodesPath', {
-          selected: target.path,
-          path: '/state/tools/objectdefinitioneditor',
-        });
+        return this.loadFileEditor(target.path);
       } else {
-        return $perAdminApp.loadContent(
-          `/content/admin/pages/object-definitions.html/path${SUFFIX_PARAM_SEPARATOR}${
-            target.path
-          }`
-        );
+        return this.loadExplorer(target.path);
       }
+    },
+
+    loadFileEditor(path) {
+      return $perAdminApp.stateAction('selectToolsNodesPath', {
+        selected: path,
+        path: '/state/tools/file',
+      });
+    },
+
+    loadExplorer(path) {
+      $perAdminApp.stateAction('unselectFile');
+      return $perAdminApp.loadContent(
+        `/content/admin/pages/object-definitions.html/path${SUFFIX_PARAM_SEPARATOR}${path}`
+      );
     },
   },
 };

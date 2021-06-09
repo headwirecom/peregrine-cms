@@ -23,6 +23,7 @@
  * #L%
  */
 import { LoggerFactory } from '../logger';
+import { set } from '../utils';
 
 let log = LoggerFactory.logger('createObjectDefinitionFile').setLevelDebug();
 
@@ -45,6 +46,7 @@ export default function(me, target) {
 
   /* eslint-disable no-underscore-dangle */
   return api._postFormData(path, payload).then((data) => {
+    set(me.getView(), '/state/tools/file', path);
     me.loadContent(
       `/content/admin/pages/object-definitions.html/path:${path}`
     );

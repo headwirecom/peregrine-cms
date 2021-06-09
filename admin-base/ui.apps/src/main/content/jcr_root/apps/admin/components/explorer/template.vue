@@ -594,7 +594,7 @@ export default {
                 } else if (target.startsWith(`/content/${tenant.name}/templates`)) {
                     $perAdminApp.stateAction('showTemplateInfo', { selected: target })
                 } else if (target.startsWith(`/content/${tenant.name}/object-definitions`)) {
-                    $perAdminApp.stateAction('selectFile', { selected: target, path: '/state/tools/objectdefinitionfile' })
+                    $perAdminApp.stateAction('selectFile', target)
                 } else {
                     $perAdminApp.stateAction('showPageInfo', { selected: target })
                 }
@@ -627,7 +627,7 @@ export default {
                     $perAdminApp.stateAction('unselectAsset', { })
                 }
 
-                $perAdminApp.stateAction('unselectFile', {path: '/state/tools/objectdefinitionfile'})
+                $perAdminApp.stateAction('unselectFile')
 
                 const payload = { selected: target.path, path: me.model.dataFrom }
                 $perAdminApp.stateAction('selectToolsNodesPath', payload).then( () => {

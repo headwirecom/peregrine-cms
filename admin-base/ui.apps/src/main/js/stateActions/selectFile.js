@@ -6,7 +6,5 @@ const log = LoggerFactory.logger('selectFile').setLevelDebug();
 export default function(me, target) {
   log.fine(target);
 
-  const { selected, path } = target;
-
-  set($perAdminApp.getView(), path, selected);
+  set($perAdminApp.getView(), `/state/tools/file`, target);
 }

@@ -81,7 +81,6 @@ export const NodeType = {
   ASSET: 'asset',
   OBJECT: 'object',
   FILE: 'file',
-  OBJECT_DEFINITION_FILE: 'objectdefinitionfile',
 };
 export const MimeType = {
   Image: {

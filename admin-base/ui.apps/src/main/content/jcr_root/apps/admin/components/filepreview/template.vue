@@ -1,20 +1,19 @@
 <template>
-  <div class="mein-kram" id="das-ist-ein-test">
-    <admin-components-explorerpreviewcontent
-      :model="model"
-      :nodeType="NodeType.OBJECT_DEFINITION_FILE"
-      :browserRoot="`${getBasePath()}/object-definitions`"
-      :currentPath="`${getBasePath()}/object-definitions`"
-      :onDelete="onDelete"
-    />
-  </div>
+  <admin-components-explorerpreviewcontent
+    :model="model"
+    :nodeType="NodeType.FILE"
+    :browserRoot="`${getBasePath()}/${model.browserRoot}`"
+    :currentPath="`${getBasePath()}/${model.currentPath}`"
+    :onDelete="onDelete"
+  />
 </template>
 
 <script>
 import { NodeType } from '../../../../../../js/constants';
+import { set } from '../../../../../../js/utils';
 
 export default {
-  name: 'ObjectDefinitionFilePreview',
+  name: 'FilePreview',
   props: {
     model: {
       type: Object,
@@ -29,6 +28,10 @@ export default {
     return {
       NodeType: NodeType,
     };
+  },
+  beforeMount() {
+    set($perAdminApp.getView(), '/state/rightPanelFullscreen', false);
+    set($perAdminApp.getView(), '/state/rightPanelVisible', true);
   },
   methods: {
     getBasePath() {
