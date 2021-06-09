@@ -1,6 +1,9 @@
 <template>
   <div class="peregrine-content-view">
     <codemirror v-model="content" />
+    <a class="btn-floating btn-large waves-effect waves-light save-btn" :title="$i18n('save')">
+      <icon icon="save" />
+    </a>
   </div>
 </template>
 
@@ -8,6 +11,7 @@
 import { SUFFIX_PARAM_SEPARATOR } from '../../../../../../js/constants';
 import { api, stateAction, toast, view } from '../../../../../../js/mixins';
 import { get } from '../../../../../../js/utils';
+import Icon from '../icon/template.vue';
 
 const axiosPlainTextOptions = {
   headers: {
@@ -22,6 +26,7 @@ const axiosPlainTextOptions = {
 };
 
 export default {
+  components: { Icon },
   mixins: [toast, view, api, stateAction],
   props: ['model'],
   data() {
@@ -62,7 +67,7 @@ export default {
     onSave() {
       const { path, content } = this;
 
-      this.stateAction('saveObjectDefinitionFile', {
+      this.stateAction('saveFile', {
         path,
         content,
         format: '.json',
@@ -96,6 +101,11 @@ export default {
 
 <style scoped>
 .save-btn {
-  margin-left: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
 }
 </style>
