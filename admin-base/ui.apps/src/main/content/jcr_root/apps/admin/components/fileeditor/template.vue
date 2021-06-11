@@ -1,7 +1,11 @@
 <template>
   <div class="peregrine-content-view">
     <codemirror v-model="content" />
-    <a class="btn-floating btn-large waves-effect waves-light save-btn" :title="$i18n('save')">
+    <a
+      class="btn-floating btn-large waves-effect waves-light save-btn"
+      :title="$i18n('save')"
+      @click="onSave"
+    >
       <icon icon="save" />
     </a>
   </div>
@@ -9,7 +13,13 @@
 
 <script>
 import { SUFFIX_PARAM_SEPARATOR } from '../../../../../../js/constants';
-import { api, stateAction, toast, view } from '../../../../../../js/mixins';
+import {
+  api,
+  getTenant,
+  stateAction,
+  toast,
+  view,
+} from '../../../../../../js/mixins';
 import { get } from '../../../../../../js/utils';
 import Icon from '../icon/template.vue';
 
@@ -27,7 +37,7 @@ const axiosPlainTextOptions = {
 
 export default {
   components: { Icon },
-  mixins: [toast, view, api, stateAction],
+  mixins: [toast, view, api, stateAction, getTenant],
   props: ['model'],
   data() {
     return {
@@ -37,6 +47,11 @@ export default {
   computed: {
     path() {
       return get(this.view, '/state/tools/file', null);
+    },
+    isObjectDefinitionFile() {
+      return this.path.startsWith(
+        `${this.getTenantBasePath()}/object-definitions`
+      );
     },
   },
   created() {
@@ -67,18 +82,23 @@ export default {
     onSave() {
       const { path, content } = this;
 
-      this.stateAction('saveFile', {
-        path,
-        content,
-        format: '.json',
-      });
+      if (this.isObjectDefinitionFile) {
+        this.stateAction('saveObjectDefinitionFile', {
+          path,
+          content,
+          format: '.json',
+        });
+      } else {
+        console.error('SAVE FOR THIS FILE NOT IMPLEMENTED YET');
+        this.toast('Could not save file!', 'error');
+      }
     },
 
-    selectPathInNav(me, target) {
-      if (target.path === me.path) {
-        return this.loadFileEditor(target.path);
+    selectPathInNav(me, {path}) {
+      if (path === me.path) {
+        return this.loadFileEditor(path);
       } else {
-        return this.loadExplorer(target.path);
+        return this.loadExplorer(path);
       }
     },
 

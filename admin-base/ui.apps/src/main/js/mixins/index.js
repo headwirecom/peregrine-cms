@@ -7,3 +7,4 @@ export { default as toast } from './toastMixin';
 export { default as view } from './viewMixin';
 export { default as api } from './apiMixin';
 export { default as stateAction } from './stateActionsMixin';
+export { default as getTenant } from './getTenantMixin';
