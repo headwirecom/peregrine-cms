@@ -70,7 +70,7 @@
 
         <!-- Tests Dependencies Versions -->
         <junit.version>4.13.2</junit.version>
-        <mockito-all.version>1.9.5</mockito-all.version>
+        <mockito-all.version>1.10.19</mockito-all.version>
         <jmock-junit4.version>2.12.0</jmock-junit4.version>
         <org.apache.sling.commons.testing.version>2.1.0</org.apache.sling.commons.testing.version>
         <org.apache.sling.junit.core.version>1.1.2</org.apache.sling.junit.core.version>
