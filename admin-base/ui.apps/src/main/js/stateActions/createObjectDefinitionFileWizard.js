@@ -24,14 +24,15 @@
  */
 import { LoggerFactory } from '../logger';
 import { SUFFIX_PARAM_SEPARATOR } from '../constants';
-let log = LoggerFactory.logger(
+
+const log = LoggerFactory.logger(
   'creatObjectDefinitionFileWizard'
 ).setLevelDebug();
 
 export default function(me, target) {
   log.fine(target);
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     if (target.target) {
       me.loadContent(
         target.target + '.html/path' + SUFFIX_PARAM_SEPARATOR + target.path

@@ -23,13 +23,14 @@
  * #L%
  */
 import { LoggerFactory } from '../logger';
+import { set } from '../utils';
 
 let log = LoggerFactory.logger('createObjectDefinitionFile').setLevelDebug();
 
 export default function(me, target) {
   log.fine(target);
 
-  const { parent: path, name, format } = target;
+  const { parent: path, name, format, content } = target;
 
   const api = me.getApi();
   let fileOptions = { type: 'text/plain' };
@@ -39,12 +40,13 @@ export default function(me, target) {
   }
 
   const payload = {
-    '*': new File([new Blob(['{}'], fileOptions)], name),
+    '*': new File([new Blob([content], fileOptions)], name),
     '@TypeHint': 'nt:file',
   };
 
   /* eslint-disable no-underscore-dangle */
   return api._postFormData(path, payload).then((data) => {
+    set(me.getView(), '/state/tools/file', path);
     me.loadContent(
       `/content/admin/pages/object-definitions.html/path:${path}`
     );

@@ -159,7 +159,7 @@ export default {
         {name: 'pages', title: 'Pages'},
         {name: 'assets', title: 'Assets'},
         {name: 'objects', title: 'Objects'},
-        {name: 'templates', title: 'Templates'}
+        {name: 'templates', title: 'Templates'},
       ],
       helpSelection: 'Help'
     }
@@ -237,11 +237,14 @@ export default {
     getSectionModel(section) {
       let target = `/content/admin/pages/${section.name}.html`
       if (this.state.tenant) {
-        if (section.name !== 'welcome') {
+        if (section.name !== 'welcome' && section.name !== 'object-definitions') {
           const path = this.state.tools[section.name]
           target += path && path.length > 0 ? `/path:${path}`
               : `/path:${this.state.tenant.roots[section.name]}`
-        } else {
+        } else if (section.name === 'object-definitions') {
+          target += `/path:/content/${this.state.tenant.name}/${section.name}`
+        } 
+        else {
           target += `/path:/content/${this.state.tenant.name}`
         }
       } else {

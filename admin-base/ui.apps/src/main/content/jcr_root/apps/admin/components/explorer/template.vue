@@ -67,7 +67,7 @@
                                 tooltipTitle: `${$i18n('select')} '${child.title || child.name}'`
                             }">
                         <i v-if="child.hasChildren" class="material-icons">folder</i>
-                        <i v-else class="material-icons">folder_open</i>
+                        <i v-else-if="!isInsideObjectDefinition" class="material-icons">folder_open</i>
                     </admin-components-action>
 
                     <admin-components-action v-if="editable(child)"
@@ -109,6 +109,7 @@
                                 tooltipTitle: `${$i18n('editFile')} '${child.title || child.name}'`
                             }">
                             <admin-components-iconeditpage></admin-components-iconeditpage>
+                            FLÖT
                         </admin-components-action>
 
                         <admin-components-action v-if="replicable(child)"
@@ -525,11 +526,11 @@ export default {
             },
 
             editable: function(child) {
-                return ['per:Page', 'per:Object'].indexOf(child.resourceType) >= 0
+                return ['per:Page', 'per:Object', 'nt:file'].indexOf(child.resourceType) >= 0
             },
 
             composumEditable: function(child) {
-                return ['nt:file'].indexOf(child.resourceType) >= 0
+                return [].indexOf(child.resourceType) >= 0
             },
 
             viewable: function(child) {
@@ -592,6 +593,8 @@ export default {
                   $perAdminApp.stateAction('selectObject', { selected: node.path, path: me.model.dataFrom })
                 } else if (target.startsWith(`/content/${tenant.name}/templates`)) {
                     $perAdminApp.stateAction('showTemplateInfo', { selected: target })
+                } else if (target.startsWith(`/content/${tenant.name}/object-definitions`)) {
+                    $perAdminApp.stateAction('selectFile', target)
                 } else {
                     $perAdminApp.stateAction('showPageInfo', { selected: target })
                 }
@@ -623,6 +626,9 @@ export default {
                 if($perAdminApp.getNodeFromView('/state/tools/asset/show')) {
                     $perAdminApp.stateAction('unselectAsset', { })
                 }
+
+                $perAdminApp.stateAction('unselectFile')
+
                 const payload = { selected: target.path, path: me.model.dataFrom }
                 $perAdminApp.stateAction('selectToolsNodesPath', payload).then( () => {
                     $('div.brand-logo span').last().click() //TODO: quick and dirty solution!!!!
@@ -672,7 +678,7 @@ export default {
             addObjectDefinitionFile(me, target) {
                 const tenant = $perAdminApp.getView().state.tenant;
                 const path  = me.pt ? me.pt.path : `/content/${tenant.name}/object-definitions`;
-
+                
                 if (this.isInsideObjectDefinition(path)) {
                     $perAdminApp.stateAction('createObjectDefinitionFileWizard', {path, target});
                 }
