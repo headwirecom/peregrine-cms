@@ -72,7 +72,8 @@
 
       <edit jcr:primaryType="nt:unstructured" 
         browserRoot="object-definitions" 
-        currentPath="object-definitions" 
+        currentPath="object-definitions"
+        dataFrom="/state/tools/objectdefinitions"
         sling:resourceType="admin/components/filepreview">
 
       </edit>

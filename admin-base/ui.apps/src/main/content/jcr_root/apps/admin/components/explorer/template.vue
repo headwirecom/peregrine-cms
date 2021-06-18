@@ -123,7 +123,7 @@
 
                         <admin-components-action v-if="editable(child)"
                             v-bind:model="{
-                                target: child.path,
+                                target: child,
                                 command: 'showInfo',
                                 tooltipTitle: `'${child.title || child.name}' ${$i18n('info')}`
                             }">
@@ -585,24 +585,27 @@ export default {
                 return ['per:Asset', 'nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page', 'sling:OrderedFolder', 'per:Object', 'per:ObjectDefinition'].indexOf(node.resourceType) >= 0
             },
 
-            showInfo: function(me, target) {
-                const tenant = $perAdminApp.getView().state.tenant
-                if(target.startsWith(`/content/${tenant.name}/objects`)) {
-                  const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
-                  set($perAdminApp.getView(), `/state/tools/edit`, false)
-                  $perAdminApp.stateAction('selectObject', { selected: node.path, path: me.model.dataFrom })
-                } else if (target.startsWith(`/content/${tenant.name}/templates`)) {
-                    $perAdminApp.stateAction('showTemplateInfo', { selected: target })
-                } else if (target.startsWith(`/content/${tenant.name}/object-definitions`)) {
-                    $perAdminApp.stateAction('selectFile', target)
+            showInfo: function(me, {path, resourceType}) {
+                const tenant = $perAdminApp.getView().state.tenant;
+                const {model} = me;
+
+                if (resourceType === 'nt:file') {
+                    $perAdminApp.stateAction('selectFile', {path, resourceType});
                 } else {
-                    $perAdminApp.stateAction('showPageInfo', { selected: target })
+                    if(path.startsWith(`/content/${tenant.name}/objects`)) {
+                        set($perAdminApp.getView(), `/state/tools/edit`, false);
+                        $perAdminApp.stateAction('selectObject', { selected: node.path, path: model.dataFrom });
+                    } else if (path.startsWith(`/content/${tenant.name}/templates`)) {
+                        $perAdminApp.stateAction('showTemplateInfo', { selected: path });
+                    } else {
+                        $perAdminApp.stateAction('showPageInfo', { selected: path, resourceType });
+                    }
                 }
             },
 
             showRow: function(item, ev) {
-                if (this.editable(item)) {
-                    this.showInfo(this, item.path);
+                if (this.editable(item)) {  
+                    this.showInfo(this, item);
                 }
             },
 

@@ -1,7 +1,7 @@
 <template>
   <admin-components-explorerpreviewcontent
     :model="model"
-    :nodeType="NodeType.FILE"
+    :nodeType="nodeType"
     :browserRoot="`${getBasePath()}/${model.browserRoot}`"
     :currentPath="`${getBasePath()}/${model.currentPath}`"
     :onDelete="onDelete"
@@ -10,7 +10,7 @@
 
 <script>
 import { NodeType } from '../../../../../../js/constants';
-import { set } from '../../../../../../js/utils';
+import { get, set } from '../../../../../../js/utils';
 
 export default {
   name: 'FilePreview',
@@ -27,7 +27,26 @@ export default {
   data() {
     return {
       NodeType: NodeType,
+      nodeType: null,
     };
+  },
+  computed: {
+    explorerpreview() {
+      return get($perAdminApp.getView(), '/state/tools/explorerpreview');
+    },
+  },
+  watch: {
+    explorerpreview(val, oldval) {
+      console.log(val, oldval)
+    }
+  },
+  created() {
+    const resourceType = get(
+      $perAdminApp.getView(),
+      '/state/tools/explorerpreview',
+      null
+    );
+    this.nodeType = NodeType.FILE;
   },
   beforeMount() {
     set($perAdminApp.getView(), '/state/rightPanelFullscreen', false);

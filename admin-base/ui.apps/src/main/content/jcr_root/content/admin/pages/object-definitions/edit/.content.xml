@@ -73,6 +73,7 @@
         sling:resourceType="admin/components/filepreview"
         browserRoot="object-definitions"
         currentPath="object-definitions"
+        dataFrom="/state/tools/file"
         text="right panel">
       </right-panel>
 

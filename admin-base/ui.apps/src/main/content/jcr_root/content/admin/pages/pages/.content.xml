@@ -79,7 +79,7 @@
                sling:resourceType="admin/components/action" target="" type="icon" title="add page" command="addPage" icon="add"/>
       </actions>
       -->
-      <edit jcr:primaryType="nt:unstructured" sling:resourceType="admin/components/pageview"/>
+      <edit jcr:primaryType="nt:unstructured" sling:resourceType="admin/components/pageview" dataFrom="/state/tools/pages"/>
 
     </explorer>
 
