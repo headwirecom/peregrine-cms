@@ -72,7 +72,7 @@
 
                     <admin-components-action v-if="editable(child)"
                         v-bind:model="{
-                            target: child.path,
+                            target: child,
                             command: 'editEntity',
                             dblClickTarget: child,
                             dblClickCommand: 'selectPath',
@@ -95,7 +95,7 @@
                     <div class="secondary-content">
                         <admin-components-action v-if="editable(child)"
                             v-bind:model="{
-                                target: child.path,
+                                target: child,
                                 command: 'editEntity',
                                 tooltipTitle: `${$i18n('edit')} '${child.title || child.name}'`
                             }">
@@ -272,7 +272,7 @@
 
 <script>
 
-import {getCurrentDateTime, set} from '../../../../../../js/utils'
+import {getCurrentDateTime, set, get} from '../../../../../../js/utils'
 import {IconLib} from '../../../../../../js/constants'
 
 import Icon from '../icon/template.vue'
@@ -325,7 +325,7 @@ export default {
             },
             hasEdit: function() {
                 return this.model.children && this.model.children[0]
-            }
+            },
         },
         created() {
           document.addEventListener('paste', this.onDocumentPaste)
@@ -594,7 +594,7 @@ export default {
                 } else {
                     if(path.startsWith(`/content/${tenant.name}/objects`)) {
                         set($perAdminApp.getView(), `/state/tools/edit`, false);
-                        $perAdminApp.stateAction('selectObject', { selected: node.path, path: model.dataFrom });
+                        $perAdminApp.stateAction('selectObject', { selected: path, path: model.dataFrom });
                     } else if (path.startsWith(`/content/${tenant.name}/templates`)) {
                         $perAdminApp.stateAction('showTemplateInfo', { selected: path });
                     } else {

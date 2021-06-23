@@ -98,11 +98,11 @@ import backupTenant from "./stateActions/backupTenant";
 import downloadBackupTenant from "./stateActions/downloadBackupTenant";
 import uploadBackupTenant from "./stateActions/uploadBackupTenant";
 import restoreTenant from "./stateActions/restoreTenant";
-import acceptTermsAndConditions from './stateActions/acceptTermsAndConditions'
-import editObjectDefinitionFile from './stateActions/editObjectDefinitionFile';
-import saveObjectDefinitionFile from './stateActions/saveObjectDefinitionFile';
+import acceptTermsAndConditions from './stateActions/acceptTermsAndConditions';
 import selectFile from './stateActions/selectFile';
 import unselectFile from './stateActions/unselectFile';
+import editFile from './stateActions/editFile';
+import saveFile from './stateActions/saveFile';
 
 let log = LoggerFactory.logger('actions').setLevelDebug()
 
@@ -184,11 +184,11 @@ actions['backupTenant'] = backupTenant
 actions['downloadBackupTenant'] = downloadBackupTenant
 actions['uploadBackupTenant'] = uploadBackupTenant
 actions['restoreTenant'] = restoreTenant
-actions['acceptTermsAndConditions'] = acceptTermsAndConditions
-actions['editObjectDefinitionFile'] = editObjectDefinitionFile;
-actions['saveObjectDefinitionFile'] = saveObjectDefinitionFile;
+actions['acceptTermsAndConditions'] = acceptTermsAndConditions;
 actions['selectFile'] = selectFile;
 actions['unselectFile'] = unselectFile;
+actions['editFile'] = editFile;
+actions['saveFile'] = saveFile;
 
 
 function noopAction(me, target) {

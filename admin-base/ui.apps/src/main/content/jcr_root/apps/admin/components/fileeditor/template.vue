@@ -36,6 +36,7 @@ const axiosPlainTextOptions = {
 };
 
 export default {
+  name: 'FileEditor',
   components: { Icon },
   mixins: [toast, view, api, stateAction, getTenant],
   props: ['model'],
@@ -48,17 +49,18 @@ export default {
     path() {
       return get(this.view, '/state/tools/file', null);
     },
-    isObjectDefinitionFile() {
-      return this.path.startsWith(
-        `${this.getTenantBasePath()}/object-definitions`
-      );
+    filename() {
+      return this.path.split('/').pop();
+    },
+    extension() {
+      return `.${this.filename.split('.').pop()}`;
     },
   },
   created() {
     if (this.path) {
       this.loadFileContent();
     } else {
-      this.sendFileNotFoundToast();
+      this.toast(`File not found!`, 'error');
     }
   },
   methods: {
@@ -66,35 +68,20 @@ export default {
       const options = Object.assign({ url: this.path }, axiosPlainTextOptions);
 
       axios(options)
-        .then(({ data }) => {
-          this.content = data;
-        })
+        .then(({ data }) => (this.content = data))
         .catch((e) => {
           console.error(e);
-          this.sendFileNotFoundToast();
+          this.toast(`File not found!`, 'error');
         });
-    },
-
-    sendFileNotFoundToast() {
-      this.toast(`File not found!`, 'error');
     },
 
     onSave() {
-      const { path, content } = this;
+      const { path, content, extension } = this;
 
-      if (this.isObjectDefinitionFile) {
-        this.stateAction('saveObjectDefinitionFile', {
-          path,
-          content,
-          format: '.json',
-        });
-      } else {
-        console.error('SAVE FOR THIS FILE NOT IMPLEMENTED YET');
-        this.toast('Could not save file!', 'error');
-      }
+      this.stateAction('saveFile', { path, content, extension });
     },
 
-    selectPathInNav(me, {path}) {
+    selectPathInNav(me, { path }) {
       if (path === me.path) {
         return this.loadFileEditor(path);
       } else {
@@ -110,9 +97,12 @@ export default {
     },
 
     loadExplorer(path) {
+      const page = path.split('/')[3];
+
       $perAdminApp.stateAction('unselectFile');
+
       return $perAdminApp.loadContent(
-        `/content/admin/pages/object-definitions.html/path${SUFFIX_PARAM_SEPARATOR}${path}`
+        `/content/admin/pages/${page}.html/path${SUFFIX_PARAM_SEPARATOR}${path}`
       );
     },
   },
@@ -127,5 +117,6 @@ export default {
   position: absolute;
   bottom: 1rem;
   right: 1rem;
+  z-index: 5;
 }
 </style>

@@ -1,6 +1,5 @@
 <template>
   <admin-components-explorerpreviewcontent
-    :key="nodeType"
     :model="model"
     :tab="tab"
     :is-edit="isEditPage"
@@ -32,6 +31,11 @@ export default {
       default: (type, path) => new Promise(),
     },
   },
+  data() {
+    return {
+      nodeType: NodeType.PAGE,
+    };
+  },
   computed: {
     isEditPage() {
       return this.model.path === '/jcr:content/workspace/right-panel';
@@ -43,12 +47,20 @@ export default {
       return get($perAdminApp.getView(), '/state/tools/explorerpreview', null);
     },
   },
-  created() {
-    if (this.explorerpreview && this.explorerpreview.resourceType === 'nt:file') {
-      this.nodeType = NodeType.FILE;
-    } else {
-      this.nodeType = NodeType.PAGE;
-    }
+  watch: {
+    explorerpreview: {
+      deep: true,
+      immediate: true,
+      handler(val) {
+        const { resourceType } = val;
+
+        if (resourceType === 'nt:file') {
+          this.nodeType = NodeType.FILE;
+        } else {
+          this.nodeType = NodeType.PAGE;
+        }
+      },
+    },
   },
   beforeMount() {
     set($perAdminApp.getView(), '/state/rightPanelFullscreen', false);

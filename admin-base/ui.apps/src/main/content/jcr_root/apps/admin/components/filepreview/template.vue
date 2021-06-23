@@ -2,8 +2,8 @@
   <admin-components-explorerpreviewcontent
     :model="model"
     :nodeType="nodeType"
-    :browserRoot="`${getBasePath()}/${model.browserRoot}`"
-    :currentPath="`${getBasePath()}/${model.currentPath}`"
+    :browserRoot="browserRoot"
+    :currentPath="currentPath"
     :onDelete="onDelete"
   />
 </template>
@@ -26,27 +26,26 @@ export default {
   },
   data() {
     return {
-      NodeType: NodeType,
-      nodeType: null,
+      nodeType: NodeType.FILE,
+      currentPath: null,
     };
   },
   computed: {
-    explorerpreview() {
-      return get($perAdminApp.getView(), '/state/tools/explorerpreview');
+    filePath() {
+      return get(
+        $perAdminApp.getView(),
+        '/state/tools/file',
+        this.getBasePath()
+      );
+    },
+    browserRoot() {
+      const split = this.filePath.split('/');
+
+      return split.slice(0, split.length - 2).join('/');
     },
   },
-  watch: {
-    explorerpreview(val, oldval) {
-      console.log(val, oldval)
-    }
-  },
   created() {
-    const resourceType = get(
-      $perAdminApp.getView(),
-      '/state/tools/explorerpreview',
-      null
-    );
-    this.nodeType = NodeType.FILE;
+    this.currentPath = this.browserRoot;
   },
   beforeMount() {
     set($perAdminApp.getView(), '/state/rightPanelFullscreen', false);

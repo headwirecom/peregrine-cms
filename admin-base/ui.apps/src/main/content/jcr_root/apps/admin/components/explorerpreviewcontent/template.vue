@@ -3,7 +3,7 @@
 
     <template v-if="currentObject">
       <div class="explorer-preview-nav">
-        <ul class="nav-left" v-if="hasMultipleTabs">
+        <ul class="nav-left">
           <explorer-preview-nav-item
               v-if="!!($slots.default)"
               icon="view_list"
@@ -38,6 +38,7 @@
               @click="setActiveTab(Tab.VERSIONS)"/>
 
           <explorer-preview-nav-item
+              v-if="allowWebPublish"
               icon="public"
               :title="'Web Publishing'"
               :class="{'active': isTab(Tab.PUBLISHING)}"
@@ -234,19 +235,19 @@
             <icon icon="external-link" :lib="IconLib.FONT_AWESOME"/>
             Open live version
           </div>
-          <div :class="classForActionDisabledOnActivatedResource" :title="`rename ${nodeType}`" @click="renameNode()">
+          <div v-if="allowRename" :class="classForActionDisabledOnActivatedResource" :title="`rename ${nodeType}`" @click="renameNode()">
             <icon :lib="IconLib.MATERIAL_ICONS" icon="text_format"/>
             <span>Rename {{ nodeType }}</span>
           </div>
-          <div :class="classForActionDisabledOnActivatedResource" :title="`move ${nodeType}`" @click="moveNode()">
+          <div v-if="allowMove" :class="classForActionDisabledOnActivatedResource" :title="`move ${nodeType}`" @click="moveNode()">
             <icon icon="compare_arrows"/>
             <span>Move {{ nodeType }}</span>
           </div>
-          <div class="action" :title="`copy ${nodeType}`" @click="copyNode()">
+          <div v-if="allowCopy" class="action" :title="`copy ${nodeType}`" @click="copyNode()">
             <icon icon="content_copy"/>
             Copy {{ nodeType }}
           </div>
-          <div :class="classForActionDisabledOnActivatedResource" :title="`delete ${nodeType}`" @click="deleteNode()">
+          <div v-if="allowDelete" :class="classForActionDisabledOnActivatedResource" :title="`delete ${nodeType}`" @click="deleteNode()">
             <icon :icon="selfOrAnyDescendantActivated ? 'delete_forever' : 'delete'" />
             <span>Delete {{ nodeType }}</span>
           </div>
@@ -409,7 +410,11 @@ export default {
         references: [NodeType.ASSET, NodeType.PAGE, NodeType.TEMPLATE, NodeType.OBJECT],
         selectStateAction: [NodeType.ASSET, NodeType.OBJECT],
         showProp: [NodeType.ASSET, NodeType.OBJECT, NodeType.FILE],
-        allowMove: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET]
+        allowMove: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET],
+        allowRename: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET],
+        allowCopy: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET],
+        allowDelete: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET],
+        allowWebPublish: [NodeType.PAGE],
       },
       path: {
         current: null,
@@ -461,14 +466,23 @@ export default {
     allowMove() {
       return this.nodeTypeGroups.allowMove.indexOf(this.nodeType) > -1;
     },
+    allowRename() {
+      return this.nodeTypeGroups.allowRename.indexOf(this.nodeType) > -1;
+    },
+    allowCopy() {
+      return this.nodeTypeGroups.allowCopy.indexOf(this.nodeType) > -1;
+    },
+    allowDelete() {
+      return this.nodeTypeGroups.allowDelete.indexOf(this.nodeType) > -1;
+    },
+    allowWebPublish() {
+      return this.nodeTypeGroups.allowWebPublish.indexOf(this.nodeType) > -1;
+    },
     hasOgTags() {
       return this.nodeTypeGroups.ogTags.indexOf(this.nodeType) > -1;
     },
     hasReferences() {
       return this.nodeTypeGroups.references.indexOf(this.nodeType) > -1;
-    },
-    hasMultipleTabs() {
-      return this.hasOgTags || this.hasReferences;
     },
     referencedBy() {
       if ($perAdminApp.getView().state.referencedBy) {
