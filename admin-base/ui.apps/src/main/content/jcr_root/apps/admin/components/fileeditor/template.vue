@@ -1,6 +1,10 @@
 <template>
   <div class="peregrine-content-view">
-    <codemirror v-model="content" />
+    <codemirror
+      v-if="codemirror.ready"
+      v-model="content"
+      :options="codemirror.options"
+    />
     <a
       class="btn-floating btn-large waves-effect waves-light save-btn"
       :title="$i18n('save')"
@@ -20,7 +24,7 @@ import {
   toast,
   view,
 } from '../../../../../../js/mixins';
-import { get } from '../../../../../../js/utils';
+import { asyncLoadJsScript, get } from '../../../../../../js/utils';
 import Icon from '../icon/template.vue';
 
 const axiosPlainTextOptions = {
@@ -43,6 +47,15 @@ export default {
   data() {
     return {
       content: '',
+      codemirror: {
+        ready: false,
+        options: {
+          lineNumbers: true,
+          lineWrapping: true,
+          indentWithTabs: false,
+          tabSize: 4,
+        },
+      },
     };
   },
   computed: {
@@ -55,22 +68,51 @@ export default {
     extension() {
       return `.${this.filename.split('.').pop()}`;
     },
+    mode() {
+      if (['.js', '.json'].includes(this.extension)) {
+        return `javascript`;
+      } else if (this.extension === '.xml') {
+        return `xml`;
+      } else {
+        return null;
+      }
+    },
   },
   created() {
-    if (this.path) {
-      this.loadFileContent();
-    } else {
-      this.toast(`File not found!`, 'error');
-    }
+    this.loadSyntaxHighlighting().then(() => {
+      this.codemirror.options.mode = this.mode;
+
+      if (this.path) {
+        this.loadFileContent();
+      } else {
+        this.toast(`File not found!`, 'error');
+      }
+    });
   },
   methods: {
+    loadSyntaxHighlighting() {
+      const { mode } = this;
+
+      if (mode) {
+        return asyncLoadJsScript(
+          `/etc/felibs/admin/dependencies/codemirror/mode/${mode}/${mode}.js`
+        );
+      } else {
+        return window.Promise.resolve();
+      }
+    },
+
     loadFileContent() {
       const options = Object.assign({ url: this.path }, axiosPlainTextOptions);
 
       axios(options)
-        .then(({ data }) => (this.content = data))
+        .then(({ data }) => {
+          this.content = data;
+          this.codemirror.ready = true;
+        })
         .catch((e) => {
           console.error(e);
+          this.codemirror.ready = true;
           this.toast(`File not found!`, 'error');
         });
     },

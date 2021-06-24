@@ -117,8 +117,7 @@ export default {
           }
         },
         
-        editEntity(me, {path, resourceType}) {+
-        console.log('editEntity: ', path, resourceType);
+        editEntity(me, {path, resourceType}) {
           const view = $perAdminApp.getView()
           const tenant = view.state.tenant
           

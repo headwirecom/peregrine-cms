@@ -314,3 +314,25 @@ export function objectToFormData(obj) {
 
   return formData;
 }
+
+export function asyncLoadJsScript(src) {
+  return new Promise((resolve, reject) => {
+    if (!document.querySelector(`script[src="${src}"]`)) {
+      const script = document.createElement('script');
+
+      script.setAttribute('src', src);
+      document.body.appendChild(script);
+      script.onload = () => {
+        logger.fine(`successfully loaded script: ${src}`);
+        resolve();
+      };
+      script.onerror = () => {
+        logger.fine(`failed to load script: ${src}`);
+        reject();
+      };
+    } else {
+      logger.fine(`script already present: ${src}`);
+      resolve();
+    }
+  });
+}
