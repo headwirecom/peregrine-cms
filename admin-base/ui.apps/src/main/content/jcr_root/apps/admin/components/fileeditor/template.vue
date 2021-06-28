@@ -1,36 +1,40 @@
 <template>
   <div class="peregrine-content-view file-editor">
-    <codemirror
-      v-if="codemirror.ready"
-      v-model="content.client"
-      :options="codemirror.options"
-    />
-    <div class="actions-wrapper">
-      <div class="actions">
-        <a
-          class="btn-floating btn-large waves-effect waves-light save-btn"
-          :title="$i18n('save')"
-          @click="onSave"
-        >
-          <icon icon="save" />
-        </a>
-        <a
-          class="btn-floating btn-large waves-effect waves-light save-and-exit-btn"
-          :title="$i18n('save & exit')"
-          @click="onSaveAndExit"
-        >
-          <icon icon="save" />
-          <icon icon="cancel" class="sub-icon" />
-        </a>
-        <a
-          class="btn-floating btn-large waves-effect waves-light exit-btn"
-          :title="$i18n('exit (without saving)!')"
-          @click="onExit"
-        >
-          <icon icon="cancel" />
-        </a>
+    <template v-if="codemirror.ready">
+      <codemirror v-model="content.client" :options="codemirror.options" />
+      <div class="actions-wrapper">
+        <div class="actions">
+          <a
+            class="btn-floating btn-large waves-effect waves-light save-btn"
+            :title="$i18n('save')"
+            @click="onSave"
+          >
+            <icon icon="save" />
+          </a>
+          <a
+            class="btn-floating btn-large waves-effect waves-light save-and-exit-btn"
+            :title="$i18n('save & exit')"
+            @click="onSaveAndExit"
+          >
+            <icon icon="save" />
+            <icon icon="cancel" class="sub-icon" />
+          </a>
+          <a
+            class="btn-floating btn-large waves-effect waves-light exit-btn"
+            :title="$i18n('exit (without saving)!')"
+            @click="onExit"
+          >
+            <icon icon="cancel" />
+          </a>
+        </div>
       </div>
-    </div>
+    </template>
+    <spinner
+      v-if="!codemirror.ready"
+      width="100"
+      height="100"
+      position="center"
+    />
   </div>
 </template>
 
@@ -45,6 +49,7 @@ import {
 } from '../../../../../../js/mixins';
 import { asyncLoadJsScript, get } from '../../../../../../js/utils';
 import Icon from '../icon/template.vue';
+import Spinner from '../spinner/template.vue';
 
 const axiosPlainTextOptions = {
   headers: {
@@ -60,7 +65,7 @@ const axiosPlainTextOptions = {
 
 export default {
   name: 'FileEditor',
-  components: { Icon },
+  components: { Icon, Spinner },
   mixins: [toast, view, api, stateAction, getTenant],
   props: ['model'],
   data() {
