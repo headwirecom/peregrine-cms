@@ -2,16 +2,35 @@
   <div class="peregrine-content-view">
     <codemirror
       v-if="codemirror.ready"
-      v-model="content"
+      v-model="content.client"
       :options="codemirror.options"
     />
-    <a
-      class="btn-floating btn-large waves-effect waves-light save-btn"
-      :title="$i18n('save')"
-      @click="onSave"
-    >
-      <icon icon="save" />
-    </a>
+    <div class="actions-wrapper">
+      <div class="actions">
+        <a
+          class="btn-floating btn-large waves-effect waves-light save-btn"
+          :title="$i18n('save')"
+          @click="onSave"
+        >
+          <icon icon="save" />
+        </a>
+        <a
+          class="btn-floating btn-large waves-effect waves-light save-and-exit-btn"
+          :title="$i18n('save & exit')"
+          @click="onSaveAndExit"
+        >
+          <icon icon="save" />
+          <icon icon="cancel" class="sub-icon" />
+        </a>
+        <a
+          class="btn-floating btn-large waves-effect waves-light exit-btn"
+          :title="$i18n('exit (without saving)!')"
+          @click="onExit"
+        >
+          <icon icon="cancel" />
+        </a>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -46,15 +65,22 @@ export default {
   props: ['model'],
   data() {
     return {
-      content: '',
+      content: {
+        server: '',
+        client: '',
+      },
       codemirror: {
         ready: false,
         options: {
+          viewportMargin: Infinity,
           lineNumbers: true,
           lineWrapping: true,
           indentWithTabs: false,
           tabSize: 4,
         },
+      },
+      save: {
+        timestamp: null,
       },
     };
   },
@@ -62,6 +88,7 @@ export default {
     path() {
       return get(this.view, '/state/tools/file', null);
     },
+
     filename() {
       return this.path.split('/').pop();
     },
@@ -76,6 +103,9 @@ export default {
       } else {
         return null;
       }
+    },
+    hasChanges() {
+      return this.content.server !== this.content.client;
     },
   },
   created() {
@@ -107,7 +137,8 @@ export default {
 
       axios(options)
         .then(({ data }) => {
-          this.content = data;
+          this.content.server = data;
+          this.content.client = data;
           this.codemirror.ready = true;
         })
         .catch((e) => {
@@ -120,7 +151,44 @@ export default {
     onSave() {
       const { path, content, extension } = this;
 
-      this.stateAction('saveFile', { path, content, extension });
+      this.stateAction('saveFile', { path, content: content.client, extension })
+        .then(() => {
+          this.save.timestamp = new Date();
+          this.content.server = this.content.client;
+          this.toast('Saved file', 'success');
+        })
+        .catch(() => this.toast('Save failed!', 'error'));
+    },
+
+    onSaveAndExit() {
+      const { path, content, extension } = this;
+
+      this.stateAction('saveFile', { path, content: content.client, extension })
+        .then(() => this.loadExplorer(this.getParentPath()))
+        .catch(() => this.toast('Save failed!', 'error'));
+    },
+
+    onExit() {
+      const me = this;
+
+      if (this.hasChanges) {
+        $perAdminApp.askUser(
+          'You have unsaved changes',
+          'Are you sure you want to exit wihtout saving?',
+          {
+            yesText: 'Yes',
+            noText: 'No',
+            yes() {
+              return me.loadExplorer(me.getParentPath());
+            },
+            no() {
+              return;
+            },
+          }
+        );
+      } else {
+        return me.loadExplorer(me.getParentPath());
+      }
     },
 
     selectPathInNav(me, { path }) {
@@ -147,18 +215,123 @@ export default {
         `/content/admin/pages/${page}.html/path${SUFFIX_PARAM_SEPARATOR}${path}`
       );
     },
+
+    getParentPath() {
+      return this.path
+        .split('/')
+        .slice(0, -1)
+        .join('/');
+    },
   },
 };
 </script>
 
 <style scoped>
-.save-btn {
+.vue-codemirror-wrap {
+  width: 98%;
+  margin: 1%;
+  border: 1px solid #607d8b;
+  padding: 3px;
+  border-radius: 3px;
+}
+
+.actions-wrapper {
+  position: fixed;
+  bottom: 0.5rem;
+  right: 23rem;
+  width: 72px;
+  height: 72px;
+  z-index: 5;
+}
+
+.actions-wrapper:hover {
+  height: 200px;
+}
+
+.actions-wrapper:hover .save-and-exit-btn {
+  bottom: 4.5rem;
+}
+
+.actions {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.actions:hover .exit-btn {
+  bottom: 8.5rem;
+}
+
+.btn-floating {
+  position: absolute;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.save-btn {
+  bottom: 0.5rem;
+  right: 0.5rem;
+  border: 1px solid var(--pcms-blue-grey-darken-3);
+  z-index: 6;
+}
+
+.save-btn:hover {
+  border: 1px solid #ff9800;
+}
+
+.save-and-exit-btn {
+  bottom: 0.5rem;
+  right: 0.5rem;
+  border: 1px solid var(--pcms-blue-grey-darken-3);
+  background-color: #fff;
+  display: flex;
+  transition: bottom 300ms linear !important;
+}
+
+.save-and-exit-btn .icon {
+  color: var(--pcms-blue-grey-darken-3);
+}
+
+.save-and-exit-btn .icon.sub-icon {
   position: absolute;
-  bottom: 1rem;
-  right: 1rem;
-  z-index: 5;
+  font-size: 1rem;
+  top: 54%;
+  left: 54%;
+  width: 15px;
+  height: 15px;
+  padding: 0;
+  margin: 0;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  background-color: #fff;
+}
+
+.save-and-exit-btn:hover {
+  background-color: #ff9800;
+  border-color: #ff9800;
+}
+
+.save-and-exit-btn:hover .icon.sub-icon {
+  background-color: #ff9800;
+  border-color: #ff9800;
+}
+
+.exit-btn {
+  bottom: 0.5rem;
+  right: 0.5rem;
+  border: 1px solid var(--pcms-blue-grey-darken-3);
+  background-color: #fff;
+  display: flex;
+  transition: bottom 300ms linear !important;
+}
+
+.exit-btn:hover {
+  background-color: #ff9800;
+  border-color: #ff9800;
+}
+
+.exit-btn .icon {
+  color: var(--pcms-blue-grey-darken-3);
 }
 </style>
