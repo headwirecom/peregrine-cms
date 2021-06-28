@@ -1,5 +1,5 @@
 <template>
-  <div class="peregrine-content-view">
+  <div class="peregrine-content-view file-editor">
     <codemirror
       v-if="codemirror.ready"
       v-model="content.client"
