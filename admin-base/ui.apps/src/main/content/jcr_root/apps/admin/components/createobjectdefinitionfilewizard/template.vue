@@ -67,6 +67,14 @@
             <codemirror
               v-model="formmodel.content"
               ref="coremirror"
+              :options="{
+                viewportMargin: Infinity,
+                lineNumbers: true,
+                lineWrapping: true,
+                indentWithTabs: false,
+                tabSize: 4,
+                mode: 'javascript'
+              }"
               @click.native="onCodemirrorClick"
             >
               Click to edit
