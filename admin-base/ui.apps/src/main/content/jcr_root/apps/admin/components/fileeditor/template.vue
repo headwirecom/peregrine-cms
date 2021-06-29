@@ -104,6 +104,8 @@ export default {
         return `javascript`;
       } else if (this.extension === '.xml') {
         return `xml`;
+      } else if (this.extension === '.css') {
+        return 'css';
       } else {
         return null;
       }
