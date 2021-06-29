@@ -93,7 +93,6 @@ export default {
     path() {
       return get(this.view, '/state/tools/file', null);
     },
-
     filename() {
       return this.path.split('/').pop();
     },
