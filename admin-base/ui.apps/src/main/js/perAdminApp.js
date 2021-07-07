@@ -793,7 +793,7 @@ var PerAdminApp = {
      */
     init(perAdminAppView) {
         view = perAdminAppView
-        api = new PeregrineApi(new PerAdminImpl(PerAdminApp))
+        api = new PeregrineApi(new PerAdminImpl(this))
         sessionKeepAlive();
     },
 

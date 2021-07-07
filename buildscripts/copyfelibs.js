@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path');
 console.log('=== copying node_modules dependencies ========================================');
 
-//Find depencies in node_modules and copy them to target
+//Find dependencies in node_modules and copy them to target
 
 var basePath = './src/main/content/jcr_root';
 var felibsPath = '/etc/felibs/admin/dependencies';
@@ -29,7 +29,7 @@ for( let dep of lines ) {
     let entry;
     entry = package.main ? package.main : 'index.js';
 
-    // Find minfied version if it exists
+    // Find minified version if it exists
     if (!entry.includes('.min.js')) {
       const noExt = package.main.replace('.js', '');
       entry = noExt + (fs.existsSync(`node_modules/${dep}/${noExt}.min.js`) ? '.min.js' : '.js');
