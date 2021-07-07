@@ -1,3 +1,5 @@
+language: java
+
 branches:
   only:
   - develop-sling12
@@ -8,7 +10,10 @@ cache:
   - $HOME/.m2
   
 services:
-- docker
+  - docker
+
+node_js:
+  - node
 
 jdk:
   - openjdk11
@@ -28,6 +33,8 @@ script:
 - if [ ${TRAVIS_PULL_REQUEST} != "false" ]; then BUILD_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH; else BUILD_BRANCH=$TRAVIS_BRANCH; fi
 - ./travis-build.sh
 - cd docker && ./builddocker.sh && ./builddocker-remote-replication.sh
+- ./run-sling-junit-tests.sh
+- ./run-e2e-tests.sh
 - ./pushdocker-travis.sh
 
 after_script:
