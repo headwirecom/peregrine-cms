@@ -239,12 +239,14 @@ export default {
   border: 1px solid #607d8b;
   padding: 3px;
   border-radius: 3px;
+  max-height: calc(100% - 1% - 45px);
+  overflow: auto;
 }
 
 .actions-wrapper {
   position: fixed;
-  bottom: 0.5rem;
-  right: 23rem;
+  bottom: 3rem;
+  right: 25rem;
   width: 72px;
   height: 72px;
   z-index: 5;
