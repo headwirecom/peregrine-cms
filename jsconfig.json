@@ -1,0 +1,11 @@
+{
+  "include": [
+    "src/**/*.js",
+    "src/**/*.jsx",
+    "src/**/*.vue",
+    "src/**/*.json",
+  ],
+  "exclude": [
+    "**/node_modules/*"
+  ]
+}
