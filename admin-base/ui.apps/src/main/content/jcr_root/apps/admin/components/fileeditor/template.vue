@@ -1,20 +1,24 @@
 <template>
   <div class="peregrine-content-view file-editor">
     <template v-if="codemirror.ready">
-      <codemirror v-model="content.client" :options="codemirror.options" />
+      <codemirror
+        v-model="content.client"
+        :options="codemirror.options"
+        @keydown.native.prevent="handleHotkeys"
+      />
       <div class="actions-wrapper">
         <div class="actions">
           <a
             class="btn-floating btn-large waves-effect waves-light save-btn"
             :title="$i18n('save')"
-            @click="onSave"
+            @click="save"
           >
             <icon icon="save" />
           </a>
           <a
             class="btn-floating btn-large waves-effect waves-light save-and-exit-btn"
             :title="$i18n('save & exit')"
-            @click="onSaveAndExit"
+            @click="saveAndExit"
           >
             <icon icon="save" />
             <icon icon="cancel" class="sub-icon" />
@@ -22,7 +26,7 @@
           <a
             class="btn-floating btn-large waves-effect waves-light exit-btn"
             :title="$i18n('exit (without saving)!')"
-            @click="onExit"
+            @click="exit"
           >
             <icon icon="cancel" />
           </a>
@@ -47,7 +51,7 @@ import {
   toast,
   view,
 } from '../../../../../../js/mixins';
-import { asyncLoadJsScript, get } from '../../../../../../js/utils';
+import { asyncLoadJsScript, get, isMac } from '../../../../../../js/utils';
 import Icon from '../icon/template.vue';
 import Spinner from '../spinner/template.vue';
 
@@ -84,9 +88,7 @@ export default {
           tabSize: 4,
         },
       },
-      save: {
-        timestamp: null,
-      },
+      lastSave: null,
     };
   },
   computed: {
@@ -148,25 +150,25 @@ export default {
           this.codemirror.ready = true;
         })
         .catch((e) => {
-          console.error(e);
           this.codemirror.ready = true;
+          console.error(e);
           this.toast(`File not found!`, 'error');
         });
     },
 
-    onSave() {
+    save() {
       const { path, content, extension } = this;
 
       this.stateAction('saveFile', { path, content: content.client, extension })
         .then(() => {
-          this.save.timestamp = new Date();
+          this.lastSave = new Date();
           this.content.server = this.content.client;
-          this.toast('Saved file', 'success');
+          this.loneToast('Saved file', 'success');
         })
         .catch(() => this.toast('Save failed!', 'error'));
     },
 
-    onSaveAndExit() {
+    saveAndExit() {
       const { path, content, extension } = this;
 
       this.stateAction('saveFile', { path, content: content.client, extension })
@@ -174,7 +176,7 @@ export default {
         .catch(() => this.toast('Save failed!', 'error'));
     },
 
-    onExit() {
+    exit() {
       const me = this;
 
       if (this.hasChanges) {
@@ -227,6 +229,17 @@ export default {
         .split('/')
         .slice(0, -1)
         .join('/');
+    },
+
+    handleHotkeys(event) {
+      const ctrl = isMac() ? event.metaKey : event.ctrlKey;
+
+      if (ctrl) {
+        if (event.key === 's') {
+          event.preventDefault();
+          this.save();
+        }
+      }
     },
   },
 };
