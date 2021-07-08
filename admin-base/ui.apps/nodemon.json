@@ -2,8 +2,8 @@
   "watch": [
     "src/main/"
   ],
-  "ext": "vue,js,json,xml",
-  "exec": "mvn clean install -q -PautoInstallPackage",
+  "ext": "vue,js",
+  "exec": "npm run quickbuild:clean",
   "delay": 3000,
   "events": {
     "start": "node ./scripts/nodemon/start-notification.js",
