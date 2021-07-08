@@ -127,7 +127,7 @@
               <span class="right">
                 <action
                     v-bind:model="{
-                      target: itemToTarget(item.path),
+                      target: item,
                       command: 'editReference',
                       tooltipTitle: `edit '${item.name}'`
                     }">
@@ -137,7 +137,7 @@
               <span class="edit-icon">
                 <action
                     v-bind:model="{
-                      target: itemToTarget(item.path),
+                      target: path,
                       command: 'editReference',
                       tooltipTitle: `edit '${item.name}'`
                     }">

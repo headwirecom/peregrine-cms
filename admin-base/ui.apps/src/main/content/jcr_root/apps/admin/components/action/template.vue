@@ -154,7 +154,7 @@
             return '#'
         },
         targetHtml() {
-            if(this.target.indexOf('.html') >= 0) return this.target
+            if(this.target && this.target.indexOf('.html') >= 0) return this.target
             return this.target !== '#' ? this.target + '.html' : '#'
         },
         visible() {

@@ -113,7 +113,7 @@ export default {
           if (target.load) {
             $perAdminApp.loadContent(target.load)
           } else {
-            me.editEntity(me, target.target)
+            me.editEntity(me, target)
           }
         },
         
@@ -138,7 +138,7 @@ export default {
             } else if (path.startsWith(`/content/${tenant.name}/object-definitions`)){
               $perAdminApp.stateAction('editObjectDefinitionFile', path);
             } else {
-                $perAdminApp.stateAction('editPage', path);
+              $perAdminApp.stateAction('editPage', path);
             }
           }
         }
