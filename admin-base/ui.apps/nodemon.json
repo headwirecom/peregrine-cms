@@ -1,6 +1,8 @@
 {
-  "watch": ["src/main/content/jcr_root", "src/main/js"],
-  "ext": "vue,js",
-  "exec": "npm run quickbuild",
-  "delay": 500
+  "watch": [
+    "src/main/"
+  ],
+  "ext": "vue,js,json,xml",
+  "exec": "mvn clean install -DautoInstallPackage",
+  "delay": 3000
 }
