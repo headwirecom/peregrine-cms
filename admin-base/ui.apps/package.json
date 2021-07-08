@@ -39,6 +39,7 @@
     "material-design-icons": "^3.0.1",
     "materialize-css": "^0.100.2",
     "moment": "^2.24.0",
+    "node-notifier": "^10.0.0",
     "nodemon": "^2.0.7",
     "request": "^2.88.0",
     "rimraf": "^3.0.2",
