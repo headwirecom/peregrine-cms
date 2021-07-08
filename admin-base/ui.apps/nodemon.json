@@ -4,7 +4,7 @@
   ],
   "ext": "vue,js",
   "exec": "npm run quickbuild:clean",
-  "delay": 3000,
+  "delay": 1000,
   "events": {
     "start": "node ./scripts/nodemon/start-notification.js",
     "exit": "node ./scripts/nodemon/exit-notification.js"
