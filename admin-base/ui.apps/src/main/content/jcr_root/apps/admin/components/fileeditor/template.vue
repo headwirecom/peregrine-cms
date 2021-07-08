@@ -4,7 +4,7 @@
       <codemirror
         v-model="content.client"
         :options="codemirror.options"
-        @keydown.native.prevent="handleHotkeys"
+        @keydown.native="handleHotkeys"
       />
       <div class="actions-wrapper">
         <div class="actions">
