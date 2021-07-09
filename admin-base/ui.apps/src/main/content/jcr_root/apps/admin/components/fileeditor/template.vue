@@ -2,6 +2,7 @@
   <div class="peregrine-content-view file-editor">
     <template v-if="codemirror.ready">
       <codemirror
+        ref="cm"
         v-model="content.client"
         :options="codemirror.options"
         @keydown.native="handleHotkeys"
@@ -54,18 +55,6 @@ import {
 import { asyncLoadJsScript, get, isMac } from '../../../../../../js/utils';
 import Icon from '../icon/template.vue';
 import Spinner from '../spinner/template.vue';
-
-const axiosPlainTextOptions = {
-  headers: {
-    'Content-Type': 'text/plain',
-  },
-  responseType: 'text',
-  transformResponse: [
-    (data) => {
-      return data;
-    },
-  ],
-};
 
 export default {
   name: 'FileEditor',
@@ -121,7 +110,14 @@ export default {
       this.codemirror.options.mode = this.mode;
 
       if (this.path) {
-        this.loadFileContent();
+        asyncLoadJsScript(`${CODEMIRROR_PATH}/formatting/formatting.js`)
+          .then(this.loadFileContent)
+          .then(() => {
+            this.codemirror.ready = true;
+          })
+          .catch(() => {
+            this.codemirror.ready = true;
+          });
       } else {
         this.toast(`File not found!`, 'error');
       }
@@ -130,27 +126,24 @@ export default {
   methods: {
     loadSyntaxHighlighting() {
       const { mode } = this;
+      const { Promise } = window;
 
       if (mode) {
-        return asyncLoadJsScript(
-          `/etc/felibs/admin/dependencies/codemirror/mode/${mode}/${mode}.js`
-        );
+        return asyncLoadJsScript(`${CODEMIRROR_PATH}/mode/${mode}/${mode}.js`);
       } else {
-        return window.Promise.resolve();
+        return Promise.resolve();
       }
     },
 
     loadFileContent() {
       const options = Object.assign({ url: this.path }, axiosPlainTextOptions);
 
-      axios(options)
+      return axios(options)
         .then(({ data }) => {
           this.content.server = data;
           this.content.client = data;
-          this.codemirror.ready = true;
         })
         .catch((e) => {
-          this.codemirror.ready = true;
           console.error(e);
           this.toast(`File not found!`, 'error');
         });
@@ -199,6 +192,13 @@ export default {
       }
     },
 
+    autoFormatCode() {
+      const editor = this.$refs.cm.editor;
+      const range = {from: editor.getCursor(true), to: editor.getCursor(false)};
+
+      editor.autoFormatRange(range.from, range.to);
+    },
+
     selectPathInNav(me, { path }) {
       if (path === me.path) {
         return this.loadFileEditor(path);
@@ -232,10 +232,15 @@ export default {
     },
 
     handleHotkeys(event) {
-      const ctrl = isMac() ? event.metaKey : event.ctrlKey;
+      const commandOrControl = isMac() ? event.metaKey : event.ctrlKey;
 
-      if (ctrl) {
-        if (event.key === 's') {
+      if (commandOrControl) {
+        if (event.altKey) {
+          if (event.key === 'l') {
+            event.preventDefault();
+            this.autoFormatCode();
+          }
+        } else if (event.key === 's') {
           event.preventDefault();
           this.save();
         }
@@ -243,6 +248,20 @@ export default {
     },
   },
 };
+
+const axiosPlainTextOptions = {
+  headers: {
+    'Content-Type': 'text/plain',
+  },
+  responseType: 'text',
+  transformResponse: [
+    (data) => {
+      return data;
+    },
+  ],
+};
+
+const CODEMIRROR_PATH = `/etc/felibs/admin/dependencies/codemirror`;
 </script>
 
 <style scoped>
