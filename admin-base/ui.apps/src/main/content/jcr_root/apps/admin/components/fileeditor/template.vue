@@ -1,12 +1,27 @@
 <template>
-  <div class="peregrine-content-view file-editor">
+  <div class="peregrine-content-view file-editor" @click="focusEditor">
     <template v-if="codemirror.ready">
+      <ul class="menu-bar">
+        <li class="menu-action" @click="autoFormatSelection">
+          <icon icon="code" />Format selection
+        </li>
+        <li class="menu-action" @click="execCommand('undo')">
+          <icon icon="undo" /> Undo
+        </li>
+        <li class="menu-action" @click="execCommand('redo')">
+          <icon icon="redo" /> Redo
+        </li>
+        <li v-if="lastSave" class="last-save">
+          <icon icon="save" /> {{ vLastSave }}
+        </li>
+      </ul>
       <codemirror
         ref="cm"
         v-model="content.client"
         :options="codemirror.options"
         @keydown.native="handleHotkeys"
-      />
+      >
+      </codemirror>
       <div class="actions-wrapper">
         <div class="actions">
           <a
@@ -45,13 +60,7 @@
 
 <script>
 import { SUFFIX_PARAM_SEPARATOR } from '../../../../../../js/constants';
-import {
-  api,
-  getTenant,
-  stateAction,
-  toast,
-  view,
-} from '../../../../../../js/mixins';
+import { stateAction, toast, view } from '../../../../../../js/mixins';
 import { asyncLoadJsScript, get, isMac } from '../../../../../../js/utils';
 import Icon from '../icon/template.vue';
 import Spinner from '../spinner/template.vue';
@@ -59,7 +68,7 @@ import Spinner from '../spinner/template.vue';
 export default {
   name: 'FileEditor',
   components: { Icon, Spinner },
-  mixins: [toast, view, api, stateAction, getTenant],
+  mixins: [toast, view, stateAction],
   props: ['model'],
   data() {
     return {
@@ -103,6 +112,16 @@ export default {
     },
     hasChanges() {
       return this.content.server !== this.content.client;
+    },
+    vLastSave() {
+      const DD = `${this.lastSave.getDate()}`.padStart(2, '0');
+      const MM = `${this.lastSave.getMonth() + 1}`.padStart(2, '0');
+      const YYYY = `${this.lastSave.getFullYear()}`.padStart(2, '0');
+      const hh = `${this.lastSave.getHours()}`.padStart(2, '0');
+      const mm = `${this.lastSave.getMinutes()}`.padStart(2, '0');
+      const ss = `${this.lastSave.getSeconds()}`.padStart(2, '0');
+
+      return `${DD}.${MM}.${YYYY} ${hh}:${mm}:${ss}`;
     },
   },
   created() {
@@ -192,9 +211,22 @@ export default {
       }
     },
 
-    autoFormatCode() {
+    focusEditor() {
       const editor = this.$refs.cm.editor;
-      const range = {from: editor.getCursor(true), to: editor.getCursor(false)};
+      editor.execCommand('goDocEnd');
+      editor.focus();
+    },
+
+    execCommand(command) {
+      this.$refs.cm.editor.execCommand(command);
+    },
+
+    autoFormatSelection() {
+      const editor = this.$refs.cm.editor;
+      const range = {
+        from: editor.getCursor(true),
+        to: editor.getCursor(false),
+      };
 
       editor.autoFormatRange(range.from, range.to);
     },
@@ -238,7 +270,7 @@ export default {
         if (event.altKey) {
           if (event.key === 'l') {
             event.preventDefault();
-            this.autoFormatCode();
+            this.autoFormatSelection();
           }
         } else if (event.key === 's') {
           event.preventDefault();
@@ -265,11 +297,11 @@ const CODEMIRROR_PATH = `/etc/felibs/admin/dependencies/codemirror`;
 </script>
 
 <style scoped>
-.vue-codemirror-wrap {
+.file-editor {
   width: 98%;
   margin: 1%;
   border: 1px solid #607d8b;
-  padding: 3px;
+  padding: 0;
   border-radius: 3px;
   max-height: calc(100% - 1% - 45px);
   overflow: auto;
@@ -326,7 +358,7 @@ const CODEMIRROR_PATH = `/etc/felibs/admin/dependencies/codemirror`;
   border: 1px solid var(--pcms-blue-grey-darken-3);
   background-color: #fff;
   display: flex;
-  transition: bottom 300ms linear !important;
+  transition: bottom 300ms linear, background-color 350ms linear !important;
 }
 
 .save-and-exit-btn .icon {
@@ -363,7 +395,7 @@ const CODEMIRROR_PATH = `/etc/felibs/admin/dependencies/codemirror`;
   border: 1px solid var(--pcms-blue-grey-darken-3);
   background-color: #fff;
   display: flex;
-  transition: bottom 300ms linear !important;
+  transition: bottom 300ms linear, background-color 350ms linear !important;
 }
 
 .exit-btn:hover {
@@ -373,5 +405,54 @@ const CODEMIRROR_PATH = `/etc/felibs/admin/dependencies/codemirror`;
 
 .exit-btn .icon {
   color: var(--pcms-blue-grey-darken-3);
+}
+
+.menu-bar {
+  width: 100%;
+  background-color: #eceff1;
+  list-style-type: none;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 0;
+  border-bottom: 1px solid #607d8b;
+}
+
+.menu-bar > li {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu-bar .menu-action {
+  border-right: 1px solid #607d8b;
+  padding: 0.25rem 0.5rem;
+  color: #616567;
+  cursor: pointer;
+  transition: background-color 350ms linear;
+  user-select: none;
+}
+
+.menu-bar .menu-action:hover {
+  background-color: #cfd8dc;
+}
+
+.menu-bar .menu-action:active {
+  background-color: #fff;
+}
+
+.menu-bar > li .icon {
+  margin-right: 0.25rem;
+}
+
+.menu-bar .last-save {
+  margin-left: auto;
+  padding-right: 0.5rem;
+  color: var(--pcms-gray);
+  font-size: 85%;
+}
+
+.menu-bar .last-save .icon {
+  font-size: 18px;
 }
 </style>
