@@ -301,97 +301,111 @@ function processLoaders(loaders) {
  *
  */
 function loadContentImpl(initialPath, firstTime, fromPopState) {
-    logger.fine('loading content for', initialPath)
-    view.admin.consoleErrors = false
+  logger.fine('loading content for', initialPath);
+  view.admin.consoleErrors = false;
 
-    if(!runBeforeStateActions() ) {
-        logger.fine('not allowed to switch state')
-        return
-    }
+  if (!runBeforeStateActions()) {
+    logger.fine('not allowed to switch state');
+    return;
+  }
 
-    var pathInfo = makePathInfo(initialPath.toString())
-    var path = pathInfo.path
+  var pathInfo = makePathInfo(initialPath.toString());
+  var path = pathInfo.path;
 
-    var dataUrl = pagePathToDataPath(path)
+  var dataUrl = pagePathToDataPath(path);
 
-    view.status = undefined;
+  view.status = undefined;
 
-    api.populateUser()
+  return api
+    .populateUser()
+    .then(function() {
+      if (pathInfo.suffixParams.path) {
+        const segments = pathInfo.suffixParams.path.split('/');
+        if (segments.length >= 3) {
+          if (view.state.tenant && view.state.tenant.name !== segments[2]) {
+            logger.error('tenant mismatch');
+          } else {
+            logger.fine('tenant missing');
+            return api.populateTenants().then(() => {
+              const tenant = view.admin.tenants.filter(
+                (node) => node.name === segments[2]
+              );
+              if (tenant.length >= 1) {
+                view.state.tenant = tenant[0];
+              } else {
+                logger.error('tenant does not exist or no access to tenant');
+              }
+            });
+          }
+        }
+      }
+    })
+    .then(function() {
+      return api
+        .populateContent(dataUrl)
         .then(function() {
-            if(pathInfo.suffixParams.path) {
-                const segments = pathInfo.suffixParams.path.split('/')
-                if(segments.length >= 3) {
-                    if(view.state.tenant && view.state.tenant.name !== segments[2]) {
-                        logger.error('tenant mismatch')
+          logger.fine('got data for', path);
+          walkTreeAndLoad(view.adminPageStaged).then(function() {
+            suffixParamsToModel(
+              pathInfo.suffixParams,
+              view.adminPageStaged.suffixToParameter
+            );
+
+            processLoaders(view.adminPageStaged.loaders).then(() => {
+              if (firstTime) {
+                view.adminPage = view.adminPageStaged;
+                view.status = 'loaded';
+                initPeregrineApp();
+              } else {
+                view.adminPage = view.adminPageStaged;
+                view.status = 'loaded';
+              }
+
+              delete view.adminPageStaged;
+
+              if (!fromPopState) {
+                let params = view.adminPage.suffixToParameter;
+                let suffix = '';
+                if (params) {
+                  const rendered = [];
+                  for (let i = 0; i < params.length; i += 2) {
+                    if (rendered.indexOf(params[i]) >= 0) {
+                      continue;
                     } else {
-                        logger.fine('tenant missing')
-                        return api.populateTenants().then( () => {
-                            const tenant = view.admin.tenants.filter( (node) => node.name === segments[2] )
-                            if(tenant.length >= 1) {
-                                view.state.tenant = tenant[0]
-                            } else {
-                                logger.error('tenant does not exist or no access to tenant')
-                            }
-                        })
+                      rendered.push(params[i]);
                     }
+                    if (i === 0) {
+                      suffix += '/';
+                    } else {
+                      suffix += SUFFIX_PARAM_SEPARATOR;
+                    }
+
+                    suffix += params[i];
+                    suffix += SUFFIX_PARAM_SEPARATOR;
+                    suffix += getNodeFromImpl(view, params[i + 1]);
+                  }
                 }
-            }
+                let targetPath =
+                  initialPath.slice(0, initialPath.indexOf('.html')) +
+                  '.html' +
+                  suffix;
+
+                if (document.location !== targetPath) {
+                  document.title = getNodeFromImpl(view, '/adminPage/title');
+                  history.pushState(
+                    { peregrinevue: true, path: targetPath },
+                    targetPath,
+                    targetPath
+                  );
+                }
+              }
+            });
+          });
         })
-        .then(function() {
-            api.populateContent(dataUrl)
-                .then( function () {
-                    logger.fine('got data for', path)
-                    walkTreeAndLoad(view.adminPageStaged).then( function() {
-                        suffixParamsToModel(pathInfo.suffixParams, view.adminPageStaged.suffixToParameter)
-
-                        processLoaders(view.adminPageStaged.loaders).then( () => {
-                            if(firstTime) {
-                                view.adminPage = view.adminPageStaged
-                                view.status = 'loaded';
-                                initPeregrineApp();
-                            } else {
-                                view.adminPage = view.adminPageStaged
-                                view.status = 'loaded';
-                            }
-
-                            delete view.adminPageStaged
-
-                            if(!fromPopState) {
-                                let params = view.adminPage.suffixToParameter
-                                let suffix = ""
-                                if(params) {
-                                    const rendered = []
-                                    for(let i = 0; i < params.length; i+=2) {
-                                        if(rendered.indexOf(params[i]) >= 0) {
-                                            continue;
-                                        } else {
-                                            rendered.push(params[i])
-                                        }
-                                        if(i === 0) {
-                                            suffix += '/'
-                                        } else {
-                                            suffix += SUFFIX_PARAM_SEPARATOR
-                                        }
-
-                                        suffix += params[i]
-                                        suffix += SUFFIX_PARAM_SEPARATOR
-                                        suffix += getNodeFromImpl(view, params[i+1])
-                                    }
-                                }
-                                let targetPath = initialPath.slice(0, initialPath.indexOf('.html')) + '.html' + suffix
-
-                                if(document.location !== targetPath) {
-                                    document.title = getNodeFromImpl(view, '/adminPage/title')
-                                    history.pushState({peregrinevue:true, path: targetPath}, targetPath, targetPath)
-                                }
-                            }
-                        })
-
-                    })
-                }).catch(function(error) {
-                    logger.error("error getting %s %j", dataUrl, error);
-                })
-        })
+        .catch(function(error) {
+          logger.error('error getting %s %j', dataUrl, error);
+        });
+    });
 }
 
 /**
@@ -404,16 +418,16 @@ function loadContentImpl(initialPath, firstTime, fromPopState) {
  * @return {boolean}
  */
 function findActionInTree(component, command, target) {
-    if(component.$options.methods && component.$options.methods[command]) {
-        component.$options.methods[command](component, target)
-        return true
-    } else {
-        let children = component.$children
-        for(let i = 0; i < children.length; i++) {
-            let ret = findActionInTree(children[i], command, target)
-            if(ret) return true;
-        }
+  if (component.$options.methods && component.$options.methods[command]) {
+    component.$options.methods[command](component, target);
+    return true;
+  } else {
+    let children = component.$children;
+    for (let i = 0; i < children.length; i++) {
+      let ret = findActionInTree(children[i], command, target);
+      if (ret) return true;
     }
+  }
 }
 
 /**
@@ -425,17 +439,22 @@ function findActionInTree(component, command, target) {
  * @param target
  */
 function actionImpl(component, command, target) {
-    if(component.$options.methods && component.$options.methods[command]) {
-        return component.$options.methods[command](component, target)
+  if (component.$options.methods && component.$options.methods[command]) {
+    return component.$options.methods[command](component, target);
+  } else {
+    if (component.$parent === component.$root) {
+      if (!findActionInTree(component.$root, command, target)) {
+        logger.error(
+          'action',
+          command,
+          'not found, ignored, traget was',
+          target
+        );
+      }
     } else {
-        if(component.$parent === component.$root) {
-            if(!findActionInTree(component.$root, command, target)) {
-                logger.error('action', command, 'not found, ignored, traget was', target)
-            }
-        } else {
-            return actionImpl(component.$parent, command, target)
-        }
+      return actionImpl(component.$parent, command, target);
     }
+  }
 }
 
 /**
@@ -444,49 +463,49 @@ function actionImpl(component, command, target) {
  *
  * @type {Array}
  */
-let beforeStateActions = []
+let beforeStateActions = [];
 
 function beforeStateActionImpl(fun) {
-    beforeStateActions.push(fun)
+  beforeStateActions.push(fun);
 }
 
 function runBeforeStateActions(name) {
-    // execute all before state actions
-    const actions = []
-    if(beforeStateActions.length > 0) {
-        for(let i = 0; i < beforeStateActions.length; i++) {
-            actions.push(beforeStateActions[i](name))
-        }
+  // execute all before state actions
+  const actions = [];
+  if (beforeStateActions.length > 0) {
+    for (let i = 0; i < beforeStateActions.length; i++) {
+      actions.push(beforeStateActions[i](name));
     }
+  }
 
-    return new Promise( (resolve) => {
-        Promise.all(actions).then( () => {
-            beforeStateActions = []
-            resolve()
-        })
+  return new Promise((resolve) => {
+    Promise.all(actions).then(() => {
+      beforeStateActions = [];
+      resolve();
     });
-    // console.log(ret);
+  });
+  // console.log(ret);
 
-    // // clear the actions
-    // return true
+  // // clear the actions
+  // return true
 }
 
-const waitStack = []
+const waitStack = [];
 
 function enterWaitState() {
-    waitStack.push('wait')
-    setTimeout( function() {
-        if(waitStack.length > 0) {
-            document.getElementById('waitMask').style.display = 'inherit'
-        }
-    }, 100)
+  waitStack.push('wait');
+  setTimeout(function() {
+    if (waitStack.length > 0) {
+      document.getElementById('waitMask').style.display = 'inherit';
+    }
+  }, 100);
 }
 
 function exitWaitState() {
-    waitStack.pop()
-    if(waitStack.length === 0) {
-        document.getElementById('waitMask').style.display = 'none'
-    }
+  waitStack.pop();
+  if (waitStack.length === 0) {
+    document.getElementById('waitMask').style.display = 'none';
+  }
 }
 
 /**
@@ -497,35 +516,37 @@ function exitWaitState() {
  * @param target
  */
 function stateActionImpl(name, target) {
-    enterWaitState()
-    return new Promise( (resolve, reject) => {
-        runBeforeStateActions(name).then( () => {
-            try {
-                const stateAction = StateActions(name)
-                const action = stateAction($perAdminApp, target)
-                Promise.resolve(action).then(result => {
-                    exitWaitState()
-                    if(result
-                        && typeof result === 'string'
-                        && (result.startsWith('Uncaught (in promise') || result.error))
-                    {
-                        notifyUserImpl('error', result)
-                        reject(result)
-                    } else {
-                            resolve(result)
-                    }
-                }).catch(error => {
-                    exitWaitState()
-                    notifyUserImpl('error', error)
-                    reject()
-                })
-            } catch(error) {
-                exitWaitState()
-                reject(error)
+  enterWaitState();
+  return new Promise((resolve, reject) => {
+    runBeforeStateActions(name).then(() => {
+      try {
+        const stateAction = StateActions(name);
+        const action = stateAction($perAdminApp, target);
+        Promise.resolve(action)
+          .then((result) => {
+            exitWaitState();
+            if (
+              result &&
+              typeof result === 'string' &&
+              (result.startsWith('Uncaught (in promise') || result.error)
+            ) {
+              notifyUserImpl('error', result);
+              reject(result);
+            } else {
+              resolve(result);
             }
-        })
-    })
-
+          })
+          .catch((error) => {
+            exitWaitState();
+            notifyUserImpl('error', error);
+            reject();
+          });
+      } catch (error) {
+        exitWaitState();
+        reject(error);
+      }
+    });
+  });
 }
 
 /**
@@ -537,7 +558,7 @@ function stateActionImpl(name, target) {
  * @return {*}
  */
 function getNodeFromImpl(node, path) {
-    return get(node, path)
+  return get(node, path);
 }
 
 /**
@@ -549,16 +570,18 @@ function getNodeFromImpl(node, path) {
  * @return {*}
  */
 function getNodeFromOrNullImpl(node, path) {
-
-    path = path.slice(1).split('/').reverse()
-    while(path.length > 0) {
-        var segment = path.pop()
-        if(!node[segment]) {
-            return null
-        }
-        node = node[segment]
+  path = path
+    .slice(1)
+    .split('/')
+    .reverse();
+  while (path.length > 0) {
+    var segment = path.pop();
+    if (!node[segment]) {
+      return null;
     }
-    return node
+    node = node[segment];
+  }
+  return node;
 }
 
 /**
@@ -571,7 +594,7 @@ function getNodeFromOrNullImpl(node, path) {
  * @return {*}
  */
 function getNodeFromWithDefaultImpl(node, path, value) {
-    return get(node, path, value)
+  return get(node, path, value);
 }
 
 /**
@@ -583,18 +606,18 @@ function getNodeFromWithDefaultImpl(node, path, value) {
  * @return {*}
  */
 function findNodeFromPathImpl(node, path) {
-    if(node.path === path) return node
-    if(node.children) {
-        for(var i = 0; i < node.children.length; i++) {
-            if(node.children[i].path === path) {
-                // found match
-                return node.children[i]
-            } else if(path && path.indexOf(node.children[i].path) === 0) {
-                var res = findNodeFromPathImpl(node.children[i], path)
-                if(res) return res
-            }
-        }
+  if (node.path === path) return node;
+  if (node.children) {
+    for (var i = 0; i < node.children.length; i++) {
+      if (node.children[i].path === path) {
+        // found match
+        return node.children[i];
+      } else if (path && path.indexOf(node.children[i].path) === 0) {
+        var res = findNodeFromPathImpl(node.children[i], path);
+        if (res) return res;
+      }
     }
+  }
 }
 
 /**
@@ -606,9 +629,9 @@ function findNodeFromPathImpl(node, path) {
  * @param options
  */
 function notifyUserImpl(title, message, options) {
-    set(view, '/state/notification/title', title)
-    set(view, '/state/notification/message', message)
-    $('#notifyUserModal').modal('open', options)
+  set(view, '/state/notification/title', title);
+  set(view, '/state/notification/message', message);
+  $('#notifyUserModal').modal('open', options);
 }
 
 /**
@@ -621,17 +644,17 @@ function notifyUserImpl(title, message, options) {
  * @param callback
  */
 function toastImpl(message, className, displayLength, callback) {
-    const toast = Materialize.toast(message, displayLength, className, callback)
-    toast.el.addEventListener('click', () => toast.remove())
+  const toast = Materialize.toast(message, displayLength, className, callback);
+  toast.el.addEventListener('click', () => toast.remove());
 
-    const progressBar = document.createElement('div')
-    progressBar.setAttribute('class', 'progress-bar')
-    progressBar.style.transition = `width ${displayLength - 100}ms linear`
-    toast.el.appendChild(progressBar)
-    setTimeout(() => {
-        progressBar.style.width = '0%'
-    }, 100)
-    return toast
+  const progressBar = document.createElement('div');
+  progressBar.setAttribute('class', 'progress-bar');
+  progressBar.style.transition = `width ${displayLength - 100}ms linear`;
+  toast.el.appendChild(progressBar);
+  setTimeout(() => {
+    progressBar.style.width = '0%';
+  }, 100);
+  return toast;
 }
 
 /**
@@ -643,24 +666,24 @@ function toastImpl(message, className, displayLength, callback) {
  * @param options
  */
 function askUserImpl(title, message, options) {
-    set(view, '/state/notification/title', title)
-    set(view, '/state/notification/message', message)
-    let yesText = options.yesText ? options.yesText : 'Yes'
-    let noText = options.noText ? options.noText : 'No'
-    set(view, '/state/notification/yesText', yesText)
-    set(view, '/state/notification/noText', noText)
-    options.dismissible = false
-    options.takeAction = false
-    options.complete = function() {
-        const answer = $('#askUserModal').modal('getInstance').options.takeAction;
-        if(answer && options.yes) {
-            options.yes()
-        } else if(options.no) {
-            options.no()
-        }
+  set(view, '/state/notification/title', title);
+  set(view, '/state/notification/message', message);
+  let yesText = options.yesText ? options.yesText : 'Yes';
+  let noText = options.noText ? options.noText : 'No';
+  set(view, '/state/notification/yesText', yesText);
+  set(view, '/state/notification/noText', noText);
+  options.dismissible = false;
+  options.takeAction = false;
+  options.complete = function() {
+    const answer = $('#askUserModal').modal('getInstance').options.takeAction;
+    if (answer && options.yes) {
+      options.yes();
+    } else if (options.no) {
+      options.no();
     }
-    $('#askUserModal').modal(options)
-    $('#askUserModal').modal('open')
+  };
+  $('#askUserModal').modal(options);
+  $('#askUserModal').modal('open');
 }
 
 /**
@@ -672,26 +695,27 @@ function askUserImpl(title, message, options) {
  * @param options
  */
 function promptUserImpl(title, message, options) {
-    set(view, '/state/notification/title', title)
-    set(view, '/state/notification/message', message)
-    let yesText = options.yesText ? options.yesText : 'Ok'
-    let noText = options.noText ? options.noText : 'Cancel'
-    set(view, '/state/notification/yesText', yesText)
-    set(view, '/state/notification/noText', noText)
+  set(view, '/state/notification/title', title);
+  set(view, '/state/notification/message', message);
+  let yesText = options.yesText ? options.yesText : 'Ok';
+  let noText = options.noText ? options.noText : 'Cancel';
+  set(view, '/state/notification/yesText', yesText);
+  set(view, '/state/notification/noText', noText);
 
-    options.dismissible = false
-    options.takeAction = false
-    options.complete = function() {
-        const answer = $('#promptUserModal').modal('getInstance').options.takeAction;
-        const value = $('#promptUserModal').modal('getInstance').options.value;
-        if(answer && options.yes) {
-            options.yes(value)
-        } else if(options.no) {
-            options.no()
-        }
+  options.dismissible = false;
+  options.takeAction = false;
+  options.complete = function() {
+    const answer = $('#promptUserModal').modal('getInstance').options
+      .takeAction;
+    const value = $('#promptUserModal').modal('getInstance').options.value;
+    if (answer && options.yes) {
+      options.yes(value);
+    } else if (options.no) {
+      options.no();
     }
-    $('#promptUserModal').modal(options)
-    $('#promptUserModal').modal('open')
+  };
+  $('#promptUserModal').modal(options);
+  $('#promptUserModal').modal('open');
 }
 
 /**
@@ -701,9 +725,9 @@ function promptUserImpl(title, message, options) {
  * @return {boolean}
  */
 function isPreviewModeImpl() {
-    let mode = getNodeFromOrNullImpl(view, '/state/tools/workspace/view')
-    if(mode == null) return false
-    return mode === 'preview'
+  let mode = getNodeFromOrNullImpl(view, '/state/tools/workspace/view');
+  if (mode == null) return false;
+  return mode === 'preview';
 }
 
 /**
@@ -713,22 +737,22 @@ function isPreviewModeImpl() {
  * @return {null}
  */
 function getOSBrowserImpl() {
-    if(OSBrowser == null){
-        switch(true) {
-            case (window.navigator.userAgent.indexOf('Edge') != -1):
-                OSBrowser = 'edge'
-                break
-            case (window.navigator.userAgent.indexOf('Mac') != -1):
-                OSBrowser = 'mac'
-                break
-            case (window.navigator.userAgent.indexOf('Win') != -1):
-                OSBrowser = 'win'
-                break
-            default:
-                OSBrowser = 'unknown'
-        }
+  if (OSBrowser == null) {
+    switch (true) {
+      case window.navigator.userAgent.indexOf('Edge') != -1:
+        OSBrowser = 'edge';
+        break;
+      case window.navigator.userAgent.indexOf('Mac') != -1:
+        OSBrowser = 'mac';
+        break;
+      case window.navigator.userAgent.indexOf('Win') != -1:
+        OSBrowser = 'win';
+        break;
+      default:
+        OSBrowser = 'unknown';
     }
-    return OSBrowser
+  }
+  return OSBrowser;
 }
 
 /**
@@ -739,12 +763,12 @@ function getOSBrowserImpl() {
  * @param name
  */
 function registerExtensionImpl(id, name) {
-    let extensionList = extensions[id]
-    if(!extensionList) {
-        extensions[id] = [name]
-    } else {
-        extensionList.push(name)
-    }
+  let extensionList = extensions[id];
+  if (!extensionList) {
+    extensions[id] = [name];
+  } else {
+    extensionList.push(name);
+  }
 }
 
 /**
@@ -755,23 +779,23 @@ function registerExtensionImpl(id, name) {
  * @return {*}
  */
 function getExtensionImpl(id) {
-    return extensions[id]
+  return extensions[id];
 }
 
 function loadi18nImpl() {
-    if(!view.state.language) {
-        Vue.set(view.state, 'language', 'en')
-    }
-    api.populateI18N(view.state.language)
+  if (!view.state.language) {
+    Vue.set(view.state, 'language', 'en');
+  }
+  api.populateI18N(view.state.language);
 }
 
 /**
  * helper function to call the backend every minute to keep the session alive
  */
 function sessionKeepAlive() {
-    setInterval(function() {
-        api.populateUser();
-    },1000 * 60);
+  setInterval(function() {
+    api.populateUser();
+  }, 1000 * 60);
 }
 
 /**
@@ -853,7 +877,7 @@ var PerAdminApp = {
    * @param {boolean} firstTime - is vuejs already instantiated?
    */
   loadContent(path, firstTime = false) {
-    loadContentImpl(path, firstTime);
+    return loadContentImpl(path, firstTime);
   },
 
   /**

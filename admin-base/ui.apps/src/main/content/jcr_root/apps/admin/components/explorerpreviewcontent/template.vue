@@ -411,7 +411,7 @@ export default {
         selectStateAction: [NodeType.ASSET, NodeType.OBJECT],
         showProp: [NodeType.ASSET, NodeType.OBJECT, NodeType.FILE],
         allowMove: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET],
-        allowRename: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET],
+        allowRename: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET, NodeType.FILE],
         allowCopy: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET],
         allowDelete: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET],
         allowWebPublish: [NodeType.PAGE],
@@ -721,24 +721,26 @@ export default {
       this.formmodel.title = this.node.title
     },
     performRenameNode(newName, newTitle) {
-      const that = this;
+      const vm = this;
       $perAdminApp.stateAction(`rename${this.uNodeType}`, {
         path: this.currentObject,
         name: newName,
         title: newTitle,
         edit: this.isEdit
-      }).then(() => {
-        if (that.nodeType === 'asset' || that.nodeType === 'object') {
-          const currNode = $perAdminApp.getNodeFromView(`/state/tools/${that.nodeType}/show`)
+      }).then((data) => {
+        if (vm.nodeType === 'asset' || vm.nodeType === 'object') {
+          const currNode = $perAdminApp.getNodeFromView(`/state/tools/${vm.nodeType}/show`)
           const currNodeArr = currNode.split('/');
           currNodeArr[currNodeArr.length - 1] = newName
-          $perAdminApp.getNodeFromView(`/state/tools/${that.nodeType}`).show = currNodeArr.join(
+          $perAdminApp.getNodeFromView(`/state/tools/${vm.nodeType}`).show = currNodeArr.join(
               '/')
+        } else if (vm.nodeType === NodeType.FILE) {
+          $perAdminApp.stateAction('selectFile', {path: data.destination, resourceType: 'nt:file'});
         } else { // page and template handling
-          const currNode = $perAdminApp.getNodeFromView('/state/tools')[that.nodeType]
+          const currNode = $perAdminApp.getNodeFromView('/state/tools')[vm.nodeType]
           const currNodeArr = currNode.split('/');
           currNodeArr[currNodeArr.length - 1] = newName
-          $perAdminApp.getNodeFromView('/state/tools')[that.nodeType] = currNodeArr.join('/')
+          $perAdminApp.getNodeFromView('/state/tools')[vm.nodeType] = currNodeArr.join('/')
         }
         this.setActiveTab(Tab.INFO)
       })

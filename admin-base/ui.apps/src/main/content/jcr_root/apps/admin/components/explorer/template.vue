@@ -514,6 +514,8 @@ export default {
             isSelected: function(child) {
                 if(this.model.selectionFrom && child) {
                     return $perAdminApp.getNodeFromViewOrNull(this.model.selectionFrom) === child.path
+                } else if (child.resourceType) {
+                    return child.path === $perAdminApp.getNodeFromViewOrNull('/state/tools/file');
                 } else if(child.path === $perAdminApp.getNodeFromViewOrNull('/state/tools/page')) {
                     return true
                 }
