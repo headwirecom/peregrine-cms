@@ -768,6 +768,9 @@ export default {
     renameNode() {
       this.checkActivationStatusAndPerform(() => {
         this.$refs.renameModal.open();
+        this.$nextTick(() => {
+          this.$refs.renameForm.$el.querySelector('input').focus()
+        })
       });
     },
     moveNode() {
