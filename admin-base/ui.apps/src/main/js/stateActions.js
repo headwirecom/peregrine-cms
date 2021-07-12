@@ -104,6 +104,7 @@ import unselectFile from './stateActions/unselectFile';
 import editFile from './stateActions/editFile';
 import saveFile from './stateActions/saveFile';
 import renameFile from './stateActions/renameFile';
+import copyFile from './stateActions/copyFile';
 
 let log = LoggerFactory.logger('actions').setLevelDebug();
 
@@ -191,6 +192,7 @@ actions['unselectFile'] = unselectFile;
 actions['editFile'] = editFile;
 actions['saveFile'] = saveFile;
 actions['renameFile'] = renameFile;
+actions['copyFile'] = copyFile;
 
 
 function noopAction(me, target) {

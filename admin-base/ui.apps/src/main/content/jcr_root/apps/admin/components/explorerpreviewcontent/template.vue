@@ -413,7 +413,7 @@ export default {
         showProp: [NodeType.ASSET, NodeType.OBJECT, NodeType.FILE],
         allowMove: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET],
         allowRename: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET, NodeType.FILE],
-        allowCopy: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET],
+        allowCopy: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET, NodeType.FILE],
         allowDelete: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET, NodeType.FILE],
         allowWebPublish: [NodeType.PAGE],
       },
@@ -841,10 +841,25 @@ export default {
           })
     },
     onCopySelect() {
-      $perAdminApp.stateAction('copyPage', {
-        srcPath: this.currentObject,
-        targetPath: this.path.selected
-      });
+      if (this.node.resourceType === 'nt:file') {
+        let to = this.path.selected
+        
+        if (!to) {
+          const split = this.currentObject.split('/');
+          split.pop();
+          to = split.join('/')
+        }
+
+        $perAdminApp.stateAction('copyFile', {
+          from: this.currentObject, 
+          to
+        });
+      } else {
+        $perAdminApp.stateAction('copyPage', {
+          srcPath: this.currentObject,
+          targetPath: this.path.selected,
+        });
+      }
       this.isCopyOpen = false;
     },
     onCopyCancel() {

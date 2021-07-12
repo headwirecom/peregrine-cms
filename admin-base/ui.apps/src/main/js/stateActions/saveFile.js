@@ -12,8 +12,8 @@ export default function(me, { path, content, extension }) {
     },
   };
 
-  return axios.put(path, content, options).then((data) => {
+  return axios.put(path, content, options).then((response) => {
     set(me.getView(), '/state/tools/file', path);
-    return data;
+    return response;
   });
 }
