@@ -134,48 +134,40 @@ public class UserHomepageServlet extends AbstractBaseServlet {
         boolean uriAvailable = false;
         answer.writeAttribute("name", nameToCheck);
         answer.writeAttribute("nameValid", candidateNameValid);
-        if (candidateNameValid) {
-            // check availability for valid names
-            try {
+
+        try {
+            if (candidateNameValid) {
+                // check availability for valid names
                 uriAvailable = checkUriAvailability(request, nameToCheck);
                 answer.writeAttribute("nameAvailable", uriAvailable);
-            } catch (LoginException e) {
-                return new ErrorResponse()
-                    .setHttpErrorCode(SC_BAD_REQUEST)
-                    .setErrorMessage(FAILED_TO_GET_SERVICE_RESOLVER)
-                    .setException(e);
-            } finally {
-                closeServiceResolver();
+            } else {
+                answer.writeAttribute("nameAvailable", false);
             }
-        } else {
-            answer.writeAttribute("nameAvailable", false);
-        }
-        if (request.isPost() && candidateNameValid && uriAvailable) {
-            if (userProfileExists(request)){
-                closeServiceResolver();
-                return new ErrorResponse()
-                    .setHttpErrorCode(SC_BAD_REQUEST)
-                    .setErrorMessage(USER_PAGE_EXISTS);
-            } else if (hasRequiredProps()){
-                try {
+            if (request.isPost() && candidateNameValid && uriAvailable) {
+                if (userProfileExists(request)){
+                    closeServiceResolver();
+                    return new ErrorResponse()
+                        .setHttpErrorCode(SC_BAD_REQUEST)
+                        .setErrorMessage(USER_PAGE_EXISTS);
+                } else if (hasRequiredProps()){
                     // create or update user page node under user's home
                     createUserPage(request, answer);
-                } catch (LoginException e) {
-                    return new ErrorResponse()
-                        .setHttpErrorCode(SC_BAD_REQUEST)
-                        .setErrorMessage(FAILED_TO_GET_SERVICE_RESOLVER)
-                        .setException(e);
-                } catch (AdminResourceHandler.ManagementException | RepositoryException e) {
-                    return new ErrorResponse()
-                        .setHttpErrorCode(SC_BAD_REQUEST)
-                        .setErrorMessage(MGT_ERROR)
-                        .setException(e);
-                } finally {
-                    closeServiceResolver();
                 }
             }
-
+        } catch (LoginException e) {
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(FAILED_TO_GET_SERVICE_RESOLVER)
+                .setException(e);
+        } catch (AdminResourceHandler.ManagementException | RepositoryException e) {
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_BAD_REQUEST)
+                .setErrorMessage(MGT_ERROR)
+                .setException(e);
+        } finally {
+            closeServiceResolver();
         }
+
         return answer;
     }
 
@@ -186,7 +178,6 @@ public class UserHomepageServlet extends AbstractBaseServlet {
     boolean checkUriAvailability(Request request, String name) throws LoginException {
         Iterator<Resource> usersWithName = getServiceResolver(request)
             .findResources(String.format(SQL2_STATEMENT, name), Query.JCR_SQL2);
-        closeServiceResolver();
         return !usersWithName.hasNext();
     }
 
@@ -199,12 +190,11 @@ public class UserHomepageServlet extends AbstractBaseServlet {
     ResourceResolver getServiceResolver(Request request) throws LoginException {
         if (Objects.nonNull(serviceResolver) && serviceResolver.isLive()){
             return serviceResolver;
-        } else {
-            serviceResolver = request.isAdmin() ?
+        }
+        serviceResolver = request.isAdmin() ?
                 request.getResourceResolver() :
                 loginService(resourceResolverFactory, PEREGRINE_SERVICE_NAME);
-            return serviceResolver;
-        }
+        return serviceResolver;
     }
 
     void closeServiceResolver(){
