@@ -198,7 +198,7 @@ public class UserHomepageServlet extends AbstractBaseServlet {
     }
 
     void closeServiceResolver(){
-        if (Objects.nonNull(serviceResolver)){
+        if (Objects.nonNull(serviceResolver) && serviceResolver.getUserID().equals(PEREGRINE_SERVICE_NAME)){
             serviceResolver.close();
         }
     }
@@ -235,7 +235,7 @@ public class UserHomepageServlet extends AbstractBaseServlet {
             profileNode.getPath(),
             request.getParameter(CONTENT));
 
-        userPreferences.adaptTo(ModifiableValueMap.class).put(TILDA_PAGE, true);
+        userPreferences.adaptTo(ModifiableValueMap.class).put(TILDA_PAGE, userPage.getPath());
         request.getResourceResolver().commit();
         return userPage;
     }

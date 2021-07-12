@@ -175,7 +175,7 @@
                 return this.hasTilda ? `Edit ${this.btnText}` : `Create ${this.btnText}` 
             },
             hasTilda: function(){
-                return $perAdminApp.getView().state.userPreferences.tildaPage === "true"
+                return ($perAdminApp.getView().state.userPreferences.tildaPage)
             },
             userName: function(){
                 return $perAdminApp.getView().state.user
