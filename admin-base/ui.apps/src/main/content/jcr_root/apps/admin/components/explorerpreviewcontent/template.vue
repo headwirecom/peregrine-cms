@@ -414,7 +414,7 @@ export default {
         allowMove: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET],
         allowRename: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET, NodeType.FILE],
         allowCopy: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET],
-        allowDelete: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET],
+        allowDelete: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET, NodeType.FILE],
         allowWebPublish: [NodeType.PAGE],
       },
       path: {
