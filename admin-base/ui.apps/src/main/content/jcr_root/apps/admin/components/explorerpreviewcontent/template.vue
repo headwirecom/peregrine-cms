@@ -264,6 +264,7 @@
     </template>
 
     <materialize-modal
+        class="rename-modal"
         ref="renameModal"
         v-bind:modalTitle="modalTitle"
         v-on:ready="onReady">
