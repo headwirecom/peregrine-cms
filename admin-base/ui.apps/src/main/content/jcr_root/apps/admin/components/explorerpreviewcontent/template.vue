@@ -411,7 +411,7 @@ export default {
         references: [NodeType.ASSET, NodeType.PAGE, NodeType.TEMPLATE, NodeType.OBJECT],
         selectStateAction: [NodeType.ASSET, NodeType.OBJECT],
         showProp: [NodeType.ASSET, NodeType.OBJECT, NodeType.FILE],
-        allowMove: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET],
+        allowMove: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET, NodeType.FILE],
         allowRename: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET, NodeType.FILE],
         allowCopy: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET, NodeType.FILE],
         allowDelete: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET, NodeType.FILE],
