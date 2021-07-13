@@ -797,7 +797,7 @@ export default {
     deleteNode() {
       this.checkActivationStatusAndPerform(() => {
         const me = this
-        this.onDelete(this.nodeType, this.node.path).then(() => {
+        me.onDelete(this.nodeType, this.node.path).then(() => {
           $perAdminApp.stateAction(`unselect${me.uNodeType}`, {})
         }).then(() => {
           const path = $perAdminApp.getNodeFromView('/state/tools/pages')

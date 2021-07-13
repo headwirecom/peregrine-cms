@@ -298,7 +298,7 @@ const CODEMIRROR_PATH = `/etc/felibs/admin/dependencies/codemirror`;
 
 <style scoped>
 .file-editor {
-  width: 98%;
+  width: calc(100% - 340px) !important;
   margin: 1%;
   border: 1px solid #607d8b;
   padding: 0;

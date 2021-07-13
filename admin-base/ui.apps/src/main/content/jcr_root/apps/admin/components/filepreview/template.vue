@@ -21,7 +21,7 @@ export default {
     },
     onDelete: {
       type: Function,
-      default: (type, path) => new Promise(),
+      default: (type, path) => $perAdminApp.stateAction('deleteFile', path),
     },
   },
   data() {

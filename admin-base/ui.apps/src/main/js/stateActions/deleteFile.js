@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -22,13 +22,22 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('deleteFile').setLevelDebug()
+import { LoggerFactory } from '../logger';
+import { SUFFIX_PARAM_SEPARATOR } from '../constants';
+import { parentPath as getParentPath } from '../utils';
+
+let log = LoggerFactory.logger('deleteFile').setLevelDebug();
 
 export default function(me, target) {
+  log.fine('deleteFile', target);
 
-    log.fine('deleteFile',target)
-    var api = me.getApi()
-    return api.deleteFile(target)
+  const page = target.split('/')[3];
+  const api = me.getApi();
+  const { parentPath } = getParentPath(target);
 
+  return $perAdminApp
+    .loadContent(
+      `/content/admin/pages/${page}.html/path${SUFFIX_PARAM_SEPARATOR}${parentPath}`
+    )
+    .then(() => api.deleteFile(target));
 }
