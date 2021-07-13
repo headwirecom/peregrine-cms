@@ -299,11 +299,11 @@ const CODEMIRROR_PATH = `/etc/felibs/admin/dependencies/codemirror`;
 <style scoped>
 .file-editor {
   width: calc(100% - 340px) !important;
-  margin: 1%;
+  margin: 3rem 1% 1% 1%;
   border: 1px solid #607d8b;
   padding: 0;
   border-radius: 3px;
-  max-height: calc(100% - 1% - 45px);
+  max-height: calc(100% - 1% - 35px - 3rem);
   overflow: auto;
 }
 
@@ -408,14 +408,18 @@ const CODEMIRROR_PATH = `/etc/felibs/admin/dependencies/codemirror`;
 }
 
 .menu-bar {
-  width: 100%;
+  width: calc(100% - 340px - 2%);
   background-color: #eceff1;
   list-style-type: none;
   display: flex;
   justify-content: flex-start;
   align-items: center;
   margin: 0;
-  border-bottom: 1px solid #607d8b;
+  border: 1px solid #607d8b;
+  position: fixed;
+  top: 122px;
+  left: 1%;
+  z-index: 5;
 }
 
 .menu-bar > li {
