@@ -7,6 +7,7 @@ let log = LoggerFactory.logger('copyFile').setLevelDebug();
 export default function(me, { from, to }) {
   log.fine({ from, to });
 
+  const view = me.getView();
   const page = to.split('/')[3];
   const file = from.split('/').pop();
   const fileSplit = file.split('.');
@@ -41,7 +42,8 @@ export default function(me, { from, to }) {
       return axios.put(`${to}/${filename}`, content, options);
     })
     .then((response) => {
-      set(me.getView(), '/state/tools/file', to);
+      set(view, '/state/tools/file', to);
+      set(view, '/state/tools/explorerpreview/resourceType', 'nt:file');
 
       return response;
     })
@@ -49,5 +51,10 @@ export default function(me, { from, to }) {
       $perAdminApp.loadContent(
         `/content/admin/pages/${page}.html/path${SUFFIX_PARAM_SEPARATOR}${to}`
       )
-    );
+    )
+    .then(() => ({
+      path: `${to}/${filename}`,
+      filename: filename,
+      resourceType: 'nt:file',
+    }));
 }
