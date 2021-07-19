@@ -553,7 +553,6 @@ export default {
             },
 
           nodeTypeToIcon: function (item) {
-            console.log(`nodeTypeToIcon`, item)
             if (item.resourceType === 'per:Page') return {icon: 'description', lib: IconLib.MATERIAL_ICONS}
             if (item.resourceType === 'per:Object') return {icon: 'layers', lib: IconLib.MATERIAL_ICONS}
             if (item.resourceType === 'per:ObjectDefinition') return {
