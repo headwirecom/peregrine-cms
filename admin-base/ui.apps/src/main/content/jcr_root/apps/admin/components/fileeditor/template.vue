@@ -211,10 +211,12 @@ export default {
       }
     },
 
-    focusEditor() {
-      const editor = this.$refs.cm.editor;
-      editor.execCommand('goDocEnd');
-      editor.focus();
+    focusEditor({ target }) {
+      if (target.classList.contains('file-editor')) {
+        const editor = this.$refs.cm.editor;
+        editor.execCommand('goDocEnd');
+        editor.focus();
+      }
     },
 
     execCommand(command) {
