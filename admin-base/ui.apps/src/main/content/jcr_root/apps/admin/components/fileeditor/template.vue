@@ -379,6 +379,7 @@ const CODEMIRROR_PATH = `/etc/felibs/admin/dependencies/codemirror`;
   border: 1px solid #fff;
   border-radius: 50%;
   background-color: #fff;
+  transition: background-color 350ms linear, border 350ms linear !important;
 }
 
 .save-and-exit-btn:hover {
