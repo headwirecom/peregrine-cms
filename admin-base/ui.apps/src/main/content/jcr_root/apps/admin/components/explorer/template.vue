@@ -67,7 +67,7 @@
                                 tooltipTitle: `${$i18n('select')} '${child.title || child.name}'`
                             }">
                         <i v-if="child.hasChildren" class="material-icons">folder</i>
-                        <i v-else-if="!isInsideObjectDefinition(child.path)" class="material-icons">folder_open</i>
+                        <i v-else-if="!isInsideObjectDefinition(child.path) &&  child.resourceType !== 'nt:file'" class="material-icons">folder_open</i>
                     </admin-components-action>
 
                     <admin-components-action v-if="editable(child)"
