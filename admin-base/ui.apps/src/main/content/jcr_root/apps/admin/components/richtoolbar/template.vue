@@ -385,14 +385,9 @@ export default {
       vm.browser.img.height = img.height
       vm.startBrowsing()
     },
-    insertIcon(name) {
-      /**
-       * original disabled for now
-       * due to issues with css property "white-space: pre-wrap"
-       */
-      //this.execCmd('insertHTML', `<div><svg class="fill-current" viewBox="0 0 24 24" style="width: 24px; height: 24px;"><use xlink:href="#${name}" href="#${name}"></use></svg></div>`)
-
-      this.execCmd('insertHTML', `&nbsp;[icon:${name}]&nbsp;`)
+    insertIcon(imgPath) {
+      console.log('imgPath: ', imgPath);
+      this.execCmd('insertHTML', `<peregrine-icon img="${imgPath}"></peregrine-icon>`);
     },
     setViewport(viewport) {
       set($perAdminApp.getView(), '/state/tools/workspace/view', viewport)

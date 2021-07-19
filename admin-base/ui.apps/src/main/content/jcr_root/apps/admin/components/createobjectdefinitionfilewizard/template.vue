@@ -25,7 +25,7 @@
 <template>
   <div class="container">
     <form-wizard
-      :title="'Create File'"
+      :title="'Create UI-Schema'"
       :subtitle="''"
       @on-complete="onComplete"
       color="#37474f"
@@ -125,10 +125,10 @@ export default {
             {
               type: 'input',
               inputType: 'text',
-              label: 'Filename',
+              label: 'ui-schema name',
               model: 'name',
               required: true,
-              placeholder: 'my-file-name.json',
+              placeholder: 'my-file-name',
               validator: [this.nameAvailable],
             },
           ],
