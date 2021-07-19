@@ -67,7 +67,7 @@
                                 tooltipTitle: `${$i18n('select')} '${child.title || child.name}'`
                             }">
                         <i v-if="child.hasChildren" class="material-icons">folder</i>
-                        <i v-else-if="!isInsideObjectDefinition" class="material-icons">folder_open</i>
+                        <i v-else-if="!isInsideObjectDefinition(child.path)" class="material-icons">folder_open</i>
                     </admin-components-action>
 
                     <admin-components-action v-if="editable(child)"
@@ -553,6 +553,7 @@ export default {
             },
 
           nodeTypeToIcon: function (item) {
+            console.log(`nodeTypeToIcon`, item)
             if (item.resourceType === 'per:Page') return {icon: 'description', lib: IconLib.MATERIAL_ICONS}
             if (item.resourceType === 'per:Object') return {icon: 'layers', lib: IconLib.MATERIAL_ICONS}
             if (item.resourceType === 'per:ObjectDefinition') return {
