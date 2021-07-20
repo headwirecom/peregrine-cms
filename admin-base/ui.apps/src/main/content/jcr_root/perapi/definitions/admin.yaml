@@ -1,1208 +1,1209 @@
-swagger: '2.0'
+swagger: "2.0"
 info:
-  contact:
-    email: apiinfo@peregrine-cms.com
-    name: Api Information Team
-    url: 'https://api.peregrine-cms.com'
-  description: 'peregrine cms api'
-  license:
-    name: Apache-2.0
-  title: peregrine-cms-admin
-  version: '1.0'
+    contact:
+        email: apiinfo@peregrine-cms.com
+        name: Api Information Team
+        url: "https://api.peregrine-cms.com"
+    description: "peregrine cms api"
+    license:
+        name: Apache-2.0
+    title: peregrine-cms-admin
+    version: "1.0"
 schemes:
-  - http
+    - http
 basePath: /perapi/admin
 consumes:
-  - application/json
+    - application/json
 produces:
-  - application/json
+    - application/json
 paths:
-  /access.json:
-    get:
-      responses:
-        200:
-          description: returns the user id, authentication type if available, and a graph of additional profile properties if configured in the AccessServlet
-          schema:
-            type: object
-            required:
-              - userID
-            properties:
-              authType:
-                type: string
-              userID:
-                type: string
-  /componentDefinition.json:
-    get:
-      parameters:
-        - description: the name of the component we want to get information about
-          name: name
-          type: string
-          in: query
-        - description: the path to a content node to look up the corresponding component. If
-            a path to a per:Page node is provided the explorer_dialog.json is used
-            for the model otherwise the dialog.json file of the component is used.
-          name: path
-          type: string
-          in: query
-          required: true
-      responses:
-        200:
-          description: get a component definition
-          schema:
-            type: object
-            properties:
-              path:
-                type: string
-                description: Path of the Commponent
-              name:
-                type: string
-                description: Name of the Commponent
-              model:
-                type: string
-                description: Content of the found dialog.json node
-  '/content.json{path}':
-    get:
-      description: Returns the content for the given path
-      parameters:
-        - description: the path to the content, for example /content/${tenant}/pages/index
-          name: path
-          type: string
-          in: path
-          required: true
-      responses:
-        200:
-          description: returns all the content for the given node
-          schema:
-            type: object
-            additionalProperties:
-              type: object
-  '/copy.json{path}':
-    post:
-      description: Copy a given node to a new place
-      parameters:
-        - name: path
-          type: string
-          in: path
-          description: the path of the resource to copy
-          required: true
-        - name: to
-          type: string
-          in: formData
-          description: the path of the resource that is either the new parent for type 'child' or the next sibling for type 'before'
-          required: true
-        - name: type
-          type: string
-          in: formData
-          description: The type of move which can be 'child' (add as child of the given to node) or 'before' (add before the given to node)
-          required: true
-        - name: newName
-          type: string
-          in: formData
-          description: The new name that copied resource will have
-          required: false
-        - name: newTitle
-          type: string
-          in: formData
-          description: The new title that copied resource will have
-          required: false
-        - name: deep
-          type: boolean
-          in: formData
-          description: flag indicating if children of the selected resource should also be copied
-          required: false
-      responses:
-        200:
-          description: returns the from node name and path and the new node name and path
-          schema:
-            $ref: "#/definitions/Move"
-        400:
-          description: If one of the paths did not resolve, the provided new name already exists under the new parent location, or the copy operation failed
-          schema:
-            $ref: "#/definitions/Error"
-  '/copyPage.json{path}':
-    post:
-      description: Copy a page to a target location
-      parameters:
-        - name: path
-          type: string
-          in: path
-          description: the path of the page to copy
-          required: true
-        - name: to
-          type: string
-          in: formData
-          description: the path of the page that is either the new parent for type 'child' or the next sibling for type 'before'
-          required: true
-        - name: type
-          type: string
-          in: formData
-          description: The type of move which can be 'child' (add as child of the given to node) or 'before' (add before the given to node)
-          required: true
-        - name: newName
-          type: string
-          in: formData
-          description: The new name that copied page will have
-          required: false
-        - name: newTitle
-          type: string
-          in: formData
-          description: The new title that copied resource will have
-          required: false
-        - name: deep
-          type: boolean
-          in: formData
-          description: flag indicating if children of the selected page should also be copied
-          required: false
-      responses:
-        200:
-          description: returns the from node name and path and the new node name and path
-          schema:
-            $ref: "#/definitions/Move"
-        400:
-          description: If one of the paths did not resolve, the provided new name already exists under the new parent location, or the copy operation failed
-          schema:
-            $ref: "#/definitions/Error"
-  '/createFolder.json{path}':
-    post:
-      description: Create a new folder in the system
-      parameters:
-        - name: path
-          type: string
-          in: path
-          description: the path where to create the new folder
-          required: true
-        - name: name
-          type: string
-          in: formData
-          description: the name of the new folder
-          required: true
-      responses:
-        200:
-          description: returns all the content for the given node
-          schema:
-            type: object
-            properties:
-              type:
-                type: string
-                description: Type set to 'folder'
-              status:
-                type: string
-                description: Status set to 'created'
-              name:
-                type: string
-                description: Name of the created Object
-              path:
-                type: string
-                description: Path of the newly created folder
-        400:
-          description: If the path did not resolve to a resource, the name is null or the folder already exists
-          schema:
-            $ref: "#/definitions/Error"
-  '/createObject.json{path}':
-    post:
-      description: Create a new object in the system
-      parameters:
-        - name: path
-          type: string
-          in: path
-          description: the path where to create the object
-          required: true
-        - name: name
-          type: string
-          in: formData
-          description: the name of the new object
-          required: true
-        - name: resourceType
-          type: string
-          in: formData
-          description: the resource type of new the object
-      responses:
-        200:
-          description: Object created as specified
-          schema:
-            type: object
-            properties:
-              type:
-                type: string
-                description: Type set to 'object'
-              status:
-                type: string
-                description: Status set to 'created'
-              name:
-                type: string
-                description: Name of the created Object
-              path:
-                type: string
-                description: Path of the newly created object
-              templatePath:
-                type: string
-                description: Template Path of the created object
-        400:
-          description: If the path did not resolve to a resource, the name is null or the object already exists
-          schema:
-            $ref: "#/definitions/Error"
-  '/createPage.json{path}':
-    post:
-      description: Create a new page in the system
-      parameters:
-        - name: path
-          type: string
-          in: path
-          description: the path where to create the page
-          required: true
-        - name: name
-          type: string
-          in: formData
-          description: the name of the new page
-          required: true
-        - name: templatePath
-          type: string
-          in: formData
-          description: the path to the template of the page
-          required: true
-      responses:
-        200:
-          description: Page created as specified
-          schema:
-            type: object
-            properties:
-              type:
-                type: string
-                description: Type set to 'page'
-              status:
-                type: string
-                description: Status set to 'created'
-              name:
-                type: string
-                description: Name of the created Object
-              path:
-                type: string
-                description: Path of the newly created page
-              templatePath:
-                type: string
-                description: Template Path of the created page
-        400:
-          description: If the path or template path did not resolve to a resource, the name is null or the page already exists
-          schema:
-            $ref: "#/definitions/Error"
-  '/createTenant.json':
-    post:
-      description: Create a new Tenant by copying from an existing Tenant
-      parameters:
-        - name: fromTenant
-          type: string
-          in: formData
-          description: The Name of the Source Tenant to copy from which must exist
-          required: true
-        - name: toTenant
-          type: string
-          in: formData
-          description: The Name of the Target Tenant to be copied to which must not exist
-          required: true
-        - name: tenantTitle
-          type: string
-          in: formData
-          description: The Title of the Target Tenant (if not provided the name is used instead)
-          required: false
-        - name: colorPalette
-          type: string
-          in: formData
-          description: Path to the Color Palette to be set like '/content/themecleanflex/pages/css/palettes/default.css'
-          required: false
-        - name: tenantUserPwd
-          type: string
-          in: formData
-          description: A password for the tenant user created for Admin
-          required: false
-      responses:
-        200:
-          description: returns the path of the new Tenant and the path to the source
-          schema:
-            type: object
-            properties:
-              type:
-                type: string
-                description: Type set to 'tenant'
-              status:
-                type: string
-                description: Status set to 'created'
-              name:
-                type: string
-                description: Name of the newly crated tenant
-              path:
-                type: string
-                description: Path of the newly created tenant
-              sourcePath:
-                type: string
-                description: Path of the source tenant
-        400:
-          description: If the path did not resolve to a resource
-          schema:
-            $ref: "#/definitions/Error"
-  '/createTemplate.json{path}':
-    post:
-      description: Create a new template in the system
-      parameters:
-        - name: path
-          type: string
-          in: path
-          description: the path where to create the template
-          required: true
-        - name: name
-          type: string
-          in: formData
-          description: the name of the new template
-        - name: component
-          type: string
-          in: formData
-          description: the path to the page component for this template
-      responses:
-        200:
-          description: Template created as specified
-          schema:
-            type: object
-            properties:
-              type:
-                type: string
-                description: Type set to 'page'
-              status:
-                type: string
-                description: Status set to 'created'
-              name:
-                type: string
-                description: Name of the created Object
-              path:
-                type: string
-                description: Path of the newly created template
-        400:
-          description: If the path did not resolve to a resource, the name is null or the template already exists
-          schema:
-            $ref: "#/definitions/Error"
-  '/listRecyclables.json{path}':
-    get:
-      description: List all deleted items for a given site which may be restored
-      parameters:
-        - name: path
-          type: string
-          in: path
-          description: Root site path (e.g. /content/example)
-          required: true
-      responses:
-        200:
-          description: list of items from the site's recyclebin
-          schema:
-            type: object
-            properties:
-              current:
-                type: integer
-                description: used for pagination
-              more:
-                type: boolean
-                description: used for pagination
-              data:
-                type: array
-                description: array of result objects each containing a recyclable items details
-                items:
+    /access.json:
+        get:
+            responses:
+                200:
+                    description: returns the user id, authentication type if available, and a graph of additional profile properties if configured in the AccessServlet
+                    schema:
+                        type: object
+                        required:
+                            - userID
+                        properties:
+                            authType:
+                                type: string
+                            userID:
+                                type: string
+    /componentDefinition.json:
+        get:
+            parameters:
+                - description: the name of the component we want to get information about
+                  name: name
+                  type: string
+                  in: query
+                - description:
+                      the path to a content node to look up the corresponding component. If
+                      a path to a per:Page node is provided the explorer_dialog.json is used
+                      for the model otherwise the dialog.json file of the component is used.
+                  name: path
+                  type: string
+                  in: query
+                  required: true
+            responses:
+                200:
+                    description: get a component definition
+                    schema:
+                        type: object
+                        properties:
+                            path:
+                                type: string
+                                description: Path of the Commponent
+                            name:
+                                type: string
+                                description: Name of the Commponent
+                            model:
+                                type: string
+                                description: Content of the found dialog.json node
+    "/content.json{path}":
+        get:
+            description: Returns the content for the given path
+            parameters:
+                - description: the path to the content, for example /content/${tenant}/pages/index
+                  name: path
+                  type: string
+                  in: path
+                  required: true
+            responses:
+                200:
+                    description: returns all the content for the given node
+                    schema:
+                        type: object
+                        additionalProperties:
+                            type: object
+    "/copy.json{path}":
+        post:
+            description: Copy a given node to a new place
+            parameters:
+                - name: path
+                  type: string
+                  in: path
+                  description: the path of the resource to copy
+                  required: true
+                - name: to
+                  type: string
+                  in: formData
+                  description: the path of the resource that is either the new parent for type 'child' or the next sibling for type 'before'
+                  required: true
+                - name: type
+                  type: string
+                  in: formData
+                  description: The type of move which can be 'child' (add as child of the given to node) or 'before' (add before the given to node)
+                  required: true
+                - name: newName
+                  type: string
+                  in: formData
+                  description: The new name that copied resource will have
+                  required: false
+                - name: newTitle
+                  type: string
+                  in: formData
+                  description: The new title that copied resource will have
+                  required: false
+                - name: deep
+                  type: boolean
+                  in: formData
+                  description: flag indicating if children of the selected resource should also be copied
+                  required: false
+            responses:
+                200:
+                    description: returns the from node name and path and the new node name and path
+                    schema:
+                        $ref: "#/definitions/Move"
+                400:
+                    description: If one of the paths did not resolve, the provided new name already exists under the new parent location, or the copy operation failed
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/copyPage.json{path}":
+        post:
+            description: Copy a page to a target location
+            parameters:
+                - name: path
+                  type: string
+                  in: path
+                  description: the path of the page to copy
+                  required: true
+                - name: to
+                  type: string
+                  in: formData
+                  description: the path of the page that is either the new parent for type 'child' or the next sibling for type 'before'
+                  required: true
+                - name: type
+                  type: string
+                  in: formData
+                  description: The type of move which can be 'child' (add as child of the given to node) or 'before' (add before the given to node)
+                  required: true
+                - name: newName
+                  type: string
+                  in: formData
+                  description: The new name that copied page will have
+                  required: false
+                - name: newTitle
+                  type: string
+                  in: formData
+                  description: The new title that copied resource will have
+                  required: false
+                - name: deep
+                  type: boolean
+                  in: formData
+                  description: flag indicating if children of the selected page should also be copied
+                  required: false
+            responses:
+                200:
+                    description: returns the from node name and path and the new node name and path
+                    schema:
+                        $ref: "#/definitions/Move"
+                400:
+                    description: If one of the paths did not resolve, the provided new name already exists under the new parent location, or the copy operation failed
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/createFolder.json{path}":
+        post:
+            description: Create a new folder in the system
+            parameters:
+                - name: path
+                  type: string
+                  in: path
+                  description: the path where to create the new folder
+                  required: true
+                - name: name
+                  type: string
+                  in: formData
+                  description: the name of the new folder
+                  required: true
+            responses:
+                200:
+                    description: returns all the content for the given node
+                    schema:
+                        type: object
+                        properties:
+                            type:
+                                type: string
+                                description: Type set to 'folder'
+                            status:
+                                type: string
+                                description: Status set to 'created'
+                            name:
+                                type: string
+                                description: Name of the created Object
+                            path:
+                                type: string
+                                description: Path of the newly created folder
+                400:
+                    description: If the path did not resolve to a resource, the name is null or the folder already exists
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/createObject.json{path}":
+        post:
+            description: Create a new object in the system
+            parameters:
+                - name: path
+                  type: string
+                  in: path
+                  description: the path where to create the object
+                  required: true
+                - name: name
+                  type: string
+                  in: formData
+                  description: the name of the new object
+                  required: true
+                - name: resourceType
+                  type: string
+                  in: formData
+                  description: the resource type of new the object
+            responses:
+                200:
+                    description: Object created as specified
+                    schema:
+                        type: object
+                        properties:
+                            type:
+                                type: string
+                                description: Type set to 'object'
+                            status:
+                                type: string
+                                description: Status set to 'created'
+                            name:
+                                type: string
+                                description: Name of the created Object
+                            path:
+                                type: string
+                                description: Path of the newly created object
+                            templatePath:
+                                type: string
+                                description: Template Path of the created object
+                400:
+                    description: If the path did not resolve to a resource, the name is null or the object already exists
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/createPage.json{path}":
+        post:
+            description: Create a new page in the system
+            parameters:
+                - name: path
+                  type: string
+                  in: path
+                  description: the path where to create the page
+                  required: true
+                - name: name
+                  type: string
+                  in: formData
+                  description: the name of the new page
+                  required: true
+                - name: templatePath
+                  type: string
+                  in: formData
+                  description: the path to the template of the page
+                  required: true
+            responses:
+                200:
+                    description: Page created as specified
+                    schema:
+                        type: object
+                        properties:
+                            type:
+                                type: string
+                                description: Type set to 'page'
+                            status:
+                                type: string
+                                description: Status set to 'created'
+                            name:
+                                type: string
+                                description: Name of the created Object
+                            path:
+                                type: string
+                                description: Path of the newly created page
+                            templatePath:
+                                type: string
+                                description: Template Path of the created page
+                400:
+                    description: If the path or template path did not resolve to a resource, the name is null or the page already exists
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/createTenant.json":
+        post:
+            description: Create a new Tenant by copying from an existing Tenant
+            parameters:
+                - name: fromTenant
+                  type: string
+                  in: formData
+                  description: The Name of the Source Tenant to copy from which must exist
+                  required: true
+                - name: toTenant
+                  type: string
+                  in: formData
+                  description: The Name of the Target Tenant to be copied to which must not exist
+                  required: true
+                - name: tenantTitle
+                  type: string
+                  in: formData
+                  description: The Title of the Target Tenant (if not provided the name is used instead)
+                  required: false
+                - name: colorPalette
+                  type: string
+                  in: formData
+                  description: Path to the Color Palette to be set like '/content/themecleanflex/pages/css/palettes/default.css'
+                  required: false
+                - name: tenantUserPwd
+                  type: string
+                  in: formData
+                  description: A password for the tenant user created for Admin
+                  required: false
+            responses:
+                200:
+                    description: returns the path of the new Tenant and the path to the source
+                    schema:
+                        type: object
+                        properties:
+                            type:
+                                type: string
+                                description: Type set to 'tenant'
+                            status:
+                                type: string
+                                description: Status set to 'created'
+                            name:
+                                type: string
+                                description: Name of the newly crated tenant
+                            path:
+                                type: string
+                                description: Path of the newly created tenant
+                            sourcePath:
+                                type: string
+                                description: Path of the source tenant
+                400:
+                    description: If the path did not resolve to a resource
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/createTemplate.json{path}":
+        post:
+            description: Create a new template in the system
+            parameters:
+                - name: path
+                  type: string
+                  in: path
+                  description: the path where to create the template
+                  required: true
+                - name: name
+                  type: string
+                  in: formData
+                  description: the name of the new template
+                - name: component
+                  type: string
+                  in: formData
+                  description: the path to the page component for this template
+            responses:
+                200:
+                    description: Template created as specified
+                    schema:
+                        type: object
+                        properties:
+                            type:
+                                type: string
+                                description: Type set to 'page'
+                            status:
+                                type: string
+                                description: Status set to 'created'
+                            name:
+                                type: string
+                                description: Name of the created Object
+                            path:
+                                type: string
+                                description: Path of the newly created template
+                400:
+                    description: If the path did not resolve to a resource, the name is null or the template already exists
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/listRecyclables.json{path}":
+        get:
+            description: List all deleted items for a given site which may be restored
+            parameters:
+                - name: path
+                  type: string
+                  in: path
+                  description: Root site path (e.g. /content/example)
+                  required: true
+            responses:
+                200:
+                    description: list of items from the site's recyclebin
+                    schema:
+                        type: object
+                        properties:
+                            current:
+                                type: integer
+                                description: used for pagination
+                            more:
+                                type: boolean
+                                description: used for pagination
+                            data:
+                                type: array
+                                description: array of result objects each containing a recyclable items details
+                                items:
+                                    type: object
+                                    properties:
+                                        path:
+                                            type: string
+                                            description: path of deleted item
+                                        deleted_by:
+                                            type: string
+                                        date_deleted:
+                                            type: string
+                                        recyclebin:
+                                            type: string
+                                            description: path of this recyclebin item
+                            path:
+                                type: string
+                                description: Path of the newly created template
+                400:
+                    description: If the path did not resolve to a resource, the name is null or the template already exists
+                    schema:
+                        $ref: "#/definitions/Error"
+                403:
+                    description: Forbidden. User does not have sufficient access to get list of site recyclables
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/restoreRecyclable.json{path}":
+        post:
+            description: Restore a previously deleted page, asset or asset folder
+            parameters:
+                - name: path
+                  type: string
+                  in: path
+                  description: Path of item from site recyclebin
+                  required: true
+            responses:
+                200:
+                    description: Success. Item was restored.
+                    schema:
+                        type: object
+                400:
+                    description: Bad request. Generic error status code indicating some problem handling the request.
+                    schema:
+                        $ref: "#/definitions/Error"
+                403:
+                    description: Forbidden. User does not have sufficient access to restore an item
+                    schema:
+                        $ref: "#/definitions/Error"
+                409:
+                    description: Conflict. Restore failed because of a conflict. Either an item already exists at the path, or the parents above the item do not exist
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/listVersions.json{path}":
+        get:
+            description: get list of a resources versions
+            parameters:
+                - name: path
+                  type: string
+                  in: path
+                  description: Path of resource
+                  required: true
+            responses:
+                200:
+                    description: Lists versions information for the resource
+                    schema:
+                        type: object
+                        properties:
+                            has_versions:
+                                type: boolean
+                                description: Set true when the resource has versions
+                            versions:
+                                type: array
+                                description: Array with each element representing a version of the resource
+                                items:
+                                    type: object
+                                    properties:
+                                        name:
+                                            type: string
+                                            description: Versions name
+                                        created:
+                                            type: string
+                                            description: Formatted date when the version was created
+                                        path:
+                                            type: string
+                                            description: Frozen node path of the version.
+                                        labels:
+                                            type: array
+                                            description: Array of labels (Strings) applied to the version
+                                            items:
+                                                type: string
+
+                                        base:
+                                            type: boolean
+                                            description: If base is true, this is the current version.
+                400:
+                    description: Versions could not be listed for the resource
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/manageVersions.json{path}":
+        post:
+            parameters:
+                - name: path
+                  type: string
+                  in: path
+                  description: Path of resource
+                  required: true
+                - name: action
+                  type: string
+                  in: formData
+                  description: createVersion, deleteVersion, or restoreVersion
+                  required: true
+                - name: version
+                  type: string
+                  in: formData
+                  description: name of the version to restore
+                  required: false
+            description: Endpoint to manage resources versions (create, delete, or restore)
+            responses:
+                200:
+                    description: Successful version management operation
+                    schema:
+                        type: object
+                400:
+                    description: Managing versions failed
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/deleteNode.json{path}":
+        post:
+            description: Delete a node
+            parameters:
+                - name: path
+                  type: string
+                  in: path
+                  description: the path to the node to delete
+                  required: true
+            responses:
+                200:
+                    description: Given Node was deleted
+                    schema:
+                        type: object
+                        properties:
+                            type:
+                                type: string
+                                description: Type set to 'node'
+                            status:
+                                type: string
+                                description: Status set to 'deleted'
+                            name:
+                                type: string
+                                description: Name of the deleted Node
+                            parentPath:
+                                type: string
+                                description: Path of the parent in which the Node was deleted from
+                400:
+                    description: If the path did not resolve to a resource or if the node could not be deleted
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/deletePage.json{path}":
+        post:
+            description: Delete a page
+            parameters:
+                - name: path
+                  type: string
+                  in: path
+                  description: the path to the page to delete
+                  required: true
+            responses:
+                200:
+                    description: Given Page was deleted
+                    schema:
+                        type: object
+                        properties:
+                            type:
+                                type: string
+                                description: Type set to 'page'
+                            status:
+                                type: string
+                                description: Status set to 'deleted'
+                            name:
+                                type: string
+                                description: Name of the deleted Node
+                            parentPath:
+                                type: string
+                                description: Path of the parent in which the Page was deleted from
+                400:
+                    description: If the path did not resolve to a resource, if the reosurce is not a page or if the page could not be deleted
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/deleteTenant.json":
+        post:
+            description: Delete a Tenant
+            parameters:
+                - name: name
+                  type: string
+                  in: formData
+                  description: The Name of the Tenant to delete
+                  required: true
+            responses:
+                200:
+                    description: returns the path of the deleted tenant
+                    schema:
+                        type: object
+                        properties:
+                            type:
+                                type: string
+                                description: Type set to 'tenant'
+                            status:
+                                type: string
+                                description: Status set to 'deleted'
+                            sourcePath:
+                                type: string
+                                description: Path of the source tenant
+                400:
+                    description: If the path did not resolve to a resource
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/getObject.json{path}":
+        get:
+            description: Return the content for the given object
+            parameters:
+                - description: the path to the content
+                  name: path
+                  type: string
+                  in: path
+                  required: true
+            responses:
+                200:
+                    description: returns all the content for the given node
+                    schema:
+                        type: object
+                        additionalProperties:
+                            type: object
+    "/updateTenant.json":
+        post:
+            description: Update a tenant's components and frontend libs from its source tenant
+            parameters:
+                - name: name
+                  type: string
+                  in: formData
+                  description: The Name of the tenant to update
+                  required: true
+            responses:
+                200:
+                    description: returns the path of the new tenant and the path to the source
+                    schema:
+                        type: object
+                        properties:
+                            type:
+                                type: string
+                                description: Type set to 'tenant'
+                            status:
+                                type: string
+                                description: Status set to 'updated'
+                            name:
+                                type: string
+                                description: Name of the updated tenant
+                400:
+                    description: If the name was not a valid tenant name
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/insertNodeAt.json{path}":
+        post:
+            description: Insert node at a path based on a component or content properties
+            parameters:
+                - name: path
+                  type: string
+                  in: path
+                  description: the path to the parent resource for into moves or the sibling for before or after
+                  required: true
+                - name: component
+                  type: string
+                  in: formData
+                  description: the path to the Node Component (resource type)
+                - name: content
                   type: object
-                  properties:
-                    path:
-                      type: string
-                      description: path of deleted item
-                    deleted_by:
-                      type: string
-                    date_deleted:
-                      type: string
-                    recyclebin:
-                      type: string
-                      description: path of this recyclebin item
-              path:
-                type: string
-                description: Path of the newly created template
-        400:
-          description: If the path did not resolve to a resource, the name is null or the template already exists
-          schema:
-            $ref: "#/definitions/Error"
-        403:
-          description: Forbidden. User does not have sufficient access to get list of site recyclables
-          schema:
-            $ref: "#/definitions/Error"
-  '/restoreRecyclable.json{path}':
-    post:
-      description: Restore a previously deleted page, asset or asset folder
-      parameters:
-        - name: path
-          type: string
-          in: path
-          description: Path of item from site recyclebin
-          required: true
-      responses:
-        200:
-          description: Success. Item was restored.
-          schema:
-            type: object
-        400:
-          description: Bad request. Generic error status code indicating some problem handling the request.
-          schema:
-            $ref: "#/definitions/Error"
-        403:
-          description: Forbidden. User does not have sufficient access to restore an item
-          schema:
-            $ref: "#/definitions/Error"
-        409:
-          description: Conflict. Restore failed because of a conflict. Either an item already exists at the path, or the parents above the item do not exist
-          schema:
-            $ref: "#/definitions/Error"
-  '/listVersions.json{path}':
-    get:
-      description: get list of a resources versions
-      parameters:
-        - name: path
-          type: string
-          in: path
-          description: Path of resource
-          required: true
-      responses:
-        200:
-          description: Lists versions information for the resource
-          schema:
-            type: object
-            properties:
-              has_versions:
-                type: boolean
-                description: Set true when the resource has versions
-              versions:
-                type: array
-                description: Array with each element representing a version of the resource
-                items:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                      description: Versions name
-                    created:
-                      type: string
-                      description: Formatted date when the version was created
-                    path:
-                      type: string
-                      description: Frozen node path of the version.
-                    labels:
+                  in: formData
+                  description: Node properties in Json format. 'component' must provide the component node path and path is disregarded
+                - name: drop
+                  type: string
+                  in: formData
+                  description: before, after, into, into-before, into-after
+                - name: type
+                  type: string
+                  in: formData
+                  description: same as drop parameter and can be used instead of drop
+                - name: variation
+                  type: string
+                  in: formData
+                  description: name of a component variation to be used if available
+            responses:
+                200:
+                    description: Returns the parent model
+                    schema:
+                        type: object
+                        additionalProperties:
+                            type: object
+                400:
+                    description: If the path did not resolve to a resource or if the move / reorder failed
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/list.json/{type}":
+        get:
+            description: List the available tools
+            parameters:
+                - name: type
+                  type: string
+                  in: path
+                  description: either 'tools' or 'tools/config'
+                  required: true
+            responses:
+                200:
+                    description: the available tools
+                    schema:
+                        type: object
+                        additionalProperties:
+                            type: object
+                400:
+                    description: If the type was unrecognized or the Json serialization failed
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/listTenants.json":
+        get:
+            description: List all the tenants (top level tenants) on this peregrine instance
+            responses:
+                200:
+                    description: returns the list of tenants
+                    schema:
+                        type: object
+                        properties:
+                            tenants:
+                                type: array
+                                items:
+                                    type: object
+                                    properties:
+                                        name:
+                                            type: string
+                                        title:
+                                            type: string
+                                        roots:
+                                            type: object
+    "/moveNodeTo.json{path}":
+        post:
+            description: Move the given node to different location
+            parameters:
+                - name: path
+                  type: string
+                  in: path
+                  description: the path of the parent resource for into moves or the sibling for before or after
+                  required: true
+                - name: component
+                  type: string
+                  in: formData
+                  description: the path to the Node to be moved (source)
+                - name: drop
+                  type: string
+                  in: formData
+                  description: before, after, into, into-before, into-after
+                - name: type
+                  type: string
+                  in: formData
+                  description: same as drop parameter and can be used instead of drop
+            responses:
+                "200":
+                    description: returns the new node structure at the drop location
+                    schema:
+                        type: object
+                        additionalProperties:
+                            type: object
+                400:
+                    description: If the path or component did not resolve to a resource or if the move / reorder failed
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/move.json{path}":
+        post:
+            description: Move the given node to a new place
+            parameters:
+                - name: path
+                  type: string
+                  in: path
+                  description: the path of the resource which is moved
+                  required: true
+                - name: to
+                  type: string
+                  in: formData
+                  description: the path of the resource that is either the new parent for type 'child' or the next/previous sibling for type 'before' or 'after'
+                  required: true
+                - name: type
+                  type: string
+                  in: formData
+                  description: The type of move which can be 'child' (add as child of the given to node), 'after' (add after the given to node) or 'before' (add before the given to node)
+                  required: true
+            responses:
+                200:
+                    description: returns the from node name and path and the new node name and path
+                    schema:
+                        $ref: "#/definitions/Move"
+                400:
+                    description: If the path and to did not resolve to a resource or if the type was wrong
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/rename.json{path}":
+        post:
+            description: Renames a Resource and tries to keep the order intact
+            parameters:
+                - name: path
+                  type: string
+                  in: path
+                  description: the path of the resource which is renamed
+                  required: true
+                - name: title
+                  type: string
+                  in: formData
+                  description: the new title of the resource getting renamed
+                  required: false
+                - name: to
+                  type: string
+                  in: formData
+                  description: the new name of the resource
+                  required: true
+            responses:
+                200:
+                    description: returns the from node name and path and the new node name and path
+                    schema:
+                        $ref: "#/definitions/Move"
+                400:
+                    description: If the path did not resolve to a resource, the to name was not provided or contained a slash
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/nodes.json{path}":
+        get:
+            parameters:
+                - name: path
+                  type: string
+                  in: path
+                  required: true
+            responses:
+                "200":
+                    description: returns the node tree
+                    schema:
+                        type: object
+                        additionalProperties:
+                            type: object
+    "/templates.json":
+        get:
+            responses:
+                "200":
+                    description: returns the templates
+                    schema:
+                        type: object
+                        additionalProperties:
+                            type: object
+    "/objects.json":
+        get:
+            responses:
+                "200":
+                    description: returns the templates
+                    schema:
+                        type: object
+                        additionalProperties:
+                            type: object
+    "/components.json":
+        get:
+            responses:
+                "200":
+                    description: returns the components
+                    schema:
+                        type: object
+                        additionalProperties:
+                            type: object
+    "/listRepl.json":
+        get:
+            description: List all available and active Replication Services
+            responses:
+                200:
+                    description: returns the list of
+                    schema:
+                        type: object
+                        properties:
+                            replicationServices:
+                                type: array
+                                items:
+                                    type: object
+                                    properties:
+                                        name:
+                                            type: string
+                                        description:
+                                            type: string
+    "/repl.json{path}":
+        post:
+            description: Replicate the given node(s) using the named replication service
+            parameters:
+                - name: path
+                  type: string
+                  in: path
+                  description: the path of the node(s) to be replicated
+                  required: true
+                - name: name
+                  type: string
+                  in: formData
+                  description: the name of the replication service to be used
+                  required: false
+                - name: deep
+                  type: boolean
+                  in: formData
+                  description: flag indicating if only the given node and its content is replicated or all sub nodes
+                  required: false
+                - name: deactivate
+                  type: boolean
+                  in: formData
+                  description: flag indicating if the target nodes are removed aka deactivated
+                  required: false
+                - name: resources
+                  in: formData
+                  description: Resources to replicate allow with the path; such as references assets, templates and pages.
+                  schema:
                       type: array
-                      description: Array of labels (Strings) applied to the version
                       items:
+                          $ref: "#/definitions/ReplResource"
+            responses:
+                200:
+                    description: returns the root node name / path and the list of the nodes referenced
+                    schema:
+                        type: object
+                        properties:
+                            sourceName:
+                                type: string
+                            sourcePath:
+                                type: string
+                            replicates:
+                                type: array
+                                items:
+                                    type: object
+                                    properties:
+                                        name:
+                                            type: string
+                                        path:
+                                            type: string
+                400:
+                    description: If the path did not resolve to a resource
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/ref.json{path}":
+        get:
+            description: List references and their references of the given page
+            parameters:
+                - name: path
+                  type: string
+                  in: path
+                  description: the path of the resource to lists its references
+                  required: true
+            responses:
+                200:
+                    description: returns the root node name / path and the list of the nodes referenced
+                    schema:
+                        type: object
+                        properties:
+                            sourceName:
+                                type: string
+                            sourcePath:
+                                type: string
+                            references:
+                                type: array
+                                items:
+                                    type: object
+                                    properties:
+                                        name:
+                                            type: string
+                                        path:
+                                            type: string
+                400:
+                    description: If the path did not resolve to a resource
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/refBy.json{path}":
+        get:
+            description: List all the nodes that have a reference to the given node
+            parameters:
+                - name: path
+                  type: string
+                  in: path
+                  description: the path of the resource which is the targer of the reference
+                  required: true
+            responses:
+                200:
+                    description: returns the root node name / path and the list of the nodes that reference the given page which includes the node, the property node and the property name that contains the link
+                    schema:
+                        type: object
+                        properties:
+                            sourceName:
+                                type: string
+                            sourcePath:
+                                type: string
+                            referencedBy:
+                                type: array
+                                items:
+                                    type: object
+                                    properties:
+                                        name:
+                                            description: Name of the Page having a reference
+                                            type: string
+                                        path:
+                                            description: Path to the Page having a reference
+                                            type: string
+                                        propertyName:
+                                            description: Name of the Property containing the reference
+                                            type: string
+                                        propertyPath:
+                                            description: Path of the Resource with the property containing the reference
+                                            type: string
+                400:
+                    description: If the path did not resolve to a resource
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/uploadFiles.json{path}":
+        post:
+            parameters:
+                - name: path
+                  type: string
+                  in: path
+                  description: Path to the resource the assets are added to
+                  required: true
+            responses:
+                200:
+                    description: Returns the parent node together with an array of asset uploaded
+                    schema:
+                        type: object
+                        properties:
+                            resourceName:
+                                type: string
+                                description: Name of the Parent Resource
+                            resourcePath:
+                                type: string
+                                description: Path of the Parent Resource
+                            assets:
+                                type: array
+                                items:
+                                    type: object
+                                    properties:
+                                        assetName:
+                                            type: string
+                                            description: Name of the created Asset Resource
+                                        assetPath:
+                                            type: string
+                                            description: Path of the created Asset Resource
+                400:
+                    description: If the path or if the asset creation failed
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/backupTenant.json{path}":
+        get:
+            description: Provides data about latest Site Backup
+            parameters:
+                - name: path
+                  type: string
+                  in: path
+                  description: the path of the tenant site
+                  required: true
+            responses:
+                200:
+                    description: returns the status from the operation
+                    schema:
+                        $ref: "#/definitions/OperationResponse"
+                400:
+                    description: Error of the failed backup
+                    schema:
+                        $ref: "#/definitions/Error"
+        post:
+            description: Backs up a Tenant Site
+            parameters:
+                - name: path
+                  type: string
+                  in: path
+                  description: the path of the tenant site
+                  required: true
+            responses:
+                200:
+                    description: returns the status from the operation
+                    schema:
+                        $ref: "#/definitions/OperationResponse"
+                400:
+                    description: Error of the failed backup
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/downloadBackupTenant.json{path}":
+        get:
+            description: Downloads latest Site Backup
+            parameters:
+                - name: path
+                  type: string
+                  in: path
+                  description: the path of the tenant site
+                  required: true
+            responses:
+                200:
+                    description: returns the package as byte stream
+                    schema:
                         type: string
-                       
-                    base:
-                      type: boolean
-                      description: If base is true, this is the current version.
-        400:
-          description: Versions could not be listed for the resource
-          schema:
-            $ref: "#/definitions/Error"
-  '/manageVersions.json{path}':
-    post:
-      parameters:
-        - name: path
-          type: string
-          in: path
-          description: Path of resource
-          required: true
-        - name: action
-          type: string
-          in: formData
-          description: createVersion, deleteVersion, or restoreVersion
-          required: true
-        - name: version
-          type: string
-          in: formData
-          description: name of the version to restore
-          required: false
-      description: Endpoint to manage resources versions (create, delete, or restore)
-      responses:
-        200:
-          description: Successful version management operation
-          schema:
-            type: object
-        400:
-          description: Managing versions failed
-          schema:
-            $ref: "#/definitions/Error"
-  '/deleteNode.json{path}':
-    post:
-      description: Delete a node
-      parameters:
-        - name: path
-          type: string
-          in: path
-          description: the path to the node to delete
-          required: true
-      responses:
-        200:
-          description: Given Node was deleted
-          schema:
-            type: object
-            properties:
-              type:
-                type: string
-                description: Type set to 'node'
-              status:
-                type: string
-                description: Status set to 'deleted'
-              name:
-                type: string
-                description: Name of the deleted Node
-              parentPath:
-                type: string
-                description: Path of the parent in which the Node was deleted from
-        400:
-          description: If the path did not resolve to a resource or if the node could not be deleted
-          schema:
-            $ref: "#/definitions/Error"
-  '/deletePage.json{path}':
-    post:
-      description: Delete a page
-      parameters:
-        - name: path
-          type: string
-          in: path
-          description: the path to the page to delete
-          required: true
-      responses:
-        200:
-          description: Given Page was deleted
-          schema:
-            type: object
-            properties:
-              type:
-                type: string
-                description: Type set to 'page'
-              status:
-                type: string
-                description: Status set to 'deleted'
-              name:
-                type: string
-                description: Name of the deleted Node
-              parentPath:
-                type: string
-                description: Path of the parent in which the Page was deleted from
-        400:
-          description: If the path did not resolve to a resource, if the reosurce is not a page or if the page could not be deleted
-          schema:
-            $ref: "#/definitions/Error"
-  '/deleteTenant.json':
-    post:
-      description: Delete a Tenant
-      parameters:
-        - name: name
-          type: string
-          in: formData
-          description: The Name of the Tenant to delete
-          required: true
-      responses:
-        200:
-          description: returns the path of the deleted tenant
-          schema:
-            type: object
-            properties:
-              type:
-                type: string
-                description: Type set to 'tenant'
-              status:
-                type: string
-                description: Status set to 'deleted'
-              sourcePath:
-                type: string
-                description: Path of the source tenant
-        400:
-          description: If the path did not resolve to a resource
-          schema:
-            $ref: "#/definitions/Error"
-  '/getObject.json{path}':
-    get:
-      description: Return the content for the given object
-      parameters:
-        - description: the path to the content
-          name: path
-          type: string
-          in: path
-          required: true
-      responses:
-        200:
-          description: returns all the content for the given node
-          schema:
-            type: object
-            additionalProperties:
-              type: object
-  '/updateTenant.json':
-    post:
-      description: Update a tenant's components and frontend libs from its source tenant
-      parameters:
-        - name: name
-          type: string
-          in: formData
-          description: The Name of the tenant to update
-          required: true
-      responses:
-        200:
-          description: returns the path of the new tenant and the path to the source
-          schema:
-            type: object
-            properties:
-              type:
-                type: string
-                description: Type set to 'tenant'
-              status:
-                type: string
-                description: Status set to 'updated'
-              name:
-                type: string
-                description: Name of the updated tenant
-        400:
-          description: If the name was not a valid tenant name
-          schema:
-            $ref: "#/definitions/Error"
-  '/insertNodeAt.json{path}':
-    post:
-      description: Insert node at a path based on a component or content properties
-      parameters:
-        - name: path
-          type: string
-          in: path
-          description: the path to the parent resource for into moves or the sibling for before or after
-          required: true
-        - name: component
-          type: string
-          in: formData
-          description: the path to the Node Component (resource type)
-        - name: content
-          type: object
-          in: formData
-          description: Node properties in Json format. 'component' must provide the component node path and path is disregarded
-        - name: drop
-          type: string
-          in: formData
-          description: before, after, into, into-before, into-after
-        - name: type
-          type: string
-          in: formData
-          description: same as drop parameter and can be used instead of drop
-        - name: variation
-          type: string
-          in: formData
-          description: name of a component variation to be used if available
-      responses:
-        200:
-          description: Returns the parent model
-          schema:
-            type: object
-            additionalProperties:
-              type: object
-        400:
-          description: If the path did not resolve to a resource or if the move / reorder failed
-          schema:
-            $ref: "#/definitions/Error"
-  '/list.json/{type}':
-    get:
-      description: List the available tools
-      parameters:
-        - name: type
-          type: string
-          in: path
-          description: either 'tools' or 'tools/config'
-          required: true
-      responses:
-        200:
-          description: the available tools
-          schema:
-            type: object
-            additionalProperties:
-              type: object
-        400:
-          description: If the type was unrecognized or the Json serialization failed
-          schema:
-            $ref: "#/definitions/Error"
-  '/listTenants.json':
-    get:
-      description: List all the tenants (top level tenants) on this peregrine instance
-      responses:
-        200:
-          description: returns the list of tenants
-          schema:
-            type: object
-            properties:
-              tenants:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                    title:
-                      type: string
-                    roots:
-                      type: object
-  '/moveNodeTo.json{path}':
-    post:
-      description: Move the given node to different location
-      parameters:
-        - name: path
-          type: string
-          in: path
-          description: the path of the parent resource for into moves or the sibling for before or after
-          required: true
-        - name: component
-          type: string
-          in: formData
-          description: the path to the Node to be moved (source)
-        - name: drop
-          type: string
-          in: formData
-          description: before, after, into, into-before, into-after
-        - name: type
-          type: string
-          in: formData
-          description: same as drop parameter and can be used instead of drop
-      responses:
-        '200':
-          description: returns the new node structure at the drop location
-          schema:
-            type: object
-            additionalProperties:
-              type: object
-        400:
-          description: If the path or component did not resolve to a resource or if the move / reorder failed
-          schema:
-            $ref: "#/definitions/Error"
-  '/move.json{path}':
-    post:
-      description: Move the given node to a new place
-      parameters:
-        - name: path
-          type: string
-          in: path
-          description: the path of the resource which is moved
-          required: true
-        - name: to
-          type: string
-          in: formData
-          description: the path of the resource that is either the new parent for type 'child' or the next/previous sibling for type 'before' or 'after'
-          required: true
-        - name: type
-          type: string
-          in: formData
-          description: The type of move which can be 'child' (add as child of the given to node), 'after' (add after the given to node) or 'before' (add before the given to node)
-          required: true
-      responses:
-        200:
-          description: returns the from node name and path and the new node name and path
-          schema:
-            $ref: "#/definitions/Move"
-        400:
-          description: If the path and to did not resolve to a resource or if the type was wrong
-          schema:
-            $ref: "#/definitions/Error"
-  '/rename.json{path}':
-    post:
-      description: Renames a Resource and tries to keep the order intact
-      parameters:
-        - name: path
-          type: string
-          in: path
-          description: the path of the resource which is renamed
-          required: true
-        - name: title
-          type: string
-          in: formData
-          description: the new title of the resource getting renamed
-          required: false
-        - name: to
-          type: string
-          in: formData
-          description: the new name of the resource
-          required: true
-      responses:
-        200:
-          description: returns the from node name and path and the new node name and path
-          schema:
-            $ref: "#/definitions/Move"
-        400:
-          description: If the path did not resolve to a resource, the to name was not provided or contained a slash
-          schema:
-            $ref: "#/definitions/Error"
-  '/nodes.json{path}':
-    get:
-      parameters:
-        - name: path
-          type: string
-          in: path
-          required: true
-      responses:
-        '200':
-          description: returns the node tree
-          schema:
-            type: object
-            additionalProperties:
-              type: object
-  '/templates.json':
-    get:
-      responses:
-        '200':
-          description: returns the templates
-          schema:
-            type: object
-            additionalProperties:
-              type: object
-  '/objects.json':
-    get:
-      responses:
-        '200':
-          description: returns the templates
-          schema:
-            type: object
-            additionalProperties:
-              type: object
-  '/components.json':
-    get:
-      responses:
-        '200':
-          description: returns the components
-          schema:
-            type: object
-            additionalProperties:
-              type: object
-  '/listRepl.json':
-    get:
-      description: List all available and active Replication Services
-      responses:
-        200:
-          description: returns the list of
-          schema:
-            type: object
-            properties:
-              replicationServices:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                    description:
-                      type: string
-  '/repl.json{path}':
-    post:
-      description: Replicate the given node(s) using the named replication service
-      parameters:
-        - name: path
-          type: string
-          in: path
-          description: the path of the node(s) to be replicated
-          required: true
-        - name: name
-          type: string
-          in: formData
-          description: the name of the replication service to be used
-          required: false
-        - name: deep
-          type: boolean
-          in: formData
-          description: flag indicating if only the given node and its content is replicated or all sub nodes
-          required: false
-        - name: deactivate
-          type: boolean
-          in: formData
-          description: flag indicating if the target nodes are removed aka deactivated
-          required: false
-        - name: resources
-          in: formData
-          description: Resources to replicate allow with the path; such as references assets, templates and pages.
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/ReplResource'
-      responses:
-        200:
-          description: returns the root node name / path and the list of the nodes referenced
-          schema:
-            type: object
-            properties:
-              sourceName:
-                type: string
-              sourcePath:
-                type: string
-              replicates:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                    path:
-                      type: string
-        400:
-          description: If the path did not resolve to a resource
-          schema:
-            $ref: "#/definitions/Error"
-  '/ref.json{path}':
-    get:
-      description: List references and their references of the given page
-      parameters:
-        - name: path
-          type: string
-          in: path
-          description: the path of the resource to lists its references
-          required: true
-      responses:
-        200:
-          description: returns the root node name / path and the list of the nodes referenced
-          schema:
-            type: object
-            properties:
-              sourceName:
-                type: string
-              sourcePath:
-                type: string
-              references:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                    path:
-                      type: string
-        400:
-          description: If the path did not resolve to a resource
-          schema:
-            $ref: "#/definitions/Error"
-  '/refBy.json{path}':
-    get:
-      description: List all the nodes that have a reference to the given node
-      parameters:
-        - name: path
-          type: string
-          in: path
-          description: the path of the resource which is the targer of the reference
-          required: true
-      responses:
-        200:
-          description: returns the root node name / path and the list of the nodes that reference the given page which includes the node, the property node and the property name that contains the link
-          schema:
-            type: object
-            properties:
-              sourceName:
-                type: string
-              sourcePath:
-                type: string
-              referencedBy:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    name:
-                      description: Name of the Page having a reference
-                      type: string
-                    path:
-                      description: Path to the Page having a reference
-                      type: string
-                    propertyName:
-                      description: Name of the Property containing the reference
-                      type: string
-                    propertyPath:
-                      description: Path of the Resource with the property containing the reference
-                      type: string
-        400:
-          description: If the path did not resolve to a resource
-          schema:
-            $ref: "#/definitions/Error"
-  '/uploadFiles.json{path}':
-    post:
-      parameters:
-        - name: path
-          type: string
-          in: path
-          description: Path to the resource the assets are added to
-          required: true
-      responses:
-        200:
-          description: Returns the parent node together with an array of asset uploaded
-          schema:
-            type: object
-            properties:
-              resourceName:
-                type: string
-                description: Name of the Parent Resource
-              resourcePath:
-                type: string
-                description: Path of the Parent Resource
-              assets:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    assetName:
-                      type: string
-                      description: Name of the created Asset Resource
-                    assetPath:
-                      type: string
-                      description: Path of the created Asset Resource
-        400:
-          description: If the path or if the asset creation failed
-          schema:
-            $ref: "#/definitions/Error"
-  '/backupTenant.json{path}':
-    get:
-      description: Provides data about latest Site Backup
-      parameters:
-        - name: path
-          type: string
-          in: path
-          description: the path of the tenant site
-          required: true
-      responses:
-        200:
-          description: returns the status from the operation
-          schema:
-            $ref: "#/definitions/OperationResponse"
-        400:
-          description: Error of the failed backup
-          schema:
-            $ref: "#/definitions/Error"
-    post:
-      description: Backs up a Tenant Site
-      parameters:
-        - name: path
-          type: string
-          in: path
-          description: the path of the tenant site
-          required: true
-      responses:
-        200:
-          description: returns the status from the operation
-          schema:
-            $ref: "#/definitions/OperationResponse"
-        400:
-          description: Error of the failed backup
-          schema:
-            $ref: "#/definitions/Error"
-  '/downloadBackupTenant.json{path}':
-    get:
-      description: Downloads latest Site Backup
-      parameters:
-        - name: path
-          type: string
-          in: path
-          description: the path of the tenant site
-          required: true
-      responses:
-        200:
-          description: returns the package as byte stream
-          schema:
-            type: string
-            format: binary
-        400:
-          description: Error of the failed backup
-          schema:
-            $ref: "#/definitions/Error"
-  '/uploadBackupTenant.json{path}':
-    post:
-      description: Upload Site Backup
-      parameters:
-        - name: file
-          type: string
-          format: binary
-          in: file
-          description: the file to be uploaded
-          required: true
-      responses:
-        200:
-          description: returns the package as byte stream
-          schema:
-            type: string
-            format: binary
-        400:
-          description: Error of the failed backup
-          schema:
-            $ref: "#/definitions/Error"
-  '/restoreTenant.json{path}':
-    post:
-      description: Restores a previously Tenant Site Backup
-      parameters:
-        - name: path
-          type: string
-          in: path
-          description: the path of the tenant site
-          required: true
-      responses:
-        200:
-          description: returns the status from the operation
-          schema:
-            $ref: "#/definitions/OperationResponse"
-        400:
-          description: Error of the failed restoring
-          schema:
-            $ref: "#/definitions/Error"
-  '/tenants/name/available.json':
-    get:
-      description: Checks whether the tenant name is available
-      parameters:
-        - name: name
-          type: string
-          in: query
-          description: the name of the tenant site to be checked
-          required: true
-      responses:
-        200:
-          description: returns json object with a 'result' marker field
-          schema:
-            $ref: "#/definitions/BooleanResponse"
-        400:
-          description: Missing 'name' parameter error
-          schema:
-            $ref: "#/definitions/Error"
+                        format: binary
+                400:
+                    description: Error of the failed backup
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/uploadBackupTenant.json{path}":
+        post:
+            description: Upload Site Backup
+            parameters:
+                - name: file
+                  type: string
+                  format: binary
+                  in: file
+                  description: the file to be uploaded
+                  required: true
+            responses:
+                200:
+                    description: returns the package as byte stream
+                    schema:
+                        type: string
+                        format: binary
+                400:
+                    description: Error of the failed backup
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/restoreTenant.json{path}":
+        post:
+            description: Restores a previously Tenant Site Backup
+            parameters:
+                - name: path
+                  type: string
+                  in: path
+                  description: the path of the tenant site
+                  required: true
+            responses:
+                200:
+                    description: returns the status from the operation
+                    schema:
+                        $ref: "#/definitions/OperationResponse"
+                400:
+                    description: Error of the failed restoring
+                    schema:
+                        $ref: "#/definitions/Error"
+    "/tenants/name/available.json":
+        get:
+            description: Checks whether the tenant name is available
+            parameters:
+                - name: name
+                  type: string
+                  in: query
+                  description: the name of the tenant site to be checked
+                  required: true
+            responses:
+                200:
+                    description: returns json object with a 'result' marker field
+                    schema:
+                        $ref: "#/definitions/BooleanResponse"
+                400:
+                    description: Missing 'name' parameter error
+                    schema:
+                        $ref: "#/definitions/Error"
 definitions:
-  Error:
-    type: object
-    properties:
-      code:
-        type: integer
-      message:
-        type: string
-      path:
-        type: string
-      exception:
-        type: string
-      additionalProperties:
-        type: string
-  Move:
-    type: object
-    properties:
-      sourceName:
-        type: string
-      sourcePath:
-        type: string
-      targetName:
-        type: string
-      targetPath:
-        type: string
-  ReplResource:
-    type: object
-    properties:
-      path:
-        type: string
-        description: path of a reference
-      deactivate:
-        type: boolean
-        description: true to deactivate
-  OperationResponse:
-    type: object
-    properties:
-      tenant:
-        type: string
-      action:
-        type: string
-      outcome:
-        type: string
-  BooleanResponse:
-    type: object
-    properties:
-      result:
-        type: boolean
+    Error:
+        type: object
+        properties:
+            code:
+                type: integer
+            message:
+                type: string
+            path:
+                type: string
+            exception:
+                type: string
+            additionalProperties:
+                type: string
+    Move:
+        type: object
+        properties:
+            sourceName:
+                type: string
+            sourcePath:
+                type: string
+            targetName:
+                type: string
+            targetPath:
+                type: string
+    ReplResource:
+        type: object
+        properties:
+            path:
+                type: string
+                description: path of a reference
+            deactivate:
+                type: boolean
+                description: true to deactivate
+    OperationResponse:
+        type: object
+        properties:
+            tenant:
+                type: string
+            action:
+                type: string
+            outcome:
+                type: string
+    BooleanResponse:
+        type: object
+        properties:
+            result:
+                type: boolean

@@ -1,39 +1,39 @@
 .component-explorer {
 	height: 100%;
 	overflow: auto;
-	.collapsible-body{
+	.collapsible-body {
 		padding: 5px;
-	.collection { 
-		overflow: hidden;
-		border: 0;
-		.collection-item {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			background: none;
-			border: none;
-			color: $link-color;
-			cursor: move;
-			&:hover,
-			&:focus,
-			&:active {
-				background-color: #fff;
-			}
-			&:active {
+		.collection {
+			overflow: hidden;
+			border: 0;
+			.collection-item {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				background: none;
+				border: none;
+				color: $link-color;
 				cursor: move;
-			}
-			.material-icons {
-				color: #b0bec5;
-				vertical-align: middle;
-				margin-right: 0.5rem;
-			}
-			div {
-				width: 100%;
-			}
-			img {
-				max-width: 100%;
+				&:hover,
+				&:focus,
+				&:active {
+					background-color: #fff;
+				}
+				&:active {
+					cursor: move;
+				}
+				.material-icons {
+					color: #b0bec5;
+					vertical-align: middle;
+					margin-right: 0.5rem;
+				}
+				div {
+					width: 100%;
+				}
+				img {
+					max-width: 100%;
+				}
 			}
 		}
 	}
-}
 }

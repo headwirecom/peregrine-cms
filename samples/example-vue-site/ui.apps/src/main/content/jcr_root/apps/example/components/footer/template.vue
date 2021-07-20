@@ -23,15 +23,18 @@
   #L%
   -->
 <template>
-    <footer class="navbar navbar-light bg-faded fixed-bottom" v-bind:data-per-path="model.path">
-      <span class="navbar-text">
-        &copy; 2017 by peregrine-cms, a headwire company
-      </span>
-    </footer>
+	<footer
+		class="navbar navbar-light bg-faded fixed-bottom"
+		v-bind:data-per-path="model.path"
+	>
+		<span class="navbar-text">
+			&copy; 2017 by peregrine-cms, a headwire company
+		</span>
+	</footer>
 </template>
 
 <script>
-    export default {
-        props: [ 'model' ]
-    }
+	export default {
+		props: ["model"],
+	};
 </script>

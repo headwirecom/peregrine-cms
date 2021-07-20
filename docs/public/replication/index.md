@@ -27,10 +27,11 @@ as it acts as a container to other resources.
 Let's start with
 
 ## Root Site
-* [Replicate new Root Site](root-site-new.md)
-* [Replicate updated Root Site](root-site-updated.md)
-* [Un-publish Root Site](root-site-unpublished.md)
-* [Replicate deleted Root Site](root-site-deleted.md)
+
+-   [Replicate new Root Site](root-site-new.md)
+-   [Replicate updated Root Site](root-site-updated.md)
+-   [Un-publish Root Site](root-site-unpublished.md)
+-   [Replicate deleted Root Site](root-site-deleted.md)
 
 ## Resource
 
@@ -49,35 +50,42 @@ We want to perform an action `A` on a resource `R` that will move it from state 
 Let's address this below and first focus on a simple happy path for each action,
 where we use a placeholder for the above:
 
-* [Replicate new Resource](resource-new.md)
-* [Replicate updated Resource](resource-updated.md)
-* [Un-publish Resource](resource-unpublished.md)
-* [Replicate deleted Resource](resource-deleted.md)
+-   [Replicate new Resource](resource-new.md)
+-   [Replicate updated Resource](resource-updated.md)
+-   [Un-publish Resource](resource-unpublished.md)
+-   [Replicate deleted Resource](resource-deleted.md)
 
 Whenever we speak of associated resources in the above scenarios, there are many combinations of the state
 of base resource, action and referenced / referencing resource that have to be considered for activation
 to keep the published version in good shape. We have the following
 [combinations listing](https://docs.google.com/spreadsheets/d/1IYNtmZCszbP1S9TZV4ZzlinLnh7zlsnzsSlnYpwC3Bc) to consider:
+
 ### Referenced Resource
+
 ![Definition: Referenced Resource](referenced-definition.png)
 
 ![Combinations = Edge Cases: Referenced Resources](referenced-resources.png)
+
 ### Referencing Resource
+
 ![Definition: Referencing Resource](referencing-definition.png)
 
 ![Combinations = Edge Cases: Referencing Resources](referencing-resources.png)
 
 ## Page Tree
-* Do we want to publish parents of a page when we publish the page? Or just mock the path from the root to it?
+
+-   Do we want to publish parents of a page when we publish the page? Or just mock the path from the root to it?
 
 ## Specific Resource Type Use Cases
-* [Replicate new Sitemap](sitemap-new.md)
-* [Replicate updated Sitemap](sitemap-updated.md)
-* [Replicate deleted Sitemap](sitemap-deleted.md)
+
+-   [Replicate new Sitemap](sitemap-new.md)
+-   [Replicate updated Sitemap](sitemap-updated.md)
+-   [Replicate deleted Sitemap](sitemap-deleted.md)
 
 # Implementation Notes
 
 ## Replication Types
+
 We have to note that there are two basic replication strategies in Peregrine:
 
 ![Replication Strategies](replication-types.jpg)
@@ -88,7 +96,7 @@ final renderings of the replicated resources. A lot can go wrong if we don't han
 properly.
 
 ## Versioning Role
+
 We should version the published resources and use those versions to render published resources that depend on them.
 Let's note though, that it will be much more feasible to simply keep an up-to-date published tree of resources
 than to use the versions directly.
-

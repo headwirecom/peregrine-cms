@@ -23,117 +23,155 @@
   #L%
   -->
 <template>
-    <div class="tooling-page" v-if="allowRender">
-        <template v-for="child in model.children">
-            <component v-bind:is="child.component" v-bind:model="child" v-bind:key="child.path"></component>
-        </template>
-        <admin-components-about></admin-components-about>
-        <admin-components-notifyuser></admin-components-notifyuser>
-        <admin-components-askuser></admin-components-askuser>
-        <admin-components-promptuser></admin-components-promptuser>
-    </div>
+	<div class="tooling-page" v-if="allowRender">
+		<template v-for="child in model.children">
+			<component
+				v-bind:is="child.component"
+				v-bind:model="child"
+				v-bind:key="child.path"
+			></component>
+		</template>
+		<admin-components-about></admin-components-about>
+		<admin-components-notifyuser></admin-components-notifyuser>
+		<admin-components-askuser></admin-components-askuser>
+		<admin-components-promptuser></admin-components-promptuser>
+	</div>
 </template>
 
 <script>
-import {set} from '../../../../../../js/utils'
+	import { set } from "../../../../../../js/utils";
 
-export default {
-    props: ['model'],
-    mounted(){
-        // init materialize plugins
-        $('.modal').modal()
-        if(this.preferences.firstLogin != undefined
-                && this.preferences.firstLogin == 'true'
-                && !window.location.pathname.startsWith('/content/admin/pages/onboard')) {
-            // we should switch to this but currently we have a problem with the load and the url check
-            // $perAdminApp.loadContent('/content/admin/pages/onboard.html')
-            window.location = '/content/admin/pages/onboard.html'
-        }
-    },
-    data() {
-        return { decline: false, preferences: $perAdminApp.getNodeFromViewWithDefault('/state/userPreferences', { firstLogin: "true" }) }
-    },
-    computed: {
-        allowRender() {
-            if(this.preferences.firstLogin != undefined
-                && this.preferences.firstLogin == 'true'
-                && !window.location.pathname.startsWith('/content/admin/pages/onboard')) {
-                return false
-            }
-            return true
-        },
-        path() {
-          return $perAdminApp.getNodeFrom($perAdminApp.getView(), this.model.dataFrom)
-        },
-        pt() {
-          return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, this.path)
-        },
-    },
-    methods: {
-        selectPath: function(me, target) {
-            // const view = $perAdminApp.getView()
-            // const tenant = view.state.tenant
-            // const action = target.action || target
-            // const section = action.split('/').slice(-1).pop()
-            // set(view, '/state/current/section/name', section)
-            // const payload = {
-            //     path: `/state/tools/${section}`
-            //     // ,
-            //     // selected: `/content/${tenant.name}/${section}`
-            // }
-            // $perAdminApp.stateAction('selectToolsNodesPath', payload).then(() => {
-            //     $perAdminApp.loadContent(action + '.html')
-            // })
-            if(target.indexOf('.html') >= 0) {
-                $perAdminApp.loadContent(target)
-            } else {
-                $perAdminApp.loadContent(target + '.html')
-            }
-        },
-        editPreview: function(me, target) {
-            $perAdminApp.stateAction('editPreview', target)
-        },
-        editPage: function(me, target) {
-        },
-        addSite: function(me, target) {
-            $perAdminApp.stateAction('createTenantWizard', '/content')
-        },
-        configureTenant: function(me, target) {
-            $perAdminApp.stateAction('setTenant', target)
-                .then(() => $perAdminApp.stateAction('configureTenant', target))
-        },
-        onDecline(me) {
-            me.decline = true
-            $perAdminApp.loadContent('/content/admin/pages/onboard/sorry.html')
-        },
-        onAccept(me) {
-            $perAdminApp.stateAction('acceptTermsAndConditions', {} )
-        },
-        editReference(me, target) {
-          if (target.load) {
-            $perAdminApp.loadContent(target.load)
-          } else {
-            me.editEntity(me, target.target)
-          }
-        },
-        editEntity(me, target) {
-          const view = $perAdminApp.getView()
-          const tenant = view.state.tenant
-          const path = me.pt.path
-          if (target.startsWith(`/content/${tenant.name}/pages`)) {
-            set(view, '/state/tools/page', target)
-          } else if (target.startsWith(`/content/${tenant.name}/templates`)) {
-            set(view, '/state/tools/template', target)
-          }
-          if (target.startsWith(`/content/${tenant.name}/objects`)) {
-            const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
-            $perAdminApp.stateAction('editObject', {selected: node.path, path: me.model.dataFrom})
-          } else if (target.startsWith(`/content/${tenant.name}/templates`)) {
-            $perAdminApp.stateAction('editTemplate', target)
-          } else {
-            $perAdminApp.stateAction('editPage', target)
-          }
-        }
-    }
-}
+	export default {
+		props: ["model"],
+		mounted() {
+			// init materialize plugins
+			$(".modal").modal();
+			if (
+				this.preferences.firstLogin != undefined &&
+				this.preferences.firstLogin == "true" &&
+				!window.location.pathname.startsWith(
+					"/content/admin/pages/onboard"
+				)
+			) {
+				// we should switch to this but currently we have a problem with the load and the url check
+				// $perAdminApp.loadContent('/content/admin/pages/onboard.html')
+				window.location = "/content/admin/pages/onboard.html";
+			}
+		},
+		data() {
+			return {
+				decline: false,
+				preferences: $perAdminApp.getNodeFromViewWithDefault(
+					"/state/userPreferences",
+					{ firstLogin: "true" }
+				),
+			};
+		},
+		computed: {
+			allowRender() {
+				if (
+					this.preferences.firstLogin != undefined &&
+					this.preferences.firstLogin == "true" &&
+					!window.location.pathname.startsWith(
+						"/content/admin/pages/onboard"
+					)
+				) {
+					return false;
+				}
+				return true;
+			},
+			path() {
+				return $perAdminApp.getNodeFrom(
+					$perAdminApp.getView(),
+					this.model.dataFrom
+				);
+			},
+			pt() {
+				return $perAdminApp.findNodeFromPath(
+					this.$root.$data.admin.nodes,
+					this.path
+				);
+			},
+		},
+		methods: {
+			selectPath: function (me, target) {
+				// const view = $perAdminApp.getView()
+				// const tenant = view.state.tenant
+				// const action = target.action || target
+				// const section = action.split('/').slice(-1).pop()
+				// set(view, '/state/current/section/name', section)
+				// const payload = {
+				//     path: `/state/tools/${section}`
+				//     // ,
+				//     // selected: `/content/${tenant.name}/${section}`
+				// }
+				// $perAdminApp.stateAction('selectToolsNodesPath', payload).then(() => {
+				//     $perAdminApp.loadContent(action + '.html')
+				// })
+				if (target.indexOf(".html") >= 0) {
+					$perAdminApp.loadContent(target);
+				} else {
+					$perAdminApp.loadContent(target + ".html");
+				}
+			},
+			editPreview: function (me, target) {
+				$perAdminApp.stateAction("editPreview", target);
+			},
+			editPage: function (me, target) {},
+			addSite: function (me, target) {
+				$perAdminApp.stateAction("createTenantWizard", "/content");
+			},
+			configureTenant: function (me, target) {
+				$perAdminApp
+					.stateAction("setTenant", target)
+					.then(() =>
+						$perAdminApp.stateAction("configureTenant", target)
+					);
+			},
+			onDecline(me) {
+				me.decline = true;
+				$perAdminApp.loadContent(
+					"/content/admin/pages/onboard/sorry.html"
+				);
+			},
+			onAccept(me) {
+				$perAdminApp.stateAction("acceptTermsAndConditions", {});
+			},
+			editReference(me, target) {
+				if (target.load) {
+					$perAdminApp.loadContent(target.load);
+				} else {
+					me.editEntity(me, target.target);
+				}
+			},
+			editEntity(me, target) {
+				const view = $perAdminApp.getView();
+				const tenant = view.state.tenant;
+				const path = me.pt.path;
+				if (target.startsWith(`/content/${tenant.name}/pages`)) {
+					set(view, "/state/tools/page", target);
+				} else if (
+					target.startsWith(`/content/${tenant.name}/templates`)
+				) {
+					set(view, "/state/tools/template", target);
+				}
+				if (target.startsWith(`/content/${tenant.name}/objects`)) {
+					const node = $perAdminApp.findNodeFromPath(
+						$perAdminApp.getView().admin.nodes,
+						target
+					);
+					$perAdminApp.stateAction("editObject", {
+						selected: node.path,
+						path: me.model.dataFrom,
+					});
+				} else if (
+					target.startsWith(`/content/${tenant.name}/templates`)
+				) {
+					$perAdminApp.stateAction("editTemplate", target);
+				} else {
+					$perAdminApp.stateAction("editPage", target);
+				}
+			},
+		},
+	};
 </script>

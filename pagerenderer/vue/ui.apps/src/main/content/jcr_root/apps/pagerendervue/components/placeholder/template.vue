@@ -23,98 +23,112 @@
   #L%
   -->
 <template>
-    <div v-if="show"
-         class="per-drop-target"
-         v-on:allowDrop="allowDrop"
-         v-on:drop="drop"
-         v-bind:data-per-path="model.path"
-         data-per-droptarget="true"
-         v-bind:data-per-location="model.location">
-        {{componentName}}
-    </div>
+	<div
+		v-if="show"
+		class="per-drop-target"
+		v-on:allowDrop="allowDrop"
+		v-on:drop="drop"
+		v-bind:data-per-path="model.path"
+		data-per-droptarget="true"
+		v-bind:data-per-location="model.location"
+	>
+		{{ componentName }}
+	</div>
 </template>
 
 <script>
-export default {
-    props: ['model'],
-    data: function() {
-      return {
-          show: false
-      }
-    },
-    computed: {
-        componentName: function() {
-            let post = ''
-            if(this.model.location === 'before') post = ' start'
-            if(this.model.location === 'after') post = ' end'
-            return this.model.component.split('-').pop() + post
-        },
-        mode: function() {
-            return this.$root.view
-        }
-    },
-    created() {
-        const vm = this;
+	export default {
+		props: ["model"],
+		data: function () {
+			return {
+				show: false,
+			};
+		},
+		computed: {
+			componentName: function () {
+				let post = "";
+				if (this.model.location === "before") post = " start";
+				if (this.model.location === "after") post = " end";
+				return this.model.component.split("-").pop() + post;
+			},
+			mode: function () {
+				return this.$root.view;
+			},
+		},
+		created() {
+			const vm = this;
 
-        if (window.parent && window.parent.$perAdminApp  && window.parent.$perAdminApp.eventBus) {
-            window.parent.$perAdminApp.eventBus.$on('edit-preview', (data) => {
-                vm.show = data !== 'preview'
-            })
-        }
+			if (
+				window.parent &&
+				window.parent.$perAdminApp &&
+				window.parent.$perAdminApp.eventBus
+			) {
+				window.parent.$perAdminApp.eventBus.$on(
+					"edit-preview",
+					(data) => {
+						vm.show = data !== "preview";
+					}
+				);
+			}
 
-        if(window.frameElement && window.frameElement.attributes['data-per-mode']) {
-            if(window.frameElement.attributes['data-per-mode'].value) {
-                vm.show = false
-                return;
-            }
-        }
-    },
-    mounted() {
-      this.show = this.isEditMode()
-    },
-    methods: {
-        isEditMode: function() {
-            if(window.$peregrineApp) {
-                return window.$peregrineApp.isAuthorMode()
-            }
-            if(window.parent) {
-                if(window.parent.$perAdminApp && window.parent !== window) {
-                    return this.$root.view !== 'preview'
-                }
-            }
-            return false
-        },
-        allowDrop: function(e) {
-            e.preventDefault()
-        },
-        drop: function(e) {
-        },
-        edit: function(e) {
-            alert('edit')
-        }
-    }
-}
+			if (
+				window.frameElement &&
+				window.frameElement.attributes["data-per-mode"]
+			) {
+				if (window.frameElement.attributes["data-per-mode"].value) {
+					vm.show = false;
+					return;
+				}
+			}
+		},
+		mounted() {
+			this.show = this.isEditMode();
+		},
+		methods: {
+			isEditMode: function () {
+				if (window.$peregrineApp) {
+					return window.$peregrineApp.isAuthorMode();
+				}
+				if (window.parent) {
+					if (
+						window.parent.$perAdminApp &&
+						window.parent !== window
+					) {
+						return this.$root.view !== "preview";
+					}
+				}
+				return false;
+			},
+			allowDrop: function (e) {
+				e.preventDefault();
+			},
+			drop: function (e) {},
+			edit: function (e) {
+				alert("edit");
+			},
+		},
+	};
 </script>
 
 <style>
-    .per-drop-target {
-        border: 1px dashed #c0c0c0;
-        clear: both;
-        padding: 4px;
-        margin: 4px;
-        text-align: center;
-        width: calc(100% - 8px);
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        color: black !important; 
-        overflow: hidden;
-        font-size: 0.75em;
-        background: #f8f8f8e0;
-    }
+	.per-drop-target {
+		border: 1px dashed #c0c0c0;
+		clear: both;
+		padding: 4px;
+		margin: 4px;
+		text-align: center;
+		width: calc(100% - 8px);
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		color: black !important;
+		overflow: hidden;
+		font-size: 0.75em;
+		background: #f8f8f8e0;
+	}
 
-    .per-drop-target-empty {
-        font-size: 1.5em;
-        height: 3em;
-        padding-top: 0.75em;
-    }
+	.per-drop-target-empty {
+		font-size: 1.5em;
+		height: 3em;
+		padding-top: 0.75em;
+	}
 </style>

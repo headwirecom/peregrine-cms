@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -22,20 +22,22 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('acceptTermsAndConditions').setLevelDebug()
+import { LoggerFactory } from "../logger";
+let log = LoggerFactory.logger("acceptTermsAndConditions").setLevelDebug();
 
-import { set } from '../utils'
+import { set } from "../utils";
 
-export default function(me, target) {
+export default function (me, target) {
+	log.fine(target);
 
-    log.fine(target)
-
-    let view = me.getView()
-    return new Promise( (resolve, reject) => {
-        return me.getApi().acceptTermsAndConditions().then( () => {
-            me.loadContent('/content/admin/pages/onboard/welcome.html')
-            resolve()
-        })
-    })
+	let view = me.getView();
+	return new Promise((resolve, reject) => {
+		return me
+			.getApi()
+			.acceptTermsAndConditions()
+			.then(() => {
+				me.loadContent("/content/admin/pages/onboard/welcome.html");
+				resolve();
+			});
+	});
 }

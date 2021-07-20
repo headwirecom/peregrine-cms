@@ -22,28 +22,31 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from '../logger';
-import { SUFFIX_PARAM_SEPARATOR } from '../constants';
+import { LoggerFactory } from "../logger";
+import { SUFFIX_PARAM_SEPARATOR } from "../constants";
 let log = LoggerFactory.logger(
-  'creatObjectDefinitionFileWizard'
+	"creatObjectDefinitionFileWizard"
 ).setLevelDebug();
 
-export default function(me, target) {
-  log.fine(target);
+export default function (me, target) {
+	log.fine(target);
 
-  return new Promise((resolve, reject) => {
-    if (target.target) {
-      me.loadContent(
-        target.target + '.html/path' + SUFFIX_PARAM_SEPARATOR + target.path
-      );
-    } else {
-      me.loadContent(
-        '/content/admin/pages/object-definitions/createFile.html/path' +
-          SUFFIX_PARAM_SEPARATOR +
-          target.path
-      );
-    }
+	return new Promise((resolve, reject) => {
+		if (target.target) {
+			me.loadContent(
+				target.target +
+					".html/path" +
+					SUFFIX_PARAM_SEPARATOR +
+					target.path
+			);
+		} else {
+			me.loadContent(
+				"/content/admin/pages/object-definitions/createFile.html/path" +
+					SUFFIX_PARAM_SEPARATOR +
+					target.path
+			);
+		}
 
-    resolve();
-  });
+		resolve();
+	});
 }

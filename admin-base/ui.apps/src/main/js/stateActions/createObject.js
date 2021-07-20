@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -22,28 +22,43 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from '../logger'
-import {SUFFIX_PARAM_SEPARATOR} from "../constants";
-let log = LoggerFactory.logger('createObject').setLevelDebug()
+import { LoggerFactory } from "../logger";
+import { SUFFIX_PARAM_SEPARATOR } from "../constants";
+let log = LoggerFactory.logger("createObject").setLevelDebug();
 
-export default function(me, target) {
-
-    log.fine(target)
-    var api = me.getApi()
-    return new Promise( (resolve, reject) => {
-        api.createObject(target.parent, target.name, target.template).then( () => {
-            if(target.data) {
-                api.saveObjectEdit(target.parent + '/' + target.name, target.data).then( () => {
-                    if(target.returnTo) {
-                        me.loadContent(target.returnTo+'.html/path' +SUFFIX_PARAM_SEPARATOR + target.parent)
-                        me.stateAction('selectObject', { selected: target.parent + '/' + target.name, path: '/state/tools/objects' })
-                    } else {
-                        me.loadContent('/content/admin/pages/objects.html/path' + SUFFIX_PARAM_SEPARATOR + target.parent)
-                    }
-                    resolve()
-                })
-            }
-        })
-    })
-
+export default function (me, target) {
+	log.fine(target);
+	var api = me.getApi();
+	return new Promise((resolve, reject) => {
+		api.createObject(target.parent, target.name, target.template).then(
+			() => {
+				if (target.data) {
+					api.saveObjectEdit(
+						target.parent + "/" + target.name,
+						target.data
+					).then(() => {
+						if (target.returnTo) {
+							me.loadContent(
+								target.returnTo +
+									".html/path" +
+									SUFFIX_PARAM_SEPARATOR +
+									target.parent
+							);
+							me.stateAction("selectObject", {
+								selected: target.parent + "/" + target.name,
+								path: "/state/tools/objects",
+							});
+						} else {
+							me.loadContent(
+								"/content/admin/pages/objects.html/path" +
+									SUFFIX_PARAM_SEPARATOR +
+									target.parent
+							);
+						}
+						resolve();
+					});
+				}
+			}
+		);
+	});
 }

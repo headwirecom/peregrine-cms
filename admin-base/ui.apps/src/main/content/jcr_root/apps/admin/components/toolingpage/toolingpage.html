@@ -23,176 +23,233 @@
   under the License.
   #L%
   -->
-<sly data-sly-use.helper="apps.pagerendervue.structure.page.Helper"/>
+<sly data-sly-use.helper="apps.pagerendervue.structure.page.Helper" />
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<head>
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, shrink-to-fit=no"
+		/>
 
-    <title>${resource.jcr:title}</title>
+		<title>${resource.jcr:title}</title>
 
-    <sly data-sly-include="styles.html"></sly>
+		<sly data-sly-include="styles.html"></sly>
 
-    <sly data-sly-list="${helper.model.siteCSS}">
-        <link rel="stylesheet" href="${item}" type="text/css">
-    </sly>
+		<sly data-sly-list="${helper.model.siteCSS}">
+			<link rel="stylesheet" href="${item}" type="text/css" />
+		</sly>
 
-    <link rel="stylesheet" href="/etc/felibs/admin.css" type="text/css">
-    <link rel="stylesheet" href="/etc/felibs/admin/dependencies.css" type="text/css">
-    <link rel="stylesheet" href="/etc/felibs/admin/dependencies/font-awesome/css/font-awesome.min.css" type="text/css">
+		<link rel="stylesheet" href="/etc/felibs/admin.css" type="text/css" />
+		<link
+			rel="stylesheet"
+			href="/etc/felibs/admin/dependencies.css"
+			type="text/css"
+		/>
+		<link
+			rel="stylesheet"
+			href="/etc/felibs/admin/dependencies/font-awesome/css/font-awesome.min.css"
+			type="text/css"
+		/>
 
-    <script type="text/javascript">
-        if(/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) {
-            document.write('<script src="/etc/felibs/pagerendervue/conditional-js/shim.min.js"><\/script>');
-        }
+		<script type="text/javascript">
+			if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) {
+				document.write(
+					'<script src="/etc/felibs/pagerendervue/conditional-js/shim.min.js"><\/script>'
+				);
+			}
 
-        if('ResizeObserver' in window === false) {
-            document.write('<script src="/etc/felibs/admin/polyfills/ResizeObserver.global.js"><\/script>');
-        }
-    </script>
+			if ("ResizeObserver" in window === false) {
+				document.write(
+					'<script src="/etc/felibs/admin/polyfills/ResizeObserver.global.js"><\/script>'
+				);
+			}
+		</script>
 
-    <style>
-        .tutorial-visible {
-            display: flex;
-        }
+		<style>
+			.tutorial-visible {
+				display: flex;
+			}
 
-        #peregrine-adminapp {
-            flex-grow: 1;
-        }
+			#peregrine-adminapp {
+				flex-grow: 1;
+			}
 
-        .peregrine-tutorial {
-            display: none;
-        }
+			.peregrine-tutorial {
+				display: none;
+			}
 
-        .tutorial-visible .peregrine-tutorial {
-            width: 400px;
-            background: #37474f;
-            height: 100vh;
-            display: block;
-            top: 0px;
-            position: sticky;
-        }
+			.tutorial-visible .peregrine-tutorial {
+				width: 400px;
+				background: #37474f;
+				height: 100vh;
+				display: block;
+				top: 0px;
+				position: sticky;
+			}
 
-        .tutorial-visible .tooling-page .explorer {
-            right: 400px;
-        }
+			.tutorial-visible .tooling-page .explorer {
+				right: 400px;
+			}
 
-        .tutorial-visible .tooling-page .peregrine-workspace {
-            right: 400px;
-        }
+			.tutorial-visible .tooling-page .peregrine-workspace {
+				right: 400px;
+			}
 
-        .tutorial-visible .peregrine-workspace .peregrine-content-view.preview {
-            right: 400px;
-        }
+			.tutorial-visible
+				.peregrine-workspace
+				.peregrine-content-view.preview {
+				right: 400px;
+			}
 
-        .tutorial-visible .preview #editview {
-            width: calc(100% - 400px) !important;
-        }
+			.tutorial-visible .preview #editview {
+				width: calc(100% - 400px) !important;
+			}
+		</style>
+	</head>
+	<body>
+		<div
+			id="waitMask"
+			style="
+				display: none;
+				z-index: 999;
+				position: absolute;
+				top: 0;
+				right: 0;
+				height: 100%;
+				width: 100%;
+				cursor: wait;
+				background-color: black;
+				opacity: 0.2;
+				pointer-events: none;
+			"
+		>
+			&nbsp;
+		</div>
 
-    </style>
-
-</head>
-<body>
-
-<div id="waitMask" style="display: none; z-index: 999; position: absolute; top: 0; right: 0; height: 100%; width: 100%; cursor: wait; background-color: black; opacity: 0.2;pointer-events: none;">&nbsp;</div>
-
-<div id="peregrine-main">
-    <div id="peregrine-adminapp">
-        <span v-cloak>
-            <component v-bind:is="adminPage.component" v-bind:model="adminPage"></component>
-        </span>
-    </div>
-    <!-- <div class="peregrine-tutorial">
+		<div id="peregrine-main">
+			<div id="peregrine-adminapp">
+				<span v-cloak>
+					<component
+						v-bind:is="adminPage.component"
+						v-bind:model="adminPage"
+					></component>
+				</span>
+			</div>
+			<!-- <div class="peregrine-tutorial">
         <iframe src="/content/admin/pages/tutorials.html" style="height: 100%; width: 100%; background: white;" data-per-mode="tutorial"></iframe>
     </div> -->
-</div>
+		</div>
 
-<sly data-sly-list="${helper.model.siteJS}">
-    <script type="text/javascript" src="${item}"></script>
-</sly>
+		<sly data-sly-list="${helper.model.siteJS}">
+			<script type="text/javascript" src="${item}"></script>
+		</sly>
 
-<sly data-sly-include="renderer.html"></sly>
-<script>
-    Vue.use(VueCodeMirror)
-    // switch between old and new implementation
-    var newImpl = true
-    var $perAdminView = { state: {}, adminPage: {}, adminPageStaged: {}, admin: {}, pageView: { view: 'desktop'}, nodes: {} }
+		<sly data-sly-include="renderer.html"></sly>
+		<script>
+			Vue.use(VueCodeMirror);
+			// switch between old and new implementation
+			var newImpl = true;
+			var $perAdminView = {
+				state: {},
+				adminPage: {},
+				adminPageStaged: {},
+				admin: {},
+				pageView: { view: "desktop" },
+				nodes: {},
+			};
 
-    if(newImpl) {
-        // define a couple of extra vue components that are used by components
-        // but not in the tree of auto loaded components
-        $perAdminApp.loadComponent('admin-components-iconaction')
-        $perAdminApp.loadComponent('admin-components-action')
-        $perAdminApp.loadComponent('admin-components-notifyuser')
-        $perAdminApp.loadComponent('admin-components-askuser')
-        $perAdminApp.loadComponent('admin-components-promptuser')
-        $perAdminApp.loadComponent('admin-components-pathbrowser')
-        $perAdminApp.loadComponent('admin-components-logo')
-        $perAdminApp.loadComponent('admin-components-extensions')
-        $perAdminApp.loadComponent('admin-components-spinner')
-        $perAdminApp.loadComponent('admin-components-tour')
-        $perAdminApp.loadComponent('admin-components-about')
-        $perAdminApp.loadComponent('admin-components-explorerpreview')
-        $perAdminApp.loadComponent('admin-components-explorerpreviewnavitem')
-        $perAdminApp.loadComponent('admin-components-explorerpreviewcontent')
-        $perAdminApp.loadComponent('admin-components-confirmdialog')
-        $perAdminApp.loadComponent('admin-components-fileupload')
-        $perAdminApp.loadComponent('admin-components-separator')
-        $perAdminApp.loadComponent('admin-components-colorpaletteselector')
-        $perAdminApp.loadComponent('admin-components-materializeswitch')
-        $perAdminApp.loadComponent('admin-components-componentexplorer')
-        $perAdminApp.loadComponent('admin-components-nodetreeitem')
-        $perAdminApp.loadComponent('admin-components-publishingmodal')
-        $perAdminApp.loadComponent('admin-components-publishinginfo')
-        $perAdminApp.loadComponent('admin-components-richtoolbar')
-        $perAdminApp.loadComponent('admin-components-richtoolbargroup')
-        $perAdminApp.loadComponent('admin-components-richtoolbarbtn')
-        $perAdminApp.loadComponent('admin-components-addcomponentmodal')
-        $perAdminApp.loadComponent('admin-components-icon')
-        $perAdminApp.loadComponent('admin-components-tabswrapper')
-        $perAdminApp.loadComponent('admin-components-tab')
+			if (newImpl) {
+				// define a couple of extra vue components that are used by components
+				// but not in the tree of auto loaded components
+				$perAdminApp.loadComponent("admin-components-iconaction");
+				$perAdminApp.loadComponent("admin-components-action");
+				$perAdminApp.loadComponent("admin-components-notifyuser");
+				$perAdminApp.loadComponent("admin-components-askuser");
+				$perAdminApp.loadComponent("admin-components-promptuser");
+				$perAdminApp.loadComponent("admin-components-pathbrowser");
+				$perAdminApp.loadComponent("admin-components-logo");
+				$perAdminApp.loadComponent("admin-components-extensions");
+				$perAdminApp.loadComponent("admin-components-spinner");
+				$perAdminApp.loadComponent("admin-components-tour");
+				$perAdminApp.loadComponent("admin-components-about");
+				$perAdminApp.loadComponent("admin-components-explorerpreview");
+				$perAdminApp.loadComponent(
+					"admin-components-explorerpreviewnavitem"
+				);
+				$perAdminApp.loadComponent(
+					"admin-components-explorerpreviewcontent"
+				);
+				$perAdminApp.loadComponent("admin-components-confirmdialog");
+				$perAdminApp.loadComponent("admin-components-fileupload");
+				$perAdminApp.loadComponent("admin-components-separator");
+				$perAdminApp.loadComponent(
+					"admin-components-colorpaletteselector"
+				);
+				$perAdminApp.loadComponent(
+					"admin-components-materializeswitch"
+				);
+				$perAdminApp.loadComponent(
+					"admin-components-componentexplorer"
+				);
+				$perAdminApp.loadComponent("admin-components-nodetreeitem");
+				$perAdminApp.loadComponent("admin-components-publishingmodal");
+				$perAdminApp.loadComponent("admin-components-publishinginfo");
+				$perAdminApp.loadComponent("admin-components-richtoolbar");
+				$perAdminApp.loadComponent("admin-components-richtoolbargroup");
+				$perAdminApp.loadComponent("admin-components-richtoolbarbtn");
+				$perAdminApp.loadComponent(
+					"admin-components-addcomponentmodal"
+				);
+				$perAdminApp.loadComponent("admin-components-icon");
+				$perAdminApp.loadComponent("admin-components-tabswrapper");
+				$perAdminApp.loadComponent("admin-components-tab");
 
+				$perAdminApp.loadComponent(
+					"admin-components-materializedropdown"
+				);
+				$perAdminApp.loadComponent("admin-components-dropdowndivider");
+				$perAdminApp.loadComponent("admin-components-materializemodal");
+				$perAdminApp.loadComponent(
+					"admin-components-materializespinner"
+				);
 
-        $perAdminApp.loadComponent('admin-components-materializedropdown')
-        $perAdminApp.loadComponent('admin-components-dropdowndivider')
-        $perAdminApp.loadComponent('admin-components-materializemodal')
-        $perAdminApp.loadComponent('admin-components-materializespinner')
+				$perAdminApp.loadComponent("field-pathbrowser");
+				$perAdminApp.loadComponent("field-texteditor");
+				$perAdminApp.loadComponent("field-list");
+				$perAdminApp.loadComponent("field-collection");
+				$perAdminApp.loadComponent("field-materialswitch");
+				$perAdminApp.loadComponent("field-material-checkbox");
+				$perAdminApp.loadComponent("field-material-radios");
+				$perAdminApp.loadComponent("field-material-select");
+				$perAdminApp.loadComponent("field-material-checklist");
+				$perAdminApp.loadComponent("field-material-datepicker");
+				$perAdminApp.loadComponent("field-material-timepicker");
+				$perAdminApp.loadComponent("field-material-datetime");
+				$perAdminApp.loadComponent("field-material-textarea");
+				$perAdminApp.loadComponent("field-material-multiselect");
+				$perAdminApp.loadComponent("field-material-range");
+				$perAdminApp.loadComponent("field-listselection");
+				$perAdminApp.loadComponent("field-iconbrowser");
+				$perAdminApp.loadComponent("field-headline");
+				$perAdminApp.loadComponent("field-horizontal-line");
+				$perAdminApp.loadComponent("field-object-definition-reference");
 
-        $perAdminApp.loadComponent('field-pathbrowser')
-        $perAdminApp.loadComponent('field-texteditor')
-        $perAdminApp.loadComponent('field-list')
-        $perAdminApp.loadComponent('field-collection')
-        $perAdminApp.loadComponent('field-materialswitch')
-        $perAdminApp.loadComponent('field-material-checkbox')
-        $perAdminApp.loadComponent('field-material-radios')
-        $perAdminApp.loadComponent('field-material-select')
-        $perAdminApp.loadComponent('field-material-checklist')
-        $perAdminApp.loadComponent('field-material-datepicker')
-        $perAdminApp.loadComponent('field-material-timepicker')
-        $perAdminApp.loadComponent('field-material-datetime')
-        $perAdminApp.loadComponent('field-material-textarea')
-        $perAdminApp.loadComponent('field-material-multiselect')
-        $perAdminApp.loadComponent('field-material-range')
-        $perAdminApp.loadComponent('field-listselection')
-        $perAdminApp.loadComponent('field-iconbrowser')
-        $perAdminApp.loadComponent('field-headline')
-        $perAdminApp.loadComponent('field-horizontal-line')
-        $perAdminApp.loadComponent('field-object-definition-reference')
+				$perAdminApp.loadComponent("admin-components-iconeditpage");
+				$perAdminApp.loadComponent("admin-components-iconopenfolder");
+				$perAdminApp.loadComponent("admin-components-iconrename");
+				$perAdminApp.loadComponent("admin-components-draghandle");
+				$perAdminApp.loadComponent("admin-components-iconbrowser");
+				$perAdminApp.loadComponent(
+					"pagerendervue-components-placeholder"
+				);
 
-        $perAdminApp.loadComponent('admin-components-iconeditpage')
-        $perAdminApp.loadComponent('admin-components-iconopenfolder')
-        $perAdminApp.loadComponent('admin-components-iconrename')
-        $perAdminApp.loadComponent('admin-components-draghandle')
-        $perAdminApp.loadComponent('admin-components-iconbrowser')
-        $perAdminApp.loadComponent('pagerendervue-components-placeholder')
-
-
-        // init peregrine admin app
-        $perAdminApp.init($perAdminView)
-        $perAdminApp.loadContent(document.location.pathname, true)
-    } else {
-        loadContent(document.location, true);
-    }
-</script>
-</body>
+				// init peregrine admin app
+				$perAdminApp.init($perAdminView);
+				$perAdminApp.loadContent(document.location.pathname, true);
+			} else {
+				loadContent(document.location, true);
+			}
+		</script>
+	</body>
 </html>

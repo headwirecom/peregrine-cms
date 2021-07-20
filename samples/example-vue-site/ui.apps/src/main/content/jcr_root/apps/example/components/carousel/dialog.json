@@ -1,74 +1,74 @@
 {
-  "fields": [
-    {
-      "type": "materialswitch",
-      "label": "Interval",
-      "model": "interval"
-    },
-    {
-      "type": "materialswitch",
-      "label": "Pause",
-      "model": "pause"
-    },
-    {
-      "type": "materialswitch",
-      "label": "Ride",
-      "model": "ride"
-    },
-    {
-      "type": "materialswitch",
-      "label": "Indicators",
-      "model": "indicators"
-    },
-    {
-      "type": "materialswitch",
-      "label": "Controls",
-      "model": "controls"
-    },
-    {
-      "type": "materialswitch",
-      "label": "Wrap",
-      "model": "wrap"
-    },
-    {
-      "type": "materialswitch",
-      "label": "Keyboard",
-      "model": "keyboard"
-    },
-    {
-      "type": "collection",
-      "title": "slides",
-      "model": "slides",
-      "resourceType": "example/components/carouselItem",
-      "multifield": true,
-      "fields" : [
-        {
-          "type": "pathbrowser",
-          "browserRoot": "/content/example/assets",
-          "placeholder": "imagepath",
-          "label": "Image Source",
-          "model": "imagePath"
-        },
-        {
-          "type": "input",
-          "inputType": "text",
-          "label": "Image Heading",
-          "model": "heading"
-        },
-        {
-          "type": "input",
-          "inputType": "text",
-          "label": "Image Text",
-          "model": "text"
-        },
-        {
-          "type": "input",
-          "inputType": "text",
-          "label": "Alt Text",
-          "model": "alt"
-        }
-      ],
-      "items": []
-    }
-  ]
+	"fields": [
+		{
+			"type": "materialswitch",
+			"label": "Interval",
+			"model": "interval"
+		},
+		{
+			"type": "materialswitch",
+			"label": "Pause",
+			"model": "pause"
+		},
+		{
+			"type": "materialswitch",
+			"label": "Ride",
+			"model": "ride"
+		},
+		{
+			"type": "materialswitch",
+			"label": "Indicators",
+			"model": "indicators"
+		},
+		{
+			"type": "materialswitch",
+			"label": "Controls",
+			"model": "controls"
+		},
+		{
+			"type": "materialswitch",
+			"label": "Wrap",
+			"model": "wrap"
+		},
+		{
+			"type": "materialswitch",
+			"label": "Keyboard",
+			"model": "keyboard"
+		},
+		{
+			"type": "collection",
+			"title": "slides",
+			"model": "slides",
+			"resourceType": "example/components/carouselItem",
+			"multifield": true,
+			"fields": [
+				{
+					"type": "pathbrowser",
+					"browserRoot": "/content/example/assets",
+					"placeholder": "imagepath",
+					"label": "Image Source",
+					"model": "imagePath"
+				},
+				{
+					"type": "input",
+					"inputType": "text",
+					"label": "Image Heading",
+					"model": "heading"
+				},
+				{
+					"type": "input",
+					"inputType": "text",
+					"label": "Image Text",
+					"model": "text"
+				},
+				{
+					"type": "input",
+					"inputType": "text",
+					"label": "Alt Text",
+					"model": "alt"
+				}
+			],
+			"items": []
+		}
+	]
 }

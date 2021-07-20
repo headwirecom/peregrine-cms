@@ -1,3 +1,5 @@
-<sly data-sly-use.model="com.peregrine.felib.models.JSModel"/><sly data-sly-list="${model.files}">
-// ${item.path}
-${item.content @ context='unsafe'}</sly>
+<sly data-sly-use.model="com.peregrine.felib.models.JSModel" /><sly
+	data-sly-list="${model.files}"
+>
+	// ${item.path} ${item.content @ context='unsafe'}</sly
+>

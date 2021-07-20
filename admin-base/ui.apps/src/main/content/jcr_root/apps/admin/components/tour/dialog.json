@@ -1,37 +1,37 @@
 {
-  "fields": [
-    {
-      "type": "collection",
-      "title": "Tour Items",
-      "model": "children",
-      "multifield": true,
-      "fieldLabel": ["locator"],
-      "fields" : [
-        {
-          "type": "input",
-          "inputType": "text",
-          "label": "locator",
-          "model": "locator"
-        },
-        {
-          "type": "material-textarea",
-          "label": "Text",
-          "model": "text",
-          "rows": 5
-        }
-      ]
-    },
-    {
-      "type": "input",
-      "inputType": "text",
-      "label": "Selector",
-      "model": "selector"
-    },
-    {
-      "type": "input",
-      "inputType": "text",
-      "label": "anchor",
-      "model": "anchor"
-    }
-  ]
+	"fields": [
+		{
+			"type": "collection",
+			"title": "Tour Items",
+			"model": "children",
+			"multifield": true,
+			"fieldLabel": ["locator"],
+			"fields": [
+				{
+					"type": "input",
+					"inputType": "text",
+					"label": "locator",
+					"model": "locator"
+				},
+				{
+					"type": "material-textarea",
+					"label": "Text",
+					"model": "text",
+					"rows": 5
+				}
+			]
+		},
+		{
+			"type": "input",
+			"inputType": "text",
+			"label": "Selector",
+			"model": "selector"
+		},
+		{
+			"type": "input",
+			"inputType": "text",
+			"label": "anchor",
+			"model": "anchor"
+		}
+	]
 }

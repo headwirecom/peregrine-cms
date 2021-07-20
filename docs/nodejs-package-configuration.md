@@ -17,7 +17,7 @@ searched for a property called **packages** (multi-string) which must have entri
 
 If the entry is having no **@** character or is the last character then the version **latest** is assumed.
 
-**Attention**: because  Node.js modules can be installed manually either on the command line
+**Attention**: because Node.js modules can be installed manually either on the command line
 or through the Peregrine API this service cannot determine if a module is still needed or not.
 Therefore this service is **not uninstalling** a module at any time.
 
@@ -49,7 +49,7 @@ This is the configuration for the **ssr.html** extension which requires both **v
           jcr:description="Packages needed for SSR selector"
           packages="[vue@latest,vue-server-renderer@latest]"
 />
-```  
+```
 
 #### filter.xml
 
@@ -82,12 +82,11 @@ The file must contain the resource data in JSon format:
 
 ```json
 {
-  "jcr:primaryType": "per:NpmPackageConfig",
-  "jcr:title": "SSR HTML",
-  "jcr:description": "Packages needed for SSR selector",
-  "packages": ["vue@latest", "vue-server-renderer@latest"]
+	"jcr:primaryType": "per:NpmPackageConfig",
+	"jcr:title": "SSR HTML",
+	"jcr:description": "Packages needed for SSR selector",
+	"packages": ["vue@latest", "vue-server-renderer@latest"]
 }
-
 ```
 
 #### Sling-Initial-Content definition

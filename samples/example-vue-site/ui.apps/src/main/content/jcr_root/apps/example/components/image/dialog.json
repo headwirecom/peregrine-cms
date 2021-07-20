@@ -1,35 +1,35 @@
 {
-  "groups": [
-    {
-      "legend": "Image",
-      "fields": [
-        {
-          "type": "pathbrowser",
-          "label": "image",
-          "model": "imagePath",
-          "browserRoot": "/content/example/assets",
-          "placeholder": "select path"
-        }
-      ]
-    },
-    {
-      "legend": "Attributes",
-      "fields": [
-        {
-          "type": "input",
-          "inputType": "text",
-          "label": "title",
-          "model": "title",
-          "placeholder": "enter a title"
-        },
-        {
-          "type": "textArea",
-          "label": "caption",
-          "model": "caption",
-          "rows": 5,
-          "placeholder": "enter a text"
-        }
-      ]
-    }
-  ]
+	"groups": [
+		{
+			"legend": "Image",
+			"fields": [
+				{
+					"type": "pathbrowser",
+					"label": "image",
+					"model": "imagePath",
+					"browserRoot": "/content/example/assets",
+					"placeholder": "select path"
+				}
+			]
+		},
+		{
+			"legend": "Attributes",
+			"fields": [
+				{
+					"type": "input",
+					"inputType": "text",
+					"label": "title",
+					"model": "title",
+					"placeholder": "enter a title"
+				},
+				{
+					"type": "textArea",
+					"label": "caption",
+					"model": "caption",
+					"rows": 5,
+					"placeholder": "enter a text"
+				}
+			]
+		}
+	]
 }

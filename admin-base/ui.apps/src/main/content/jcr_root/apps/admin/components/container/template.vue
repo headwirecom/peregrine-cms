@@ -23,15 +23,19 @@
   #L%
   -->
 <template>
-<div>
-    <template v-for="child in model.children">
-        <component v-bind:is="child.component" v-bind:model="child" v-bind:key="child.path"></component>
-    </template>
-</div>
+	<div>
+		<template v-for="child in model.children">
+			<component
+				v-bind:is="child.component"
+				v-bind:model="child"
+				v-bind:key="child.path"
+			></component>
+		</template>
+	</div>
 </template>
 
 <script>
-    export default {
-        props: ['model']
-    }
+	export default {
+		props: ["model"],
+	};
 </script>

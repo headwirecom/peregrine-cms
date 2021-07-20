@@ -23,20 +23,23 @@
   #L%
   -->
 <template>
-    <div>
-        <select v-model="value"
-                class="browser-default"
-                v-bind:style="schema.multiple ? 'height: 8rem': ''"
-                v-bind:multiple="schema.multiple">
-            <option v-bind:value="val.value"
-                    v-for="val in schema.values">{{val.name}}</option>
-        </select>
-    </div>
+	<div>
+		<select
+			v-model="value"
+			class="browser-default"
+			v-bind:style="schema.multiple ? 'height: 8rem' : ''"
+			v-bind:multiple="schema.multiple"
+		>
+			<option v-bind:value="val.value" v-for="val in schema.values">
+				{{ val.name }}
+			</option>
+		</select>
+	</div>
 </template>
 
 <script>
-    export default {
-        props: ['model'],
-        mixins: [ VueFormGenerator.abstractField ]
-    }
+	export default {
+		props: ["model"],
+		mixins: [VueFormGenerator.abstractField],
+	};
 </script>

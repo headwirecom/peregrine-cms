@@ -23,36 +23,48 @@
   #L%
   -->
 <template>
-    <div id="aboutPeregrine" class="modal">
-        <div class="modal-content">
-            <p class="left-align">
-                <img style="margin: 10px; width: 100px; max-width: 100px;" src="/etc/felibs/admin/peregrine-logo.svg" align="right"/>
-                <img style="width: 0px; height: 0px;" src="https://www.headwire.com/t/peregrine.png"/>
-                <span v-html="$i18n('aboutp1')"></span>
-            </p>
-            <p class="left-align browser-default">
-                <span v-html="$i18n('aboutp2')"></span>
-            </p>
-            <p class="left-align browser-default">
-                <span v-html="$i18n('aboutp3')"></span>
-            </p>
-            <p class="left-align browser-default">
-                <span v-html="$i18n('aboutp4')"></span>
-            </p>
-        </div>
-        <div class="modal-footer">
-            <button 
-                type="button"
-                class="modal-action modal-close waves-effect waves-light btn-flat"
-                v-bind:title="$i18n('close')">
-                {{$i18n('close')}}
-            </button>
-        </div>
-    </div>
+	<div id="aboutPeregrine" class="modal">
+		<div class="modal-content">
+			<p class="left-align">
+				<img
+					style="margin: 10px; width: 100px; max-width: 100px"
+					src="/etc/felibs/admin/peregrine-logo.svg"
+					align="right"
+				/>
+				<img
+					style="width: 0px; height: 0px"
+					src="https://www.headwire.com/t/peregrine.png"
+				/>
+				<span v-html="$i18n('aboutp1')"></span>
+			</p>
+			<p class="left-align browser-default">
+				<span v-html="$i18n('aboutp2')"></span>
+			</p>
+			<p class="left-align browser-default">
+				<span v-html="$i18n('aboutp3')"></span>
+			</p>
+			<p class="left-align browser-default">
+				<span v-html="$i18n('aboutp4')"></span>
+			</p>
+		</div>
+		<div class="modal-footer">
+			<button
+				type="button"
+				class="
+					modal-action modal-close
+					waves-effect waves-light
+					btn-flat
+				"
+				v-bind:title="$i18n('close')"
+			>
+				{{ $i18n("close") }}
+			</button>
+		</div>
+	</div>
 </template>
 
 <script>
-    export default {
-        props: ['model']
-    }
+	export default {
+		props: ["model"],
+	};
 </script>

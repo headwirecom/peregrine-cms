@@ -22,24 +22,28 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from '../logger'
-import {SUFFIX_PARAM_SEPARATOR} from "../constants";
-let log = LoggerFactory.logger('configureTenant').setLevelDebug()
+import { LoggerFactory } from "../logger";
+import { SUFFIX_PARAM_SEPARATOR } from "../constants";
+let log = LoggerFactory.logger("configureTenant").setLevelDebug();
 
 /**
  * StateAction:configureTenant
- * 
+ *
  * @module stateActions
- * 
+ *
  * @param {*} me a reference to the peregrine admin object
  * @param {*} target root path of site to configure (path to the per:Site node)
  */
-export default function(me, target) {
-    log.fine('configureTenant',target)
-    var api = me.getApi()
-    return new Promise( (resolve, reject) => {
-        me.loadContent('/content/admin/pages/tenants/configure.html/path' + SUFFIX_PARAM_SEPARATOR +'/content/'+target.name)
-        resolve()
-    })
-
+export default function (me, target) {
+	log.fine("configureTenant", target);
+	var api = me.getApi();
+	return new Promise((resolve, reject) => {
+		me.loadContent(
+			"/content/admin/pages/tenants/configure.html/path" +
+				SUFFIX_PARAM_SEPARATOR +
+				"/content/" +
+				target.name
+		);
+		resolve();
+	});
 }

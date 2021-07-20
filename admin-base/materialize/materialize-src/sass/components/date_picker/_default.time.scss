@@ -5,99 +5,99 @@
  * The list of times.
  */
 .picker__list {
-  list-style: none;
-  padding: 0.75em 0 4.2em;
-  margin: 0;
+	list-style: none;
+	padding: 0.75em 0 4.2em;
+	margin: 0;
 }
 /**
  * The times on the clock.
  */
 .picker__list-item {
-  border-bottom: 1px solid #ddd;
-  border-top: 1px solid #ddd;
-  margin-bottom: -1px;
-  position: relative;
-  background: #fff;
-  padding: .75em 1.25em;
+	border-bottom: 1px solid #ddd;
+	border-top: 1px solid #ddd;
+	margin-bottom: -1px;
+	position: relative;
+	background: #fff;
+	padding: 0.75em 1.25em;
 }
 @media (min-height: 46.75em) {
-  .picker__list-item {
-    padding: .5em 1em;
-  }
+	.picker__list-item {
+		padding: 0.5em 1em;
+	}
 }
 /* Hovered time */
 .picker__list-item:hover {
-  cursor: pointer;
-  color: #000;
-  background: #b1dcfb;
-  border-color: #0089ec;
-  z-index: 10;
+	cursor: pointer;
+	color: #000;
+	background: #b1dcfb;
+	border-color: #0089ec;
+	z-index: 10;
 }
 /* Highlighted and hovered/focused time */
 .picker__list-item--highlighted {
-  border-color: #0089ec;
-  z-index: 10;
+	border-color: #0089ec;
+	z-index: 10;
 }
 .picker__list-item--highlighted:hover,
 .picker--focused .picker__list-item--highlighted {
-  cursor: pointer;
-  color: #000;
-  background: #b1dcfb;
+	cursor: pointer;
+	color: #000;
+	background: #b1dcfb;
 }
 /* Selected and hovered/focused time */
 .picker__list-item--selected,
 .picker__list-item--selected:hover,
 .picker--focused .picker__list-item--selected {
-  background: #0089ec;
-  color: #fff;
-  z-index: 10;
+	background: #0089ec;
+	color: #fff;
+	z-index: 10;
 }
 /* Disabled time */
 .picker__list-item--disabled,
 .picker__list-item--disabled:hover,
 .picker--focused .picker__list-item--disabled {
-  background: #f5f5f5;
-  border-color: #f5f5f5;
-  color: #ddd;
-  cursor: default;
-  border-color: #ddd;
-  z-index: auto;
+	background: #f5f5f5;
+	border-color: #f5f5f5;
+	color: #ddd;
+	cursor: default;
+	border-color: #ddd;
+	z-index: auto;
 }
 /**
  * The clear button
  */
 .picker--time .picker__button--clear {
-  display: block;
-  width: 80%;
-  margin: 1em auto 0;
-  padding: 1em 1.25em;
-  background: none;
-  border: 0;
-  font-weight: 500;
-  font-size: .67em;
-  text-align: center;
-  text-transform: uppercase;
-  color: $timepicker-clock-color;
+	display: block;
+	width: 80%;
+	margin: 1em auto 0;
+	padding: 1em 1.25em;
+	background: none;
+	border: 0;
+	font-weight: 500;
+	font-size: 0.67em;
+	text-align: center;
+	text-transform: uppercase;
+	color: $timepicker-clock-color;
 }
 .picker--time .picker__button--clear:hover,
 .picker--time .picker__button--clear:focus {
-  color: #000;
-  background: #b1dcfb;
-  background: #ee2200;
-  border-color: #ee2200;
-  cursor: pointer;
-  color: #fff;
-  outline: none;
+	color: #000;
+	background: #b1dcfb;
+	background: #ee2200;
+	border-color: #ee2200;
+	cursor: pointer;
+	color: #fff;
+	outline: none;
 }
 .picker--time .picker__button--clear:before {
-  top: -0.25em;
-  color: $timepicker-clock-color;
-  font-size: 1.25em;
-  font-weight: bold;
+	top: -0.25em;
+	color: $timepicker-clock-color;
+	font-size: 1.25em;
+	font-weight: bold;
 }
 .picker--time .picker__button--clear:hover:before,
 .picker--time .picker__button--clear:focus:before {
-  color: #fff;
+	color: #fff;
 }
 
 /* ==========================================================================
@@ -107,21 +107,21 @@
  * The frame the bounds the time picker.
  */
 .picker--time .picker__frame {
-  min-width: 256px;
-  max-width: 320px;
+	min-width: 256px;
+	max-width: 320px;
 }
 /**
  * The picker box.
  */
 .picker--time .picker__box {
-  font-size: 1em;
-  background: #f2f2f2;
-  padding: 0;
+	font-size: 1em;
+	background: #f2f2f2;
+	padding: 0;
 }
 @media (min-height: 40.125em) {
-  .picker--time .picker__box {
-    margin-bottom: 5em;
-  }
+	.picker--time .picker__box {
+		margin-bottom: 5em;
+	}
 }
 
 /* ==========================================================================
@@ -132,41 +132,40 @@
 	font-weight: bold;
 	text-align: center;
 	color: rgba(255, 255, 255, 0.6);
-  font-weight: 400;
+	font-weight: 400;
 	clear: both;
 	position: relative;
 }
 
 .clockpicker-span-am-pm {
-  font-size: 1.3rem;
-  position: absolute;
-  right: 1rem;
-  bottom: 0.3rem;
-  line-height: 2rem;
-  font-weight: 500;
+	font-size: 1.3rem;
+	position: absolute;
+	right: 1rem;
+	bottom: 0.3rem;
+	line-height: 2rem;
+	font-weight: 500;
 }
 @media only screen and (min-width: 601px) {
 	.clockpicker-display {
 		top: 32%;
 	}
 	.clockpicker-span-am-pm {
-	  position: relative;
-	  right: auto;
-	  bottom: auto;
-	  text-align: center;
-	  margin-top: 1.2rem;
+		position: relative;
+		right: auto;
+		bottom: auto;
+		text-align: center;
+		margin-top: 1.2rem;
 	}
 }
 
-
-.text-primary{
-	color: rgba(255, 255, 255, 1)
+.text-primary {
+	color: rgba(255, 255, 255, 1);
 }
 .clockpicker-span-hours {
-  margin-right: 3px;
+	margin-right: 3px;
 }
 .clockpicker-span-minutes {
-  margin-left: 3px;
+	margin-left: 3px;
 }
 
 .clockpicker-span-hours,
@@ -184,9 +183,9 @@
 	height: 270px;
 	overflow: visible;
 	position: relative;
-  margin: auto;
-  margin-top: 25px;
-  margin-bottom: 5px;
+	margin: auto;
+	margin-top: 25px;
+	margin-bottom: 5px;
 	user-select: none;
 }
 .clockpicker-canvas,
@@ -212,7 +211,7 @@
 }
 .clockpicker-tick.active,
 .clockpicker-tick:hover {
-	background-color: transparentize($secondary-color, .75);
+	background-color: transparentize($secondary-color, 0.75);
 }
 .clockpicker-dial {
 	-webkit-transition: -webkit-transform 350ms, opacity 350ms;
@@ -232,11 +231,11 @@
 	transform: scale(1.2, 1.2);
 }
 .clockpicker-minutes.clockpicker-dial-out {
-	-webkit-transform: scale(.8, .8);
-	-moz-transform: scale(.8, .8);
-	-ms-transform: scale(.8, .8);
-	-o-transform: scale(.8, .8);
-	transform: scale(.8, .8);
+	-webkit-transform: scale(0.8, 0.8);
+	-moz-transform: scale(0.8, 0.8);
+	-ms-transform: scale(0.8, 0.8);
+	-o-transform: scale(0.8, 0.8);
+	transform: scale(0.8, 0.8);
 }
 .clockpicker-canvas {
 	-webkit-transition: opacity 175ms;

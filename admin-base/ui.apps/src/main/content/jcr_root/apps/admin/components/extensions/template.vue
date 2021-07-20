@@ -23,19 +23,24 @@
   #L%
   -->
 <template>
-    <span v-if="extensions">
-        <component v-for="(extension, key) in extensions" v-bind:key="key" v-bind:is="extension" v-bind:model="model"></component>
-    </span>
+	<span v-if="extensions">
+		<component
+			v-for="(extension, key) in extensions"
+			v-bind:key="key"
+			v-bind:is="extension"
+			v-bind:model="model"
+		></component>
+	</span>
 </template>
 
 <script>
-    export default {
-        props: ['model'],
-        computed: {
-            extensions() {
-                const ext = $perAdminApp.getExtension(this.model.id)
-                return ext
-            }
-        }
-    }
+	export default {
+		props: ["model"],
+		computed: {
+			extensions() {
+				const ext = $perAdminApp.getExtension(this.model.id);
+				return ext;
+			},
+		},
+	};
 </script>

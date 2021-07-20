@@ -1,5 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <!--
 
       Licensed to the Apache Software Foundation (ASF) under one
@@ -20,53 +19,81 @@
       under the License.
 
 -->
-<html xml:lang="en" lang="en"
-      xmlns="http://www.w3.org/1999/xhtml"
-      id="login-page"
+<html
+	xml:lang="en"
+	lang="en"
+	xmlns="http://www.w3.org/1999/xhtml"
+	id="login-page"
 >
-<head>
-   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-   <title>Login</title>
-   <link rel="stylesheet" href="${contextPath}/etc/felibs/materialize/materialize.css">
-</head>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta
+			http-equiv="Cache-Control"
+			content="no-cache, no-store, must-revalidate"
+		/>
+		<title>Login</title>
+		<link
+			rel="stylesheet"
+			href="${contextPath}/etc/felibs/materialize/materialize.css"
+		/>
+	</head>
 
-<body>
-<div class="top-bar">
-   <img border="0"
-        src="${contextPath}/etc/felibs/admin/peregrine-logo.png"
-        alt="Peregrine CMS Logo"/>
-   <!--a href="#help" class="help">Help</a-->
-</div>
+	<body>
+		<div class="top-bar">
+			<img
+				border="0"
+				src="${contextPath}/etc/felibs/admin/peregrine-logo.png"
+				alt="Peregrine CMS Logo"
+			/>
+			<!--a href="#help" class="help">Help</a-->
+		</div>
 
-<div id="main">
-   <div class="login-wrapper">
-      <!--suppress CssUnknownTarget -->
-      <div class="login-image"></div>
-      <div class="login-form-wrapper">
-         <form id="loginform" method="POST" action="${contextPath}/j_security_check"
-               enctype="multipart/form-data" accept-charset="UTF-8">
+		<div id="main">
+			<div class="login-wrapper">
+				<!--suppress CssUnknownTarget -->
+				<div class="login-image"></div>
+				<div class="login-form-wrapper">
+					<form
+						id="loginform"
+						method="POST"
+						action="${contextPath}/j_security_check"
+						enctype="multipart/form-data"
+						accept-charset="UTF-8"
+					>
+						<input type="hidden" name="_charset_" value="UTF-8" />
+						<input
+							type="hidden"
+							name="resource"
+							value="${resource}"
+						/>
 
-            <input type="hidden" name="_charset_" value="UTF-8"/>
-            <input type="hidden" name="resource" value="${resource}"/>
+						<h3 class="title">Log In</h3>
 
-            <h3 class="title">Log In</h3>
+						<div id="err">
+							<p>${j_reason}</p>
+						</div>
 
-            <div id="err">
-               <p>${j_reason}</p>
-            </div>
+						<div class="form-control">
+							<label for="j_username">Username</label>
+							<input
+								id="j_username"
+								name="j_username"
+								placeholder="Username"
+								autofocus
+							/>
+						</div>
 
-            <div class="form-control">
-               <label for="j_username">Username</label>
-               <input id="j_username" name="j_username" placeholder="Username" autofocus/>
-            </div>
+						<div class="form-control">
+							<label for="j_password">Password</label>
+							<input
+								id="j_password"
+								name="j_password"
+								type="password"
+								placeholder="Password"
+							/>
+						</div>
 
-            <div class="form-control">
-               <label for="j_password">Password</label>
-               <input id="j_password" name="j_password" type="password" placeholder="Password"/>
-            </div>
-
-            <!-- <div class="form-control remember-me-forgot-password">
+						<!-- <div class="form-control remember-me-forgot-password">
                <div class="remember-me">
                   <input type="checkbox"/>
                   <span>Remember me</span>
@@ -74,24 +101,28 @@
                <div class="forgot-password"><a href="#forgot-password">Forgot Password?</a></div>
             </div> -->
 
-            <div class="buttongroup form-control">
-               <button id="login" accesskey="l" class="form-button" type="submit">
-                  Log In
-               </button>
-            </div>
+						<div class="buttongroup form-control">
+							<button
+								id="login"
+								accesskey="l"
+								class="form-button"
+								type="submit"
+							>
+								Log In
+							</button>
+						</div>
 
-            <!-- <div class="sign-up-wrapper form-control">
+						<!-- <div class="sign-up-wrapper form-control">
                Don't have an account? <a href="#sign-up">Sign up now</a>
             </div> -->
-         </form>
-      </div>
-   </div>
-   <div class="legal">
-      <!-- <a href="#terms-and-conditions">Terms & Conditions</a>
+					</form>
+				</div>
+			</div>
+			<div class="legal">
+				<!-- <a href="#terms-and-conditions">Terms & Conditions</a>
       <span class="separator"></span>
       <a href="#privacy-policy">Privacy policy</a> -->
-   </div>
-</div>
-
-</body>
+			</div>
+		</div>
+	</body>
 </html>

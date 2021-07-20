@@ -1,57 +1,68 @@
 <!DOCTYPE html>
-<sly data-sly-use.helper="com.peregrine.pagerender.server.helpers.PageHelper"/>
+<sly data-sly-use.helper="com.peregrine.pagerender.server.helpers.PageHelper" />
 <sly data-sly-use.pageMerge="com.peregrine.nodetypes.merge.PageMerge" />
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <sly data-sly-list="${helper.model.prefetchDNS}"><link rel="preconnect" href="${item}"><link rel="dns-prefetch" href="${item}"></sly>
-    <sly data-sly-list="${helper.model.siteJS}"><link rel="preload" href="${item}" as="script"></sly>
-    <sly data-sly-list="${helper.model.siteCSS}"><link rel="preload" href="${item}" as="style"></sly>
+	<head>
+		<meta charset="utf-8" />
+		<sly data-sly-list="${helper.model.prefetchDNS}"
+			><link rel="preconnect" href="${item}" /><link
+				rel="dns-prefetch"
+				href="${item}"
+		/></sly>
+		<sly data-sly-list="${helper.model.siteJS}"
+			><link rel="preload" href="${item}" as="script"
+		/></sly>
+		<sly data-sly-list="${helper.model.siteCSS}"
+			><link rel="preload" href="${item}" as="style"
+		/></sly>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#c0c0c0">
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#c0c0c0" />
 
-    <title>${resource.jcr:title}</title>
+		<title>${resource.jcr:title}</title>
 
-    <link rel="manifest" href="${helper.siteRootPath}/manifest.json">
-    <script>$peregrineSiteRoot = "${helper.siteRootPath @ context='unsafe'}"</script>
+		<link rel="manifest" href="${helper.siteRootPath}/manifest.json" />
+		<script>
+			$peregrineSiteRoot = "${helper.siteRootPath @ context='unsafe'}";
+		</script>
 
-    <sly data-sly-include="tracker-head.html"></sly>
+		<sly data-sly-include="tracker-head.html"></sly>
 
-    <sly data-sly-list="${helper.model.siteCSS}">
-        <link rel="stylesheet" href="${item}" type="text/css">
-    </sly>
+		<sly data-sly-list="${helper.model.siteCSS}">
+			<link rel="stylesheet" href="${item}" type="text/css" />
+		</sly>
 
-    <script>
-        $peregrineApp = {
-            loadComponent: (name) => {
-                console.log(name)
-            }
-        }
-    </script>
+		<script>
+			$peregrineApp = {
+				loadComponent: (name) => {
+					console.log(name);
+				},
+			};
+		</script>
+	</head>
+	<body>
+		<sly data-sly-include="tracker-bodystart.html"></sly>
+		<div id="peregrine-app">
+			<!--/* ${helper.path} */-->
+			<div
+				data-sly-list.item="${pageMerge.getMergedResources}"
+				data-per-path="${helper.model.path}"
+			>
+				<sly data-sly-resource="${item.path}"></sly>
+			</div>
+		</div>
 
-</head>
-<body>
-<sly data-sly-include="tracker-bodystart.html"></sly>
-<div id="peregrine-app">
-    <!--/* ${helper.path} */-->
-    <div data-sly-list.item="${pageMerge.getMergedResources}" data-per-path="${helper.model.path}">
-        <sly data-sly-resource="${item.path}"></sly>
-    </div>     
-</div>
+		<sly data-sly-list="${helper.model.siteJS}">
+			<script type="text/javascript" src="${item}"></script>
+		</sly>
 
-<sly data-sly-list="${helper.model.siteJS}">
-    <script type="text/javascript" src="${item}"></script>
-</sly>
+		<sly data-sly-list="${helper.model.siteJS}">
+			<script type="text/javascript" src="${item}"></script>
+		</sly>
 
-<sly data-sly-list="${helper.model.siteJS}">
-    <script type="text/javascript" src="${item}"></script>
-</sly>
+		<sly data-sly-include="renderer.html"></sly>
 
-<sly data-sly-include="renderer.html"></sly>
-
-<sly data-sly-include="serviceworker.html"></sly>
-<sly data-sly-include="tracker-bodyend.html"></sly>
-</body>
+		<sly data-sly-include="serviceworker.html"></sly>
+		<sly data-sly-include="tracker-bodyend.html"></sly>
+	</body>
 </html>
-

@@ -1,11 +1,11 @@
 .debugger {
 	z-index: $zindexDebugger;
-	position: fixed; 
-	bottom: 60px; 
+	position: fixed;
+	bottom: 60px;
 	left: 0;
 	.toggle-debugger {
-		width: 2.5rem; 
-		height: 2.5rem; 
+		width: 2.5rem;
+		height: 2.5rem;
 		position: absolute;
 		&.show-debugger {
 			position: fixed;
@@ -17,7 +17,7 @@
 			color: #fff;
 			border-top-right-radius: 0.375rem;
 			text-align: center;
-			transition: background-color .25s;
+			transition: background-color 0.25s;
 			.material-icons {
 				font-size: 2rem;
 				line-height: 2.5rem;
@@ -42,7 +42,7 @@
 	}
 
 	a {
-	    color: #fff;
+		color: #fff;
 	}
 
 	.debugger-content {
@@ -82,7 +82,8 @@
 			height: 100%;
 			overflow: auto;
 			code pre {
-				font-family: "Inconsolata-g", Consolas, "Source Code Pro", Monaco, Menlo, monospace;
+				font-family: "Inconsolata-g", Consolas, "Source Code Pro",
+					Monaco, Menlo, monospace;
 			}
 			ul.list-inline {
 				padding-bottom: 0.75rem;
@@ -114,14 +115,14 @@
 		}
 	}
 	&.visible {
-		bottom: 0; 
-		left: 0; 
-		top: 0; 
-		right: 0; 
-		height: 100%; 
-		width: 100%; 
-		overflow-y: scroll; 
-		background-color: color("blue-grey", "darken-3"); 
+		bottom: 0;
+		left: 0;
+		top: 0;
+		right: 0;
+		height: 100%;
+		width: 100%;
+		overflow-y: scroll;
+		background-color: color("blue-grey", "darken-3");
 		color: white;
 	}
 }

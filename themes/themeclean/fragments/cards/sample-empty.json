@@ -1,9 +1,7 @@
 {
-  "title": "Cards no default value",
-  "group": "Empty",
-  "model": {
-    "cards": [
-      
-    ]
-  }
+	"title": "Cards no default value",
+	"group": "Empty",
+	"model": {
+		"cards": []
+	}
 }

@@ -23,24 +23,24 @@
   #L%
   -->
 <template>
-<div v-bind:data-per-path="model.path" v-bind:class="model.extraclasses">
-<p v-html="text" data-per-inline="model.text"></p>
-</div>
+	<div v-bind:data-per-path="model.path" v-bind:class="model.extraclasses">
+		<p v-html="text" data-per-inline="model.text"></p>
+	</div>
 </template>
 
 <script>
-export default {
-    props: [ 'model'],
-    computed: {
-        text: function() {
-            const text = this.$exp(this.model, 'text')
-            if(text !== '') {
-                return text
-            }
-            if(window.parent && window.parent.$perAdminApp) {
-                return 'empty'
-            }
-        }
-    }
-}
+	export default {
+		props: ["model"],
+		computed: {
+			text: function () {
+				const text = this.$exp(this.model, "text");
+				if (text !== "") {
+					return text;
+				}
+				if (window.parent && window.parent.$perAdminApp) {
+					return "empty";
+				}
+			},
+		},
+	};
 </script>

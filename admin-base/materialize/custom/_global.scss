@@ -36,25 +36,26 @@ dl {
 }
 
 /* vue  fade transitions */
-.fade-enter-active, .fade-leave-active {
-  -webkit-transition: opacity .15s ease-out;
-  -moz-transition: opacity .15s ease-out;
-  -ms-transition: opacity .15s ease-out;
-  transition: opacity .15s ease-out;
+.fade-enter-active,
+.fade-leave-active {
+	-webkit-transition: opacity 0.15s ease-out;
+	-moz-transition: opacity 0.15s ease-out;
+	-ms-transition: opacity 0.15s ease-out;
+	transition: opacity 0.15s ease-out;
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
-  opacity: 0
+	opacity: 0;
 }
 
-.svg-icon { 
+.svg-icon {
 	display: inline-block;
 	position: relative;
 	width: 24px;
-	padding-bottom: 24px; 
+	padding-bottom: 24px;
 	line-height: 1em;
-	vertical-align: middle; 
-	overflow: hidden; 
-	.svg-content { 
+	vertical-align: middle;
+	overflow: hidden;
+	.svg-content {
 		display: inline-block;
 		position: absolute;
 		top: 0;
@@ -65,15 +66,15 @@ dl {
 
 .clearfix:before,
 .clearfix:after {
-        display: table;
-        content: " ";
+	display: table;
+	content: " ";
 }
 
 .clearfix:after {
-    clear: both;
+	clear: both;
 }
 
-a[title='ignore-containers'] {
+a[title="ignore-containers"] {
 	display: none;
 }
 

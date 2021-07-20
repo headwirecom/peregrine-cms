@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -22,16 +22,16 @@
  * under the License.
  * #L%
  */
-const fs = require('fs-extra')
-const marked = require('marked')
-const xmlescape = require('xml-escape');
-const p = require('path')
+const fs = require("fs-extra");
+const marked = require("marked");
+const xmlescape = require("xml-escape");
+const p = require("path");
 
-var path = '../../docs/public'
+var path = "../../docs/public";
 
 function content(title, html, order) {
-html = xmlescape(html).split(".md&quot;&gt;").join(".html&quot;&gt;")
-return `<?xml version="1.0" encoding="UTF-8"?>
+	html = xmlescape(html).split(".md&quot;&gt;").join(".html&quot;&gt;");
+	return `<?xml version="1.0" encoding="UTF-8"?>
 <jcr:root 
    xmlns:sling="http://sling.apache.org/jcr/sling/1.0" 
    xmlns:jcr="http://www.jcp.org/jcr/1.0"
@@ -68,76 +68,85 @@ return `<?xml version="1.0" encoding="UTF-8"?>
     
     ${order}
    
-</jcr:root>`
+</jcr:root>`;
 }
 
 function findOrder(commands) {
-  var ret = ''
-  var order = /order: (.*)/g.exec(commands)
-  if (order[1]) {
-    order[1].split(',').forEach(x => {
-      var node = x.trim()
-      ret += '<' + node + '/>\n'
-    })
-  }
-  return ret;
+	var ret = "";
+	var order = /order: (.*)/g.exec(commands);
+	if (order[1]) {
+		order[1].split(",").forEach((x) => {
+			var node = x.trim();
+			ret += "<" + node + "/>\n";
+		});
+	}
+	return ret;
 }
 
 function makeContent(root, path) {
-  var isIndex = path.endsWith("/index.md");
-  var title;
-  if (isIndex) {
-    title = path.slice(0, path.lastIndexOf('/'))
-    title = title.slice(title.lastIndexOf('/') + 1)
-  } else {
-    title = path.slice(path.lastIndexOf('/') + 1)
-    title = title.slice(0, title.lastIndexOf('.md'))
-  }
+	var isIndex = path.endsWith("/index.md");
+	var title;
+	if (isIndex) {
+		title = path.slice(0, path.lastIndexOf("/"));
+		title = title.slice(title.lastIndexOf("/") + 1);
+	} else {
+		title = path.slice(path.lastIndexOf("/") + 1);
+		title = title.slice(0, title.lastIndexOf(".md"));
+	}
 
-  var md = fs.readFileSync(path).toString()
-    .replace(/!\[(.*)\]\((.*)\)/g, function (math, p1, p2, string) {
-      return '![' + p1 + '](' + title + '/' + p2 + ')'
-    })
+	var md = fs
+		.readFileSync(path)
+		.toString()
+		.replace(/!\[(.*)\]\((.*)\)/g, function (math, p1, p2, string) {
+			return "![" + p1 + "](" + title + "/" + p2 + ")";
+		});
 
-  var order = ''
-  // trim commands
-  if (md.startsWith('```')) {
-    var commands = md.slice(3, md.indexOf('```', 3))
-    order = findOrder(commands)
-    md = md.slice(md.indexOf('```', 3) + 3)
-  }
+	var order = "";
+	// trim commands
+	if (md.startsWith("```")) {
+		var commands = md.slice(3, md.indexOf("```", 3));
+		order = findOrder(commands);
+		md = md.slice(md.indexOf("```", 3) + 3);
+	}
 
-  var out = marked.parse(md) + '<p>&nbsp;</p>'
-  var res = content(title, out, order)
+	var out = marked.parse(md) + "<p>&nbsp;</p>";
+	var res = content(title, out, order);
 
-  var relPath = 'target/classes/content/docs/pages/public' + path.slice(root.length)
-  console.log(`${relPath}`)
-  fs.mkdirsSync(`${relPath}/..`)
-  fs.writeFileSync(isIndex ? p.join(`${relPath}`, '../.content.xml') : relPath.replace(".md", ".xml"), res)
+	var relPath =
+		"target/classes/content/docs/pages/public" + path.slice(root.length);
+	console.log(`${relPath}`);
+	fs.mkdirsSync(`${relPath}/..`);
+	fs.writeFileSync(
+		isIndex
+			? p.join(`${relPath}`, "../.content.xml")
+			: relPath.replace(".md", ".xml"),
+		res
+	);
 }
 
 function copyImage(root, path) {
-  var image = fs.readFileSync(path)
-  var title = path.slice(0, path.lastIndexOf('/'))
-  var name = path.slice(path.lastIndexOf('/'))
+	var image = fs.readFileSync(path);
+	var title = path.slice(0, path.lastIndexOf("/"));
+	var name = path.slice(path.lastIndexOf("/"));
 
-  var relPath = 'target/classes/content/docs/pages/public' + title.slice(root.length)
-  fs.mkdirsSync(relPath)
-  fs.writeFileSync(relPath + '/' + name, image)
+	var relPath =
+		"target/classes/content/docs/pages/public" + title.slice(root.length);
+	fs.mkdirsSync(relPath);
+	fs.writeFileSync(relPath + "/" + name, image);
 }
 
 function processDir(root, path) {
-  var files = fs.readdirSync(path)
-  files.forEach(file => {
-    var fullpath = path + '/' + file
-    if (fs.lstatSync(fullpath).isDirectory()) {
-      processDir(root, fullpath)
-    } else if (fullpath.endsWith('.md')) {
-      makeContent(root, fullpath)
-    } else if (fullpath.endsWith('.png')) {
-      copyImage(root, fullpath)
-    }
-  })
+	var files = fs.readdirSync(path);
+	files.forEach((file) => {
+		var fullpath = path + "/" + file;
+		if (fs.lstatSync(fullpath).isDirectory()) {
+			processDir(root, fullpath);
+		} else if (fullpath.endsWith(".md")) {
+			makeContent(root, fullpath);
+		} else if (fullpath.endsWith(".png")) {
+			copyImage(root, fullpath);
+		}
+	});
 }
 
-processDir(path, path)
+processDir(path, path);

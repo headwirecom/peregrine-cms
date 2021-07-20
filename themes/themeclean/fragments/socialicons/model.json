@@ -1,59 +1,58 @@
 {
-  "definitions": {
-    "Socialicons": {
-      "type": "object",
-      "x-type": "component",
-      "properties": {
-        "iconcustomcolor": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Custom Icons Color",
-          "x-form-type": "materialswitch"
-        },
-        "iconcolor": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Icon Color",
-          "x-default": "#000000",
-          "x-form-visible": "model.iconcustomcolor == 'true'",
-          "x-form-type": "color"
-        },
-        "iconsize": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Icon Size",
-          "x-form-type": "materialrange",
-          "x-default": "25",
-          "x-form-min": 0,
-          "x-form-max": 150
-        },
-        "icons": {
-          "type": "object",
-          "x-form-type": "collection",
-          "x-form-label": "Icons",
-          "x-source": "inject",
-          "properties": {
-            "icon": {
-              "type": "string",
-              "x-source": "inject",
-              "x-form-label": "Icon Chooser",
-              "x-form-type": "iconbrowser",
-              "x-form-hint": "Select an icon.",
-              "x-form-required": true,
-              "x-form-validator": "required",
-              "x-form-families": ["material","font awesome"]
-            },
-            "url": {
-              "type": "string",
-              "x-source": "inject",
-              "x-form-label": "Icon Url",
-              "x-form-type": "pathbrowser",
-              "x-form-browserRoot": "/content/themeclean/pages"
-            }
-          }
-        }
-        
-      }
-    }
-  }
+	"definitions": {
+		"Socialicons": {
+			"type": "object",
+			"x-type": "component",
+			"properties": {
+				"iconcustomcolor": {
+					"type": "string",
+					"x-source": "inject",
+					"x-form-label": "Custom Icons Color",
+					"x-form-type": "materialswitch"
+				},
+				"iconcolor": {
+					"type": "string",
+					"x-source": "inject",
+					"x-form-label": "Icon Color",
+					"x-default": "#000000",
+					"x-form-visible": "model.iconcustomcolor == 'true'",
+					"x-form-type": "color"
+				},
+				"iconsize": {
+					"type": "string",
+					"x-source": "inject",
+					"x-form-label": "Icon Size",
+					"x-form-type": "materialrange",
+					"x-default": "25",
+					"x-form-min": 0,
+					"x-form-max": 150
+				},
+				"icons": {
+					"type": "object",
+					"x-form-type": "collection",
+					"x-form-label": "Icons",
+					"x-source": "inject",
+					"properties": {
+						"icon": {
+							"type": "string",
+							"x-source": "inject",
+							"x-form-label": "Icon Chooser",
+							"x-form-type": "iconbrowser",
+							"x-form-hint": "Select an icon.",
+							"x-form-required": true,
+							"x-form-validator": "required",
+							"x-form-families": ["material", "font awesome"]
+						},
+						"url": {
+							"type": "string",
+							"x-source": "inject",
+							"x-form-label": "Icon Url",
+							"x-form-type": "pathbrowser",
+							"x-form-browserRoot": "/content/themeclean/pages"
+						}
+					}
+				}
+			}
+		}
+	}
 }

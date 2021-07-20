@@ -22,45 +22,43 @@
  * under the License.
  * #L%
  */
-import {LoggerFactory} from '../logger'
-import {set} from '../utils'
+import { LoggerFactory } from "../logger";
+import { set } from "../utils";
 
-let log = LoggerFactory.logger('setTenant').setLevelDebug()
+let log = LoggerFactory.logger("setTenant").setLevelDebug();
 
-export default function(me, tenant) {
+export default function (me, tenant) {
+	log.fine(tenant);
 
-  log.fine(tenant)
+	let view = me.getView();
+	let eventBus = me.eventBus;
+	const list = view.admin.tenants;
 
-  let view = me.getView()
-  let eventBus = me.eventBus
-  const list = view.admin.tenants
+	return new Promise((resolve, reject) => {
+		if (!list) resolve();
 
-  return new Promise( (resolve, reject) => {
-    if (!list) resolve()
+		let next = list.filter((item) => item.name === tenant.name);
+		if (next.length <= 0) {
+			throw "tenant not found";
+		}
 
-    let next = list.filter((item) => (item.name === tenant.name))
-    if (next.length <= 0) {
-      throw 'tenant not found'
-    }
+		// prepopulate tree viewers
+		set(me.getView(), "/state/tools", {
+			dashboard: `/content/${tenant.name}`,
+			pages: `/content/${tenant.name}/pages`,
+			assets: `/content/${tenant.name}/assets`,
+			objects: `/content/${tenant.name}/objects`,
+			templates: `/content/${tenant.name}/templates`,
+			objectdefinitions: `/content/${tenant.name}/object-definitions`,
+		});
 
-    // prepopulate tree viewers
-    set(me.getView(), '/state/tools', {
-      dashboard: `/content/${tenant.name}`,
-      pages: `/content/${tenant.name}/pages`,
-      assets: `/content/${tenant.name}/assets`,
-      objects: `/content/${tenant.name}/objects`,
-      templates: `/content/${tenant.name}/templates`,
-      objectdefinitions: `/content/${tenant.name}/object-definitions`
-    })
-
-    next = next[0]
-    set(me.getView(), '/state/tenant', next)
-    eventBus.$emit('tenants-update', {
-      current: next
-    })
-    resolve()
-
-  }).catch(err => {
-    log.error(err)
-  })
+		next = next[0];
+		set(me.getView(), "/state/tenant", next);
+		eventBus.$emit("tenants-update", {
+			current: next,
+		});
+		resolve();
+	}).catch((err) => {
+		log.error(err);
+	});
 }

@@ -1,7 +1,5 @@
 {
-  "title": "Image/Video with no default value",
-  "group": "Empty",
-  "model": {
-    
-  }
+	"title": "Image/Video with no default value",
+	"group": "Empty",
+	"model": {}
 }

@@ -23,44 +23,49 @@
   #L%
   -->
 <template>
-    <div class="field-wrap field-with-button">
-        <input
-            ref="field"
-            class="form-control"
-            type="text"
-            :disabled="disabled"
-            :maxlength="schema.max"
-            :placeholder="schema.placeholder"
-            :readonly="schema.readonly" >
-        <button v-on:click.stop.prevent="add" class="btn-flat">
-          <i class="material-icons">insert_drive_file</i>
-        </button>
-        <div v-for="item in value">
-            <a href="#" v-on:click.stop.prevent="remove(item)">D</a> {{item}}
-        </div>
-    </div>
+	<div class="field-wrap field-with-button">
+		<input
+			ref="field"
+			class="form-control"
+			type="text"
+			:disabled="disabled"
+			:maxlength="schema.max"
+			:placeholder="schema.placeholder"
+			:readonly="schema.readonly"
+		/>
+		<button v-on:click.stop.prevent="add" class="btn-flat">
+			<i class="material-icons">insert_drive_file</i>
+		</button>
+		<div v-for="item in value">
+			<a href="#" v-on:click.stop.prevent="remove(item)">D</a> {{ item }}
+		</div>
+	</div>
 </template>
 
 <script>
-    export default {
-        props: ['model'],
-        mixins: [ VueFormGenerator.abstractField ],
-        methods: {
-            remove(item) {
-                let values = this.value
+	export default {
+		props: ["model"],
+		mixins: [VueFormGenerator.abstractField],
+		methods: {
+			remove(item) {
+				let values = this.value;
 
-                for(let i = 0; i < values.length; i++) {
-                    if(values[i] === item) {
-                        values.splice(i, 1)
-                        break;
-                    }
-                }
-                this.$forceUpdate()
-            },
-            add() {
-                this.$set(this.value, this.value.length, this.$refs.field.value)
-                this.$forceUpdate()
-            }
-        }
-    }
+				for (let i = 0; i < values.length; i++) {
+					if (values[i] === item) {
+						values.splice(i, 1);
+						break;
+					}
+				}
+				this.$forceUpdate();
+			},
+			add() {
+				this.$set(
+					this.value,
+					this.value.length,
+					this.$refs.field.value
+				);
+				this.$forceUpdate();
+			},
+		},
+	};
 </script>

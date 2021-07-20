@@ -1,85 +1,85 @@
 #toast-container {
-  position: fixed;
-  top: 55px !important;
-  right: 10px;
-  max-width: 35rem;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
+	position: fixed;
+	top: 55px !important;
+	right: 10px;
+	max-width: 35rem;
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
 
-  .toast {
-    $before-width: 5rem;
-    $progress-bar-height: 7px;
+	.toast {
+		$before-width: 5rem;
+		$progress-bar-height: 7px;
 
-    position: relative;
-    padding-left: $before-width;
-    padding-bottom: calc(10px  + #{$progress-bar-height});
-    word-break: break-word;
-    opacity: 0;
-    transition: opacity .1s ease-out;
-    font-weight: 400;
+		position: relative;
+		padding-left: $before-width;
+		padding-bottom: calc(10px + #{$progress-bar-height});
+		word-break: break-word;
+		opacity: 0;
+		transition: opacity 0.1s ease-out;
+		font-weight: 400;
 
-    &:before {
-      position: absolute;
-      left: 0;
-      font-family: "Material Icons", sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: $before-width;
-      font-size: 2rem;
-      content: 'notifications'
-    }
+		&:before {
+			position: absolute;
+			left: 0;
+			font-family: "Material Icons", sans-serif;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			width: $before-width;
+			font-size: 2rem;
+			content: "notifications";
+		}
 
-    .progress-bar {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: $progress-bar-height;
-      font-family: "Material Icons", sans-serif;
-      display: flex;
-      font-size: 2rem;
-      background-color: rgba(255, 255, 255, .8);
-      border-top-right-radius: 5px;
-      border-bottom-right-radius: 5px;
-      content: '';
-    }
+		.progress-bar {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			height: $progress-bar-height;
+			font-family: "Material Icons", sans-serif;
+			display: flex;
+			font-size: 2rem;
+			background-color: rgba(255, 255, 255, 0.8);
+			border-top-right-radius: 5px;
+			border-bottom-right-radius: 5px;
+			content: "";
+		}
 
-    &.info {
-      background-color: var(--info-bg);
-      color: var(--info-color);
+		&.info {
+			background-color: var(--info-bg);
+			color: var(--info-color);
 
-      &:before {
-        content: 'info'
-      }
-    }
+			&:before {
+				content: "info";
+			}
+		}
 
-    &.warn {
-      background-color: var(--warn-bg);
-      color: var(--warn-color);
+		&.warn {
+			background-color: var(--warn-bg);
+			color: var(--warn-color);
 
-      &:before {
-        content: 'warning';
-      }
-    }
+			&:before {
+				content: "warning";
+			}
+		}
 
-    &.error {
-      background-color: var(--error-bg);
-      color: var(--error-color);
+		&.error {
+			background-color: var(--error-bg);
+			color: var(--error-color);
 
-      &:before {
-        content: 'error';
-      }
-    }
+			&:before {
+				content: "error";
+			}
+		}
 
-    &.success {
-      background-color: var(--success-bg);
-      color: var(--success-color);
+		&.success {
+			background-color: var(--success-bg);
+			color: var(--success-color);
 
-      &:before {
-        content: 'check';
-      }
-    }
-  }
+			&:before {
+				content: "check";
+			}
+		}
+	}
 }

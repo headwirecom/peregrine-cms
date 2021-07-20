@@ -1,8 +1,8 @@
 {
-  "title": "Page List",
-  "group": "Features",
-  "model": {
-    "rootpage": "/content/themeclean/pages",
-    "levels": 2
-  }
+	"title": "Page List",
+	"group": "Features",
+	"model": {
+		"rootpage": "/content/themeclean/pages",
+		"levels": 2
+	}
 }

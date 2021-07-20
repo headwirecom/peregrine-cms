@@ -1,5 +1,4 @@
-Versioning in Peregrine CMS
-=====
+# Versioning in Peregrine CMS
 
 Peregrine provides versioning for the resources (page / asset / object / template) stored in sites.
 
@@ -43,9 +42,10 @@ Its value is the label that `VersioningResourceResolver` will look for in the re
 to e.g. `Published` or the other type described above.
 
 The property can be passed in 3 ways:
-* as a `request` header,
-* as a `Cookie`,
-* as a `request` attribute.
+
+-   as a `request` header,
+-   as a `Cookie`,
+-   as a `request` attribute.
 
 The second option allows for a consistent view of the given state of the site, when applied in the browser manually.
 We do not provide any UI for the user to use it, it's an advanced option for the developers only.

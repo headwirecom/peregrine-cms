@@ -1,6 +1,5 @@
 {
-  "title": "Container",
-  "group": "Chrome",
-  "model": {
-  }
+	"title": "Container",
+	"group": "Chrome",
+	"model": {}
 }

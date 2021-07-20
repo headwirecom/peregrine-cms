@@ -23,34 +23,42 @@
   #L%
   -->
 <template>
-    <span>
-      <a v-bind:title="$i18n('fileUpload')" href="#!" class="btn-floating waves-effect waves-light">
-        <label style="cursor: inherit;">
-          <input type="file" ref="file_upload" style="display:none" v-on:change="addFiles">
-          <i class="material-icons">file_upload</i>
-        </label>
-      </a>
-    </span>
+	<span>
+		<a
+			v-bind:title="$i18n('fileUpload')"
+			href="#!"
+			class="btn-floating waves-effect waves-light"
+		>
+			<label style="cursor: inherit">
+				<input
+					type="file"
+					ref="file_upload"
+					style="display: none"
+					v-on:change="addFiles"
+				/>
+				<i class="material-icons">file_upload</i>
+			</label>
+		</a>
+	</span>
 </template>
 
 <script>
-export default {
-  props: ['model'],
-  methods: {
-    addFiles (ev) {
-      this.uploadFile(ev.target.files)
-    },
-    uploadFile(files) {
-      $perAdminApp.stateAction('uploadFiles', {
-        path: $perAdminApp.getView().state.tools.assets,
-        files: files,
-        cb: this.fileUploadComplete
-      })
-    },
-    fileUploadComplete(percentCompleted){
-      return
-    }
-  }
-}
-
+	export default {
+		props: ["model"],
+		methods: {
+			addFiles(ev) {
+				this.uploadFile(ev.target.files);
+			},
+			uploadFile(files) {
+				$perAdminApp.stateAction("uploadFiles", {
+					path: $perAdminApp.getView().state.tools.assets,
+					files: files,
+					cb: this.fileUploadComplete,
+				});
+			},
+			fileUploadComplete(percentCompleted) {
+				return;
+			},
+		},
+	};
 </script>

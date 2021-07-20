@@ -1,5 +1,5 @@
 module.exports = {
-    convert: function($, f) {
-//        f.bindPath($)
-    }
-}
+	convert: function ($, f) {
+		//        f.bindPath($)
+	},
+};

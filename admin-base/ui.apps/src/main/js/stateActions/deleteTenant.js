@@ -22,18 +22,17 @@
  * under the License.
  * #L%
  */
-import {LoggerFactory} from '../logger'
+import { LoggerFactory } from "../logger";
 
-let log = LoggerFactory.logger('deleteTenant').setLevelDebug()
+let log = LoggerFactory.logger("deleteTenant").setLevelDebug();
 
-export default function(me, target) {
-    log.fine('deleteTenant',target)
-    var api = me.getApi()
+export default function (me, target) {
+	log.fine("deleteTenant", target);
+	var api = me.getApi();
 
-    if (me.getNodeFromView('/state/tools')) {
-        me.getNodeFromView('/state/tools').page = undefined
-    }
+	if (me.getNodeFromView("/state/tools")) {
+		me.getNodeFromView("/state/tools").page = undefined;
+	}
 
-    return api.deleteTenant(target).then( () => api.populateTenants() )
-
+	return api.deleteTenant(target).then(() => api.populateTenants());
 }

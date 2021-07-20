@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -22,13 +22,18 @@
  * under the License.
  * #L%
  */
-import PerAdminApp from './perAdminApp'
-import PerAdminImpl from './apiImpl'
+import PerAdminApp from "./perAdminApp";
+import PerAdminImpl from "./apiImpl";
 
-var $pappView = {}
-var $papp = new PerAdminApp($pappView)
-var $perApi = new PerAdminImpl($papp)
-$papp.setApi($perApi)
-var $logger = $papp.getLogger('index.js')
-$papp.getApi().populateTools().then(() => { $logger.info(JSON.stringify($pappView, true, 2)) } ).catch( (error) => $logger.info('failed test', error) )
-
+var $pappView = {};
+var $papp = new PerAdminApp($pappView);
+var $perApi = new PerAdminImpl($papp);
+$papp.setApi($perApi);
+var $logger = $papp.getLogger("index.js");
+$papp
+	.getApi()
+	.populateTools()
+	.then(() => {
+		$logger.info(JSON.stringify($pappView, true, 2));
+	})
+	.catch((error) => $logger.info("failed test", error));

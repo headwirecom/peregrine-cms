@@ -1,7 +1,5 @@
 {
-  "title": "Article Pager",
-  "group": "Empty",
-  "model": {
-    
-  }
+	"title": "Article Pager",
+	"group": "Empty",
+	"model": {}
 }

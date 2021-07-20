@@ -1,10 +1,9 @@
 {
-  "definitions": {
-    "Container": {
-      "type": "object",
-      "x-type": "component",
-      "properties": {
-      }
-    }
-  }
+	"definitions": {
+		"Container": {
+			"type": "object",
+			"x-type": "component",
+			"properties": {}
+		}
+	}
 }

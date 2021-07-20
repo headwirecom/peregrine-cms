@@ -1,6 +1,5 @@
 {
-  "title": "Pagelistnested",
-  "group": ".hidden",
-  "model": {
-  }
+	"title": "Pagelistnested",
+	"group": ".hidden",
+	"model": {}
 }

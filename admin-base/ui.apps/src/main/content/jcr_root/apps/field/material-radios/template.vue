@@ -1,48 +1,65 @@
 <template>
 	<div class="wrap">
-		<ul v-if="!schema.preview" :class="schema.inline ? 'radio-list inline' : 'radio-list'" :disabled="disabled" :id="getFieldID(schema)">
-		  <li v-for="item in items" :class="isItemChecked(item) ? 'checked' : ''">
-		    <input 
-		    	class="form-control"
-		    	:id="getItemName(item) + _uid"
-		    	type="radio" 
-		    	:class="schema.withGap ? 'with-gap' : ''"
-		    	:disabled="disabled" 
-		    	:name="id" 
-		    	@click="onSelection(item)" 
-		    	:value="getItemValue(item)" 
-		    	:checked="isItemChecked(item)"/>
-		    <label :for="getItemName(item)+_uid">{{ getItemName(item) }}</label>
-		  </li>
+		<ul
+			v-if="!schema.preview"
+			:class="schema.inline ? 'radio-list inline' : 'radio-list'"
+			:disabled="disabled"
+			:id="getFieldID(schema)"
+		>
+			<li
+				v-for="item in items"
+				:class="isItemChecked(item) ? 'checked' : ''"
+			>
+				<input
+					class="form-control"
+					:id="getItemName(item) + _uid"
+					type="radio"
+					:class="schema.withGap ? 'with-gap' : ''"
+					:disabled="disabled"
+					:name="id"
+					@click="onSelection(item)"
+					:value="getItemValue(item)"
+					:checked="isItemChecked(item)"
+				/>
+				<label :for="getItemName(item) + _uid">{{
+					getItemName(item)
+				}}</label>
+			</li>
 		</ul>
 		<template v-else>
-			<p v-for="item in items" v-if="isItemChecked(item)">{{ getItemName(item) }}</p>
+			<p v-for="item in items" v-if="isItemChecked(item)">
+				{{ getItemName(item) }}
+			</p>
 		</template>
 	</div>
 </template>
 
-<script>	
+<script>
 	export default {
-		mixins: [ VueFormGenerator.abstractField ], 
+		mixins: [VueFormGenerator.abstractField],
 
 		computed: {
 			items() {
 				let values = this.schema.values;
-				if (typeof(values) == "function") {
+				if (typeof values == "function") {
 					return values.apply(this, [this.model, this.schema]);
 				} else {
 					return values;
 				}
 			},
-			id(){
+			id() {
 				return this.schema.model;
-			}
+			},
 		},
 
 		methods: {
 			getItemValue(item) {
-				if (_.isObject(item)){
-					if (typeof this.schema["radiosOptions"] !== "undefined" && typeof this.schema["radiosOptions"]["value"] !== "undefined") {
+				if (_.isObject(item)) {
+					if (
+						typeof this.schema["radiosOptions"] !== "undefined" &&
+						typeof this.schema["radiosOptions"]["value"] !==
+							"undefined"
+					) {
 						return item[this.schema.radiosOptions.value];
 					} else {
 						if (typeof item["value"] !== "undefined") {
@@ -56,8 +73,12 @@
 				}
 			},
 			getItemName(item) {
-				if (_.isObject(item)){
-					if (typeof this.schema["radiosOptions"] !== "undefined" && typeof this.schema["radiosOptions"]["name"] !== "undefined") {
+				if (_.isObject(item)) {
+					if (
+						typeof this.schema["radiosOptions"] !== "undefined" &&
+						typeof this.schema["radiosOptions"]["name"] !==
+							"undefined"
+					) {
 						return item[this.schema.radiosOptions.name];
 					} else {
 						if (typeof item["name"] !== "undefined") {
@@ -75,8 +96,8 @@
 			},
 			isItemChecked(item) {
 				let currentValue = this.getItemValue(item);
-				return (currentValue === this.value);
+				return currentValue === this.value;
 			},
-		}
+		},
 	};
 </script>

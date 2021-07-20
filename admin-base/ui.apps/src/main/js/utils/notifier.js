@@ -1,18 +1,17 @@
 class Notifier {
+	constructor($app) {
+		this.$app = $app;
+	}
 
-  constructor($app) {
-    this.$app = $app
-  }
-
-  filesNotUploaded(fileList) {
-    return this.$app.notifyUser(
-        'Warning !',
-        `
+	filesNotUploaded(fileList) {
+		return this.$app.notifyUser(
+			"Warning !",
+			`
         Some assets were not uploaded. Asset exists in this location:
-        ${fileList.map((file) => file.name).join(', ')}
+        ${fileList.map((file) => file.name).join(", ")}
         `
-    )
-  }
+		);
+	}
 }
 
-export default Notifier
+export default Notifier;

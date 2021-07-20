@@ -1,11 +1,11 @@
 {
-  "title": "Article Media",
-  "group": "Article",
-  "model": {
-    "mediatype": "video",
-    "videosrc": "https://www.youtube-nocookie.com/embed/NM2wtte1JRE",
-    "mediawidth": "100",
-    "toppadding": "0",
-    "bottompadding": "0"
-  }
+	"title": "Article Media",
+	"group": "Article",
+	"model": {
+		"mediatype": "video",
+		"videosrc": "https://www.youtube-nocookie.com/embed/NM2wtte1JRE",
+		"mediawidth": "100",
+		"toppadding": "0",
+		"bottompadding": "0"
+	}
 }

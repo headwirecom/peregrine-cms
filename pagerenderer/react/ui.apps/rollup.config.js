@@ -1,11 +1,11 @@
-import buble from 'rollup-plugin-buble';
+import buble from "rollup-plugin-buble";
 
 export default {
-	input: 'src/main/js/peregrineApp.js',
+	input: "src/main/js/peregrineApp.js",
 	output: {
-			file: 'target/classes/etc/felibs/pagerender-react/js/perview.js', 
-			format: 'iife',
-			name: '$peregrineApp',
+		file: "target/classes/etc/felibs/pagerender-react/js/perview.js",
+		format: "iife",
+		name: "$peregrineApp",
 	},
-	plugins: [ buble() ],
-}
+	plugins: [buble()],
+};

@@ -1,5 +1,4 @@
-peregrine cms renditions
-=====
+# peregrine cms renditions
 
 # Introduction
 
@@ -9,8 +8,8 @@ on Windows, Mac and Linux.
 
 # Installing VIPS
 
-Unless you are running the official Peregrine Docker image, VIPS needs to 
-be installed manually as it requires installation of native OS code. 
+Unless you are running the official Peregrine Docker image, VIPS needs to
+be installed manually as it requires installation of native OS code.
 To learn more on how to install **libvips**:
 
 [libvips Wiki Page](https://github.com/jcupitt/libvips/wiki)
@@ -18,7 +17,6 @@ To learn more on how to install **libvips**:
 ## Linux (Ubuntu)
 
 If you have an apt-get based Linux system, run the following command:
-
 
 ```
 $ sudo apt-get install libvips libvips-dev libvips-tools -y
@@ -66,29 +64,29 @@ configure and execute the image handling.
 
 Peregrine provides these Image Transformation Services:
 
-* Thumbnail: creates a smaller version the original image with or without cropping
-* Greyscale: creates a grey image of the original image
+-   Thumbnail: creates a smaller version the original image with or without cropping
+-   Greyscale: creates a grey image of the original image
 
 All services in Peregrine are disabled by default because
 Peregrine cannot assume that VIPS is installed.
 
 ### Thumbnail Configuration
 
-|Name|Parameter|Required|Type|Default|Description|
-|:---|:--------|:-------|:---|:------|:----------|
-|Enabled|enabled|yes|boolean|true|Flag to indicate if the Service can be used or not|
-|Name|name|yes|String|vips:thumbnail|Name of the Image Transformation used for the Setup|
-|Default Width|defaultWidth|no|int|50|Default Width in pixels of the target image|
-|Default Height|defaultHeight|no|int|50|Default Height in pixels of the target image|
+| Name           | Parameter     | Required | Type    | Default        | Description                                         |
+| :------------- | :------------ | :------- | :------ | :------------- | :-------------------------------------------------- |
+| Enabled        | enabled       | yes      | boolean | true           | Flag to indicate if the Service can be used or not  |
+| Name           | name          | yes      | String  | vips:thumbnail | Name of the Image Transformation used for the Setup |
+| Default Width  | defaultWidth  | no       | int     | 50             | Default Width in pixels of the target image         |
+| Default Height | defaultHeight | no       | int     | 50             | Default Height in pixels of the target image        |
 
 ![Image Transformation Configuration for Thumbnail](renditions.image.transformation.configuration.thumbnail.png)
 
 ### Greyscale Configuration
 
-|Name|Parameter|Required|Type|Default|Description|
-|:---|:--------|:-------|:---|:------|:----------|
-|Enabled|enabled|yes|boolean|true|Flag to indicate if the Service can be used or not|
-|Name|name|yes|String|vips:greyscale|Name of the Image Transformation used for the Setup|
+| Name    | Parameter | Required | Type    | Default        | Description                                         |
+| :------ | :-------- | :------- | :------ | :------------- | :-------------------------------------------------- |
+| Enabled | enabled   | yes      | boolean | true           | Flag to indicate if the Service can be used or not  |
+| Name    | name      | yes      | String  | vips:greyscale | Name of the Image Transformation used for the Setup |
 
 ![Image Transformation Configuration for Greyscale](renditions.image.transformation.configuration.greyscale.png)
 
@@ -103,10 +101,10 @@ or image sizes etc.
 
 The configuration of an Image Transformation Setup: **com.peregrine.transform.ImageTransformationSetup**:
 
-|Name|Parameter|Required|Type|Default|Description|
-|:---|:--------|:-------|:---|:------|:----------|
-|Name|name|yes|String|none|Name of the Image Transformation Setup. You need to provide an extension for the target image type|
-|Configuration|imageTransformationConfiguration|yes|String|none|List of Image Transformation in the format: transformation=&lt;transformation name>[\|parameter name=parameter value]*|
+| Name          | Parameter                        | Required | Type   | Default | Description                                                                                                             |
+| :------------ | :------------------------------- | :------- | :----- | :------ | :---------------------------------------------------------------------------------------------------------------------- |
+| Name          | name                             | yes      | String | none    | Name of the Image Transformation Setup. You need to provide an extension for the target image type                      |
+| Configuration | imageTransformationConfiguration | yes      | String | none    | List of Image Transformation in the format: transformation=&lt;transformation name>[\|parameter name=parameter value]\* |
 
 For example if there is a need for a greyscale thumbnail you can execute a greyscale and then a thumbnail
 to generated the desired image.

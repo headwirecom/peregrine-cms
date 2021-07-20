@@ -1,6 +1,6 @@
 process.env.NODE_PATH = "./node_modules";
-process.argv.push('admin')
-process.argv.push('upload')
+process.argv.push("admin");
+process.argv.push("upload");
 require("module").Module._initPaths();
 
-const build = require('../../../../../buildscripts/buildvue.js')
+const build = require("../../../../../buildscripts/buildvue.js");

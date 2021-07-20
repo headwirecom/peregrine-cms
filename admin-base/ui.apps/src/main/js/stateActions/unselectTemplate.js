@@ -22,18 +22,17 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('unselectTemplate').setLevelDebug()
+import { LoggerFactory } from "../logger";
+let log = LoggerFactory.logger("unselectTemplate").setLevelDebug();
 
-import { set } from '../utils'
+import { set } from "../utils";
 
-export default function(me, target) {
+export default function (me, target) {
+	log.fine(target);
 
-    log.fine(target)
-
-    let view = me.getView()
-    return new Promise( (resolve, reject) => {
-        set(view, '/state/tools/template', undefined)
-        resolve()
-    })
+	let view = me.getView();
+	return new Promise((resolve, reject) => {
+		set(view, "/state/tools/template", undefined);
+		resolve();
+	});
 }

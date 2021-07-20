@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -22,14 +22,12 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from './logger.js'
-let log = LoggerFactory.logger('util').setDebugLevel()
+import { LoggerFactory } from "./logger.js";
+let log = LoggerFactory.logger("util").setDebugLevel();
 
-import { DATA_EXTENSION, COMPONENT_PREFIX } from './constants.js'
+import { DATA_EXTENSION, COMPONENT_PREFIX } from "./constants.js";
 
-export function pathToPathInfo(path) {
-
-}
+export function pathToPathInfo(path) {}
 
 /**
  *
@@ -40,20 +38,17 @@ export function pathToPathInfo(path) {
  * @returns {*}
  */
 export function pagePathToDataPath(path) {
-
-    log.fine('converting',path,'to dataPath')
-    var firstHtmlExt = path.indexOf('.html')
-    var res = null
-    if(firstHtmlExt >= 0) {
-        var pathNoExt = path.substring(0,firstHtmlExt)
-        res = pathNoExt + DATA_EXTENSION
-    }
-    else {
-        res = path + DATA_EXTENSION
-    }
-    log.fine('result',res)
-    return res
-
+	log.fine("converting", path, "to dataPath");
+	var firstHtmlExt = path.indexOf(".html");
+	var res = null;
+	if (firstHtmlExt >= 0) {
+		var pathNoExt = path.substring(0, firstHtmlExt);
+		res = pathNoExt + DATA_EXTENSION;
+	} else {
+		res = path + DATA_EXTENSION;
+	}
+	log.fine("result", res);
+	return res;
 }
 
 /**
@@ -63,11 +58,10 @@ export function pagePathToDataPath(path) {
  * @param name
  */
 export function componentNameToVarName(name) {
-
-    var segments = name.split('-')
-    for(var i = 0; i < segments.length; i++) {
-        segments[i] = segments[i].charAt(0).toUpperCase() + segments[i].slice(1)
-    }
-    return COMPONENT_PREFIX + segments.join('')
-
+	var segments = name.split("-");
+	for (var i = 0; i < segments.length; i++) {
+		segments[i] =
+			segments[i].charAt(0).toUpperCase() + segments[i].slice(1);
+	}
+	return COMPONENT_PREFIX + segments.join("");
 }

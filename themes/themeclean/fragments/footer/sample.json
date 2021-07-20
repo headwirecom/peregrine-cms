@@ -1,51 +1,52 @@
 {
-  "title": "Footer",
-  "group": "Chrome",
-  "model": {
-    "backgroundtype": "color",
-    "bgcolor": "#eeeeee",
-    "bottompadding": "0",
-    "toppadding": "30",
-    "colorscheme": "light",
-    "showlogo": "true",
-    "logo": "/content/themeclean/assets/images/peregrine-logo.png",
-    "logourl": "http://www.peregrine-cms.com",
-    "logosize": "60",
-    "copyright": "Copyright 2017 Peregrine - All Rights Reserved",
-    "columns": [
-      {
-        "title": "",
-        "text": ""
-      },
-      {
-        "title": "Contact",
-        "text": "<p>email@email.com<br>1-800-888-8888</p>"
-      },{
-        "title": "Location",
-        "text": "<p>1234 S Pointe Drive, Laguna Hills, CA 92653</p>"
-      }
-    ],
-    "icons": [
-      {
-        "url": "https://www.facebook.com/",
-        "icon": "fontAwesome:fa fa-facebook:"
-      },
-      {
-        "url": "https://twitter.com/",
-        "icon": "fontAwesome:fa fa-twitter:"
-      },
-      {
-        "url": "https://www.instagram.com/",
-        "icon": "fontAwesome:fa fa-instagram:"
-      },
-      {
-        "url": "https://www.pinterest.com/",
-        "icon": "fontAwesome:fa fa-pinterest-p:"
-      },
-      {
-        "url": "https://www.youtube.com/",
-        "icon": "fontAwesome:fa fa-youtube-play:"
-      }
-    ]
-  }
+	"title": "Footer",
+	"group": "Chrome",
+	"model": {
+		"backgroundtype": "color",
+		"bgcolor": "#eeeeee",
+		"bottompadding": "0",
+		"toppadding": "30",
+		"colorscheme": "light",
+		"showlogo": "true",
+		"logo": "/content/themeclean/assets/images/peregrine-logo.png",
+		"logourl": "http://www.peregrine-cms.com",
+		"logosize": "60",
+		"copyright": "Copyright 2017 Peregrine - All Rights Reserved",
+		"columns": [
+			{
+				"title": "",
+				"text": ""
+			},
+			{
+				"title": "Contact",
+				"text": "<p>email@email.com<br>1-800-888-8888</p>"
+			},
+			{
+				"title": "Location",
+				"text": "<p>1234 S Pointe Drive, Laguna Hills, CA 92653</p>"
+			}
+		],
+		"icons": [
+			{
+				"url": "https://www.facebook.com/",
+				"icon": "fontAwesome:fa fa-facebook:"
+			},
+			{
+				"url": "https://twitter.com/",
+				"icon": "fontAwesome:fa fa-twitter:"
+			},
+			{
+				"url": "https://www.instagram.com/",
+				"icon": "fontAwesome:fa fa-instagram:"
+			},
+			{
+				"url": "https://www.pinterest.com/",
+				"icon": "fontAwesome:fa fa-pinterest-p:"
+			},
+			{
+				"url": "https://www.youtube.com/",
+				"icon": "fontAwesome:fa fa-youtube-play:"
+			}
+		]
+	}
 }

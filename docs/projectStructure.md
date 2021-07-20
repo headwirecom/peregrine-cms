@@ -12,7 +12,7 @@ A bundle providing common code to all modules
 
 ## core / base
 
-per:cms base - provides all peregrine specific node types and models as well as the 
+per:cms base - provides all peregrine specific node types and models as well as the
 basic authentication configuration for the apache sling repository
 
 ## core / login
@@ -50,6 +50,7 @@ implementation of server side based site rendering using HTL
 ## admin
 
 ### admin / base
+
 administration console for per:cms
 
 ### admin / sites

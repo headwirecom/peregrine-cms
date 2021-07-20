@@ -1,83 +1,83 @@
 {
-  "definitions": {
-    "Footer": {
-      "type": "object",
-      "x-type": "component",
-      "properties": {
-        "showlogo": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Show Logo",
-          "x-form-type": "materialswitch"
-        },
-        "logo": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Logo",
-          "x-form-type": "pathbrowser",
-          "x-form-visible": "model.showlogo == 'true'",
-          "x-form-browserRoot": "/content/themeclean/assets"
-        },
-        "logoalttext": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Logo Alt Text",
-          "x-form-visible": "model.showlogo == 'true'",
-          "x-form-type": "text"
-        },
-        "logourl": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Logo Url",
-          "x-form-type": "pathbrowser",
-          "x-form-visible": "model.showlogo == 'true'",
-          "x-form-browserRoot": "/content/themeclean/pages"
-        },
-        "logosize": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Logo Size",
-          "x-form-type": "materialrange",
-          "x-form-visible": "model.showlogo == 'true'",
-          "x-form-min": 1,
-          "x-form-max": 300 
-        },
-        "columns": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Columns",
-          "x-form-type": "collection",
-          "x-form-multifield": "true",
-          "properties": {
-            "title": {
-              "type": "string",
-              "x-source": "inject",
-              "x-form-label": "Title",
-              "x-form-type": "text"
-            },
-            "text": {
-              "type": "string",
-              "x-source": "inject",
-              "x-form-label": "Text",
-              "x-form-type": "texteditor"
-            }
-          }
-        },
-        "copyright": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Copyright Text",
-          "x-form-type": "text"
-        },
-        "socialref": {
-            "x-form-type": "reference",
-        	"$ref": "fragments/socialicons/model.json#/definitions/Socialicons"
-        },
-        "bgref": {
-            "x-form-type": "reference",
-        	"$ref": "fragments/block/model.json#/definitions/Block"
-        }
-      }
-    }
-  }
+	"definitions": {
+		"Footer": {
+			"type": "object",
+			"x-type": "component",
+			"properties": {
+				"showlogo": {
+					"type": "string",
+					"x-source": "inject",
+					"x-form-label": "Show Logo",
+					"x-form-type": "materialswitch"
+				},
+				"logo": {
+					"type": "string",
+					"x-source": "inject",
+					"x-form-label": "Logo",
+					"x-form-type": "pathbrowser",
+					"x-form-visible": "model.showlogo == 'true'",
+					"x-form-browserRoot": "/content/themeclean/assets"
+				},
+				"logoalttext": {
+					"type": "string",
+					"x-source": "inject",
+					"x-form-label": "Logo Alt Text",
+					"x-form-visible": "model.showlogo == 'true'",
+					"x-form-type": "text"
+				},
+				"logourl": {
+					"type": "string",
+					"x-source": "inject",
+					"x-form-label": "Logo Url",
+					"x-form-type": "pathbrowser",
+					"x-form-visible": "model.showlogo == 'true'",
+					"x-form-browserRoot": "/content/themeclean/pages"
+				},
+				"logosize": {
+					"type": "string",
+					"x-source": "inject",
+					"x-form-label": "Logo Size",
+					"x-form-type": "materialrange",
+					"x-form-visible": "model.showlogo == 'true'",
+					"x-form-min": 1,
+					"x-form-max": 300
+				},
+				"columns": {
+					"type": "string",
+					"x-source": "inject",
+					"x-form-label": "Columns",
+					"x-form-type": "collection",
+					"x-form-multifield": "true",
+					"properties": {
+						"title": {
+							"type": "string",
+							"x-source": "inject",
+							"x-form-label": "Title",
+							"x-form-type": "text"
+						},
+						"text": {
+							"type": "string",
+							"x-source": "inject",
+							"x-form-label": "Text",
+							"x-form-type": "texteditor"
+						}
+					}
+				},
+				"copyright": {
+					"type": "string",
+					"x-source": "inject",
+					"x-form-label": "Copyright Text",
+					"x-form-type": "text"
+				},
+				"socialref": {
+					"x-form-type": "reference",
+					"$ref": "fragments/socialicons/model.json#/definitions/Socialicons"
+				},
+				"bgref": {
+					"x-form-type": "reference",
+					"$ref": "fragments/block/model.json#/definitions/Block"
+				}
+			}
+		}
+	}
 }

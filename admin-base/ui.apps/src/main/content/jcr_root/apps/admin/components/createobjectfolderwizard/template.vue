@@ -23,92 +23,108 @@
   #L%
   -->
 <template>
-<div class="container">
-    <form-wizard v-bind:title="'create a folder'" 
-                 v-bind:subtitle="''" 
-                 @on-complete="onComplete" 
-                 color="#37474f">
-        <tab-content title="choose folder name" 
-                     :before-change="leaveTabOne">
-            <vue-form-generator :model="formmodel"
-                                :schema="nameSchema"
-                                :options="formOptions"
-                                ref="nameTab">
-            </vue-form-generator>
-        </tab-content>
-        <tab-content title="verify">
-            <pre v-html="JSON.stringify(formmodel, true, 2)"></pre>
-        </tab-content>
-    </form-wizard>
-</div>
+	<div class="container">
+		<form-wizard
+			v-bind:title="'create a folder'"
+			v-bind:subtitle="''"
+			@on-complete="onComplete"
+			color="#37474f"
+		>
+			<tab-content
+				title="choose folder name"
+				:before-change="leaveTabOne"
+			>
+				<vue-form-generator
+					:model="formmodel"
+					:schema="nameSchema"
+					:options="formOptions"
+					ref="nameTab"
+				>
+				</vue-form-generator>
+			</tab-content>
+			<tab-content title="verify">
+				<pre v-html="JSON.stringify(formmodel, true, 2)"></pre>
+			</tab-content>
+		</form-wizard>
+	</div>
 </template>
 
 <script>
-    export default {
-        props: ['model'],
-        data:
-            function() {
-                let formModelAssets = $perAdminApp.getNodeFromView('/state/tools/objects')
-                return {
-                    formmodel: {
-                        path: formModelAssets,
-                        name: ''
-                    },
-                    formOptions: {
-                        validationErrorClass: "has-error",
-                        validationSuccessClass: "has-success",
-                        validateAfterChanged: true,
-                        focusFirstField: true
-                    },
-                    nameSchema: {
-                        fields: [{
-                            type: "input",
-                            inputType: "text",
-                            label: "Folder Name",
-                            placeholder: "Folder Name",
-                            model: "name",
-                            required: true,
-                            validator: [this.nameAvailable, this.validFolderName]
-                        }]
-                    }
-                }
-
-        },
-        computed: {
-            
-        },
-        methods: {
-            onComplete: function() {
-                let payload = { parent: this.formmodel.path, name: this.formmodel.name }
-                $perAdminApp.stateAction('createObjectFolder', payload)
-            },
-            nameAvailable(value) {
-                if(!value || value.length === 0) {
-                    return ['name is required']
-                } else {
-                    const folder = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, this.formmodel.path)
-                    for(let i = 0; i < folder.children.length; i++) {
-                        if(folder.children[i].name === value) {
-                            return ['name aready in use']
-                        }
-                    }
-                    return []
-                }
-                return true
-            },
-            validFolderName(value) {
-                if(!value || value.length === 0) {
-                    return ['name is required']
-                }
-                if(value.match(/[^0-9a-zA-Z_-]/)) {
-                    return ['folder names may only contain letters, numbers, underscores, and dashes']
-                }
-                return [];
-            },
-            leaveTabOne: function() {
-                return this.$refs.nameTab.validate()
-            }
-
-        }
-    }
+	export default {
+		props: ["model"],
+		data: function () {
+			let formModelAssets = $perAdminApp.getNodeFromView(
+				"/state/tools/objects"
+			);
+			return {
+				formmodel: {
+					path: formModelAssets,
+					name: "",
+				},
+				formOptions: {
+					validationErrorClass: "has-error",
+					validationSuccessClass: "has-success",
+					validateAfterChanged: true,
+					focusFirstField: true,
+				},
+				nameSchema: {
+					fields: [
+						{
+							type: "input",
+							inputType: "text",
+							label: "Folder Name",
+							placeholder: "Folder Name",
+							model: "name",
+							required: true,
+							validator: [
+								this.nameAvailable,
+								this.validFolderName,
+							],
+						},
+					],
+				},
+			};
+		},
+		computed: {},
+		methods: {
+			onComplete: function () {
+				let payload = {
+					parent: this.formmodel.path,
+					name: this.formmodel.name,
+				};
+				$perAdminApp.stateAction("createObjectFolder", payload);
+			},
+			nameAvailable(value) {
+				if (!value || value.length === 0) {
+					return ["name is required"];
+				} else {
+					const folder = $perAdminApp.findNodeFromPath(
+						$perAdminApp.getView().admin.nodes,
+						this.formmodel.path
+					);
+					for (let i = 0; i < folder.children.length; i++) {
+						if (folder.children[i].name === value) {
+							return ["name aready in use"];
+						}
+					}
+					return [];
+				}
+				return true;
+			},
+			validFolderName(value) {
+				if (!value || value.length === 0) {
+					return ["name is required"];
+				}
+				if (value.match(/[^0-9a-zA-Z_-]/)) {
+					return [
+						"folder names may only contain letters, numbers, underscores, and dashes",
+					];
+				}
+				return [];
+			},
+			leaveTabOne: function () {
+				return this.$refs.nameTab.validate();
+			},
+		},
+	};
 </script>

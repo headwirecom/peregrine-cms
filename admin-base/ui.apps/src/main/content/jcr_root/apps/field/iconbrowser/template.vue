@@ -23,104 +23,113 @@
   #L%
   -->
 <template>
-    <div class="wrap">
-      <template v-if="!schema.preview">
-        <input
-          :id="getFieldID(schema)"
-          type="text"
-          :value="sanitizedValue"
-          :disabled="disabled"
-          :maxlength="schema.max"
-          :placeholder="schema.placeholder"
-          :readonly="schema.readonly"
-          @input="value = $event.target.value" />
-        <button v-on:click.stop.prevent="browse" class="btn-flat">
-          <i class="material-icons">insert_drive_file</i>
-        </button>
-        <div class="icon">
-            <i v-bind:class="selectedIcon.class">{{selectedIcon.text}}</i>
-        </div>
-        <admin-components-iconbrowser
-            v-if="isOpen"
-            :families="families"
-            :selectedIcon="selectedIcon"
-            :onCancel="onCancel"
-            @select="onSelect">
-        </admin-components-iconbrowser>
-      </template>
-      <p v-else><i v-bind:class="selectedIcon.class">{{selectedIcon.text}}</i>{{value}}</p>
-    </div>
+	<div class="wrap">
+		<template v-if="!schema.preview">
+			<input
+				:id="getFieldID(schema)"
+				type="text"
+				:value="sanitizedValue"
+				:disabled="disabled"
+				:maxlength="schema.max"
+				:placeholder="schema.placeholder"
+				:readonly="schema.readonly"
+				@input="value = $event.target.value"
+			/>
+			<button v-on:click.stop.prevent="browse" class="btn-flat">
+				<i class="material-icons">insert_drive_file</i>
+			</button>
+			<div class="icon">
+				<i v-bind:class="selectedIcon.class">{{ selectedIcon.text }}</i>
+			</div>
+			<admin-components-iconbrowser
+				v-if="isOpen"
+				:families="families"
+				:selectedIcon="selectedIcon"
+				:onCancel="onCancel"
+				@select="onSelect"
+			>
+			</admin-components-iconbrowser>
+		</template>
+		<p v-else>
+			<i v-bind:class="selectedIcon.class">{{ selectedIcon.text }}</i
+			>{{ value }}
+		</p>
+	</div>
 </template>
 
 <script>
-    export default {
-        props: ['model'],
-        mixins: [ VueFormGenerator.abstractField ],
-        data () {
-            return {
-                isOpen: false,
-                families: null,
-                selectedIcon: {
-                    family: null,
-                    class: null,
-                    text: null
-                }
-            }
-        },
-        computed: {
-			sanitizedValue: {
-				get () {
-      		        return this.value ? this.value : ''
+	export default {
+		props: ["model"],
+		mixins: [VueFormGenerator.abstractField],
+		data() {
+			return {
+				isOpen: false,
+				families: null,
+				selectedIcon: {
+					family: null,
+					class: null,
+					text: null,
 				},
-				set (newValue) {
-					this.value = newValue
-				}
-			}
+			};
 		},
-        created () {
-            // set initial state from value
-            this.selectedIcon = this.getIconFromValue(this.sanitizedValue)
-            // create families array from schema
-            this.families = this.schema.families.map(family => {
-                return {
-                    name: family,
-                    value: this.camelize(family)
-                }
-            })
-        },
-        watch: {
-            sanitizedValue (newSanitizedValue) {
-                // keep selectedIcon synced with value (if valid)
-                this.selectedIcon = this.getIconFromValue(newSanitizedValue)
-            }
-        },
-        methods: {
-            onCancel () {
-                this.isOpen = false
-            },
-            onSelect (icon) {
-                this.value = `${icon.family}:${icon.class}:${icon.text}`
-                this.isOpen = false
-            },
-            browse () {
-                this.isOpen = true
-            },
-            getIconFromValue (value) {
-                let iconParts = value.split(':') //[iconFamily, iconClass, iconText]
-                if(iconParts && iconParts.length > 2){
-                    return {
-                        family: iconParts[0],
-                        class: iconParts[1],
-                        text: iconParts[2]
-                    }
-                }
-                return this.selectedIcon
-            },
-            camelize (str) {
-                return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(letter, index) {
-                    return index == 0 ? letter.toLowerCase() : letter.toUpperCase();
-                }).replace(/\s+/g, '');
-            }
-        }
-    }
+		computed: {
+			sanitizedValue: {
+				get() {
+					return this.value ? this.value : "";
+				},
+				set(newValue) {
+					this.value = newValue;
+				},
+			},
+		},
+		created() {
+			// set initial state from value
+			this.selectedIcon = this.getIconFromValue(this.sanitizedValue);
+			// create families array from schema
+			this.families = this.schema.families.map((family) => {
+				return {
+					name: family,
+					value: this.camelize(family),
+				};
+			});
+		},
+		watch: {
+			sanitizedValue(newSanitizedValue) {
+				// keep selectedIcon synced with value (if valid)
+				this.selectedIcon = this.getIconFromValue(newSanitizedValue);
+			},
+		},
+		methods: {
+			onCancel() {
+				this.isOpen = false;
+			},
+			onSelect(icon) {
+				this.value = `${icon.family}:${icon.class}:${icon.text}`;
+				this.isOpen = false;
+			},
+			browse() {
+				this.isOpen = true;
+			},
+			getIconFromValue(value) {
+				let iconParts = value.split(":"); //[iconFamily, iconClass, iconText]
+				if (iconParts && iconParts.length > 2) {
+					return {
+						family: iconParts[0],
+						class: iconParts[1],
+						text: iconParts[2],
+					};
+				}
+				return this.selectedIcon;
+			},
+			camelize(str) {
+				return str
+					.replace(/(?:^\w|[A-Z]|\b\w)/g, function (letter, index) {
+						return index == 0
+							? letter.toLowerCase()
+							: letter.toUpperCase();
+					})
+					.replace(/\s+/g, "");
+			},
+		},
+	};
 </script>

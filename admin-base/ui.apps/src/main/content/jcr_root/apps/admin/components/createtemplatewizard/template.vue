@@ -23,13 +23,15 @@
   #L%
   -->
 <template>
-<div class="container">
-    <form-wizard 
-      v-bind:title="'create a template'" 
-      v-bind:subtitle="''" @on-complete="onComplete" 
-      error-color="#d32f2f"
-      color="#546e7a">
-        <!-- <tab-content title="select component" :before-change="leaveTabOne">
+	<div class="container">
+		<form-wizard
+			v-bind:title="'create a template'"
+			v-bind:subtitle="''"
+			@on-complete="onComplete"
+			error-color="#d32f2f"
+			color="#546e7a"
+		>
+			<!-- <tab-content title="select component" :before-change="leaveTabOne">
             <fieldset class="vue-form-generator">
                 <div class="form-group required">
                     <label>Select Component</label>
@@ -47,150 +49,173 @@
                 </div>
             </fieldset>
         </tab-content> -->
-        <tab-content title="choose name" :before-change="leaveTabTwo">
-            <p>
-                You are about to create a template. A template inherits
-                all the components from its parent template in the template
-                hierarchy.
-            </p>
-            <vue-form-generator :model="formmodel"
-                                :schema="nameSchema"
-                                :options="formOptions"
-                                ref="nameTab">
-
-            </vue-form-generator>
-        </tab-content>
-        <tab-content title="verify">
-            Click <b>finish</b> to create a chld template `{{formmodel.title}}` of `{{formmodel.path}}`
-        </tab-content>
-    </form-wizard>
-</div>
+			<tab-content title="choose name" :before-change="leaveTabTwo">
+				<p>
+					You are about to create a template. A template inherits all
+					the components from its parent template in the template
+					hierarchy.
+				</p>
+				<vue-form-generator
+					:model="formmodel"
+					:schema="nameSchema"
+					:options="formOptions"
+					ref="nameTab"
+				>
+				</vue-form-generator>
+			</tab-content>
+			<tab-content title="verify">
+				Click <b>finish</b> to create a chld template `{{
+					formmodel.title
+				}}` of `{{ formmodel.path }}`
+			</tab-content>
+		</form-wizard>
+	</div>
 </template>
 
 <script>
-    export default {
-        props: ['model'],
-        data:
-            function() {
-                const path = $perAdminApp.getNodeFromView('/state/tools/templates')
-                const siteName = path.split('/')[3]
-                return {
-                    formErrors: {
-                        unselectedComponentError: false
-                    },
-                    formmodel: {
-                        path: path,
-                        name: '',
-                        title: '',
-                        component: null
-                    },
-                    formOptions: {
-                        validationErrorClass: "has-error",
-                        validationSuccessClass: "has-success",
-                        validateAfterChanged: true,
-                        focusFirstField: true
-                    },
-                    nameChanged: false,
-                    nameSchema: {
-                        fields: [
-                            {
-                                type: "input",
-                                inputType: "text",
-                                label: "Template Title",
-                                model: "title",
-                                required: true,
-                                onChanged: (model, newVal, oldVal, field) => {
-                                    if(!this.nameChanged) {
-                                        this.formmodel.name = $perAdminApp.normalizeString(newVal);
-                                    }
-                                }
-                            },
-                            {
-                            type: "input",
-                            inputType: "text",
-                            label: "Template Name",
-                            model: "name",
-                            required: true,
-                            onChanged: (model, newVal, oldVal, field) => {
-                                this.nameChanged = true;
-                            },
-                            validator: [this.nameAvailable, this.validTemplateName]
-                        }
-                        ]
-                    }
-                }
+	export default {
+		props: ["model"],
+		data: function () {
+			const path = $perAdminApp.getNodeFromView("/state/tools/templates");
+			const siteName = path.split("/")[3];
+			return {
+				formErrors: {
+					unselectedComponentError: false,
+				},
+				formmodel: {
+					path: path,
+					name: "",
+					title: "",
+					component: null,
+				},
+				formOptions: {
+					validationErrorClass: "has-error",
+					validationSuccessClass: "has-success",
+					validateAfterChanged: true,
+					focusFirstField: true,
+				},
+				nameChanged: false,
+				nameSchema: {
+					fields: [
+						{
+							type: "input",
+							inputType: "text",
+							label: "Template Title",
+							model: "title",
+							required: true,
+							onChanged: (model, newVal, oldVal, field) => {
+								if (!this.nameChanged) {
+									this.formmodel.name =
+										$perAdminApp.normalizeString(newVal);
+								}
+							},
+						},
+						{
+							type: "input",
+							inputType: "text",
+							label: "Template Name",
+							model: "name",
+							required: true,
+							onChanged: (model, newVal, oldVal, field) => {
+								this.nameChanged = true;
+							},
+							validator: [
+								this.nameAvailable,
+								this.validTemplateName,
+							],
+						},
+					],
+				},
+			};
+		},
+		created: function () {
+			//By default select the first item in the list;
+			this.selectComponent(this, this.components[0].path);
+		},
+		computed: {
+			components: function () {
+				const tenant = $perAdminApp.getView().state.tenant || {
+					name: "example",
+				};
+				const components = $perAdminApp.getNodeFromViewOrNull(
+					"/admin/components/data"
+				);
+				const siteRootParts = this.formmodel.path
+					.split("/")
+					.slice(0, 4);
+				siteRootParts[1] = "apps";
+				siteRootParts[2] = tenant.name;
+				const siteRoot = siteRootParts.slice(0, 3).join("/");
+				return components.filter(
+					(component) =>
+						component.path.startsWith(siteRoot) &&
+						(component.name === "page" ||
+							component.templateComponent)
+				);
+			},
+		},
+		methods: {
+			selectComponent: function (me, target) {
+				if (me === null) me = this;
+				me.formmodel.component = target;
 
-        },
-        created: function() {
-            //By default select the first item in the list;
-            this.selectComponent(this, this.components[0].path);
-        },
-        computed: {
-            components: function() {
-                const tenant = $perAdminApp.getView().state.tenant || {name: 'example'}
-                const components = $perAdminApp.getNodeFromViewOrNull('/admin/components/data')
-                const siteRootParts = this.formmodel.path.split('/').slice(0,4)
-                siteRootParts[1] = 'apps'
-                siteRootParts[2] = tenant.name
-                const siteRoot = siteRootParts.slice(0,3).join('/')
-                return components.filter( (component) =>
-                    component.path.startsWith(siteRoot)
-                    && (component.name === 'page' || component.templateComponent)
-                )
-            }
-        }
-        ,
-        methods: {
-            selectComponent: function(me, target){
-                if(me === null) me = this
-                me.formmodel.component = target;
+				this.validateTabOne(me);
+			},
+			nameAvailable(value) {
+				if (!value || value.length === 0) {
+					return ["name is required"];
+				} else {
+					const folder = $perAdminApp.findNodeFromPath(
+						$perAdminApp.getView().admin.nodes,
+						this.formmodel.path
+					);
+					for (let i = 0; i < folder.children.length; i++) {
+						if (folder.children[i].name === value) {
+							return ["name aready in use"];
+						}
+					}
+					return [];
+				}
+			},
+			validTemplateName(value) {
+				if (!value || value.length === 0) {
+					return ["name is required"];
+				}
+				if (value.match(/[^0-9a-zA-Z_-]/)) {
+					return [
+						"template names may only contain letters, numbers, underscores, and dashes",
+					];
+				}
+				return [];
+			},
+			isSelected: function (target) {
+				return this.formmodel.component === target;
+			},
+			onComplete: function () {
+				const path = this.formmodel.path;
+				const siteName = path.split("/")[3];
+				const component = this.formmodel.component.substring(
+					this.formmodel.component.indexOf("/", 1) + 1
+				);
+				$perAdminApp.stateAction("createTemplate", {
+					parent: this.formmodel.path,
+					name: this.formmodel.name,
+					component: component,
+					title: this.formmodel.title,
+				});
+			},
+			validateTabOne: function (me) {
+				me.formErrors.unselectedComponentError =
+					!me.formmodel.component;
 
-                this.validateTabOne(me);
-            },
-            nameAvailable(value) {
-                if(!value || value.length === 0) {
-                    return ['name is required']
-                } else {
-                    const folder = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, this.formmodel.path)
-                    for(let i = 0; i < folder.children.length; i++) {
-                        if(folder.children[i].name === value) {
-                            return ['name aready in use']
-                        }
-                    }
-                    return []
-                }
-            },
-            validTemplateName(value) {
-                if(!value || value.length === 0) {
-                    return ['name is required']
-                }
-                if(value.match(/[^0-9a-zA-Z_-]/)) {
-                    return ['template names may only contain letters, numbers, underscores, and dashes']
-                }
-                return [];
-            },
-            isSelected: function(target) {
-                return this.formmodel.component === target
-            },
-            onComplete: function() {
-                const path = this.formmodel.path
-                const siteName = path.split('/')[3]
-                const component = this.formmodel.component.substring(this.formmodel.component.indexOf('/',1)+1)
-                $perAdminApp.stateAction('createTemplate', { parent: this.formmodel.path, name: this.formmodel.name, component: component, title: this.formmodel.title })
-            },
-            validateTabOne: function(me) {
-                me.formErrors.unselectedComponentError = (!me.formmodel.component);
-
-                return !me.formErrors.unselectedComponentError;
-            },
-            leaveTabOne: function() {
-                return this.validateTabOne(this);
-            },
-            leaveTabTwo: function() {
-                return this.$refs.nameTab.validate()
-            }
-
-
-        }
-    }
+				return !me.formErrors.unselectedComponentError;
+			},
+			leaveTabOne: function () {
+				return this.validateTabOne(this);
+			},
+			leaveTabTwo: function () {
+				return this.$refs.nameTab.validate();
+			},
+		},
+	};
 </script>

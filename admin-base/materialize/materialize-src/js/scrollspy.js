@@ -10,8 +10,7 @@
  * @see https://github.com/thesmart
  * @version 0.1.2
  */
-(function($) {
-
+(function ($) {
 	var jWindow = $(window);
 	var elements = [];
 	var elementsInView = [];
@@ -19,11 +18,11 @@
 	var ticks = 0;
 	var unique_id = 1;
 	var offset = {
-		top : 0,
-		right : 0,
-		bottom : 0,
-		left : 0,
-	}
+		top: 0,
+		right: 0,
+		bottom: 0,
+		left: 0,
+	};
 
 	/**
 	 * Find elements that are within the boundary
@@ -35,17 +34,19 @@
 	 */
 	function findElements(top, right, bottom, left) {
 		var hits = $();
-		$.each(elements, function(i, element) {
+		$.each(elements, function (i, element) {
 			if (element.height() > 0) {
 				var elTop = element.offset().top,
 					elLeft = element.offset().left,
 					elRight = elLeft + element.width(),
 					elBottom = elTop + element.height();
 
-				var isIntersect = !(elLeft > right ||
+				var isIntersect = !(
+					elLeft > right ||
 					elRight < left ||
 					elTop > bottom ||
-					elBottom < top);
+					elBottom < top
+				);
 
 				if (isIntersect) {
 					hits.push(element);
@@ -55,7 +56,6 @@
 
 		return hits;
 	}
-
 
 	/**
 	 * Called when the user scrolls the window
@@ -71,26 +71,30 @@
 			bottom = top + jWindow.height();
 
 		// determine which elements are in view
-		var intersections = findElements(top+offset.top + scrollOffset || 200, right+offset.right, bottom+offset.bottom, left+offset.left);
-		$.each(intersections, function(i, element) {
-
-			var lastTick = element.data('scrollSpy:ticks');
-			if (typeof lastTick != 'number') {
+		var intersections = findElements(
+			top + offset.top + scrollOffset || 200,
+			right + offset.right,
+			bottom + offset.bottom,
+			left + offset.left
+		);
+		$.each(intersections, function (i, element) {
+			var lastTick = element.data("scrollSpy:ticks");
+			if (typeof lastTick != "number") {
 				// entered into view
-				element.triggerHandler('scrollSpy:enter');
+				element.triggerHandler("scrollSpy:enter");
 			}
 
 			// update tick id
-			element.data('scrollSpy:ticks', ticks);
+			element.data("scrollSpy:ticks", ticks);
 		});
 
 		// determine which elements are no longer in view
-		$.each(elementsInView, function(i, element) {
-			var lastTick = element.data('scrollSpy:ticks');
-			if (typeof lastTick == 'number' && lastTick !== ticks) {
+		$.each(elementsInView, function (i, element) {
+			var lastTick = element.data("scrollSpy:ticks");
+			if (typeof lastTick == "number" && lastTick !== ticks) {
 				// exited from view
-				element.triggerHandler('scrollSpy:exit');
-				element.data('scrollSpy:ticks', null);
+				element.triggerHandler("scrollSpy:exit");
+				element.data("scrollSpy:ticks", null);
 			}
 		});
 
@@ -100,11 +104,10 @@
 
 	/**
 	 * Called when window is resized
-	*/
+	 */
 	function onWinSize() {
-		jWindow.trigger('scrollSpy:winSize');
+		jWindow.trigger("scrollSpy:winSize");
 	}
-
 
 	/**
 	 * Enables ScrollSpy using a selector
@@ -118,28 +121,32 @@
 				activeClass : string -> Class name to be added to the active link. Default: active
 	 * @returns {jQuery}
 	 */
-	$.scrollSpy = function(selector, options) {
-	  var defaults = {
+	$.scrollSpy = function (selector, options) {
+		var defaults = {
 			throttle: 100,
 			scrollOffset: 200, // offset - 200 allows elements near bottom of page to scroll
-			activeClass: 'active',
-			getActiveElement: function(id) {
+			activeClass: "active",
+			getActiveElement: function (id) {
 				return 'a[href="#' + id + '"]';
-			}
-    };
-    options = $.extend(defaults, options);
+			},
+		};
+		options = $.extend(defaults, options);
 
 		var visible = [];
 		selector = $(selector);
-		selector.each(function(i, element) {
+		selector.each(function (i, element) {
 			elements.push($(element));
 			$(element).data("scrollSpy:id", i);
 			// Smooth scroll to section
-		  $('a[href="#' + $(element).attr('id') + '"]').click(function(e) {
-		    e.preventDefault();
-		    var offset = $(Materialize.escapeHash(this.hash)).offset().top + 1;
-	    	$('html, body').animate({ scrollTop: offset - options.scrollOffset }, {duration: 400, queue: false, easing: 'easeOutCubic'});
-		  });
+			$('a[href="#' + $(element).attr("id") + '"]').click(function (e) {
+				e.preventDefault();
+				var offset =
+					$(Materialize.escapeHash(this.hash)).offset().top + 1;
+				$("html, body").animate(
+					{ scrollTop: offset - options.scrollOffset },
+					{ duration: 400, queue: false, easing: "easeOutCubic" }
+				);
+			});
 		});
 
 		offset.top = options.offsetTop || 0;
@@ -147,60 +154,67 @@
 		offset.bottom = options.offsetBottom || 0;
 		offset.left = options.offsetLeft || 0;
 
-		var throttledScroll = Materialize.throttle(function() {
+		var throttledScroll = Materialize.throttle(function () {
 			onScroll(options.scrollOffset);
 		}, options.throttle || 100);
-		var readyScroll = function(){
+		var readyScroll = function () {
 			$(document).ready(throttledScroll);
 		};
 
 		if (!isSpying) {
-			jWindow.on('scroll', readyScroll);
-			jWindow.on('resize', readyScroll);
+			jWindow.on("scroll", readyScroll);
+			jWindow.on("resize", readyScroll);
 			isSpying = true;
 		}
 
 		// perform a scan once, after current execution context, and after dom is ready
 		setTimeout(readyScroll, 0);
 
-
-		selector.on('scrollSpy:enter', function() {
-			visible = $.grep(visible, function(value) {
-	      return value.height() != 0;
-	    });
+		selector.on("scrollSpy:enter", function () {
+			visible = $.grep(visible, function (value) {
+				return value.height() != 0;
+			});
 
 			var $this = $(this);
 
 			if (visible[0]) {
-				$(options.getActiveElement(visible[0].attr('id'))).removeClass(options.activeClass);
-				if ($this.data('scrollSpy:id') < visible[0].data('scrollSpy:id')) {
+				$(options.getActiveElement(visible[0].attr("id"))).removeClass(
+					options.activeClass
+				);
+				if (
+					$this.data("scrollSpy:id") < visible[0].data("scrollSpy:id")
+				) {
 					visible.unshift($(this));
-				}
-				else {
+				} else {
 					visible.push($(this));
 				}
-			}
-			else {
+			} else {
 				visible.push($(this));
 			}
 
-
-			$(options.getActiveElement(visible[0].attr('id'))).addClass(options.activeClass);
+			$(options.getActiveElement(visible[0].attr("id"))).addClass(
+				options.activeClass
+			);
 		});
-		selector.on('scrollSpy:exit', function() {
-			visible = $.grep(visible, function(value) {
-	      return value.height() != 0;
-	    });
+		selector.on("scrollSpy:exit", function () {
+			visible = $.grep(visible, function (value) {
+				return value.height() != 0;
+			});
 
 			if (visible[0]) {
-				$(options.getActiveElement(visible[0].attr('id'))).removeClass(options.activeClass);
+				$(options.getActiveElement(visible[0].attr("id"))).removeClass(
+					options.activeClass
+				);
 				var $this = $(this);
-				visible = $.grep(visible, function(value) {
-	        return value.attr('id') != $this.attr('id');
-	      });
-	      if (visible[0]) { // Check if empty
-					$(options.getActiveElement(visible[0].attr('id'))).addClass(options.activeClass);
-	      }
+				visible = $.grep(visible, function (value) {
+					return value.attr("id") != $this.attr("id");
+				});
+				if (visible[0]) {
+					// Check if empty
+					$(options.getActiveElement(visible[0].attr("id"))).addClass(
+						options.activeClass
+					);
+				}
 			}
 		});
 
@@ -212,12 +226,17 @@
 	 * @param {Object=} options						Optional. Set { throttle: number } to change throttling. Default: 100 ms
 	 * @returns {jQuery}		$(window)
 	 */
-	$.winSizeSpy = function(options) {
-		$.winSizeSpy = function() { return jWindow; }; // lock from multiple calls
+	$.winSizeSpy = function (options) {
+		$.winSizeSpy = function () {
+			return jWindow;
+		}; // lock from multiple calls
 		options = options || {
-			throttle: 100
+			throttle: 100,
 		};
-		return jWindow.on('resize', Materialize.throttle(onWinSize, options.throttle || 100));
+		return jWindow.on(
+			"resize",
+			Materialize.throttle(onWinSize, options.throttle || 100)
+		);
 	};
 
 	/**
@@ -231,8 +250,7 @@
 											offsetLeft : number -> offset from left. Default: 0
 	 * @returns {jQuery}
 	 */
-	$.fn.scrollSpy = function(options) {
+	$.fn.scrollSpy = function (options) {
 		return $.scrollSpy($(this), options);
 	};
-
 })(jQuery);

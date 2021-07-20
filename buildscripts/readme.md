@@ -4,11 +4,10 @@
 
 builds the vue components of a project into an felib
 
-```node buildvue.js <felib name>```
-
+`node buildvue.js <felib name>`
 
 ## buildreact.js
 
 builds the react components of a project into an felib
 
-```node buildreact.js <felib name>```
+`node buildreact.js <felib name>`
