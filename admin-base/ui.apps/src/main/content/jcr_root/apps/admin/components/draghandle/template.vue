@@ -23,16 +23,14 @@
   #L%
   -->
 <template>
-    <span
-            class="draggable">
-        <i class="material-icons tiny">drag_handle</i>
-    </span>
+	<span class="draggable">
+		<i class="material-icons tiny">drag_handle</i>
+	</span>
 </template>
 
 <script>
-    export default {
-        props: ['model'],
-        computed: {
-        }
-    }
+	export default {
+		props: ["model"],
+		computed: {},
+	};
 </script>

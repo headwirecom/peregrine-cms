@@ -1,7 +1,7 @@
 {
-  "title": "Spacer",
-  "group": "Chrome",
-  "model": {
-    "height": "20"
-  }
+	"title": "Spacer",
+	"group": "Chrome",
+	"model": {
+		"height": "20"
+	}
 }

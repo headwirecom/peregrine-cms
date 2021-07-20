@@ -1,7 +1,5 @@
 {
-  "title": "Article Header no default value",
-  "group": "Empty",
-  "model": {
-    
-  }
+	"title": "Article Header no default value",
+	"group": "Empty",
+	"model": {}
 }

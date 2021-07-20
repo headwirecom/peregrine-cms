@@ -1,14 +1,14 @@
 {
-  "definitions": {
-    "Reference": {
-      "type": "object",
-      "x-type": "component",
-      "properties": {
-        "ref": {
-          "type": "string",
-          "x-source": "inject"
-        }
-      }
-    }
-  }
+	"definitions": {
+		"Reference": {
+			"type": "object",
+			"x-type": "component",
+			"properties": {
+				"ref": {
+					"type": "string",
+					"x-source": "inject"
+				}
+			}
+		}
+	}
 }

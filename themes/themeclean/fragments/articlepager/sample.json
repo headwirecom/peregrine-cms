@@ -1,11 +1,11 @@
 {
-  "title": "Article Pager",
-  "group": "Article",
-  "model": {
-    "prevlabel": "Prev",
-    "nextlabel": "Next",
-    "colorscheme": "",
-    "toppadding": "10",
-    "bottompadding": "10"
-  }
+	"title": "Article Pager",
+	"group": "Article",
+	"model": {
+		"prevlabel": "Prev",
+		"nextlabel": "Next",
+		"colorscheme": "",
+		"toppadding": "10",
+		"bottompadding": "10"
+	}
 }

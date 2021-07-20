@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -22,24 +22,25 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('deletePageNode').setLevelDebug()
+import { LoggerFactory } from "../logger";
+let log = LoggerFactory.logger("deletePageNode").setLevelDebug();
 
-import {set} from '../utils'
+import { set } from "../utils";
 
-export default function(me, target) {
-
-    if(target.path !== '/jcr:content') {
-        log.fine('deletePageNode',target)
-        var api = me.getApi()
-        return new Promise( (resolve, reject) => {
-            api.deletePageNode(target.pagePath, target.pagePath+target.path).then( () => {
-                let view = me.getView()
-                delete view.state.editor;
-                set(view, '/state/editorVisible', false)
-                resolve()
-            })
-        })
-    }
-
+export default function (me, target) {
+	if (target.path !== "/jcr:content") {
+		log.fine("deletePageNode", target);
+		var api = me.getApi();
+		return new Promise((resolve, reject) => {
+			api.deletePageNode(
+				target.pagePath,
+				target.pagePath + target.path
+			).then(() => {
+				let view = me.getView();
+				delete view.state.editor;
+				set(view, "/state/editorVisible", false);
+				resolve();
+			});
+		});
+	}
 }

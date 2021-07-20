@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -22,28 +22,27 @@
  * under the License.
  * #L%
  */
-import {LoggerFactory} from '../logger'
-import {set} from '../utils'
+import { LoggerFactory } from "../logger";
+import { set } from "../utils";
 
-let log = LoggerFactory.logger('selectToolsNodesPath').setLevelDebug()
+let log = LoggerFactory.logger("selectToolsNodesPath").setLevelDebug();
 
-export default function(me, target) {
+export default function (me, target) {
+	log.fine(target);
 
-    log.fine(target)
+	let view = me.getView();
+	const tenant = view.state.tenant;
 
-    let view = me.getView()
-    const tenant = view.state.tenant
+	return new Promise((resolve, reject) => {
+		if (target.selected.startsWith(`/content/${tenant.name}/pages`)) {
+			set(view, "/state/tools/page", null);
+		} else {
+			set(view, "/state/tools/template", null);
+		}
 
-    return new Promise( (resolve, reject) => { 
-        if(target.selected.startsWith(`/content/${tenant.name}/pages`)) {
-            set(view, '/state/tools/page', null)
-        } else {
-            set(view, '/state/tools/template', null)
-        }
-    
-        me.stateAction('loadToolsNodesPath', target).then(() => {
-            set(me.getView(), target.path, target.selected)
-            resolve()
-        })
-    })
+		me.stateAction("loadToolsNodesPath", target).then(() => {
+			set(me.getView(), target.path, target.selected);
+			resolve();
+		});
+	});
 }

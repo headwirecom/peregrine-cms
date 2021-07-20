@@ -3,18 +3,18 @@
 	.explorer-layout {
 		clear: both;
 		width: 100%;
-    height: 100%;
+		height: 100%;
 		.row {
 			margin-bottom: 0;
 			.explorer-main {
 				display: flex;
 				flex-direction: column;
-		    overflow-y: auto;
+				overflow-y: auto;
 				padding: 0;
 				.empty-explorer {
 					flex-grow: 1;
 					display: flex;
-					align-items:center;
+					align-items: center;
 					justify-content: center;
 				}
 				.collection {
@@ -38,10 +38,10 @@
 						> span > a {
 							color: color("blue-grey", "darken-2");
 							&:hover,
-								&:focus,
-								&:active {
-									color: color("blue-grey", "darken-4");
-								}
+							&:focus,
+							&:active {
+								color: color("blue-grey", "darken-4");
+							}
 						}
 						.material-icons {
 							vertical-align: middle;
@@ -70,10 +70,11 @@
 						}
 						&.explorer-item-selected {
 							color: color("blue-grey", "darken-4");
-					    background-color: color("blue-grey", "lighten-5");
+							background-color: color("blue-grey", "lighten-5");
 						}
 						&.drop-after {
-							border-bottom: 1px solid color("orange", "lighten-2") !important;
+							border-bottom: 1px solid
+								color("orange", "lighten-2") !important;
 						}
 						&.drop-before {
 							border-top: 1px solid color("orange", "lighten-2") !important;
@@ -93,8 +94,9 @@
 									vertical-align: middle;
 									display: inline-block;
 									padding: 0 0.75rem;
-									border-left: 1px solid color("blue-grey", "lighten-4");
-									transition: color .3s ease;
+									border-left: 1px solid
+										color("blue-grey", "lighten-4");
+									transition: color 0.3s ease;
 									&:hover {
 										color: color("orange", "base");
 									}

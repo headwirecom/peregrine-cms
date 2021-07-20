@@ -1,10 +1,10 @@
-import {IconLib} from '../../../../../../../../js/constants'
+import { IconLib } from "../../../../../../../../js/constants";
 
 export default (vm) => {
-  return {
-    label: 'undo',
-    icon: 'undo',
-    iconLib: IconLib.FONT_AWESOME,
-    cmd: 'undo'
-  }
-}
+	return {
+		label: "undo",
+		icon: "undo",
+		iconLib: IconLib.FONT_AWESOME,
+		cmd: "undo",
+	};
+};

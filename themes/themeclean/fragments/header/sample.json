@@ -1,37 +1,39 @@
 {
-  "title": "Header",
-  "group": "Chrome",
-  "model": {
-    "backgroundtype": "color",
-    "bgcolor": "#eeeeee",
-    "bottompadding": "0",
-    "colorscheme": "light",
-    "elevation": 1,
-    "toppadding": "0",
-    "bgvideo": "https://www.youtube.com/embed/Ju86mknumYM",
-    "collapsed": "false",
-    "logo": "/content/themeclean/assets/images/peregrine-logo.png",
-    "logourl": "http://www.peregrine-cms.com",
-    "logosize": "60",
-    "buttonsize": "default",
-    "links": [
-      {
-        "link": "/content/themeclean/pages",
-        "text": "Services"
-      },{
-        "link": "/content/themeclean/pages",
-        "text": "About Us"
-      },{
-        "link": "/content/themeclean/pages",
-        "text": "Contact Us"
-      }
-    ],
-    "buttons": [
-      {
-        "buttonlink": "/content/themeclean/pages",
-        "buttontext": "Try It Now",
-        "buttoncolor": "primary"
-      }
-    ]
-  }
+	"title": "Header",
+	"group": "Chrome",
+	"model": {
+		"backgroundtype": "color",
+		"bgcolor": "#eeeeee",
+		"bottompadding": "0",
+		"colorscheme": "light",
+		"elevation": 1,
+		"toppadding": "0",
+		"bgvideo": "https://www.youtube.com/embed/Ju86mknumYM",
+		"collapsed": "false",
+		"logo": "/content/themeclean/assets/images/peregrine-logo.png",
+		"logourl": "http://www.peregrine-cms.com",
+		"logosize": "60",
+		"buttonsize": "default",
+		"links": [
+			{
+				"link": "/content/themeclean/pages",
+				"text": "Services"
+			},
+			{
+				"link": "/content/themeclean/pages",
+				"text": "About Us"
+			},
+			{
+				"link": "/content/themeclean/pages",
+				"text": "Contact Us"
+			}
+		],
+		"buttons": [
+			{
+				"buttonlink": "/content/themeclean/pages",
+				"buttontext": "Try It Now",
+				"buttoncolor": "primary"
+			}
+		]
+	}
 }

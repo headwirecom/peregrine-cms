@@ -23,104 +23,104 @@
   #L%
   -->
 <template>
-  <div ref="modal" :id="id" class="modal materialize-modal">
-    <div v-if="modalTitle" class="modal-header">
-      {{$i18n(modalTitle)}}
-    </div>
-    <div v-if="!!$slots.default" class="modal-content">
-      <slot></slot>
-    </div>
-    <div v-if="!!$slots.footer" class="modal-footer">
-      <slot name="footer"></slot>
-    </div>
-  </div>
+	<div ref="modal" :id="id" class="modal materialize-modal">
+		<div v-if="modalTitle" class="modal-header">
+			{{ $i18n(modalTitle) }}
+		</div>
+		<div v-if="!!$slots.default" class="modal-content">
+			<slot></slot>
+		</div>
+		<div v-if="!!$slots.footer" class="modal-footer">
+			<slot name="footer"></slot>
+		</div>
+	</div>
 </template>
 
 <script>
-  export default {
-    name: 'MaterializeModal',
-    props: {
-      dismissible: {
-        type: Boolean,
-        default: true
-      },
-      opacity: {
-        type: Number,
-        default: .5
-      },
-      inDuration: {
-        type: Number,
-        default: 300
-      },
-      outDuration: {
-        type: Number,
-        default: 200
-      },
-      startingTop: {
-        type: String,
-        default: '4%'
-      },
-      endingTop: {
-        type: String,
-        default: '10%'
-      },
-      modalTitle: String
-    },
-    data() {
-      return {
-        $modal: null
-      }
-    },
-    computed: {
-      id() {
-        return `materializemodal-${this._uid}`
-      }
-    },
-    mounted() {
-      const vm = this
-      this.$modal = $(vm.$refs.modal)
-      //this.$modal.appendTo('body')
-      $(this.$modal).modal({
-        dismissible: vm.dismissible,
-        opacity: vm.opacity,
-        inDuration: vm.inDuration,
-        outDuration: vm.outDuration,
-        startingTop: vm.startingTop,
-        endingTop: vm.endingTop,
-        ready(modal, trigger) {
-          vm.$emit('ready', modal, trigger)
-        },
-        complete() {
-          vm.$emit('complete')
-        }
-      })
-    },
-    methods: {
-      open() {
-        this.$modal.modal('open')
-      },
-      close() {
-        this.$modal.modal('close')
-      }
-    }
-  }
+	export default {
+		name: "MaterializeModal",
+		props: {
+			dismissible: {
+				type: Boolean,
+				default: true,
+			},
+			opacity: {
+				type: Number,
+				default: 0.5,
+			},
+			inDuration: {
+				type: Number,
+				default: 300,
+			},
+			outDuration: {
+				type: Number,
+				default: 200,
+			},
+			startingTop: {
+				type: String,
+				default: "4%",
+			},
+			endingTop: {
+				type: String,
+				default: "10%",
+			},
+			modalTitle: String,
+		},
+		data() {
+			return {
+				$modal: null,
+			};
+		},
+		computed: {
+			id() {
+				return `materializemodal-${this._uid}`;
+			},
+		},
+		mounted() {
+			const vm = this;
+			this.$modal = $(vm.$refs.modal);
+			//this.$modal.appendTo('body')
+			$(this.$modal).modal({
+				dismissible: vm.dismissible,
+				opacity: vm.opacity,
+				inDuration: vm.inDuration,
+				outDuration: vm.outDuration,
+				startingTop: vm.startingTop,
+				endingTop: vm.endingTop,
+				ready(modal, trigger) {
+					vm.$emit("ready", modal, trigger);
+				},
+				complete() {
+					vm.$emit("complete");
+				},
+			});
+		},
+		methods: {
+			open() {
+				this.$modal.modal("open");
+			},
+			close() {
+				this.$modal.modal("close");
+			},
+		},
+	};
 </script>
 
 <style>
-    .modal-header {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 32px;
-        padding: 6px 10px;
-        font-size: 16px;
-        font-weight: bold;
-        background-color: #f5f5f5;
-        border-bottom: 1px solid #adadad;
-        text-align: center;
-    }
-    .modal .modal-content {
-      padding-top: 54px;
-    }
+	.modal-header {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 32px;
+		padding: 6px 10px;
+		font-size: 16px;
+		font-weight: bold;
+		background-color: #f5f5f5;
+		border-bottom: 1px solid #adadad;
+		text-align: center;
+	}
+	.modal .modal-content {
+		padding-top: 54px;
+	}
 </style>

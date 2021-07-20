@@ -1,28 +1,28 @@
 {
-  "name": "pcms-pagerender-server",
-  "version": "1.0.0",
-  "description": "base render infrastructure for server rendered sites",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/headwirecom/peregrine-cms.git",
-    "directory": "pagerenderer/server/ui.apps"
-  },
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node ../../../buildscripts/buildvue.js pagerenderserver",
-    "site": "node ./node_modules/jsdoc/jsdoc.js -c jsdoc.config.json"
-  },
-  "author": "",
-  "license": "Apache-2.0",
-  "dependencies": {
-    "fs-extra": "^7.0.1",
-    "jsdoc": "^3.6.5",
-    "jsdoc-vue": "^1.0.0",
-    "rollup": "^1.16.6",
-    "rollup-plugin-buble": "^0.19.8",
-    "rollup-plugin-vue": "^4.6.1",
-    "vue": "^2.5.22",
-    "vue-template-compiler": "^2.5.22"
-  }
+	"name": "pcms-pagerender-server",
+	"version": "1.0.0",
+	"description": "base render infrastructure for server rendered sites",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/headwirecom/peregrine-cms.git",
+		"directory": "pagerenderer/server/ui.apps"
+	},
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"build": "node ../../../buildscripts/buildvue.js pagerenderserver",
+		"site": "node ./node_modules/jsdoc/jsdoc.js -c jsdoc.config.json"
+	},
+	"author": "",
+	"license": "Apache-2.0",
+	"dependencies": {
+		"fs-extra": "^7.0.1",
+		"jsdoc": "^3.6.5",
+		"jsdoc-vue": "^1.0.0",
+		"rollup": "^1.16.6",
+		"rollup-plugin-buble": "^0.19.8",
+		"rollup-plugin-vue": "^4.6.1",
+		"vue": "^2.5.22",
+		"vue-template-compiler": "^2.5.22"
+	}
 }

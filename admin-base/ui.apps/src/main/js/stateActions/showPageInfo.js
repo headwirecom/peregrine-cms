@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -22,32 +22,48 @@
  * under the License.
  * #L%
  */
-import {LoggerFactory} from '../logger'
-import {set} from '../utils'
+import { LoggerFactory } from "../logger";
+import { set } from "../utils";
 
-let log = LoggerFactory.logger('showPageInfo').setLevelDebug()
+let log = LoggerFactory.logger("showPageInfo").setLevelDebug();
 
-export default function(me, target) {
+export default function (me, target) {
+	log.fine(target);
 
-    log.fine(target)
+	let view = me.getView();
+	const tenant = view.state.tenant;
 
-    let view = me.getView()
-    const tenant = view.state.tenant
-
-    return new Promise( (resolve, reject) => {
-        return me.getApi().populateExplorerDialog(target.selected).then( () => {
-            if(target.selected.startsWith(`/content/${tenant.name}/pages`)) {
-                return me.getApi().populateReferencedBy(target.selected).then( () => {
-                    set(view, '/state/tools/page', target.selected)
-                    resolve()
-                }).catch( error => reject(error))
-            } else if(target.selected.startsWith(`/content/${tenant.name}/templates`)) {
-                return me.getApi().populateReferencedBy(target.selected).then(() => {
-                    set(view, '/state/tools/template', target.selected)
-                    resolve()
-                }).catch( error => reject(error))
-            }
-        })
-        .catch( error => reject(error))
-    })
+	return new Promise((resolve, reject) => {
+		return me
+			.getApi()
+			.populateExplorerDialog(target.selected)
+			.then(() => {
+				if (
+					target.selected.startsWith(`/content/${tenant.name}/pages`)
+				) {
+					return me
+						.getApi()
+						.populateReferencedBy(target.selected)
+						.then(() => {
+							set(view, "/state/tools/page", target.selected);
+							resolve();
+						})
+						.catch((error) => reject(error));
+				} else if (
+					target.selected.startsWith(
+						`/content/${tenant.name}/templates`
+					)
+				) {
+					return me
+						.getApi()
+						.populateReferencedBy(target.selected)
+						.then(() => {
+							set(view, "/state/tools/template", target.selected);
+							resolve();
+						})
+						.catch((error) => reject(error));
+				}
+			})
+			.catch((error) => reject(error));
+	});
 }

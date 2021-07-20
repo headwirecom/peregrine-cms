@@ -1,39 +1,40 @@
-{ "fields":[
-  {
-    "type": "collection",
-    "title": "Collection",
-    "model": "list",
-    "multifield": true,
-    "fields" : [
-      {
-        "type": "input",
-        "inputType": "text",
-        "label": "Key",
-        "model": "key"
-      },
-      {
-        "type": "input",
-        "inputType": "text",
-        "label": "Value",
-        "model": "value"
-      }
-    ],
-    "items": []
-  },
-  {
-    "type": "collection",
-    "title": "Collection",
-    "model": "singleList",
-    "multifield": false,
-    "fields" : [
-      {
-        "type": "input",
-        "inputType": "text",
-        "label": "Key",
-        "model": "key"
-      }
-    ],
-    "items": []
-  }
-
-]}
+{
+	"fields": [
+		{
+			"type": "collection",
+			"title": "Collection",
+			"model": "list",
+			"multifield": true,
+			"fields": [
+				{
+					"type": "input",
+					"inputType": "text",
+					"label": "Key",
+					"model": "key"
+				},
+				{
+					"type": "input",
+					"inputType": "text",
+					"label": "Value",
+					"model": "value"
+				}
+			],
+			"items": []
+		},
+		{
+			"type": "collection",
+			"title": "Collection",
+			"model": "singleList",
+			"multifield": false,
+			"fields": [
+				{
+					"type": "input",
+					"inputType": "text",
+					"label": "Key",
+					"model": "key"
+				}
+			],
+			"items": []
+		}
+	]
+}

@@ -1,14 +1,13 @@
-import {LoggerFactory} from '../logger'
+import { LoggerFactory } from "../logger";
 
-const log = LoggerFactory.logger('deleteTemplate').setLevelDebug();
+const log = LoggerFactory.logger("deleteTemplate").setLevelDebug();
 
 export default function (me, target) {
+	log.fine(target);
 
-  log.fine(target);
+	const api = me.getApi();
 
-  const api = me.getApi();
+	me.getNodeFromView("/state/tools").template = undefined;
 
-  me.getNodeFromView('/state/tools').template = undefined;
-
-  return api.deleteTemplate(target);
-};
+	return api.deleteTemplate(target);
+}

@@ -1,11 +1,11 @@
-import buble from 'rollup-plugin-buble';
+import buble from "rollup-plugin-buble";
 
 export default {
-	input: 'src/main/js/perAdminApp.js',
+	input: "src/main/js/perAdminApp.js",
 	output: {
-		file: 'target/classes/etc/felibs/admin/js/perAdminApp.js', 
-		format: 'iife',
-		name: '$perAdminApp',
+		file: "target/classes/etc/felibs/admin/js/perAdminApp.js",
+		format: "iife",
+		name: "$perAdminApp",
 	},
-	plugins: [ buble() ],
-}
+	plugins: [buble()],
+};

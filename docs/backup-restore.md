@@ -15,4 +15,3 @@ another site that does not exist (my-site -> my-site-2) and then the user has to
 
 A Tenant based backup / restore require a dedicated process for it to deal with all these checks as the
 Content-Package-based version does not handle permission and probably requires admin rights anyhow.
-

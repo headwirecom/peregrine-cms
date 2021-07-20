@@ -22,32 +22,32 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from '../logger';
+import { LoggerFactory } from "../logger";
 
-let log = LoggerFactory.logger('createObjectDefinitionFile').setLevelDebug();
+let log = LoggerFactory.logger("createObjectDefinitionFile").setLevelDebug();
 
-export default function(me, target) {
-  log.fine(target);
+export default function (me, target) {
+	log.fine(target);
 
-  const { parent: path, name, format } = target;
+	const { parent: path, name, format } = target;
 
-  const api = me.getApi();
-  let fileOptions = { type: 'text/plain' };
+	const api = me.getApi();
+	let fileOptions = { type: "text/plain" };
 
-  if (format === '.json') {
-    fileOptions = { type: 'application/json' };
-  }
+	if (format === ".json") {
+		fileOptions = { type: "application/json" };
+	}
 
-  const payload = {
-    '*': new File([new Blob(['{}'], fileOptions)], name),
-    '@TypeHint': 'nt:file',
-  };
+	const payload = {
+		"*": new File([new Blob(["{}"], fileOptions)], name),
+		"@TypeHint": "nt:file",
+	};
 
-  /* eslint-disable no-underscore-dangle */
-  return api._postFormData(path, payload).then((data) => {
-    me.loadContent(
-      `/content/admin/pages/object-definitions.html/path:${path}`
-    );
-    return data;
-  });
+	/* eslint-disable no-underscore-dangle */
+	return api._postFormData(path, payload).then((data) => {
+		me.loadContent(
+			`/content/admin/pages/object-definitions.html/path:${path}`
+		);
+		return data;
+	});
 }

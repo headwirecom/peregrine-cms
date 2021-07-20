@@ -23,79 +23,67 @@
   #L%
   -->
 
-
 <template>
-    <div class="publishinginfo">
-      <table>
-        <tbody>
-          <tr>
-            <th>Status</th>
-            <td>{{printStatus(node)}}</td>            
-          </tr>
-          <tr>
-            <th>Date</th>
-            <td>{{publishActionDate}}</td>            
-          </tr>
-          <tr>
-            <th>By</th>
-            <td>{{node.ReplicatedBy}}</td>            
-          </tr>
+	<div class="publishinginfo">
+		<table>
+			<tbody>
+				<tr>
+					<th>Status</th>
+					<td>{{ printStatus(node) }}</td>
+				</tr>
+				<tr>
+					<th>Date</th>
+					<td>{{ publishActionDate }}</td>
+				</tr>
+				<tr>
+					<th>By</th>
+					<td>{{ node.ReplicatedBy }}</td>
+				</tr>
 
-          <tr>
-            <th>Last Modified</th>
-            <td>{{modificationDate}}</td>            
-          </tr> 
-          <tr>
-            <th>Last Modified by</th>
-            <td>{{node.lastModifiedBy}}</td>            
-          </tr> 
-        </tbody>
-      </table>
-    </div>
+				<tr>
+					<th>Last Modified</th>
+					<td>{{ modificationDate }}</td>
+				</tr>
+				<tr>
+					<th>Last Modified by</th>
+					<td>{{ node.lastModifiedBy }}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 </template>
 
 <script>
-import ReferenceUtil from '../../../../../../js/mixins/ReferenceUtil'
+	import ReferenceUtil from "../../../../../../js/mixins/ReferenceUtil";
 
-export default {
-    props: [
-        'isOpen',
-        'node',
-        'modalTitle',
-    ],
-    data(){
-        return {
-
-        }
-    },
-    mixins: [ReferenceUtil],
-    computed: {
-        publishActionDate(){
-            // new Date(this.node.Replicated);
-            return this.node.Replicated
-        },
-        modificationDate(){
-            // new Date(this.node.lastModified);
-            return this.node.lastModified
-        },
-
-    },
-    methods: {
-
-    },
-    mounted() {
-        
-    }
-}
+	export default {
+		props: ["isOpen", "node", "modalTitle"],
+		data() {
+			return {};
+		},
+		mixins: [ReferenceUtil],
+		computed: {
+			publishActionDate() {
+				// new Date(this.node.Replicated);
+				return this.node.Replicated;
+			},
+			modificationDate() {
+				// new Date(this.node.lastModified);
+				return this.node.lastModified;
+			},
+		},
+		methods: {},
+		mounted() {},
+	};
 </script>
 
 <style>
-.publishinginfo {
-    padding: 0 0.75rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-}
-th {
-    color: #607d8b;
-    font-size: 1rem;
-}
+	.publishinginfo {
+		padding: 0 0.75rem;
+		border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+	}
+	th {
+		color: #607d8b;
+		font-size: 1rem;
+	}
 </style>

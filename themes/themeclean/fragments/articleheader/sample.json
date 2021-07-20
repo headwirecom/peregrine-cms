@@ -1,14 +1,14 @@
 {
-  "title": "Article Header",
-  "group": "Article",
-  "model": {
-    "backgroundtype": "color",
-    "toppadding": "0",
-    "bottompadding": "0",
-    "showtitle": "true",
-    "title": "Peregrine Clean Theme",
-    "showsubtitle": "true",
-    "subtitle": "Blazing fast CMS",
-    "textalign": "left"
-  }
+	"title": "Article Header",
+	"group": "Article",
+	"model": {
+		"backgroundtype": "color",
+		"toppadding": "0",
+		"bottompadding": "0",
+		"showtitle": "true",
+		"title": "Peregrine Clean Theme",
+		"showsubtitle": "true",
+		"subtitle": "Blazing fast CMS",
+		"textalign": "left"
+	}
 }

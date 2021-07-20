@@ -1,9 +1,10 @@
-<footer 
-    data-sly-use.helper="com.peregrine.pagerender.server.helpers.BaseHelper"
-    data-per-path="${helper.model.path}"
-    class="navbar navbar-light bg-light fixed-bottom">
-    <span class="navbar-text">
-        ${properties.text @ context='html'}
-        ${properties.text ? '': '&copy; 2021 by peregrine-cms, an open source project'}      
-    </span>
+<footer
+	data-sly-use.helper="com.peregrine.pagerender.server.helpers.BaseHelper"
+	data-per-path="${helper.model.path}"
+	class="navbar navbar-light bg-light fixed-bottom"
+>
+	<span class="navbar-text">
+		${properties.text @ context='html'} ${properties.text ? '': '&copy; 2021
+		by peregrine-cms, an open source project'}
+	</span>
 </footer>

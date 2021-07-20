@@ -1,36 +1,36 @@
 {
-  "definitions": {
-    "Articlequote": {
-      "type": "object",
-      "x-type": "component",
-      "properties": {
-        "text": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Text",
-          "x-form-type": "texteditor"
-        },
-        "blockquote": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Block Quote",
-          "x-form-type": "materialswitch",
-          "x-default": "false"
-        },
-        "linewidth": {
-          "type": "string",
-          "x-source": "inject",
-          "x-form-label": "Line Width",
-          "x-form-visible": "model.blockquote == 'false'",
-          "x-form-type": "materialrange",
-          "x-form-min": 10,
-          "x-form-max": 100
-        },
-        "bgref": {
-          "$ref": "fragments/block/model-article.json#/definitions/Block",
-          "x-form-type": "reference"
-        }
-      }
-    }
-  }
+	"definitions": {
+		"Articlequote": {
+			"type": "object",
+			"x-type": "component",
+			"properties": {
+				"text": {
+					"type": "string",
+					"x-source": "inject",
+					"x-form-label": "Text",
+					"x-form-type": "texteditor"
+				},
+				"blockquote": {
+					"type": "string",
+					"x-source": "inject",
+					"x-form-label": "Block Quote",
+					"x-form-type": "materialswitch",
+					"x-default": "false"
+				},
+				"linewidth": {
+					"type": "string",
+					"x-source": "inject",
+					"x-form-label": "Line Width",
+					"x-form-visible": "model.blockquote == 'false'",
+					"x-form-type": "materialrange",
+					"x-form-min": 10,
+					"x-form-max": 100
+				},
+				"bgref": {
+					"$ref": "fragments/block/model-article.json#/definitions/Block",
+					"x-form-type": "reference"
+				}
+			}
+		}
+	}
 }

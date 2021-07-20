@@ -1,9 +1,7 @@
 {
-  "title": "Tabs no default values",
-  "group": "Empty",
-  "model": {
-    "tabs": [
-      
-    ]
-  }
+	"title": "Tabs no default values",
+	"group": "Empty",
+	"model": {
+		"tabs": []
+	}
 }

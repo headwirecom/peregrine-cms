@@ -22,179 +22,175 @@
  * under the License.
  * #L%
  */
-import {LoggerFactory} from './logger'
-import loadToolsNodesPath from './stateActions/loadToolsNodesPath'
-import selectToolsNodesPath from './stateActions/selectToolsNodesPath'
-import createPage from './stateActions/createPage'
-import createPageFromSkeletonPage
-    from './stateActions/createPageFromSkeletonPage'
-import createPageWizard from './stateActions/createPageWizard'
-import createTenantWizard from './stateActions/createTenantWizard'
-import createTenant from './stateActions/createTenant'
-import deletePage from './stateActions/deletePage'
-import deleteTenant from './stateActions/deleteTenant'
-import configureTenant from './stateActions/configureTenant'
-import renamePage from './stateActions/renamePage'
-import copyPage from './stateActions/copyPage'
-import movePage from './stateActions/movePage'
-import createTemplate from './stateActions/createTemplate'
-import createTemplateWizard from './stateActions/createTemplateWizard'
-import sourceImageWizard from './stateActions/sourceImageWizard'
-import fetchExternalAsset from './stateActions/fetchExternalAsset'
-import createFolder from './stateActions/createFolder'
-import deleteFolder from './stateActions/deleteFolder'
-import deleteFile from './stateActions/deleteFile'
-import uploadFiles from './stateActions/uploadFiles'
-import editPage from './stateActions/editPage'
-import editTemplate from './stateActions/editTemplate'
-import editComponent from './stateActions/editComponent'
-import savePageEdit from './stateActions/savePageEdit'
-import deletePageNode from './stateActions/deletePageNode'
-import cancelPageEdit from './stateActions/cancelPageEdit'
-import addComponentToPath from './stateActions/addComponentToPath'
-import moveComponentToPath from './stateActions/moveComponentToPath'
-import selectObject from './stateActions/selectObject'
-import editObject from './stateActions/editObject'
-import unselectObject from './stateActions/unselectObject'
-import saveObjectEdit from './stateActions/saveObjectEdit'
-import saveAssetProperties from './stateActions/saveAssetProperties'
-import deleteObject from './stateActions/deleteObject'
-import createObject from './stateActions/createObject'
-import createObjectWizard from './stateActions/createObjectWizard'
-import selectAsset from './stateActions/selectAsset'
-import unselectAsset from './stateActions/unselectAsset'
-import unselectPage from './stateActions/unselectPage'
-import unselectTemplate from './stateActions/unselectTemplate'
-import deleteAsset from './stateActions/deleteAsset'
-import renameAsset from './stateActions/renameAsset'
-import moveAsset from './stateActions/moveAsset'
-import showPageInfo from './stateActions/showPageInfo'
-import editPreview from './stateActions/editPreview'
-import createAssetFolder from './stateActions/createAssetFolder'
-import createObjectFolder from './stateActions/createObjectFolder'
-import createObjectDefinition from './stateActions/createObjectDefinition'
-import createObjectDefinitionFile from './stateActions/createObjectDefinitionFile';
-import createAssetFolderWizard from './stateActions/createAssetFolderWizard'
-import createObjectFolderWizard from './stateActions/createObjectFolderWizard'
-import createObjectDefinitionWizard from './stateActions/createObjectDefinitionWizard'
-import createObjectDefinitionFileWizard from './stateActions/createObjectDefinitionFileWizard';
-import savePageProperties from './stateActions/savePageProperties'
-import replicate from './stateActions/replicate'
-import publish from './stateActions/publish'
-import unreplicate from './stateActions/unreplicate'
-import moveTemplate from './stateActions/moveTemplate'
-import renameObject from './stateActions/renameObject'
-import moveObject from './stateActions/moveObject'
-import deleteTemplate from './stateActions/deleteTemplate'
-import deleteVersion from './stateActions/deleteVersion'
-import createVersion from './stateActions/createVersion'
-import restoreVersion from './stateActions/restoreVersion'
-import renameTemplate from './stateActions/renameTemplate'
-import setTenant from './stateActions/setTenant'
-import recycleItem from './stateActions/recycleItem'
-import deleteRecyclable from './stateActions/deleteRecyclable'
-import tenantSetupReplication from './stateActions/tenantSetupReplication'
+import { LoggerFactory } from "./logger";
+import loadToolsNodesPath from "./stateActions/loadToolsNodesPath";
+import selectToolsNodesPath from "./stateActions/selectToolsNodesPath";
+import createPage from "./stateActions/createPage";
+import createPageFromSkeletonPage from "./stateActions/createPageFromSkeletonPage";
+import createPageWizard from "./stateActions/createPageWizard";
+import createTenantWizard from "./stateActions/createTenantWizard";
+import createTenant from "./stateActions/createTenant";
+import deletePage from "./stateActions/deletePage";
+import deleteTenant from "./stateActions/deleteTenant";
+import configureTenant from "./stateActions/configureTenant";
+import renamePage from "./stateActions/renamePage";
+import copyPage from "./stateActions/copyPage";
+import movePage from "./stateActions/movePage";
+import createTemplate from "./stateActions/createTemplate";
+import createTemplateWizard from "./stateActions/createTemplateWizard";
+import sourceImageWizard from "./stateActions/sourceImageWizard";
+import fetchExternalAsset from "./stateActions/fetchExternalAsset";
+import createFolder from "./stateActions/createFolder";
+import deleteFolder from "./stateActions/deleteFolder";
+import deleteFile from "./stateActions/deleteFile";
+import uploadFiles from "./stateActions/uploadFiles";
+import editPage from "./stateActions/editPage";
+import editTemplate from "./stateActions/editTemplate";
+import editComponent from "./stateActions/editComponent";
+import savePageEdit from "./stateActions/savePageEdit";
+import deletePageNode from "./stateActions/deletePageNode";
+import cancelPageEdit from "./stateActions/cancelPageEdit";
+import addComponentToPath from "./stateActions/addComponentToPath";
+import moveComponentToPath from "./stateActions/moveComponentToPath";
+import selectObject from "./stateActions/selectObject";
+import editObject from "./stateActions/editObject";
+import unselectObject from "./stateActions/unselectObject";
+import saveObjectEdit from "./stateActions/saveObjectEdit";
+import saveAssetProperties from "./stateActions/saveAssetProperties";
+import deleteObject from "./stateActions/deleteObject";
+import createObject from "./stateActions/createObject";
+import createObjectWizard from "./stateActions/createObjectWizard";
+import selectAsset from "./stateActions/selectAsset";
+import unselectAsset from "./stateActions/unselectAsset";
+import unselectPage from "./stateActions/unselectPage";
+import unselectTemplate from "./stateActions/unselectTemplate";
+import deleteAsset from "./stateActions/deleteAsset";
+import renameAsset from "./stateActions/renameAsset";
+import moveAsset from "./stateActions/moveAsset";
+import showPageInfo from "./stateActions/showPageInfo";
+import editPreview from "./stateActions/editPreview";
+import createAssetFolder from "./stateActions/createAssetFolder";
+import createObjectFolder from "./stateActions/createObjectFolder";
+import createObjectDefinition from "./stateActions/createObjectDefinition";
+import createObjectDefinitionFile from "./stateActions/createObjectDefinitionFile";
+import createAssetFolderWizard from "./stateActions/createAssetFolderWizard";
+import createObjectFolderWizard from "./stateActions/createObjectFolderWizard";
+import createObjectDefinitionWizard from "./stateActions/createObjectDefinitionWizard";
+import createObjectDefinitionFileWizard from "./stateActions/createObjectDefinitionFileWizard";
+import savePageProperties from "./stateActions/savePageProperties";
+import replicate from "./stateActions/replicate";
+import publish from "./stateActions/publish";
+import unreplicate from "./stateActions/unreplicate";
+import moveTemplate from "./stateActions/moveTemplate";
+import renameObject from "./stateActions/renameObject";
+import moveObject from "./stateActions/moveObject";
+import deleteTemplate from "./stateActions/deleteTemplate";
+import deleteVersion from "./stateActions/deleteVersion";
+import createVersion from "./stateActions/createVersion";
+import restoreVersion from "./stateActions/restoreVersion";
+import renameTemplate from "./stateActions/renameTemplate";
+import setTenant from "./stateActions/setTenant";
+import recycleItem from "./stateActions/recycleItem";
+import deleteRecyclable from "./stateActions/deleteRecyclable";
+import tenantSetupReplication from "./stateActions/tenantSetupReplication";
 import backupTenant from "./stateActions/backupTenant";
 import downloadBackupTenant from "./stateActions/downloadBackupTenant";
 import uploadBackupTenant from "./stateActions/uploadBackupTenant";
 import restoreTenant from "./stateActions/restoreTenant";
-import acceptTermsAndConditions from './stateActions/acceptTermsAndConditions'
+import acceptTermsAndConditions from "./stateActions/acceptTermsAndConditions";
 
-let log = LoggerFactory.logger('actions').setLevelDebug()
+let log = LoggerFactory.logger("actions").setLevelDebug();
 
-let actions = []
+let actions = [];
 
-actions['loadToolsNodesPath'] = loadToolsNodesPath
-actions['selectToolsNodesPath'] = selectToolsNodesPath
-actions['createTenantWizard'] = createTenantWizard
-actions['createTenant'] = createTenant
-actions['createPageWizard'] = createPageWizard
-actions['createPage'] = createPage
-actions['createPageFromSkeletonPage'] = createPageFromSkeletonPage
-actions['deletePage'] = deletePage
-actions['deleteTenant'] = deleteTenant
-actions['configureTenant'] = configureTenant
-actions['renamePage'] = renamePage
-actions['copyPage'] = copyPage
-actions['movePage'] = movePage
-actions['createTemplate'] = createTemplate
-actions['createTemplateWizard'] = createTemplateWizard
-actions['createFolder'] = createFolder
-actions['deleteFolder'] = deleteFolder
-actions['deleteFile'] = deleteFile
-actions['uploadFiles'] = uploadFiles
-actions['sourceImageWizard'] = sourceImageWizard
-actions['fetchExternalAsset'] = fetchExternalAsset
-actions['editPage'] = editPage
-actions['editTemplate'] = editTemplate
-actions['editComponent'] = editComponent
-actions['savePageEdit'] = savePageEdit
-actions['addComponentToPath'] = addComponentToPath
-actions['moveComponentToPath'] = moveComponentToPath
-actions['deletePageNode'] = deletePageNode
-actions['cancelPageEdit'] = cancelPageEdit
-actions['selectObject'] = selectObject
-actions['editObject'] = editObject
-actions['unselectObject'] = unselectObject
-actions['saveObjectEdit'] = saveObjectEdit
-actions['saveAssetProperties'] = saveAssetProperties
-actions['deleteObject'] = deleteObject
-actions['createObject'] = createObject
-actions['createObjectWizard'] = createObjectWizard
-actions['selectAsset'] = selectAsset
-actions['showPageInfo'] = showPageInfo
-actions['unselectAsset'] = unselectAsset
-actions['unselectPage'] = unselectPage
-actions['unselectTemplate'] = unselectTemplate
-actions['deleteAsset'] = deleteAsset
-actions['renameAsset'] = renameAsset
-actions['moveAsset'] = moveAsset
-actions['editPreview'] = editPreview
-actions['createAssetFolder'] = createAssetFolder
-actions['createAssetFolderWizard'] = createAssetFolderWizard
-actions['createObjectFolder'] = createObjectFolder
-actions['createObjectDefinition'] = createObjectDefinition
-actions['createObjectDefinitionFile'] = createObjectDefinitionFile;
-actions['createObjectFolderWizard'] = createObjectFolderWizard
-actions['createObjectDefinitionWizard'] = createObjectDefinitionWizard
-actions['createObjectDefinitionFileWizard'] = createObjectDefinitionFileWizard;
-actions['renameObject'] = renameObject
-actions['savePageProperties'] = savePageProperties
-actions['replicate'] = replicate
-actions['publish'] = publish
-actions['unreplicate'] = unreplicate
-actions['moveObject'] = moveObject
-actions['showTemplateInfo'] = showPageInfo
-actions['saveTemplateProperties'] = savePageProperties
-actions['renameTemplate'] = renameTemplate
-actions['moveTemplate'] = moveTemplate
-actions['deleteTemplate'] = deleteTemplate
-actions['recycleItem'] = recycleItem
-actions['deleteRecyclable'] = deleteRecyclable
-actions['deleteVersion'] = deleteVersion
-actions['createVersion'] = createVersion
-actions['restoreVersion'] = restoreVersion
-actions['setTenant'] = setTenant
-actions['tenantSetupReplication'] = tenantSetupReplication
-actions['backupTenant'] = backupTenant
-actions['downloadBackupTenant'] = downloadBackupTenant
-actions['uploadBackupTenant'] = uploadBackupTenant
-actions['restoreTenant'] = restoreTenant
-actions['acceptTermsAndConditions'] = acceptTermsAndConditions
-
+actions["loadToolsNodesPath"] = loadToolsNodesPath;
+actions["selectToolsNodesPath"] = selectToolsNodesPath;
+actions["createTenantWizard"] = createTenantWizard;
+actions["createTenant"] = createTenant;
+actions["createPageWizard"] = createPageWizard;
+actions["createPage"] = createPage;
+actions["createPageFromSkeletonPage"] = createPageFromSkeletonPage;
+actions["deletePage"] = deletePage;
+actions["deleteTenant"] = deleteTenant;
+actions["configureTenant"] = configureTenant;
+actions["renamePage"] = renamePage;
+actions["copyPage"] = copyPage;
+actions["movePage"] = movePage;
+actions["createTemplate"] = createTemplate;
+actions["createTemplateWizard"] = createTemplateWizard;
+actions["createFolder"] = createFolder;
+actions["deleteFolder"] = deleteFolder;
+actions["deleteFile"] = deleteFile;
+actions["uploadFiles"] = uploadFiles;
+actions["sourceImageWizard"] = sourceImageWizard;
+actions["fetchExternalAsset"] = fetchExternalAsset;
+actions["editPage"] = editPage;
+actions["editTemplate"] = editTemplate;
+actions["editComponent"] = editComponent;
+actions["savePageEdit"] = savePageEdit;
+actions["addComponentToPath"] = addComponentToPath;
+actions["moveComponentToPath"] = moveComponentToPath;
+actions["deletePageNode"] = deletePageNode;
+actions["cancelPageEdit"] = cancelPageEdit;
+actions["selectObject"] = selectObject;
+actions["editObject"] = editObject;
+actions["unselectObject"] = unselectObject;
+actions["saveObjectEdit"] = saveObjectEdit;
+actions["saveAssetProperties"] = saveAssetProperties;
+actions["deleteObject"] = deleteObject;
+actions["createObject"] = createObject;
+actions["createObjectWizard"] = createObjectWizard;
+actions["selectAsset"] = selectAsset;
+actions["showPageInfo"] = showPageInfo;
+actions["unselectAsset"] = unselectAsset;
+actions["unselectPage"] = unselectPage;
+actions["unselectTemplate"] = unselectTemplate;
+actions["deleteAsset"] = deleteAsset;
+actions["renameAsset"] = renameAsset;
+actions["moveAsset"] = moveAsset;
+actions["editPreview"] = editPreview;
+actions["createAssetFolder"] = createAssetFolder;
+actions["createAssetFolderWizard"] = createAssetFolderWizard;
+actions["createObjectFolder"] = createObjectFolder;
+actions["createObjectDefinition"] = createObjectDefinition;
+actions["createObjectDefinitionFile"] = createObjectDefinitionFile;
+actions["createObjectFolderWizard"] = createObjectFolderWizard;
+actions["createObjectDefinitionWizard"] = createObjectDefinitionWizard;
+actions["createObjectDefinitionFileWizard"] = createObjectDefinitionFileWizard;
+actions["renameObject"] = renameObject;
+actions["savePageProperties"] = savePageProperties;
+actions["replicate"] = replicate;
+actions["publish"] = publish;
+actions["unreplicate"] = unreplicate;
+actions["moveObject"] = moveObject;
+actions["showTemplateInfo"] = showPageInfo;
+actions["saveTemplateProperties"] = savePageProperties;
+actions["renameTemplate"] = renameTemplate;
+actions["moveTemplate"] = moveTemplate;
+actions["deleteTemplate"] = deleteTemplate;
+actions["recycleItem"] = recycleItem;
+actions["deleteRecyclable"] = deleteRecyclable;
+actions["deleteVersion"] = deleteVersion;
+actions["createVersion"] = createVersion;
+actions["restoreVersion"] = restoreVersion;
+actions["setTenant"] = setTenant;
+actions["tenantSetupReplication"] = tenantSetupReplication;
+actions["backupTenant"] = backupTenant;
+actions["downloadBackupTenant"] = downloadBackupTenant;
+actions["uploadBackupTenant"] = uploadBackupTenant;
+actions["restoreTenant"] = restoreTenant;
+actions["acceptTermsAndConditions"] = acceptTermsAndConditions;
 
 function noopAction(me, target) {
-    log.error('state action noop with target:', target)
+	log.error("state action noop with target:", target);
 }
 
 export default function getStateAction(name) {
-
-    log.fine(actions)
-    if(actions[name]) {
-        return actions[name]
-    } else {
-        log.error('stateAction', name, 'missing')
-        return noopAction
-    }
-
+	log.fine(actions);
+	if (actions[name]) {
+		return actions[name];
+	} else {
+		log.error("stateAction", name, "missing");
+		return noopAction;
+	}
 }

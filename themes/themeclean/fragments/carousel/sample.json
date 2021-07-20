@@ -1,24 +1,26 @@
 {
-  "title": "Carousel",
-  "group": "Features",
-  "model" : {
-    "carouselheight": 50,
-    "toppadding": 0,
-    "bottompadding": 0,
-    "slides": [
-      {
-        "imagepath": "/content/themeclean/assets/images/background1.jpg",
-        "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ",
-        "heading": "Slide One"
-      },{
-        "imagepath": "/content/themeclean/assets/images/background2.jpg",
-        "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ",
-        "heading": "Slide Two"
-      },{
-        "imagepath": "/content/themeclean/assets/images/background3.jpg",
-        "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ",
-        "heading": "Slide Three"
-      }
-    ]
-  }
+	"title": "Carousel",
+	"group": "Features",
+	"model": {
+		"carouselheight": 50,
+		"toppadding": 0,
+		"bottompadding": 0,
+		"slides": [
+			{
+				"imagepath": "/content/themeclean/assets/images/background1.jpg",
+				"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ",
+				"heading": "Slide One"
+			},
+			{
+				"imagepath": "/content/themeclean/assets/images/background2.jpg",
+				"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ",
+				"heading": "Slide Two"
+			},
+			{
+				"imagepath": "/content/themeclean/assets/images/background3.jpg",
+				"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ",
+				"heading": "Slide Three"
+			}
+		]
+	}
 }

@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -22,38 +22,43 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from '../logger'
-let log = LoggerFactory.logger('savePageEdit').setLevelDebug()
+import { LoggerFactory } from "../logger";
+let log = LoggerFactory.logger("savePageEdit").setLevelDebug();
 
-import { set } from '../utils'
+import { set } from "../utils";
 
-export default function(me, target) {
+export default function (me, target) {
+	log.fine(target);
 
-    log.fine(target)
+	let view = me.getView();
 
-    let view = me.getView()
-
-    return new Promise( (resolve, reject) => {
-        me.getApi().savePageEdit(view.pageView.path, target.data).then( () => {
-            delete view.state.editor;
-            set(view, '/state/editorVisible', false)
-            if(view.pageView.page.serverSide) {
-                me.action(me.getApp().$children[0], 'refreshEditor', view.pageView.page)
-                resolve()
-            } else {
-                resolve()
-            }
-        }).catch( error => {
-           reject(error)
-         })
-
-    })
-    // me.getApi().populateComponentDefinitionFromNode(view.pageView.path+target).then( (name) => {
-    //         log.fine('component name is', name)
-    //         set(view, '/state/editor/component', name)
-    //         set(view, '/state/editor/path', target)
-    //         set(view, '/state/editorVisible', true)
-    //         set(view, '/state/rightPanelVisible', true)
-    //     }
-    // )
+	return new Promise((resolve, reject) => {
+		me.getApi()
+			.savePageEdit(view.pageView.path, target.data)
+			.then(() => {
+				delete view.state.editor;
+				set(view, "/state/editorVisible", false);
+				if (view.pageView.page.serverSide) {
+					me.action(
+						me.getApp().$children[0],
+						"refreshEditor",
+						view.pageView.page
+					);
+					resolve();
+				} else {
+					resolve();
+				}
+			})
+			.catch((error) => {
+				reject(error);
+			});
+	});
+	// me.getApi().populateComponentDefinitionFromNode(view.pageView.path+target).then( (name) => {
+	//         log.fine('component name is', name)
+	//         set(view, '/state/editor/component', name)
+	//         set(view, '/state/editor/path', target)
+	//         set(view, '/state/editorVisible', true)
+	//         set(view, '/state/rightPanelVisible', true)
+	//     }
+	// )
 }

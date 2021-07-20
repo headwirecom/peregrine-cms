@@ -1,14 +1,18 @@
-{ "fields":[{
-  "type": "input",
-  "inputType": "text",
-  "label": "title",
-  "model": "title",
-  "placeholder": "enter a title"
-},
-  {
-    "type": "material-textarea",
-    "label": "text",
-    "model": "text",
-    "rows": 5,
-    "placeholder": "enter text"
-  }]}
+{
+	"fields": [
+		{
+			"type": "input",
+			"inputType": "text",
+			"label": "title",
+			"model": "title",
+			"placeholder": "enter a title"
+		},
+		{
+			"type": "material-textarea",
+			"label": "text",
+			"model": "text",
+			"rows": 5,
+			"placeholder": "enter text"
+		}
+	]
+}

@@ -23,14 +23,16 @@
   #L%
   -->
 <template>
-    <div class="jumbotron" v-bind:data-per-path="model.path">
-        <h1 class="display-3" data-per-inline="model.title">{{model.title}}</h1>
-        <p class="lead" data-per-inline="model.text">{{model.text}}</p>
-    </div>
+	<div class="jumbotron" v-bind:data-per-path="model.path">
+		<h1 class="display-3" data-per-inline="model.title">
+			{{ model.title }}
+		</h1>
+		<p class="lead" data-per-inline="model.text">{{ model.text }}</p>
+	</div>
 </template>
 
 <script>
-    export default {
-        props: ['model']
-    }
+	export default {
+		props: ["model"],
+	};
 </script>

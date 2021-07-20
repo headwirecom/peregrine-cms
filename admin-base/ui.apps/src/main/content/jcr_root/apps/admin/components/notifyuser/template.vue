@@ -23,32 +23,41 @@
   #L%
   -->
 <template>
-    <div id="notifyUserModal" class="modal bottom-sheet">
-        <div class="modal-content">
-            <h4>{{title}}</h4>
-            <p>{{message}}</p>
-        </div>
-        <div class="modal-footer">
-            <button 
-                type="button"
-                class="modal-action modal-close waves-effect waves-light btn-flat"
-                title="ok">
-                ok
-            </button>
-        </div>
-    </div>
+	<div id="notifyUserModal" class="modal bottom-sheet">
+		<div class="modal-content">
+			<h4>{{ title }}</h4>
+			<p>{{ message }}</p>
+		</div>
+		<div class="modal-footer">
+			<button
+				type="button"
+				class="
+					modal-action modal-close
+					waves-effect waves-light
+					btn-flat
+				"
+				title="ok"
+			>
+				ok
+			</button>
+		</div>
+	</div>
 </template>
 
 <script>
-    export default {
-        props: ['model'],
-        computed: {
-            title() {
-                return $perAdminApp.getNodeFromViewOrNull('/state/notification/title')
-            },
-            message() {
-                return $perAdminApp.getNodeFromViewOrNull('/state/notification/message')
-            }
-        }
-    }
+	export default {
+		props: ["model"],
+		computed: {
+			title() {
+				return $perAdminApp.getNodeFromViewOrNull(
+					"/state/notification/title"
+				);
+			},
+			message() {
+				return $perAdminApp.getNodeFromViewOrNull(
+					"/state/notification/message"
+				);
+			},
+		},
+	};
 </script>

@@ -23,29 +23,39 @@
   #L%
   -->
 <template>
-    <div class="tooling-page">
-        <template v-for="child in model.children">
-            <component v-bind:is="child.component" v-bind:model="child"></component>
-        </template>
-        <admin-components-notifyuser>general notification</admin-components-notifyuser>
-        <admin-components-pathbrowser>path browser</admin-components-pathbrowser>
-        <admin-components-assetbrowser>asset browser</admin-components-assetbrowser>
-        <admin-components-pagebrowser>page browser</admin-components-pagebrowser>
-    </div>
+	<div class="tooling-page">
+		<template v-for="child in model.children">
+			<component
+				v-bind:is="child.component"
+				v-bind:model="child"
+			></component>
+		</template>
+		<admin-components-notifyuser
+			>general notification</admin-components-notifyuser
+		>
+		<admin-components-pathbrowser
+			>path browser</admin-components-pathbrowser
+		>
+		<admin-components-assetbrowser
+			>asset browser</admin-components-assetbrowser
+		>
+		<admin-components-pagebrowser
+			>page browser</admin-components-pagebrowser
+		>
+	</div>
 </template>
 
 <script>
-export default {
-    props: ['model'],
-    methods: {
-        selectPath: function(me, target) {
-            $perAdminApp.loadContent(target+'.html')
-        },
-        editPreview: function(me, target) {
-            $perAdminApp.stateAction('editPreview', target)
-        },
-        editPage: function(me, target) {
-        }
-    }
-}
+	export default {
+		props: ["model"],
+		methods: {
+			selectPath: function (me, target) {
+				$perAdminApp.loadContent(target + ".html");
+			},
+			editPreview: function (me, target) {
+				$perAdminApp.stateAction("editPreview", target);
+			},
+			editPage: function (me, target) {},
+		},
+	};
 </script>

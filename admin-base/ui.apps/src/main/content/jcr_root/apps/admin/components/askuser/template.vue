@@ -22,56 +22,77 @@
   under the License.
   #L%
   -->
-<template>  
-    <div id="askUserModal" class="modal bottom-sheet" ref="modal">
-        <div class="modal-content">
-            <h4>{{title}}</h4>
-            <p>{{message}}</p>
-        </div>
-        <div class="modal-footer">
-            <button 
-                type="button"
-                class="modal-action modal-close waves-effect waves-light btn-flat"
-                v-on:click="cancel()"
-                title="cancel">
-                {{noText}}
-            </button>
-            <button 
-                type="button"
-                class="modal-action modal-close waves-effect waves-light btn-flat"
-                v-on:click="ok()"
-                title="ok">
-                {{yesText}}
-            </button>
-        </div>
-    </div>
+<template>
+	<div id="askUserModal" class="modal bottom-sheet" ref="modal">
+		<div class="modal-content">
+			<h4>{{ title }}</h4>
+			<p>{{ message }}</p>
+		</div>
+		<div class="modal-footer">
+			<button
+				type="button"
+				class="
+					modal-action modal-close
+					waves-effect waves-light
+					btn-flat
+				"
+				v-on:click="cancel()"
+				title="cancel"
+			>
+				{{ noText }}
+			</button>
+			<button
+				type="button"
+				class="
+					modal-action modal-close
+					waves-effect waves-light
+					btn-flat
+				"
+				v-on:click="ok()"
+				title="ok"
+			>
+				{{ yesText }}
+			</button>
+		</div>
+	</div>
 </template>
 
 <script>
-    export default {
-        props: ['model'],
-        computed: {
-            title() {
-                return $perAdminApp.getNodeFromViewOrNull('/state/notification/title')
-            },
-            message() {
-                return $perAdminApp.getNodeFromViewOrNull('/state/notification/message')
-            },
-            yesText() {
-                return $perAdminApp.getNodeFromViewOrNull('/state/notification/yesText')
-            },
-            noText() {
-                return $perAdminApp.getNodeFromViewOrNull('/state/notification/noText')
-            }
-        },
-        methods: {
-            cancel() {
-                $('#askUserModal').modal('getInstance').options.takeAction = false;
-            },
-            ok() {
-                $('#askUserModal').modal('getInstance').options.takeAction = true;
-            }
-        }
-
-    }
+	export default {
+		props: ["model"],
+		computed: {
+			title() {
+				return $perAdminApp.getNodeFromViewOrNull(
+					"/state/notification/title"
+				);
+			},
+			message() {
+				return $perAdminApp.getNodeFromViewOrNull(
+					"/state/notification/message"
+				);
+			},
+			yesText() {
+				return $perAdminApp.getNodeFromViewOrNull(
+					"/state/notification/yesText"
+				);
+			},
+			noText() {
+				return $perAdminApp.getNodeFromViewOrNull(
+					"/state/notification/noText"
+				);
+			},
+		},
+		methods: {
+			cancel() {
+				$("#askUserModal").modal(
+					"getInstance"
+				).options.takeAction = false;
+			},
+			ok() {
+				$("#askUserModal").modal(
+					"getInstance"
+				).options.takeAction = true;
+			},
+		},
+	};
 </script>

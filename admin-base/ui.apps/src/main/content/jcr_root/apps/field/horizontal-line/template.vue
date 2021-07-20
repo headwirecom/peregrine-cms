@@ -1,14 +1,13 @@
 <template>
-    <hr class="hr"/>
+	<hr class="hr" />
 </template>
 
 <script>
-    export default {
-    }
+	export default {};
 </script>
 
 <style scoped>
-    .hr {
-        width: 100%;
-    }
+	.hr {
+		width: 100%;
+	}
 </style>

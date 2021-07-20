@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -22,23 +22,33 @@
  * under the License.
  * #L%
  */
-import { LoggerFactory } from '../logger'
-import {SUFFIX_PARAM_SEPARATOR} from "../constants";
-let log = LoggerFactory.logger('sourceImageWizard').setLevelDebug()
+import { LoggerFactory } from "../logger";
+import { SUFFIX_PARAM_SEPARATOR } from "../constants";
+let log = LoggerFactory.logger("sourceImageWizard").setLevelDebug();
 
-export default function(me, target) {
+export default function (me, target) {
+	log.fine(target);
 
-    log.fine(target)
+	var api = me.getApi();
 
-    var api = me.getApi()
-
-    return new Promise( (resolve, reject) => {
-        api.fetchExternalImage(target.path, target.url, target.name, target.config).then( () => {
-            me.loadContent('/content/admin/pages/assets.html/path'+SUFFIX_PARAM_SEPARATOR+target.path)
-            resolve()
-        }).catch( () => {
-            me.notifyUser('Error', 'Could not upload asset', target.error) 
-            reject()
-        })
-    })
+	return new Promise((resolve, reject) => {
+		api.fetchExternalImage(
+			target.path,
+			target.url,
+			target.name,
+			target.config
+		)
+			.then(() => {
+				me.loadContent(
+					"/content/admin/pages/assets.html/path" +
+						SUFFIX_PARAM_SEPARATOR +
+						target.path
+				);
+				resolve();
+			})
+			.catch(() => {
+				me.notifyUser("Error", "Could not upload asset", target.error);
+				reject();
+			});
+	});
 }
