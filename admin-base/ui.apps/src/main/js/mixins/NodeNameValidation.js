@@ -38,28 +38,35 @@ export default {
                         onChanged: (model, newVal, oldVal, field) => {
                             this.nameChanged = true;
                         },
-                        validator: [this.nameAvailable, this.validPageName]
+                        validator: [this.nameAvailable, this.validName]
                     }
                 ]
             }
         }
     },
     methods: {
-        validPageName: function(event) {
-            let value = event
+        validName: function(event) {
+            console.log(this.uNodeType);
+            let value = event;
             if (event && event instanceof Object && event.data) {
-                value = event.data
+              value = event.data;
             }
-            if(!value || value.length === 0) {
-                return [this.$i18n('Name is required.')]
+            if (!value || value.length === 0) {
+              return [this.$i18n('Name is required.')];
             }
-            let regExMatch = /[^0-9a-zA-Z_-]/
-            let errorMsg = 'Page names may only contain letters, numbers, underscores, and dashes'
-            if (this.uNodeType === "Asset") {
-                regExMatch = /[^0-9a-z.A-Z_-]/
-                errorMsg = 'Assets names may only contain letters, numbers, underscores, and dashes'
+            let regExMatch = /[^0-9a-zA-Z_-]/;
+            let errorMsg =
+              'Page names may only contain letters, numbers, underscores, and dashes';
+            if (this.uNodeType === 'Asset') {
+              regExMatch = /[^0-9a-z.A-Z_-]/;
+              errorMsg =
+                'Assets names may only contain letters, numbers, underscores, dots and dashes';
+            } else if (this.uNodeType === 'File') {
+              regExMatch = /[^0-9a-z.A-Z_-]/;
+              errorMsg =
+                'File names may only contain letters, numbers, underscores, dots and dashes';
             }
-
+            
             if (value.match(regExMatch)) {
                 return [this.$i18n(errorMsg)]
             }
