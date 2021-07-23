@@ -447,7 +447,7 @@ function actionImpl(component, command, target) {
         logger.error(
           'action',
           command,
-          'not found, ignored, traget was',
+          'not found, ignored, target was',
           target
         );
       }
