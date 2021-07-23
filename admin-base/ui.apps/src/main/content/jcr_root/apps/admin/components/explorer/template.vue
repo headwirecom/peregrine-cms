@@ -102,16 +102,6 @@
                             <admin-components-iconeditpage></admin-components-iconeditpage>
                         </admin-components-action>
 
-                        <admin-components-action v-if="composumEditable(child)"
-                            v-bind:model="{
-                                target: child.path,
-                                command: 'editFile',
-                                tooltipTitle: `${$i18n('editFile')} '${child.title || child.name}'`
-                            }">
-                            <admin-components-iconeditpage></admin-components-iconeditpage>
-                            FLÖT
-                        </admin-components-action>
-
                         <admin-components-action v-if="replicable(child)"
                             v-bind:model="{
                                 target: child.path,
@@ -529,10 +519,6 @@ export default {
 
             editable: function(child) {
                 return ['per:Page', 'per:Object', 'nt:file'].indexOf(child.resourceType) >= 0
-            },
-
-            composumEditable: function(child) {
-                return [].indexOf(child.resourceType) >= 0
             },
 
             viewable: function(child) {
