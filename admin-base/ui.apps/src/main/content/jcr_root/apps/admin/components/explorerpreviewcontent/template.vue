@@ -649,14 +649,12 @@ export default {
     getSchemaByActiveTab() {
       if (this.nodeType === NodeType.FILE) {
         return this.getGeneratedFileSchema();
+      } else if (this.activeTab === Tab.INFO) {
+        return this.getSchema(SchemaKey.MODEL);
+      } else if (this.activeTab === Tab.OG_TAGS) {
+        return this.getSchema(SchemaKey.OG_TAGS);
       } else {
-        if (this.activeTab === Tab.INFO) {
-          return this.getSchema(SchemaKey.MODEL);
-        } else if (this.activeTab === Tab.OG_TAGS) {
-          return this.getSchema(SchemaKey.OG_TAGS);
-        } else {
-          return {};
-        }
+        return {};
       }
     },
     getObjectComponent() {
