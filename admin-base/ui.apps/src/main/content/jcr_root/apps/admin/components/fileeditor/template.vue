@@ -100,8 +100,10 @@ export default {
       return `.${this.filename.split('.').pop()}`;
     },
     mode() {
-      if (['.js', '.json'].includes(this.extension)) {
+      if (this.extension === '.js') {
         return `javascript`;
+      } else if (this.extension === '.json') {
+        return {name: `javascript`, json: true};
       } else if (this.extension === '.xml') {
         return `xml`;
       } else if (this.extension === '.css') {
@@ -147,8 +149,10 @@ export default {
       const { mode } = this;
       const { Promise } = window;
 
-      if (mode) {
+      if (typeof mode === 'string') {
         return asyncLoadJsScript(`${CODEMIRROR_PATH}/mode/${mode}/${mode}.js`);
+      } else if (typeof mode === 'object') {
+        return asyncLoadJsScript(`${CODEMIRROR_PATH}/mode/${mode.name}/${mode.name}.js`);
       } else {
         return Promise.resolve();
       }
