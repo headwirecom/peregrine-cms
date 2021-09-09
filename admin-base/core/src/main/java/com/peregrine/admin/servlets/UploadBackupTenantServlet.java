@@ -25,6 +25,11 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
+import com.peregrine.admin.resource.NodeNameValidation;
+import com.peregrine.admin.resource.NodeNameValidationService;
+import com.peregrine.admin.security.PackageValidator;
+import org.apache.commons.io.IOUtils;
+import org.apache.jackrabbit.vault.fs.io.Archive;
 import org.apache.jackrabbit.vault.packaging.JcrPackage;
 import org.apache.jackrabbit.vault.packaging.JcrPackageManager;
 import org.apache.jackrabbit.vault.packaging.Packaging;
@@ -33,11 +38,30 @@ import org.apache.sling.api.request.RequestParameterMap;
 import org.apache.sling.event.jobs.JobManager;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.helpers.DefaultHandler;
 
+import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.servlet.Servlet;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_UPLOAD_BACKUP_TENANT;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
@@ -83,6 +107,9 @@ public class UploadBackupTenantServlet extends AbstractPackageServlet {
     @Reference
     private Packaging packaging;
 
+    @Reference
+    private PackageValidator packageValidator;
+
     @Override
     Packaging getPackaging() { return packaging; }
 
@@ -95,11 +122,32 @@ public class UploadBackupTenantServlet extends AbstractPackageServlet {
 
             RequestParameter file = parameters.getValue(PARAM_FILE);
             if (file != null) {
-                InputStream input = file.getInputStream();
+
+                File temporaryFile = File.createTempFile("uploaded-", ".zip");
+                boolean verdict = false;
+                try (InputStream input = file.getInputStream()) {
+                    temporaryFile.deleteOnExit();
+                    Files.copy(input, temporaryFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+                    verdict = packageValidator.isPackageSafe(temporaryFile);
+
+                    Files.delete(temporaryFile.toPath());
+                }
+                if (!verdict) {
+                    logger.info("Package is potentially unsafe");
+                    return new ErrorResponse()
+                            .setHttpErrorCode(SC_BAD_REQUEST)
+                            .setErrorMessage("Package was analyzed and found to be potentially unsafe")
+                            .setRequestPath(request.getRequestPath());
+                }
+
                 boolean force = request.getBooleanParameter(PARAM_FORCE, false);
 
+
+                InputStream input = file.getInputStream();
                 JcrPackageManager manager = getPackageManager(request);
                 JcrPackage jcrPackage = manager.upload(input, force);
+
 
                 logger.info("Upload Done successfully and saved");
                 JsonResponse answer = new JsonResponse()
