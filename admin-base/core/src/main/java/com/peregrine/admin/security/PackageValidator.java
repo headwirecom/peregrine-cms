@@ -1,23 +1,20 @@
 package com.peregrine.admin.security;
 
-import com.peregrine.admin.resource.NodeNameValidation;
-import org.apache.sling.api.resource.LoginException;
-import org.osgi.service.component.annotations.Reference;
+import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 
 public interface PackageValidator {
-
-    boolean isPackageSafe(File packageFile) throws IOException;
+    /**
+     * Checks if the package passed as an InputStream is safe to be installed.
+     *
+     * @param packageStream input stream that provides the content of the package. note that after this method returns,
+     *        the input stream is closed in any case.
+     * @return {@code true} if package was found to be safe to be installed, {@code false} otherwise
+     * @throws IOException if an I/O error occurrs
+     */
+    @NotNull
+    boolean isPackageSafe(InputStream packageStream) throws IOException;
 }

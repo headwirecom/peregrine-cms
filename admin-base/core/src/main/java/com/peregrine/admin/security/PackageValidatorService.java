@@ -1,38 +1,62 @@
 package com.peregrine.admin.security;
 
+/*-
+ * #%L
+ * admin base - Core
+ * %%
+ * Copyright (C) 2021 headwire inc.
+ * %%
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ * #L%
+ */
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Iterables;
 import com.peregrine.admin.resource.NodeNameValidation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.vault.fs.api.FilterSet;
-import org.apache.jackrabbit.vault.fs.api.VaultInputSource;
 import org.apache.jackrabbit.vault.fs.api.WorkspaceFilter;
-import org.apache.jackrabbit.vault.fs.config.MetaInf;
-import org.apache.jackrabbit.vault.fs.io.Archive;
 import org.apache.jackrabbit.vault.packaging.PackageId;
 import org.apache.jackrabbit.vault.packaging.Packaging;
 import org.apache.jackrabbit.vault.packaging.VaultPackage;
-import org.apache.jackrabbit.vault.packaging.impl.ZipVaultPackage;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import java.util.zip.ZipFile;
 
 import static com.peregrine.admin.util.AdminConstants.PEREGRINE_SERVICE_NAME;
 import static com.peregrine.commons.util.PerUtil.loginService;
@@ -56,25 +80,37 @@ public class PackageValidatorService implements PackageValidator {
             "/etc/felibs/",
             "/content/");
 
-    public boolean isPackageSafe(File packageFile) throws IOException {
-        try (VaultPackage jcrPackage = packaging.getPackageManager().open(packageFile)) {
+    private static final Pattern SUBPACKAGE = Pattern.compile("jcr_root/apps/.*/install/[^/]+.zip");
 
-            List<String> storedRoots = getStoredRoots(jcrPackage);
-            if (storedRoots == null) {
-                return false;
-            }
+    private static final List<String> FORBIDDEN_NAMES = List.of("admin", "examplesite", "pagerendererserver", "pagerenderevue", "themeclean", "themecleanflex",
+            "composum", "felib", "field", "nt", "per", "perapi", "runmodes", "sling", "apidocs");
 
-            WorkspaceFilter filter = jcrPackage.getMetaInf().getFilter();
-            if (storedRoots.isEmpty()) {
-                return isFilterSetPermitted(filter);
-            } else {
-                return isFilterConsistentWithExistingRoots(filter, storedRoots);
+    @Override
+    public boolean isPackageSafe(InputStream is) throws IOException {
+        Path temporaryFile = Files.createTempFile("validating-", ".zip");
+        Files.copy(is, temporaryFile, StandardCopyOption.REPLACE_EXISTING);
+        boolean verdictPackage = isPackageSafe(temporaryFile);
+        boolean verdictSubpackages = false;
+        if (verdictPackage) {
+            try (ZipFile zipFile = new ZipFile(temporaryFile.toFile())) {
+                verdictSubpackages = zipFile.stream()
+                        .filter(zipEntry -> SUBPACKAGE.matcher(zipEntry.getName()).matches())
+                        .allMatch(subpackage -> {
+                            try {
+                                return isPackageSafe(zipFile.getInputStream(subpackage));
+                            } catch (IOException e) {
+                                logger.warn("Exception when checking subpackage", e);
+                                return false;
+                            }
+                        });
             }
         }
+        Files.deleteIfExists(temporaryFile);
+        return verdictPackage && verdictSubpackages;
     }
 
-    private boolean isPackageSafe(InputStream is) throws IOException {
-        try (VaultPackage jcrPackage = packaging.getPackageManager().open(is)) {
+    private boolean isPackageSafe(Path packageFile) throws IOException {
+        try (VaultPackage jcrPackage = packaging.getPackageManager().open(packageFile.toFile())) {
 
             List<String> storedRoots = getStoredRoots(jcrPackage);
             if (storedRoots == null) {
@@ -161,7 +197,11 @@ public class PackageValidatorService implements PackageValidator {
                         })
                 .collect(Collectors.toSet());
 
-        return suffixes.size() == 1 &&
-                nodeNameValidation.isValidSiteName(Iterables.get(suffixes, 0));
+        if (suffixes.size() != 1) {
+            return false;
+        }
+        String suffix = Iterables.get(suffixes, 0);
+        return nodeNameValidation.isValidSiteName(suffix)
+                && FORBIDDEN_NAMES.stream().noneMatch(forbidden -> forbidden.equals(suffix));
     }
 }
