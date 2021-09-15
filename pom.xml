@@ -76,7 +76,7 @@
         <org.apache.sling.junit.core.version>1.1.2</org.apache.sling.junit.core.version>
         <org.apache.sling.testing.clients.version>2.0.8</org.apache.sling.testing.clients.version>
         <org.apache.sling.testing.rules.version>2.0.0</org.apache.sling.testing.rules.version>
-        <org.apache.sling.testing.sling-mock.junit4.version>3.1.0</org.apache.sling.testing.sling-mock.junit4.version>
+        <org.apache.sling.testing.sling-mock.junit4.version>3.0.2</org.apache.sling.testing.sling-mock.junit4.version>
         <org.apache.sling.junit.teleporter.version>1.0.22</org.apache.sling.junit.teleporter.version>
 
         <sourceReleaseAssemblyDescriptor>source-release</sourceReleaseAssemblyDescriptor>
