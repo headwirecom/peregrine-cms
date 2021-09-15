@@ -61,7 +61,9 @@ import java.util.zip.ZipFile;
 import static com.peregrine.admin.util.AdminConstants.PEREGRINE_SERVICE_NAME;
 import static com.peregrine.commons.util.PerUtil.loginService;
 
-@Component
+@Component(
+        service = PackageValidatorService.class
+)
 public class PackageValidatorService implements PackageValidator {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -110,7 +112,7 @@ public class PackageValidatorService implements PackageValidator {
     }
 
     private boolean isPackageSafe(Path packageFile) throws IOException {
-        try (VaultPackage jcrPackage = packaging.getPackageManager().open(packageFile.toFile())) {
+        try (VaultPackage jcrPackage = packaging.getPackageManager().open(packageFile.toFile(), true)) {
 
             List<String> storedRoots = getStoredRoots(jcrPackage);
             if (storedRoots == null) {
