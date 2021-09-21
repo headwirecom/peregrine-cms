@@ -31,23 +31,39 @@ export default function(me, target) {
 
     log.fine(target)
 
+    const { selected, resourceType } = target;
     let view = me.getView()
     const tenant = view.state.tenant
 
+    set(view, '/state/tools/explorerpreview/resourceType', resourceType);
+
     return new Promise( (resolve, reject) => {
-        return me.getApi().populateExplorerDialog(target.selected).then( () => {
-            if(target.selected.startsWith(`/content/${tenant.name}/pages`)) {
-                return me.getApi().populateReferencedBy(target.selected).then( () => {
-                    set(view, '/state/tools/page', target.selected)
-                    resolve()
-                }).catch( error => reject(error))
-            } else if(target.selected.startsWith(`/content/${tenant.name}/templates`)) {
-                return me.getApi().populateReferencedBy(target.selected).then(() => {
-                    set(view, '/state/tools/template', target.selected)
-                    resolve()
-                }).catch( error => reject(error))
+        return me
+          .getApi()
+          .populateExplorerDialog(selected)
+          .then(() => {
+            if (selected.startsWith(`/content/${tenant.name}/pages`)) {
+              return me
+                .getApi()
+                .populateReferencedBy(selected)
+                .then(() => {
+                  set(view, '/state/tools/page', selected);
+                  resolve();
+                })
+                .catch((error) => reject(error));
+            } else if (
+              selected.startsWith(`/content/${tenant.name}/templates`)
+            ) {
+              return me
+                .getApi()
+                .populateReferencedBy(selected)
+                .then(() => {
+                  set(view, '/state/tools/template', selected);
+                  resolve();
+                })
+                .catch((error) => reject(error));
             }
-        })
-        .catch( error => reject(error))
+          })
+          .catch((error) => reject(error));
     })
 }

@@ -861,7 +861,7 @@ class PerAdminImpl {
     })
   }
 
-  copyPage(srcPath, targetPath) {
+  copyPage(srcPath, targetPath, name = null) {
     return new Promise((resolve, reject) => {
       let data = new FormData()
       data.append('path', srcPath)

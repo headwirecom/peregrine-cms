@@ -27,6 +27,7 @@
 <template>
     <admin-components-materializemodal
         ref="materializemodal"
+        class="publishing-modal"
         v-on:complete="$emit('complete',$event)"
         v-bind:modalTitle="modalTitle" >
 

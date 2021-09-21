@@ -114,6 +114,7 @@
 <sly data-sly-include="renderer.html"></sly>
 <script>
     Vue.use(VueCodeMirror)
+    window.CodeMirror = VueCodeMirror.CodeMirror;
     // switch between old and new implementation
     var newImpl = true
     var $perAdminView = { state: {}, adminPage: {}, adminPageStaged: {}, admin: {}, pageView: { view: 'desktop'}, nodes: {} }

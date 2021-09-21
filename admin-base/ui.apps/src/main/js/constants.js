@@ -80,6 +80,7 @@ export const NodeType = {
   TEMPLATE: 'template',
   ASSET: 'asset',
   OBJECT: 'object',
+  FILE: 'file',
 };
 export const MimeType = {
   Image: {

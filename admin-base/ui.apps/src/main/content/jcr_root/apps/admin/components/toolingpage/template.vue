@@ -113,27 +113,33 @@ export default {
           if (target.load) {
             $perAdminApp.loadContent(target.load)
           } else {
-            me.editEntity(me, target.target)
+            me.editEntity(me, target)
           }
         },
-        editEntity(me, target) {
+        
+        editEntity(me, {path, resourceType}) {
           const view = $perAdminApp.getView()
           const tenant = view.state.tenant
-          const path = me.pt.path
-          if (target.startsWith(`/content/${tenant.name}/pages`)) {
-            set(view, '/state/tools/page', target)
-          } else if (target.startsWith(`/content/${tenant.name}/templates`)) {
-            set(view, '/state/tools/template', target)
+          
+          if (path.startsWith(`/content/${tenant.name}/pages`)) {
+            set(view, '/state/tools/page', path)
+          } else if (path.startsWith(`/content/${tenant.name}/templates`)) {
+            set(view, '/state/tools/template', path)
           }
-          if (target.startsWith(`/content/${tenant.name}/objects`)) {
-            const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
+
+          if (resourceType === 'nt:file') {
+            $perAdminApp.stateAction('editFile', {path, resourceType});
+          } else if (path.startsWith(`/content/${tenant.name}/objects`)) {
+            const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, path)
             $perAdminApp.stateAction('editObject', {selected: node.path, path: me.model.dataFrom})
-          } else if (target.startsWith(`/content/${tenant.name}/templates`)) {
-            $perAdminApp.stateAction('editTemplate', target)
+          } else if (path.startsWith(`/content/${tenant.name}/templates`)) {
+            $perAdminApp.stateAction('editTemplate', path)
+          } else if (path.startsWith(`/content/${tenant.name}/object-definitions`)){
+            $perAdminApp.stateAction('editObjectDefinitionFile', path);
           } else {
-            $perAdminApp.stateAction('editPage', target)
-          }
+            $perAdminApp.stateAction('editPage', path);
         }
+      }
     }
 }
 </script>

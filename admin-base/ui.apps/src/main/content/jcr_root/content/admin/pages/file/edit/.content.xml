@@ -35,7 +35,6 @@
     jcr:title="File Editor"
     jcr:description="an editor to edit files"
     dataFrom="/state/tools/file"
-    dataDefault="/content/admin/object-definitions"
     suffixToParameter="[path,/pageView/path,path,/state/tools/file]"
     loaders="[populateNodesForBrowser:/state/tools/file]">
 
@@ -44,7 +43,7 @@
 
       <subnav jcr:primaryType="nt:unstructured"
         sling:resourceType="admin/components/subnav"
-        classes="navcenter">
+        classes="navleft">
 
         <pathfield jcr:primaryType="nt:unstructured" 
           sling:resourceType="admin/components/pathfield" 
@@ -71,8 +70,6 @@
 
       <right-panel jcr:primaryType="nt:unstructured"
         sling:resourceType="admin/components/filepreview"
-        browserRoot="object-definitions"
-        currentPath="object-definitions"
         dataFrom="/state/tools/file"
         text="right panel">
       </right-panel>

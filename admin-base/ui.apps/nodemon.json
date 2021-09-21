@@ -1,6 +1,12 @@
 {
-  "watch": ["src/main/content/jcr_root", "src/main/js"],
+  "watch": [
+    "src/main/"
+  ],
   "ext": "vue,js",
-  "exec": "npm run quickbuild",
-  "delay": 500
+  "exec": "npm run quickbuild:clean",
+  "delay": 1000,
+  "events": {
+    "start": "node ./scripts/nodemon/start-notification.js",
+    "exit": "node ./scripts/nodemon/exit-notification.js"
+  }
 }

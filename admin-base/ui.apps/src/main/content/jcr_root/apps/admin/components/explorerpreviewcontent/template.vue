@@ -3,7 +3,7 @@
 
     <template v-if="currentObject">
       <div class="explorer-preview-nav">
-        <ul class="nav-left" v-if="hasMultipleTabs">
+        <ul class="nav-left">
           <explorer-preview-nav-item
               v-if="!!($slots.default)"
               icon="view_list"
@@ -38,6 +38,7 @@
               @click="setActiveTab(Tab.VERSIONS)"/>
 
           <explorer-preview-nav-item
+              v-if="allowWebPublish"
               icon="public"
               :title="'Web Publishing'"
               :class="{'active': isTab(Tab.PUBLISHING)}"
@@ -79,7 +80,7 @@
             @validated="onValidated()"
             @model-updated="onModelUpdate">
         </vue-form-generator>
-        <div class="explorer-confirm-dialog">
+        <div v-if="!nodeType === NodeType.FILE" class="explorer-confirm-dialog">
           <template v-if="edit">
             <button
                 class="btn btn-raised waves-effect waves-light right"
@@ -126,7 +127,7 @@
               <span class="right">
                 <action
                     v-bind:model="{
-                      target: itemToTarget(item.path),
+                      target: item,
                       command: 'editReference',
                       tooltipTitle: `edit '${item.name}'`
                     }">
@@ -136,7 +137,7 @@
               <span class="edit-icon">
                 <action
                     v-bind:model="{
-                      target: itemToTarget(item.path),
+                      target: path,
                       command: 'editReference',
                       tooltipTitle: `edit '${item.name}'`
                     }">
@@ -234,19 +235,19 @@
             <icon icon="external-link" :lib="IconLib.FONT_AWESOME"/>
             Open live version
           </div>
-          <div :class="classForActionDisabledOnActivatedResource" :title="`rename ${nodeType}`" @click="renameNode()">
+          <div v-if="allowRename" :class="classForActionDisabledOnActivatedResource" :title="`rename ${nodeType}`" @click="renameNode()">
             <icon :lib="IconLib.MATERIAL_ICONS" icon="text_format"/>
             <span>Rename {{ nodeType }}</span>
           </div>
-          <div :class="classForActionDisabledOnActivatedResource" :title="`move ${nodeType}`" @click="moveNode()">
+          <div v-if="allowMove" :class="classForActionDisabledOnActivatedResource" :title="`move ${nodeType}`" @click="moveNode()">
             <icon icon="compare_arrows"/>
             <span>Move {{ nodeType }}</span>
           </div>
-          <div class="action" :title="`copy ${nodeType}`" @click="copyNode()">
+          <div v-if="allowCopy" class="action" :title="`copy ${nodeType}`" @click="copyNode()">
             <icon icon="content_copy"/>
             Copy {{ nodeType }}
           </div>
-          <div :class="classForActionDisabledOnActivatedResource" :title="`delete ${nodeType}`" @click="deleteNode()">
+          <div v-if="allowDelete" :class="classForActionDisabledOnActivatedResource" :title="`delete ${nodeType}`" @click="deleteNode()">
             <icon :icon="selfOrAnyDescendantActivated ? 'delete_forever' : 'delete'" />
             <span>Delete {{ nodeType }}</span>
           </div>
@@ -263,6 +264,7 @@
     </template>
 
     <materialize-modal
+        class="rename-modal"
         ref="renameModal"
         v-bind:modalTitle="modalTitle"
         v-on:ready="onReady">
@@ -408,8 +410,12 @@ export default {
         ogTags: [NodeType.PAGE, NodeType.TEMPLATE],
         references: [NodeType.ASSET, NodeType.PAGE, NodeType.TEMPLATE, NodeType.OBJECT],
         selectStateAction: [NodeType.ASSET, NodeType.OBJECT],
-        showProp: [NodeType.ASSET, NodeType.OBJECT],
-        allowMove: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET]
+        showProp: [NodeType.ASSET, NodeType.OBJECT, NodeType.FILE],
+        allowMove: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET, NodeType.FILE],
+        allowRename: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET, NodeType.FILE],
+        allowCopy: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET, NodeType.FILE],
+        allowDelete: [NodeType.PAGE, NodeType.TEMPLATE, NodeType.ASSET, NodeType.FILE],
+        allowWebPublish: [NodeType.PAGE, NodeType.FILE],
       },
       path: {
         current: null,
@@ -436,7 +442,9 @@ export default {
     currentObject() {
       const obj = this.rawCurrentObject;
       if (this.nodeTypeGroups.showProp.indexOf(this.nodeType) > -1) {
-        if (obj && obj.hasOwnProperty('show')) {
+        if (this.nodeType === NodeType.FILE) {
+          return obj;
+        } else if (obj && obj.hasOwnProperty('show')) {
           return obj.show;
         } else {
           return null;
@@ -459,14 +467,23 @@ export default {
     allowMove() {
       return this.nodeTypeGroups.allowMove.indexOf(this.nodeType) > -1;
     },
+    allowRename() {
+      return this.nodeTypeGroups.allowRename.indexOf(this.nodeType) > -1;
+    },
+    allowCopy() {
+      return this.nodeTypeGroups.allowCopy.indexOf(this.nodeType) > -1;
+    },
+    allowDelete() {
+      return this.nodeTypeGroups.allowDelete.indexOf(this.nodeType) > -1;
+    },
+    allowWebPublish() {
+      return this.nodeTypeGroups.allowWebPublish.indexOf(this.nodeType) > -1;
+    },
     hasOgTags() {
       return this.nodeTypeGroups.ogTags.indexOf(this.nodeType) > -1;
     },
     hasReferences() {
       return this.nodeTypeGroups.references.indexOf(this.nodeType) > -1;
-    },
-    hasMultipleTabs() {
-      return this.hasOgTags || this.hasReferences;
     },
     referencedBy() {
       if ($perAdminApp.getView().state.referencedBy) {
@@ -630,7 +647,9 @@ export default {
       return schema;
     },
     getSchemaByActiveTab() {
-      if (this.activeTab === Tab.INFO) {
+      if (this.nodeType === NodeType.FILE) {
+        return this.getGeneratedFileSchema();
+      } else if (this.activeTab === Tab.INFO) {
         return this.getSchema(SchemaKey.MODEL);
       } else if (this.activeTab === Tab.OG_TAGS) {
         return this.getSchema(SchemaKey.OG_TAGS);
@@ -701,24 +720,26 @@ export default {
       this.formmodel.title = this.node.title
     },
     performRenameNode(newName, newTitle) {
-      const that = this;
+      const vm = this;
       $perAdminApp.stateAction(`rename${this.uNodeType}`, {
         path: this.currentObject,
         name: newName,
         title: newTitle,
         edit: this.isEdit
-      }).then(() => {
-        if (that.nodeType === 'asset' || that.nodeType === 'object') {
-          const currNode = $perAdminApp.getNodeFromView(`/state/tools/${that.nodeType}/show`)
+      }).then((data) => {
+        if (vm.nodeType === 'asset' || vm.nodeType === 'object') {
+          const currNode = $perAdminApp.getNodeFromView(`/state/tools/${vm.nodeType}/show`)
           const currNodeArr = currNode.split('/');
           currNodeArr[currNodeArr.length - 1] = newName
-          $perAdminApp.getNodeFromView(`/state/tools/${that.nodeType}`).show = currNodeArr.join(
+          $perAdminApp.getNodeFromView(`/state/tools/${vm.nodeType}`).show = currNodeArr.join(
               '/')
+        } else if (vm.nodeType === NodeType.FILE) {
+          $perAdminApp.stateAction('selectFile', {path: data.destination, resourceType: 'nt:file'});
         } else { // page and template handling
-          const currNode = $perAdminApp.getNodeFromView('/state/tools')[that.nodeType]
+          const currNode = $perAdminApp.getNodeFromView('/state/tools')[vm.nodeType]
           const currNodeArr = currNode.split('/');
           currNodeArr[currNodeArr.length - 1] = newName
-          $perAdminApp.getNodeFromView('/state/tools')[that.nodeType] = currNodeArr.join('/')
+          $perAdminApp.getNodeFromView('/state/tools')[vm.nodeType] = currNodeArr.join('/')
         }
         this.setActiveTab(Tab.INFO)
       })
@@ -746,6 +767,9 @@ export default {
     renameNode() {
       this.checkActivationStatusAndPerform(() => {
         this.$refs.renameModal.open();
+        this.$nextTick(() => {
+          this.$refs.renameForm.$el.querySelector('input').focus()
+        })
       });
     },
     moveNode() {
@@ -771,7 +795,7 @@ export default {
     deleteNode() {
       this.checkActivationStatusAndPerform(() => {
         const me = this
-        this.onDelete(this.nodeType, this.node.path).then(() => {
+        me.onDelete(this.nodeType, this.node.path).then(() => {
           $perAdminApp.stateAction(`unselect${me.uNodeType}`, {})
         }).then(() => {
           const path = $perAdminApp.getNodeFromView('/state/tools/pages')
@@ -815,10 +839,25 @@ export default {
           })
     },
     onCopySelect() {
-      $perAdminApp.stateAction('copyPage', {
-        srcPath: this.currentObject,
-        targetPath: this.path.selected
-      });
+      if (this.node.resourceType === 'nt:file') {
+        let to = this.path.selected
+        
+        if (!to) {
+          const split = this.currentObject.split('/');
+          split.pop();
+          to = split.join('/')
+        }
+
+        $perAdminApp.stateAction('copyFile', {
+          from: this.currentObject, 
+          to
+        });
+      } else {
+        $perAdminApp.stateAction('copyPage', {
+          srcPath: this.currentObject,
+          targetPath: this.path.selected,
+        });
+      }
       this.isCopyOpen = false;
     },
     onCopyCancel() {
@@ -936,6 +975,37 @@ export default {
         }).catch(() => {
           this.isReferencedInPublish = false;
         });
+    },
+
+    getGeneratedFileSchema() {
+      return {
+        fields: [
+          {
+            type: 'input',
+            inputType: 'text',
+            label: 'Name',
+            model: 'name',
+            readonly: true,
+            preview: true
+          },
+          {
+            type: 'material-datetime',
+            inputType: 'text',
+            label: 'Created',
+            model: 'created',
+            readonly: true,
+            preview: true
+          },
+          {
+            type: 'input',
+            inputType: 'text',
+            label: 'Created by',
+            model: 'createdBy',
+            readonly: true,
+            preview: true
+          },
+        ]
+      };
     }
   }
 }

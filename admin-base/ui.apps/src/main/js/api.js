@@ -159,8 +159,8 @@ class PerApi {
         return impl.movePage(path, to, type)
     }
 
-    copyPage(srcPath, targetPath) {
-        return impl.copyPage(srcPath, targetPath)
+    copyPage(srcPath, targetPath, name=null) {
+        return impl.copyPage(srcPath, targetPath, name)
     }
 
     deletePageNode(path, nodePath) {

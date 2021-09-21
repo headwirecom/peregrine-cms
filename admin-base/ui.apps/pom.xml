@@ -101,6 +101,16 @@
             </resource>
 
             <resource>
+                <directory>${basedir}/node_modules/codemirror/mode</directory>
+                <targetPath>etc/felibs/admin/dependencies/codemirror/mode</targetPath>
+            </resource>
+
+            <resource>
+                <directory>${basedir}/node_modules/codemirror-formatting</directory>
+                <targetPath>etc/felibs/admin/dependencies/codemirror/formatting</targetPath>
+            </resource>
+
+            <resource>
                 <directory>${basedir}/src/main/content/jcr_root</directory>
                 <excludes>
                     <!-- exclude .vlt control files in the package -->

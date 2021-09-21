@@ -67,12 +67,12 @@
                                 tooltipTitle: `${$i18n('select')} '${child.title || child.name}'`
                             }">
                         <i v-if="child.hasChildren" class="material-icons">folder</i>
-                        <i v-else class="material-icons">folder_open</i>
+                        <i v-else-if="!isInsideObjectDefinition(child.path) &&  child.resourceType !== 'nt:file'" class="material-icons">folder_open</i>
                     </admin-components-action>
 
                     <admin-components-action v-if="editable(child)"
                         v-bind:model="{
-                            target: child.path,
+                            target: child,
                             command: 'editEntity',
                             dblClickTarget: child,
                             dblClickCommand: 'selectPath',
@@ -95,18 +95,9 @@
                     <div class="secondary-content">
                         <admin-components-action v-if="editable(child)"
                             v-bind:model="{
-                                target: child.path,
+                                target: child,
                                 command: 'editEntity',
                                 tooltipTitle: `${$i18n('edit')} '${child.title || child.name}'`
-                            }">
-                            <admin-components-iconeditpage></admin-components-iconeditpage>
-                        </admin-components-action>
-
-                        <admin-components-action v-if="composumEditable(child)"
-                            v-bind:model="{
-                                target: child.path,
-                                command: 'editFile',
-                                tooltipTitle: `${$i18n('editFile')} '${child.title || child.name}'`
                             }">
                             <admin-components-iconeditpage></admin-components-iconeditpage>
                         </admin-components-action>
@@ -122,7 +113,7 @@
 
                         <admin-components-action v-if="editable(child)"
                             v-bind:model="{
-                                target: child.path,
+                                target: child,
                                 command: 'showInfo',
                                 tooltipTitle: `'${child.title || child.name}' ${$i18n('info')}`
                             }">
@@ -271,7 +262,7 @@
 
 <script>
 
-import {getCurrentDateTime, set} from '../../../../../../js/utils'
+import {getCurrentDateTime, set, get} from '../../../../../../js/utils'
 import {IconLib} from '../../../../../../js/constants'
 
 import Icon from '../icon/template.vue'
@@ -324,7 +315,7 @@ export default {
             },
             hasEdit: function() {
                 return this.model.children && this.model.children[0]
-            }
+            },
         },
         created() {
           document.addEventListener('paste', this.onDocumentPaste)
@@ -513,6 +504,8 @@ export default {
             isSelected: function(child) {
                 if(this.model.selectionFrom && child) {
                     return $perAdminApp.getNodeFromViewOrNull(this.model.selectionFrom) === child.path
+                } else if (child.resourceType) {
+                    return child.path === $perAdminApp.getNodeFromViewOrNull('/state/tools/file');
                 } else if(child.path === $perAdminApp.getNodeFromViewOrNull('/state/tools/page')) {
                     return true
                 }
@@ -525,11 +518,7 @@ export default {
             },
 
             editable: function(child) {
-                return ['per:Page', 'per:Object'].indexOf(child.resourceType) >= 0
-            },
-
-            composumEditable: function(child) {
-                return ['nt:file'].indexOf(child.resourceType) >= 0
+                return ['per:Page', 'per:Object', 'nt:file'].indexOf(child.resourceType) >= 0
             },
 
             viewable: function(child) {
@@ -584,22 +573,27 @@ export default {
                 return ['per:Asset', 'nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page', 'sling:OrderedFolder', 'per:Object', 'per:ObjectDefinition'].indexOf(node.resourceType) >= 0
             },
 
-            showInfo: function(me, target) {
-                const tenant = $perAdminApp.getView().state.tenant
-                if(target.startsWith(`/content/${tenant.name}/objects`)) {
-                  const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, target)
-                  set($perAdminApp.getView(), `/state/tools/edit`, false)
-                  $perAdminApp.stateAction('selectObject', { selected: node.path, path: me.model.dataFrom })
-                } else if (target.startsWith(`/content/${tenant.name}/templates`)) {
-                    $perAdminApp.stateAction('showTemplateInfo', { selected: target })
+            showInfo: function(me, {path, resourceType}) {
+                const tenant = $perAdminApp.getView().state.tenant;
+                const {model} = me;
+
+                if (resourceType === 'nt:file') {
+                    $perAdminApp.stateAction('selectFile', {path, resourceType});
                 } else {
-                    $perAdminApp.stateAction('showPageInfo', { selected: target })
+                    if(path.startsWith(`/content/${tenant.name}/objects`)) {
+                        set($perAdminApp.getView(), `/state/tools/edit`, false);
+                        $perAdminApp.stateAction('selectObject', { selected: path, path: model.dataFrom });
+                    } else if (path.startsWith(`/content/${tenant.name}/templates`)) {
+                        $perAdminApp.stateAction('showTemplateInfo', { selected: path });
+                    } else {
+                        $perAdminApp.stateAction('showPageInfo', { selected: path, resourceType });
+                    }
                 }
             },
 
             showRow: function(item, ev) {
-                if (this.editable(item)) {
-                    this.showInfo(this, item.path);
+                if (this.editable(item)) {  
+                    this.showInfo(this, item);
                 }
             },
 
@@ -623,6 +617,9 @@ export default {
                 if($perAdminApp.getNodeFromView('/state/tools/asset/show')) {
                     $perAdminApp.stateAction('unselectAsset', { })
                 }
+
+                $perAdminApp.stateAction('unselectFile')
+
                 const payload = { selected: target.path, path: me.model.dataFrom }
                 $perAdminApp.stateAction('selectToolsNodesPath', payload).then( () => {
                     $('div.brand-logo span').last().click() //TODO: quick and dirty solution!!!!
@@ -672,7 +669,7 @@ export default {
             addObjectDefinitionFile(me, target) {
                 const tenant = $perAdminApp.getView().state.tenant;
                 const path  = me.pt ? me.pt.path : `/content/${tenant.name}/object-definitions`;
-
+                
                 if (this.isInsideObjectDefinition(path)) {
                     $perAdminApp.stateAction('createObjectDefinitionFileWizard', {path, target});
                 }
