@@ -91,24 +91,16 @@ public class PackageValidatorService implements PackageValidator {
     public boolean isPackageSafe(InputStream is) throws IOException {
         Path temporaryFile = Files.createTempFile("validating-", ".zip");
         Files.copy(is, temporaryFile, StandardCopyOption.REPLACE_EXISTING);
-        boolean verdictPackage = isPackageSafe(temporaryFile);
-        boolean verdictSubpackages = false;
-        if (verdictPackage) {
+        boolean packageFiltersSafe = isPackageSafe(temporaryFile);
+        if (packageFiltersSafe) {
             try (ZipFile zipFile = new ZipFile(temporaryFile.toFile())) {
-                verdictSubpackages = zipFile.stream()
-                        .filter(zipEntry -> SUBPACKAGE.matcher(zipEntry.getName()).matches())
-                        .allMatch(subpackage -> {
-                            try {
-                                return isPackageSafe(zipFile.getInputStream(subpackage));
-                            } catch (IOException e) {
-                                logger.warn("Exception when checking subpackage", e);
-                                return false;
-                            }
-                        });
+                return zipFile.stream()
+                        .noneMatch(zipEntry -> SUBPACKAGE.matcher(zipEntry.getName()).matches());
+            } finally {
+                Files.deleteIfExists(temporaryFile);
             }
         }
-        Files.deleteIfExists(temporaryFile);
-        return verdictPackage && verdictSubpackages;
+        return false;
     }
 
     private boolean isPackageSafe(Path packageFile) throws IOException {

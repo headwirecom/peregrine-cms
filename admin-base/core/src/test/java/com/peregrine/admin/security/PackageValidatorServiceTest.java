@@ -135,5 +135,11 @@ public class PackageValidatorServiceTest {
         assertTrue(packageValidatorService.isPackageSafe(is));
     }
 
+    @Test
+    public void testPackageWithSubpackage() throws IOException {
+        InputStream is = this.getClass().getResourceAsStream("/tenant-full-package-with-subpackage-1.0.zip");
+        assertFalse(packageValidatorService.isPackageSafe(is));
+    }
+
 
 }
