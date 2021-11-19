@@ -29,19 +29,19 @@
         <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
 
         <!-- OSGi Dependency Versions -->
-        <osgi.core>6.0.0</osgi.core>
-        <osgi.annotation.version>6.0.1</osgi.annotation.version>
+        <osgi.core>7.0.0</osgi.core>
+        <osgi.annotation.version>7.0.0</osgi.annotation.version>
         <org.osgi.service.component.annotations.version>1.4.0</org.osgi.service.component.annotations.version>
-        <org.osgi.service.metatype.annotations.version>1.4.0</org.osgi.service.metatype.annotations.version>
+        <org.osgi.service.metatype.annotations.version>1.4.1</org.osgi.service.metatype.annotations.version>
 
         <!-- Java Frameworks -->
         <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
         <javax.inject.version>1</javax.inject.version>
         <javax.jcr.version>2.0</javax.jcr.version>
-        <slf4j.version>1.7.30</slf4j.version>
+        <slf4j.version>1.7.32</slf4j.version>
 
         <!-- Sling Dependencies Versions -->
-        <org.apache.sling.api.version>2.23.0</org.apache.sling.api.version>
+        <org.apache.sling.api.version>2.24.0</org.apache.sling.api.version>
         <org.apache.sling.jcr.api.version>2.4.0</org.apache.sling.jcr.api.version>
         <org.apache.sling.jcr.base.version>3.1.6</org.apache.sling.jcr.base.version>
         <org.apache.sling.commons.mime.version>2.2.2</org.apache.sling.commons.mime.version>
@@ -57,25 +57,26 @@
         <org.apache.sling.xss.version>2.2.8</org.apache.sling.xss.version>
 
         <!-- Third Party Dependencies Versions -->
-        <jackrabbit.version>2.18.6</jackrabbit.version>
-        <commons-lang3.version>3.11</commons-lang3.version>
-        <commons-io.version>2.8.0</commons-io.version>
+        <jackrabbit.version>2.19.3</jackrabbit.version>
+        <commons-lang3.version>3.12.0</commons-lang3.version>
+        <commons-io.version>2.11.0</commons-io.version>
         <commons-collections.version>3.2.2</commons-collections.version>
-        <com.fasterxml.jackson.version>2.12.1</com.fasterxml.jackson.version>
+        <com.fasterxml.jackson.version>2.13.0</com.fasterxml.jackson.version>
         <guava.version>15.0</guava.version>
         <!-- <aws-java-sdk-osgi.version>1.11.181</aws-java-sdk-osgi.version> -->
-        <metadata-extractor.version>2.15.0</metadata-extractor.version>
+        <metadata-extractor.version>2.16.0</metadata-extractor.version>
         <xmpcore.version>6.1.11</xmpcore.version>
-        <tika.version>1.14</tika.version>
+        <tika.version>1.27</tika.version>
 
         <!-- Tests Dependencies Versions -->
         <junit.version>4.13.2</junit.version>
-        <mockito-all.version>1.9.5</mockito-all.version>
+        <mockito-all.version>1.10.19</mockito-all.version>
         <jmock-junit4.version>2.12.0</jmock-junit4.version>
         <org.apache.sling.commons.testing.version>2.1.0</org.apache.sling.commons.testing.version>
         <org.apache.sling.junit.core.version>1.1.2</org.apache.sling.junit.core.version>
         <org.apache.sling.testing.clients.version>2.0.8</org.apache.sling.testing.clients.version>
         <org.apache.sling.testing.rules.version>2.0.0</org.apache.sling.testing.rules.version>
+        <org.apache.sling.testing.sling-mock.junit4.version>3.0.2</org.apache.sling.testing.sling-mock.junit4.version>
         <org.apache.sling.junit.teleporter.version>1.0.22</org.apache.sling.junit.teleporter.version>
 
         <sourceReleaseAssemblyDescriptor>source-release</sourceReleaseAssemblyDescriptor>
@@ -333,6 +334,12 @@
                     <version>5.1.2</version>
                     <inherited>true</inherited>
                 </plugin>
+                <!-- bnd plugin -->
+                <plugin>
+                    <groupId>biz.aQute.bnd</groupId>
+                    <artifactId>bnd-maven-plugin</artifactId>
+                    <version>5.3.0</version>
+                </plugin>
                 <!-- Maven Dependency Plugin -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -394,7 +401,7 @@
             <!-- OSGi Dependencies -->
             <dependency>
                 <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.core</artifactId>
+                <artifactId>osgi.core</artifactId>
                 <version>${osgi.core}</version>
                 <scope>provided</scope>
             </dependency>
@@ -524,7 +531,7 @@
             <dependency>
                 <groupId>org.apache.jackrabbit.vault</groupId>
                 <artifactId>org.apache.jackrabbit.vault</artifactId>
-                <version>3.4.10</version>
+                <version>3.5.4</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -597,8 +604,9 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.tika</groupId>
-                <artifactId>tika-bundle</artifactId>
+                <artifactId>tika-parsers</artifactId>
                 <version>${tika.version}</version>
+                <scope>provided</scope>
             </dependency>
 
             <dependency>
@@ -679,7 +687,7 @@
             <dependency>
                 <groupId>org.apache.sling</groupId>
                 <artifactId>org.apache.sling.testing.sling-mock.junit4</artifactId>
-                <version>3.0.2</version>
+                <version>${org.apache.sling.testing.sling-mock.junit4.version}</version>
                 <scope>test</scope>
             </dependency>
 
