@@ -25,6 +25,7 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
+import com.peregrine.admin.security.PackageValidator;
 import org.apache.jackrabbit.vault.packaging.JcrPackage;
 import org.apache.jackrabbit.vault.packaging.JcrPackageManager;
 import org.apache.jackrabbit.vault.packaging.Packaging;
@@ -36,8 +37,7 @@ import org.osgi.service.component.annotations.Reference;
 
 import javax.jcr.RepositoryException;
 import javax.servlet.Servlet;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_UPLOAD_BACKUP_TENANT;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
@@ -83,6 +83,9 @@ public class UploadBackupTenantServlet extends AbstractPackageServlet {
     @Reference
     private Packaging packaging;
 
+    @Reference
+    private PackageValidator packageValidator;
+
     @Override
     Packaging getPackaging() { return packaging; }
 
@@ -95,11 +98,26 @@ public class UploadBackupTenantServlet extends AbstractPackageServlet {
 
             RequestParameter file = parameters.getValue(PARAM_FILE);
             if (file != null) {
-                InputStream input = file.getInputStream();
+
+                boolean verdict = false;
+                try (InputStream input = file.getInputStream()) {
+                    verdict = packageValidator.isPackageSafe(input);
+                }
+                if (!verdict) {
+                    logger.info("Package is potentially unsafe");
+                    return new ErrorResponse()
+                            .setHttpErrorCode(SC_BAD_REQUEST)
+                            .setErrorMessage("Package was analyzed and found to be potentially unsafe")
+                            .setRequestPath(request.getRequestPath());
+                }
+
                 boolean force = request.getBooleanParameter(PARAM_FORCE, false);
 
+
+                InputStream input = file.getInputStream();
                 JcrPackageManager manager = getPackageManager(request);
                 JcrPackage jcrPackage = manager.upload(input, force);
+
 
                 logger.info("Upload Done successfully and saved");
                 JsonResponse answer = new JsonResponse()
