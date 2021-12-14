@@ -17,7 +17,8 @@
     specific language governing permissions and limitations
     under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -41,17 +42,37 @@
             <plugin>
                 <groupId>biz.aQute.bnd</groupId>
                 <artifactId>bnd-maven-plugin</artifactId>
+                <extensions>true</extensions>
                 <executions>
                     <execution>
-                        <id>bnd-process</id>
+                        <id>jar</id>
                         <goals>
                             <goal>bnd-process</goal>
                         </goals>
-                        <configuration>
-                            <bndfile>bundle.bnd</bndfile>
-                        </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <bnd>
+                        Sling-Model-Packages: com.peregrine.admin.models
+                        Sling-Test-Regexp: .*JTest
+                        -exportcontents: com.peregrine.admin.models,\
+                                        com.peregrine.admin.resource,\
+                                        com.peregrine.admin.security,\
+                                        com.peregrine.admin.servlets,\
+                                        com.peregrine.admin.util
+                        -snapshot: SNAPSHOT
+                        -conditionalpackage: com.drew.*,com.adobe.internal.xmp.*
+                    </bnd>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.sling</groupId>
