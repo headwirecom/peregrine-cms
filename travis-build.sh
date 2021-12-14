@@ -9,8 +9,8 @@ mvn clean install
 #cd ../..
 
 echo "Fetching Peregrine CMS Feature Launcher..."
-curl -L -o ./docker/files/com.peregrine-cms.sling.launchpad-12-SNAPSHOT-oak_tar_far.far https://github.com/peregrine-cms/peregrine-builder/releases/download/0.0.8/com.peregrine-cms.sling.launchpad-12-SNAPSHOT-oak_tar_far.far
-curl -L -o ./docker/files/org.apache.sling.feature.launcher.jar  https://github.com/peregrine-cms/peregrine-builder/releases/download/0.0.8/org.apache.sling.feature.launcher.jar
+curl -L -o ./docker/files/com.peregrine-cms.sling.launchpad-12-SNAPSHOT-oak_tar_far.far https://github.com/peregrine-cms/peregrine-builder/releases/download/0.0.9/com.peregrine-cms.sling.launchpad-12-SNAPSHOT-oak_tar_far.far
+curl -L -o ./docker/files/org.apache.sling.feature.launcher.jar  https://github.com/peregrine-cms/peregrine-builder/releases/download/0.0.9/org.apache.sling.feature.launcher.jar
 
 echo "Building 'themeclean-flex'..."
 git clone https://github.com/headwirecom/themeclean-flex
