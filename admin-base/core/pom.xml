@@ -52,16 +52,18 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <bnd>
-                        Sling-Model-Packages: com.peregrine.admin.models
-                        Sling-Test-Regexp: .*JTest
-                        -exportcontents: com.peregrine.admin.models,\
-                                        com.peregrine.admin.resource,\
-                                        com.peregrine.admin.security,\
-                                        com.peregrine.admin.servlets,\
-                                        com.peregrine.admin.util
-                        -snapshot: SNAPSHOT
-                        -conditionalpackage: com.drew.*,com.adobe.internal.xmp.*
+                    <bnd><![CDATA[
+                                Sling-Model-Packages: com.peregrine.admin.models
+                                Sling-Test-Regexp: .*JTest
+                                -exportcontents: com.peregrine.admin.models, \
+                                                 com.peregrine.admin.resource, \
+                                                 com.peregrine.admin.security, \
+                                                 com.peregrine.admin.servlets, \
+                                                 com.peregrine.admin.util
+                                -snapshot: SNAPSHOT
+                                -conditionalpackage: com.drew.*, \
+                                                     com.adobe.internal.xmp.*
+                            ]]>
                     </bnd>
                 </configuration>
             </plugin>
