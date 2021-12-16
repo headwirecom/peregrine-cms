@@ -29,6 +29,11 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peregrine.commons.servlets.ServletHelper;
+import com.peregrine.jsonschema.specification.Property;
+import com.peregrine.jsonschema.specification.Schema;
+import com.peregrine.jsonschema.specification.SchemaLoaderService;
+//import com.peregrine.jsonschema.specification.SchemaParser;
+//import com.peregrine.jsonschema.specification.SchemaParser.SchemaException;
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
 import org.apache.sling.api.resource.Resource;
@@ -75,6 +80,11 @@ public class ObjectModel extends AbstractComponent {
     @Inject
     private String name;
 
+    private Schema schema;
+
+    @Inject
+    private SchemaLoaderService schemaLoaderService;
+
     public String getName() {
         return name;
     }
@@ -97,38 +107,67 @@ public class ObjectModel extends AbstractComponent {
     @JsonAnyGetter
     public Map<String, Object> getDynamicValues() {
         Map<String, Object> answer = new HashMap<>();
+        generateSchemaModel();
         Resource source = getResource();
         ValueMap properties = source.getValueMap();
         String objectDefinitionPath = properties.get(OBJECT_PATH, String.class);
         if(objectDefinitionPath != null) {
-            Resource definitionDialog = source.getResourceResolver().getResource(objectDefinitionPath + SLASH + DIALOG_JSON);
-            if(definitionDialog != null) {
-                InputStream is = definitionDialog.adaptTo(InputStream.class);
-                if(is != null) {
-                    String dialog = null;
-                    try {
-                        dialog = ServletHelper.asString(is).toString();
-                        ObjectMapper mapper = new ObjectMapper();
-                        DialogBean dialogBean = mapper.readValue(dialog, DialogBean.class);
-                        for(GroupItem group: dialogBean.getGroups()) {
-                            for (FieldItem field : group.getFields()) {
+            if(schema == null) {
+                Resource definitionDialog = source.getResourceResolver().getResource(objectDefinitionPath + SLASH + DIALOG_JSON);
+                if (definitionDialog != null) {
+                    InputStream is = definitionDialog.adaptTo(InputStream.class);
+                    if (is != null) {
+                        String dialog = null;
+                        try {
+                            dialog = ServletHelper.asString(is).toString();
+                            ObjectMapper mapper = new ObjectMapper();
+                            DialogBean dialogBean = mapper.readValue(dialog, DialogBean.class);
+                            for(GroupItem group: dialogBean.getGroups()) {
+                                for (FieldItem field : group.getFields()) {
+                                    answer.put(field.getModel(), properties.get(field.getModel(), String.class));
+                                }
+                            }
+                            for (FieldItem field : dialogBean.getFields()) {
                                 answer.put(field.getModel(), properties.get(field.getModel(), String.class));
                             }
+                        } catch (IOException e) {
+                            if(dialog == null) {
+                                logger.warn("Dialog Resource count not be read as input stream: '{}'", objectDefinitionPath + SLASH + DIALOG_JSON);
+                            } else {
+                                logger.warn("Failed to parse given Dialog content into Dialog Bean: '{}'", dialog);
+                            }
                         }
-                        for (FieldItem field : dialogBean.getFields()) {
-                            answer.put(field.getModel(), properties.get(field.getModel(), String.class));
-                        }
-                    } catch (IOException e) {
-                        if(dialog == null) {
-                            logger.warn("Dialog Resource count not be read as input stream: '{}'", objectDefinitionPath + SLASH + DIALOG_JSON);
-                        } else {
-                            logger.warn("Failed to parse given Dialog content into Dialog Bean: '{}'", dialog);
-                        }
+                        //AS TODO: Check if we still need this later. If not remove this and the SchemaParser and SchemaProvider
+//                        try {
+//                            String content = ServletHelper.asString(is).toString();
+//                            schema = SchemaParser.parseSchema(content);
+//                        } catch (SchemaException e) {
+//                            logger.error("Dialog Schema on : '" + (objectDefinitionPath + SLASH + DIALOG_JSON) + "' was not parsable", e);
+//                        } catch (IOException e) {
+//                            logger.warn("Failed to read Dialog JSon on :'{}'", objectDefinitionPath + SLASH + DIALOG_JSON);
+//                        }
                     }
                 }
             }
+            if(schema != null) {
+                for (Property property : schema.getProperties()) {
+                    answer.put(
+                        property.getName(),
+                        properties.get(property.getName(), String.class)
+                    );
+                }
+            }
         }
+        answer.put("line", "");
         return answer;
+    }
+
+    private void generateSchemaModel() {
+        Resource source = getResource();
+        String objectDefinitionPath = source.getValueMap().get(OBJECT_PATH, String.class);
+        if(objectDefinitionPath != null) {
+            this.schema = schemaLoaderService.getSchema(source.getResourceResolver(), objectDefinitionPath);
+        }
     }
 
     /** Represents the entire dialog.json file **/
