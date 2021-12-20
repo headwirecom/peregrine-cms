@@ -69,7 +69,9 @@ public class PerSchemaContentResolver
         if(resource == null) {
             throw new IllegalArgumentException("Couldn't read content from the JCR, node not found: " + path);
         }
-        references.add(resource.getPath());
+        if(references != null) {
+            references.add(resource.getPath());
+        }
         Resource contentResource = resource.getChild(JCR_CONTENT);
         if(contentResource == null) {
             throw new IllegalArgumentException("Couldn't find jcr:content child of node: " + path);

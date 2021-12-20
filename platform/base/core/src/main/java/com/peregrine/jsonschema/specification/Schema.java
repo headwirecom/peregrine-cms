@@ -4,6 +4,7 @@ import java.util.List;
 
 public interface Schema {
 
+    String getSource();
     String getVersion();
     String getId();
 

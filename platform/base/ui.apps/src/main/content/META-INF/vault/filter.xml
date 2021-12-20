@@ -50,4 +50,5 @@
         <exclude pattern="/apps/per/install/.*"/>
     </filter>
     <filter root="/apps/runmodes"/>
+    <filter root="/perapi/public"/>
 </workspaceFilter>

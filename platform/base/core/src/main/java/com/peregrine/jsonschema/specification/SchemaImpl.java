@@ -6,6 +6,7 @@ import java.util.List;
 public class SchemaImpl
     implements Schema
 {
+    String source;
     String version;
     String id;
     List<Property> properties = new ArrayList<>();
@@ -13,12 +14,18 @@ public class SchemaImpl
     List<Property> dependencies = new ArrayList<>();
     List<String> references = new ArrayList<>();
 
-    public SchemaImpl(String version, String id, List<String> references) {
+    public SchemaImpl(String source, String version, String id, List<String> references) {
+        this.source = source;
         this.version = version;
         this.id = id;
         if(references != null) {
             this.references.addAll(references);
         }
+    }
+
+    @Override
+    public String getSource() {
+        return source;
     }
 
     @Override

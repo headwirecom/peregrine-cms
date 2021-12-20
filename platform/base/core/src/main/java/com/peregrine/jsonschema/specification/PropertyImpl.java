@@ -27,11 +27,6 @@ public class PropertyImpl
     }
 
     @Override
-    public boolean isReference() {
-        return type.equals(REFERENCE_TYPE_NAME);
-    }
-
-    @Override
     public boolean isRequired() {
         return required;
     }

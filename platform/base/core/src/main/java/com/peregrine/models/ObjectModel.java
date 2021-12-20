@@ -32,8 +32,6 @@ import com.peregrine.commons.servlets.ServletHelper;
 import com.peregrine.jsonschema.specification.Property;
 import com.peregrine.jsonschema.specification.Schema;
 import com.peregrine.jsonschema.specification.SchemaLoaderService;
-//import com.peregrine.jsonschema.specification.SchemaParser;
-//import com.peregrine.jsonschema.specification.SchemaParser.SchemaException;
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
 import org.apache.sling.api.resource.Resource;
@@ -137,15 +135,6 @@ public class ObjectModel extends AbstractComponent {
                                 logger.warn("Failed to parse given Dialog content into Dialog Bean: '{}'", dialog);
                             }
                         }
-                        //AS TODO: Check if we still need this later. If not remove this and the SchemaParser and SchemaProvider
-//                        try {
-//                            String content = ServletHelper.asString(is).toString();
-//                            schema = SchemaParser.parseSchema(content);
-//                        } catch (SchemaException e) {
-//                            logger.error("Dialog Schema on : '" + (objectDefinitionPath + SLASH + DIALOG_JSON) + "' was not parsable", e);
-//                        } catch (IOException e) {
-//                            logger.warn("Failed to read Dialog JSon on :'{}'", objectDefinitionPath + SLASH + DIALOG_JSON);
-//                        }
                     }
                 }
             }

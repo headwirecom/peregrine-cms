@@ -16,8 +16,6 @@ import org.jsonschema2pojo.SchemaMapper;
 import org.jsonschema2pojo.SchemaStore;
 import org.jsonschema2pojo.rules.RuleFactory;
 
-import javax.jcr.Binary;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -31,7 +29,6 @@ import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_DATA;
 import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED;
-import static com.peregrine.commons.util.PerConstants.SLASH;
 
 public class SchemaLoaderImpl implements SchemaLoader {
 
@@ -109,7 +106,7 @@ public class SchemaLoaderImpl implements SchemaLoader {
                     // Go though the Code Model and create our Schema Model from it
                     JPackage myPackage = codeModel._package("com.example");
                     JDefinedClass myClass = myPackage._getClass("ClassName");
-                    SchemaImpl schema = new SchemaImpl(myClass.name(), "1.0", references);
+                    SchemaImpl schema = new SchemaImpl(content, myClass.name(), "1.0", references);
                     Map<String, JFieldVar> myFields = myClass.fields();
                     handleSchemaFields(myFields, schema);
                     answer = schema;
@@ -135,6 +132,7 @@ public class SchemaLoaderImpl implements SchemaLoader {
             schema.addProperty(new PropertyImpl(fieldName, field.type().fullName()));
         }
     }
+
     private Resource getSchemaContent(Resource schemaResource) {
         Resource answer = null;
         if(schemaResource != null) {
