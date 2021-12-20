@@ -15,7 +15,7 @@
     "fs-extra": "^9.1.0",
     "jsdoc": "^3.5.5",
     "jsdoc-vue": "^1.0.0",
-    "marked": "^2.0.1",
+    "marked": "^4.0.8",
     "request": "^2.88.0",
     "rollup": "^1.1.2",
     "rollup-plugin-buble": "^0.19.6",
