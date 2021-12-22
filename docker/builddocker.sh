@@ -5,8 +5,6 @@
 
 . env.sh
 
-./fetchfiles.sh
-
 export RUNMODE=$1
 export DOCKER_IMAGE_WITH_TYPE=${DOCKER_IMAGE}-$2
 if [ -z "$1" ]
