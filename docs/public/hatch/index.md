@@ -11,6 +11,8 @@ as well as Sling Models in the **core/src/main/java/com/thenecleanflex/models**.
 Beside the **jcr:content** node definition (.content.xml) the files are driven by the **percli hatch** process that
 generates these files based on the corresponding node in the **fragments** folder.
 
+For more information about the inner workings of hatch have a look at the [Percli Hatch Internals](internals.md).
+
 ## Fragments
 
 The definition for the Themeclean-Flex components are placed in the **fragments** folder in the root of the project.
