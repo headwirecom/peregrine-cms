@@ -1,0 +1,27 @@
+{
+  "files": {
+    "main.js": "/content/admin/jsonformeditor/static/js/main.0230d203.chunk.js",
+    "main.js.map": "/content/admin/jsonformeditor/static/js/main.0230d203.chunk.js.map",
+    "runtime-main.js": "/content/admin/jsonformeditor/static/js/runtime-main.16667f60.js",
+    "runtime-main.js.map": "/content/admin/jsonformeditor/static/js/runtime-main.16667f60.js.map",
+    "static/css/2.827d79f7.chunk.css": "/content/admin/jsonformeditor/static/css/2.827d79f7.chunk.css",
+    "static/js/2.e990ee80.chunk.js": "/content/admin/jsonformeditor/static/js/2.e990ee80.chunk.js",
+    "static/js/2.e990ee80.chunk.js.map": "/content/admin/jsonformeditor/static/js/2.e990ee80.chunk.js.map",
+    "static/js/3.88704057.chunk.js": "/content/admin/jsonformeditor/static/js/3.88704057.chunk.js",
+    "static/js/3.88704057.chunk.js.map": "/content/admin/jsonformeditor/static/js/3.88704057.chunk.js.map",
+    "editor.worker.js": "/content/admin/jsonformeditor/editor.worker.js",
+    "editor.worker.js.map": "/content/admin/jsonformeditor/editor.worker.js.map",
+    "index.html": "/content/admin/jsonformeditor/index.html",
+    "json.worker.js": "/content/admin/jsonformeditor/json.worker.js",
+    "json.worker.js.map": "/content/admin/jsonformeditor/json.worker.js.map",
+    "static/css/2.827d79f7.chunk.css.map": "/content/admin/jsonformeditor/static/css/2.827d79f7.chunk.css.map",
+    "static/js/2.e990ee80.chunk.js.LICENSE.txt": "/content/admin/jsonformeditor/static/js/2.e990ee80.chunk.js.LICENSE.txt",
+    "static/media/codicon.css": "/content/admin/jsonformeditor/static/media/codicon.b3726f01.ttf"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.16667f60.js",
+    "static/css/2.827d79f7.chunk.css",
+    "static/js/2.e990ee80.chunk.js",
+    "static/js/main.0230d203.chunk.js"
+  ]
+}
