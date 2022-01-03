@@ -29,23 +29,20 @@ for pkg in "${PKG_ORDER[@]}"
 do
   echo "Installing package '${pkg}' in defined order..."
   slingpackager -v upload --install ${PACKAGE_DIR}/$pkg
+  sleep 1
 done
+sleep 4
 
 # Wait for Sling to be fully ready again
 # added an extra sleep to make sure the last package install is completed (sling jobs may take a bit to run)
-sleep 5     
-STATUS=$(curl -u admin:admin -s --fail  http://localhost:8080/system/console/bundles.json | jq '.s[3:5]' -c)
-if [ "$STATUS" != "[0,0]" ]; then
-  while [ "$STATUS" != "[0,0]" ]
-  do    
-    echo "Sling still starting. Waiting for all bundles to be ready.."
-    sleep 5
-    STATUS=$(curl -u admin:admin -s --fail  http://localhost:8080/system/console/bundles.json | jq '.s[3:5]' -c)
-  done
-fi
+while [ "$(curl -u admin:admin -s --fail  http://localhost:8080/system/console/bundles.json | jq '.s[3:5]' -c)" != "[0,0]" ]
+do
+  echo "Sling still starting. Waiting for all bundles to be ready.."
+  sleep 5
+done
 
 #echo "Stopping Peregrine..."
-#kill `ps -ef | grep org.apache.sling.feature.launcher.jar | grep -v grep | awk '{print $2}'`
+kill `ps -ef | grep org.apache.sling.feature.launcher.jar | grep -v grep | awk '{print $2}'`
 
 #echo "Starting Sling for the second time..."
 #/app/scripts/start.sh
