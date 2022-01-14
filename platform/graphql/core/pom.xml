@@ -144,35 +144,18 @@
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.graphql.core</artifactId>
-            <version>0.0.12</version>
-<!-- For now we need to install it -->
-<!--            <scope>provided</scope>-->
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>commons-validator</groupId>-->
-<!--            <artifactId>commons-validator</artifactId>-->
-<!--            <version>1.5.0</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>commons-beanutils</groupId>-->
-<!--            <artifactId>commons-beanutils</artifactId>-->
-<!--            <version>1.9.0</version>-->
-<!--        </dependency>-->
         <dependency>
             <artifactId>jackson-core</artifactId>
             <groupId>com.fasterxml.jackson.core</groupId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <artifactId>jackson-databind</artifactId>
             <groupId>com.fasterxml.jackson.core</groupId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
-            <version>4.4</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 

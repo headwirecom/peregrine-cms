@@ -3,8 +3,13 @@ package com.peregrine.graphql.schema.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.peregrine.graphql.schema.GraphQLConstants.BY_PATH_MODEL_SUFFIX;
+import static com.peregrine.graphql.schema.GraphQLConstants.BY_PATH_SUFFIX;
 import static com.peregrine.graphql.schema.GraphQLConstants.ID_TYPE;
 import static com.peregrine.graphql.schema.GraphQLConstants.ITEMS_FIELD_NAME;
+import static com.peregrine.graphql.schema.GraphQLConstants.ITEM_FIELD_NAME;
+import static com.peregrine.graphql.schema.GraphQLConstants.LIST_MODEL_SUFFIX;
+import static com.peregrine.graphql.schema.GraphQLConstants.LIST_SUFFIX;
 import static com.peregrine.graphql.schema.GraphQLConstants.PATH_FIELD_NAME;
 import static com.peregrine.graphql.schema.GraphQLConstants.TYPE_NAME;
 
@@ -20,14 +25,6 @@ public class TypeModel extends AbstractTypeModel {
 
     public String getPath() {
         return path;
-    }
-
-    public String getListName() {
-        return getName() + "List";
-    }
-
-    public String getListResultName() {
-        return getName() + "Results";
     }
 
     public TypeModel addField(TypeFieldModel field) {
@@ -57,7 +54,10 @@ public class TypeModel extends AbstractTypeModel {
             answer += "\n";
         }
         answer += "}\n\n";
-        answer += TYPE_NAME + " " + getListResultName() + " {\n" +
+        answer += TYPE_NAME + " " + getName() + BY_PATH_MODEL_SUFFIX + " {\n" +
+            "  " + ITEM_FIELD_NAME + ": [" + getName() + "]!\n" +
+            "}\n\n";
+        answer += TYPE_NAME + " " + getName() + LIST_MODEL_SUFFIX + " {\n" +
             "  " + ITEMS_FIELD_NAME + ": [" + getName() + "]!\n" +
             "}\n\n";
         return answer;

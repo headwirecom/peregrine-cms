@@ -25,6 +25,12 @@ import java.util.List;
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_DATA;
 import static com.peregrine.commons.util.PerConstants.OBJECT_DEFINITIONS;
+import static com.peregrine.graphql.schema.json.JSonFormConstants.JSON_ENUMS;
+import static com.peregrine.graphql.schema.json.JSonFormConstants.JSON_FORMAT_PROPERTY;
+import static com.peregrine.graphql.schema.json.JSonFormConstants.JSON_OBJECT_TYPE;
+import static com.peregrine.graphql.schema.json.JSonFormConstants.JSON_PROPERTIES;
+import static com.peregrine.graphql.schema.json.JSonFormConstants.JSON_REQUIRED;
+import static com.peregrine.graphql.schema.json.JSonFormConstants.JSON_TYPE;
 
 @Component(
     service = SchemaModelHandler.class,
@@ -61,22 +67,22 @@ public class SchemaModelHandlerService
                         }
                         String name = schemaParentResource.getName();
                         String path = schemaParentResource.getPath();
-                        String type = jsonSchema.get("type").asText();
-                        if ("object".equals(type)) {
+                        String type = jsonSchema.get(JSON_TYPE).asText();
+                        if (JSON_OBJECT_TYPE.equals(type)) {
                             TypeModel typeModel = new TypeModel(name, path);
-                            JsonNode properties = jsonSchema.get("properties");
+                            JsonNode properties = jsonSchema.get(JSON_PROPERTIES);
                             if (properties != null && properties.isObject()) {
                                 Iterator<String> keys = properties.fieldNames();
                                 while (keys.hasNext()) {
                                     String key = keys.next();
                                     JsonNode item = properties.get(key);
                                     if (item != null && item.isObject()) {
-                                        String itemType = item.get("type").asText();
+                                        String itemType = item.get(JSON_TYPE).asText();
                                         JSonFormScalar e = JSonFormScalar.getEnum(itemType);
                                         TypeFieldModel fieldModel = new TypeFieldModel().setName(key);
                                         switch (e) {
                                             case String:
-                                                if (item.has("enum")) {
+                                                if (item.has(JSON_ENUMS)) {
                                                     // Handle Enums
                                                     EnumModel enumModel = new EnumModel(key);
                                                     JsonNode temp = item.get(key);
@@ -93,7 +99,10 @@ public class SchemaModelHandlerService
                                                     }
                                                 } else {
                                                     fieldModel.setType(ScalarEnum.String);
-                                                    //AS TODO: Handle Formatting
+                                                    if(item.has(JSON_FORMAT_PROPERTY)) {
+                                                        //AS TODO: Handle Formatting
+
+                                                    }
                                                 }
                                                 break;
                                             case Boolean:
@@ -110,7 +119,7 @@ public class SchemaModelHandlerService
                                     }
                                 }
                             }
-                            JsonNode required = jsonSchema.get("required");
+                            JsonNode required = jsonSchema.get(JSON_REQUIRED);
                             if (required != null && required.isArray()) {
                                 Iterator<JsonNode> requiredFields = required.elements();
                                 while (requiredFields.hasNext()) {

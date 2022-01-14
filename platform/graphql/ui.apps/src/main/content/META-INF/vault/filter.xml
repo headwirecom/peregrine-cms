@@ -26,4 +26,5 @@
 <workspaceFilter version="1.0">
   <filter root="/apps/graphql"/>
   <filter root="/content/graphiql"/>
+  <filter root="/etc/graphiql"/>
 </workspaceFilter>

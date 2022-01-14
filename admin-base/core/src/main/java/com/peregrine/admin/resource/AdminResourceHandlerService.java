@@ -1330,6 +1330,7 @@ public class AdminResourceHandlerService
                 newSite.setProperty(TEMPLATE, false);
                 newSite.setProperty(INTERNAL, false);
                 newSite.setProperty(SOURCE_SITE, fromName);
+                newSite.setProperty(SLING_RESOURCE_TYPE, "graphql/query");
                 answer = getResource(resourceResolver, newSite.getPath());
             } catch (RepositoryException e) {
                 logger.error("Error creating per:Site JCR node", e);

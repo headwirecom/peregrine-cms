@@ -1,26 +1,33 @@
 <html>
 <head>
     <title>Simple GraphiQL Example</title>
-    <link href="https://unpkg.com/graphiql/graphiql.min.css" rel="stylesheet"/>
+    <link href="/etc/graphiql/graphiql.min.css" rel="stylesheet"/>
 </head>
 <body style="margin: 0;">
 <div id="graphiql" style="height: 100vh;"></div>
 
 <script
-        crossorigin
-        src="https://unpkg.com/react/umd/react.production.min.js"
+        src="/etc/graphiql/react.production.min.js"
 ></script>
 <script
-        crossorigin
-        src="https://unpkg.com/react-dom/umd/react-dom.production.min.js"
+        src="/etc/graphiql/react-dom.production.min.js"
 ></script>
 <script
-        crossorigin
-        src="https://unpkg.com/graphiql/graphiql.min.js"
+        src="/etc/graphiql/graphiql.min.js"
 ></script>
 
 <script>
-    const fetcher = GraphiQL.createFetcher({url: '/content/test_graphql_1.gql'});
+    // AS Test
+    console.log(`URL: ${window.location.pathname}`)
+    var pagePath = window.location.pathname;
+    var tenant = '';
+    if(pagePath.startsWith('/content/') && pagePath.endsWith('/graphiql.html')) {
+        var length = '/content/'.length;
+        var index = pagePath.indexOf('/', length + 1);
+        tenant = pagePath.substring(length, index);
+    }
+    console.log(`Tenant from URL: ${tenant}`)
+    const fetcher = GraphiQL.createFetcher({url: `/content/${tenant}.gql`});
 
     ReactDOM.render(
         React.createElement(GraphiQL, {fetcher: fetcher}),
