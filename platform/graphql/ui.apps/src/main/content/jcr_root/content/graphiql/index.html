@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
     <title>Simple GraphiQL Example</title>
@@ -7,10 +8,10 @@
 <div id="graphiql" style="height: 100vh;"></div>
 
 <script
-        src="/etc/graphiql/react.production.min.js"
+        src="/etc/graphiql/umd/react.min.js"
 ></script>
 <script
-        src="/etc/graphiql/react-dom.production.min.js"
+        src="/etc/graphiql/umd/react-dom.min.js"
 ></script>
 <script
         src="/etc/graphiql/graphiql.min.js"
@@ -21,7 +22,7 @@
     console.log(`URL: ${window.location.pathname}`)
     var pagePath = window.location.pathname;
     var tenant = '';
-    if(pagePath.startsWith('/content/') && pagePath.endsWith('/graphiql.html')) {
+    if (pagePath.startsWith('/content/') && pagePath.endsWith('/graphiql.html')) {
         var length = '/content/'.length;
         var index = pagePath.indexOf('/', length + 1);
         tenant = pagePath.substring(length, index);
