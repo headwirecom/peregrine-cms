@@ -1,6 +1,7 @@
 package com.peregrine.graphql.data;
 
 import com.peregrine.graphql.schema.SchemaProvider;
+import com.peregrine.graphql.schema.model.QueryTypeEnum;
 import com.peregrine.graphql.schema.model.SchemaModel;
 import com.peregrine.graphql.schema.model.TypeModel;
 import org.apache.sling.api.resource.Resource;
@@ -69,29 +70,41 @@ public class DefaultDataFetcher
             resource.getPath(), name, source);
 
         SchemaModel schemaModel = schemaProvider.getSchemaModel(resource);
-        TypeModel typeModel = schemaModel.getTypeByListName(source);
-        String path = typeModel.getPath();
-        List<Resource> typeResources = new ArrayList<>();
-        getResourcesByObjectPath(objectsResource, path, typeResources);
-        SelectionSet selectionSet = env.getSelectionSet();
-        SelectedField itemsField = selectionSet.get(ITEMS_FIELD_NAME);
-        if(itemsField != null) {
-            List<SelectedField> selectedFieldList = itemsField.getSubSelectedFields();
-            List<Map<String, Object>> data = new ArrayList<>();
-            answer.put(ITEMS_FIELD_NAME, data);
-            for(Resource typeResource: typeResources) {
-                Map<String, Object> row = new HashMap<>();
-                for (SelectedField subField : selectedFieldList) {
-                    // Handle _path
-                    if (subField.getName().equals(PATH_FIELD_NAME)) {
-                        row.put(PATH_FIELD_NAME, typeResource.getPath());
-                    } else {
-                        ValueMap properties = typeResource.getValueMap();
-                        Object value = properties.get(subField.getName());
-                        row.put(subField.getName(), value);
+        QueryTypeEnum queryType = getQueryType(source);
+        if(queryType != QueryTypeEnum.Unknown) {
+            String typeName = source.substring(0, source.length() - queryType.toString().length());
+            TypeModel typeModel = schemaModel.getTypeByName(typeName);
+            String path = typeModel.getPath();
+            List<Resource> typeResources = new ArrayList<>();
+            switch(queryType) {
+                case List:
+                    getResourcesByObjectPath(objectsResource, path, typeResources);
+                    break;
+                case ByPath:
+                    getResourceByPath(objectsResource, path, typeResources);
+                    break;
+            }
+            SelectionSet selectionSet = env.getSelectionSet();
+            String selectedField = queryType.getSelectedField();
+            SelectedField itemsField = selectionSet.get(selectedField);
+            if (itemsField != null) {
+                List<SelectedField> selectedFieldList = itemsField.getSubSelectedFields();
+                List<Map<String, Object>> data = new ArrayList<>();
+                answer.put(selectedField, data);
+                for (Resource typeResource : typeResources) {
+                    Map<String, Object> row = new HashMap<>();
+                    for (SelectedField subField : selectedFieldList) {
+                        // Handle _path
+                        if (subField.getName().equals(PATH_FIELD_NAME)) {
+                            row.put(PATH_FIELD_NAME, typeResource.getPath());
+                        } else {
+                            ValueMap properties = typeResource.getValueMap();
+                            Object value = properties.get(subField.getName());
+                            row.put(subField.getName(), value);
+                        }
                     }
+                    data.add(row);
                 }
-                data.add(row);
             }
         }
         return answer;
@@ -110,6 +123,27 @@ public class DefaultDataFetcher
         }
         for(Resource child: root.getChildren()) {
             getResourcesByObjectPath(child, path, result);
+        }
+    }
+
+    private void getResourceByPath(Resource root, String path, List<Resource> result) {
+        if(root == null || path == null) {
+            // Just a fallback for bad data
+            return;
+        }
+        Resource item = root.getResourceResolver().getResource(path);
+        if(item != null) {
+            result.add(item);
+        }
+    }
+
+    private QueryTypeEnum getQueryType(String queryTypeName) {
+        if(queryTypeName.endsWith(QueryTypeEnum.List.toString())) {
+            return QueryTypeEnum.List;
+        } else if(queryTypeName.endsWith(QueryTypeEnum.ByPath.toString())) {
+            return QueryTypeEnum.ByPath;
+        } else {
+            return QueryTypeEnum.Unknown;
         }
     }
 }

@@ -17,11 +17,10 @@ public class SchemaModel {
     private List<TypeModel> types = new ArrayList<>();
     private List<EnumModel> enumerations = new ArrayList<>();
 
-    public TypeModel getTypeByListName(String listName) {
+    public TypeModel getTypeByName(String typeName) {
         TypeModel answer = null;
-        for(TypeModel type: types) {
-            String typeListName = type.getName() + LIST_SUFFIX;
-            if(typeListName.equals(listName)) {
+        for (TypeModel type : types) {
+            if (typeName.equals(type.getName())) {
                 answer = type;
                 break;
             }
@@ -66,9 +65,9 @@ public class SchemaModel {
             "type QueryType {\n";
         for(TypeModel type: types) {
             String name = type.getName();
-            String listName = name + LIST_SUFFIX;
+            String listName = name + QueryTypeEnum.List;
             String listResultName = name + LIST_MODEL_SUFFIX;
-            String byPathName = name + BY_PATH_SUFFIX;
+            String byPathName = name + QueryTypeEnum.ByPath;
             String ByPathResultName = name + BY_PATH_MODEL_SUFFIX;
             answer +=
                 "  \"\"\"\n" +
