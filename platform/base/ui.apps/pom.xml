@@ -62,7 +62,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>graphql.ui.apps</artifactId>
             <version>${project.version}</version>
-            <type>ZIP</type>
+            <type>zip</type>
         </dependency>
     </dependencies>
 
