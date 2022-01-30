@@ -54,7 +54,9 @@ public class SchemaModel {
         answer += "directive @resolver(name: String, options: String, source: String) on UNION\n" +
             "union " + ALL_SCHEMA_MODELS + " @resolver(name : " + FETCHER_NAME + ", source : \"" + ALL_SCHEMA_MODELS + "\") = ";
         for(TypeModel type: types) {
-            answer += type.getName() + LIST_SEPARATOR;
+            if(!type.isSubType()) {
+                answer += type.getName() + LIST_SEPARATOR;
+            }
         }
         if(answer.endsWith(LIST_SEPARATOR)) {
             answer = answer.substring(0, answer.length() - LIST_SEPARATOR.length());
@@ -64,20 +66,22 @@ public class SchemaModel {
         answer += "directive @fetcher(name: String, options: String, source: String) on FIELD_DEFINITION\n" +
             "type QueryType {\n";
         for(TypeModel type: types) {
-            String name = type.getName();
-            String listName = name + QueryTypeEnum.List;
-            String listResultName = name + LIST_MODEL_SUFFIX;
-            String byPathName = name + QueryTypeEnum.ByPath;
-            String ByPathResultName = name + BY_PATH_MODEL_SUFFIX;
-            answer +=
-                "  \"\"\"\n" +
-                "  Get a List of " + name + "\n" +
-                "  \"\"\"\n" +
-                "  " + listName + ": " + listResultName + "! @fetcher(name : " + FETCHER_NAME + ", source : \"" + listName + "\")\n" +
-                "  \"\"\"\n" +
-                "  Get a Single Instance of " + name + " by Path\n" +
-                "  \"\"\"\n" +
-                "  " + byPathName + "(" + PATH_FIELD_NAME + ": String!): " + ByPathResultName + "! @fetcher(name : " + FETCHER_NAME + ", source : \"" + byPathName + "\")\n";
+            if(!type.isSubType()) {
+                String name = type.getName();
+                String listName = name + QueryTypeEnum.List;
+                String listResultName = name + LIST_MODEL_SUFFIX;
+                String byPathName = name + QueryTypeEnum.ByPath;
+                String ByPathResultName = name + BY_PATH_MODEL_SUFFIX;
+                answer +=
+                    "  \"\"\"\n" +
+                        "  Get a List of " + name + "\n" +
+                        "  \"\"\"\n" +
+                        "  " + listName + ": " + listResultName + "! @fetcher(name : " + FETCHER_NAME + ", source : \"" + listName + "\")\n" +
+                        "  \"\"\"\n" +
+                        "  Get a Single Instance of " + name + " by Path\n" +
+                        "  \"\"\"\n" +
+                        "  " + byPathName + "(" + PATH_FIELD_NAME + ": String!): " + ByPathResultName + "! @fetcher(name : " + FETCHER_NAME + ", source : \"" + byPathName + "\")\n";
+            }
         }
         answer += "}";
         return answer;

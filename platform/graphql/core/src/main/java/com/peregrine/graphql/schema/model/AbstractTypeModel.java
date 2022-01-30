@@ -4,15 +4,21 @@ import java.util.Locale;
 
 public abstract class AbstractTypeModel {
 
+    private int type;
     private String name;
     private String originalName;
 
-    public AbstractTypeModel(String name) {
+    public AbstractTypeModel(int type, String name) {
         if(name == null) {
             throw new IllegalArgumentException("Type Name must not be null");
         }
+        this.type = type;
         this.originalName = name;
         this.name = convertName(name);
+    }
+
+    public int getType() {
+        return type;
     }
 
     public String getName() {
@@ -21,6 +27,11 @@ public abstract class AbstractTypeModel {
 
     public String getOriginalName() {
         return originalName;
+    }
+
+    public String updateName(String newName) {
+        this.name = convertName(newName);
+        return this.name;
     }
 
     public static String convertName(String name) {
