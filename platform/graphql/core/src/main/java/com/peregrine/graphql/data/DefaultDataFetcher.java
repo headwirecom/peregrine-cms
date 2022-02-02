@@ -98,7 +98,8 @@ public class DefaultDataFetcher
                         getResourcesByObjectPath(childResource, typeModel, typeResources);
                         break;
                     case ByPath:
-                        getResourceByPath(childResource, path, typeResources);
+                        getResourcesByObjectPath(childResource, typeModel, typeResources);
+//                        getResourceByPath(childResource, path, typeResources);
                         typeResources = filterByArguments(typeResources, arguments, true);
                         break;
                     case ByFieldNameAndValue:
