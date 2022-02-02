@@ -4,7 +4,7 @@ public class TypeFieldModel {
 
     private String name;
     private ScalarEnum type;
-    private TypeModel customType;
+    private AbstractTypeModel customType;
     private boolean id;
     private boolean notNull;
     private boolean array;
@@ -27,11 +27,11 @@ public class TypeFieldModel {
         return this;
     }
 
-    public TypeModel getCustomType() {
+    public AbstractTypeModel getCustomType() {
         return customType;
     }
 
-    public TypeFieldModel setCustomType(TypeModel customType) {
+    public TypeFieldModel setCustomType(AbstractTypeModel customType) {
         this.customType = customType;
         this.customType.setSubType(true);
         return this;

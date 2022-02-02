@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
@@ -66,6 +67,7 @@ public class DefaultDataFetcher
         Map<String, Object> answer = new HashMap<>();
 
         Resource tenantResource = env.getCurrentResource();
+        Map<String, Object> arguments = env.getArguments();
         String name = "sites/default";
         String source = env.getFetcherSource();
         if (source == null) {
@@ -85,6 +87,9 @@ public class DefaultDataFetcher
             int type = typeModel.getType();
             String childPath = type == JSON_FORM_TYPE ? OBJECTS : (type == DIALOG_TYPE ? PAGES : null);
             Resource childResource = childPath != null ? tenantResource.getChild(childPath) : null;
+            String selectedField = queryType.getSelectedField();
+            List<Map<String, Object>> data = new ArrayList<>();
+            answer.put(selectedField, data);
             if (childResource == null) {
                 logger.warn("Child Path: '{}' on Resource: '{}' does not yield a folder", childPath, tenantResource.getPath());
             } else {
@@ -94,15 +99,18 @@ public class DefaultDataFetcher
                         break;
                     case ByPath:
                         getResourceByPath(childResource, path, typeResources);
+                        typeResources = filterByArguments(typeResources, arguments, true);
                         break;
+                    case ByFieldNameAndValue:
+                        getResourcesByObjectPath(childResource, typeModel, typeResources);
+//                        getResourceByPath(childResource, path, typeResources);
+                        // Now filter based on field name and value
+                        typeResources = filterByArguments(typeResources, arguments, false);
                 }
                 SelectionSet selectionSet = env.getSelectionSet();
-                String selectedField = queryType.getSelectedField();
                 SelectedField itemsField = selectionSet.get(selectedField);
                 if (itemsField != null) {
                     List<SelectedField> selectedFieldList = itemsField.getSubSelectedFields();
-                    List<Map<String, Object>> data = new ArrayList<>();
-                    answer.put(selectedField, data);
                     for (Resource typeResource : typeResources) {
                         Map<String, Object> map = new HashMap<>();
                         for (SelectedField subField : selectedFieldList) {
@@ -110,26 +118,40 @@ public class DefaultDataFetcher
                             TypeFieldModel subFieldType = typeModel.getField(subFieldName);
                             Object value = handleSubField( subField, subFieldType, typeResource);
                             map.put(subFieldName, value);
-//                            // Handle _path
-//                            if (subFieldName.equals(PATH_FIELD_NAME)) {
-//                                row.put(PATH_FIELD_NAME, typeResource.getPath());
-//                            } else {
-//                                ValueMap properties = typeResource.getValueMap();
-//                                Object value = null;
-//                                if(properties.containsKey(subFieldName)) {
-//                                    value = properties.get(subField.getName());
-//                                } else {
-//                                    Resource subNode = typeResource.getChild(subFieldName);
-//                                    if(subNode != null) {
-//                                        value = handleSubFields(subField, subNode);
-//                                    }
-//                                }
-//                                row.put(subFieldName, value);
-//                            }
                         }
                         data.add(map);
                     }
                 }
+            }
+        } else {
+            throw new IllegalArgumentException("Query Source '" + source + "' is unknown");
+        }
+        return answer;
+    }
+
+    private List<Resource> filterByArguments(List<Resource> resources, Map<String, Object> queryArguments, boolean onlyByPath) {
+        List<Resource> answer = resources;
+        String pathArgument = (String) queryArguments.get(PATH_FIELD_NAME);
+        if(pathArgument != null && !pathArgument.isEmpty()) {
+            answer = answer.stream()
+                .filter(r -> r.getPath().startsWith(pathArgument))
+                .collect(Collectors.toList());
+        }
+        if(!onlyByPath) {
+            String fieldName = (String) queryArguments.get("fieldName");
+            String fieldValue = (String) queryArguments.get("fieldValue");
+            if(fieldName != null && fieldValue != null) {
+                answer = answer.stream()
+                    .filter(r -> {
+                        ValueMap properties = r.getValueMap();
+                        if (properties.containsKey(fieldName)) {
+                            return fieldValue.equals(properties.get(fieldName, String.class));
+                        }
+                        return false;
+                    })
+                    .collect(Collectors.toList());
+            } else {
+                answer.clear();
             }
         }
         return answer;
@@ -149,7 +171,7 @@ public class DefaultDataFetcher
             Map<String, Object> map = new HashMap<>();
             //TODO: Check if we need to search by Type Field Model's Original Name instead
             Resource childResource = resource.getChild(fieldName);
-            TypeModel customType = fieldType.getCustomType();
+            TypeModel customType = (TypeModel) fieldType.getCustomType();
             if(fieldType.isArray()) {
                 // Loop Over Children
                 List<Object> list = new ArrayList<>();
@@ -194,9 +216,9 @@ public class DefaultDataFetcher
                     result.add(root);
                 }
             } else if(type == DIALOG_TYPE) {
-                Resource resource = getResourceOfType(root, typeModel);
-                if(resource != null) {
-                    result.add(resource);
+                List<Resource> resources = getResourcesOfType(root, typeModel);
+                if(!resources.isEmpty()) {
+                    result.addAll(resources);
                 }
             }
         }
@@ -205,26 +227,26 @@ public class DefaultDataFetcher
         }
     }
 
-    private Resource getResourceOfType(Resource root, TypeModel typeModel) {
+    private List<Resource> getResourcesOfType(Resource root, TypeModel typeModel) {
         Resource content = root.getChild(JCR_CONTENT);
-        Resource answer = null;
+        List<Resource> answer = new ArrayList<>();
         if(content != null) {
-                    answer = resourceContainsComponent(content, typeModel);
-                }
+            answer.addAll(resourcesContainsComponent(content, typeModel));
+        }
         return answer;
     }
 
-    private Resource resourceContainsComponent(Resource root, TypeModel typeModel) {
-        Resource answer = null;
+    private List<Resource> resourcesContainsComponent(Resource root, TypeModel typeModel) {
+        List<Resource> answer = new ArrayList<>();
         for(Resource child: root.getChildren()) {
             ValueMap properties = child.getValueMap();
             String resourceType = properties.get(SLING_RESOURCE_TYPE, String.class);
             if(resourceType != null) {
                 if(resourceType.endsWith(typeModel.getName())) {
-                    return child;
+                    answer.add(child);
                 }
             } else {
-                answer = resourceContainsComponent(child, typeModel);
+                answer.addAll(resourcesContainsComponent(child, typeModel));
             }
         }
         return answer;
@@ -242,12 +264,9 @@ public class DefaultDataFetcher
     }
 
     private QueryTypeEnum getQueryType(String queryTypeName) {
-        if(queryTypeName.endsWith(QueryTypeEnum.List.toString())) {
-            return QueryTypeEnum.List;
-        } else if(queryTypeName.endsWith(QueryTypeEnum.ByPath.toString())) {
-            return QueryTypeEnum.ByPath;
-        } else {
-            return QueryTypeEnum.Unknown;
-        }
+        return Arrays.stream(QueryTypeEnum.values())
+            .filter(e -> queryTypeName.endsWith(e.toString()))
+            .findFirst()
+            .orElse(QueryTypeEnum.Unknown);
     }
 }

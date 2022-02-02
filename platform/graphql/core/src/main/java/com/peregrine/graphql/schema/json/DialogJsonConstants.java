@@ -21,7 +21,7 @@ public interface DialogJsonConstants {
     enum TYPE {
         input, collection, material_textarea,
         material_radios, pathbrowser, object_definition_reference,
-        materialswitch, texteditor,
+        material_select, materialswitch, texteditor,
         unknown;
     }
 

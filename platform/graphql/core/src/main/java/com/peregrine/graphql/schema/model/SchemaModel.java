@@ -11,6 +11,7 @@ import static com.peregrine.graphql.schema.GraphQLConstants.LIST_MODEL_SUFFIX;
 import static com.peregrine.graphql.schema.GraphQLConstants.LIST_SEPARATOR;
 import static com.peregrine.graphql.schema.GraphQLConstants.LIST_SUFFIX;
 import static com.peregrine.graphql.schema.GraphQLConstants.PATH_FIELD_NAME;
+import static com.peregrine.graphql.schema.json.DialogJsonConstants.DIALOG_TYPE;
 
 public class SchemaModel {
 
@@ -31,6 +32,17 @@ public class SchemaModel {
     public SchemaModel addType(TypeModel type) {
         types.add(type);
         return this;
+    }
+
+    public boolean containsEnumByName(String enumerationName) {
+        boolean answer = false;
+        for(EnumModel enumModel: enumerations) {
+            if(enumModel.getName().equals(enumerationName)) {
+                answer = true;
+                break;
+            }
+        }
+        return answer;
     }
 
     public SchemaModel addEnum(EnumModel enumeration) {
@@ -72,6 +84,7 @@ public class SchemaModel {
                 String listResultName = name + LIST_MODEL_SUFFIX;
                 String byPathName = name + QueryTypeEnum.ByPath;
                 String ByPathResultName = name + BY_PATH_MODEL_SUFFIX;
+                String byFieldNameAndValueName = name + QueryTypeEnum.ByFieldNameAndValue;
                 answer +=
                     "  \"\"\"\n" +
                         "  Get a List of " + name + "\n" +
@@ -81,6 +94,13 @@ public class SchemaModel {
                         "  Get a Single Instance of " + name + " by Path\n" +
                         "  \"\"\"\n" +
                         "  " + byPathName + "(" + PATH_FIELD_NAME + ": String!): " + ByPathResultName + "! @fetcher(name : " + FETCHER_NAME + ", source : \"" + byPathName + "\")\n";
+                if(type.getType() == DIALOG_TYPE) {
+                    answer +=
+                        "  \"\"\"\n" +
+                        "  Get a List of of " + name + " by Path and Field Type and Value\n" +
+                        "  \"\"\"\n" +
+                        "  " + byFieldNameAndValueName + "(" + PATH_FIELD_NAME + ": String!, fieldName: String, fieldValue: String): " + listResultName + "! @fetcher(name : " + FETCHER_NAME + ", source : \"" + byFieldNameAndValueName + "\")\n";
+                }
             }
         }
         answer += "}";

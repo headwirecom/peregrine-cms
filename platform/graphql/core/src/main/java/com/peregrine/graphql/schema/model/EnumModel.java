@@ -5,25 +5,28 @@ import java.util.List;
 
 public class EnumModel extends AbstractTypeModel {
 
-    private List<String> enumeration;
+    private List<String> enumerations;
 
     public EnumModel(int type, String name) {
         super(type, name);
-        this.enumeration = new ArrayList<>();
+        this.enumerations = new ArrayList<>();
     }
 
     public EnumModel addEnumeration(String enumeration) {
-        this.enumeration.add(enumeration);
+        if(enumeration.contains("-")) {
+            enumeration = enumeration.replaceAll("-", "_");
+        }
+        this.enumerations.add(enumeration);
         return this;
     }
 
-    public List<String> getEnumeration() {
-        return new ArrayList<>(enumeration);
+    public List<String> getEnumerations() {
+        return new ArrayList<>(enumerations);
     }
 
     public String print() {
         String answer = "enum " + getName() + " {\n";
-        for(String item: getEnumeration()) {
+        for(String item: getEnumerations()) {
             answer += "  " + item + "\n";
         }
         answer += "}\n\n";

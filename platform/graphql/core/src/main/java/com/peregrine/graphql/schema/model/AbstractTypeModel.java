@@ -7,6 +7,7 @@ public abstract class AbstractTypeModel {
     private int type;
     private String name;
     private String originalName;
+    private boolean subType;
 
     public AbstractTypeModel(int type, String name) {
         if(name == null) {
@@ -15,10 +16,20 @@ public abstract class AbstractTypeModel {
         this.type = type;
         this.originalName = name;
         this.name = convertName(name);
+        this.subType = false;
     }
 
     public int getType() {
         return type;
+    }
+
+    public boolean isSubType() {
+        return subType;
+    }
+
+    public AbstractTypeModel setSubType(boolean subType) {
+        this.subType = subType;
+        return this;
     }
 
     public String getName() {

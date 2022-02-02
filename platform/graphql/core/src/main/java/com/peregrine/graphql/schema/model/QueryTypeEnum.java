@@ -1,7 +1,7 @@
 package com.peregrine.graphql.schema.model;
 
 public enum QueryTypeEnum {
-    List("items"), ByPath("item"), Unknown("");
+    List("items"), ByPath("item"), ByFieldNameAndValue("items"), Unknown("unknown");
 
     String selectedField;
     QueryTypeEnum(String selectedField) {

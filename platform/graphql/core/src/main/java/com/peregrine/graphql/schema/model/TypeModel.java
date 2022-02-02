@@ -17,12 +17,10 @@ public class TypeModel extends AbstractTypeModel {
 
     private String path;
     private List<TypeFieldModel> fields = new ArrayList<>();
-    private boolean subType;
 
     public TypeModel(int type, String name, String path) {
         super(type, name);
         this.path = path;
-        this.subType = false;
     }
 
     public String getPath() {
@@ -32,7 +30,7 @@ public class TypeModel extends AbstractTypeModel {
     public TypeModel addField(TypeFieldModel field) {
         fields.add(field);
         // Check for Custom Types and update their name
-        TypeModel subType = field.getCustomType();
+        AbstractTypeModel subType = field.getCustomType();
         if(subType != null) {
             subType.updateName(
                 getName() + '_' + subType.getName() + (field.isArray() ? "Items" : "Item")
@@ -43,15 +41,6 @@ public class TypeModel extends AbstractTypeModel {
 
     public TypeFieldModel getField(String name) {
         return fields.stream().filter(i -> i.getName().equals(name)).findFirst().orElse(null);
-    }
-
-    public boolean isSubType() {
-        return subType;
-    }
-
-    public TypeModel setSubType(boolean subType) {
-        this.subType = subType;
-        return this;
     }
 
     public List<TypeFieldModel> getFields() {
@@ -68,7 +57,7 @@ public class TypeModel extends AbstractTypeModel {
             if(field.isArray()) {
                 answer += "[";
             }
-            TypeModel customType = field.getCustomType();
+            AbstractTypeModel customType = field.getCustomType();
             if(customType != null) {
                 answer += customType.getName();
             } else {
