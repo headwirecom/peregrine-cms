@@ -156,6 +156,8 @@ public class PageSchemaModelBuilderService
                 case pathbrowser:
                 case object_definition_reference:
                 case texteditor:
+                case material_radios:
+                case material_select:
                     answer = new TypeFieldModel()
                         .setName(model)
                         .setType(ScalarEnum.String);
@@ -164,37 +166,6 @@ public class PageSchemaModelBuilderService
                     answer = new TypeFieldModel()
                         .setName(model)
                         .setType(ScalarEnum.Boolean);
-                    break;
-                case material_radios:
-                case material_select:
-//AS TODO: Enums can't be used if a value contains a dash (-) so for now we take it out and replace with a list
-//                    JsonNode values = field.get(DIALOG_FIELD_VALUES);
-//                    if(values == null || !values.isArray()) {
-//                        logger.warn("Material-Radios {} does not have values", field);
-//                    } else {
-//                        String enumModelName = model;
-//                        int count = 1;
-//                        while(schemaModel.containsEnumByName(enumModelName)) {
-//                            enumModelName = model + "_" + count++;
-//                        }
-//                        EnumModel enumModel = new EnumModel(DIALOG_TYPE, enumModelName);
-//                        Iterator<JsonNode> i = values.iterator();
-//                        while(i.hasNext()) {
-//                            JsonNode value = i.next();
-//                            if(value.has(DIALOG_FIELD_VALUES_VALUE)) {
-//                                enumModel.addEnumeration(
-//                                    value.get(DIALOG_FIELD_VALUES_VALUE).asText()
-//                                );
-//                            }
-//                        }
-//                        schemaModel.addEnum(enumModel);
-//                        answer = new TypeFieldModel()
-//                            .setName(enumModelName)
-//                            .setCustomType(enumModel);
-//                    }
-                    answer = new TypeFieldModel()
-                        .setName(model)
-                        .setType(ScalarEnum.String);
                     break;
                 case collection:
                     TypeModel collectionType = null;

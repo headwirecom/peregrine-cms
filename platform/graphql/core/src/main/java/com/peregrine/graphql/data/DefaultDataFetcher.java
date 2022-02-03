@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
@@ -104,9 +105,9 @@ public class DefaultDataFetcher
                         break;
                     case ByFieldNameAndValue:
                         getResourcesByObjectPath(childResource, typeModel, typeResources);
-//                        getResourceByPath(childResource, path, typeResources);
                         // Now filter based on field name and value
                         typeResources = filterByArguments(typeResources, arguments, false);
+                        break;
                 }
                 SelectionSet selectionSet = env.getSelectionSet();
                 SelectedField itemsField = selectionSet.get(selectedField);
@@ -141,12 +142,16 @@ public class DefaultDataFetcher
         if(!onlyByPath) {
             String fieldName = (String) queryArguments.get("fieldName");
             String fieldValue = (String) queryArguments.get("fieldValue");
-            if(fieldName != null && fieldValue != null) {
+            if(fieldName != null) {
                 answer = answer.stream()
                     .filter(r -> {
                         ValueMap properties = r.getValueMap();
                         if (properties.containsKey(fieldName)) {
-                            return fieldValue.equals(properties.get(fieldName, String.class));
+                            if(fieldValue == null || fieldValue.isEmpty()) {
+                                return true;
+                            } else {
+                                return fieldValue.equals(properties.get(fieldName, String.class));
+                            }
                         }
                         return false;
                     })
@@ -157,6 +162,38 @@ public class DefaultDataFetcher
         }
         return answer;
     }
+
+//    private List<Resource> filterByFieldArguments(List<Resource> resources, Map<String, Object> queryArguments) {
+//        List<Resource> answer = resources;
+//        List<String> fields = (List<String>) queryArguments.get("fields");
+//        Object operation = queryArguments.get("operation");
+//        if(fields != null && (fields.size() % 2) == 0 ) {
+//            Map<String,String> fieldMap = new HashMap<>();
+//            for(int i = 0; i < (fields.size() / 2); i++) {
+//                fieldMap.put(fields.get(i), fields.get(i + 1));
+//            }
+//            answer = answer.stream()
+//                .filter(r -> {
+//                    ValueMap properties = r.getValueMap();
+//                    boolean insideAnswer = true;
+//                    for(Entry<String,String> entry: fieldMap.entrySet()) {
+//                        String fieldName = entry.getKey();
+//                        String fieldValue = entry.getValue();
+//                        if(fieldName != null) {
+//                            if (properties.containsKey(fieldName)) {
+//                                if(!fieldValue.equals(properties.get(fieldName, String.class))) {
+//                                    insideAnswer = false;
+//                                    break;
+//                                }
+//                            }
+//                        }
+//                    }
+//                    return insideAnswer;
+//                })
+//                .collect(Collectors.toList());
+//        }
+//        return answer;
+//    }
 
     private Object handleSubField(SelectedField field, TypeFieldModel fieldType, Resource resource) {
         Object answer = null;

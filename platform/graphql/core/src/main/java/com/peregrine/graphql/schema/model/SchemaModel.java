@@ -97,9 +97,9 @@ public class SchemaModel {
                 if(type.getType() == DIALOG_TYPE) {
                     answer +=
                         "  \"\"\"\n" +
-                        "  Get a List of of " + name + " by Path and Field Type and Value\n" +
-                        "  \"\"\"\n" +
-                        "  " + byFieldNameAndValueName + "(" + PATH_FIELD_NAME + ": String!, fieldName: String, fieldValue: String): " + listResultName + "! @fetcher(name : " + FETCHER_NAME + ", source : \"" + byFieldNameAndValueName + "\")\n";
+                            "  Get a List of of " + name + " by Path and Field Name and Value\n" +
+                            "  \"\"\"\n" +
+                            "  " + byFieldNameAndValueName + "(" + PATH_FIELD_NAME + ": String, fieldName: String!, fieldValue: String): " + listResultName + "! @fetcher(name : " + FETCHER_NAME + ", source : \"" + byFieldNameAndValueName + "\")\n";
                 }
             }
         }
