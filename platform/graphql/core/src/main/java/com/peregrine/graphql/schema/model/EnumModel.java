@@ -7,7 +7,7 @@ public class EnumModel extends AbstractTypeModel {
 
     private List<String> enumerations;
 
-    public EnumModel(int type, String name) {
+    public EnumModel(TypeModelType type, String name) {
         super(type, name);
         this.enumerations = new ArrayList<>();
     }

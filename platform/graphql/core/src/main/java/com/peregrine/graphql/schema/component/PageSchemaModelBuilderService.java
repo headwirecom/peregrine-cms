@@ -1,14 +1,18 @@
-package com.peregrine.graphql.schema.json;
+package com.peregrine.graphql.schema.component;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.peregrine.graphql.schema.json.DialogJsonConstants.INPUT_TYPE;
-import com.peregrine.graphql.schema.json.DialogJsonConstants.TYPE;
-import com.peregrine.graphql.schema.model.EnumModel;
+import com.peregrine.graphql.schema.SchemaModelBuilder;
+import com.peregrine.graphql.schema.component.DialogJsonConstants.INPUT_TYPE;
+import com.peregrine.graphql.schema.component.DialogJsonConstants.TYPE;
 import com.peregrine.graphql.schema.model.ScalarEnum;
 import com.peregrine.graphql.schema.model.SchemaModel;
 import com.peregrine.graphql.schema.model.TypeFieldModel;
 import com.peregrine.graphql.schema.model.TypeModel;
+import com.peregrine.graphql.schema.model.TypeModelTypeImpl;
+import com.peregrine.graphql.schema.model.TypeModelTypeImpl.QueryImpl;
+import com.peregrine.graphql.schema.util.Utils;
+import com.peregrine.graphql.schema.util.Utils.VariableImpl;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.api.resource.ValueMap;
@@ -27,17 +31,18 @@ import java.util.WeakHashMap;
 import java.util.stream.Collectors;
 
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_SUPER_TYPE;
-import static com.peregrine.graphql.schema.json.DialogJsonConstants.DIALOG_CONTENT_VALUE;
-import static com.peregrine.graphql.schema.json.DialogJsonConstants.DIALOG_FIELDS_PROPERTY;
-import static com.peregrine.graphql.schema.json.DialogJsonConstants.DIALOG_FIELD_INPUT_TYPE;
-import static com.peregrine.graphql.schema.json.DialogJsonConstants.DIALOG_FIELD_MODEL;
-import static com.peregrine.graphql.schema.json.DialogJsonConstants.DIALOG_FIELD_TYPE;
-import static com.peregrine.graphql.schema.json.DialogJsonConstants.DIALOG_FIELD_VALUES;
-import static com.peregrine.graphql.schema.json.DialogJsonConstants.DIALOG_FIELD_VALUES_VALUE;
-import static com.peregrine.graphql.schema.json.DialogJsonConstants.DIALOG_GROUPS_PROPERTY;
-import static com.peregrine.graphql.schema.json.DialogJsonConstants.DIALOG_LEGEND_PROPERTY;
-import static com.peregrine.graphql.schema.json.DialogJsonConstants.DIALOG_NODE_NAME;
-import static com.peregrine.graphql.schema.json.DialogJsonConstants.DIALOG_TYPE;
+import static com.peregrine.graphql.schema.GraphQLConstants.PATH_FIELD_NAME;
+import static com.peregrine.graphql.schema.component.DialogJsonConstants.DIALOG_CONTENT_VALUE;
+import static com.peregrine.graphql.schema.component.DialogJsonConstants.DIALOG_FIELDS_PROPERTY;
+import static com.peregrine.graphql.schema.component.DialogJsonConstants.DIALOG_FIELD_INPUT_TYPE;
+import static com.peregrine.graphql.schema.component.DialogJsonConstants.DIALOG_FIELD_MODEL;
+import static com.peregrine.graphql.schema.component.DialogJsonConstants.DIALOG_FIELD_TYPE;
+import static com.peregrine.graphql.schema.component.DialogJsonConstants.DIALOG_GROUPS_PROPERTY;
+import static com.peregrine.graphql.schema.component.DialogJsonConstants.DIALOG_LEGEND_PROPERTY;
+import static com.peregrine.graphql.schema.component.DialogJsonConstants.DIALOG_NODE_NAME;
+import static com.peregrine.graphql.schema.model.TypeModelTypeImpl.SUB_COMPONENT_TYPE;
+import static com.peregrine.graphql.schema.util.Utils.PAGE_PATH_SYSTEM_VARIABLE;
+import static com.peregrine.graphql.schema.util.Utils.PATH_SYSTEM_VARIABLE;
 import static com.peregrine.graphql.schema.util.Utils.getSchemaContent;
 
 @Component(
@@ -48,6 +53,22 @@ public class PageSchemaModelBuilderService
     implements SchemaModelBuilder
 {
     private static final List<String> PAGES_PRIMARY_TYPE = new ArrayList<>(Arrays.asList("per:Page", "per:Asset", "per:Object", "per:ObjectDefinition"));
+
+    public static final TypeModelTypeImpl pageTypeModelType = new TypeModelTypeImpl()
+        .withQueries(
+            new QueryImpl(true, "ComponentList", "List all Components with that Type"),
+            new QueryImpl(true, "ComponentByPath", "List all Components of a Page with that Path")
+                .withArguments(
+                    new VariableImpl(PATH_FIELD_NAME, ScalarEnum.String, true)
+                ),
+            new QueryImpl(true, "ComponentByField", "List all Components by Field Name and Value as well as Page Path")
+                .withArguments(
+                    new VariableImpl(PATH_FIELD_NAME, ScalarEnum.String, false),
+                    new VariableImpl("fieldName", ScalarEnum.String, true),
+                    new VariableImpl("fieldValue", ScalarEnum.String, false)
+                )
+        )
+        .withSystemVariables(PATH_SYSTEM_VARIABLE, PAGE_PATH_SYSTEM_VARIABLE);
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -119,7 +140,7 @@ public class PageSchemaModelBuilderService
      * @return Type Model for the fields of the component
      */
     private TypeModel parseFields(Resource dialogResource, JsonNode fields, SchemaModel schemaModel) {
-        TypeModel answer = new TypeModel(DIALOG_TYPE, dialogResource.getParent().getName(), dialogResource.getPath());
+        TypeModel answer = new TypeModel(pageTypeModelType, dialogResource.getParent().getName(), dialogResource.getPath());
         Iterator<JsonNode> i = fields.iterator();
         while(i.hasNext()) {
             JsonNode field = i.next();
@@ -171,7 +192,7 @@ public class PageSchemaModelBuilderService
                     TypeModel collectionType = null;
                     JsonNode fields = field.get(DIALOG_FIELDS_PROPERTY);
                     if(fields.isArray()) {
-                        collectionType = new TypeModel(DIALOG_TYPE, model, null);
+                        collectionType = new TypeModel(SUB_COMPONENT_TYPE, model, null);
                         Iterator<JsonNode> i = fields.iterator();
                         while(i.hasNext()) {
                             JsonNode collectionField = i.next();

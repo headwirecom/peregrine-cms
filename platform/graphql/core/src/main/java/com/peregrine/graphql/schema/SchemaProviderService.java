@@ -1,19 +1,26 @@
 package com.peregrine.graphql.schema;
 
-import com.peregrine.graphql.schema.json.SchemaModelHandler;
 import com.peregrine.graphql.schema.model.SchemaModel;
 import org.apache.commons.collections4.MapIterator;
 import org.apache.commons.collections4.map.LRUMap;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component(
     service = SchemaProvider.class,
@@ -44,10 +51,26 @@ public class SchemaProviderService
         int cache_max_entries() default 20;
     }
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private SchemaCache<String, SchemaModel> schemaCache;
 
-    @Reference
-    private SchemaModelHandler schemaModelHandler;
+    List<SchemaModelBuilder> schemaModelBuilderList = new ArrayList<>();
+
+    @Reference(
+        cardinality = ReferenceCardinality.MULTIPLE,
+        policy = ReferencePolicy.DYNAMIC
+    )
+    void addSchemaModelBuilder(SchemaModelBuilder schemaModelBuilder) {
+        schemaModelBuilderList.add(schemaModelBuilder);
+        schemaModelBuilderList = schemaModelBuilderList.stream()
+            .sorted(Comparator.comparing(SchemaModelBuilder::getOrder))
+            .collect(Collectors.toList());
+    }
+
+    void removeSchemaModelBuilder(SchemaModelBuilder schemaModelBuilder) {
+        schemaModelBuilderList.remove(schemaModelBuilder);
+    }
 
     @Activate
     public void activate(Config configuration) {
@@ -66,8 +89,21 @@ public class SchemaProviderService
         }
         SchemaModel answer = schemaCache.get(schemaParent.getPath());
         if(answer == null) {
-            answer = schemaModelHandler.convert(schemaParent);
+            answer = convert(schemaParent);
             schemaCache.put(schemaParent.getPath(), answer);
+        }
+        return answer;
+    }
+
+    public SchemaModel convert(Resource tenantResource) {
+        SchemaModel answer = null;
+        if(tenantResource == null || ResourceUtil.isNonExistingResource(tenantResource)) {
+            logger.warn("Called with a null or non-existing resource: {}", tenantResource);
+        } else {
+            answer = new SchemaModel();
+            for (SchemaModelBuilder builder : schemaModelBuilderList) {
+                builder.buildFromTenant(tenantResource, answer);
+            }
         }
         return answer;
     }

@@ -1,10 +1,10 @@
-package com.peregrine.graphql.schema.json;
+package com.peregrine.graphql.schema.component;
 
 import com.peregrine.graphql.schema.model.ScalarEnum;
 
 public interface DialogJsonConstants {
 
-    int DIALOG_TYPE = 20;
+    int COMPONENT_TYPE = 20;
 
     String DIALOG_NODE_NAME = "dialog.json";
     String DIALOG_GROUPS_PROPERTY = "groups";

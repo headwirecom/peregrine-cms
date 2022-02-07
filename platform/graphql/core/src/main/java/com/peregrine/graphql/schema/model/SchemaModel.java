@@ -1,17 +1,14 @@
 package com.peregrine.graphql.schema.model;
 
+import com.peregrine.graphql.schema.model.TypeModelType.Query;
+import com.peregrine.graphql.schema.model.TypeModelType.Variable;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.peregrine.graphql.schema.GraphQLConstants.ALL_SCHEMA_MODELS;
-import static com.peregrine.graphql.schema.GraphQLConstants.BY_PATH_MODEL_SUFFIX;
-import static com.peregrine.graphql.schema.GraphQLConstants.BY_PATH_SUFFIX;
 import static com.peregrine.graphql.schema.GraphQLConstants.FETCHER_NAME;
-import static com.peregrine.graphql.schema.GraphQLConstants.LIST_MODEL_SUFFIX;
 import static com.peregrine.graphql.schema.GraphQLConstants.LIST_SEPARATOR;
-import static com.peregrine.graphql.schema.GraphQLConstants.LIST_SUFFIX;
-import static com.peregrine.graphql.schema.GraphQLConstants.PATH_FIELD_NAME;
-import static com.peregrine.graphql.schema.json.DialogJsonConstants.DIALOG_TYPE;
 
 public class SchemaModel {
 
@@ -80,26 +77,23 @@ public class SchemaModel {
         for(TypeModel type: types) {
             if(!type.isSubType()) {
                 String name = type.getName();
-                String listName = name + QueryTypeEnum.List;
-                String listResultName = name + LIST_MODEL_SUFFIX;
-                String byPathName = name + QueryTypeEnum.ByPath;
-                String ByPathResultName = name + BY_PATH_MODEL_SUFFIX;
-                String byFieldNameAndValueName = name + QueryTypeEnum.ByFieldNameAndValue;
-                answer +=
-                    "  \"\"\"\n" +
-                        "  Get a List of " + name + "\n" +
-                        "  \"\"\"\n" +
-                        "  " + listName + ": " + listResultName + "! @fetcher(name : " + FETCHER_NAME + ", source : \"" + listName + "\")\n" +
-                        "  \"\"\"\n" +
-                        "  Get a Single Instance of " + name + " by Path\n" +
-                        "  \"\"\"\n" +
-                        "  " + byPathName + "(" + PATH_FIELD_NAME + ": String!): " + ByPathResultName + "! @fetcher(name : " + FETCHER_NAME + ", source : \"" + byPathName + "\")\n";
-                if(type.getType() == DIALOG_TYPE) {
+                TypeModelType modelType = type.getType();
+                for(Query query: modelType.getQueries()) {
+                    String queryName = name + query.getSuffix();
+                    String resultName = name + "Result" + (query.isMultiple() ? "s" : "");
+                    List<Variable> arguments = query.getArguments();
+                    String argumentLine = arguments.isEmpty() ? "" : "(";
+                    for(Variable argument: arguments) {
+                        argumentLine += argument.getName() + ":" + argument.getType() + (argument.isMandatory() ? "!" : "") + ",";
+                    }
+                    if(!arguments.isEmpty()) {
+                        argumentLine = argumentLine.substring(0, argumentLine.length() - 1) + ")";
+                    }
                     answer +=
                         "  \"\"\"\n" +
-                            "  Get a List of of " + name + " by Path and Field Name and Value\n" +
-                            "  \"\"\"\n" +
-                            "  " + byFieldNameAndValueName + "(" + PATH_FIELD_NAME + ": String, fieldName: String!, fieldValue: String): " + listResultName + "! @fetcher(name : " + FETCHER_NAME + ", source : \"" + byFieldNameAndValueName + "\")\n";
+                        " " + query.getDescription() + "\n" +
+                        "  \"\"\"\n" +
+                        "  " + queryName + argumentLine + ": " + resultName + "! @fetcher(name : " + FETCHER_NAME + ", source : \"" + queryName + "\")\n";
                 }
             }
         }

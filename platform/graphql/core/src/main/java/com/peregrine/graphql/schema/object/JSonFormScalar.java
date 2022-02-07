@@ -1,4 +1,4 @@
-package com.peregrine.graphql.schema.json;
+package com.peregrine.graphql.schema.object;
 
 public enum JSonFormScalar {
     String("string"),

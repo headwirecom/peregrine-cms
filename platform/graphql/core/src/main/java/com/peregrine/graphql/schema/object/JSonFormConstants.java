@@ -1,8 +1,8 @@
-package com.peregrine.graphql.schema.json;
+package com.peregrine.graphql.schema.object;
 
 public interface JSonFormConstants {
 
-    int JSON_FORM_TYPE = 10;
+    int OBJECT_TYPE = 10;
 
     String JSON_SCHEMA_NODE_NAME = "schema.json";
 

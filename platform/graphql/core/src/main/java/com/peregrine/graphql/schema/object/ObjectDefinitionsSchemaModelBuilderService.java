@@ -1,12 +1,15 @@
-package com.peregrine.graphql.schema.json;
+package com.peregrine.graphql.schema.object;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.peregrine.graphql.schema.SchemaModelBuilder;
 import com.peregrine.graphql.schema.model.EnumModel;
 import com.peregrine.graphql.schema.model.ScalarEnum;
 import com.peregrine.graphql.schema.model.SchemaModel;
 import com.peregrine.graphql.schema.model.TypeFieldModel;
 import com.peregrine.graphql.schema.model.TypeModel;
+import com.peregrine.graphql.schema.model.TypeModelTypeImpl;
+import com.peregrine.graphql.schema.model.TypeModelTypeImpl.QueryImpl;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceUtil;
 import org.osgi.service.component.annotations.Component;
@@ -20,14 +23,15 @@ import java.util.Iterator;
 import java.util.List;
 
 import static com.peregrine.commons.util.PerConstants.OBJECT_DEFINITIONS;
-import static com.peregrine.graphql.schema.json.JSonFormConstants.JSON_ENUMS;
-import static com.peregrine.graphql.schema.json.JSonFormConstants.JSON_FORMAT_PROPERTY;
-import static com.peregrine.graphql.schema.json.JSonFormConstants.JSON_FORM_TYPE;
-import static com.peregrine.graphql.schema.json.JSonFormConstants.JSON_OBJECT_TYPE;
-import static com.peregrine.graphql.schema.json.JSonFormConstants.JSON_PROPERTIES;
-import static com.peregrine.graphql.schema.json.JSonFormConstants.JSON_REQUIRED;
-import static com.peregrine.graphql.schema.json.JSonFormConstants.JSON_SCHEMA_NODE_NAME;
-import static com.peregrine.graphql.schema.json.JSonFormConstants.JSON_TYPE;
+import static com.peregrine.graphql.schema.model.TypeModelTypeImpl.SUB_COMPONENT_TYPE;
+import static com.peregrine.graphql.schema.object.JSonFormConstants.JSON_ENUMS;
+import static com.peregrine.graphql.schema.object.JSonFormConstants.JSON_FORMAT_PROPERTY;
+import static com.peregrine.graphql.schema.object.JSonFormConstants.JSON_OBJECT_TYPE;
+import static com.peregrine.graphql.schema.object.JSonFormConstants.JSON_PROPERTIES;
+import static com.peregrine.graphql.schema.object.JSonFormConstants.JSON_REQUIRED;
+import static com.peregrine.graphql.schema.object.JSonFormConstants.JSON_SCHEMA_NODE_NAME;
+import static com.peregrine.graphql.schema.object.JSonFormConstants.JSON_TYPE;
+import static com.peregrine.graphql.schema.util.Utils.PATH_SYSTEM_VARIABLE;
 import static com.peregrine.graphql.schema.util.Utils.getChildResources;
 import static com.peregrine.graphql.schema.util.Utils.getSchemaContent;
 
@@ -39,6 +43,14 @@ public class ObjectDefinitionsSchemaModelBuilderService
     implements SchemaModelBuilder
 {
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    public static final TypeModelTypeImpl objectTypeModelType = new TypeModelTypeImpl()
+        .withQueries(
+            new QueryImpl(true, "ObjectList", "List all Objects of that Type"),
+            new QueryImpl(false, "ObjectByPath", "List an Object of that Type by the given Path")
+                .withArguments(PATH_SYSTEM_VARIABLE)
+        )
+        .withSystemVariables(PATH_SYSTEM_VARIABLE);
 
     @Override
     public int getOrder() {
@@ -66,7 +78,7 @@ public class ObjectDefinitionsSchemaModelBuilderService
                     String path = schemaParentResource.getPath();
                     String type = jsonSchema.get(JSON_TYPE).asText();
                     if (JSON_OBJECT_TYPE.equals(type)) {
-                        TypeModel typeModel = new TypeModel(JSON_FORM_TYPE, name, path);
+                        TypeModel typeModel = new TypeModel(objectTypeModelType, name, path);
                         JsonNode properties = jsonSchema.get(JSON_PROPERTIES);
                         if (properties != null && properties.isObject()) {
                             Iterator<String> keys = properties.fieldNames();
@@ -81,7 +93,7 @@ public class ObjectDefinitionsSchemaModelBuilderService
                                         case String:
                                             if (item.has(JSON_ENUMS)) {
                                                 // Handle Enums
-                                                EnumModel enumModel = new EnumModel(JSON_FORM_TYPE, key);
+                                                EnumModel enumModel = new EnumModel(SUB_COMPONENT_TYPE, key);
                                                 JsonNode temp = item.get(key);
                                                 schemaModel.addEnum(enumModel);
                                                 if (temp.isArray()) {

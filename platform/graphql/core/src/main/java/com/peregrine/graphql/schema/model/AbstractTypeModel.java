@@ -1,15 +1,17 @@
 package com.peregrine.graphql.schema.model;
 
+import com.peregrine.graphql.schema.model.TypeModelType;
+
 import java.util.Locale;
 
 public abstract class AbstractTypeModel {
 
-    private int type;
+    private TypeModelType type;
     private String name;
     private String originalName;
     private boolean subType;
 
-    public AbstractTypeModel(int type, String name) {
+    public AbstractTypeModel(TypeModelType type, String name) {
         if(name == null) {
             throw new IllegalArgumentException("Type Name must not be null");
         }
@@ -19,7 +21,7 @@ public abstract class AbstractTypeModel {
         this.subType = false;
     }
 
-    public int getType() {
+    public TypeModelType getType() {
         return type;
     }
 

@@ -1,16 +1,14 @@
 package com.peregrine.graphql.schema.model;
 
+import com.peregrine.graphql.schema.model.TypeModelType.Variable;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.peregrine.graphql.schema.GraphQLConstants.BY_PATH_MODEL_SUFFIX;
-import static com.peregrine.graphql.schema.GraphQLConstants.BY_PATH_SUFFIX;
-import static com.peregrine.graphql.schema.GraphQLConstants.ID_TYPE;
+import static com.peregrine.graphql.schema.GraphQLConstants.SINGLE_ITEM_RESULT_SET;
 import static com.peregrine.graphql.schema.GraphQLConstants.ITEMS_FIELD_NAME;
 import static com.peregrine.graphql.schema.GraphQLConstants.ITEM_FIELD_NAME;
-import static com.peregrine.graphql.schema.GraphQLConstants.LIST_MODEL_SUFFIX;
-import static com.peregrine.graphql.schema.GraphQLConstants.LIST_SUFFIX;
-import static com.peregrine.graphql.schema.GraphQLConstants.PATH_FIELD_NAME;
+import static com.peregrine.graphql.schema.GraphQLConstants.MULTIPLE_ITEMS_RESULT_SET;
 import static com.peregrine.graphql.schema.GraphQLConstants.TYPE_NAME;
 
 public class TypeModel extends AbstractTypeModel {
@@ -18,7 +16,7 @@ public class TypeModel extends AbstractTypeModel {
     private String path;
     private List<TypeFieldModel> fields = new ArrayList<>();
 
-    public TypeModel(int type, String name, String path) {
+    public TypeModel(TypeModelType type, String name, String path) {
         super(type, name);
         this.path = path;
     }
@@ -50,7 +48,9 @@ public class TypeModel extends AbstractTypeModel {
     public String print() {
         String answer = TYPE_NAME + " " + getName() + " {\n";
         if(!isSubType()) {
-            answer += "  " + PATH_FIELD_NAME + ": " + ID_TYPE + "\n";
+            for(Variable systemVariable: getType().getSystemVariables()) {
+                answer += "  " + systemVariable.getName() + ": " + systemVariable.getType() + "\n";
+            }
         }
         for(TypeFieldModel field: getFields()) {
             answer += "  " + field.getName() + ": ";
@@ -73,11 +73,11 @@ public class TypeModel extends AbstractTypeModel {
         }
         answer += "}\n\n";
         if(!isSubType()) {
-            answer += TYPE_NAME + " " + getName() + BY_PATH_MODEL_SUFFIX + " {\n" +
-                "  " + ITEM_FIELD_NAME + ": [" + getName() + "]!\n" +
+            answer += TYPE_NAME + " " + getName() + SINGLE_ITEM_RESULT_SET + " {\n" +
+                "  " + ITEM_FIELD_NAME + ": " + getName() + "\n" +
                 "}\n\n";
-            answer += TYPE_NAME + " " + getName() + LIST_MODEL_SUFFIX + " {\n" +
-                "  " + ITEMS_FIELD_NAME + ": [" + getName() + "]!\n" +
+            answer += TYPE_NAME + " " + getName() + MULTIPLE_ITEMS_RESULT_SET + " {\n" +
+                "  " + ITEMS_FIELD_NAME + ": [" + getName() + "]\n" +
                 "}\n\n";
         }
         return answer;
