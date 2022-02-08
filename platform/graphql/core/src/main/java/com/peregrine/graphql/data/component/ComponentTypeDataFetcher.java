@@ -1,65 +1,39 @@
 package com.peregrine.graphql.data.component;
 
+import com.peregrine.graphql.data.AbstractTypeDataFetcher;
 import com.peregrine.graphql.data.TypeDataFetcher;
-import com.peregrine.graphql.schema.model.SchemaModel;
 import com.peregrine.graphql.schema.model.TypeModel;
-import com.peregrine.graphql.schema.model.TypeModelType;
 import com.peregrine.graphql.schema.model.TypeModelType.Query;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
-import org.apache.sling.graphql.api.SlingDataFetcher;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.PAGES;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
-import static com.peregrine.graphql.schema.GraphQLConstants.PATH_FIELD_NAME;
-import static com.peregrine.graphql.schema.component.DialogJsonConstants.COMPONENT_TYPE;
 import static com.peregrine.graphql.schema.component.PageSchemaModelBuilderService.pageTypeModelType;
-import static com.peregrine.graphql.schema.object.JSonFormConstants.OBJECT_TYPE;
 
 @Component(
     service = TypeDataFetcher.class
 )
 public class ComponentTypeDataFetcher
+    extends AbstractTypeDataFetcher
     implements TypeDataFetcher
 {
     private static final List<String> ALLOWED_PRIMARY_TYPES = new ArrayList<>(Arrays.asList("per:Page", "per:Asset", "per:Object", "per:ObjectDefinition"));
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Override
-    public Query getQuery(String queryName) {
-        Query answer = null;
-        if(queryName != null) {
-            for (Query query : pageTypeModelType.getQueries()) {
-                if (queryName.endsWith(query.getSuffix())) {
-                    answer = query;
-                    break;
-                }
-            }
-        }
-        return answer;
-    }
-
-    @Override
-    public TypeModel getTypeModel(Query typeQuery, SchemaModel schemaModel, String queryName) {
-        TypeModel answer = null;
-        if(typeQuery != null && schemaModel != null && queryName != null) {
-            String typeName = queryName.substring(0, queryName.length() - typeQuery.getSuffix().length());
-            answer = schemaModel.getTypeByName(typeName);
-        }
-        return answer;
+    public ComponentTypeDataFetcher() {
+        super(pageTypeModelType);
     }
 
     @Override
@@ -127,38 +101,6 @@ public class ComponentTypeDataFetcher
                 }
             } else {
                 answer.addAll(resourcesContainsComponent(child, typeModel));
-            }
-        }
-        return answer;
-    }
-
-    private List<Resource> filterByArguments(List<Resource> resources, Map<String, Object> queryArguments, boolean onlyByPath) {
-        List<Resource> answer = resources;
-        String pathArgument = (String) queryArguments.get(PATH_FIELD_NAME);
-        if(pathArgument != null && !pathArgument.isEmpty()) {
-            answer = answer.stream()
-                .filter(r -> r.getPath().startsWith(pathArgument))
-                .collect(Collectors.toList());
-        }
-        if(!onlyByPath) {
-            String fieldName = (String) queryArguments.get("fieldName");
-            String fieldValue = (String) queryArguments.get("fieldValue");
-            if(fieldName != null) {
-                answer = answer.stream()
-                    .filter(r -> {
-                        ValueMap properties = r.getValueMap();
-                        if (properties.containsKey(fieldName)) {
-                            if(fieldValue == null || fieldValue.isEmpty()) {
-                                return true;
-                            } else {
-                                return fieldValue.equals(properties.get(fieldName, String.class));
-                            }
-                        }
-                        return false;
-                    })
-                    .collect(Collectors.toList());
-            } else {
-                answer.clear();
             }
         }
         return answer;
