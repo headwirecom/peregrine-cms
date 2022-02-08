@@ -102,7 +102,7 @@ public class SchemaProviderService
         } else {
             answer = new SchemaModel();
             for (SchemaModelBuilder builder : schemaModelBuilderList) {
-                builder.buildFromTenant(tenantResource, answer);
+                builder.build(tenantResource, answer);
             }
         }
         return answer;

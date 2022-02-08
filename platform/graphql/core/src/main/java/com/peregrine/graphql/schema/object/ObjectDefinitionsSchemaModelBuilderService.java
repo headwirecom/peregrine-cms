@@ -58,7 +58,7 @@ public class ObjectDefinitionsSchemaModelBuilderService
     }
 
     @Override
-    public void buildFromTenant(Resource tenant, SchemaModel schemaModel) {
+    public void build(Resource tenant, SchemaModel schemaModel) {
         Resource objectDefinitionsResource = tenant.getChild(OBJECT_DEFINITIONS);
         if(objectDefinitionsResource == null || ResourceUtil.isNonExistingResource(objectDefinitionsResource)) {
             logger.warn("Given Resource does not yield a child '{}': {}", OBJECT_DEFINITIONS, tenant);

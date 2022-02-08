@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.WeakHashMap;
 import java.util.stream.Collectors;
 
+import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_SUPER_TYPE;
 import static com.peregrine.graphql.schema.GraphQLConstants.PATH_FIELD_NAME;
 import static com.peregrine.graphql.schema.component.DialogJsonConstants.DIALOG_CONTENT_VALUE;
@@ -80,7 +81,7 @@ public class PageSchemaModelBuilderService
     }
 
     @Override
-    public void buildFromTenant(Resource tenant, SchemaModel schemaModel) {
+    public void build(Resource tenant, SchemaModel schemaModel) {
         String appsComponentsFolderPath = "/apps/" + tenant.getName() + "/components";
         Resource tenantAppsComponentsFolder = tenant.getResourceResolver()
             .getResource(appsComponentsFolderPath);
@@ -224,13 +225,14 @@ public class PageSchemaModelBuilderService
             ValueMap properties = component.getValueMap();
             String slingResourceSuperType = properties.get(SLING_RESOURCE_SUPER_TYPE, String.class);
             if(slingResourceSuperType != null && slingResourceSuperType.length() > 0) {
-                //TODO: We should use the Library Folder paths
-                String superTypePath = "/apps/" + slingResourceSuperType;
-                Resource target = component.getResourceResolver().getResource(superTypePath);
-                if(target != null) {
-                    Resource dialog = target.getChild(DIALOG_NODE_NAME);
-                    if(dialog != null) {
-                        pageResources.add(dialog);
+                for(String searchPath: component.getResourceResolver().getSearchPath()) {
+                    String superTypePath = searchPath + slingResourceSuperType;
+                    Resource target = component.getResourceResolver().getResource(superTypePath);
+                    if(target != null) {
+                        Resource dialog = target.getChild(DIALOG_NODE_NAME);
+                        if (dialog != null) {
+                            pageResources.add(dialog);
+                        }
                     }
                 }
             }

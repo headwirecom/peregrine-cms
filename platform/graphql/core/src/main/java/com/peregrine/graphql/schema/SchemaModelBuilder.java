@@ -7,6 +7,6 @@ public interface SchemaModelBuilder {
 
     int getOrder();
 
-    void buildFromTenant(Resource tenant, SchemaModel schemaModel);
+    void build(Resource tenant, SchemaModel schemaModel);
 
 }
