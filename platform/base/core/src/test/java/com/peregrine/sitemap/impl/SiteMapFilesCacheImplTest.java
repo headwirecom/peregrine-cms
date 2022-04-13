@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -69,13 +69,13 @@ public final class SiteMapFilesCacheImplTest extends SiteStructureTestBase {
         init(cache);
 
         when(siteMapExtractorsContainer.findFirstFor(page)).thenReturn(extractor);
-        when(extractor.getConfiguration()).thenReturn(siteMapConfiguration);
+        lenient().when(extractor.getConfiguration()).thenReturn(siteMapConfiguration);
         when(structureCache.get(page)).thenReturn(entries);
     }
 
     private SiteMapEntry createEntry(final int size) {
         final SiteMapEntry result = new SiteMapEntry(page.getPath());
-        when(siteMapBuilder.getSize(result)).thenReturn(size);
+        lenient().when(siteMapBuilder.getSize(result)).thenReturn(size);
         return result;
     }
 
@@ -89,7 +89,7 @@ public final class SiteMapFilesCacheImplTest extends SiteStructureTestBase {
     @SuppressWarnings("unchecked")
 	@Test
     public void get_throwLoginException() throws LoginException {
-            when(resourceResolverFactory.createResourceResolver()).thenThrow(LoginException.class);
+        when(resourceResolverFactory.createResourceResolver()).thenThrow(LoginException.class);
         assertNull(model.get(page, 0));
     }
 
@@ -102,9 +102,9 @@ public final class SiteMapFilesCacheImplTest extends SiteStructureTestBase {
 
         when(structureCache.get(page)).thenReturn(null);
         assertEquals(VALUE, model.get(page, 0));
-        when(siteMapExtractorsContainer.findFirstFor(page)).thenReturn(extractor);
+        lenient().when(siteMapExtractorsContainer.findFirstFor(page)).thenReturn(extractor);
         assertEquals(VALUE, model.get(page, 0));
-        when(structureCache.get(page)).thenReturn(Collections.emptyList());
+        lenient().when(structureCache.get(page)).thenReturn(Collections.emptyList());
         assertEquals(VALUE, model.get(page, 0));
     }
 
@@ -112,9 +112,9 @@ public final class SiteMapFilesCacheImplTest extends SiteStructureTestBase {
     public void get_handleNullEntriesAndExtractor() {
         when(structureCache.get(page)).thenReturn(null);
         assertNull(model.get(page, 0));
-        when(siteMapExtractorsContainer.findFirstFor(page)).thenReturn(null);
+        lenient().when(siteMapExtractorsContainer.findFirstFor(page)).thenReturn(null);
         assertNull(model.get(page, 0));
-        when(structureCache.get(page)).thenReturn(Collections.emptyList());
+        lenient().when(structureCache.get(page)).thenReturn(Collections.emptyList());
         assertNull(model.get(page, 0));
     }
 

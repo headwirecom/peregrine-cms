@@ -16,8 +16,8 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static com.peregrine.commons.util.PerConstants.PATH;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,7 +38,7 @@ public class ReplicationServletTestBase extends SlingServletTest {
         setField("replications", replications);
         setField("resourceManagement", resourceManagement);
 
-        when(replications.getOrDefault(anyString())).thenReturn(replication);
+        when(replications.getOrDefault(any())).thenReturn(replication);
 
         when(replication.prepare(any())).thenAnswer(i -> i.getArguments()[0]);
         when(replication.replicate(any())).thenAnswer(i -> i.getArguments()[0]);
