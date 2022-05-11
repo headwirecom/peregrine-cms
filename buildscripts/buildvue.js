@@ -7,7 +7,10 @@ const vue       = require('rollup-plugin-vue2')
 const css       = require('rollup-plugin-css-only')
 const buble     = require('@rollup/plugin-buble')
 const commonjs  = require('@rollup/plugin-commonjs')
-const { nodeResolve } = require('@rollup/plugin-node-resolve');
+const json      = require('@rollup/plugin-json')
+const { nodeResolve } = require('@rollup/plugin-node-resolve')
+const { babel } = require('@rollup/plugin-babel')
+const nodePolyfills = require('rollup-plugin-polyfill-node')
 const camelcase = require('camelcase')
 
 console.log('========== building vue files ==========')
@@ -61,21 +64,21 @@ async function compileComponent(file){
     // each component needs a unique module name
     var moduleName = 'cmp'+nameCapitalCamelCase
 
-    console.log(`${file} -> ${moduleName}`)
-
     // compile the Vue component and give us a .js and .css
     await rollup.rollup({
         input: `${basePath}${file}`,
         plugins: [
             commonjs(),
+            nodePolyfills(),
             nodeResolve(),
+            json(),
             vue({
                 compiler: () => {},
                 compileTemplate: true,
                 css: false
             }),
             css({output:`${distBasePath}/css/${nameCamelCase}.css`}),
-            buble(),
+            babel({ babelHelpers: 'bundled' }),
         ]
     }).then( async function(bundle) {
 
@@ -94,8 +97,11 @@ async function compileComponent(file){
                 compiling.splice(index, 1)
             }
             updateIndexFiles()
-        }).catch( (error) => {console.log("z", error)})
+        }).catch( (error) => {
+            console.log(error)}
+        )
     }).catch( (error) => {
+        console.log(`Error compiling ${file}:\n`, error)
         const index = compiling.indexOf(file)
         if(index >= 0) {
             compiling.splice(index, 1)

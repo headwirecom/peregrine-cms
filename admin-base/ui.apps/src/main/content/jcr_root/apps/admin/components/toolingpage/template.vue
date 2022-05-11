@@ -129,9 +129,12 @@ export default {
 
           if (resourceType === 'nt:file') {
             $perAdminApp.stateAction('editFile', {path, resourceType});
-          } else if (path.startsWith(`/content/${tenant.name}/objects`)) {
+          } else if (path.startsWith(`/content/${tenant.name}/objects/tags`)) {
             const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, path)
             $perAdminApp.stateAction('editObject', {selected: node.path, path: me.model.dataFrom})
+          } else if (path.startsWith(`/content/${tenant.name}/objects`)) {
+            const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, path)
+            $perAdminApp.stateAction('editObjectStandalone', {selected: node.path, path: me.model.dataFrom})
           } else if (path.startsWith(`/content/${tenant.name}/templates`)) {
             $perAdminApp.stateAction('editTemplate', path)
           } else if (path.startsWith(`/content/${tenant.name}/object-definitions`)){

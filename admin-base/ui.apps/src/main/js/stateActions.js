@@ -106,6 +106,7 @@ import saveFile from './stateActions/saveFile';
 import renameFile from './stateActions/renameFile';
 import copyFile from './stateActions/copyFile';
 import moveFile from './stateActions/moveFile';
+import editObjectStandalone from './stateActions/editObjectStandalone';
 
 let log = LoggerFactory.logger('actions').setLevelDebug();
 
@@ -195,6 +196,7 @@ actions['saveFile'] = saveFile;
 actions['renameFile'] = renameFile;
 actions['copyFile'] = copyFile;
 actions['moveFile'] = moveFile;
+actions['editObjectStandalone'] = editObjectStandalone;
 
 
 function noopAction(me, target) {
