@@ -61,45 +61,31 @@ async function compileComponent(file){
     // each component needs a unique module name
     var moduleName = 'cmp'+nameCapitalCamelCase
 
-    console.log(`${file} -> ${moduleName}`)
-
     // compile the Vue component and give us a .js and .css
     await rollup.rollup({
         input: `${basePath}${file}`,
         plugins: [
             commonjs(),
             nodeResolve(),
-            vue({
-                compiler: () => {},
-                compileTemplate: true,
-                css: false
-            }),
-            css({output:`${distBasePath}/css/${nameCamelCase}.css`}),
+            vue(),
+            css({output:(styles) => fs.writeFileSync(`${distBasePath}/css/${nameCamelCase}.css`, styles)}),
             buble(),
         ]
-    }).then( async function(bundle) {
-
-        await bundle.write({
+    }).then((bundle) => bundle.write({
             format: 'iife',
             name: moduleName,
-            file:`${distBasePath}/js/${nameCamelCase}.js`,
+            file: `${distBasePath}/js/${nameCamelCase}.js`,
             globals: {
                 tools: 'tools',
                 log: 'log'
             }
-
-        }).then( function() {
-            const index = compiling.indexOf(file)
-            if(index >= 0) {
-                compiling.splice(index, 1)
-            }
-            updateIndexFiles()
-        }).catch( (error) => {console.log("z", error)})
-    }).catch( (error) => {
+        })
+    ).then(() =>  {
         const index = compiling.indexOf(file)
         if(index >= 0) {
             compiling.splice(index, 1)
         }
+        return updateIndexFiles()
     })
     return { name: name, nameCamelCase: nameCamelCase, nameCapitalCamelCase: nameCapitalCamelCase}
 }
@@ -200,11 +186,19 @@ function readDirs(basePath, path, extFilter, mTimeMin = 0) {
 // find all the vue files in this project
 var vueFiles = readDirs(basePath, basePath, '.vue', timestamp)
 //var allFiles = readDirs(basePath, basePath, '.vue')
-var compiling = []
+var compiling = [];
 // for each of the files compile it
-for(let i = 0; i < vueFiles.length; i++) {
-    compileComponent(vueFiles[i])
-}
+(async () => {
+    await Promise.all(vueFiles.map(compileComponent))
+        .catch(e => {
+            console.error(e);
+            process.exit(1);
+        })
+})()
+updateIndexFiles()
+// for(let i = 0; i < vueFiles.length; i++) {
+//     compileComponent(vueFiles[i])
+// }
 
 fs.writeFileSync(timestampTokenFile, `${Date.now()}`, 'utf-8');
 
