@@ -50,8 +50,6 @@ try {
  */
 async function compileComponent(file){
 
-    compiling.push(file)
-
     console.log("compiling vue file: .%s", file)
     // get component name from file name (file: a.vue, name: a)
     var name = file.substring(1, file.lastIndexOf('/')).toLowerCase().split('/').join('-')
@@ -175,7 +173,6 @@ function readDirs(basePath, path, extFilter, mTimeMin = 0) {
 // find all the vue files in this project
 var vueFiles = readDirs(basePath, basePath, '.vue', timestamp)
 //var allFiles = readDirs(basePath, basePath, '.vue')
-var compiling = [];
 // for each of the files compile it
 (async () => {
     await Promise.all(vueFiles.map(compileComponent))
