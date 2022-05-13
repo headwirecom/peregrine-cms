@@ -3,7 +3,7 @@ const fs        = require('fs-extra')
 
 const rollup    = require('rollup')
 const path      = require('path')
-const vue       = require('rollup-plugin-vue2')
+const vue       = require('rollup-plugin-vue')
 const css       = require('rollup-plugin-css-only')
 const buble     = require('@rollup/plugin-buble')
 const commonjs  = require('@rollup/plugin-commonjs')
@@ -65,7 +65,7 @@ async function compileComponent(file){
         plugins: [
             commonjs(),
             nodeResolve(),
-            vue(),
+            vue({css: true}),
             css({output:(styles) => fs.writeFileSync(`${distBasePath}/css/${nameCamelCase}.css`, styles)}),
             buble(),
         ]
@@ -171,7 +171,7 @@ function readDirs(basePath, path, extFilter, mTimeMin = 0) {
 }
 
 // find all the vue files in this project
-var vueFiles = readDirs(basePath, basePath, '.vue', timestamp)
+var vueFiles = readDirs(basePath, basePath, '.vue', timestamp);
 //var allFiles = readDirs(basePath, basePath, '.vue')
 // for each of the files compile it
 (async () => {
