@@ -90,7 +90,7 @@
 
         <noContent>true</noContent>
         <org.apache.sling.serviceusermapper.version>1.5.4</org.apache.sling.serviceusermapper.version>
-        <org.apache.sling.event.version>4.2.12</org.apache.sling.event.version>
+        <org.apache.sling.event.version>4.3.2</org.apache.sling.event.version>
     </properties>
 
     <build>
