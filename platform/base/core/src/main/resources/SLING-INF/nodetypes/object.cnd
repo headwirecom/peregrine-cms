@@ -23,6 +23,7 @@
  * #L%
  */
 <'per'='http://www.peregrine-cms.com/jcr/cms/1.0'>
+<'nt'='http://www.jcp.org/jcr/nt/1.0'>
 
 [per:Object] > nt:hierarchyNode, sling:OrderedFolder, per:Replication
   orderable
