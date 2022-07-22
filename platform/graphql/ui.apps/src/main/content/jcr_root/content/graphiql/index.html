@@ -1,0 +1,44 @@
+<html>
+<head>
+    <title>Simple GraphiQL Example</title>
+    <link href="/etc/graphiql/graphiql.css" rel="stylesheet"/>
+</head>
+<body style="margin: 0;">
+<div id="graphiql" style="height: 100vh;"></div>
+
+<!--<script-->
+<!--        src="/etc/graphiql/react.production.min.js"-->
+<!--&gt;</script>-->
+<!--<script-->
+<!--        src="/etc/graphiql/react-dom.production.min.js"-->
+<!--&gt;</script>-->
+<script
+        src="/etc/graphiql/umd/react.js"
+></script>
+<script
+        src="/etc/graphiql/umd/react-dom.js"
+></script>
+<script
+        src="/etc/graphiql/graphiql2.js"
+></script>
+
+<script>
+    // AS Test
+    console.log(`URL: ${window.location.pathname}`)
+    var pagePath = window.location.pathname;
+    var tenant = '';
+    if (pagePath.startsWith('/content/') && pagePath.endsWith('/graphiql.html')) {
+        var length = '/content/'.length;
+        var index = pagePath.indexOf('/', length + 1);
+        tenant = pagePath.substring(length, index);
+    }
+    console.log(`Tenant from URL: ${tenant}`)
+    const fetcher = GraphiQL.createFetcher({url: `/content/${tenant}.gql`});
+
+    ReactDOM.render(
+        React.createElement(GraphiQL, {fetcher: fetcher}),
+        document.getElementById('graphiql'),
+    );
+</script>
+</body>
+</html>

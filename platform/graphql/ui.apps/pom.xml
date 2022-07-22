@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.peregrine-cms</groupId>
+        <artifactId>graphql.parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>graphql.ui.apps</artifactId>
+    <packaging>content-package</packaging>
+
+    <name>Peregrine CMS - Platform - GraphQL - UI Apps</name>
+    <description>
+        JCR Package for the Peregrine CMS GraphQL module.
+    </description>
+
+    <properties>
+        <noContent>false</noContent>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>graphql.core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.graphql.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.graphql-java</groupId>
+            <artifactId>graphql-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.graphql-java</groupId>
+            <artifactId>java-dataloader</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.reactivestreams</groupId>
+            <artifactId>reactive-streams</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.johnzon</groupId>
+            <artifactId>johnzon-mapper</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.servlet-helpers</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <!-- define the resources that will go into the package -->
+            <resource>
+                <!--
+                    we want to keep some of the META-INF files and not configure
+                    everything in the plugin.
+                -->
+                <directory>${basedir}/src/main/content/META-INF</directory>
+                <targetPath>../vault-work/META-INF</targetPath>
+            </resource>
+            <resource>
+                <directory>${basedir}/src/main/content/jcr_root</directory>
+                <excludes>
+                    <!-- exclude .vlt control files in the package -->
+                    <exclude>**/.vlt</exclude>
+                    <exclude>**/.vltignore</exclude>
+                    <exclude>**/.gitignore</exclude>
+                    <exclude>**/*.iml</exclude>
+                    <exclude>**/.classpath</exclude>
+                    <exclude>**/.project</exclude>
+                    <exclude>**/.settings</exclude>
+                    <exclude>**/.DS_Store</exclude>
+                    <exclude>**/target/**</exclude>
+                    <exclude>**/pom.xml</exclude>
+                </excludes>
+            </resource>
+        </resources>
+
+        <plugins>
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <configuration>
+                    <installDirectory>${nodepath}</installDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install node and npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <configuration>
+                            <nodeVersion>v12.18.3</nodeVersion>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>npm install</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <!-- Optional config which provides for running any npm command -->
+                        <configuration>
+                            <arguments>install</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm run build</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <phase>compile</phase>
+                        <configuration>
+                            <environmentVariables>
+                                <NODE_PATH>./node_modules</NODE_PATH>
+                            </environmentVariables>
+                            <arguments>run build</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm run site</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <phase>site</phase>
+                        <configuration>
+                            <environmentVariables>
+                                <NODE_PATH>./node_modules</NODE_PATH>
+                            </environmentVariables>
+                            <arguments>run site</arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>io.wcm.maven.plugins</groupId>
+                <artifactId>wcmio-content-package-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <!--<serviceURL>http://${sling.host}:${sling.port}/bin/cpm/package.service.html</serviceURL>-->
+                    <userId>${sling.user}</userId>
+                    <password>${sling.password}</password>
+                    <failOnMissingEmbed>true</failOnMissingEmbed>
+                    <group>com.peregrine-cms</group>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                        <configuration>
+                            <embeddedTarget>/apps/graphql/install</embeddedTarget>
+                            <embeddeds>
+                                <embedded>
+                                    <groupId>org.apache.sling</groupId>
+                                    <artifactId>org.apache.sling.graphql.core</artifactId>
+                                    <generateFilter>true</generateFilter>
+                                </embedded>
+                                <embedded>
+                                    <groupId>com.graphql-java</groupId>
+                                    <artifactId>graphql-java</artifactId>
+                                    <generateFilter>true</generateFilter>
+                                </embedded>
+                                <embedded>
+                                    <groupId>com.graphql-java</groupId>
+                                    <artifactId>java-dataloader</artifactId>
+                                    <generateFilter>true</generateFilter>
+                                </embedded>
+                                <embedded>
+                                    <groupId>org.reactivestreams</groupId>
+                                    <artifactId>reactive-streams</artifactId>
+                                    <generateFilter>true</generateFilter>
+                                </embedded>
+                                <embedded>
+                                    <groupId>org.apache.johnzon</groupId>
+                                    <artifactId>johnzon-mapper</artifactId>
+                                    <generateFilter>true</generateFilter>
+                                </embedded>
+                                <embedded>
+                                    <groupId>org.apache.sling</groupId>
+                                    <artifactId>org.apache.sling.servlet-helpers</artifactId>
+                                    <generateFilter>true</generateFilter>
+                                </embedded>
+                                <embedded>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>graphql.core</artifactId>
+                                    <generateFilter>true</generateFilter>
+                                </embedded>
+                            </embeddeds>
+                            <dependencies>
+                                <dependency>
+                                    <group>${project.groupId}</group>
+                                    <name>base.ui.apps</name>
+                                    <version>${project.version}</version>
+                                </dependency>
+                            </dependencies>
+                            <!-- ATTENTION: Do not include this package as sub package which would yield an endless loop -->
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <configuration>
+                    <licenseName>peregrine-cms-license</licenseName>
+                    <licenseResolver>${project.baseUri}../../src/license</licenseResolver>
+                    <excludes>
+                        <!-- Need to provide a pattern that deals with folders as well -->
+                        <exclude>**/css.html</exclude>
+                        <exclude>**/js.html</exclude>
+                        <exclude>**/lib.html</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
