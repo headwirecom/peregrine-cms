@@ -29,13 +29,31 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peregrine.commons.servlets.ServletHelper;
+import com.peregrine.jsonschema.specification.Property;
+import com.peregrine.jsonschema.specification.PropertyImpl;
+import com.peregrine.jsonschema.specification.Schema;
+import com.peregrine.jsonschema.specification.SchemaImpl;
+import com.peregrine.jsonschema.specification.SchemaParser;
+import com.peregrine.jsonschema.specification.SchemaParser.SchemaException;
 import com.peregrine.nodetypes.models.AbstractComponent;
 import com.peregrine.nodetypes.models.IComponent;
+import com.sun.codemodel.JClass;
+import com.sun.codemodel.JCodeModel;
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JFieldVar;
+import com.sun.codemodel.JPackage;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
+import org.jsonschema2pojo.DefaultGenerationConfig;
+import org.jsonschema2pojo.GenerationConfig;
+import org.jsonschema2pojo.Jackson2Annotator;
+import org.jsonschema2pojo.SchemaGenerator;
+import org.jsonschema2pojo.SchemaMapper;
+import org.jsonschema2pojo.SchemaStore;
+import org.jsonschema2pojo.rules.RuleFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,10 +61,12 @@ import javax.inject.Inject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import static com.peregrine.commons.util.PerConstants.DIALOG_JSON;
 import static com.peregrine.commons.util.PerConstants.JACKSON;
@@ -75,6 +95,8 @@ public class ObjectModel extends AbstractComponent {
     @Inject
     private String name;
 
+    private Schema schema;
+
     public String getName() {
         return name;
     }
@@ -97,38 +119,97 @@ public class ObjectModel extends AbstractComponent {
     @JsonAnyGetter
     public Map<String, Object> getDynamicValues() {
         Map<String, Object> answer = new HashMap<>();
+//        generateSchemaModel();
         Resource source = getResource();
         ValueMap properties = source.getValueMap();
         String objectDefinitionPath = properties.get(OBJECT_PATH, String.class);
         if(objectDefinitionPath != null) {
-            Resource definitionDialog = source.getResourceResolver().getResource(objectDefinitionPath + SLASH + DIALOG_JSON);
-            if(definitionDialog != null) {
-                InputStream is = definitionDialog.adaptTo(InputStream.class);
-                if(is != null) {
-                    String dialog = null;
-                    try {
-                        dialog = ServletHelper.asString(is).toString();
-                        ObjectMapper mapper = new ObjectMapper();
-                        DialogBean dialogBean = mapper.readValue(dialog, DialogBean.class);
-                        for(GroupItem group: dialogBean.getGroups()) {
-                            for (FieldItem field : group.getFields()) {
+//            if(schema == null) {
+                Resource definitionDialog = source.getResourceResolver().getResource(objectDefinitionPath + SLASH + DIALOG_JSON);
+                if (definitionDialog != null) {
+                    InputStream is = definitionDialog.adaptTo(InputStream.class);
+                    if (is != null) {
+                        String dialog = null;
+                        try {
+                            dialog = ServletHelper.asString(is).toString();
+                            ObjectMapper mapper = new ObjectMapper();
+                            DialogBean dialogBean = mapper.readValue(dialog, DialogBean.class);
+                            for(GroupItem group: dialogBean.getGroups()) {
+                                for (FieldItem field : group.getFields()) {
+                                    answer.put(field.getModel(), properties.get(field.getModel(), String.class));
+                                }
+                            }
+                            for (FieldItem field : dialogBean.getFields()) {
                                 answer.put(field.getModel(), properties.get(field.getModel(), String.class));
                             }
+                        } catch (IOException e) {
+                            if(dialog == null) {
+                                logger.warn("Dialog Resource count not be read as input stream: '{}'", objectDefinitionPath + SLASH + DIALOG_JSON);
+                            } else {
+                                logger.warn("Failed to parse given Dialog content into Dialog Bean: '{}'", dialog);
+                            }
                         }
-                        for (FieldItem field : dialogBean.getFields()) {
-                            answer.put(field.getModel(), properties.get(field.getModel(), String.class));
-                        }
-                    } catch (IOException e) {
-                        if(dialog == null) {
-                            logger.warn("Dialog Resource count not be read as input stream: '{}'", objectDefinitionPath + SLASH + DIALOG_JSON);
-                        } else {
-                            logger.warn("Failed to parse given Dialog content into Dialog Bean: '{}'", dialog);
-                        }
+//                        try {
+//                            String content = ServletHelper.asString(is).toString();
+//                            schema = SchemaParser.parseSchema(content);
+//                        } catch (SchemaException e) {
+//                            logger.error("Dialog Schema on : '" + (objectDefinitionPath + SLASH + DIALOG_JSON) + "' was not parsable", e);
+//                        } catch (IOException e) {
+//                            logger.warn("Failed to read Dialog JSon on :'{}'", objectDefinitionPath + SLASH + DIALOG_JSON);
+//                        }
                     }
                 }
             }
-        }
+//            if(schema != null) {
+//                for (Property property : schema.getProperties()) {
+//                    answer.put(
+//                        property.getName(),
+//                        properties.get(property.getName(), String.class)
+//                    );
+//                }
+//            }
+//        }
+//        answer.put("line", "");
         return answer;
+    }
+
+    private void generateSchemaModel() {
+        try {
+            Resource source = getResource();
+            String objectDefinitionPath = source.getValueMap().get(OBJECT_PATH, String.class);
+            if(objectDefinitionPath != null) {
+                Resource definitionDialog = source.getResourceResolver().getResource(objectDefinitionPath + SLASH + "json-schema.json" + SLASH + "jcr:content");
+                if (definitionDialog != null) {
+                    ValueMap properties = definitionDialog.getValueMap();
+                    String content = properties.get("jcr:data", String.class);
+                    JCodeModel codeModel = new JCodeModel();
+                    GenerationConfig config = new DefaultGenerationConfig() {
+                        @Override
+                        public boolean isGenerateBuilders() { // set config option by overriding method
+                            return true;
+                        }
+                    };
+                    SchemaMapper mapper = new SchemaMapper(new RuleFactory(config, new Jackson2Annotator(config), new SchemaStore()), new SchemaGenerator());
+                    mapper.generate(codeModel, "ClassName", "com.example", content);
+
+                    java.io.File tempFile =  Files.createTempDirectory("required").toFile();
+                    codeModel.build(tempFile);
+
+                    // Go though the Code Model and create our Schema Model from it
+                    JPackage myPackage = codeModel._package("com.example");
+                    JDefinedClass myClass = myPackage._getClass("ClassName");
+                    SchemaImpl schema = new SchemaImpl(myClass.name(), "1.0");
+                    Map<String,JFieldVar> myFields = myClass.fields();
+                    for(Entry<String,JFieldVar> entry: myFields.entrySet()) {
+                        String fieldName = entry.getKey();
+                        JFieldVar field = entry.getValue();
+                        schema.addProperty(new PropertyImpl(fieldName, field.type().fullName()));
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /** Represents the entire dialog.json file **/
