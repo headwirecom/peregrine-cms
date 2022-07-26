@@ -1,0 +1,23 @@
+{
+  "name": "graphql",
+  "version": "1.0.0",
+  "description": "GraphiQL UI application",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/headwirecom/peregrine-cms.git",
+    "directory": "platform/graphql/ui.apps"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node ./index.js"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "graphiql": "^1.5.16",
+    "graphql": "^16.2.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  }
+}

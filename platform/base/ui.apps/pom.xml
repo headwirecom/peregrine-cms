@@ -58,6 +58,12 @@
             <artifactId>distribution</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>graphql.ui.apps</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
     </dependencies>
 
     <build>
@@ -123,6 +129,11 @@
                                 <embedded>
                                     <groupId>${project.groupId}</groupId>
                                     <artifactId>distribution</artifactId>
+                                    <generateFilter>true</generateFilter>
+                                </embedded>
+                                <embedded>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>graphql.ui.apps</artifactId>
                                     <generateFilter>true</generateFilter>
                                 </embedded>
                             </embeddeds>
