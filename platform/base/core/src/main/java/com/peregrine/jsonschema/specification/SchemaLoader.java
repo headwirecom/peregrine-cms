@@ -7,7 +7,7 @@ import java.util.Date;
 
 public interface SchemaLoader {
 
-    String SCHEMA_JSON_NODE_NAME = "schema.json";
+    String SCHEMA_JSON_NODE_NAME = "json-schema.json";
 
     /**
      * Checks if the given path is a Schema

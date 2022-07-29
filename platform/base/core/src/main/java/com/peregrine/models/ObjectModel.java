@@ -147,7 +147,8 @@ public class ObjectModel extends AbstractComponent {
                 }
             }
         }
-        answer.put("line", "");
+//AS TODO: not sure if that was a test or some requirements
+//        answer.put("line", "");
         return answer;
     }
 
