@@ -125,7 +125,7 @@
 
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
-            <artifactId>jackrabbit-api</artifactId>
+            <artifactId>oak-jackrabbit-api</artifactId>
         </dependency>
 
         <dependency>

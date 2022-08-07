@@ -10,14 +10,9 @@ import org.apache.sling.api.resource.Resource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.jcr.RepositoryException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.mock.MockTools.setParentChildRelationships;
@@ -95,7 +90,7 @@ public final class CacheBuilderBaseTest extends SiteStructureTestBase {
     @SuppressWarnings("unchecked")
 	@Test
     public void rebuilds_throwLoginException() throws LoginException {
-        when(model.createResourceResolver()).thenThrow(LoginException.class);
+        when(model.createResourceResolver()).thenAnswer(invocation -> { throw new LoginException(); });
 
         model.rebuild(StringUtils.EMPTY);
         verifyCommits(0);

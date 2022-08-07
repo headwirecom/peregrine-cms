@@ -3,6 +3,7 @@ package com.peregrine.mock;
 import javax.jcr.RepositoryException;
 
 import static com.peregrine.commons.util.PerConstants.*;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 public class PageMock extends ResourceMock {
@@ -17,7 +18,7 @@ public class PageMock extends ResourceMock {
         addChild(JCR_CONTENT, content);
         content.setParent(this);
         try {
-            when(node.canAddMixin(PER_REPLICATION)).thenReturn(true);
+            lenient().when(node.canAddMixin(PER_REPLICATION)).thenReturn(true);
         } catch (final RepositoryException e) { }
     }
 

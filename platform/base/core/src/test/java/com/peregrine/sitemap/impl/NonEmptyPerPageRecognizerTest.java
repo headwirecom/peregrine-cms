@@ -4,7 +4,7 @@ import com.peregrine.commons.Page;
 import com.peregrine.sitemap.PageRecognizerBaseTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;

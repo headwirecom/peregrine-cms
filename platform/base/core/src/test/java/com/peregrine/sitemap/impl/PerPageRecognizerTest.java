@@ -4,7 +4,7 @@ import com.peregrine.commons.util.PerConstants;
 import com.peregrine.sitemap.PageRecognizerBaseTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PerPageRecognizerTest extends PageRecognizerBaseTest {

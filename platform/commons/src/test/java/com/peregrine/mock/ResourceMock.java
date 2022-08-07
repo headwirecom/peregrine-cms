@@ -21,9 +21,8 @@ import java.util.stream.Collectors;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
 import static org.apache.jackrabbit.JcrConstants.JCR_PRIMARYTYPE;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 public class ResourceMock extends ResourceWrapper {
 
@@ -52,7 +51,7 @@ public class ResourceMock extends ResourceWrapper {
         mock = getResource();
         node = mockNode(debugName);
         final ValueMap valueMap = new ValueMapDecorator(properties);
-        when(mock.getValueMap()).thenReturn(valueMap);
+        lenient().when(mock.getValueMap()).thenReturn(valueMap);
         addAdapter(valueMap);
         addAdapter(new ModifiableValueMapDecorator(properties));
     }
@@ -72,22 +71,22 @@ public class ResourceMock extends ResourceWrapper {
             return mockNodeProperty(key);
         };
         try {
-            when(mock.hasProperty(anyString())).then(invocation ->
+            lenient().when(mock.hasProperty(anyString())).then(invocation ->
                     properties.containsKey((invocation.getArguments()[0])));
-            when(mock.setProperty(anyString(), anyString())).then(setPropertyAnswer);
-            when(mock.getProperty(anyString())).then(invocation ->
+            lenient().when(mock.setProperty(anyString(), anyString())).then(setPropertyAnswer);
+            lenient().when(mock.getProperty(anyString())).then(invocation ->
                     mockNodeProperty((String) invocation.getArguments()[0]));
-            when(mock.getProperties()).then(invocation -> new PropertyIteratorMock());
-            when(mock.getNodes()).then(invocation -> new NodeIteratorMock(children));
-            when(mock.hasNode(anyString())).then(invocation -> hasChild(invocation.getArguments()[0]));
-            when(mock.getNode(anyString())).then(invocation ->
+            lenient().when(mock.getProperties()).then(invocation -> new PropertyIteratorMock());
+            lenient().when(mock.getNodes()).then(invocation -> new NodeIteratorMock(children));
+            lenient().when(mock.hasNode(anyString())).then(invocation -> hasChild(invocation.getArguments()[0]));
+            lenient().when(mock.getNode(anyString())).then(invocation ->
                     Optional.ofNullable(invocation.getArguments()[0])
                             .map(a -> getChild((String) a))
                             .map(ResourceMock::getNode)
                             .orElse(null)
             );
-            when(mock.getIdentifier()).thenReturn(name);
-            when(mock.getPrimaryNodeType()).thenReturn(nodeType);
+            lenient().when(mock.getIdentifier()).thenReturn(name);
+            lenient().when(mock.getPrimaryNodeType()).thenReturn(nodeType);
         } catch (final RepositoryException e) { }
 
         return mock;
@@ -145,7 +144,7 @@ public class ResourceMock extends ResourceWrapper {
     public final ResourceMock setPrimaryType(final String primaryType) {
         putProperty(JCR_PRIMARYTYPE, primaryType);
         when(mock.isResourceType(primaryType)).thenReturn(true);
-        when(nodeType.getName()).thenReturn(primaryType);
+        lenient().when(nodeType.getName()).thenReturn(primaryType);
         return this;
     }
 
@@ -156,7 +155,7 @@ public class ResourceMock extends ResourceWrapper {
     }
 
     public final ResourceMock setResourceType(final String resourceType) {
-        when(mock.isResourceType(resourceType)).thenReturn(true);
+        lenient().when(mock.isResourceType(resourceType)).thenReturn(true);
         putProperty(SLING_RESOURCE_TYPE, resourceType);
         return this;
     }
@@ -237,7 +236,7 @@ public class ResourceMock extends ResourceWrapper {
     }
 
     public final ResourceMock setParent(final Resource parent) {
-        when(mock.getParent()).thenReturn(parent);
+        lenient().when(mock.getParent()).thenReturn(parent);
         if(parent instanceof ResourceMock && !((ResourceMock) parent).hasChild(getName())) {
             ((ResourceMock) parent).addChild(this);
         }

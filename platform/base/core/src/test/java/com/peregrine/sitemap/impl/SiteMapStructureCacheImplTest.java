@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.*;
 
@@ -69,7 +69,7 @@ public final class SiteMapStructureCacheImplTest extends SiteStructureTestBase i
         init(cacheParent);
 
         when(siteMapExtractorsContainer.findFirstFor(page)).thenReturn(extractor);
-        when(extractor.getConfiguration()).thenReturn(siteMapConfiguration);
+        lenient().when(extractor.getConfiguration()).thenReturn(siteMapConfiguration);
 
         model.addRefreshListener(this);
     }
@@ -163,7 +163,7 @@ public final class SiteMapStructureCacheImplTest extends SiteStructureTestBase i
     public void get_extractorIsNull() {
         repo.mockResourceResolverCreate();
         disableCacheResolution();
-        when(siteMapExtractorsContainer.findFirstFor(page)).thenReturn(null);
+        lenient().when(siteMapExtractorsContainer.findFirstFor(page)).thenReturn(null);
         assertNull(model.get(page));
     }
 
@@ -181,7 +181,7 @@ public final class SiteMapStructureCacheImplTest extends SiteStructureTestBase i
     @Test
     public void putSiteMapsInCache() {
         repo.mockResourceResolverCreate();
-        when(extractor.extract(page)).thenReturn(entries);
+        lenient().when(extractor.extract(page)).thenReturn(entries);
         addEntryCache();
         SiteMapEntry entry = createEntry();
         entry.putProperty("x:y", 0);
