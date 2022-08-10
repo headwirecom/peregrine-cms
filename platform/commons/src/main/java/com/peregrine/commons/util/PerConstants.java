@@ -127,6 +127,10 @@ public class PerConstants {
     public static final String NAME = "name";
     public static final String DATA = "data";
     public static final String MODEL = "model";
+
+    public static final String JSON_SCHEMA = "jsonSchema";
+
+    public static final String UI_SCHEMA = "uiSchema";
     public static final String TYPE = "type";
     public static final String VARIATION = "variation";
     public static final String VARIATION_PATH = "variationPath";

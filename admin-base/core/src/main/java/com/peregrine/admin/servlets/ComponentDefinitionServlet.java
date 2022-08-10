@@ -29,6 +29,7 @@ import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_COMPONENT_DE
 import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
 import static com.peregrine.commons.util.PerConstants.CONF_ROOT;
 import static com.peregrine.commons.util.PerConstants.DIALOG_JSON;
+import static com.peregrine.commons.util.PerConstants.JSON_SCHEMA;
 import static com.peregrine.commons.util.PerConstants.MODEL;
 import static com.peregrine.commons.util.PerConstants.NAME;
 import static com.peregrine.commons.util.PerConstants.OBJECT_PATH;
@@ -37,6 +38,7 @@ import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.SLASH;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_SUPER_TYPE;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
+import static com.peregrine.commons.util.PerConstants.UI_SCHEMA;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
 import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
@@ -113,6 +115,14 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
         if (ogTags == null) {
             ogTags = getDialogFromSuperType(componentResource, page, true);
         }
+        Resource jsonSchema = componentResource.getChild("json-schema.json");
+//        if (jsonSchema == null) {
+//            jsonSchema = getDialogFromSuperType(componentResource, page, false);
+//        }
+        Resource uiSchema = componentResource.getChild("ui-schema.json");
+//        if (uiSchema == null) {
+//            uiSchema = getDialogFromSuperType(componentResource, page, false);
+//        }
         JsonResponse answer = new JsonResponse();
         answer.writeAttribute(PATH, componentResource.getPath());
         answer.writeAttribute(NAME, ServletHelper.componentPathToName(componentResource.getPath()));
@@ -121,6 +131,12 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
         }
         if (ogTags != null) {
             answer.writeAttributeRaw(OG_TAGS, rewriteDialogToTenant(path, ogTags));
+        }
+        if (jsonSchema != null) {
+            answer.writeAttributeRaw(JSON_SCHEMA, rewriteDialogToTenant(path, jsonSchema));
+        }
+        if (uiSchema != null) {
+            answer.writeAttributeRaw(UI_SCHEMA, rewriteDialogToTenant(path, uiSchema));
         }
         return answer;
     }

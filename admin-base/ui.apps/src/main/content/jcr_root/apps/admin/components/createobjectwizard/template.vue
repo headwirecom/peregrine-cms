@@ -22,44 +22,18 @@
   under the License.
   #L%
   -->
-<template>
-<div class="container">
-    <form-wizard v-bind:title="'create an object'" v-bind:subtitle="''" @on-complete="onComplete" color="#37474f">
-        <tab-content title="select object type" :before-change="leaveTabOne">
-            <ul class="collection">
-                <li class="collection-item"
-                    v-for="item in objects"
-                    v-bind:key="item.path"
-                    v-on:click.stop.prevent="selectItem(null, item.path)"
-                    v-bind:class="isSelected(item.path) ? 'grey lighten-2' : ''">
-                    <admin-components-action v-bind:model="{ command: 'selectItem', target: item.path, title: item.name }"></admin-components-action>
-                </li>
-            </ul>
-            <div v-if="!formmodel.templatePath">please select an object</div>
-        </tab-content>
-        <tab-content title="choose name" :before-change="leaveTabTwo">
-            <vue-form-generator :model="formmodel"
-                                :schema="nameSchema"
-                                :options="formOptions"
-                                ref="nameTab">
-
-            </vue-form-generator>
-        </tab-content>
-        <tab-content title="values">
-            <div>Provide the values for this object</div>
-            <vue-form-generator :model="formmodel"
-                                :schema="objectSchema"
-                                :options="formOptions"
-                                ref="verifyTab">
-
-            </vue-form-generator>
-        </tab-content>
-    </form-wizard>
-</div>
-</template>
 
 <script>
-    export default {
+// import { JsonForms } from '@jsonforms/vue';
+// import { vanillaRenderers } from '@jsonforms/vue-vanilla';
+// import { defineComponent } from 'vue';
+//
+// const renderers = [
+//   ...vanillaRenderers,
+//   // here you can add custom renderers
+// ]
+
+export default {
         props: ['model'],
         data:
             function() {
@@ -99,6 +73,26 @@
                     const definitions = $perAdminApp.getNodeFromView('/admin/componentDefinitions')
                     if(definitions &&  definitions[componentName]) {
                         return definitions[componentName].model
+                    }
+                }
+            },
+            jsonschema: function() {
+                if(this.formmodel.objectPath !== '') {
+                    const path = this.formmodel.objectPath.split('/')
+                    const componentName = path.slice(2).join('-')
+                    const definitions = $perAdminApp.getNodeFromView('/admin/componentDefinitions')
+                    if(definitions &&  definitions[componentName]) {
+                        return definitions[componentName].jsonschema
+                    }
+                }
+            },
+            uischema: function() {
+                if(this.formmodel.objectPath !== '') {
+                    const path = this.formmodel.objectPath.split('/')
+                    const componentName = path.slice(2).join('-')
+                    const definitions = $perAdminApp.getNodeFromView('/admin/componentDefinitions')
+                    if(definitions &&  definitions[componentName]) {
+                        return definitions[componentName].uischema
                     }
                 }
             },
@@ -190,3 +184,46 @@
         }
     }
 </script>
+<template>
+  <div class="container">
+    <form-wizard v-bind:title="'create an object'" v-bind:subtitle="''" @on-complete="onComplete" color="#37474f">
+      <tab-content title="select object type" :before-change="leaveTabOne">
+        <ul class="collection">
+          <li class="collection-item"
+              v-for="item in objects"
+              v-bind:key="item.path"
+              v-on:click.stop.prevent="selectItem(null, item.path)"
+              v-bind:class="isSelected(item.path) ? 'grey lighten-2' : ''">
+            <admin-components-action v-bind:model="{ command: 'selectItem', target: item.path, title: item.name }"></admin-components-action>
+          </li>
+        </ul>
+        <div v-if="!formmodel.templatePath">please select an object</div>
+      </tab-content>
+      <tab-content title="choose name" :before-change="leaveTabTwo">
+        <vue-form-generator :model="formmodel"
+                            :schema="nameSchema"
+                            :options="formOptions"
+                            ref="nameTab">
+
+        </vue-form-generator>
+      </tab-content>
+      <tab-content title="values">
+        <div>Provide the values for this object</div>
+<!--        <json-forms-->
+<!--            :data="formmodel"-->
+<!--            :schema="jsonschema"-->
+<!--            :uischema="uischema"-->
+<!--            :renderers="renderers"-->
+<!--            ref="verifyTab"-->
+<!--        />-->
+        <!--            @change="onChange"-->
+
+          <vue-form-generator :model="formmodel"
+                              :schema="objectSchema"
+                              :options="formOptions"
+                              ref="verifyTab">
+          </vue-form-generator>
+      </tab-content>
+    </form-wizard>
+  </div>
+</template>
