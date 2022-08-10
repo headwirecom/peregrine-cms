@@ -74,7 +74,7 @@ import org.osgi.service.component.annotations.Reference;
  */
 public class CopyServlet extends AbstractBaseServlet {
 
-    public static final String TAGET_NAME = "tagetName";
+    public static final String TARGET_NAME = "targetName";
     public static final String TARGET_PATH = "targetPath";
     public static final String TO = "to";
     public static final String NEW_NAME = "newName";
@@ -93,7 +93,9 @@ public class CopyServlet extends AbstractBaseServlet {
         Resource nextSibling = null;
         String type = request.getParameter(TYPE);
         String newName = request.getParameter(NEW_NAME);
+        if("null".equals(newName)) { newName = null; }
         String newTitle = request.getParameter(NEW_TITLE);
+        if("null".equals(newTitle)) { newTitle = null; }
         String deepParam = request.getParameter(DEEP);
         boolean deep = Boolean.parseBoolean(deepParam);
         if(ORDER_CHILD_TYPE.equals(type)) {
@@ -129,7 +131,7 @@ public class CopyServlet extends AbstractBaseServlet {
         JsonResponse answer = new JsonResponse();
         answer.writeAttribute(SOURCE_NAME, from.getName());
         answer.writeAttribute(SOURCE_PATH, from.getPath());
-        answer.writeAttribute(TAGET_NAME, copiedResource.getName());
+        answer.writeAttribute(TARGET_NAME, copiedResource.getName());
         answer.writeAttribute(TARGET_PATH, copiedResource.getPath());
         return answer;
     }
