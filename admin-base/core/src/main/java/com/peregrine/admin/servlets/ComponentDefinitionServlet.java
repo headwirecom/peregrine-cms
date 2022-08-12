@@ -116,10 +116,12 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
             ogTags = getDialogFromSuperType(componentResource, page, true);
         }
         Resource jsonSchema = componentResource.getChild("json-schema.json");
+//AS TODO: could there be a parent json-schema definition?
 //        if (jsonSchema == null) {
 //            jsonSchema = getDialogFromSuperType(componentResource, page, false);
 //        }
         Resource uiSchema = componentResource.getChild("ui-schema.json");
+//AS TODO: could there be a parent ui-schema definition?
 //        if (uiSchema == null) {
 //            uiSchema = getDialogFromSuperType(componentResource, page, false);
 //        }

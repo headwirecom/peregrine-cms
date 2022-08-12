@@ -927,9 +927,10 @@ class PerAdminImpl {
     })
   }
 
-  createFolder(parentPath, name) {
+  createFolder(parentPath, name, allowedNodeTypes) {
     let data = new FormData()
     data.append('name', name)
+    data.append('allowedNodeTypes', allowedNodeTypes)
     return updateWithForm('/admin/createFolder.json' + parentPath, data)
         .then(() => this.populateNodesForBrowser(parentPath))
   }

@@ -31,7 +31,7 @@ export default function(me, target) {
     var api = me.getApi()
 
     return new Promise( (resolve, reject) => {
-        api.createFolder(target.parent, target.name).then( () => {
+        api.createFolder(target.parent, target.name, target.allowedNodeTypes).then( () => {
             me.loadContent('/content/admin/pages/objects.html/path'+ SUFFIX_PARAM_SEPARATOR + target.parent)
             resolve()
         })

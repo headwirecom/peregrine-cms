@@ -24,165 +24,242 @@
   -->
 
 <script>
-// import { JsonForms } from '@jsonforms/vue';
-// import { vanillaRenderers } from '@jsonforms/vue-vanilla';
-// import { defineComponent } from 'vue';
+// import { defineComponent } from "@vue/composition-api";
+// import { JsonForms, JsonFormsChangeEvent } from "@jsonforms/vue2";
+// import {
+//   defaultStyles,
+//   mergeStyles,
+//   vanillaRenderers
+// } from "@jsonforms/vue2-vanilla";
 //
 // const renderers = [
 //   ...vanillaRenderers,
 //   // here you can add custom renderers
 // ]
 
+// export default defineComponent({
+//         name: 'create-object-wizard',
+//         components: {
+//           JsonForms
+//         },
 export default {
-        props: ['model'],
-        data:
-            function() {
-                return {
-                    formmodel: {
-                        path: $perAdminApp.getNodeFromView(this.model.dataFrom),
-                        name: '',
-                        objectPath: ''
-
-                    },
-                    formOptions: {
-                        validationErrorClass: "has-error",
-                        validationSuccessClass: "has-success",
-                        validateAfterChanged: true,
-                        focusFirstField: true
-                    },
-                    nameSchema: {
-                        fields: [{
-                            type: "input",
-                            inputType: "text",
-                            label: "Object Name",
-                            model: "name",
-                            required: true,
-                            validator: [this.nameAvailable, this.validObjectName]
-                        }
-                        ]
-                    }
-                }
-
-        }
-        ,
-        computed: {
-            objectSchema: function() {
-                if(this.formmodel.objectPath !== '') {
-                    const path = this.formmodel.objectPath.split('/')
-                    const componentName = path.slice(2).join('-')
-                    const definitions = $perAdminApp.getNodeFromView('/admin/componentDefinitions')
-                    if(definitions &&  definitions[componentName]) {
-                        return definitions[componentName].model
-                    }
-                }
-            },
-            jsonschema: function() {
-                if(this.formmodel.objectPath !== '') {
-                    const path = this.formmodel.objectPath.split('/')
-                    const componentName = path.slice(2).join('-')
-                    const definitions = $perAdminApp.getNodeFromView('/admin/componentDefinitions')
-                    if(definitions &&  definitions[componentName]) {
-                        return definitions[componentName].jsonschema
-                    }
-                }
-            },
-            uischema: function() {
-                if(this.formmodel.objectPath !== '') {
-                    const path = this.formmodel.objectPath.split('/')
-                    const componentName = path.slice(2).join('-')
-                    const definitions = $perAdminApp.getNodeFromView('/admin/componentDefinitions')
-                    if(definitions &&  definitions[componentName]) {
-                        return definitions[componentName].uischema
-                    }
-                }
-            },
-            objects: function() {
-                const path = $perAdminApp.getNodeFromView(this.model.dataFrom)
-                const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, path)
-                const objects = $perAdminApp.getNodeFromViewOrNull('/admin/objects/data')
-                const allowedObjects = this.findAllowedObjects(path)
-                if(allowedObjects) {
-                    let ret = []
-                    for(let i = 0; i < objects.length; i++) {
-                        if(allowedObjects.indexOf(objects[i].name) >= 0) {
-                            ret.push(objects[i])
-                        }
-                    }
-                    return ret
-                }
-                const tenant = $perAdminApp.getView().state.tenant;
-                return objects.filter( object => { 
-                    return object.path.startsWith('/apps/admin/') 
-                        || (tenant && object.path.startsWith(`/apps/${tenant.name}/`)) 
-                        || (tenant && object.path.startsWith(`/content/${tenant.name}/object-definitions/`))
-                })
-            }
+  props: ["model"],
+  data: function () {
+    return {
+      // renderers: Object.freeze(renderers),
+      formmodel: {
+        path: $perAdminApp.getNodeFromView(this.model.dataFrom),
+        name: "",
+        objectPath: "",
+      },
+      formOptions: {
+        validationErrorClass: "has-error",
+        validationSuccessClass: "has-success",
+        validateAfterChanged: true,
+        focusFirstField: true,
+      },
+      nameSchema: {
+        fields: [{
+          type: "input",
+          inputType: "text",
+          label: "Object Name",
+          model: "name",
+          required: true,
+          validator: [
+            this.nameAvailable,
+            this.validObjectName,
+          ],
         },
-        created: function() {
-            //By default select the first item in the list;
-            if(this.objects.length > 0) {
-                this.selectItem(null, this.objects[0].path)
-            }
-        },
-        methods: {
-            findAllowedObjects(path) {
-
-                const pathSegments = path.split('/')
-                while(pathSegments.length > 1) {
-                    const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, pathSegments.join('/'))
-                    if(node.allowedObjects) {
-                        return node.allowedObjects
-                    }
-                    pathSegments.pop()
-                }
-                return undefined
-            },
-            selectItem: function(me, target){
-                if(me === null) me = this
-                me.formmodel.objectPath = target
-            },
-            isSelected: function(target) {
-                return this.formmodel.objectPath === target
-            },
-            onComplete: function() {
-                let objectPath = this.formmodel.objectPath
-                objectPath = objectPath.split('/').slice(2).join('/')
-                $perAdminApp.stateAction('createObject', { parent: this.formmodel.path, name: this.formmodel.name, template: objectPath, data: this.formmodel, returnTo: this.model.returnTo })
-            },
-            nameAvailable(value) {
-                if(!value || value.length === 0) {
-                    return ['name is required']
-                } else {
-                    const folder = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, this.formmodel.path)
-                    for(let i = 0; i < folder.children.length; i++) {
-                        if(folder.children[i].name === value) {
-                            return ['name aready in use']
-                        }
-                    }
-                    return []
-                }
-            },
-            validObjectName(value) {
-                if(!value || value.length === 0) {
-                    return ['name is required']
-                }
-                if(value.match(/[^0-9a-zA-Z_-]/)) {
-                    return ['object names may only contain letters, numbers, underscores, and dashes']
-                }
-                return [];
-            },
-            leaveTabOne: function() {
-                if('' !== ''+this.formmodel.objectPath) {
-                    $perAdminApp.getApi().populateComponentDefinitionFromNode(this.formmodel.objectPath)
-                }
-                return ! ('' === ''+this.formmodel.objectPath)
-            },
-            leaveTabTwo: function() {
-                return this.$refs.nameTab.validate()
-            }
-
+        ],
+      },
+    };
+  },
+  computed: {
+    objectSchema: function () {
+      if (this.formmodel.objectPath !== "") {
+        const path = this.formmodel.objectPath.split("/");
+        const componentName = path.slice(2).join("-");
+        const definitions = $perAdminApp.getNodeFromView(
+            "/admin/componentDefinitions"
+        );
+        if (definitions && definitions[componentName]) {
+          return definitions[componentName].model;
         }
+      }
+    },
+    jsonschema: function () {
+      if (this.formmodel.objectPath !== '') {
+        const path = this.formmodel.objectPath.split('/')
+        const componentName = path.slice(2).join('-')
+        const definitions = $perAdminApp.getNodeFromView('/admin/componentDefinitions')
+        if (definitions && definitions[componentName]) {
+          return definitions[componentName].jsonschema
+        }
+      }
+    },
+    uischema: function () {
+      if (this.formmodel.objectPath !== '') {
+        const path = this.formmodel.objectPath.split('/')
+        const componentName = path.slice(2).join('-')
+        const definitions = $perAdminApp.getNodeFromView('/admin/componentDefinitions')
+        if (definitions && definitions[componentName]) {
+          return definitions[componentName].uischema
+        }
+      }
+    },
+    objects: function () {
+      const path = $perAdminApp.getNodeFromView(this.model.dataFrom);
+      // console.log(`objects(), path: ${path}`)
+      const objects = $perAdminApp.getNodeFromViewOrNull(
+          "/admin/objects/data"
+      );
+      // console.log(`objects(), path: ${JSON.stringify(objects)}`)
+      const allowedNodeTypes = this.findAllowedNodeTypes(path)
+      // console.log(`objects(), allowed nodetypes: ${JSON.stringify(allowedNodeTypes)}`)
+      let ret = [];
+      if(allowedNodeTypes) {
+        for (let i = 0; i < objects.length; i++) {
+          // console.log(`objects(), ${i}. objects node-type: ${objects[i].nodeType}`)
+          for(let j = 0; j < allowedNodeTypes.length; j++) {
+            // console.log(`objects(), ${i}. allowed node-type: ${allowedNodeTypes[j]}`)
+            if (objects[i].nodeType === allowedNodeTypes[j]) {
+              ret.push(objects[i]);
+            }
+          }
+        }
+      } else {
+        const allowedObjects = this.findAllowedObjects(path);
+        if (allowedObjects) {
+          ret = ret.filter((object) => {
+            return allowedObjects.indexOf(object.name) >= 0
+          })
+          return ret;
+        }
+      }
+      const tenant = $perAdminApp.getView().state.tenant;
+      return ret.filter((object) => {
+        return (
+            object.path.startsWith("/apps/admin/") ||
+            (tenant &&
+                object.path.startsWith(`/apps/${tenant.name}/`)) ||
+            (tenant &&
+                object.path.startsWith(
+                    `/content/${tenant.name}/object-definitions/`
+                ))
+        );
+      });
+    },
+  },
+  created: function () {
+    //By default select the first item in the list;
+    if (this.objects.length > 0) {
+      this.selectItem(null, this.objects[0].path);
     }
+  },
+  methods: {
+    supportedNodeType(path) {
+      let isTag = path.indexOf('/tags/') >= 0
+      if(!isTag) {
+        isTag = path.endsWith('/tags')
+      }
+      return isTag ? 'per:Tag' : 'per:ObjectDefinition'
+    },
+    findAllowedObjects(path) {
+      // console.log(`findAllowedObjects(), path: ${path}`)
+      const pathSegments = path.split("/");
+      while (pathSegments.length > 1) {
+        const node = $perAdminApp.findNodeFromPath(
+            $perAdminApp.getView().admin.nodes,
+            pathSegments.join("/")
+        );
+        if (node.allowedObjects) {
+          return node.allowedObjects;
+        }
+        pathSegments.pop();
+      }
+      return undefined;
+    },
+    findAllowedNodeTypes(path) {
+      // console.log(`findAllowedNodeTypes(), path: ${path}`)
+      const pathSegments = path.split("/");
+      while (pathSegments.length > 1) {
+        // console.log(`findAllowedNodeTypes(), path: ${pathSegments.join("/")}`)
+        const node = $perAdminApp.findNodeFromPath(
+            $perAdminApp.getView().admin.nodes,
+            pathSegments.join("/")
+        );
+        // console.log(`findAllowedNodeTypes(), node: ${JSON.stringify(node)}`)
+        if (node.allowedNodeTypes) {
+          if(Array.isArray(node.allowedNodeTypes)) {
+            return node.allowedNodeTypes
+          } else {
+            return [node.allowedNodeTypes]
+          }
+        }
+        pathSegments.pop();
+      }
+      return undefined;
+    },
+    selectItem: function (me, target) {
+      if (me === null) me = this;
+      me.formmodel.objectPath = target;
+    },
+    isSelected: function (target) {
+      return this.formmodel.objectPath === target;
+    },
+    onComplete: function () {
+      let objectPath = this.formmodel.objectPath;
+      objectPath = objectPath.split("/").slice(2).join("/");
+      $perAdminApp.stateAction("createObject", {
+        parent: this.formmodel.path,
+        name: this.formmodel.name,
+        template: objectPath,
+        data: this.formmodel,
+        returnTo: this.model.returnTo,
+      });
+    },
+    nameAvailable(value) {
+      if (!value || value.length === 0) {
+        return ["name is required"];
+      } else {
+        const folder = $perAdminApp.findNodeFromPath(
+            $perAdminApp.getView().admin.nodes,
+            this.formmodel.path
+        );
+        for (let i = 0; i < folder.children.length; i++) {
+          if (folder.children[i].name === value) {
+            return ["name aready in use"];
+          }
+        }
+        return [];
+      }
+    },
+    validObjectName(value) {
+      if (!value || value.length === 0) {
+        return ["name is required"];
+      }
+      if (value.match(/[^0-9a-zA-Z_-]/)) {
+        return [
+          "object names may only contain letters, numbers, underscores, and dashes",
+        ];
+      }
+      return [];
+    },
+    leaveTabOne: function () {
+      if ("" !== "" + this.formmodel.objectPath) {
+        $perAdminApp
+            .getApi()
+            .populateComponentDefinitionFromNode(
+                this.formmodel.objectPath
+            );
+      }
+      return !("" === "" + this.formmodel.objectPath);
+    },
+    leaveTabTwo: function () {
+      return this.$refs.nameTab.validate();
+    },
+  },
+};
 </script>
 <template>
   <div class="container">
@@ -194,7 +271,8 @@ export default {
               v-bind:key="item.path"
               v-on:click.stop.prevent="selectItem(null, item.path)"
               v-bind:class="isSelected(item.path) ? 'grey lighten-2' : ''">
-            <admin-components-action v-bind:model="{ command: 'selectItem', target: item.path, title: item.name }"></admin-components-action>
+            <admin-components-action
+                v-bind:model="{ command: 'selectItem', target: item.path, title: item.name }"></admin-components-action>
           </li>
         </ul>
         <div v-if="!formmodel.templatePath">please select an object</div>
@@ -209,20 +287,20 @@ export default {
       </tab-content>
       <tab-content title="values">
         <div>Provide the values for this object</div>
-<!--        <json-forms-->
-<!--            :data="formmodel"-->
-<!--            :schema="jsonschema"-->
-<!--            :uischema="uischema"-->
-<!--            :renderers="renderers"-->
-<!--            ref="verifyTab"-->
-<!--        />-->
+        <!--        <json-forms-->
+        <!--            v-bind:data="formmodel"-->
+        <!--            v-bind:schema="jsonschema"-->
+        <!--            v-bind:uischema="uischema"-->
+        <!--            v-bind:renderers="renderers"-->
+        <!--            ref="verifyTab"-->
+        <!--        />-->
         <!--            @change="onChange"-->
 
-          <vue-form-generator :model="formmodel"
-                              :schema="objectSchema"
-                              :options="formOptions"
-                              ref="verifyTab">
-          </vue-form-generator>
+        <vue-form-generator :model="formmodel"
+                            :schema="objectSchema"
+                            :options="formOptions"
+                            ref="verifyTab">
+        </vue-form-generator>
       </tab-content>
     </form-wizard>
   </div>
