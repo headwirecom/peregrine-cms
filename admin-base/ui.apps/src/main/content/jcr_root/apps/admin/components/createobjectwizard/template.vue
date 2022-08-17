@@ -24,25 +24,24 @@
   -->
 
 <script>
-// import { defineComponent } from "@vue/composition-api";
-// import { JsonForms, JsonFormsChangeEvent } from "@jsonforms/vue2";
-// import {
-//   defaultStyles,
-//   mergeStyles,
-//   vanillaRenderers
-// } from "@jsonforms/vue2-vanilla";
-//
-// const renderers = [
-//   ...vanillaRenderers,
-//   // here you can add custom renderers
-// ]
+import { defineComponent } from "@vue/composition-api";
+import { JsonForms, JsonFormsChangeEvent } from "@jsonforms/vue2";
+import {
+  defaultStyles,
+  mergeStyles,
+  vanillaRenderers
+} from "@jsonforms/vue2-vanilla";
 
-// export default defineComponent({
-//         name: 'create-object-wizard',
-//         components: {
-//           JsonForms
-//         },
-export default {
+const renderers = [
+  ...vanillaRenderers,
+  // here you can add custom renderers
+]
+
+export default defineComponent({
+  name: 'create-object-wizard',
+  components: {
+    JsonForms
+  },
   props: ["model"],
   data: function () {
     return {
@@ -259,7 +258,7 @@ export default {
       return this.$refs.nameTab.validate();
     },
   },
-};
+});
 </script>
 <template>
   <div class="container">
@@ -287,15 +286,14 @@ export default {
       </tab-content>
       <tab-content title="values">
         <div>Provide the values for this object</div>
-        <!--        <json-forms-->
-        <!--            v-bind:data="formmodel"-->
-        <!--            v-bind:schema="jsonschema"-->
-        <!--            v-bind:uischema="uischema"-->
-        <!--            v-bind:renderers="renderers"-->
-        <!--            ref="verifyTab"-->
-        <!--        />-->
-        <!--            @change="onChange"-->
-
+               <json-forms
+                   v-bind:data="formmodel"
+                   v-bind:schema="jsonschema"
+                   v-bind:uischema="uischema"
+                   v-bind:renderers="renderers"
+                   ref="verifyTab"
+                   @change="onChange"
+               />
         <vue-form-generator :model="formmodel"
                             :schema="objectSchema"
                             :options="formOptions"
