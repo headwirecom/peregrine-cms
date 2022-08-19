@@ -117,26 +117,17 @@ export default {
       const allowedNodeTypes = this.findAllowedNodeTypes(path)
       // console.log(`objects(), allowed nodetypes: ${JSON.stringify(allowedNodeTypes)}`)
       let ret = [];
-      if(allowedNodeTypes) {
-        for (let i = 0; i < objects.length; i++) {
-          // console.log(`objects(), ${i}. objects node-type: ${objects[i].nodeType}`)
-          for(let j = 0; j < allowedNodeTypes.length; j++) {
-            // console.log(`objects(), ${i}. allowed node-type: ${allowedNodeTypes[j]}`)
-            if (objects[i].nodeType === allowedNodeTypes[j]) {
-              ret.push(objects[i]);
-            }
+      for (let i = 0; i < objects.length; i++) {
+        // console.log(`objects(), ${i}. objects node-type: ${objects[i].nodeType}`)
+        for(let j = 0; j < allowedNodeTypes.length; j++) {
+          // console.log(`objects(), ${i}. allowed node-type: ${allowedNodeTypes[j]}`)
+          if (objects[i].nodeType === allowedNodeTypes[j]) {
+            ret.push(objects[i]);
           }
-        }
-      } else {
-        const allowedObjects = this.findAllowedObjects(path);
-        if (allowedObjects) {
-          ret = ret.filter((object) => {
-            return allowedObjects.indexOf(object.name) >= 0
-          })
-          return ret;
         }
       }
       const tenant = $perAdminApp.getView().state.tenant;
+      // Only allow Admin and Tenant ODs
       return ret.filter((object) => {
         return (
             object.path.startsWith("/apps/admin/") ||
@@ -157,28 +148,6 @@ export default {
     }
   },
   methods: {
-    supportedNodeType(path) {
-      let isTag = path.indexOf('/tags/') >= 0
-      if(!isTag) {
-        isTag = path.endsWith('/tags')
-      }
-      return isTag ? 'per:Tag' : 'per:ObjectDefinition'
-    },
-    findAllowedObjects(path) {
-      // console.log(`findAllowedObjects(), path: ${path}`)
-      const pathSegments = path.split("/");
-      while (pathSegments.length > 1) {
-        const node = $perAdminApp.findNodeFromPath(
-            $perAdminApp.getView().admin.nodes,
-            pathSegments.join("/")
-        );
-        if (node.allowedObjects) {
-          return node.allowedObjects;
-        }
-        pathSegments.pop();
-      }
-      return undefined;
-    },
     findAllowedNodeTypes(path) {
       // console.log(`findAllowedNodeTypes(), path: ${path}`)
       const pathSegments = path.split("/");
@@ -198,7 +167,7 @@ export default {
         }
         pathSegments.pop();
       }
-      return undefined;
+      return ['per:ObjectDefinition'];
     },
     selectItem: function (me, target) {
       if (me === null) me = this;

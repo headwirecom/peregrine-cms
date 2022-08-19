@@ -59,8 +59,6 @@ public class PerConstants {
     public static final String ORDER_AFTER_TYPE = "after";
     public static final String ORDER_CHILD_TYPE = "child";
 
-    public static final String ALLOWED_OBJECTS = "allowedObjects";
-
     public static final String ALLOWED_NODE_TYPES = "allowedNodeTypes";
 
     public static final String CHILD_COUNT = "childCount";

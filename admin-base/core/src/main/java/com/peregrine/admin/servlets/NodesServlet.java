@@ -28,7 +28,7 @@ package com.peregrine.admin.servlets;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_NODES;
 import static com.peregrine.admin.servlets.ReferenceServletUtils.IS_STALE;
 import static com.peregrine.commons.util.PerConstants.ALLOWED_NODE_TYPES;
-import static com.peregrine.commons.util.PerConstants.ALLOWED_OBJECTS;
+//import static com.peregrine.commons.util.PerConstants.ALLOWED_OBJECTS;
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.COMPONENT;
 import static com.peregrine.commons.util.PerConstants.ECMA_DATE_FORMAT;
@@ -265,7 +265,6 @@ public class NodesServlet extends AbstractBaseServlet {
         writeIfFound(json, JCR_LAST_MODIFIED, properties);
         writeIfFound(json, JCR_LAST_MODIFIED_BY, properties);
         writeIfFound(json, JCR_LAST_MODIFIED_BY, properties);
-        writeIfFound(json, ALLOWED_OBJECTS, properties);
         writeIfFound(json, ALLOWED_NODE_TYPES, properties);
 
         // For the Replication data we need to obtain the content properties. If not found

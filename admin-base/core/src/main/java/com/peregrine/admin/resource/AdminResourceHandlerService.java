@@ -31,6 +31,7 @@ import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
 import static com.peregrine.commons.util.PerConstants.OBJECT;
 import static com.peregrine.commons.util.PerConstants.OBJECTS;
 import static com.peregrine.commons.util.PerConstants.OBJECTS_ROOT;
+import static com.peregrine.commons.util.PerConstants.OBJECT_DEFINITION;
 import static com.peregrine.commons.util.PerConstants.OBJECT_DEFINITIONS_ROOT;
 import static com.peregrine.commons.util.PerConstants.OBJECT_DEFINITION_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.OBJECT_PRIMARY_TYPE;
