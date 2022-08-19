@@ -207,8 +207,8 @@ class PerApi {
         return impl.moveAsset(path, to, type)
     }
 
-    createFolder(parentPath, name) {
-        return impl.createFolder(parentPath, name)
+    createFolder(parentPath, name, allowedNodeTypes) {
+        return impl.createFolder(parentPath, name, allowedNodeTypes)
     }
 
     deleteFolder(parentPath, name) {
