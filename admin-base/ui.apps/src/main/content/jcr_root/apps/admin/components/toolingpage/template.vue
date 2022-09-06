@@ -127,8 +127,13 @@ export default {
             set(view, '/state/tools/template', path)
           }
 
+          console.log('editEntity(), path: ' + path + ', resource type: ' + resourceType)
           if (resourceType === 'nt:file') {
             $perAdminApp.stateAction('editFile', {path, resourceType});
+          } else if (resourceType == 'sling:OrderedFolder') {
+            const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, path)
+            $perAdminApp.stateAction('editFolder', {selected: node.path, path: me.model.dataFrom})
+//            $perAdminApp.stateAction('editObject', {selected: node.path, path: me.model.dataFrom})
           } else if (path.startsWith(`/content/${tenant.name}/objects`)) {
             const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, path)
             $perAdminApp.stateAction('editObject', {selected: node.path, path: me.model.dataFrom})

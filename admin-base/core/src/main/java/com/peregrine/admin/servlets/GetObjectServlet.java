@@ -26,6 +26,9 @@ package com.peregrine.admin.servlets;
  */
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_GET_OBJECT;
+import static com.peregrine.commons.util.PerConstants.DATA_JSON_EXTENSION;
+import static com.peregrine.commons.util.PerConstants.JSON;
+import static com.peregrine.commons.util.PerConstants.JSON_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.MODEL;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
@@ -40,9 +43,12 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Map;
 import javax.servlet.Servlet;
+
+import com.peregrine.intra.IntraSlingCaller;
 import org.apache.sling.api.request.RequestDispatcherOptions;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.factory.ExportException;
@@ -75,6 +81,10 @@ public class GetObjectServlet extends AbstractBaseServlet {
     @Reference
     ModelFactory modelFactory;
 
+    @Reference
+    @SuppressWarnings("unused")
+    private IntraSlingCaller intraSlingCaller;
+
     @Override
     protected Response handleRequest(Request request) throws IOException {
         String path = request.getParameter(PATH);
@@ -105,6 +115,20 @@ public class GetObjectServlet extends AbstractBaseServlet {
             } catch (MissingExporterException e) {
             } catch (ModelClassException e) {
                 // doesnt exist, continue
+            }
+        }
+        if("sling:OrderedFolder".equals(resource.getResourceType())) {
+            try {
+                byte[] response = intraSlingCaller.call(
+                    intraSlingCaller.createContext()
+                        .setResourceResolver(request.getRequest().getResourceResolver())
+                        .setPath(resource.getPath())
+                        .setExtension(JSON)
+                );
+                return new TextResponse(JSON, JSON_MIME_TYPE)
+                    .write(new String(response, Charset.forName("utf-8")));
+            } catch(IntraSlingCaller.CallException e) {
+                logger.warn("Internal call failed", e);
             }
         }
 

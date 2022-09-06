@@ -1,6 +1,6 @@
 /*-
  * #%L
- * peregrine default node types - Core
+ * admin base - UI Apps
  * %%
  * Copyright (C) 2017 headwire inc.
  * %%
@@ -22,7 +22,18 @@
  * under the License.
  * #L%
  */
-<'per'='http://www.peregrine-cms.com/jcr/cms/1.0'>
+import { LoggerFactory } from '../logger'
+let log = LoggerFactory.logger('unselectFolder').setLevelDebug()
 
-[per:Tag] > per:ObjectDefinition
+import { set } from '../utils'
 
+export default function(me, target) {
+
+    log.fine(target)
+
+    let view = me.getView()
+    return new Promise( (resolve, reject) => {
+        set(view, '/state/tools/object', undefined)
+        resolve()
+    })
+}

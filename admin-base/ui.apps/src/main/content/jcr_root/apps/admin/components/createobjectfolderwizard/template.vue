@@ -53,7 +53,7 @@
                     formmodel: {
                         path: formModelAssets,
                         name: '',
-                        allowedNodeTypes: ''
+                        allowedObjects: ''
                     },
                     formOptions: {
                         validationErrorClass: "has-error",
@@ -74,8 +74,8 @@
                           type: "input",
                           inputType: "text",
                           multiple: true,
-                          label: "Allowed Nodetypes",
-                          model: "allowedNodeTypes",
+                          label: "Allowed Objects",
+                          model: "allowedObjects",
                           required: false
                         }]
                     }
@@ -87,7 +87,7 @@
         },
         methods: {
             onComplete: function() {
-                let payload = { parent: this.formmodel.path, name: this.formmodel.name, allowedNodeTypes: this.formmodel.allowedNodeTypes }
+                let payload = { parent: this.formmodel.path, name: this.formmodel.name, allowedObjects: this.formmodel.allowedObjects }
                 $perAdminApp.stateAction('createObjectFolder', payload)
             },
             nameAvailable(value) {

@@ -1,0 +1,18 @@
+{
+  "fields": [
+    {
+      "type": "input",
+      "inputType": "text",
+      "label": "Folder Name",
+      "model": "name",
+      "placeholder": "name"
+    },
+    {
+      "type": "input",
+      "inputType": "text",
+      "label": "Allowed Objects List",
+      "model": "allowedObjects",
+      "placeholder": "allowedObjects"
+    }
+  ]
+}

@@ -24,6 +24,6 @@
   #L%
 -->
 <jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:per="http://www.peregrine-cms.com/jcr/cms/1.0"
-          jcr:primaryType="per:Tag"
+          jcr:primaryType="per:ObjectDefinition"
           jcr:title="Default Tag"
 />

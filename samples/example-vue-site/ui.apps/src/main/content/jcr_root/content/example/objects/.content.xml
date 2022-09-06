@@ -29,7 +29,7 @@
   jcr:primaryType="per:Page"
   jcr:title="example root object"
   jcr:description="Example Objects Root"
-  allowedNodeTypes="[per:ObjectDefinition]"
+  allowedObjects="[]"
 >
 
   <jcr:content

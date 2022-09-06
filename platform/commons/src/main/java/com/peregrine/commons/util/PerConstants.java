@@ -61,10 +61,6 @@ public class PerConstants {
 
     public static final String ALLOWED_OBJECTS = "allowedObjects";
 
-    public static final String ALLOWED_NODE_TYPES = "allowedNodeTypes";
-
-    public static final String CHILD_COUNT = "childCount";
-
     public static final String DISTRIBUTION_SUB_SERVICE = "peregrine-distribution-sub-service";
 
     public static final String ECMA_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";

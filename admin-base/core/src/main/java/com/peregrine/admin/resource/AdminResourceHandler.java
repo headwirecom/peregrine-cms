@@ -51,11 +51,11 @@ public interface AdminResourceHandler {
      * @param resourceResolver Resource Resolver to manage resources and cannot be null
      * @param parentPath Path to the Parent Resource which cannot be null or empty
      * @param name Name of the Folder which cannot be null or empty
-     * @param allowedNoteTypes Allowed Node Type(s), when it is a list then it must be a comma separated list
+     * @param allowedObjects Allowed Object Definition Folder(s), when it is a list then it must be a comma separated list
      * @return Newly created JCR Resource Folder
      * @throws ManagementException If the creation failed
      */
-    Resource createFolder(ResourceResolver resourceResolver, String parentPath, String name, String allowedNoteTypes) throws ManagementException;
+    Resource createFolder(ResourceResolver resourceResolver, String parentPath, String name, String allowedObjects) throws ManagementException;
 
     /**
      * Creates an Peregrine Object Resource

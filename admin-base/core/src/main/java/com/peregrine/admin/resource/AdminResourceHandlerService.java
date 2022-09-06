@@ -1,7 +1,7 @@
 package com.peregrine.admin.resource;
 
 import static com.peregrine.commons.ResourceUtils.*;
-import static com.peregrine.commons.util.PerConstants.ALLOWED_NODE_TYPES;
+import static com.peregrine.commons.util.PerConstants.ALLOWED_OBJECTS;
 import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
 import static com.peregrine.commons.util.PerConstants.ASSET;
 import static com.peregrine.commons.util.PerConstants.ASSETS_ROOT;
@@ -279,7 +279,7 @@ public class AdminResourceHandlerService
     }
 
     @Override
-    public Resource createFolder(ResourceResolver resourceResolver, String parentPath, String name, String allowedNodeTypes) throws ManagementException {
+    public Resource createFolder(ResourceResolver resourceResolver, String parentPath, String name, String allowedObjects) throws ManagementException {
         if(!nodeNameValidation.isValidPageName(name)) {
             throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, name));
         }
@@ -293,17 +293,17 @@ public class AdminResourceHandlerService
             }
             Node newFolder = parent.addNode(name, SLING_ORDERED_FOLDER);
             newFolder.setProperty(JCR_TITLE, name);
-            if(allowedNodeTypes != null) {
-                List<String> nodeTypeList = new ArrayList();
-                for(String nodeType : allowedNodeTypes.split(COMMA)) {
+            if(allowedObjects != null) {
+                List<String> objectList = new ArrayList();
+                for(String object : allowedObjects.split(COMMA)) {
                     // Parse the String for commas to separated them if found
-                    nodeType = nodeType.trim();
-                    if(!nodeType.isEmpty()) {
-                        nodeTypeList.add(nodeType);
+                    object = object.trim();
+                    if(!object.isEmpty()) {
+                        objectList.add(object);
                     }
                 }
-                if(!nodeTypeList.isEmpty()) {
-                    newFolder.setProperty(ALLOWED_NODE_TYPES, nodeTypeList.toArray(new String[0]));
+                if(!objectList.isEmpty()) {
+                    newFolder.setProperty(ALLOWED_OBJECTS, objectList.toArray(new String[0]));
                 }
             }
             baseResourceHandler.updateModification(resourceResolver, newFolder);

@@ -27,7 +27,6 @@ package com.peregrine.admin.servlets;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_NODES;
 import static com.peregrine.admin.servlets.ReferenceServletUtils.IS_STALE;
-import static com.peregrine.commons.util.PerConstants.ALLOWED_NODE_TYPES;
 import static com.peregrine.commons.util.PerConstants.ALLOWED_OBJECTS;
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.COMPONENT;
@@ -266,7 +265,6 @@ public class NodesServlet extends AbstractBaseServlet {
         writeIfFound(json, JCR_LAST_MODIFIED_BY, properties);
         writeIfFound(json, JCR_LAST_MODIFIED_BY, properties);
         writeIfFound(json, ALLOWED_OBJECTS, properties);
-        writeIfFound(json, ALLOWED_NODE_TYPES, properties);
 
         // For the Replication data we need to obtain the content properties. If not found
         // then we try with the resource's properties for non jcr:content nodes
@@ -298,9 +296,11 @@ public class NodesServlet extends AbstractBaseServlet {
 
     private String writeIfFound(JsonResponse json, String propertyName, ValueMap properties, String responseName) throws IOException {
         Object value = properties.get(propertyName);
-        String data;
+        Object data;
         if(value instanceof Calendar) {
             data = DATE_FORMATTER.format(((Calendar) value).getTime());
+        } else if(value instanceof Object[]) {
+            data = properties.get(propertyName, Object[].class);
         } else {
             data = properties.get(propertyName, String.class);
         }
@@ -312,9 +312,18 @@ public class NodesServlet extends AbstractBaseServlet {
                     break;
                 }
             }
-            json.writeAttribute(name, data);
+            if(data instanceof Object[]) {
+                Object[] array = (Object[]) data;
+                json.writeArray(name);
+                for(Object item: array) {
+                    json.writeString(item.toString());
+                }
+                json.writeClose();
+            } else {
+                json.writeAttribute(name, data.toString());
+            }
         }
-        return data;
+        return data == null ? "" : data.toString();
     }
 
     class Tag {

@@ -61,7 +61,7 @@
                     <admin-components-draghandle/>
 
                     <admin-components-action v-if="editable(child)"
-                                             v-bind:model="{
+                           v-bind:model="{
                                 target: child,
                                 command: 'selectPath',
                                 tooltipTitle: `${$i18n('select')} '${child.title || child.name}'`
@@ -81,11 +81,25 @@
                       <icon v-bind="nodeTypeToIcon(child)"/> {{child.title ? child.title : child.name}}
                     </admin-components-action>
 
-                    <admin-components-action v-if="!editable(child)"
+                  <!-- Select Folder on hollow folder icon -> this should show the folder details on  the right panel-->
+                  <admin-components-action v-if="!editable(child) && child.resourceType ==='sling:OrderedFolder'"
+                           v-bind:model="{
+                                target: child,
+                                command: 'selectPath',
+                                dblClickTarget: child,
+                                dblClickCommand: 'editPath',
+                                tooltipTitle: `${$i18n('select')} '${child.title || child.name}'`
+                           }">
+                    <i v-if="child.hasChildren" class="material-icons">view_list</i>
+                    <i v-else-if="!child.hasChildren" class="material-icons">folder_open</i>
+                  </admin-components-action>
+
+                  <!-- Open Folder on filled folder icon -> this will open folder and show its details page (leaving the current folder) -->
+                  <admin-components-action v-if="!editable(child)"
                         v-bind:model="{
-                            target: child,
-                            command: 'selectPath',
-                            tooltipTitle: `${$i18n('select')} '${child.title || child.name}'`
+                                target: child,
+                                command: 'selectPath',
+                                tooltipTitle: `${$i18n('open')} '${child.title || child.name}'`
                         }">
                       <icon v-bind="nodeTypeToIcon(child)"/> {{child.title ? child.title : child.name}}
                     </admin-components-action>
@@ -98,6 +112,15 @@
                                 target: child,
                                 command: 'editEntity',
                                 tooltipTitle: `${$i18n('edit')} '${child.title || child.name}'`
+                            }">
+                            <admin-components-iconeditpage></admin-components-iconeditpage>
+                        </admin-components-action>
+
+                        <admin-components-action v-if="isObjectFolder(child)"
+                            v-bind:model="{
+                                target: child,
+                                command: 'editEntity',
+                                tooltipTitle: `${$i18n('edit folder')} '${child.title || child.name}'`
                             }">
                             <admin-components-iconeditpage></admin-components-iconeditpage>
                         </admin-components-action>
@@ -360,7 +383,7 @@ export default {
                 var pathSegments = path.split('/')
                 pathSegments.pop()
                 path = pathSegments.join('/')
-                $perAdminApp.action(!me ? this: me, 'selectPath', { path: path, resourceType: 'sling:OrderedFolder'})
+                $perAdminApp.action(!me ? this: me, 'selectPath', { path: path, resourceType: 'sling:OrderedFolder', hasChildren: true})
             },
 
             selectItem(item) {
@@ -521,6 +544,10 @@ export default {
                 return ['per:Page', 'per:Object', 'nt:file'].indexOf(child.resourceType) >= 0
             },
 
+            isObjectFolder: function(child) {
+                return ['sling:OrderedFolder'].indexOf(child.resourceType) >= 0 && child.path.indexOf('/objects/') > 0
+            },
+
             viewable: function(child) {
                 return ['per:Page', 'per:Object', 'nt:file'].indexOf(child.resourceType) >= 0
             },
@@ -580,11 +607,14 @@ export default {
                 if (resourceType === 'nt:file') {
                     $perAdminApp.stateAction('selectFile', {path, resourceType});
                 } else {
-                    if(path.startsWith(`/content/${tenant.name}/objects`)) {
+                    if(resourceType === 'sling:OrderedFolder') {
+                        console.log(`showInfo(), show folder info`)
+                        $perAdminApp.stateAction('selectFolder', { selected: path, resourceType });
+                    } else if(path.startsWith(`/content/${tenant.name}/objects`)) {
                         set($perAdminApp.getView(), `/state/tools/edit`, false);
                         $perAdminApp.stateAction('selectObject', { selected: path, path: model.dataFrom });
                     } else if (path.startsWith(`/content/${tenant.name}/templates`)) {
-                        $perAdminApp.stateAction('showTemplateInfo', { selected: path });
+                        $perAdminApp.stateAction('showTemplateInfo', {selected: path});
                     } else {
                         $perAdminApp.stateAction('showPageInfo', { selected: path, resourceType });
                     }
@@ -592,7 +622,10 @@ export default {
             },
 
             showRow: function(item, ev) {
-                if (this.editable(item)) {  
+                console.log(`showRow(), item: ${JSON.stringify(item)}, event: ${JSON.stringify(ev)}`)
+                if (this.editable(item)) {
+                    this.showInfo(this, item);
+                } else if(item.resourceType === 'sling:OrderedFolder') {
                     this.showInfo(this, item);
                 }
             },
@@ -614,6 +647,9 @@ export default {
                 if($perAdminApp.getNodeFromView('/state/tools/object/show')) {
                     $perAdminApp.stateAction('unselectObject', { })
                 }
+                // if($perAdminApp.getNodeFromView('/state/tools/folder/show')) {
+                //     $perAdminApp.stateAction('unselectFolder', { })
+                // }
                 if($perAdminApp.getNodeFromView('/state/tools/asset/show')) {
                     $perAdminApp.stateAction('unselectAsset', { })
                 }
@@ -621,6 +657,7 @@ export default {
                 $perAdminApp.stateAction('unselectFile')
 
                 const payload = { selected: target.path, path: me.model.dataFrom }
+                console.log(`selectPath(), selectToolsNodesPath, payload: ${JSON.stringify(payload)}`)
                 $perAdminApp.stateAction('selectToolsNodesPath', payload).then( () => {
                     $('div.brand-logo span').last().click() //TODO: quick and dirty solution!!!!
                 })

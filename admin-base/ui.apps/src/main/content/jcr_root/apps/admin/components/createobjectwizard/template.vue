@@ -109,32 +109,20 @@ export default {
     },
     objects: function () {
       const path = $perAdminApp.getNodeFromView(this.model.dataFrom);
-      // console.log(`objects(), path: ${path}`)
+      console.log(`objects(), path: ${path}`)
       const objects = $perAdminApp.getNodeFromViewOrNull(
           "/admin/objects/data"
       );
-      // console.log(`objects(), path: ${JSON.stringify(objects)}`)
-      const allowedNodeTypes = this.findAllowedNodeTypes(path)
-      // console.log(`objects(), allowed nodetypes: ${JSON.stringify(allowedNodeTypes)}`)
+      console.log(`objects(), path: ${JSON.stringify(objects)}`)
+      const allowedObjects = this.findAllowedObjects(path)
+      console.log(`objects(), allowed objects: ${JSON.stringify(allowedObjects)}`)
       let ret = [];
-      if(allowedNodeTypes) {
-        for (let i = 0; i < objects.length; i++) {
-          // console.log(`objects(), ${i}. objects node-type: ${objects[i].nodeType}`)
-          for(let j = 0; j < allowedNodeTypes.length; j++) {
-            // console.log(`objects(), ${i}. allowed node-type: ${allowedNodeTypes[j]}`)
-            if (objects[i].nodeType === allowedNodeTypes[j]) {
-              ret.push(objects[i]);
-            }
-          }
-        }
+      if(allowedObjects) {
+        ret = objects.filter((object) => {
+          return allowedObjects.indexOf(object.name) >= 0
+        })
       } else {
-        const allowedObjects = this.findAllowedObjects(path);
-        if (allowedObjects) {
-          ret = ret.filter((object) => {
-            return allowedObjects.indexOf(object.name) >= 0
-          })
-          return ret;
-        }
+        ret = objects;
       }
       const tenant = $perAdminApp.getView().state.tenant;
       return ret.filter((object) => {
@@ -157,48 +145,25 @@ export default {
     }
   },
   methods: {
-    supportedNodeType(path) {
-      let isTag = path.indexOf('/tags/') >= 0
-      if(!isTag) {
-        isTag = path.endsWith('/tags')
-      }
-      return isTag ? 'per:Tag' : 'per:ObjectDefinition'
-    },
     findAllowedObjects(path) {
-      // console.log(`findAllowedObjects(), path: ${path}`)
       const pathSegments = path.split("/");
       while (pathSegments.length > 1) {
+        console.log(`findAllowedObjects(), path: ${pathSegments.join("/")}`)
         const node = $perAdminApp.findNodeFromPath(
             $perAdminApp.getView().admin.nodes,
             pathSegments.join("/")
         );
-        if (node.allowedObjects) {
-          return node.allowedObjects;
-        }
-        pathSegments.pop();
-      }
-      return undefined;
-    },
-    findAllowedNodeTypes(path) {
-      // console.log(`findAllowedNodeTypes(), path: ${path}`)
-      const pathSegments = path.split("/");
-      while (pathSegments.length > 1) {
-        // console.log(`findAllowedNodeTypes(), path: ${pathSegments.join("/")}`)
-        const node = $perAdminApp.findNodeFromPath(
-            $perAdminApp.getView().admin.nodes,
-            pathSegments.join("/")
-        );
-        // console.log(`findAllowedNodeTypes(), node: ${JSON.stringify(node)}`)
-        if (node.allowedNodeTypes) {
-          if(Array.isArray(node.allowedNodeTypes)) {
-            return node.allowedNodeTypes
-          } else {
-            return [node.allowedNodeTypes]
+        if(node) {
+          console.log(`findAllowedObjects(), node: ${JSON.stringify(node.allowedObjects)}`)
+          if (node.allowedObjects) {
+            return node.allowedObjects
           }
+        } else {
+          break
         }
-        pathSegments.pop();
+        pathSegments.pop()
       }
-      return undefined;
+      return undefined
     },
     selectItem: function (me, target) {
       if (me === null) me = this;
