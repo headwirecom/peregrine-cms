@@ -40,7 +40,7 @@ export default function(me, target) {
         const currentObject = deepClone(
             me.getNodeFromView('/state/tools/object'))
 
-        if (name !== 'saveObjectEdit') {
+        if (name !== 'saveFolderEdit') {
             // if there was no change skip asking to save
             const newChecksum = JSON.stringify(
                 me.getNodeFromView('/state/tools/object/data'))

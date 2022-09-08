@@ -32,10 +32,11 @@ export default function(me, target) {
 
     set(me.getView(), '/state/tools/save/confirmed', false)
     return new Promise( (resolve, reject) => {
-        let allowedObjectsString = target.data.allowedObjects;
-        let allowedObjects = allowedObjectsString.split(',')
-        target.data.allowedObjects = allowedObjects
+        // let allowedObjectsString = target.data.allowedObjects;
+        // let allowedObjects = allowedObjectsString.split(',')
+        // target.data.allowedObjects = allowedObjects
         me.getApi().saveFolderEdit(target.path, target.data).then( () => {
+            set(me.getView(), '/state/tools/save/confirmed', true)
             resolve()
         })
     })

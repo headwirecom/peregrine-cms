@@ -90,6 +90,7 @@ public class GetFolderServlet extends AbstractBaseServlet {
         "{ " +
         "  \"name\": \"%s\", " +
         "  \"path\": \"%s\", " +
+        "  \"resourceType\": \"%s\", " +
         "  \"model\": %s " +
         "}";
 
@@ -116,7 +117,7 @@ public class GetFolderServlet extends AbstractBaseServlet {
                     InputStream is = dialogResource != null ? dialogResource.adaptTo(InputStream.class) : null;
                     model = is != null ? ServletHelper.asString(is).toString() : model;
                 }
-                String modelText = String.format(MODEL_FORMAT, resource.getName(), resource.getPath(), model);
+                String modelText = String.format(MODEL_FORMAT, resource.getName(), resource.getPath(), resource.getResourceType(), model);
                 return new TextResponse(JSON, JSON_MIME_TYPE)
                     .write(modelText);
             } else {
@@ -142,6 +143,7 @@ public class GetFolderServlet extends AbstractBaseServlet {
                     ObjectNode object = (ObjectNode) root;
                     object.put("name", resource.getName());
                     object.put("path", resource.getPath());
+                    object.put("resourceType", resourceType);
 
                     return new TextResponse(JSON, JSON_MIME_TYPE)
                         .write(object.toString());

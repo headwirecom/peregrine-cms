@@ -486,150 +486,14 @@ class PerAdminImpl {
   populateFolderDefinitionFromNode(path) {
     return new Promise((resolve, reject) => {
       var name
+      // This is a copy of populateComponentDefinitionFromNode() but without any code handling in the middle
       fetch('/admin/getFolderSchema.json' + path)
           .then((data) => {
             name = data.name
-            let component = callbacks.getComponentByName(name)
-            if (component && component.methods
-                && component.methods.augmentEditorSchema) {
-              data.model = component.methods.augmentEditorSchema(data.model)
-              data.ogTags = component.methods.augmentEditorSchema(data.ogTags)
-            }
-
             let promises = []
-            // if (data && data.model) {
-            //   if (data.model.groups) {
-            //     for (let j = 0; j < data.model.groups.length; j++) {
-            //       for (let i = 0; i < data.model.groups[j].fields.length; i++) {
-            //         let from = data.model.groups[j].fields[i].valuesFrom
-            //         if (from) {
-            //           data.model.groups[j].fields[i].values = []
-            //           let promise = axios.get(from).then((response) => {
-            //             for (var key in response.data) {
-            //               if (response.data[key]['jcr:title']) {
-            //                 const nodeName = key
-            //                 const val = from.replace('.infinity.json',
-            //                     '/' + nodeName)
-            //                 let name = response.data[key].name
-            //                 if (!name) {
-            //                   name = response.data[key]['jcr:title']
-            //                 }
-            //                 data.model.groups[j].fields[i].values.push(
-            //                     {value: val, name: name})
-            //               }
-            //             }
-            //           }).catch((error) => {
-            //             logger.error('missing node',
-            //                 data.model.groups[j].fields[i].valuesFrom,
-            //                 'for list population in dialog', error)
-            //           })
-            //           promises.push(promise)
-            //         }
-            //         let visible = data.model.groups[j].fields[i].visible
-            //         if (visible) {
-            //           data.model.groups[j].fields[i].visible = function (model) {
-            //             return exprEval.Parser.evaluate(visible, this)
-            //           }
-            //         }
-            //       }
-            //     }
-            //   } else {
-            //     for (let i = 0; i < data.model.fields.length; i++) {
-            //       let from = data.model.fields[i].valuesFrom
-            //       if (from) {
-            //         data.model.fields[i].values = []
-            //         let promise = axios.get(from).then((response) => {
-            //           const toProcess = []
-            //           for (let key in response.data) {
-            //             toProcess.push({key, data: response.data[key]})
-            //           }
-            //
-            //           let next = toProcess.shift()
-            //           while (next) {
-            //             if (next.data['jcr:title']) {
-            //               const nodeName = next.key
-            //               const val = next.data.path ? next.data.path + '/'
-            //                   + nodeName
-            //                   : from.replace('.infinity.json', '/' + nodeName)
-            //               let name = next.data.name
-            //               if (!name) {
-            //                 name = next.data['jcr:title']
-            //               }
-            //               if (next.parent) {
-            //                 name = next.parent + '-' + name
-            //               }
-            //               data.model.fields[i].values.push(
-            //                   {value: val, name: name})
-            //               for (let k in next.data) {
-            //                 if (next.data[k] instanceof Object
-            //                     && next.data[k]['sling:resourceType']
-            //                     === 'admin/objects/tag') {
-            //                   toProcess.push(
-            //                       {key: k, parent: name, data: next.data[k]})
-            //                 }
-            //               }
-            //             }
-            //             next = toProcess.shift()
-            //           }
-            //
-            //         }).catch((error) => {
-            //           logger.error('missing node',
-            //               data.model.fields[i].valuesFrom,
-            //               'for list population in dialog', error)
-            //         })
-            //         promises.push(promise)
-            //       }
-            //       const visible = data.model.fields[i].visible
-            //       if (visible) {
-            //         data.model.fields[i].visible = function (model) {
-            //           return exprEval.Parser.evaluate(visible, this)
-            //         }
-            //       }
-            //     }
-            //     if (data.ogTags) {
-            //       for (let i = 0; i < data.ogTags.fields.length; i++) {
-            //         let from = data.ogTags.fields[i].valuesFrom
-            //         if (from) {
-            //           data.ogTags.fields[i].values = []
-            //           let promise = axios.get(from).then((response) => {
-            //             for (var key in response.data) {
-            //               if (response.data[key]['jcr:title']) {
-            //                 const nodeName = key
-            //                 const val = from.replace('.infinity.json',
-            //                     '/' + nodeName)
-            //                 let name = response.data[key].name
-            //                 if (!name) {
-            //                   name = response.data[key]['jcr:title']
-            //                 }
-            //                 data.ogTags.fields[i].values.push(
-            //                     {value: val, name: name})
-            //               }
-            //             }
-            //           }).catch((error) => {
-            //             logger.error('missing node',
-            //                 data.ogTags.fields[i].valuesFrom,
-            //                 'for list population in dialog', error)
-            //           })
-            //           promises.push(promise)
-            //         }
-            //         const visible = data.ogTags.fields[i].visible
-            //         if (visible) {
-            //           data.ogTags.fields[i].visible = function (ogTags) {
-            //             return exprEval.Parser.evaluate(visible, this)
-            //           }
-            //         }
-            //       }
-            //       translateFields(data.ogTags.fields)
-            //     }
-            //     translateFields(data.model.fields)
-            //   }
-            // } else {
-            //   logger.warn(
-            //       `no dialogger.json file given for component "${name}"`)
-            // }
-
             Promise.all(promises).then(() => {
-              populateView('/admin/componentDefinitions', 'sling:OrderedFolder', data)
+              let resourceType = data.resourceType
+              populateView('/admin/componentDefinitions', resourceType, data)
               resolve(name)
             })
           })
@@ -677,25 +541,22 @@ class PerAdminImpl {
   }
 
   populateFolder(path, target, name) {
-    // return new Promise((resolve) => {
-    //   fetch('/admin/getFolderSchema.json' + path)
-    //     .then((schema) => {
-    //       // populateView('/admin/componentDefinitions', name, modelData)
-    //       populateView('/admin/componentDefinitions', 'sling:OrderedFolder', schema)
-    //       resolve(name)
-    //       return fetch('/admin/getFolder.json' + path)
-    //         .then((data) => {
-    //           data['sling:resourceType'] = data['jcr:primaryType']
-    //           populateView('/state/tools/object', 'data', data)
-    //         })
-    //     })
-    // })
     return this.populateFolderDefinitionFromNode(path)
       .then(() => {
         return fetch('/admin/getFolder.json' + path)
           .then((data) => {
             data['sling:resourceType'] = data['jcr:primaryType']
             populateView('/state/tools/object', 'data', data)
+            // Remember all items that are an array and store them for a later conversion back to an array
+            let arrayProperties = []
+            for(let key in data) {
+              let value = data[key]
+              if(value && Array.isArray(value)) {
+                arrayProperties.push(key)
+              }
+            }
+            // Backup of the original Folder Data
+            populateView('/state/tools/object', 'arrayProperties', arrayProperties)
           })
       })
   }
@@ -1325,6 +1186,20 @@ class PerAdminImpl {
     delete nodeData['jcr:createdBy']
     delete nodeData['jcr:lastModified']
     delete nodeData['jcr:lastModifiedBy']
+    delete nodeData['name']
+    delete nodeData['path']
+    delete nodeData['resourceType']
+    delete nodeData['sling:resourceType']
+    // Get the list of array properties from the View and then convert the string back to an array
+    let arrayProperties = getOrCreate(callbacks.getView(), '/state/tools/object/arrayProperties')
+    for(let i = 0; i < arrayProperties.length; i++) {
+      let arrayProperty = arrayProperties[i]
+      if (nodeData[arrayProperty] !== undefined) {
+        let propertyString = nodeData[arrayProperty];
+        let propertyArray = propertyString.split(',')
+        nodeData[arrayProperty] = propertyArray
+      }
+    }
     formData.append('content', json(nodeData))
     return updateWithForm('/admin/updateResource.json' + path, formData)
   }

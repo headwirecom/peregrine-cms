@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import {set} from '../../../../../../js/utils'
+import {set, isFolder} from '../../../../../../js/utils'
 
 export default {
     props: ['model'],
@@ -116,7 +116,6 @@ export default {
             me.editEntity(me, target)
           }
         },
-        
         editEntity(me, {path, resourceType}) {
           const view = $perAdminApp.getView()
           const tenant = view.state.tenant
@@ -130,10 +129,9 @@ export default {
           console.log('editEntity(), path: ' + path + ', resource type: ' + resourceType)
           if (resourceType === 'nt:file') {
             $perAdminApp.stateAction('editFile', {path, resourceType});
-          } else if (resourceType == 'sling:OrderedFolder') {
+          } else if (isFolder(resourceType)) {
             const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, path)
             $perAdminApp.stateAction('editFolder', {selected: node.path, path: me.model.dataFrom})
-//            $perAdminApp.stateAction('editObject', {selected: node.path, path: me.model.dataFrom})
           } else if (path.startsWith(`/content/${tenant.name}/objects`)) {
             const node = $perAdminApp.findNodeFromPath($perAdminApp.getView().admin.nodes, path)
             $perAdminApp.stateAction('editObject', {selected: node.path, path: me.model.dataFrom})

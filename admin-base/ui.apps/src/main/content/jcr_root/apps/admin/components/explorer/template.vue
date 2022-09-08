@@ -82,7 +82,7 @@
                     </admin-components-action>
 
                   <!-- Select Folder on hollow folder icon -> this should show the folder details on  the right panel-->
-                  <admin-components-action v-if="!editable(child) && child.resourceType ==='sling:OrderedFolder'"
+                  <admin-components-action v-if="!editable(child) && callIsFolder(child)"
                            v-bind:model="{
                                 target: child,
                                 command: 'selectPath',
@@ -285,7 +285,7 @@
 
 <script>
 
-import {getCurrentDateTime, set, get} from '../../../../../../js/utils'
+import {getCurrentDateTime, set, get, isFolder} from '../../../../../../js/utils'
 import {IconLib} from '../../../../../../js/constants'
 
 import Icon from '../icon/template.vue'
@@ -362,7 +362,9 @@ export default {
             isObjects(path) {
                 return path.startsWith(`/content/${this.getTenant().name}/objects`)
             },
-
+            callIsFolder(item) {
+              return isFolder(item)
+            },
             isObjectDefinitions(path) {
                 return !this.isInsideObjectDefinition(path) 
                     && path.startsWith(`/content/${this.getTenant().name}/object-definitions`)
@@ -408,12 +410,8 @@ export default {
                 this.publishDialogPath = null
             },
 
-            isFolder(item) {
-                return ["sling:OrderedFolder", "sling:Folder", "nt:folder"].indexOf(item.resourceType) >= 0
-            },
-
             replicable(item) {
-                return !this.isFolder(item)
+                return !isFolder(item)
             },
 
             onDragRowStart(item, ev) {
@@ -545,7 +543,7 @@ export default {
             },
 
             isObjectFolder: function(child) {
-                return ['sling:OrderedFolder'].indexOf(child.resourceType) >= 0 && child.path.indexOf('/objects/') > 0
+                return isFolder(child) && child.path.indexOf('/objects/') > 0
             },
 
             viewable: function(child) {
@@ -574,6 +572,7 @@ export default {
             }
             if (item.resourceType === 'nt:file') return this.fileExtToIcon(item)
             if (item.resourceType === 'per:Asset') return {icon: 'image', lib: IconLib.MATERIAL_ICONS}
+            if (item.resourceType === 'nt:folder') return {icon: 'folder', lib: IconLib.MATERIAL_ICONS}
             if (item.resourceType === 'sling:Folder') return {icon: 'folder', lib: IconLib.MATERIAL_ICONS}
             if (item.resourceType === 'sling:OrderedFolder') return {icon: 'folder', lib: IconLib.MATERIAL_ICONS}
             return {icon: '█', lib: IconLib.PLAIN_TEXT}
@@ -597,7 +596,7 @@ export default {
                     if(node.excludeFromSitemap && node.excludeFromSitemap === 'true') return false
                     return ['per:Page', 'per:Asset', 'per:Object', 'per:ObjectDefinition'].indexOf(node.resourceType) >= 0
                 }
-                return ['per:Asset', 'nt:file', 'sling:Folder', 'sling:OrderedFolder', 'per:Page', 'sling:OrderedFolder', 'per:Object', 'per:ObjectDefinition'].indexOf(node.resourceType) >= 0
+                return ['per:Asset', 'nt:file', 'nt:folder', 'sling:Folder', 'per:Page', 'sling:OrderedFolder', 'per:Object', 'per:ObjectDefinition'].indexOf(node.resourceType) >= 0
             },
 
             showInfo: function(me, {path, resourceType}) {
@@ -607,7 +606,7 @@ export default {
                 if (resourceType === 'nt:file') {
                     $perAdminApp.stateAction('selectFile', {path, resourceType});
                 } else {
-                    if(resourceType === 'sling:OrderedFolder') {
+                    if(isFolder(resourceType)) {
                         console.log(`showInfo(), show folder info`)
                         $perAdminApp.stateAction('selectFolder', { selected: path, resourceType });
                     } else if(path.startsWith(`/content/${tenant.name}/objects`)) {
@@ -625,7 +624,7 @@ export default {
                 console.log(`showRow(), item: ${JSON.stringify(item)}, event: ${JSON.stringify(ev)}`)
                 if (this.editable(item)) {
                     this.showInfo(this, item);
-                } else if(item.resourceType === 'sling:OrderedFolder') {
+                } else if(isFolder(item)) {
                     this.showInfo(this, item);
                 }
             },
