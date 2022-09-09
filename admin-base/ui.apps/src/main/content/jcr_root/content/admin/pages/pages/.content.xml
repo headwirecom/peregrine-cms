@@ -34,9 +34,9 @@
     sling:resourceType="admin/components/toolingpage"
     jcr:title="Pages"
     jcr:description="admin base Content Root"
+    suffixToParameter="[path,/state/tools/pages,path,/state/tools/file,path,/state/tools/explorerpreview/resourceType]"
     dataFrom="/state/tools/pages"
     dataDefault="/content/admin/pages"
-    suffixToParameter="[path,/state/tools/pages,path,/state/tools/file,path,/state/tools/explorerpreview/resourceType]"
     loaders="[populateNodesForBrowser:/state/tools/pages]">
 
     <nav jcr:primaryType="nt:unstructured"

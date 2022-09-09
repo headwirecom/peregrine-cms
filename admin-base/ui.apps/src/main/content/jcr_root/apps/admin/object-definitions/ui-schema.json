@@ -1,0 +1,15 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "Control",
+      "scope": "#/properties/name",
+      "label": "Folder Name"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/allowedObjects",
+      "label": "Allowed Objects List"
+    }
+  ]
+}

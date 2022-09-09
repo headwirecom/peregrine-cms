@@ -358,3 +358,28 @@ export function asyncLoadJsScript(src) {
 export function isMac() {
   return window.navigator.platform.toUpperCase().indexOf('MAC') >= 0;
 }
+
+const FOLDERS = [
+  'nt:folder',
+  'sling:Folder',
+  'sling:OrderedFolder'
+]
+
+/**
+ * Checks if the given item has a resource type of type folder
+ * or if the given item is a resource type
+ * @param item Either an objet that contain resourceType property or is a resource type string
+ *
+ * @return True if it is a folder otherwise false
+ */
+export function isFolder(item) {
+    let answer = false
+    if(item !== undefined) {
+      if(item.resourceType === undefined) {
+        answer = FOLDERS.indexOf(item) >= 0
+      } else {
+        answer = FOLDERS.indexOf(item.resourceType) >= 0
+    }
+    return answer
+  }
+}

@@ -35,6 +35,7 @@ export default function(me, target) {
     let view = me.getView()
     const tenant = view.state.tenant
 
+    console.log(`showPageInfo.js, target: ${JSON.stringify(target)}`)
     set(view, '/state/tools/explorerpreview/resourceType', resourceType);
 
     return new Promise( (resolve, reject) => {
@@ -62,6 +63,28 @@ export default function(me, target) {
                   resolve();
                 })
                 .catch((error) => reject(error));
+            } else if (
+              selected.startsWith(`/content/${tenant.name}/objects`)
+            ) {
+              return me
+                .getApi()
+                .populateReferencedBy(selected)
+                .then(() => {
+                  set(view, '/state/tools/objects', selected);
+                  resolve();
+                })
+                .catch((error) => reject(error));
+            // } else if (
+            //   selected.startsWith(`/content/${tenant.name}/folder`)
+            // ) {
+            //   return me
+            //     .getApi()
+            //     .populateReferencedBy(selected)
+            //     .then(() => {
+            //       set(view, '/state/tools/objects', selected);
+            //       resolve();
+            //     })
+            //     .catch((error) => reject(error));
             }
           })
           .catch((error) => reject(error));

@@ -23,18 +23,21 @@
  * #L%
  */
 import { LoggerFactory } from '../logger'
-import {SUFFIX_PARAM_SEPARATOR} from "../constants";
-let log = LoggerFactory.logger('createObjectFolder').setLevelDebug()
+import {set} from '../utils'
+let log = LoggerFactory.logger('saveFolderEdit').setLevelDebug()
 
 export default function(me, target) {
-    log.fine(target)
-    var api = me.getApi()
 
+    log.fine(target)
+
+    set(me.getView(), '/state/tools/save/confirmed', false)
     return new Promise( (resolve, reject) => {
-        api.createFolder(target.parent, target.name, target.allowedObjects).then( () => {
-            me.loadContent('/content/admin/pages/objects.html/path'+ SUFFIX_PARAM_SEPARATOR + target.parent)
+        // let allowedObjectsString = target.data.allowedObjects;
+        // let allowedObjects = allowedObjectsString.split(',')
+        // target.data.allowedObjects = allowedObjects
+        me.getApi().saveFolderEdit(target.path, target.data).then( () => {
+            set(me.getView(), '/state/tools/save/confirmed', true)
             resolve()
         })
     })
-
 }

@@ -1,0 +1,15 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "Control",
+      "scope": "#/properties/name",
+      "label": "Tag Name"
+    },
+    {
+      "type": "Control",
+      "scope": "#/properties/value",
+      "label": "Tag Display Value"
+    }
+  ]
+}
