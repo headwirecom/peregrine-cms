@@ -3,7 +3,7 @@
     {
       "type": "input",
       "inputType": "text",
-      "label": "Folder Name",
+      "label": "Folder Title",
       "model": "name",
       "placeholder": "name"
     },

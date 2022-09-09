@@ -1182,6 +1182,8 @@ class PerAdminImpl {
     // convert to a new object
     let nodeData = JSON.parse(JSON.stringify(node))
     stripNulls(nodeData)
+    // Save Folder Title (Name) as jcr:title
+    nodeData['jcr:title'] = nodeData['name']
     delete nodeData['jcr:created']
     delete nodeData['jcr:createdBy']
     delete nodeData['jcr:lastModified']
@@ -1195,9 +1197,11 @@ class PerAdminImpl {
     for(let i = 0; i < arrayProperties.length; i++) {
       let arrayProperty = arrayProperties[i]
       if (nodeData[arrayProperty] !== undefined) {
-        let propertyString = nodeData[arrayProperty];
-        let propertyArray = propertyString.split(',')
-        nodeData[arrayProperty] = propertyArray
+        let propertyValue = nodeData[arrayProperty];
+        if((typeof propertyValue) === 'string') {
+          let propertyArray = propertyValue.split(',')
+          nodeData[arrayProperty] = propertyArray
+        }
       }
     }
     formData.append('content', json(nodeData))

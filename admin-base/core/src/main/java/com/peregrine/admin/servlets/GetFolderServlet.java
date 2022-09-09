@@ -47,6 +47,7 @@ import java.util.regex.Pattern;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_GET_FOLDER;
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_GET_FOLDER_SCHEMA;
 import static com.peregrine.commons.util.PerConstants.DIALOG_JSON;
+import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
 import static com.peregrine.commons.util.PerConstants.JSON;
 import static com.peregrine.commons.util.PerConstants.JSON_MIME_TYPE;
 import static com.peregrine.commons.util.PerConstants.PATH;
@@ -141,7 +142,9 @@ public class GetFolderServlet extends AbstractBaseServlet {
                     String jsonText = new String(response, Charset.forName("utf-8"));
                     JsonNode root = new ObjectMapper().readTree(jsonText);
                     ObjectNode object = (ObjectNode) root;
-                    object.put("name", resource.getName());
+                    // Check if there is a 'jcr:title' entry and if provided set it as name
+                    String title = object.has(JCR_TITLE) ? object.get(JCR_TITLE).asText() : resource.getName();
+                    object.put("name", title);
                     object.put("path", resource.getPath());
                     object.put("resourceType", resourceType);
 
