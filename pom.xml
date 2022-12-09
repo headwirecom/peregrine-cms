@@ -719,7 +719,7 @@
             <dependency>
                 <groupId>org.jetbrains</groupId>
                 <artifactId>annotations</artifactId>
-                <version>16.0.2</version>
+                <version>23.1.0</version>
                 <scope>provided</scope>
             </dependency>
 
