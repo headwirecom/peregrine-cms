@@ -64,7 +64,7 @@
         <com.fasterxml.jackson.version>2.13.0</com.fasterxml.jackson.version>
         <guava.version>15.0</guava.version>
         <!-- <aws-java-sdk-osgi.version>1.11.181</aws-java-sdk-osgi.version> -->
-        <metadata-extractor.version>2.16.0</metadata-extractor.version>
+        <metadata-extractor.version>2.18.0</metadata-extractor.version>
         <xmpcore.version>6.1.11</xmpcore.version>
         <tika.version>1.27</tika.version>
 
