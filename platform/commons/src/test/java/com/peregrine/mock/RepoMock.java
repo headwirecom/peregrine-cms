@@ -18,10 +18,9 @@ import java.util.Optional;
 import static com.peregrine.commons.util.PerConstants.*;
 import static com.peregrine.mock.MockTools.fullName;
 import static com.peregrine.mock.MockTools.setParentChildRelationships;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 public final class RepoMock {
 
@@ -56,9 +55,9 @@ public final class RepoMock {
         init(live);
         init(feLibs);
         bindResolverFactory();
-        when(resourceResolver.map(any()))
+        lenient().when(resourceResolver.map(any()))
                 .thenAnswer(invocation -> resourceResolverMap.get(invocation.getArguments()[0]));
-        when(resourceResolver.listChildren(any()))
+        lenient().when(resourceResolver.listChildren(any()))
                 .thenAnswer(invocation -> Optional.of(invocation)
                             .map(InvocationOnMock::getArguments)
                             .map(a -> a[0])
@@ -68,14 +67,14 @@ public final class RepoMock {
                             .map(Resource::listChildren)
                             .orElseGet(() -> Collections.<Resource>emptyList().iterator())
                 );
-        when(resourceResolver.adaptTo(Session.class)).thenReturn(session);
+        lenient().when(resourceResolver.adaptTo(Session.class)).thenReturn(session);
     }
 
     private void bindResolverFactory() {
         try {
-            when(resolverFactory.getServiceResourceResolver(any())).thenReturn(resourceResolver);
-            when(resolverFactory.getResourceResolver(any())).thenReturn(resourceResolver);
-            when(resolverFactory.getThreadResourceResolver()).thenReturn(resourceResolver);
+            lenient().when(resolverFactory.getServiceResourceResolver(any())).thenReturn(resourceResolver);
+            lenient().when(resolverFactory.getResourceResolver(any())).thenReturn(resourceResolver);
+            lenient().when(resolverFactory.getThreadResourceResolver()).thenReturn(resourceResolver);
         } catch (final LoginException e) {
         }
     }

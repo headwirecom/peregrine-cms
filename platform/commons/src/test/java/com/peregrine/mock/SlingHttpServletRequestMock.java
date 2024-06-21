@@ -12,8 +12,7 @@ import java.util.*;
 
 import static com.peregrine.commons.Chars.DOT;
 import static com.peregrine.commons.util.PerConstants.HTML;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public final class SlingHttpServletRequestMock extends SlingHttpServletRequestWrapper {
 
@@ -24,8 +23,8 @@ public final class SlingHttpServletRequestMock extends SlingHttpServletRequestWr
     public SlingHttpServletRequestMock(final SlingHttpServletRequest mock) {
         super(mock);
         this.mock = mock;
-        when(mock.getRequestPathInfo()).thenReturn(requestPathInfo);
-        when(requestPathInfo.getExtension()).thenReturn(HTML);
+        lenient().when(mock.getRequestPathInfo()).thenReturn(requestPathInfo);
+        lenient().when(requestPathInfo.getExtension()).thenReturn(HTML);
     }
 
     public SlingHttpServletRequestMock(final String name) {
@@ -33,15 +32,15 @@ public final class SlingHttpServletRequestMock extends SlingHttpServletRequestWr
     }
 
     public void bind(final Resource resource) {
-        when(mock.getResource()).thenReturn(resource);
+        lenient().when(mock.getResource()).thenReturn(resource);
         final ResourceResolver resourceResolver = resource.getResourceResolver();
-        when(mock.getResourceResolver()).thenReturn(resourceResolver);
+        lenient().when(mock.getResourceResolver()).thenReturn(resourceResolver);
         final String path = resource.getPath();
-        when(requestPathInfo.getResourcePath()).thenReturn(path);
+        lenient().when(requestPathInfo.getResourcePath()).thenReturn(path);
     }
 
     public void setExtension(final String extension) {
-        when(requestPathInfo.getExtension()).thenReturn(extension);
+        lenient().when(requestPathInfo.getExtension()).thenReturn(extension);
     }
 
     public void setSelectors(final String... selectors) {

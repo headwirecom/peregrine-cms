@@ -13,19 +13,16 @@ import org.apache.sling.testing.mock.sling.junit.SlingContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PackageValidatorServiceTest {
@@ -39,7 +36,7 @@ public class PackageValidatorServiceTest {
         context.registerService(Packaging.class, new PackagingImpl());
         ResourceResolver resourceResolver = context.resourceResolver();
         ResourceResolverFactory resourceResolverFactory = mock(ResourceResolverFactory.class);
-        when(resourceResolverFactory.getAdministrativeResourceResolver(any())).thenReturn(resourceResolver);
+        lenient().when(resourceResolverFactory.getAdministrativeResourceResolver(any())).thenReturn(resourceResolver);
         context.registerService(ResourceResolverFactory.class, resourceResolverFactory);
         context.registerInjectActivateService(NodeNameValidationService.class);
         packageValidatorService = context.registerInjectActivateService(PackageValidatorService.class);

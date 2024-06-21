@@ -4,7 +4,7 @@ import com.peregrine.SlingResourcesTest;
 import com.peregrine.commons.Page;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static com.peregrine.commons.util.PerConstants.EXCLUDE_TREE_FROM_SITEMAP;
 import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
