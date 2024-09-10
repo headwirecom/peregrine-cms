@@ -326,7 +326,7 @@
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.scripting.sightly</artifactId>
-            <version>1.4.8-1.4.0</version>
+            <version>1.4.24-1.4.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

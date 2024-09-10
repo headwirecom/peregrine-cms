@@ -157,8 +157,13 @@
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.scripting.sightly.compiler.java</artifactId>
-            <version>1.0.18</version>
+            <version>1.2.2-1.4.0</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <artifactId>org.apache.sling.scripting.sightly.runtime</artifactId>
+            <groupId>org.apache.sling</groupId>
         </dependency>
     </dependencies>
 

@@ -41,20 +41,20 @@
         <slf4j.version>1.7.32</slf4j.version>
 
         <!-- Sling Dependencies Versions -->
-        <org.apache.sling.api.version>2.24.0</org.apache.sling.api.version>
+        <org.apache.sling.api.version>2.27.0</org.apache.sling.api.version>
         <org.apache.sling.jcr.api.version>2.4.0</org.apache.sling.jcr.api.version>
-        <org.apache.sling.jcr.base.version>3.1.6</org.apache.sling.jcr.base.version>
-        <org.apache.sling.commons.mime.version>2.2.2</org.apache.sling.commons.mime.version>
+        <org.apache.sling.jcr.base.version>3.2.0</org.apache.sling.jcr.base.version>
+        <org.apache.sling.commons.mime.version>2.3.0</org.apache.sling.commons.mime.version>
         <org.apache.sling.settings.version>1.4.2</org.apache.sling.settings.version>
         <org.apache.sling.commons.osgi.version>2.4.2</org.apache.sling.commons.osgi.version>
-        <org.apache.sling.models.api.version>1.3.8</org.apache.sling.models.api.version>
-        <org.apache.sling.engine.version>2.7.4</org.apache.sling.engine.version>
+        <org.apache.sling.models.api.version>1.5.4</org.apache.sling.models.api.version>
+        <org.apache.sling.engine.version>2.15.16</org.apache.sling.engine.version>
         <org.apache.sling.scripting.sightly.compiler.java.version>1.2.2-1.4.0</org.apache.sling.scripting.sightly.compiler.java.version>
-        <org.apache.sling.scripting.sightly.runtime.version>1.2.4-1.4.0</org.apache.sling.scripting.sightly.runtime.version>
-        <org.apache.sling.servlet-helpers.version>1.4.2</org.apache.sling.servlet-helpers.version>
+        <org.apache.sling.scripting.sightly.runtime.version>1.2.6-1.4.0</org.apache.sling.scripting.sightly.runtime.version>
+        <org.apache.sling.servlet-helpers.version>1.4.6</org.apache.sling.servlet-helpers.version>
         <distribution.api.version>0.4.0</distribution.api.version>
         <distribution.api.version.latest>0.3.1-SNAPSHOT</distribution.api.version.latest>
-        <org.apache.sling.xss.version>2.2.8</org.apache.sling.xss.version>
+        <org.apache.sling.xss.version>2.4.0</org.apache.sling.xss.version>
 
         <!-- Third Party Dependencies Versions -->
         <jackrabbit.version>2.19.3</jackrabbit.version>
@@ -62,7 +62,7 @@
         <commons-io.version>2.11.0</commons-io.version>
         <commons-collections.version>3.2.2</commons-collections.version>
         <com.fasterxml.jackson.version>2.13.0</com.fasterxml.jackson.version>
-        <guava.version>15.0</guava.version>
+        <guava.version>18.0</guava.version>
         <!-- <aws-java-sdk-osgi.version>1.11.181</aws-java-sdk-osgi.version> -->
         <metadata-extractor.version>2.16.0</metadata-extractor.version>
         <xmpcore.version>6.1.11</xmpcore.version>
@@ -73,10 +73,10 @@
         <mockito-all.version>1.10.19</mockito-all.version>
         <jmock-junit4.version>2.12.0</jmock-junit4.version>
         <org.apache.sling.commons.testing.version>2.1.0</org.apache.sling.commons.testing.version>
-        <org.apache.sling.junit.core.version>1.1.2</org.apache.sling.junit.core.version>
-        <org.apache.sling.testing.clients.version>2.0.8</org.apache.sling.testing.clients.version>
-        <org.apache.sling.testing.rules.version>2.0.0</org.apache.sling.testing.rules.version>
-        <org.apache.sling.testing.sling-mock.junit4.version>3.0.2</org.apache.sling.testing.sling-mock.junit4.version>
+        <org.apache.sling.junit.core.version>1.1.6</org.apache.sling.junit.core.version>
+        <org.apache.sling.testing.clients.version>2.0.12</org.apache.sling.testing.clients.version>
+        <org.apache.sling.testing.rules.version>2.0.2</org.apache.sling.testing.rules.version>
+        <org.apache.sling.testing.sling-mock.junit4.version>3.5.2</org.apache.sling.testing.sling-mock.junit4.version>
         <org.apache.sling.junit.teleporter.version>1.0.22</org.apache.sling.junit.teleporter.version>
 
         <sourceReleaseAssemblyDescriptor>source-release</sourceReleaseAssemblyDescriptor>
@@ -89,8 +89,8 @@
         <gpg.useagent>true</gpg.useagent>
 
         <noContent>true</noContent>
-        <org.apache.sling.serviceusermapper.version>1.5.4</org.apache.sling.serviceusermapper.version>
-        <org.apache.sling.event.version>4.2.12</org.apache.sling.event.version>
+        <org.apache.sling.serviceusermapper.version>1.5.8</org.apache.sling.serviceusermapper.version>
+        <org.apache.sling.event.version>4.3.14</org.apache.sling.event.version>
     </properties>
 
     <build>
