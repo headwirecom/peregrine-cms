@@ -9,8 +9,12 @@ mvn clean install -q
 #cd ../..
 
 echo "Fetching Peregrine CMS Feature Launcher..."
-curl -L -o ./docker/files/com.peregrine-cms.sling.launchpad-12-SNAPSHOT-oak_tar_far.far https://github.com/peregrine-cms/peregrine-builder/releases/download/0.0.9/com.peregrine-cms.sling.launchpad-12-SNAPSHOT-oak_tar_far.far
-curl -L -o ./docker/files/org.apache.sling.feature.launcher.jar  https://github.com/peregrine-cms/peregrine-builder/releases/download/0.0.9/org.apache.sling.feature.launcher.jar
+curl -L -o ./docker/files/com.peregrine-cms.sling.launchpad-13-SNAPSHOT-oak_tar_far.far https://github.com/hsaginor/peregrine-builder/releases/download/0.0.10/com.peregrine-cms.sling.launchpad-13-SNAPSHOT-oak_tar_far.far
+# curl -L -o ./docker/files/org.apache.sling.feature.launcher.jar  https://github.com/peregrine-cms/peregrine-builder/releases/download/0.0.9/org.apache.sling.feature.launcher.jar
+curl -L -o ./docker/files/org.apache.sling.feature.launcher-1.3.0.zip https://github.com/hsaginor/peregrine-builder/releases/download/0.0.10/org.apache.sling.feature.launcher-1.3.0.zip
+unzip -q ./docker/files/org.apache.sling.feature.launcher-1.3.0.zip -d ./docker/files/
+
+ls -la ./docker/files
 
 echo "Building 'themeclean-flex'..."
 git clone https://github.com/headwirecom/themeclean-flex
@@ -23,6 +27,8 @@ echo "Copying packages to Docker working directory..."
 rm -rf ./docker/files/*.zip
 find . -type f -name \*.zip -exec cp {} ./docker/files/ \;
 rm ./docker/files/npm-*.zip
+
+ls -la ./docker/files
 
 #echo "Copy select bundles..."
 #cp platform/login/target/login-1.0-SNAPSHOT.jar ./docker/files/
