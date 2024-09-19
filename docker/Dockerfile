@@ -16,6 +16,7 @@ RUN apt update -q \
     && echo npx: $(npx --version)
 
 COPY files/* /app/binaries/
+COPY files/org.apache.sling.feature.launcher-1.3.0/ /app/binaries/org.apache.sling.feature.launcher-1.3.0/
 COPY scripts/*.sh /app/scripts/
 
 ARG runmode=none
