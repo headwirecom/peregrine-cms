@@ -41,7 +41,7 @@
     "materialize-css": "^0.100.2",
     "moment": "^2.24.0",
     "node-notifier": "^10.0.0",
-    "nodemon": "^2.0.7",
+    "nodemon": "^2.0.20",
     "request": "^2.88.0",
     "rimraf": "^3.0.2",
     "rollup": "^1.1.2",
