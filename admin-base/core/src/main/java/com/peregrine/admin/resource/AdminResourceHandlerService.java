@@ -1,11 +1,13 @@
 package com.peregrine.admin.resource;
 
 import static com.peregrine.commons.ResourceUtils.*;
+import static com.peregrine.commons.util.PerConstants.ALLOWED_OBJECTS;
 import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
 import static com.peregrine.commons.util.PerConstants.ASSET;
 import static com.peregrine.commons.util.PerConstants.ASSETS_ROOT;
 import static com.peregrine.commons.util.PerConstants.ASSET_CONTENT_TYPE;
 import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
+import static com.peregrine.commons.util.PerConstants.COMMA;
 import static com.peregrine.commons.util.PerConstants.COMPONENT;
 import static com.peregrine.commons.util.PerConstants.COMPONENTS;
 import static com.peregrine.commons.util.PerConstants.COMPONENT_PRIMARY_TYPE;
@@ -273,6 +275,11 @@ public class AdminResourceHandlerService
 
     @Override
     public Resource createFolder(ResourceResolver resourceResolver, String parentPath, String name) throws ManagementException {
+        return createFolder(resourceResolver, parentPath, name, null);
+    }
+
+    @Override
+    public Resource createFolder(ResourceResolver resourceResolver, String parentPath, String name, String allowedObjects) throws ManagementException {
         if(!nodeNameValidation.isValidPageName(name)) {
             throw new ManagementException(String.format(NAME_CONSTRAINT_VIOLATION, name));
         }
@@ -286,6 +293,19 @@ public class AdminResourceHandlerService
             }
             Node newFolder = parent.addNode(name, SLING_ORDERED_FOLDER);
             newFolder.setProperty(JCR_TITLE, name);
+            if(allowedObjects != null) {
+                List<String> objectList = new ArrayList();
+                for(String object : allowedObjects.split(COMMA)) {
+                    // Parse the String for commas to separated them if found
+                    object = object.trim();
+                    if(!object.isEmpty()) {
+                        objectList.add(object);
+                    }
+                }
+                if(!objectList.isEmpty()) {
+                    newFolder.setProperty(ALLOWED_OBJECTS, objectList.toArray(new String[0]));
+                }
+            }
             baseResourceHandler.updateModification(resourceResolver, newFolder);
             return adaptNodeToResource(resourceResolver, newFolder);
         } catch (RepositoryException e) {

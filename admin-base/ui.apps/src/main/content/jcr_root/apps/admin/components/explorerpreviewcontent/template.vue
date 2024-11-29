@@ -315,7 +315,7 @@
 
 <script>
 import {IconLib, MimeType, NodeType, SUFFIX_PARAM_SEPARATOR} from '../../../../../../js/constants'
-import {deepClone, get, set} from '../../../../../../js/utils'
+import {deepClone, get, set, isFolder} from '../../../../../../js/utils'
 import NodeNameValidation from '../../../../../../js/mixins/NodeNameValidation'
 import ReferenceUtil from '../../../../../../js/mixins/ReferenceUtil'
 import Icon from '../icon/template.vue'
@@ -672,7 +672,12 @@ export default {
       this.formGenerator.original = deepClone(this.node)
 
       if (this.nodeType === NodeType.OBJECT) {
-        $perAdminApp.stateAction('editObject', {selected: this.currentObject})
+        let resourceType = this.node.resourceType
+        if(this.isFolder(resourceType)) {
+          $perAdminApp.stateAction('editFolder', {selected: this.currentObject})
+        } else {
+          $perAdminApp.stateAction('editObject', {selected: this.currentObject})
+        }
       }
     },
     onCancel() {
@@ -944,6 +949,16 @@ export default {
         return arg.indexOf(this.activeTab) > -1;
       }
       return this.activeTab === arg;
+    },
+    isFolder(item) {
+      const FOLDERS = [
+        'nt:folder',
+        'sling:Folder',
+        'sling:OrderedFolder'
+      ]
+      return item.resourceType !== undefined ?
+          FOLDERS.indexOf(item.resourceType) >= 0 :
+          FOLDERS.indexOf(item) >= 0
     },
     openLiveVersion() {
       const view = $perAdminApp.getView()

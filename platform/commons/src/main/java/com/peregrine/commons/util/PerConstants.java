@@ -60,12 +60,13 @@ public class PerConstants {
     public static final String ORDER_CHILD_TYPE = "child";
 
     public static final String ALLOWED_OBJECTS = "allowedObjects";
-    public static final String CHILD_COUNT = "childCount";
 
     public static final String DISTRIBUTION_SUB_SERVICE = "peregrine-distribution-sub-service";
 
     public static final String ECMA_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
     public static final Locale ECMA_DATE_FORMAT_LOCALE = Locale.US;
+
+    public static final String COMMA = ",";
 
     public static final String SLASH = Strings.SLASH;
     public static final String DASH = Strings.DASH;
@@ -127,6 +128,10 @@ public class PerConstants {
     public static final String NAME = "name";
     public static final String DATA = "data";
     public static final String MODEL = "model";
+
+    public static final String JSON_SCHEMA = "jsonSchema";
+
+    public static final String UI_SCHEMA = "uiSchema";
     public static final String TYPE = "type";
     public static final String VARIATION = "variation";
     public static final String VARIATION_PATH = "variationPath";

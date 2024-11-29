@@ -83,6 +83,9 @@ class PerApi {
         return impl.populateExplorerDialog(path)
     }
 
+    populateFolder(path, target, data) {
+        return impl.populateFolder(path, target, data)
+    }
 
     populateObject(path, target, name) {
         return impl.populateObject(path, target, name)
@@ -207,8 +210,8 @@ class PerApi {
         return impl.moveAsset(path, to, type)
     }
 
-    createFolder(parentPath, name) {
-        return impl.createFolder(parentPath, name)
+    createFolder(parentPath, name, allowedNodeTypes) {
+        return impl.createFolder(parentPath, name, allowedNodeTypes)
     }
 
     deleteFolder(parentPath, name) {
@@ -253,6 +256,10 @@ class PerApi {
 
     savePageEdit(path, node) {
         return impl.savePageEdit(path, node)
+    }
+
+    saveFolderEdit(path, node) {
+        return impl.saveFolderEdit(path, node)
     }
 
     saveObjectEdit(path, node) {

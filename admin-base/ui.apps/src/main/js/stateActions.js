@@ -54,8 +54,10 @@ import cancelPageEdit from './stateActions/cancelPageEdit'
 import addComponentToPath from './stateActions/addComponentToPath'
 import moveComponentToPath from './stateActions/moveComponentToPath'
 import selectObject from './stateActions/selectObject'
+import editFolder from './stateActions/editFolder'
 import editObject from './stateActions/editObject'
 import unselectObject from './stateActions/unselectObject'
+import saveFolderEdit from './stateActions/saveFolderEdit'
 import saveObjectEdit from './stateActions/saveObjectEdit'
 import saveAssetProperties from './stateActions/saveAssetProperties'
 import deleteObject from './stateActions/deleteObject'
@@ -106,6 +108,8 @@ import saveFile from './stateActions/saveFile';
 import renameFile from './stateActions/renameFile';
 import copyFile from './stateActions/copyFile';
 import moveFile from './stateActions/moveFile';
+import selectFolder from './stateActions/selectFolder';
+import unselectFolder from './stateActions/unselectFolder';
 
 let log = LoggerFactory.logger('actions').setLevelDebug();
 
@@ -141,8 +145,10 @@ actions['moveComponentToPath'] = moveComponentToPath;
 actions['deletePageNode'] = deletePageNode;
 actions['cancelPageEdit'] = cancelPageEdit;
 actions['selectObject'] = selectObject;
+actions['editFolder'] = editFolder;
 actions['editObject'] = editObject;
 actions['unselectObject'] = unselectObject;
+actions['saveFolderEdit'] = saveFolderEdit;
 actions['saveObjectEdit'] = saveObjectEdit;
 actions['saveAssetProperties'] = saveAssetProperties;
 actions['deleteObject'] = deleteObject;
@@ -172,6 +178,7 @@ actions['publish'] = publish;
 actions['unreplicate'] = unreplicate;
 actions['moveObject'] = moveObject;
 actions['showTemplateInfo'] = showPageInfo;
+actions['showFolderInfo'] = showPageInfo;
 actions['saveTemplateProperties'] = savePageProperties;
 actions['renameTemplate'] = renameTemplate;
 actions['moveTemplate'] = moveTemplate;
@@ -195,6 +202,8 @@ actions['saveFile'] = saveFile;
 actions['renameFile'] = renameFile;
 actions['copyFile'] = copyFile;
 actions['moveFile'] = moveFile;
+actions['selectFolder'] = selectFolder;
+actions['unselectFolder'] = unselectFolder;
 
 
 function noopAction(me, target) {

@@ -483,6 +483,25 @@ class PerAdminImpl {
     })
   }
 
+  populateFolderDefinitionFromNode(path) {
+    return new Promise((resolve, reject) => {
+      var name
+      // This is a copy of populateComponentDefinitionFromNode() but without any code handling in the middle
+      fetch('/admin/getFolderSchema.json' + path)
+          .then((data) => {
+            name = data.name
+            let promises = []
+            Promise.all(promises).then(() => {
+              let resourceType = data.resourceType
+              populateView('/admin/componentDefinitions', resourceType, data)
+              resolve(name)
+            })
+          })
+    }).catch(error => {
+      reject(error)
+    })
+  }
+
   populateExplorerDialog(path) {
     return this.populateComponentDefinitionFromNode(path)
   }
@@ -519,6 +538,27 @@ class PerAdminImpl {
   populatePageView(path) {
     return fetch('/admin/readNode.json' + path)
         .then((data) => populateView('/pageView', 'page', data))
+  }
+
+  populateFolder(path, target, name) {
+    return this.populateFolderDefinitionFromNode(path)
+      .then(() => {
+        return fetch('/admin/getFolder.json' + path)
+          .then((data) => {
+            data['sling:resourceType'] = data['jcr:primaryType']
+            populateView('/state/tools/object', 'data', data)
+            // Remember all items that are an array and store them for a later conversion back to an array
+            let arrayProperties = []
+            for(let key in data) {
+              let value = data[key]
+              if(value && Array.isArray(value)) {
+                arrayProperties.push(key)
+              }
+            }
+            // Backup of the original Folder Data
+            populateView('/state/tools/object', 'arrayProperties', arrayProperties)
+          })
+      })
   }
 
   populateObject(path, target, name) {
@@ -927,9 +967,10 @@ class PerAdminImpl {
     })
   }
 
-  createFolder(parentPath, name) {
+  createFolder(parentPath, name, allowedNodeTypes) {
     let data = new FormData()
     data.append('name', name)
+    data.append('allowedNodeTypes', allowedNodeTypes)
     return updateWithForm('/admin/createFolder.json' + parentPath, data)
         .then(() => this.populateNodesForBrowser(parentPath))
   }
@@ -1134,6 +1175,37 @@ class PerAdminImpl {
             reject('Unable to save change. ' + error)
           })
     })
+  }
+
+  saveFolderEdit(path, node) {
+    let formData = new FormData()
+    // convert to a new object
+    let nodeData = JSON.parse(JSON.stringify(node))
+    stripNulls(nodeData)
+    // Save Folder Title (Name) as jcr:title
+    nodeData['jcr:title'] = nodeData['name']
+    delete nodeData['jcr:created']
+    delete nodeData['jcr:createdBy']
+    delete nodeData['jcr:lastModified']
+    delete nodeData['jcr:lastModifiedBy']
+    delete nodeData['name']
+    delete nodeData['path']
+    delete nodeData['resourceType']
+    delete nodeData['sling:resourceType']
+    // Get the list of array properties from the View and then convert the string back to an array
+    let arrayProperties = getOrCreate(callbacks.getView(), '/state/tools/object/arrayProperties')
+    for(let i = 0; i < arrayProperties.length; i++) {
+      let arrayProperty = arrayProperties[i]
+      if (nodeData[arrayProperty] !== undefined) {
+        let propertyValue = nodeData[arrayProperty];
+        if((typeof propertyValue) === 'string') {
+          let propertyArray = propertyValue.split(',')
+          nodeData[arrayProperty] = propertyArray
+        }
+      }
+    }
+    formData.append('content', json(nodeData))
+    return updateWithForm('/admin/updateResource.json' + path, formData)
   }
 
   saveObjectEdit(path, node) {

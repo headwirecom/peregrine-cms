@@ -28,7 +28,9 @@
   xmlns:jcr="http://www.jcp.org/jcr/1.0"
   jcr:primaryType="per:Page"
   jcr:title="example root object"
-  jcr:description="Example Objects Root">
+  jcr:description="Example Objects Root"
+  allowedObjects="[]"
+>
 
   <jcr:content
     jcr:primaryType="per:PageContent"

@@ -16,6 +16,8 @@ public interface AdminPaths {
     String RESOURCE_TYPE_CREATION_TEMPLATE = API_PREFIX + "createTemplate";
     String RESOURCE_TYPE_DELETE_NODE = API_PREFIX + "deleteNode";
     String RESOURCE_TYPE_DELETE_PAGE = API_PREFIX + "deletePage";
+    String RESOURCE_TYPE_GET_FOLDER = API_PREFIX + "getFolder";
+    String RESOURCE_TYPE_GET_FOLDER_SCHEMA = API_PREFIX + "getFolderSchema";
     String RESOURCE_TYPE_GET_OBJECT = API_PREFIX + "getObject";
     String RESOURCE_TYPE_LIST_REPLICATION_STATUS = API_PREFIX + "listReplicationStatus";
     String RESOURCE_TYPE_INSERT_NODE = API_PREFIX + "insertNodeAt";
@@ -24,6 +26,7 @@ public interface AdminPaths {
     String RESOURCE_TYPE_MOVE = API_PREFIX + "move";
     String RESOURCE_TYPE_RENAME = API_PREFIX + "rename";
     String RESOURCE_TYPE_COPY = API_PREFIX + "copy";
+
     String RESOURCE_TYPE_NODE = API_PREFIX + "node";
     String RESOURCE_TYPE_NODES = API_PREFIX + "nodes";
     String RESOURCE_TYPE_REF = API_PREFIX + "ref";

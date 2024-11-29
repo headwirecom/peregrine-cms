@@ -26,6 +26,7 @@ package com.peregrine.admin.servlets;
  */
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_CREATION_FOLDER;
+import static com.peregrine.commons.util.PerConstants.ALLOWED_OBJECTS;
 import static com.peregrine.commons.util.PerConstants.CREATED;
 import static com.peregrine.commons.util.PerConstants.FOLDER;
 import static com.peregrine.commons.util.PerConstants.NAME;
@@ -78,9 +79,10 @@ public class CreateFolderServlet extends AbstractBaseServlet {
     protected Response handleRequest(Request request) throws IOException {
         String parentPath = request.getParameter(PATH);
         String name = request.getParameter(NAME);
+        String allowedObjects = request.getParameter(ALLOWED_OBJECTS);
         try {
             Resource newFolder = resourceManagement
-                .createFolder(request.getResourceResolver(), parentPath, name);
+                .createFolder(request.getResourceResolver(), parentPath, name, allowedObjects);
             request.getResourceResolver().commit();
             return new JsonResponse()
                 .writeAttribute(TYPE, FOLDER)

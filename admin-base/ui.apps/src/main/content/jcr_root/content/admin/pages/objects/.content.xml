@@ -48,6 +48,10 @@
         <pathfield jcr:primaryType="nt:unstructured"
           sling:resourceType="admin/components/pathfield" dataFrom="/state/tools/objects"/>
 
+        <extensions jcr:primaryType="nt:unstructured"
+                    sling:resourceType="admin/components/extensions"
+                    id="admin.pages.subnav"/>
+
         <addFolder jcr:primaryType="nt:unstructured"
           sling:resourceType="admin/components/action"
           target="" type="icon"
@@ -78,7 +82,8 @@
     </nav>
 
     <explorer jcr:primaryType="nt:unstructured"
-      sling:resourceType="admin/components/explorer" dataFrom="/state/tools/objects"
+      sling:resourceType="admin/components/explorer"
+      dataFrom="/state/tools/objects"
       selectionFrom="/state/tools/object/show">
       <!--
       <actions jcr:primaryType="nt:unstructured" sling:resourceType="pagerendervue/structure/container">
