@@ -90,6 +90,7 @@
                             SLING-INF/nodetypes/npmpackageconfig.cnd,
                             SLING-INF/nodetypes/object.cnd,
                             SLING-INF/nodetypes/objectdefinition.cnd,
+                            SLING-INF/nodetypes/tagobjectdefinition.cnd,
                             SLING-INF/nodetypes/extension.cnd
                         </Sling-Nodetypes>
 

@@ -52,7 +52,8 @@
                 return {
                     formmodel: {
                         path: formModelAssets,
-                        name: ''
+                        name: '',
+                        allowedNodeTypes: ''
                     },
                     formOptions: {
                         validationErrorClass: "has-error",
@@ -62,13 +63,20 @@
                     },
                     nameSchema: {
                         fields: [{
-                            type: "input",
-                            inputType: "text",
-                            label: "Folder Name",
-                            placeholder: "Folder Name",
-                            model: "name",
-                            required: true,
-                            validator: [this.nameAvailable, this.validFolderName]
+                          type: "input",
+                          inputType: "text",
+                          label: "Folder Name",
+                          placeholder: "Folder Name",
+                          model: "name",
+                          required: true,
+                          validator: [this.nameAvailable, this.validFolderName]
+                        },{
+                          type: "input",
+                          inputType: "text",
+                          multiple: true,
+                          label: "Allowed Nodetypes",
+                          model: "allowedNodeTypes",
+                          required: false
                         }]
                     }
                 }
@@ -79,7 +87,7 @@
         },
         methods: {
             onComplete: function() {
-                let payload = { parent: this.formmodel.path, name: this.formmodel.name }
+                let payload = { parent: this.formmodel.path, name: this.formmodel.name, allowedNodeTypes: this.formmodel.allowedNodeTypes }
                 $perAdminApp.stateAction('createObjectFolder', payload)
             },
             nameAvailable(value) {
