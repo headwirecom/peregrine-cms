@@ -92,6 +92,14 @@ export default {
   beforeMount() {
     if (!this.value) this.value = []
   },
+  mounted() {
+    window.$perEditorCollections[this.$parent.field.model] = this
+  },
+  beforeDestroy() {
+    if (window.$perEditorCollections) {
+      delete window.$perEditorCollections[this.$parent.field.model]
+    }
+  },
   data() {
     return {
       activeItem: null

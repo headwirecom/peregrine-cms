@@ -126,13 +126,21 @@ export default {
     'view.state.inline.model'(val) {
       if (!val) return
       this.focusFieldByModel(val)
-    }
+    },
+  },
+  beforeMount() {
+    window.$perEditorCollections = {}
   },
   mounted() {
     this.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints
     if (this.schema && this.schema.hasOwnProperty('groups')) {
       this.hideGroups()
     }
+    window.$perEditor = this
+  },
+  beforeDestroy() {
+    delete window.$perEditor
+    delete window.$perEditorCollections
   },
   methods: {
     onOk(e) {
