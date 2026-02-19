@@ -490,6 +490,28 @@ public abstract class AbstractBaseServlet
             return this;
         }
         /**
+         * Write a number field
+         * @param name Name of the field
+         * @param value Number value
+         * @return This instance for method chaining
+         * @throws IOException If writing the number field failed
+         */
+        public JsonResponse writeAttribute(String name, long value) throws IOException {
+            json.writeNumberField(name, value);
+            return this;
+        }
+        /**
+         * Write a number field
+         * @param name Name of the field
+         * @param value Number value
+         * @return This instance for method chaining
+         * @throws IOException If writing the number field failed
+         */
+        public JsonResponse writeAttribute(String name, double value) throws IOException {
+            json.writeNumberField(name, value);
+            return this;
+        }
+        /**
          * Write a text field
          * @param name Name of the field
          * @param value Text value
