@@ -58,7 +58,8 @@
         <component v-bind:is="page.component" v-bind:model="page"></component>
     </span>
     <span v-cloak class="whilePeregrineLoads">
-        loading: ${resource.jcr:title} ${helper.model.brand ? helper.model.brand : ""}
+        <img style="height:60px" data-sly-test="${helper.model.absOgImage}" src="${helper.model.absOgImage}" alt="${resource.jcr:title} ${helper.model.brand ? helper.model.brand : ''}"/>
+        <span data-sly-test="${!helper.model.absOgImage}">${resource.jcr:title} ${helper.model.brand ? helper.model.brand : ""}</span>
     </span>
 </div>
 

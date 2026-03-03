@@ -13,9 +13,9 @@ package com.peregrine.admin.servlets;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -38,11 +38,7 @@ import java.util.Calendar;
 import static com.peregrine.admin.servlets.NodesServlet.ACTIVATED;
 import static com.peregrine.admin.servlets.NodesServlet.DATE_FORMATTER;
 import static com.peregrine.admin.util.AdminConstants.SOURCE_NAME;
-import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED;
-import static com.peregrine.commons.util.PerConstants.NAME;
-import static com.peregrine.commons.util.PerConstants.PATH;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
-import static com.peregrine.commons.util.PerConstants.SOURCE_PATH;
+import static com.peregrine.commons.util.PerConstants.*;
 import static java.util.Objects.nonNull;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 
@@ -62,6 +58,7 @@ public final class ReferenceServletUtils {
     public static void addBasicProps(final Resource resource, final JsonResponse target) throws IOException {
         target.writeAttribute(NAME, resource.getName());
         target.writeAttribute(PATH, resource.getPath());
+        target.writeAttribute(TYPE, resource.getResourceType());
     }
 
     public static void addBasicSourceProps(final Resource resource, final JsonResponse target) throws IOException {
