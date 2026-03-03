@@ -50,6 +50,11 @@
       <div v-if="enableEditableFeatures" class="editable-actions">
         <ul>
           <li class="waves-effect waves-light">
+            <a href="#" :title="$i18n('add')" @click.stop.prevent="onAdd">
+                <i class="material-icons">add_circle</i>
+            </a>
+          </li>
+          <li class="waves-effect waves-light">
             <a href="#" :title="$i18n('copy')" @click.stop.prevent="onCopy">
               <i class="material-icons">content_copy</i>
             </a>
@@ -89,6 +94,7 @@
 </template>
 
 <script>
+import '../../../../../../js/jquery-longpress'
 import {Attribute, Key, Toast} from '../../../../../../js/constants'
 import {Error} from '../../../../../../js/messages'
 import {
@@ -100,6 +106,39 @@ import {
   saveSelection,
   set
 } from '../../../../../../js/utils'
+
+
+const allowedStylesMap = {
+  // bold, italic, etc handled by html tags
+  'text-align':true,
+  'font-size':true,
+}
+const allowedStylesElementsMap = {
+  IMG: true,
+}
+function removeUnwantedStyles(htmlText) {
+  const tempDiv = document.createElement('div')
+  tempDiv.innerHTML = htmlText
+
+  tempDiv.querySelectorAll('[style]').forEach((span) => {
+    if (allowedStylesElementsMap[span.nodeName]) return;
+    const propertiesToRemove = []
+    for (let i = 0; i < span.style.length; i++) {
+      const property = span.style.item(i);
+      if (!allowedStylesMap[property]) {
+        propertiesToRemove.push(property);
+      }
+    }
+    // must be done in later step, otherwise length changes
+    for (let i = 0; i < propertiesToRemove.length; i++) {
+      span.style.removeProperty(propertiesToRemove[i]);
+    }
+  })
+
+  return tempDiv.innerHTML
+}
+
+
 
 export default {
   props: ['model'],
@@ -494,6 +533,7 @@ export default {
       let content = ''
       if (vm.isRich) {
         content = vm.target.innerHTML.replace(/(?:\r\n|\r|\n)/g, '<br>')
+        content = removeUnwantedStyles(content);
       } else {
         content = vm.target.innerText
       }
@@ -503,7 +543,8 @@ export default {
       while (dataInline.length > 1) {
         parentProp = parentProp[dataInline.pop()]
       }
-      parentProp[dataInline.pop()] = content
+      const keyStr = dataInline.pop()
+      parentProp[keyStr] = content;
     },
 
     onInlineEdit(event) {
@@ -703,6 +744,42 @@ export default {
       }
     },
 
+    onIframeLongPress() {
+        if (this.editable.class === 'selected') {
+            const editable = document.getElementById('editable');
+            if (editable) {
+                const handle1 = editable.querySelector('.drag-handle.top-right');
+                const handle2 = editable.querySelector('.drag-handle.bottom-left');
+                if (handle1 && !handle1.classList.contains('full')) {
+                    handle1.style.top = '0';
+                    handle1.style.left = '0';
+                    handle1.style.width = '100%';
+                    handle1.style.height = '100%';
+                    handle1.style.opacity = '.8';
+                    handle1.classList.add('full');
+                    handle1.ondblclick = () => {
+                        handle1.removeAttribute('style');
+                        handle1.classList.remove('full');
+                        handle2.style.visibility = '';
+                    };
+
+                    let timer = null;
+                    handle1.onwheel = () => {
+                        handle1.style.pointerEvents = 'none';
+                        if (timer) {
+                            clearTimeout(timer);
+                        }
+                        timer = setTimeout(() => {
+                            handle1.style.pointerEvents = '';
+                            timer = null;
+                        }, 100);
+                    };
+                    handle2.style.visibility = 'hidden';
+                }
+            }
+        }
+    },
+
     onIframeScroll() {
       this.scrollTop = this.iframe.html.scrollTop
     },
@@ -870,6 +947,7 @@ export default {
     iframeEditMode() {
       set($perAdminApp.getView(), '/state/contentview/editor/active', true)
       this.iframe.doc.addEventListener('click', this.onIframeClick)
+      $(this.iframe.doc).longpress(this.onIframeLongPress);
       this.iframe.doc.addEventListener('scroll', this.onIframeScroll)
       this.iframe.doc.addEventListener('dragover', this.onIframeDragOver)
       this.iframe.doc.addEventListener('drop', this.onIframeDrop)
@@ -1097,6 +1175,136 @@ export default {
       remains.forEach((remain) => {
         remain.remove()
       })
+    },
+
+    onAdd() {
+        const components = this.view.admin.components.data;
+        if (!components) {
+            return;
+        }
+
+        const tenant = this.view.pageView.path.split('/')[2];
+        const groups = [];
+        const filteredComponents = components.filter((component) => {
+            if (component.path.startsWith(`/apps/${tenant}/`) && component.group !== '.hidden') {
+                if (!groups.includes(component.group)) {
+                    groups.push(component.group);
+                }
+                return true;
+            }
+            return false;
+        });
+
+        const id = 'admin-components-modal';
+        let $modal = $(`#${id}`);
+
+        if (!$modal.length) {
+            document.body.insertAdjacentHTML('beforeend', `<div id="${id}" class="modal materialize-modal"></div>`);
+            $modal = $(`#${id}`);
+            $modal.modal({
+                dismissible: true,
+                opacity: .5,
+                inDuration: 300,
+                outDuration: 300,
+                startingTop: '4%',
+                endingTop: '10%'
+            });
+        }
+
+        const modal = $modal[0];
+        modal.innerHTML = `
+            <div class="modal-header">
+              Components
+            </div>
+            <div class="modal-content">
+                  <div style="display: flex;flex-direction:column;justify-content: center;gap: 16px;">
+                    <input class="component-filter" placeholder="Filter" autocomplete="off">
+                    <select class="browser-default group-filter">
+                        <option value="all">All Groups</option>
+                        ${groups.map(group => `<option value="${group}">${group}</option>`).join('')}
+                    </select>
+                    <div style="display: flex;flex-direction: column;gap: 16px;">
+                        <style>.component[hidden] {display: none !important;}</style>
+                        ${filteredComponents.map(component => `
+                            <div class="component" style="flex-direction: column;align-items: flex-start;gap: 8px;display: flex; width: 100%; background: #fff; border: 1px solid #cfd8dc; padding: 1rem;" data-group="${component.group}" data-title="${component.title.trim().toLowerCase()}" data-path="${this.componentKey(component)}">
+                                <div>
+                                    ${this.componentDisplayName(component)}
+                                    <div style="margin-block: 16px;display: flex;gap: 16px; flex-wrap: wrap;">
+                                        ${this.dropTarget ? `<!--<button data-drop="into-before" class="btn">Add into first</button><button data-drop="into-last" class="btn">Add into last</button>-->` : ''}
+  <!--                                                <button data-drop="before" class="btn">Add before</button>-->
+                                        <button data-drop="after" class="btn">Add</button>
+                                    </div>
+                                </div>
+                                ${component.thumbnail ? `<img style="object-fit: contain;width: 100%;background: #eee;height: 150px;" src="${component.thumbnail}">` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        modal.querySelector('.component-filter').oninput = (event) => {
+            const value = event.target.value;
+            if (!value) {
+                modal.querySelectorAll(`.component:not([hidden])`).forEach((btn) => {
+                    btn.style.display = 'flex';
+                });
+            }
+            else {
+                modal.querySelectorAll(`.component:not([hidden])`).forEach((btn) => {
+                    if (btn.dataset.title.includes(value.trim().toLowerCase())) {
+                        btn.style.display = 'flex';
+                    }
+                    else {
+                        btn.style.display = 'none';
+                    }
+                });
+            }
+            modal.querySelectorAll(`.component:not([hidden])`).forEach((btn) => {
+                btn.hidden = false;
+            });
+        };
+
+        modal.querySelector('.group-filter').onchange = (event) => {
+            const value = event.target.value;
+
+            if (value === 'all') {
+                modal.querySelectorAll(`.component`).forEach((btn) => {
+                    btn.hidden = false;
+                });
+            }
+            else {
+                modal.querySelectorAll(`.component`).forEach((btn) => {
+                    btn.hidden = btn.dataset.group !== value;
+                });
+            }
+        };
+
+        modal.querySelectorAll('.component').forEach((component) => {
+            component.querySelectorAll('.btn').forEach((btn) => {
+                btn.onclick = () => {
+                    const payload = {
+                        pagePath: this.view.pageView.path,
+                        path: this.path,
+                        component: component.dataset.path,
+                        drop: btn.dataset.drop
+                    };
+
+                    $modal.modal('close');
+
+                    $perAdminApp.stateAction('addComponentToPath', payload).then((data) => {
+                        this.refreshIframeElements();
+
+                        const save = document.querySelector('.editor-panel-buttons button[title="save"]');
+                        if (save) {
+                            save.click();
+                        }
+                    });
+                };
+            });
+        });
+
+        $modal.modal('open');
     },
 
     onCopy(e) {

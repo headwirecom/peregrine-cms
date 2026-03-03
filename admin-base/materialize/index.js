@@ -1,4 +1,4 @@
-var sass = require('node-sass');
+var sass = require('sass');
 var fs = require('fs-extra');
 
 fs.mkdirs('./target/classes/etc/felibs/materialize')

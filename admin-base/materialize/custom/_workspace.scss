@@ -79,7 +79,7 @@
         z-index: 1;
         right: -1px;
         bottom: -$editable-actions-height;
-        background-color: color('blue-grey', 'darken-3');
+        background-color: customColor('blue-grey', 'darken-3');
         height: $editable-actions-height;
         text-align: center;
         box-shadow: 0 10px 10px rgba(0, 0, 0, 0.5);
@@ -95,8 +95,8 @@
             display: inline-block;
             height: 100%;
             width: 45px;
-            border-right: 1px solid color('blue-grey', 'darken-4');
-            border-left: 1px solid color('blue-grey', 'darken-2');
+            border-right: 1px solid customColor('blue-grey', 'darken-4');
+            border-left: 1px solid customColor('blue-grey', 'darken-2');
 
             > a {
               display: inline-block;
@@ -128,15 +128,15 @@
       }
 
       &.drop-top {
-        border-top: 2px dashed color('blue-grey', 'base');
+        border-top: 2px dashed customColor('blue-grey', 'base');
       }
 
       &.drop-bottom {
-        border-bottom: 2px dashed color('blue-grey', 'base');
+        border-bottom: 2px dashed customColor('blue-grey', 'base');
       }
 
       &.selected {
-        border: 2px dashed color('blue-grey', 'base');
+        border: 2px dashed customColor('blue-grey', 'base');
 
         .editable-actions {
           display: flex;
@@ -144,12 +144,12 @@
       }
 
       &.draggable {
-        border-color: color('blue-grey', 'base');
+        border-color: customColor('blue-grey', 'base');
         border-style: dashed;
       }
 
       &.drag-start {
-        border-color: color('blue-grey', 'base');
+        border-color: customColor('blue-grey', 'base');
         cursor: move;
 
         .editable-actions {
@@ -302,11 +302,11 @@
   .right-panel-toggle {
     position: absolute;
     top: 44px;
-    background-color: color('blue-grey', 'lighten-5');
+    background-color: customColor('blue-grey', 'lighten-5');
     width: 2rem;
     height: 46px;
     z-index: 1;
-    border: 1px solid color('blue-grey', 'lighten-4');
+    border: 1px solid customColor('blue-grey', 'lighten-4');
     border-right: 0;
     opacity: 0.8;
     transition: right 0.2s ease-in-out, opacity 0.2s ease-in-out;
@@ -332,7 +332,7 @@
 
       .material-icons {
         font-size: 30px;
-        color: color('blue-grey', 'lighten-1');
+        color: customColor('blue-grey', 'lighten-1');
       }
     }
   }
@@ -348,8 +348,8 @@
     -moz-transition: width 0.2s ease-in-out;
     -ms-transition: width 0.2s ease-in-out;
     transition: width 0.2s ease-in-out;
-    background-color: color('blue-grey', 'lighten-5');
-    border-left: 1px solid color('blue-grey', 'lighten-4');
+    background-color: customColor('blue-grey', 'lighten-5');
+    border-left: 1px solid customColor('blue-grey', 'lighten-4');
 
     .toggle-fullscreen {
       position: absolute;
@@ -359,7 +359,7 @@
 
       .material-icons {
         font-size: 30px;
-        color: color('blue-grey', 'base');
+        color: customColor('blue-grey', 'base');
         transition: color 0.1s ease-in-out;
       }
 
@@ -367,7 +367,7 @@
       &:focus,
       &:active {
         .material-icons {
-          color: color('blue-grey', 'darken-2');
+          color: customColor('blue-grey', 'darken-2');
         }
       }
     }
@@ -378,7 +378,7 @@
       flex: 1;
       box-shadow: none !important;
       height: 100%;
-      border-left: 1px solid color('blue-grey', 'lighten-4');
+      border-left: 1px solid customColor('blue-grey', 'lighten-4');
       overflow: visible;
     }
   }

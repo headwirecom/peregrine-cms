@@ -64,6 +64,9 @@ function fetch(path) {
     })
   }).catch((error) => {
     logger.error('Fetch request to', path, 'failed')
+    if (path.startsWith('/admin/access.json?')) {
+      window.location = '/system/sling/form/login'
+    }
     throw error
   })
 
@@ -108,11 +111,11 @@ function updateWithFormAndConfig(path, data, config) {
  * @returns
  */
 function postFormData(url, data, config = null) {
-  
+
   if (!url) {
     return logger.error('missing url!', url, data, config);
   }
-  
+
   let formData;
 
   if (!data) {
@@ -130,7 +133,7 @@ function postFormData(url, data, config = null) {
      .post(url, formData, config)
      .then(({data}) => {
       logger.fine('postFormData, response data: ' + data);
-      
+
       return data;
     })
     .catch((error) => {
@@ -343,126 +346,58 @@ class PerAdminImpl {
 
             let promises = []
             if (data && data.model) {
+              const processField = (field) => {
+                let from = field.valuesFrom
+                if (from) {
+                  field.values = []
+                  let promise = axios.get(from).then((response) => {
+                    for (var key in response.data) {
+                      if (response.data[key]['jcr:title']) {
+                        const nodeName = key
+                        const val = from.replace('.infinity.json',
+                          '/' + nodeName)
+                        let name = response.data[key].name
+                        if (!name) {
+                          name = response.data[key]['jcr:title']
+                        }
+                        field.values.push(
+                          {value: val, name: name})
+                      }
+                    }
+                  }).catch((error) => {
+                    logger.error('missing node',
+                      field.valuesFrom,
+                      'for list population in dialog', error)
+                  })
+                  promises.push(promise)
+                }
+                let visible = field.visible
+                if (visible) {
+                  field.visible = function () {
+                    return exprEval.Parser.evaluate(visible, this)
+                  }
+                }
+
+                if (field.type === 'collection' && Array.isArray(field.fields)) {
+                  for (let i = 0; i < field.fields.length; i++) {
+                    processField(field.fields[i])
+                  }
+                }
+              };
+
               if (data.model.groups) {
                 for (let j = 0; j < data.model.groups.length; j++) {
                   for (let i = 0; i < data.model.groups[j].fields.length; i++) {
-                    let from = data.model.groups[j].fields[i].valuesFrom
-                    if (from) {
-                      data.model.groups[j].fields[i].values = []
-                      let promise = axios.get(from).then((response) => {
-                        for (var key in response.data) {
-                          if (response.data[key]['jcr:title']) {
-                            const nodeName = key
-                            const val = from.replace('.infinity.json',
-                                '/' + nodeName)
-                            let name = response.data[key].name
-                            if (!name) {
-                              name = response.data[key]['jcr:title']
-                            }
-                            data.model.groups[j].fields[i].values.push(
-                                {value: val, name: name})
-                          }
-                        }
-                      }).catch((error) => {
-                        logger.error('missing node',
-                            data.model.groups[j].fields[i].valuesFrom,
-                            'for list population in dialog', error)
-                      })
-                      promises.push(promise)
-                    }
-                    let visible = data.model.groups[j].fields[i].visible
-                    if (visible) {
-                      data.model.groups[j].fields[i].visible = function (model) {
-                        return exprEval.Parser.evaluate(visible, this)
-                      }
-                    }
+                    processField(data.model.groups[j].fields[i])
                   }
                 }
               } else {
                 for (let i = 0; i < data.model.fields.length; i++) {
-                  let from = data.model.fields[i].valuesFrom
-                  if (from) {
-                    data.model.fields[i].values = []
-                    let promise = axios.get(from).then((response) => {
-                      const toProcess = []
-                      for (let key in response.data) {
-                        toProcess.push({key, data: response.data[key]})
-                      }
-
-                      let next = toProcess.shift()
-                      while (next) {
-                        if (next.data['jcr:title']) {
-                          const nodeName = next.key
-                          const val = next.data.path ? next.data.path + '/'
-                              + nodeName
-                              : from.replace('.infinity.json', '/' + nodeName)
-                          let name = next.data.name
-                          if (!name) {
-                            name = next.data['jcr:title']
-                          }
-                          if (next.parent) {
-                            name = next.parent + '-' + name
-                          }
-                          data.model.fields[i].values.push(
-                              {value: val, name: name})
-                          for (let k in next.data) {
-                            if (next.data[k] instanceof Object
-                                && next.data[k]['sling:resourceType']
-                                === 'admin/objects/tag') {
-                              toProcess.push(
-                                  {key: k, parent: name, data: next.data[k]})
-                            }
-                          }
-                        }
-                        next = toProcess.shift()
-                      }
-
-                    }).catch((error) => {
-                      logger.error('missing node',
-                          data.model.fields[i].valuesFrom,
-                          'for list population in dialog', error)
-                    })
-                    promises.push(promise)
-                  }
-                  const visible = data.model.fields[i].visible
-                  if (visible) {
-                    data.model.fields[i].visible = function (model) {
-                      return exprEval.Parser.evaluate(visible, this)
-                    }
-                  }
+                  processField(data.model.fields[i])
                 }
                 if (data.ogTags) {
                   for (let i = 0; i < data.ogTags.fields.length; i++) {
-                    let from = data.ogTags.fields[i].valuesFrom
-                    if (from) {
-                      data.ogTags.fields[i].values = []
-                      let promise = axios.get(from).then((response) => {
-                        for (var key in response.data) {
-                          if (response.data[key]['jcr:title']) {
-                            const nodeName = key
-                            const val = from.replace('.infinity.json',
-                                '/' + nodeName)
-                            let name = response.data[key].name
-                            if (!name) {
-                              name = response.data[key]['jcr:title']
-                            }
-                            data.ogTags.fields[i].values.push(
-                                {value: val, name: name})
-                          }
-                        }
-                      }).catch((error) => {
-                        logger.error('missing node',
-                            data.ogTags.fields[i].valuesFrom,
-                            'for list population in dialog', error)
-                      })
-                      promises.push(promise)
-                    }
-                    const visible = data.ogTags.fields[i].visible
-                    if (visible) {
-                      data.ogTags.fields[i].visible = function (ogTags) {
-                        return exprEval.Parser.evaluate(visible, this)
-                      }
-                    }
+                    processField(data.ogTags.fields[i]);
                   }
                   translateFields(data.ogTags.fields)
                 }
@@ -523,22 +458,45 @@ class PerAdminImpl {
 
   populateObject(path, target, name) {
     return this.populateComponentDefinitionFromNode(path)
-        .then(() => {
-          return fetch('/admin/getObject.json' + path)
-              .then((data) => populateView(target, name, data))
-        })
+      .then(() => {
+        return fetch('/admin/getObject.json' + path)
+          .then((data) => {
+            if (data.tags) {
+              data.tags = JSON.parse(data.tags)
+            }
+            return populateView(target, name, data)
+          })
+      })
   }
 
   populateReferencedBy(path, sameTenant = false) {
     return fetchRef('refBy', path, sameTenant)
-        .then((data) => populateView('/state', 'referencedBy', data))
+        .then((data) => {
+          if (sameTenant && data.referencedBy && Array.isArray(data.referencedBy)) {
+            data.referencedBy = data.referencedBy.filter(reference => reference.path !== path && !reference.path.includes('/experiences/lang_') && !reference.activated || reference.activated && reference.is_stale)
+          }
+
+          populateView('/state', 'referencedBy', data)
+        })
   }
 
   populateReferences(path, sameTenant = false) {
     return new Promise((resolve, reject) => {
       fetchRef('ref', path, sameTenant)
-          .then(function (result) {
-            populateView('/state', 'references', result)
+          .then(function (data) {
+            if (sameTenant && data.references && Array.isArray(data.references)) {
+              data.references = data.references.filter(reference => reference.path !== path && !reference.path.includes('/experiences/lang_') && !reference.activated || reference.activated && reference.is_stale)
+
+              const tenant = $perAdminApp.getView().state.tenant.name;
+              if (path.startsWith(`/content/${tenant}/pages/`) || path.startsWith(`/content/${tenant}/templates/`) || path.startsWith(`/content/${tenant}/objects/`)) {
+                const ignoredTypes = ['per:Page', 'sling:OrderedFolder', 'per:Object', 'per:ObjectDefinition', 'admin/objects/tag'];
+                data.references = data.references.filter(reference => !ignoredTypes.includes(reference.type));
+              }
+              else if (path.startsWith(`/content/${tenant}/assets/`) || path.startsWith(`/content/${tenant}/object-definitions/`)) {
+                data.references = [];
+              }
+            }
+            populateView('/state', 'references', data)
                 .then(() => resolve())
           })
           .catch(error => {
@@ -790,11 +748,10 @@ class PerAdminImpl {
         .then(() => this.populateNodesForBrowser(path))
   }
 
-  renameAsset(path, newName, newTitle) {
+  renameAsset(path, newName) {
     return new Promise((resolve, reject) => {
       let data = new FormData()
       data.append('to', newName)
-      data.append('title', newTitle)
       updateWithForm('/admin/asset/rename.json' + path, data)
           .then((data) => this.populateNodesForBrowser(path))
           .then(() => resolve())
@@ -850,7 +807,9 @@ class PerAdminImpl {
     return new Promise((resolve, reject) => {
       let data = new FormData()
       data.append('to', newName)
-      data.append('title', newTitle)
+      if (newTitle) {
+        data.append('title', newTitle)
+      }
       updateWithForm('/admin/page/rename.json' + path, data)
           .then((data) => this.populateNodesForBrowser(path))
           .then(() => resolve())
@@ -861,7 +820,7 @@ class PerAdminImpl {
     })
   }
 
-  copyPage(srcPath, targetPath, name = null) {
+  copyPage(srcPath, targetPath, name = null, otherProperties) {
     return new Promise((resolve, reject) => {
       let data = new FormData()
       data.append('path', srcPath)
@@ -870,6 +829,16 @@ class PerAdminImpl {
       data.append('newName', name)
       data.append('newTitle', name)
       data.append('type', 'child')
+
+      if (otherProperties) {
+        const keys = Object.keys(otherProperties)
+        for (let i = 0; i < keys.length; i++) {
+          const key = keys[i];
+          const value = otherProperties[key]
+          data.append(key, value)
+        }
+      }
+
       updateWithForm('/admin/createPageFromSkeletonPage.json', data)
           .then((data) => this.populateNodesForBrowser(srcPath))
           .then(() => resolve())
@@ -1101,7 +1070,6 @@ class PerAdminImpl {
 
   savePageEdit(path, node) {
     return new Promise((resolve, reject) => {
-      let formData = new FormData()
       // convert to a new object
       let nodeData = JSON.parse(JSON.stringify(node))
       if (nodeData.component) {
@@ -1110,8 +1078,11 @@ class PerAdminImpl {
           nodeData = component.methods.beforeSave(nodeData)
         }
       }
+
+      let isPage = false
       if (nodeData.path === '/jcr:content') {
         nodeData['jcr:primaryType'] = 'per:PageContent'
+        isPage = true
       } else {
         nodeData['jcr:primaryType'] = 'nt:unstructured'
       }
@@ -1124,15 +1095,42 @@ class PerAdminImpl {
       }
       stripNulls(nodeData)
 
-      formData.append('content', json(nodeData))
+      if (isPage) {
+        // Delete tags
+        const formDataTags = new FormData();
+        formDataTags.append('content', json({tags: {_opDelete: true}}));
 
-      updateWithForm('/admin/updateResource.json' + path + node.path, formData)
+        updateWithForm('/admin/updateResource.json' + path + node.path, formDataTags)
           // .then( (data) => this.populateNodesForBrowser(parentPath) )
-          .then(() => resolve())
-          .catch(error => {
+          .then(() => {
+            const formData = new FormData()
+            formData.append('content', json(nodeData))
+
+            updateWithForm('/admin/updateResource.json' + path + node.path, formData)
+              // .then( (data) => this.populateNodesForBrowser(parentPath) )
+              .then(() => resolve())
+              .catch(error => {
+                logger.error('Failed to save page: ' + error)
+                reject('Unable to save change. ' + error)
+              })
+          })
+          .catch((error) => {
             logger.error('Failed to save page: ' + error)
             reject('Unable to save change. ' + error)
-          })
+          });
+      }
+      else {
+        const formData = new FormData()
+        formData.append('content', json(nodeData))
+
+        updateWithForm('/admin/updateResource.json' + path + node.path, formData)
+          // .then( (data) => this.populateNodesForBrowser(parentPath) )
+          .then(() => resolve())
+          .catch(function (error) {
+            logger.error('Failed to save page: ' + error)
+            reject('Unable to save change. ' + error)
+          });
+      }
     })
   }
 
@@ -1145,6 +1143,18 @@ class PerAdminImpl {
     delete nodeData['jcr:createdBy']
     delete nodeData['jcr:lastModified']
     delete nodeData['jcr:lastModifiedBy']
+
+    if (nodeData.tags) {
+      const tags = []
+      Object.keys(nodeData.tags).forEach((tag) => {
+        tags.push(nodeData.tags[tag])
+      });
+      nodeData.tags = JSON.stringify(tags)
+    }
+    else {
+      nodeData.tags = JSON.stringify([])
+    }
+
     formData.append('content', json(nodeData))
     return updateWithForm('/admin/updateResource.json' + path, formData)
   }
@@ -1223,12 +1233,15 @@ class PerAdminImpl {
           .then(respData => {
             count = 0
             noticeFunction = setInterval(function () {
+              if (!document.hasFocus()) {
+                return;
+              }
+
               function stopPolling(data) {
                 const lastAction = data['per:ReplicationLastAction']
                 const activated = data['activated']
                 const ref = data['per:ReplicationRef']
                 const replicated = data['per:Replicated']
-                let stopPolling = false
                 if (lastAction === 'deactivated' && activated === false
                     && !ref) {
                   return true
@@ -1243,8 +1256,10 @@ class PerAdminImpl {
                 return false
               }
 
+              // Use lastResource if any to check replication status
+              const lastResource = resources[resources.length - 1];
               return fetch(
-                  `/admin/listReplicationStatus.json${respData.sourcePath}`)
+                  `/admin/listReplicationStatus.json${respData.sourcePath}${lastResource ? `?lastResource=${lastResource}` : ''}`)
                   .then(data => {
                     if (count++ >= 25) {
                       clearInterval(noticeFunction)
@@ -1258,11 +1273,11 @@ class PerAdminImpl {
                           path.lastIndexOf('/'))
                       $perAdminApp.getApi().populateNodesForBrowser(parentPath)
                       $perAdminApp.notifyUser('Success',
-                          `${data.sourcePath} was successfully ${deactivate
+                          `${respData.sourcePath} was successfully ${deactivate
                               ? 'un' : ''}published.`)
                     }
                   })
-            }, 500)
+            }, 1000)
           })
           .then(() => resolve())
           .catch(error => {

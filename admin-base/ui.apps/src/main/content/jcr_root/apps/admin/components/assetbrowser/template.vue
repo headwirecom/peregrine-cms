@@ -11,9 +11,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -35,16 +35,16 @@
                     <i class="material-icons">view_module</i>
                 </a>
             </li>
-            <li 
-                class="indicator" 
+            <li
+                class="indicator"
                 :style="`transform: translateX(${tab === 'browse' ? '0' : '72px'})`">
             </li>
         </ul>
         <div class="pathbrowser-filter">
             <input placeholder="search"  type="text" v-model="search">
         </div>
-        <div class="modal-content">                    
-            <div class="col-browse"> 
+        <div class="modal-content">
+            <div class="col-browse">
                 <div v-if="search">
                     <table>
                         <thead>
@@ -66,18 +66,18 @@
                 </div>
                 <template v-if="tab === 'browse' && !search">
                     <span class="current-folder">
-                        <button 
-                            :disabled="path === '/content'" 
-                            type="button" 
-                            class="btn-flat" 
+                        <button
+                            :disabled="path === '/content'"
+                            type="button"
+                            class="btn-flat"
                             v-on:click.stop.prevent="selectParent">
-                            <i class="material-icons">keyboard_arrow_left</i> 
+                            <i class="material-icons">keyboard_arrow_left</i>
                         </button>
                         {{path}} ({{list.length}})
                     </span>
                     <ul class="browse-list">
                         <template v-for="item in nodes.children">
-                            <li v-if="isFolder(item)" 
+                            <li v-if="isFolder(item)"
                                 v-on:click.stop.prevent="selectFolder(item)"
                                 :class="isSelected(item.path) ? 'selected' : ''">
                                 <input name="selectedItem" type="radio" class="with-gap" :checked="isSelected(item.path)" />
@@ -85,8 +85,8 @@
                                 <i class="material-icons">folder</i>
                                 <span>{{item.name}}</span>
                             </li>
-                            <li v-if="isFile(item)" 
-                                v-on:click.stop.prevent="selectItem(item)" 
+                            <li v-if="isFile(item)"
+                                v-on:click.stop.prevent="selectItem(item)"
                                 :class="isSelected(item.path) ? 'selected' : ''">
                                 <input name="selectedItem" type="radio" class="with-gap" :checked="isSelected(item.path)" />
                                 <label></label>
@@ -103,29 +103,29 @@
                                 <span class="cards-toolbar-title">Sort</span>
                             </li>
                             <li>
-                                <input 
-                                    name="assetbrowser_sort_cards" 
-                                    type="radio" 
-                                    class="with-gap" 
-                                    id="assetbrowser_sort_cards_name" 
+                                <input
+                                    name="assetbrowser_sort_cards"
+                                    type="radio"
+                                    class="with-gap"
+                                    id="assetbrowser_sort_cards_name"
                                     :checked="sortBy === 'name'"/>
                                 <label v-on:click="onSort('name')" for="assetbrowser_sort_cards_name">name</label>
                             </li>
                             <li>
-                                <input 
-                                    name="assetbrowser_sort_cards" 
-                                    type="radio" 
-                                    class="with-gap" 
-                                    id="assetbrowser_sort_cards_type" 
+                                <input
+                                    name="assetbrowser_sort_cards"
+                                    type="radio"
+                                    class="with-gap"
+                                    id="assetbrowser_sort_cards_type"
                                     :checked="sortBy === 'resourceType'"/>
                                 <label v-on:click="onSort('resourceType')" for="assetbrowser_sort_cards_type">type</label>
                             </li>
                             <li>
-                                <input 
-                                    name="assetbrowser_sort_cards" 
-                                    type="radio" 
-                                    class="with-gap" 
-                                    id="assetbrowser_sort_cards_date" 
+                                <input
+                                    name="assetbrowser_sort_cards"
+                                    type="radio"
+                                    class="with-gap"
+                                    id="assetbrowser_sort_cards_date"
                                     :checked="sortBy === 'created'"/>
                                 <label v-on:click="onSort('created')" for="assetbrowser_sort_cards_date">date</label>
                             </li>
@@ -135,74 +135,74 @@
                                 <span class="cards-toolbar-title">filter</span>
                             </li>
                             <li>
-                                <input 
-                                    name="assetbrowser_filter_cards" 
-                                    type="radio" 
-                                    class="with-gap" 
-                                    id="assetbrowser_filter_cards_all" 
+                                <input
+                                    name="assetbrowser_filter_cards"
+                                    type="radio"
+                                    class="with-gap"
+                                    id="assetbrowser_filter_cards_all"
                                     :checked="filterBy === '*'"/>
                                 <label v-on:click="onFilter('*')" for="assetbrowser_filter_cards_all">all</label>
                             </li>
                             <li>
-                                <input 
-                                    name="assetbrowser_filter_cards" 
-                                    type="radio" 
-                                    class="with-gap" 
-                                    id="assetbrowser_filter_cards_files" 
+                                <input
+                                    name="assetbrowser_filter_cards"
+                                    type="radio"
+                                    class="with-gap"
+                                    id="assetbrowser_filter_cards_files"
                                     :checked="filterBy === 'files'"/>
                                 <label v-on:click="onFilter('files')" for="assetbrowser_filter_cards_files">files</label>
                             </li>
                             <li>
-                                <input 
-                                    name="assetbrowser_filter_cards" 
-                                    type="radio" 
-                                    class="with-gap" 
-                                    id="assetbrowser_filter_cards_folders" 
+                                <input
+                                    name="assetbrowser_filter_cards"
+                                    type="radio"
+                                    class="with-gap"
+                                    id="assetbrowser_filter_cards_folders"
                                     :checked="filterBy === 'folders'"/>
                                 <label v-on:click="onFilter('folders')" for="assetbrowser_filter_cards_folders">folders</label>
                             </li>
 
                         </ul>
                         <p class="range-field">
-                            <input 
-                                type="range" 
-                                min="120" 
-                                max="400" 
+                            <input
+                                type="range"
+                                min="120"
+                                max="400"
                                 v-model="cardSize"/>
                         </p>
-                        <!--<admin-components-spinner 
+                        <!--<admin-components-spinner
                             v-if="isotopeLoading"
-                            width="60" 
+                            width="60"
                             position="center">
                         </admin-components-spinner> -->
-                        
-                        <isotope 
-                            ref="isotope" 
-                            class="isotopes" 
+
+                        <isotope
+                            ref="isotope"
+                            class="isotopes"
                             v-bind:options="getIsotopeOptions()"
-                            v-images-loaded:on="getImagesLoadedCbs()" 
+                            v-images-loaded:on="getImagesLoadedCbs()"
                             v-bind:list="list">
-                            <div 
-                                v-for="(item, index) in list" 
+                            <div
+                                v-for="(item, index) in list"
                                 :key="item.path">
-                                <div 
-                                    v-if="isFolder(item)" 
+                                <div
+                                    v-if="isFolder(item)"
                                     class="item-folder"
                                     v-bind:style="`width: ${cardSize}px; height: ${cardSize}px`"
                                     v-on:click.stop.prevent="selectFolder(item)">
                                         <div class="item-content">
-                                            <i 
+                                            <i
                                                 class="material-icons"
                                                 :style="`font-size: ${cardIconSize(cardSize)}px`">folder_open</i>
                                             <br/>{{item.name}}
                                         </div>
                                 </div>
-                                <img 
-                                    v-if="isFile(item)" 
-                                    class="item-file" 
+                                <img
+                                    v-if="isFile(item)"
+                                    class="item-file"
                                     :class="preview === item.path ? 'selected' : ''"
-                                    v-bind:style="`width: ${cardSize}px`" 
-                                    v-bind:src="item.path" 
+                                    v-bind:style="`width: ${cardSize}px`"
+                                    v-bind:src="item.path"
                                     v-on:click.stop.prevent="selectItem(item)"/>
                             </div>
                         </isotope>
@@ -311,13 +311,13 @@
                     },
                     getSortData: {
                         name: function(itemElem){
-                            return itemElem.name.toLowerCase()    
+                            return itemElem.name.toLowerCase()
                         },
                         created: function(itemElem){
                             return Date.parse(itemElem.created)
                         },
                         resourceType: function(itemElem){
-                            return itemElem.resourceType.toLowerCase()    
+                            return itemElem.resourceType.toLowerCase()
                         }
                     },
                     getFilterData:{
@@ -354,13 +354,13 @@
                 return item.name !== 'jcr:content'
             },
             isFile(item) {
-                return ['per:Asset','nt:file'].indexOf(item.resourceType) >= 0
+                return ['per:Asset', 'per:Object', 'nt:file'].indexOf(item.resourceType) >= 0
             },
             isFolder(item) {
                 return ['per:Page','nt:folder', 'sling:Folder', 'sling:OrderedFolder'].indexOf(item.resourceType) >= 0
             },
             isSelected(path) {
-                return this.selectedPath === path 
+                return this.selectedPath === path
             },
             selectFolder(item) {
                 $perAdminApp.getApi().populateNodesForBrowser(item.path, 'pathBrowser')

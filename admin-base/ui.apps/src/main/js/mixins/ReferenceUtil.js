@@ -7,7 +7,7 @@ export default {
     methods: {
         trimReferences(referenceList) {
             return referenceList.reduce(
-              (map => (r, a) => (!map.has(a.path) && map.set(a.path, 
+              (map => (r, a) => (!map.has(a.path) && map.set(a.path,
               r[r.push({
                 name: a.name,
                 path: a.path,
@@ -18,16 +18,19 @@ export default {
                 is_stale: a.is_stale,
                 "jcr:lastModified": a["jcr:lastModified"],
                 "per:Replicated": a["per:Replicated"],
-              }) - 1]), 
+              }) - 1]),
               map.get(a.path).count++, r))(new Map),
               []
             );
           },
-          printStatus(ref){
-            if (ref.is_stale) {
+        printStatus(ref){
+            if (ref.is_assets_folder) {
+                return "Assets folder"
+            }
+            else if (ref.is_stale) {
                 return "Stale"
             } else if (ref.activated === true){
-                return "Published"                
+                return "Published"
             } else if(ref.activated === false) {
                 return "Unpublished"
             } else {

@@ -52,6 +52,7 @@ export default function(me, target) {
                         'Save Object Edit?',
                         'Would you like to save your object edits?',
                         {
+                            defaultFocus: 'yes',
                             yesText: 'Save',
                             noText: 'Cancel',
                             yes() {

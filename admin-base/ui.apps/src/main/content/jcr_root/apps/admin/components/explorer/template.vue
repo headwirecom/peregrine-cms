@@ -35,6 +35,7 @@
             <ul class="collection">
                 <li v-if="showNavigateToParent"
                     v-on:click.stop.prevent="selectParent()"
+                    id="back-to-parent"
                     class="collection-item">
                     <admin-components-action
                             v-bind:model="{
@@ -44,6 +45,19 @@
                         }"><i class="material-icons">folder_open</i><i class="material-icons">arrow_upward</i>
                     </admin-components-action>
                 </li>
+            <li class="sort-controls">
+                <span class="sort-label">Sort by:</span>
+                <button
+                    v-for="option in sortOptions"
+                    :key="option.value"
+                    :class="['sort-btn', { active: sortBy === option.value }]"
+                    @click="toggleSort(option.value)">
+                    {{ option.label }}
+                </button>
+                <button class="sort-direction-btn" @click="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'" :title="sortOrder === 'asc' ? 'Ascending' : 'Descending'">
+                    <i class="material-icons" :style="sortOrder === 'asc' ? 'transform: rotateX(180deg);' : ''">sort</i>
+                </button>
+            </li>
                 <li
                     v-for ="child in children"
                     v-bind:key="child.path"
@@ -61,6 +75,7 @@
                     <admin-components-draghandle/>
 
                     <admin-components-action v-if="editable(child)"
+                                class="folder"
                                              v-bind:model="{
                                 target: child,
                                 command: 'selectPath',
@@ -87,7 +102,12 @@
                             command: 'selectPath',
                             tooltipTitle: `${$i18n('select')} '${child.title || child.name}'`
                         }">
-                      <icon v-bind="nodeTypeToIcon(child)"/> {{child.title ? child.title : child.name}}
+                            <div class="preview-container" v-if="child.mimeType">
+                                <img v-bind:src="child.path" v-if="child.mimeType.startsWith('image/')" class="preview" v-bind:alt="child.title || child.name">
+                                <icon v-else v-bind="nodeTypeToIcon(child)"/>
+                            </div>
+                            <icon v-else v-bind="nodeTypeToIcon(child)"/>
+                            <span>{{child.title ? child.title : child.name}}</span>
                     </admin-components-action>
 
                     <admin-components-extensions v-bind:model="{id: 'admin.components.explorer', item: child}"></admin-components-extensions>
@@ -130,6 +150,16 @@
                                 <i class="material-icons">visibility</i>
                             </a>
                         </span>
+
+                        <admin-components-action
+                            v-if="child.activated"
+                            v-bind:model="{
+                                    target: child,
+                                    command: 'unPublishResource',
+                                    tooltipTitle: `${$i18n('undo publish')} '${child.title || child.name}'`
+                                }">
+                            <i class="material-icons">cloud_off</i>
+                        </admin-components-action>
 
                         <admin-components-action
                             v-bind:model="{
@@ -278,7 +308,14 @@ export default {
                 isFileUploadVisible: false,
                 uploadProgress: 0,
                 filter: true,
-                publishDialogPath: null
+                publishDialogPath: null,
+                sortBy: 'name',
+                sortOrder: 'desc',
+                sortOptions: [
+                    { value: 'name', label: 'Name' },
+                    { value: 'date', label: 'Date' },
+                    { value: 'lastChanged', label: 'Last Changed' },
+                ]
             }
         },
 
@@ -297,7 +334,8 @@ export default {
             },
             children: function() {
                 if ( this.pt.children ) {
-                    return this.pt.children.filter( child => this.checkIfAllowed(child) )
+                    let filtered = this.pt.children.filter( child => this.checkIfAllowed(child) )
+                    return this.sortChildren(filtered)
                 }
             },
             parentPath: function() {
@@ -328,6 +366,39 @@ export default {
               return $perAdminApp.getView().state.tenant || {name: 'example'}
             },
 
+            toggleSort(value) {
+                if (this.sortBy === value) {
+                    this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc'
+                } else {
+                    this.sortBy = value
+                }
+            },
+
+            sortChildren(children) {
+                const sorted = [...children]
+                const order = this.sortOrder === 'asc' ? 1 : -1
+                switch(this.sortBy) {
+                    case 'name':
+                        sorted.sort((a, b) => (a.name || '').localeCompare(b.name || '') * order)
+                        break
+                    case 'date':
+                        sorted.sort((a, b) => {
+                            const dateA = new Date(a['jcr:created'] || a.created || 0)
+                            const dateB = new Date(b['jcr:created'] || b.created || 0)
+                            return (dateB - dateA) * order
+                        })
+                        break
+                    case 'lastChanged':
+                        sorted.sort((a, b) => {
+                            const dateA = new Date(a['jcr:lastModified'] || a.lastModified || 0)
+                            const dateB = new Date(b['jcr:lastModified'] || b.lastModified || 0)
+                            return (dateB - dateA) * order
+                        })
+                        break
+                }
+                return sorted
+            },
+
             isAssets(path) {
                 return path.startsWith(`/content/${this.getTenant().name}/assets`)
             },
@@ -341,7 +412,7 @@ export default {
             },
 
             isObjectDefinitions(path) {
-                return !this.isInsideObjectDefinition(path) 
+                return !this.isInsideObjectDefinition(path)
                     && path.startsWith(`/content/${this.getTenant().name}/object-definitions`)
             },
 
@@ -368,7 +439,22 @@ export default {
             },
 
             replicatedClass(item) {
-                if(item.ReplicationStatus) {
+                if (this.isFolder(item)) {
+                    if (!item.hasChildren) {
+                      return 'item-replication-unknown';
+                    }
+
+                    if (item.allDescendantActivated) {
+                        return 'item-activated';
+                    }
+
+                    if (item.anyDescendantActivated) {
+                        return 'item-activated-modified';
+                    }
+
+                    return 'item-replication-unknown';
+                }
+                else if(item.ReplicationStatus) {
                     const modified = item.lastModified || item.created
                     const replicated = item.Replicated
                     return `item-${item.ReplicationStatus}${replicated < modified ? '-modified' : ''}`
@@ -390,7 +476,7 @@ export default {
             },
 
             replicable(item) {
-                return !this.isFolder(item)
+                return !this.isFolder(item) || item.path.startsWith(`/content/${this.getTenant().name}/assets/`);
             },
 
             onDragRowStart(item, ev) {
@@ -535,21 +621,36 @@ export default {
                 if(child.resourceType === 'per:Page') {
                     return path + '.html'
                 }
+                if (child.resourceType === 'per:Object' && child.path.startsWith('/content/') && child.path.includes('/objects/news/')) {
+                  return path.replace("objects/news", "pages/news-details") + ".html"
+                }
                 return path + '.json'
             },
 
           nodeTypeToIcon: function (item) {
-            if (item.resourceType === 'per:Page') return {icon: 'description', lib: IconLib.MATERIAL_ICONS}
-            if (item.resourceType === 'per:Object') return {icon: 'layers', lib: IconLib.MATERIAL_ICONS}
+            if (item.resourceType === 'per:Page') return {icon: 'description', lib: IconLib.MATERIAL_ICONS};
+            if (item.resourceType === 'per:Object') return {icon: 'layers', lib: IconLib.MATERIAL_ICONS};
             if (item.resourceType === 'per:ObjectDefinition') return {
               icon: 'insert_drive_file',
               lib: IconLib.MATERIAL_ICONS
-            }
-            if (item.resourceType === 'nt:file') return this.fileExtToIcon(item)
-            if (item.resourceType === 'per:Asset') return {icon: 'image', lib: IconLib.MATERIAL_ICONS}
-            if (item.resourceType === 'sling:Folder') return {icon: 'folder', lib: IconLib.MATERIAL_ICONS}
+            };
+            if (item.resourceType === 'nt:file') return this.fileExtToIcon(item);
+            if (item.resourceType === 'per:Asset') {
+              if (item.mimeType) {
+                if (item.mimeType.startsWith('video/')) {
+                  return { icon: 'video_library', lib: IconLib.MATERIAL_ICONS }
+                } else if (item.mimeType.startsWith('audio/')) {
+                  return { icon: 'audiotrack', lib: IconLib.MATERIAL_ICONS }
+                } else {
+                  return { icon: 'image', lib: IconLib.MATERIAL_ICONS }
+                }
+              } else {
+                return { icon: 'image', lib: IconLib.MATERIAL_ICONS }
+              }
+            };
+            if (item.resourceType === 'sling:Folder') return {icon: 'folder', lib: IconLib.MATERIAL_ICONS};
             if (item.resourceType === 'sling:OrderedFolder') return {icon: 'folder', lib: IconLib.MATERIAL_ICONS}
-            return {icon: '█', lib: IconLib.PLAIN_TEXT}
+            return {icon: '█', lib: IconLib.PLAIN_TEXT};
           },
 
           fileExtToIcon(item) {
@@ -592,7 +693,7 @@ export default {
             },
 
             showRow: function(item, ev) {
-                if (this.editable(item)) {  
+                if (this.editable(item)) {
                     this.showInfo(this, item);
                 }
             },
@@ -669,7 +770,7 @@ export default {
             addObjectDefinitionFile(me, target) {
                 const tenant = $perAdminApp.getView().state.tenant;
                 const path  = me.pt ? me.pt.path : `/content/${tenant.name}/object-definitions`;
-                
+
                 if (this.isInsideObjectDefinition(path)) {
                     $perAdminApp.stateAction('createObjectDefinitionFileWizard', {path, target});
                 }
@@ -693,13 +794,37 @@ export default {
                 return !(obj.activated || obj.anyDescendantActivated || obj.isReferenced);
             },
 
+            unPublishResource(me, target) {
+              if (target.anyDescendantActivated) {
+                $perAdminApp.toast("One of the children of this resource is still published. Please unpublish all of them first.", "warn", 5000)
+              }
+              else if (target.isReferenced) {
+                $perAdminApp.askUser('Warning',
+                  ("Unpublishing may break references. Would you like to continue ?"), {
+                    yesText: 'Yes',
+                    yes: function yes() {
+                      $perAdminApp.stateAction('unreplicate', target.path);
+                    },
+                  });
+              }
+              else {
+                $perAdminApp.stateAction('unreplicate', target.path);
+              }
+            },
+
             deleteTenantOrPage: function(me, target) {
                 if (target.activated) {
-                    $perAdminApp.toast("The resource is still published. Please unpublish it first.", "warn", 7500)
+                    $perAdminApp.toast("The resource is still published. Please unpublish it first.", "warn", 5000)
                 } else if (target.anyDescendantActivated) {
-                    $perAdminApp.toast("One of the children of this resource is still published. Please unpublish all of them first.", "warn", 7500)
+                    $perAdminApp.toast("One of the children of this resource is still published. Please unpublish all of them first.", "warn", 5000)
                 } else if (target.isReferenced) {
-                    $perAdminApp.toast("The resource is referenced somewhere. Please remove the references first.", "warn", 7500)
+                  $perAdminApp.askUser('Warning',
+                    ("Deleting may break references. Would you like to continue ?"), {
+                      yesText: 'Yes',
+                      yes: function yes() {
+                        me.deletePage(me, target);
+                      },
+                    });
                 } else if(me.path === '/content') {
                     me.deleteTenant(me, target)
                 } else {
@@ -711,6 +836,7 @@ export default {
                 const me = this
                 return new Promise((resolve, reject) => {
                     $perAdminApp.askUser(`Delete ${type}?`, me.$i18n(`Are you sure you want to delete this node and all its children?`), {
+                        defaultFocus: 'no',
                         yes() {
                             $perAdminApp.stateAction(`delete${type.charAt(0).toUpperCase() + type.slice(1)}`, path)
                             resolve()
@@ -783,6 +909,57 @@ export default {
         justify-content: center;
         align-items: center;
     }
+
+    .sort-controls {
+        padding: 0.4rem 1rem;
+        background: #f9f9f9;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .sort-label {
+        font-size: 0.85rem;
+        color: #666;
+        margin-right: 0.5rem;
+    }
+
+    .sort-direction-btn,
+    .sort-direction-btn:focus {
+        background: transparent;
+        border: 1px solid #ccc;
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        cursor: pointer;
+        border-radius: 3px;
+        margin-left: 0.5rem;
+        font-size: 1.1rem;
+        line-height: 26px;
+    }
+
+    .sort-btn {
+        background: transparent;
+        border: none;
+        padding: 0.25rem 0.5rem;
+        cursor: pointer;
+        border-radius: 3px;
+        font-size: 0.8rem;
+        color: #555;
+        transition: all 0.15s;
+    }
+
+    .sort-direction-btn:hover,
+    .sort-btn:hover {
+        background: #e8e8e8;
+    }
+
+    .sort-btn.active {
+        background: #ddd;
+        font-weight: 500;
+        color: #333;
+    }
 </style>
 
 <style scoped>
@@ -794,5 +971,43 @@ export default {
   align-items: center;
   font-weight: bolder;
   color: #000000;
+}
+
+.explorer .explorer-layout .row .explorer-main .collection .collection-item:not(#back-to-parent) {
+        display: flex;
+        align-items: center;
+
+        > * {
+            display: flex;
+            align-items: center;
+
+            > a {
+                width: 100%;
+            }
+
+            > a:has(.preview-container) {
+                display: flex;
+                align-items: flex-end;
+                gap: 0.5rem;
+                margin-left: 0.5rem;
+
+                > .preview-container:has(> img.preview) {
+                    height: 64px;
+                    width: 64px;
+                    > img.preview {
+                        height: 64px;
+                        width: 64px;
+                        object-fit: scale-down;
+                        object-position: bottom;
+                    }
+                }
+            }
+        }
+
+        > span:not(.draggable):not(.folder) {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
 }
 </style>

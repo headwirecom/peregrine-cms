@@ -115,6 +115,7 @@
             deleteRecyclable(me, target) {
                 const heading = `${me.$i18n('Delete')} "${target.path}" ${me.$i18n('from')} ${target.date_deleted}`
                 $perAdminApp.askUser(heading, me.$i18n('Delete this item forever?'), {
+                    defaultFocus: 'no',
                     yes() {
                         $perAdminApp.stateAction('deleteRecyclable', target.recyclebin )
                     }

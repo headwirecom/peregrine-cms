@@ -90,6 +90,7 @@ export const MimeType = {
     GIF: 'image/gif',
     TIFF: 'image/tiff',
     SVG: 'image/svg+xml',
+    WEBP: 'image/webp',
   },
 };
 

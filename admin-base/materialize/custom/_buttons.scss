@@ -2,7 +2,7 @@
 .btn,
 .btn-floating {
   &:focus {
-    background-color: color("orange", "base");
+    background-color: customColor("orange", "base");
   }
 }
 
@@ -10,10 +10,10 @@
 .btn-flat {
   &:focus,
   &:hover {
-    background-color: color("blue-grey", "lighten-5");
+    background-color: customColor("blue-grey", "lighten-5");
   }
 
   &:active {
-    background-color: color("blue-grey", "lighten-4");
+    background-color: customColor("blue-grey", "lighten-4");
   }
 }

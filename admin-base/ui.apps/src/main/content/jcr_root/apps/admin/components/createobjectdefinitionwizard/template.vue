@@ -100,8 +100,8 @@
                 if(!value || value.length === 0) {
                     return ['name is required']
                 }
-                if(value.match(/[^0-9a-zA-Z_-]/)) {
-                    return ['object template names may only contain letters, numbers, underscores, and dashes']
+                if(value.match(/[^0-9a-zA-Z-]/)) {
+                    return ['object template names may only contain letters, numbers and dashes. Google dislikes underscores in URLs']
                 }
                 return [];
             },

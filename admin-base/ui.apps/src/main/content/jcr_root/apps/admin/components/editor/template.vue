@@ -11,9 +11,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -32,7 +32,8 @@
             ref="vfg"
             :schema="schema"
             :model="dataModel"
-            :options="formOptions"/>
+            :options="formOptions"
+        />
       </template>
     </div>
     <div class="editor-panel-buttons">
@@ -65,9 +66,6 @@ export default {
   updated: function () {
     let stateTools = $perAdminApp.getNodeFromViewWithDefault('/state/tools', {})
     stateTools._deleted = {} // reset to empty?
-    if (this.schema && this.schema.hasOwnProperty('groups')) {
-      this.hideGroups()
-    }
     setTimeout(() => {
       const node = $perAdminApp.getNodeFromViewOrNull('/state/editor') || {}
       this.path = node.path
@@ -96,10 +94,10 @@ export default {
       return $perAdminApp.getView()
     },
     schema: function () {
-      var view = $perAdminApp.getView()
-      var component = view.state.editor.component
-      var schema = view.admin.componentDefinitions[component].model
-      return schema
+      const view = this.view;
+      const component = view.state.editor.component;
+      const schema = view.admin.componentDefinitions[component].model;
+      return schema;
     },
     dataModel: function () {
       const model = $perAdminApp.findNodeFromPath($perAdminApp.getNodeFromView('/pageView/page'), this.path)
@@ -210,23 +208,28 @@ export default {
     },
 
     hideGroups() {
-      const $groups = $('.vue-form-generator fieldset')
-      $groups.each(function (i) {
-        const $group = $(this)
-        const $title = $group.find('legend')
-        $title.click(function (e) {
-          const isActive = $group.hasClass('active')
-          $groups.filter('.active').removeClass('active')
-          if (!isActive) {
-            $group.addClass('active')
-          }
-        })
-        if (i !== 0) {
-          $group.removeClass('active')
-        }
-        if (i === 0) $group.addClass('active')
-        $group.addClass('vfg-group')
-      })
+        var $vueFormGenerators = $('.vue-form-generator');
+        $vueFormGenerators.each(function() {
+            var $groups = $(this).children('fieldset');
+            $groups.each(function (i) {
+                var $group = $(this);
+                var $title = $group.find('legend');
+                $title.click(function () {
+                    var isActive = $group.hasClass('active');
+                    $groups.filter('.active').removeClass('active');
+                    if (!isActive) {
+                        $group.addClass('active');
+                    }
+                });
+                if (i !== 0) {
+                    $group.removeClass('active');
+                }
+                if (i === 0) {
+                    $group.addClass('active');
+                }
+                $group.addClass('vfg-group');
+            });
+        });
     },
 
     getFieldAndIndexByModel(schema, model) {
@@ -335,4 +338,3 @@ export default {
 //      }
 }
 </script>
-

@@ -13,9 +13,9 @@ package com.peregrine.admin.servlets;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -25,32 +25,28 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_REF;
-import static com.peregrine.admin.servlets.ReferenceServletUtils.addBasicProps;
-import static com.peregrine.admin.servlets.ReferenceServletUtils.addBasicSourceProps;
-import static com.peregrine.admin.servlets.ReferenceServletUtils.addReplicationProps;
-import static com.peregrine.admin.servlets.ReferenceServletUtils.badRequest;
-import static com.peregrine.admin.servlets.ReferenceServletUtils.getChecker;
-import static com.peregrine.commons.util.PerConstants.*;
-import static com.peregrine.commons.util.PerUtil.EQUALS;
-import static com.peregrine.commons.util.PerUtil.GET;
-import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
-import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
-import static java.util.Objects.isNull;
-import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
-import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
-import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_SELECTORS;
-import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
-import static org.osgi.framework.Constants.SERVICE_VENDOR;
-
+import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.reference.ReferenceLister;
-import java.io.IOException;
-import java.util.List;
-import javax.servlet.Servlet;
 import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+
+import javax.jcr.RepositoryException;
+import javax.servlet.Servlet;
+import java.io.IOException;
+import java.util.List;
+
+import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_REF;
+import static com.peregrine.admin.servlets.NodesServlet.CHILDREN;
+import static com.peregrine.admin.servlets.ReferenceServletUtils.*;
+import static com.peregrine.commons.util.PerConstants.JSON;
+import static com.peregrine.commons.util.PerConstants.PATH;
+import static com.peregrine.commons.util.PerUtil.*;
+import static java.util.Objects.isNull;
+import static org.apache.sling.api.servlets.ServletResolverConstants.*;
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 /**
  * This servlet provides a list of resources that are referenced by the given
@@ -73,9 +69,13 @@ import org.osgi.service.component.annotations.Reference;
 public class ReferenceListerServlet extends AbstractBaseServlet {
 
     public static final String REFERENCES = "references";
+    public static final String IS_ASSETS_FOLDER = "is_assets_folder";
 
     @Reference
     private ReferenceLister referenceLister;
+
+    @Reference
+    AdminResourceHandler resourceManagement;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
@@ -88,6 +88,24 @@ public class ReferenceListerServlet extends AbstractBaseServlet {
         final JsonResponse answer = new JsonResponse();
         addBasicSourceProps(source, answer);
         addReplicationProps(source, answer);
+        try {
+            boolean isAssetsFolder = resourceManagement.isAssetsFolder(source);
+            if (isAssetsFolder) {
+                answer.writeAttribute(IS_ASSETS_FOLDER, true);
+                answer.writeArray(CHILDREN);
+                for (Resource child : source.getChildren()) {
+                    if (!resourceManagement.isAssetsFolder(child)) {
+                        answer.writeObject();
+                        addBasicProps(child, answer);
+                        addReplicationProps(child, answer);
+                        answer.writeClose();
+                    }
+                }
+                answer.writeClose();
+            }
+        } catch (RepositoryException e) {
+            logger.error("Failed to check resource is folder for {}", source.getPath(), e);
+        }
         final List<Resource> references = referenceLister.getReferenceList(true, source, true, getChecker(request));
         answer.writeArray(REFERENCES);
         for (final Resource reference : references) {

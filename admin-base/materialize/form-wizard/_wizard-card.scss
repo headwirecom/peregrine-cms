@@ -62,9 +62,9 @@
 
     pre {
       &:not(.CodeMirror-line) {
-        background-color: color("blue-grey", "lighten-5");
-        border: 1px solid color("blue-grey", "lighten-4");
-        color: color("blue-grey", "darken-2");
+        background-color: customColor("blue-grey", "lighten-5");
+        border: 1px solid customColor("blue-grey", "lighten-4");
+        color: customColor("blue-grey", "darken-2");
         padding: 0.75rem;
       }
       &.CodeMirror-line {

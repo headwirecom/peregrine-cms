@@ -13,9 +13,9 @@ package com.peregrine.admin.servlets;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -25,14 +25,15 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import com.peregrine.replication.PerReplicable;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.replication.PerReplicable;
 import com.peregrine.replication.Replication;
 import com.peregrine.replication.Replication.ReplicationException;
 import com.peregrine.replication.ReplicationsContainerWithDefault;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
+import javax.jcr.RepositoryException;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -76,7 +77,7 @@ public abstract class ReplicationServletBase extends AbstractBaseServlet {
 
         try {
             return performReplication(replication, request, resource, resourceResolver);
-        } catch (final ReplicationException e) {
+        } catch (ReplicationException | RepositoryException e) {
             return badRequestReplicationFailed(e);
         }
     }
@@ -88,7 +89,7 @@ public abstract class ReplicationServletBase extends AbstractBaseServlet {
             Request request,
             Resource resource,
             ResourceResolver resourceResolver
-    ) throws IOException, ReplicationException;
+    ) throws IOException, ReplicationException, RepositoryException;
 
     protected static ErrorResponse badRequestReplicationFailed(final Exception e) throws IOException {
         return badRequest(REPLICATION_FAILED).setException(e);

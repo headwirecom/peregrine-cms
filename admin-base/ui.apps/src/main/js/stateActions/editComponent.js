@@ -38,6 +38,7 @@ function bringUpEditor(me, view, target) {
                     resolve(true)
                 } else {
                     $perAdminApp.askUser('Save Page Edit?', 'Would you like to save your page edits?', {
+                        defaultFocus: 'yes',
                         yesText: 'Save',
                         noText: 'Cancel',
                         yes() {

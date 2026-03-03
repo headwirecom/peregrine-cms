@@ -30,7 +30,7 @@
              ref="pathbrowser"
              @click.stop.prevent="onPrevent">
           <!-- @mousedown.prevent="() => {}" -->
-          <div class="modal-header" v-if="">
+          <div class="modal-header">
             {{ header }}
           </div>
           <ul class="pathbrowser-tabs">
@@ -118,7 +118,7 @@
                                :checked="isSelected(item.path)"/>
                         <label v-on:click.stop.prevent="selectItem(item)"></label>
                       </template>
-                      <i class="material-icons">{{ getFolderIcon() }}</i>
+                      <i class="material-icons">{{ getFolderIcon(item) }}</i>
                       <span>{{ item.name }}</span>
                     </li>
                     <li v-if="isFile(item) && isFileAllowed()"
@@ -265,7 +265,7 @@
                           <i
                               class="material-icons"
                               :style="`font-size: ${cardIconSize(cardSize)}px`">{{
-                              getFolderIcon()
+                              getFolderIcon(item)
                             }}</i>
                           <br/>
                           <span class="truncate">{{ item.name }}</span>
@@ -354,9 +354,9 @@
                 </div>
                 <div class="checkboxes-group">
                   <div class="pathbrowser-newwindow" v-if="newWindow !== undefined"
-                       @click="toggleNewWindow"
-                       @keyup.space="toggleNewWindow">
-                    <input type="checkbox" id="newWindow" :checked="newWindow"/>
+                       @click="$emit('toggle-newWindow')"
+                       @keyup.space="$emit('toggle-newWindow')">
+                    <input type="checkbox" id="newWindow" v-model="newWindow"/>
                     <label for="newWindow">Open in new window?</label>
                   </div>
                   <div class="pathbrowser-rel"
@@ -443,10 +443,14 @@ export default {
     currentPath: String,
     selectedPath: String,
     withLinkTab: Boolean,
-    newWindow: Boolean,
+    newWindow: {
+      type: Boolean,
+      default: false
+    },
     toggleNewWindow: Function,
     setCurrentPath: Function,
     setSelectedPath: Function,
+    setResourceType: Function,
     linkTitle: String,
     setLinkTitle: Function,
     altText: String,
@@ -575,12 +579,13 @@ export default {
         'image/jpg',
         'image/gif',
         'timage/tiff',
-        'image/svg+xml'
+        'image/svg+xml',
+        'image/webp',
       ].indexOf(item.mimeType) >= 0
     },
     isImageExtension(item) {
       if (item.path) {
-        return item.path.match(/.(jpg|jpeg|png|gif|svg)$/i)
+        return item.path.match(/.(jpg|jpeg|png|gif|svg|webp)$/i)
       } else {
         return false
       }
@@ -600,7 +605,10 @@ export default {
         return {icon: 'insert_drive_file', lib: IconLib.MATERIAL_ICONS}
       }
     },
-    getFolderIcon() {
+    getFolderIcon(item) {
+      if (item) {
+          return item.hasChildren ? 'folder_open' : 'description'
+      }
       return this.isType(PathBrowser.Type.ASSET) ? 'folder_open' : 'description'
     },
     getEmptyText() {
@@ -675,7 +683,7 @@ export default {
       return item.name !== 'jcr:content'
     },
     isFile(item) {
-      return ['per:Asset', 'nt:file'].indexOf(item.resourceType) >= 0
+      return ['per:Asset', 'per:Object', 'nt:file'].indexOf(item.resourceType) >= 0
     },
     isFileAllowed() {
       return this.browserType !== PathBrowser.Type.PAGE
@@ -709,7 +717,9 @@ export default {
       if (this.isSelectable(item)) {
         this.previewType = 'selected'
         this.setSelectedPath(item.path)
-
+        if (item.resourceType && typeof this.setResourceType === 'function') {
+          this.setResourceType(item.resourceType)
+        }
       }
     },
     selectLink(ev) {

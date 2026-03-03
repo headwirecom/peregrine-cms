@@ -1,17 +1,17 @@
 package com.peregrine.admin.resource;
 
-import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.jcr.version.Version;
-import javax.jcr.version.VersionIterator;
-
 import com.peregrine.admin.models.Recyclable;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import javax.jcr.version.Version;
+import javax.jcr.version.VersionIterator;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Defines the Interface for the Admin Resource
@@ -396,6 +396,8 @@ public interface AdminResourceHandler {
      * @throws ManagementException
      */
     void updateTenant(ResourceResolver resourceResolver, String tenantName) throws ManagementException;
+
+    boolean isAssetsFolder(Resource resource) throws RepositoryException;
 
     class ManagementException extends Exception {
         public ManagementException(String message) {

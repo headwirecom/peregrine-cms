@@ -13,9 +13,9 @@ package com.peregrine.admin.servlets;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -27,7 +27,6 @@ package com.peregrine.admin.servlets;
 
 import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.commons.util.PerConstants;
-import com.peregrine.commons.util.PerUtil;
 import com.peregrine.replication.Replication;
 import com.peregrine.replication.Replication.ReplicationException;
 import com.peregrine.replication.ReplicationUtil;
@@ -38,22 +37,15 @@ import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import javax.jcr.RepositoryException;
 import javax.servlet.Servlet;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_DO_REPLICATION;
-import static com.peregrine.commons.util.PerUtil.EQUALS;
-import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
-import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
-import static com.peregrine.commons.util.PerUtil.POST;
-import static com.peregrine.commons.util.PerUtil.listMissingResources;
+import static com.peregrine.commons.util.PerUtil.*;
 import static java.lang.Boolean.parseBoolean;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
@@ -101,13 +93,13 @@ public final class ReplicationServlet extends ReplicationServletBase {
             final Request request,
             final Resource resource,
             final ResourceResolver resourceResolver
-    ) throws IOException, ReplicationException {
+    ) throws IOException, ReplicationException, RepositoryException {
         if (parseBoolean(request.getParameter(DEACTIVATE))) {
             return performDeactivation(replication, resource);
         }
 
         final boolean deep = parseBoolean(request.getParameter("deep"));
-        final PerUtil.ResourceChecker tenantChecker = new ReplicationUtil.TenantOwnedResourceChecker(resource);
+        final ResourceChecker tenantChecker = new ReplicationUtil.TenantOwnedResourceChecker(resource);
         List<Resource> toBeReplicated = listMissingResources(resource, tenantChecker, deep, new LinkedList<>());
         for (final Resource r : Optional.of(RESOURCES)
                 .map(request::getParameterValues)
@@ -117,6 +109,11 @@ public final class ReplicationServlet extends ReplicationServletBase {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList())) {
             listMissingResources(r, tenantChecker, deep, toBeReplicated);
+        }
+
+        // Remove source from the list if it's an assets folder
+        if (resourceManagement.isAssetsFolder(resource)) {
+            toBeReplicated.remove(resource);
         }
 
         toBeReplicated = replication.prepare(toBeReplicated);

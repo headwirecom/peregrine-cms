@@ -23,9 +23,9 @@
 					overflow-y: auto;
 					.collection-item {
 						position: relative;
-						padding: 10px 10px;
-						color: color("blue-grey", "darken-2");
-						border-color: color("blue-grey", "lighten-4");
+						padding: 10px 0 10px 10px;
+						color: customColor("blue-grey", "darken-2");
+						border-color: customColor("blue-grey", "lighten-4");
 						&.dragging {
 							cursor: grabbing;
 						}
@@ -36,11 +36,11 @@
 							}
 						}
 						> span > a {
-							color: color("blue-grey", "darken-2");
+							color: customColor("blue-grey", "darken-2");
 							&:hover,
 								&:focus,
 								&:active {
-									color: color("blue-grey", "darken-4");
+									color: customColor("blue-grey", "darken-4");
 								}
 						}
 						.material-icons {
@@ -51,52 +51,51 @@
 							padding-bottom: 22px;
 							.svg-content {
 								transition: fill 0.3s ease;
-								fill: color("blue-grey", "darken-2");
+								fill: customColor("blue-grey", "darken-2");
 							}
 							&:hover {
 								.svg-content {
-									fill: color("orange", "base");
+									fill: customColor("orange", "base");
 								}
 							}
 						}
 						&:hover,
 						&:focus,
 						&:active {
-							color: color("blue-grey", "darken-4");
-							background-color: color("blue-grey", "lighten-5");
+							color: customColor("blue-grey", "darken-4");
+							background-color: customColor("blue-grey", "lighten-5");
 						}
 						&:last-child {
 							border-bottom: 0;
 						}
 						&.explorer-item-selected {
-							color: color("blue-grey", "darken-4");
-					    background-color: color("blue-grey", "lighten-5");
+							color: customColor("blue-grey", "darken-4");
+					    background-color: customColor("blue-grey", "lighten-5");
 						}
 						&.drop-after {
-							border-bottom: 1px solid color("orange", "lighten-2") !important;
+							border-bottom: 1px solid customColor("orange", "lighten-2") !important;
 						}
 						&.drop-before {
-							border-top: 1px solid color("orange", "lighten-2") !important;
+							border-top: 1px solid customColor("orange", "lighten-2") !important;
 							margin-top: -1px;
 						}
 						.secondary-content {
 							color: $primary-color-dark;
-							position: absolute;
-							top: 0;
-							right: 0;
-							bottom: 0;
-							padding: 0.75rem 0;
+							align-self: stretch;
 							span {
-								display: inline-block;
-								> a {
-									color: color("blue-grey", "darken-2");
+    							display: flex;
+    							height: 100%;
+    							> a {
+    								display: flex;
+    								align-content: center;
+									color: customColor("blue-grey", "darken-2");
 									vertical-align: middle;
 									display: inline-block;
 									padding: 0 0.75rem;
-									border-left: 1px solid color("blue-grey", "lighten-4");
+									border-left: 1px solid customColor("blue-grey", "lighten-4");
 									transition: color .3s ease;
 									&:hover {
-										color: color("orange", "base");
+										color: customColor("orange", "base");
 									}
 								}
 							}

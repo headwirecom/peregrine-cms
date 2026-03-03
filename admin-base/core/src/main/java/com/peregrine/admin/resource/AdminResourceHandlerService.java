@@ -1,95 +1,5 @@
 package com.peregrine.admin.resource;
 
-import static com.peregrine.commons.ResourceUtils.*;
-import static com.peregrine.commons.util.PerConstants.APPS_ROOT;
-import static com.peregrine.commons.util.PerConstants.ASSET;
-import static com.peregrine.commons.util.PerConstants.ASSETS_ROOT;
-import static com.peregrine.commons.util.PerConstants.ASSET_CONTENT_TYPE;
-import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.COMPONENT;
-import static com.peregrine.commons.util.PerConstants.COMPONENTS;
-import static com.peregrine.commons.util.PerConstants.COMPONENT_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
-import static com.peregrine.commons.util.PerConstants.DEPENDENCIES;
-import static com.peregrine.commons.util.PerConstants.FELIBS_ROOT;
-import static com.peregrine.commons.util.PerConstants.FOLDER;
-import static com.peregrine.commons.util.PerConstants.INTERNAL;
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.JCR_CREATED;
-import static com.peregrine.commons.util.PerConstants.JCR_CREATED_BY;
-import static com.peregrine.commons.util.PerConstants.JCR_DATA;
-import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
-import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
-import static com.peregrine.commons.util.PerConstants.NAME;
-import static com.peregrine.commons.util.PerConstants.NODE;
-import static com.peregrine.commons.util.PerConstants.NT_FILE;
-import static com.peregrine.commons.util.PerConstants.NT_RESOURCE;
-import static com.peregrine.commons.util.PerConstants.NT_UNSTRUCTURED;
-import static com.peregrine.commons.util.PerConstants.OBJECT;
-import static com.peregrine.commons.util.PerConstants.OBJECTS;
-import static com.peregrine.commons.util.PerConstants.OBJECTS_ROOT;
-import static com.peregrine.commons.util.PerConstants.OBJECT_DEFINITIONS_ROOT;
-import static com.peregrine.commons.util.PerConstants.OBJECT_DEFINITION_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.OBJECT_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.PACKAGES_PATH;
-import static com.peregrine.commons.util.PerConstants.PAGE;
-import static com.peregrine.commons.util.PerConstants.PAGES_ROOT;
-import static com.peregrine.commons.util.PerConstants.PAGE_CONTENT_TYPE;
-import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.PATH;
-import static com.peregrine.commons.util.PerConstants.RENDITION;
-import static com.peregrine.commons.util.PerConstants.SITE_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerConstants.SLING_FOLDER;
-import static com.peregrine.commons.util.PerConstants.SLING_ORDERED_FOLDER;
-import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_SUPER_TYPE;
-import static com.peregrine.commons.util.PerConstants.SLING_RESOURCE_TYPE;
-import static com.peregrine.commons.util.PerConstants.TEMPLATE;
-import static com.peregrine.commons.util.PerConstants.TEMPLATES_ROOT;
-import static com.peregrine.commons.util.PerConstants.TENANT;
-import static com.peregrine.commons.util.PerConstants.TEXT_MIME_TYPE;
-import static com.peregrine.commons.util.PerConstants.VARIATIONS;
-
-import static com.peregrine.commons.util.PerConstants.RECYCLEBIN_RESOURCE_TYPE;
-import static com.peregrine.commons.util.PerConstants.RECYCLE_BIN_PATH;
-
-import static com.peregrine.commons.util.PerConstants.SITE_HOME_PATTERN;
-import static com.peregrine.commons.util.PerConstants.SITE_PAGES_PATTERN;
-import static com.peregrine.commons.util.PerConstants.SITE_OBJECTS_PATTERN;
-import static com.peregrine.commons.util.PerConstants.SITE_ASSETS_PATTERN;
-import static com.peregrine.commons.util.PerConstants.SITE_TEMPLATES_PATTERN;
-
-import static com.peregrine.commons.util.PerConstants.TITLE;
-
-import static com.peregrine.commons.util.PerUtil.convertToMap;
-import static com.peregrine.commons.util.PerUtil.getBoolean;
-import static com.peregrine.commons.util.PerUtil.getChildIndex;
-import static com.peregrine.commons.util.PerUtil.getClassOrNull;
-import static com.peregrine.commons.util.PerUtil.getComponentVariableNameFromString;
-import static com.peregrine.commons.util.PerUtil.getFirstChild;
-import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
-import static com.peregrine.commons.util.PerUtil.getNode;
-import static com.peregrine.commons.util.PerUtil.getNodeAtPosition;
-import static com.peregrine.commons.util.PerUtil.getPath;
-import static com.peregrine.commons.util.PerUtil.getResource;
-import static com.peregrine.commons.util.PerUtil.getString;
-import static com.peregrine.commons.util.PerUtil.isPrimaryType;
-import static com.peregrine.commons.util.PerUtil.isPropertyPresentAndEqualsTrue;
-import static com.peregrine.commons.util.PerUtil.toStringOrNull;
-import static com.peregrine.commons.util.PerUtil.checkResource;
-import static com.peregrine.commons.util.PerUtil.getTenantVarPath;
-import static com.peregrine.commons.util.PerUtil.getTenantRootResource;
-
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.StringUtils.isAnyBlank;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Directory;
@@ -104,21 +14,6 @@ import com.peregrine.commons.ResourceUtils;
 import com.peregrine.commons.util.PerUtil;
 import com.peregrine.rendition.BaseResourceHandler;
 import com.peregrine.replication.ImageMetadataSelector;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringBufferInputStream;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import javax.jcr.*;
-import javax.jcr.version.Version;
-import javax.jcr.version.VersionHistory;
-import javax.jcr.version.VersionIterator;
-import javax.jcr.version.VersionManager;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
@@ -131,6 +26,31 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.jcr.*;
+import javax.jcr.version.Version;
+import javax.jcr.version.VersionHistory;
+import javax.jcr.version.VersionIterator;
+import javax.jcr.version.VersionManager;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringBufferInputStream;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import static com.peregrine.commons.ResourceUtils.*;
+import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerUtil.*;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.*;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
  * Created by Andreas Schaefer on 7/6/17.
@@ -269,6 +189,15 @@ public class AdminResourceHandlerService
 
     void removeImageMetadataSelector(ImageMetadataSelector selector) {
         imageMetadataSelectors.remove(selector);
+    }
+
+    @Override
+    public boolean isAssetsFolder(final Resource resource) throws RepositoryException {
+        List<String> folderTypes = Arrays.asList("sling:OrderedFolder", "sling:Folder", "nt:folder");
+        String primaryType = resource.adaptTo(Node.class).getPrimaryNodeType().toString();
+
+        String tenant = getTenantNameFromResource(resource);
+        return tenant != null && resource.getPath().startsWith("/content/" + tenant + "/assets/") && folderTypes.contains(primaryType);
     }
 
     @Override
@@ -861,7 +790,7 @@ public class AdminResourceHandlerService
         }
         try {
             final Resource answer = resourceRelocation.rename(fromResource, newName, true);
-            ModifiableValueMap mvm = getModifiableProperties(answer, true);
+            ModifiableValueMap mvm = getModifiableProperties(answer, !answer.isResourceType(OBJECT_PRIMARY_TYPE));
             if (mvm != null && mvm.containsKey(NAME_PROPERTY)) {
                 mvm.put(NAME_PROPERTY, newName);
             }
@@ -1394,7 +1323,7 @@ public class AdminResourceHandlerService
                 .filter(path -> !path.startsWith(CONTENT_ROOT + SLASH))
                 .collect(Collectors.toList());
 
-                packagePaths.add(CONTENT_ROOT + SLASH + toName);         
+                packagePaths.add(CONTENT_ROOT + SLASH + toName);
             createTenantPackage(resourceResolver, toName, packagePaths);
         } catch (PersistenceException e) {
             logger.error("Failed to create package for site " + toName, e);

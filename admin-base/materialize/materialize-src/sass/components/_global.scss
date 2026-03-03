@@ -1,3 +1,4 @@
+@use "variables";
 //Default styles
 
 html {
@@ -86,7 +87,7 @@ a {
 .divider {
   height: 1px;
   overflow: hidden;
-  background-color: color("grey", "lighten-2");
+  background-color: customColor("grey", "lighten-2");
 }
 
 

@@ -48,6 +48,7 @@ export default {
       })
     },
     fileUploadComplete(percentCompleted){
+      this.$refs.file_upload.value = null;
       return
     }
   }

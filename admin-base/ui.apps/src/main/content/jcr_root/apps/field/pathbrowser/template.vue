@@ -25,6 +25,7 @@
 <template>
     <div class="wrap">
       <template v-if="!schema.preview">
+      <div class="picker-container">
         <input
           :id="getFieldID(schema)"
           type="text"
@@ -37,9 +38,13 @@
           @input="onInputInput"
           @focus="editing = true"
           @blur="editing = false"/>
-        <button v-if="!schema.readonly" :disabled="disabled" v-on:click.stop.prevent="browse" class="btn-flat">
+        <button v-if="!schema.readonly" :disabled="disabled" v-on:click.stop.prevent="browse" class="btn-flat picker-open">
           <icon v-bind="buttonIcon"/>
         </button>
+        <button v-if="!schema.readonly" :disabled="disabled" v-on:click.stop.prevent="remove" class="btn-flat picker-remove">
+          <icon v-bind="removeButtonIcon"/>
+        </button>
+      </div>
         <img v-if="isImage(value)" :src="sanitizedValue" />
         <path-browser-component
             v-if="isOpen"
@@ -48,6 +53,10 @@
             :browserType="browserType"
             :currentPath="currentPath"
             :selectedPath="selectedPath"
+            :newWindow="newWindow"
+            @toggle-newWindow="toggleNewWindow"
+            :rel="rel"
+            @toggle-rel="toggleRel"
             :withLinkTab="withLinkTab"
             :setCurrentPath="setCurrentPath"
             :setSelectedPath="setSelectedPath"
@@ -77,6 +86,8 @@ import Icon from '../../admin/components/icon/template.vue'
                 browserRoot: '/assets',
                 browserType: PathBrowser.Type.ASSET,
                 currentPath: '/assets',
+                newWindow: false,
+                rel: false,
                 selectedPath: null,
                 withLinkTab: true,
                 editing: false
@@ -93,6 +104,9 @@ import Icon from '../../admin/components/icon/template.vue'
 			},
           buttonIcon() {
             return this.model.buttonIcon || {icon: 'insert_drive_file', lib: IconLib.MATERIAL_ICONS};
+          },
+          removeButtonIcon() {
+            return this.model.buttonIcon || {icon: 'delete', lib: IconLib.MATERIAL_ICONS};
           }
 		},
       created() {
@@ -163,7 +177,47 @@ import Icon from '../../admin/components/icon/template.vue'
           }).catch((err) => {
         $perAdminApp.getApi().populateNodesForBrowser('/content', 'pathBrowser')
       })
+    },
+    remove() {
+      this.value = "";
+    },
+    toggleNewWindow() {
+      this.newWindow = !this.newWindow;
+    },
+    toggleRel() {
+      this.rel = !this.rel;
     }
   }
 }
 </script>
+<style>
+.picker-container {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: 1fr;
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
+  margin-bottom: 0.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+
+  *  {
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0;
+  }
+  input {
+    grid-area: 1 / 1 / 2 / 6;
+  }
+  .picker-open {
+    grid-area: 1 / 6 / 2 / 7;
+    color: #546e7a !important;
+  }
+  .picker-remove {
+    grid-area: 1 / 7 / 2 / 8;
+    color: #546e7a !important;
+  }
+}
+</style>

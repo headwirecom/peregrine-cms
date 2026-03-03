@@ -11,7 +11,7 @@
 			position: fixed;
 			bottom: 0;
 			left: 0;
-			background-color: color("blue-grey", "darken-3");
+			background-color: customColor("blue-grey", "darken-3");
 			border: none;
 			border-left: 0;
 			color: #fff;
@@ -25,7 +25,7 @@
 			&:hover,
 			&:focus,
 			&:active {
-				background-color: color("blue-grey", "darken-2");
+				background-color: customColor("blue-grey", "darken-2");
 			}
 		}
 		&.hide-debugger {
@@ -52,7 +52,7 @@
 		right: 0;
 		bottom: 0;
 		overflow: hidden;
-		background-color: color("blue-grey", "darken-3");
+		background-color: customColor("blue-grey", "darken-3");
 		.row {
 			height: 100%;
 		}
@@ -60,10 +60,10 @@
 			height: 100%;
 			overflow: auto;
 			.collection {
-				border-color: color("blue-grey", "lighten-4");
+				border-color: customColor("blue-grey", "lighten-4");
 				.collection-item {
 					background: none;
-					border-color: color("blue-grey", "lighten-4");
+					border-color: customColor("blue-grey", "lighten-4");
 					.logger-level {
 						cursor: pointer;
 						color: #ffb300;
@@ -86,15 +86,15 @@
 			}
 			ul.list-inline {
 				padding-bottom: 0.75rem;
-				border-bottom: 1px solid color("blue-grey", "lighten-4");
+				border-bottom: 1px solid customColor("blue-grey", "lighten-4");
 				> li {
 					padding-right: 0.75rem;
 					> a {
 						display: inline-block;
 						cursor: pointer;
 						padding: 0.25rem 0.75rem;
-						border: 1px solid color("blue-grey", "lighten-4");
-						color: color("blue-grey", "lighten-4");
+						border: 1px solid customColor("blue-grey", "lighten-4");
+						color: customColor("blue-grey", "lighten-4");
 						border-radius: 20px;
 						&.active {
 							border-color: #fff;
@@ -121,7 +121,7 @@
 		height: 100%; 
 		width: 100%; 
 		overflow-y: scroll; 
-		background-color: color("blue-grey", "darken-3"); 
+		background-color: customColor("blue-grey", "darken-3"); 
 		color: white;
 	}
 }

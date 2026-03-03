@@ -25,15 +25,18 @@
 <template>
   <div class="text-editor-wrapper">
     <richtoolbar
-        class="on-right-panel"
-        :show-always-active="false"
-        :responsive="false"
-        @ping="key = key === 'foo'? 'bar' : 'foo'"/>
+      class="on-right-panel"
+      :show-always-active="false"
+      :responsive="false"
+      :editorContent="value"
+      @ping="key = key === 'foo'? 'bar' : 'foo'"
+    />
     <p class="text-editor inline-edit"
        :class="['text-editor', 'inline-edit', {'inline-editing': editing}]"
        ref="textEditor"
        v-html="value"
-       contenteditable="true"
+       :contenteditable="!(schema && schema.readonly)"
+       :readonly="(schema && schema.readonly)"
        @focusin="onFocusIn"
        @focusout="onFocusOut"
        @input="onInput"
@@ -49,6 +52,36 @@
 import {set} from '../../../../../js/utils'
 import Richtoolbar from '../../admin/components/richtoolbar/template.vue'
 
+const allowedStylesMap = {
+  // bold, italic, etc handled by html tags
+  "text-align": true,
+  "font-size": true
+};
+const allowedStylesElementsMap = {
+  IMG: true,
+}
+function removeUnwantedStyles(htmlText) {
+  const tempDiv = document.createElement('div')
+  tempDiv.innerHTML = htmlText
+
+  tempDiv.querySelectorAll('[style]').forEach((span) => {
+    if (allowedStylesElementsMap[span.nodeName]) return;
+    const propertiesToRemove = []
+    for (let i = 0; i < span.style.length; i++) {
+      const property = span.style.item(i);
+      if (!allowedStylesMap[property]) {
+        propertiesToRemove.push(property);
+      }
+    }
+    // must be done in later step, otherwise length changes
+    for (let i = 0; i < propertiesToRemove.length; i++) {
+      span.style.removeProperty(propertiesToRemove[i]);
+    }
+  })
+
+  return tempDiv.innerHTML
+}
+
 export default {
   components: {Richtoolbar},
   mixins: [VueFormGenerator.abstractField],
@@ -56,14 +89,19 @@ export default {
     return {
       doc: document,
       editing: false,
-      key: 0
+      key: 0,
     }
   },
   computed: {
     view() {
       return $perAdminApp.getView()
-    }
+    },
   },
+
+  mounted() {
+    set(this.view, '/state/inline/rich', true)
+  },
+
   methods: {
     onFocusIn(event) {
       set(this.view, '/state/inline/rich', true)
@@ -79,7 +117,7 @@ export default {
     },
     onInput(event) {
       const domProps = this._vnode.children[2].data.domProps
-      const content = event.target.innerHTML
+      const content = event.target.innerHTML;
       if (domProps) domProps.innerHTML = content
       this.value = content
       this.textEditorWriteToModel()
@@ -91,11 +129,19 @@ export default {
       }
     },
     textEditorWriteToModel(vm = this) {
-      vm.model.text = vm.$refs.textEditor.innerHTML
+      vm.model.text = removeUnwantedStyles(vm.$refs.textEditor.innerHTML);
     },
     pingToolbar() {
       this.key = this.key === 'foo' ? 'bar' : 'foo'
       $perAdminApp.action(this, 'pingRichToolbar')
+    },
+  },
+  watch: {
+    value() {
+      if (!this.value) return
+      const textCheckDiv = document.createElement('div')
+      textCheckDiv.innerHTML = this.value
+      if (!textCheckDiv.textContent.trim()) this.value = '';
     }
   }
 }

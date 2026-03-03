@@ -15,35 +15,14 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.nodetype.NodeTypeIterator;
 import javax.jcr.nodetype.NodeTypeManager;
 import javax.jcr.query.Query;
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-
-import static com.peregrine.commons.util.PerConstants.ACTIVATED;
-import static com.peregrine.commons.util.PerConstants.CONTENT_ROOT;
-import static com.peregrine.commons.util.PerConstants.DEACTIVATED;
-import static com.peregrine.commons.util.PerConstants.FELIBS_ROOT;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATION;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_LAST_ACTION;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
-import static com.peregrine.commons.util.PerConstants.SLASH;
-import static com.peregrine.commons.util.PerUtil.getModifiableProperties;
-import static com.peregrine.commons.util.PerUtil.isJcrContent;
+import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerUtil.*;
 import static com.peregrine.commons.util.PerUtil.isNotEmpty;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.equalsAny;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.StringUtils.startsWith;
-import static org.apache.commons.lang3.StringUtils.startsWithAny;
-import static org.apache.commons.lang3.StringUtils.substringAfter;
-import static org.apache.commons.lang3.StringUtils.substringBefore;
+import static org.apache.commons.lang3.StringUtils.*;
 
 public final class ReplicationUtil {
 
@@ -70,10 +49,15 @@ public final class ReplicationUtil {
     public static boolean supportsReplicationProperties(Resource resource) {
         boolean answer = false;
         Node sourceNode = resource.adaptTo(Node.class);
-        List<String> replicationPrimaries = getReplicationPrimaryNodeTypes(sourceNode);
         try {
-            if(replicationPrimaries != null) {
-                answer = replicationPrimaries.contains(sourceNode.getPrimaryNodeType().getName());
+            if (sourceNode.getPrimaryNodeType().toString().equals(NT_RESOURCE)) {
+                answer = true;
+            }
+            else {
+                List<String> replicationPrimaries = getReplicationPrimaryNodeTypes(sourceNode);
+                if(replicationPrimaries != null) {
+                    answer = replicationPrimaries.contains(sourceNode.getPrimaryNodeType().getName());
+                }
             }
         } catch(RepositoryException e) {
             LOGGER.warn("Failed to check Primary Node Type for Replication support -> ignore that", e);
@@ -244,6 +228,22 @@ public final class ReplicationUtil {
         }
 
         return false;
+    }
+
+    public static boolean isAllDescendantReplicated(final Resource resource) {
+        if (!resource.hasChildren()) {
+            return false;
+        }
+
+        boolean allDescendantReplicated = true;
+        for (final Resource child : resource.getChildren()) {
+            if (!isJcrContent(child) && !isReplicated(child)) {
+                allDescendantReplicated = false;
+                break;
+            }
+        }
+
+        return allDescendantReplicated;
     }
 
     public static boolean isSelfOrAnyDescendantReplicated(final Resource resource) {
