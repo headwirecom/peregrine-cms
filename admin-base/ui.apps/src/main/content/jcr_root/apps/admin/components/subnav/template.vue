@@ -57,6 +57,7 @@ import {get} from '../../../../../../js/utils'
 import Richtoolbar from '../richtoolbar/template.vue'
 
 export default {
+    name: "Subnav",
     components: {Richtoolbar},
     props: ['model'],
     data() {

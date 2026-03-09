@@ -6,6 +6,7 @@ export default (vm) => {
     icon: 'link',
     iconLib: IconLib.FONT_AWESOME,
     cmd: 'link',
-    isActive: () => vm.itemIsTag('A')
+    isActive: () => vm.itemIsTag('A'),
+    isDisabled: () => !vm.hasEditorSelection
   }
 }

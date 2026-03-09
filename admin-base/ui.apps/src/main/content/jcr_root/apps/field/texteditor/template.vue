@@ -11,9 +11,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -25,13 +25,14 @@
 <template>
   <div class="text-editor-wrapper">
     <richtoolbar
+      ref="richtoolbar"
       class="on-right-panel"
       :show-always-active="false"
       :responsive="false"
       :editorContent="value"
       @ping="key = key === 'foo'? 'bar' : 'foo'"
     />
-    <p class="text-editor inline-edit"
+    <div class="text-editor inline-edit"
        :class="['text-editor', 'inline-edit', {'inline-editing': editing}]"
        ref="textEditor"
        v-html="value"
@@ -42,14 +43,15 @@
        @input="onInput"
        @click="pingToolbar"
        @dblclick="onDblClick"
-       @keydown="pingToolbar"
+       @keydown="onKeyDown"
        @keyup="pingToolbar">
-    </p>
+       </div>
   </div>
 </template>
 
 <script>
-import {set} from '../../../../../js/utils'
+import {Key} from '../../../../../js/constants'
+import {restoreSelection, saveSelection, set} from '../../../../../js/utils'
 import Richtoolbar from '../../admin/components/richtoolbar/template.vue'
 
 const allowedStylesMap = {
@@ -99,26 +101,66 @@ export default {
   },
 
   mounted() {
-    set(this.view, '/state/inline/rich', true)
+    const view = this.view
+    if (view) set(view, '/state/inline/rich', true)
   },
 
   methods: {
     onFocusIn(event) {
-      set(this.view, '/state/inline/rich', true)
-      set(this.view, '/state/inline/doc', this.doc)
+      const view = this.view
+      if (!view) return
+      set(view, '/state/inline/rich', true)
+      set(view, '/state/inline/doc', this.doc)
+      set(view, '/state/inline/lastContainer', this.$refs.textEditor)
+      set(view, '/state/inline/editorModel', this.model)
       this.editing = true
       this.pingToolbar()
     },
+    onKeyDown(event) {
+      this.pingToolbar()
+      const key = event.which
+      const ctrlOrCmd = event.ctrlKey || event.metaKey
+
+      if (ctrlOrCmd && event.altKey && ((key >= Key.DIGIT_0 && key <= Key.DIGIT_6) || (key >= Key.NUMPAD_0 && key <= Key.NUMPAD_6))) {
+        event.preventDefault()
+        const digit = key >= Key.NUMPAD_0 ? key - Key.NUMPAD_0 : key - Key.DIGIT_0
+        const value = digit === 0 ? 'p' : `h${digit}`
+        document.execCommand('formatBlock', false, value)
+        this.$nextTick(() => this.pingToolbar())
+      } else if (key === Key.B && ctrlOrCmd) {
+        event.preventDefault()
+        document.execCommand('bold', false, null)
+        this.$nextTick(() => this.pingToolbar())
+      } else if (key === Key.I && ctrlOrCmd) {
+        event.preventDefault()
+        document.execCommand('italic', false, null)
+        this.$nextTick(() => this.pingToolbar())
+      } else if (key === Key.U && ctrlOrCmd) {
+        event.preventDefault()
+        document.execCommand('underline', false, null)
+        this.$nextTick(() => this.pingToolbar())
+      }
+    },
     onFocusOut() {
-      set(this.view, '/state/inline/rich', true)
-      set(this.view, '/state/inline/doc', null)
+      const view = this.view
+      if (!view) return
+      const sel = document.getSelection()
+      const anchorNode = sel && sel.rangeCount > 0 ? sel.anchorNode : null
+      const el = anchorNode ? (anchorNode.nodeType === Node.TEXT_NODE ? anchorNode.parentElement : anchorNode) : null
+      set(view, '/state/inline/rich', true)
+      set(view, '/state/inline/lastAnchor', el ? el.closest('a') : null)
+      set(view, '/state/inline/lastContainer', this.$refs.textEditor)
+      set(view, '/state/inline/lastDoc', this.doc)
+      set(view, '/state/inline/lastSelectionBuffer', saveSelection(this.$refs.textEditor, this.doc))
+      set(view, '/state/inline/doc', null)
+      set(view, '/state/inline/editorModel', null)
       this.editing = false
       this.pingToolbar()
     },
     onInput(event) {
-      const domProps = this._vnode.children[2].data.domProps
       const content = event.target.innerHTML;
-      if (domProps) domProps.innerHTML = content
+      const pVnode = this._vnode.children && this._vnode.children.find(c => c.elm === this.$refs.textEditor)
+      if (pVnode && pVnode.data && pVnode.data.domProps) pVnode.data.domProps.innerHTML = content
       this.value = content
       this.textEditorWriteToModel()
       this.pingToolbar()
@@ -129,11 +171,47 @@ export default {
       }
     },
     textEditorWriteToModel(vm = this) {
-      vm.model.text = removeUnwantedStyles(vm.$refs.textEditor.innerHTML);
+      const content = removeUnwantedStyles(vm.$refs.textEditor.innerHTML);
+      const pVnode = vm._vnode && vm._vnode.children && vm._vnode.children.find(c => c.elm === vm.$refs.textEditor)
+      if (pVnode && pVnode.data && pVnode.data.domProps) pVnode.data.domProps.innerHTML = content
+      vm.model.text = content;
     },
     pingToolbar() {
       this.key = this.key === 'foo' ? 'bar' : 'foo'
       $perAdminApp.action(this, 'pingRichToolbar')
+    },
+    insertLink(vm = this) {
+      vm._saveInlineSelectionState()
+      if (vm.$refs.richtoolbar) vm.$refs.richtoolbar.insertLink()
+    },
+    editLink(vm = this) {
+      vm._saveInlineSelectionState()
+      if (vm.$refs.richtoolbar) vm.$refs.richtoolbar.editLink()
+    },
+    removeLink(vm = this) {
+      const sel = document.getSelection()
+      const anchorNode = sel && sel.rangeCount > 0 ? sel.anchorNode : null
+      const el = anchorNode ? (anchorNode.nodeType === Node.TEXT_NODE ? anchorNode.parentElement : anchorNode) : null
+      const anchor = el ? el.closest('a') : null
+      if (!anchor) return
+
+      const range = document.createRange()
+      range.selectNodeContents(anchor)
+      sel.removeAllRanges()
+      sel.addRange(range)
+      document.execCommand('unlink', false, null)
+      vm.textEditorWriteToModel()
+    },
+    _saveInlineSelectionState(vm = this) {
+      const view = $perAdminApp.getView()
+      if (!view) return
+      const sel = document.getSelection()
+      const anchorNode = sel && sel.rangeCount > 0 ? sel.anchorNode : null
+      const el = anchorNode ? (anchorNode.nodeType === Node.TEXT_NODE ? anchorNode.parentElement : anchorNode) : null
+      set(view, '/state/inline/lastAnchor', el ? el.closest('a') : null)
+      set(view, '/state/inline/lastContainer', vm.$refs.textEditor)
+      set(view, '/state/inline/lastDoc', vm.doc)
+      set(view, '/state/inline/doc', vm.doc)
     },
   },
   watch: {

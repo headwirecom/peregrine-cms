@@ -6,6 +6,7 @@ export default (vm) => {
     icon: 'A<sup>2</sup>',
     iconLib: IconLib.PLAIN_TEXT,
     cmd: 'superscript',
-    isActive: () => vm.itemIsTag('SUP')
+    isActive: () => vm.itemIsTag('SUP'),
+    isDisabled: () => !vm.hasEditorSelection
   }
 }

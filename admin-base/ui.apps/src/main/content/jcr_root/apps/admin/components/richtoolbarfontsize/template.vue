@@ -1,7 +1,7 @@
 <template>
   <div class="font-size-wrapper btn-group">
-    <button class="add btn" @click="onAdd">
-      <icon icon="add" :lib="iconLib" />
+    <button class="subtract btn" @click="onSubtract" title="Decrease font size" :disabled="effectiveDisabled">
+      <icon icon="remove" :lib="iconLib" />
     </button>
 
     <div class="inputWrapper" @focusin="onFocusIn" @focusout="onFocusOut">
@@ -13,6 +13,7 @@
         type="number"
         max="250"
         min="1"
+        :disabled="effectiveDisabled"
       />
 
       <ul>
@@ -24,8 +25,8 @@
       </ul>
     </div>
 
-    <button class="subtract btn" @click="onSubtract">
-      <icon icon="remove" :lib="iconLib" />
+    <button class="add btn" @click="onAdd" title="Increase font size" :disabled="effectiveDisabled">
+      <icon icon="add" :lib="iconLib" />
     </button>
   </div>
 </template>
@@ -56,6 +57,10 @@ export default {
     getEditorSelection: {
       type: Function
     },
+    disabled: {
+      type: Boolean,
+      default: false
+    },
   },
 
   data() {
@@ -64,10 +69,14 @@ export default {
       selectionRange: null,
       inputValue: "",
       inlineListenerInterval: null,
+      focused: false,
     };
   },
 
   computed: {
+    effectiveDisabled() {
+      return this.disabled && !this.focused
+    },
     forInline() {
       if (this.$refs.inputRef.closest('.richtoolbar.on-sub-nav')) {
         return true
@@ -105,11 +114,6 @@ export default {
       if (currSelection.rangeCount <= 0) return
       if (event.currentTarget.isEqualNode(iframeDoc)) clearInterval(this.inlineListenerInterval)
       if (document.activeElement.isEqualNode(this.$refs.inputRef)) return;
-
-      // remove selection from mirror text editor to avoid issues when finding selection to apply fontsize later
-      if (event.currentTarget.isEqualNode(iframeDoc)) document.getSelection().removeAllRanges() // remove selection
-      if (event.currentTarget.isEqualNode(document)) iframeDoc?.getSelection().removeAllRanges() // remove selection
-
 
       const currRange = currSelection.getRangeAt(0);
 
@@ -187,6 +191,7 @@ export default {
 
     // save/load selection between manual inputs
     onFocusOut(e) {
+      this.focused = false
       this.exec("restoreSelection");
       if (this.selectionRange) {
         const selection = this.selectionRange.startContainer.ownerDocument.getSelection()
@@ -198,6 +203,7 @@ export default {
       });
     },
     onFocusIn(e) {
+      this.focused = true
       this.exec("saveSelection");
       const range = this.getEditorSelection()
       if (range && this.isRangeInEditor(range)) {
@@ -213,24 +219,39 @@ export default {
   display: flex;
 }
 
-.on-right-panel .font-size-wrapper {
-  border-left: 1px solid var(--pcms-gray);
-}
-
 .inputWrapper {
   position: relative;
-  margin: 0 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
   padding: 0;
   background-color: white;
   color: black;
+  border-bottom: 1px solid var(--pcms-blue-grey);
 }
 
 .inputWrapper input {
-  padding: 2px;
+  padding: 0;
   margin: 0;
   border: none;
-  width: 42px;
-  height: 32px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+/* Hide the browser's number-input spinner arrows visually
+   while keeping keyboard arrow-key increment/decrement intact */
+.inputWrapper input::-webkit-outer-spin-button,
+.inputWrapper input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.inputWrapper input[type="number"] {
+  -moz-appearance: textfield;
 }
 
 .inputWrapper ul {

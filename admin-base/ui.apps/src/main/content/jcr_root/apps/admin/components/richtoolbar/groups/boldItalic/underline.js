@@ -2,11 +2,11 @@ import {IconLib} from '../../../../../../../../js/constants'
 
 export default (vm) => {
   return {
-    label: 'bulleted list',
-    icon: 'list-ul',
+    label: 'underline',
+    icon: 'underline',
     iconLib: IconLib.FONT_AWESOME,
-    cmd: 'insertUnorderedList',
-    isActive: () => vm.itemIsTag('UL'),
+    cmd: 'underline',
+    isActive: () => vm.queryCmdState('underline'),
     isDisabled: () => !vm.hasEditorSelection
   }
 }

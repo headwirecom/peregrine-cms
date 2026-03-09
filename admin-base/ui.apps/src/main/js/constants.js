@@ -114,6 +114,11 @@ export const Attribute = {
 
 export const Key = {
   A: 65,
+  B: 66,
+  I: 73,
+  U: 85,
+  Y: 89,
+  Z: 90,
   BACKSPACE: 8,
   DELETE: 46,
   DOT: 190,
@@ -123,6 +128,10 @@ export const Key = {
   ARROW_RIGHT: 39,
   ARROW_DOWN: 40,
   ESC: 27,
+  DIGIT_0: 48,
+  DIGIT_6: 54,
+  NUMPAD_0: 96,
+  NUMPAD_6: 102,
 };
 
 export const IconLib = {

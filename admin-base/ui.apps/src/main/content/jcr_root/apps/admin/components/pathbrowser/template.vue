@@ -49,6 +49,11 @@
                 <i class="material-icons">link</i>
               </a>
             </li>
+            <li v-if="withImageTab" class="tab">
+              <a href="#" :class="tab === 'image' ? 'active' : ''" v-on:click="select('image')">
+                <i class="material-icons">image</i>
+              </a>
+            </li>
             <li
                 class="indicator"
                 :style="`transform: translateX(${tabIndicatorPosition}px)`">
@@ -109,7 +114,7 @@
                 <ul class="browse-list" v-if="list.length > 0">
                   <template v-for="item in list">
                     <li v-if="isFolder(item)"
-                        v-on:click.stop.prevent="navigateFolder(item)"
+                        v-on:click.stop.prevent="isBrowserTypePage ? selectItem(item) : navigateFolder(item)"
                         :class="isSelected(item.path) ? 'selected' : ''">
                       <template v-if="allowFolderSelection">
                         <input name="selectedItem"
@@ -118,10 +123,12 @@
                                :checked="isSelected(item.path)"/>
                         <label v-on:click.stop.prevent="selectItem(item)"></label>
                       </template>
-                      <i class="material-icons">{{ getFolderIcon(item) }}</i>
+                      <i class="material-icons"
+                         v-on:click.stop.prevent="navigateFolder(item)"
+                         :title="isBrowserTypePage ? 'Open' : ''">{{ getFolderIcon(item) }}</i>
                       <span>{{ item.name }}</span>
                     </li>
-                    <li v-if="isFile(item) && isFileAllowed()"
+                    <li v-if="isFile(item)"
                         v-on:click.stop.prevent="selectItem(item)"
                         :class="isSelected(item.path) ? 'selected' : ''">
                       <template v-if="isSelectable(item)">
@@ -271,7 +278,7 @@
                           <span class="truncate">{{ item.name }}</span>
                         </div>
                       </div>
-                      <template v-if="isFile(item) && isFileAllowed()">
+                      <template v-if="isFile(item)">
                         <img
                             v-if="isImage(item)"
                             :class="isSelected(item.path) ? 'item-image selected' : 'item-image'"
@@ -309,7 +316,7 @@
                       id="pathBrowserLink"
                       ref="pathBrowserLink"
                       type="url"
-                      placeholder="https://"
+                      placeholder="URL"
                       :value="selectedPath"
                       @mousedown=""
                       @input="selectLink"/>
@@ -366,6 +373,37 @@
                        @keyup.space="$emit('toggle-rel')">
                     <input type="checkbox" id="rel" v-model="rel"/>
                     <label for="rel"> Add rel="noopener noreferrer" to link? </label>
+                  </div>
+                </div>
+              </template>
+              <template v-if="withImageTab && tab === 'image'">
+                <div class="form-group" v-if="altText !== undefined">
+                  <label for="imageTabAltText">Image Alternate Text</label>
+                  <input
+                      id="imageTabAltText"
+                      type="text"
+                      placeholder="Alt Text"
+                      :value="altText"
+                      @input="setAltText"/>
+                </div>
+                <div class="img-group">
+                  <div class="form-group">
+                    <label for="imageTabWidth">Width (px)</label>
+                    <input
+                        id="imageTabWidth"
+                        type="number"
+                        placeholder="Width"
+                        :value="imgWidth"
+                        @input="onUpdateImgDimension('width', $event)"/>
+                  </div>
+                  <div class="form-group">
+                    <label for="imageTabHeight">Height (px)</label>
+                    <input
+                        id="imageTabHeight"
+                        type="number"
+                        placeholder="Height"
+                        :value="imgHeight"
+                        @input="onUpdateImgDimension('height', $event)"/>
                   </div>
                 </div>
               </template>
@@ -443,6 +481,7 @@ export default {
     currentPath: String,
     selectedPath: String,
     withLinkTab: Boolean,
+    withImageTab: Boolean,
     newWindow: {
       type: Boolean,
       default: false
@@ -474,7 +513,9 @@ export default {
   },
   mounted() {
     // set initial tab
-    if (this.withLinkTab && this.selectedPath && this.selectedPath.match(/^(https?:)?\/\//)) {
+    if (this.withImageTab) {
+      this.tab = 'image'
+    } else if (this.withLinkTab && this.selectedPath && this.selectedPath.match(/^(https?:)?\/\//)) {
       this.tab = 'link'
     } else {
       this.tab = 'browse'
@@ -519,7 +560,7 @@ export default {
       return {}
     },
     list() {
-      if (this.nodes.children) {
+      if (this?.nodes?.children) {
         return this.nodes.children
       }
       return []
@@ -536,6 +577,9 @@ export default {
         case ('link'):
           position = 144
           break
+        case ('image'):
+          position = this.withLinkTab ? 216 : 144
+          break
         default:
           position = 0
           break
@@ -543,7 +587,9 @@ export default {
       return position
     },
     searchTabOffset() {
-      if (this.withLinkTab) {
+      if (this.withLinkTab && this.withImageTab) {
+        return 288
+      } else if (this.withLinkTab || this.withImageTab) {
         return 216
       } else {
         return 144
@@ -551,6 +597,9 @@ export default {
     },
     allowFolderSelection() {
       return !this.isBrowserTypeImage && !this.isBrowserTypeObjectDefinition
+    },
+    isBrowserTypePage() {
+      return this.isType(PathBrowser.Type.PAGE)
     },
     isBrowserTypeImage() {
       return this.isType(PathBrowser.Type.IMAGE)
@@ -685,9 +734,6 @@ export default {
     isFile(item) {
       return ['per:Asset', 'per:Object', 'nt:file'].indexOf(item.resourceType) >= 0
     },
-    isFileAllowed() {
-      return this.browserType !== PathBrowser.Type.PAGE
-    },
     isFolder(item) {
       return [
         'per:Page',
@@ -710,7 +756,6 @@ export default {
             this.previewType = 'current'
             this.setCurrentPath(item.path)
             if (this.tab === 'cards' && this.list.length > 0) this.updateIsotopeLayout('masonry')
-            this.selectItem(item)
           })
     },
     selectItem(item) {
@@ -729,7 +774,7 @@ export default {
       this.setSelectedPath(ev.target.value)
     },
     isType(browserType) {
-      return this.browserType === browserType
+      return this.browserType?.toLowerCase() === browserType?.toLowerCase()
     },
     isSelectable(item) {
       if (!this.isBrowserTypeImage) {
@@ -757,6 +802,24 @@ export default {
 </script>
 
 <style scoped>
+.browse-list li i.material-icons {
+  cursor: pointer;
+}
+
+.form-group label,
+.form-group input {
+  color: #222;
+}
+
+.img-group {
+  display: flex;
+  gap: 8px;
+}
+
+.img-group .form-group {
+  flex: 1;
+}
+
 .browse-list .icon {
   height:36px;
   width: 36px;

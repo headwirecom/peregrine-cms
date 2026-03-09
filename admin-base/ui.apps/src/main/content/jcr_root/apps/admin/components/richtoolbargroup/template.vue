@@ -9,6 +9,7 @@
         :below-origin="true"
         :items="vItems"
         :searchable="searchable"
+        :disabled="disabled"
         @mousedown.native.prevent="() => {}"
         @toggle-click="$emit('toggle-click')"
         @item-click="$emit('click', {btn: $event})">
@@ -79,6 +80,10 @@ export default {
       type: [Array, Function]
     },
     searchable: {
+      type: Boolean,
+      default: false
+    },
+    disabled: {
       type: Boolean,
       default: false
     }

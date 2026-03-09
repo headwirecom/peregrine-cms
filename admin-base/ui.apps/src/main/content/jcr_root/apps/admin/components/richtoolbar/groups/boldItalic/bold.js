@@ -6,6 +6,7 @@ export default (vm) => {
     icon: 'bold',
     iconLib: IconLib.FONT_AWESOME,
     cmd: 'bold',
-    isActive: () => vm.queryCmdState('bold')
+    isActive: () => vm.queryCmdState('bold'),
+    isDisabled: () => !vm.hasEditorSelection
   }
 }

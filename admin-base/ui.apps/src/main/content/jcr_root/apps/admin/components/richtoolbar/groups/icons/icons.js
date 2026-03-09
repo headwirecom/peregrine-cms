@@ -27,6 +27,7 @@ export default (vm) => {
 
     icons.push({
       label: name,
+      name: name,
       icon: img,
       iconLib: IconLib.PLAIN_TEXT,
       click: () => {

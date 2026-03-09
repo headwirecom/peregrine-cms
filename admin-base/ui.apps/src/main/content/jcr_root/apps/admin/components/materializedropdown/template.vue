@@ -32,6 +32,7 @@
               class="item"
               :class="[{disabled: item.disabled}, item.class? item.class() : null]"
               :title="item.title? item.title : false"
+              @mousedown.prevent
               @click="onItemClick(item, index)">
             <admin-components-icon v-if="item.icon" :icon="item.icon" :lib="item.iconLib"/>
             {{ item.label }}

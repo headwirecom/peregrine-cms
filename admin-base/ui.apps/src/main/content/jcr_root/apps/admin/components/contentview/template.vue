@@ -112,6 +112,8 @@ const allowedStylesMap = {
   // bold, italic, etc handled by html tags
   'text-align':true,
   'font-size':true,
+  'width':true,
+  'height':true,
 }
 const allowedStylesElementsMap = {
   IMG: true,
@@ -547,6 +549,19 @@ export default {
       parentProp[keyStr] = content;
     },
 
+    writeElementToModel(vm = this, element) {
+      let content = element.innerHTML.replace(/(?:\r\n|\r|\n)/g, '<br>')
+      content = removeUnwantedStyles(content)
+      const dataInline = (element.getAttribute('data-per-inline') || '').split('.').slice(1)
+      dataInline.reverse()
+      let parentProp = vm.node
+      while (dataInline.length > 1) {
+        parentProp = parentProp[dataInline.pop()]
+      }
+      const keyStr = dataInline.pop()
+      if (keyStr) parentProp[keyStr] = content
+    },
+
     onInlineEdit(event) {
       if (!this.inlineEdit.firstTime.includes(event.target)) {
         this.inlineEdit.firstTime.push(event.target)
@@ -619,6 +634,15 @@ export default {
     onInlineFocusOut(event) {
       event.target.classList.remove('inline-editing')
       this.editing = false
+      const iframeSel = this.iframe.doc ? this.iframe.doc.defaultView.getSelection() : null
+      const anchorNode = iframeSel && iframeSel.rangeCount > 0 ? iframeSel.anchorNode : null
+      const el = anchorNode
+        ? (anchorNode.nodeType === Node.TEXT_NODE ? anchorNode.parentElement : anchorNode)
+        : null
+      set(this.view, '/state/inline/lastAnchor', el ? el.closest('a') : null)
+      set(this.view, '/state/inline/lastContainer', event.target)
+      set(this.view, '/state/inline/lastDoc', this.iframe.doc)
+      set(this.view, '/state/inline/lastSelectionBuffer', saveSelection(event.target, this.iframe.doc))
       set(this.view, '/state/inline/doc', null)
       if (!isChromeBrowser() && event.target.innerHTML) {
         event.target.innerHTML = event.target.innerHTML.trim()
@@ -640,8 +664,30 @@ export default {
       const backspaceOrDelete = key === Key.BACKSPACE || key === Key.DELETE
       const arrowKey = key >= Key.ARROW_LEFT && key <= Key.ARROW_DOWN
 
-      if (key === Key.A && ctrlOrCmd) {
+      if (key === Key.ESC) {
+        event.target.blur()
+      } else if (key === Key.A && ctrlOrCmd) {
         this.onInlineSelectAll(event)
+      } else if (key === Key.B && ctrlOrCmd) {
+        event.preventDefault()
+        window.dispatchEvent(new CustomEvent('inline-richtoolbar:cmd', { detail: { cmd: 'bold' } }))
+      } else if (key === Key.I && ctrlOrCmd) {
+        event.preventDefault()
+        window.dispatchEvent(new CustomEvent('inline-richtoolbar:cmd', { detail: { cmd: 'italic' } }))
+      } else if (key === Key.U && ctrlOrCmd) {
+        event.preventDefault()
+        window.dispatchEvent(new CustomEvent('inline-richtoolbar:cmd', { detail: { cmd: 'underline' } }))
+      } else if (ctrlOrCmd && event.altKey && ((key >= Key.DIGIT_0 && key <= Key.DIGIT_6) || (key >= Key.NUMPAD_0 && key <= Key.NUMPAD_6))) {
+        event.preventDefault()
+        const digit = key >= Key.NUMPAD_0 ? key - Key.NUMPAD_0 : key - Key.DIGIT_0
+        const value = digit === 0 ? 'p' : `h${digit}`
+        window.dispatchEvent(new CustomEvent('inline-richtoolbar:cmd', { detail: { cmd: 'formatBlock', value } }))
+      } else if (key === Key.Z && ctrlOrCmd) {
+        event.preventDefault()
+        window.dispatchEvent(new CustomEvent('inline-richtoolbar:cmd', { detail: { cmd: 'undo' } }))
+      } else if (key === Key.Y && ctrlOrCmd) {
+        event.preventDefault()
+        window.dispatchEvent(new CustomEvent('inline-richtoolbar:cmd', { detail: { cmd: 'redo' } }))
       } else if (backspaceOrDelete) {
         this.onInlineDelete(event)
       } else if (arrowKey && !shift) {
@@ -666,7 +712,8 @@ export default {
 
     onInlineDblClick(event) {
       if (event.target.tagName === 'IMG') {
-        $perAdminApp.action(this, 'editImage', event.target)
+        const action = event.target.classList.contains('peregrine-icon') ? 'editIcon' : 'editImage'
+        $perAdminApp.action(this, action, event.target)
       }
     },
 
@@ -733,6 +780,8 @@ export default {
       } else {
         this.iframePreviewMode()
       }
+      this.iframe.doc.execCommand('defaultParagraphSeparator', false, 'p')
+      window.dispatchEvent(new CustomEvent('peregrine:iframe-loaded', { detail: { iframeEl: this.$refs.editview } }))
     },
 
     onIframeClick(ev) {

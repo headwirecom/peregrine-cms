@@ -87,10 +87,16 @@ const getItems = (vm) => {
     const c = filtered.filter((f) => f.label === g.label && f.icon === g.icon)
 
     if (!c || c.length <= 0) {
-      if (items.length > 0) {
-        items.push(DropDown.DIVIDER)
+      const groupItems = g.itemRules
+        ? g.items.filter((it, i) => !g.itemRules[i] || g.itemRules[i]())
+        : g.items
+
+      if (groupItems.length > 0) {
+        if (items.length > 0) {
+          items.push(DropDown.DIVIDER)
+        }
+        items.push(...groupItems)
       }
-      items.push(...g.items)
     }
   })
 
