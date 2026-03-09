@@ -11,9 +11,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -101,12 +101,12 @@ export default {
         border: 1px dashed #c0c0c0;
         clear: both;
         padding: 4px;
-        margin: 4px;
+        margin: 0px;
         text-align: center;
-        width: calc(100% - 8px);
+        width: 100%;
         white-space: nowrap;
         text-overflow: ellipsis;
-        color: black !important; 
+        color: black !important;
         overflow: hidden;
         font-size: 0.75em;
         background: #f8f8f8e0;

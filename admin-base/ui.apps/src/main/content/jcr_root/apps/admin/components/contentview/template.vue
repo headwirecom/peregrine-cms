@@ -194,7 +194,8 @@ export default {
       dynWatchers: [],
       toast: {
         templateComponent: null,
-        missingEventPath: null
+        missingEventPath: null,
+        invalidDrop: null,
       },
       pingDebouncer: {
         id: null,
@@ -348,6 +349,7 @@ export default {
       handler(val) {
         if (!this.component) return
         this.wrapEditableAroundSelected()
+
         this.$nextTick(() => {
           this.refreshIframeElements()
         })
@@ -786,6 +788,7 @@ export default {
 
     onIframeClick(ev) {
       if (!this.isContentEditableOrNested(ev.target)) {
+        this.editable.class = ''
         this.target = ev.target
       }
       if (this.target !== ev.target) {
@@ -869,14 +872,16 @@ export default {
             if (relMousePos['y%'] <= 10 && dropLocation === 'before' && !isRoot) {
               this.dropPosition = 'before'
               this.editable.class = 'drop-top'
-            } else if (relMousePos['y%'] >= 90 && dropLocation === 'after' && !isRoot) {
+            } else if (relMousePos['y%'] >= 70 && dropLocation === 'after' && !isRoot) {
               this.dropPosition = 'after'
               this.editable.class = 'drop-bottom'
             } else if (dropLocation) {
               this.dropPosition = 'into-' + dropLocation
               this.editable.class = 'selected'
             } else {
+              // invalid drop position
               this.dropPosition = 'none'
+              this.editable.class = 'mouseover-orange'
               event.dataTransfer.effectAllowed = ''
             }
           }
@@ -888,6 +893,7 @@ export default {
             this.dropPosition = 'after'
             this.editable.class = 'drop-bottom'
           }
+          return
         } else {
           this.editable.class = ''
           this.dropPosition = 'none'
@@ -895,6 +901,7 @@ export default {
         }
       } else {
         this.dropPosition = 'none'
+        this.editable.class = ''
         event.dataTransfer.dropEffect = 'none'
       }
     },
@@ -906,7 +913,10 @@ export default {
         this.selected.draggable = false
       }
       if (typeof this.component === 'undefined' || this.component === null) return false
-      if (this.dropPosition === 'none') return false
+      if (this.dropPosition === 'none') {
+        this.toast.invalidDrop = $perAdminApp.toast('Invalid drop position', Toast.Level.WARNING)
+        return false
+      }
 
       const componentPath = event.dataTransfer.getData('text')
 
@@ -945,7 +955,7 @@ export default {
     },
 
     onIframeMouseOver(event) {
-      if (this.editable.class === 'selected') return
+      if (this.enableEditableFeatures) return
 
       const cmpEl = this.findComponentEl(event.target)
 
@@ -1090,14 +1100,16 @@ export default {
       if (!el) return
 
       this.$nextTick(() => {
-        const {top, left, width, height} = this.getBoundingClientRect(el)
-        const offset = this.getBoundingClientRect(this.$refs.editview)
+        const {top, left, width, height} = this.dragging ? el.getBoundingClientRect() : this.getBoundingClientRectWithMargin(el)
+        const offset = this.getBoundingClientRectWithMargin(this.$refs.editview)
 
         this.editable.styles.top = `${top}px`
         this.editable.styles.left = `${left + offset.left}px`
         this.editable.styles.width = `${width}px`
         this.editable.styles.height = `${height}px`
-        this.editable.class = 'selected'
+        if (!this.dragging && !this.editable.class) { // prevent breaking oniframedrag setup classes
+          this.editable.class = 'selected'
+        }
       })
     },
 
@@ -1125,7 +1137,7 @@ export default {
       return styleValue
     },
 
-    getBoundingClientRect(e) {
+    getBoundingClientRectWithMargin(e) {
       const rect = e.getBoundingClientRect()
       const marginTop = parseFloat(this.getElementStyle(e, 'margin-top'))
       const marginLeft = parseFloat(this.getElementStyle(e, 'margin-left'))
@@ -1151,7 +1163,7 @@ export default {
     },
 
     getRelativeMousePosition(event) {
-      const offset = this.getBoundingClientRect(this.component)
+      const offset = this.getBoundingClientRectWithMargin(this.component)
       return {
         width: offset.width,
         x: event.pageX - offset.left,
@@ -1203,18 +1215,25 @@ export default {
 
     onDelete(e) {
       const view = this.view
-      const pagePath = view.pageView.path
       const payload = {
         pagePath: view.pageView.path,
         path: this.path
       }
-      if (payload.path !== '/jcr:content') {
-        $perAdminApp.stateAction('deletePageNode', payload).then((data) => {
-          this.cleanUpAfterDelete(payload.path)
-          this.refreshIframeElements()
-        })
-      }
-      this.unselect(this)
+      const vm = this
+      $perAdminApp.askUser('Delete Component?', 'Are you sure you want to delete the component?', {
+        yesText: 'Yes',
+        noText: 'No',
+        yes() {
+          if (payload.path !== '/jcr:content') {
+            $perAdminApp.stateAction('deletePageNode', payload).then((data) => {
+              vm.cleanUpAfterDelete(payload.path)
+              vm.refreshIframeElements()
+            })
+          }
+          vm.unselect(vm)
+        },
+        no() {},
+      })
     },
 
     cleanUpAfterDelete(path) {

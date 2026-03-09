@@ -129,10 +129,36 @@
 
       &.drop-top {
         border-top: 2px dashed customColor('blue-grey', 'base');
+        &::before {
+          content: '';
+          display: block;
+          height: 24px;
+          width: 24px;
+          position: absolute;
+          top: 0;
+          left: calc(50% - 12px);
+          transform: rotate(90deg);
+          background-repeat: no-repeat;
+          background-size: 100% 100%;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23#{str-slice(#{customColor('blue-grey', 'base')}, 2)}' d='M10 22L0 12L10 2l1.775 1.775L3.55 12l8.225 8.225z'/%3E%3C/svg%3E");
+        }
       }
 
       &.drop-bottom {
         border-bottom: 2px dashed customColor('blue-grey', 'base');
+        &::before {
+          content: '';
+          display: block;
+          height: 24px;
+          width: 24px;
+          position: absolute;
+          bottom: 0;
+          left: calc(50% - 12px);
+          transform: rotate(-90deg);
+          background-repeat: no-repeat;
+          background-size: 100% 100%;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23#{str-slice(#{customColor('blue-grey', 'base')}, 2)}' d='M10 22L0 12L10 2l1.775 1.775L3.55 12l8.225 8.225z'/%3E%3C/svg%3E");
+        }
       }
 
       &.selected {
