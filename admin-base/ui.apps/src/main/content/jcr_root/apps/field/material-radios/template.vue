@@ -2,15 +2,15 @@
 	<div class="wrap">
 		<ul v-if="!schema.preview" :class="schema.inline ? 'radio-list inline' : 'radio-list'" :disabled="disabled" :id="getFieldID(schema)">
 		  <li v-for="item in items" :class="isItemChecked(item) ? 'checked' : ''">
-		    <input 
+		    <input
 		    	class="form-control"
 		    	:id="getItemName(item) + _uid"
-		    	type="radio" 
+		    	type="radio"
 		    	:class="schema.withGap ? 'with-gap' : ''"
-		    	:disabled="disabled" 
-		    	:name="id" 
-		    	@click="onSelection(item)" 
-		    	:value="getItemValue(item)" 
+		    	:disabled="disabled"
+		    	:name="id"
+		    	@click="onSelection(item)"
+		    	:value="getItemValue(item)"
 		    	:checked="isItemChecked(item)"/>
 		    <label :for="getItemName(item)+_uid">{{ getItemName(item) }}</label>
 		  </li>
@@ -21,9 +21,9 @@
 	</div>
 </template>
 
-<script>	
+<script>
 	export default {
-		mixins: [ VueFormGenerator.abstractField ], 
+		mixins: [ VueFormGenerator.abstractField ],
 
 		computed: {
 			items() {
@@ -77,6 +77,12 @@
 				let currentValue = this.getItemValue(item);
 				return (currentValue === this.value);
 			},
-		}
+		},
+		mounted() {
+			if (!this.value) {
+				this?.$el?.querySelector('ul input')?.click();
+				console.warn("No value was found for radio field. Make sure it's default values is setup in the model")
+			}
+		},
 	};
 </script>
