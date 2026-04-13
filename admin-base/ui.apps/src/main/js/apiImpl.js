@@ -130,16 +130,16 @@ function postFormData(url, data, config = null) {
   logger.fine('postFormData: ', url, data, config);
 
   return axios
-     .post(url, formData, config)
-     .then(({data}) => {
-      logger.fine('postFormData, response data: ' + data);
+      .post(url, formData, config)
+      .then(({data}) => {
+        logger.fine('postFormData, response data: ' + data);
 
-      return data;
-    })
-    .catch((error) => {
-      logger.error('postFormData ', error.response.request.path, 'failed');
-      throw error;
-    });
+        return data;
+      })
+      .catch((error) => {
+        logger.error('postFormData ', error.response.request.path, 'failed');
+        throw error;
+      });
 }
 
 function getOrCreate(obj, path) {
@@ -306,7 +306,7 @@ class PerAdminImpl {
   }
 
   populateSkeletonPages(path, target = 'skeletonNodes',
-      includeParents = false) {
+                        includeParents = false) {
     const skeletonPagePath = path.split('/').slice(0, 4).join('/')
         + '/skeleton-pages'
 
@@ -355,19 +355,19 @@ class PerAdminImpl {
                       if (response.data[key]['jcr:title']) {
                         const nodeName = key
                         const val = from.replace('.infinity.json',
-                          '/' + nodeName)
+                            '/' + nodeName)
                         let name = response.data[key].name
                         if (!name) {
                           name = response.data[key]['jcr:title']
                         }
                         field.values.push(
-                          {value: val, name: name})
+                            {value: val, name: name})
                       }
                     }
                   }).catch((error) => {
                     logger.error('missing node',
-                      field.valuesFrom,
-                      'for list population in dialog', error)
+                        field.valuesFrom,
+                        'for list population in dialog', error)
                   })
                   promises.push(promise)
                 }
@@ -467,27 +467,27 @@ class PerAdminImpl {
 
   populateObject(path, target, name, schema) {
     return this.populateComponentDefinitionFromNode(path)
-      .then(() => {
-        return fetch('/admin/getObject.json' + path)
-          .then(async (data) => {
-            if (!schema) {
-              schema = await fetch('/admin/componentDefinition.json' + path).then((data) => data.model);
-            }
-            if (schema && schema.fields && schema.fields.forEach) schema.fields.forEach((field) => {
-              if (data[field.model] && field.multifield && field.serialized) {
-                try {
-                  data[field.model] = JSON.parse(data[field.model])
-                } catch(e) {
-                  data[field.model] = []
+        .then(() => {
+          return fetch('/admin/getObject.json' + path)
+              .then(async (data) => {
+                if (!schema) {
+                  schema = await fetch('/admin/componentDefinition.json' + path).then((data) => data.model);
                 }
-              }
-            });
-            if (data.tags) {
-              data.tags = JSON.parse(data.tags)
-            }
-            return populateView(target, name, data)
-          })
-      })
+                if (schema && schema.fields && schema.fields.forEach) schema.fields.forEach((field) => {
+                  if (data[field.model] && field.multifield && field.serialized) {
+                    try {
+                      data[field.model] = JSON.parse(data[field.model])
+                    } catch(e) {
+                      data[field.model] = []
+                    }
+                  }
+                });
+                if (data.tags) {
+                  data.tags = JSON.parse(data.tags)
+                }
+                return populateView(target, name, data)
+              })
+        })
   }
 
   populateReferencedBy(path, sameTenant = false) {
@@ -1122,35 +1122,35 @@ class PerAdminImpl {
         formDataTags.append('content', json({tags: {_opDelete: true}}));
 
         updateWithForm('/admin/updateResource.json' + path + node.path, formDataTags)
-          // .then( (data) => this.populateNodesForBrowser(parentPath) )
-          .then(() => {
-            const formData = new FormData()
-            formData.append('content', json(nodeData))
+            // .then( (data) => this.populateNodesForBrowser(parentPath) )
+            .then(() => {
+              const formData = new FormData()
+              formData.append('content', json(nodeData))
 
-            updateWithForm('/admin/updateResource.json' + path + node.path, formData)
-              // .then( (data) => this.populateNodesForBrowser(parentPath) )
-              .then(() => resolve())
-              .catch(error => {
-                logger.error('Failed to save page: ' + error)
-                reject('Unable to save change. ' + error)
-              })
-          })
-          .catch((error) => {
-            logger.error('Failed to save page: ' + error)
-            reject('Unable to save change. ' + error)
-          });
+              updateWithForm('/admin/updateResource.json' + path + node.path, formData)
+                  // .then( (data) => this.populateNodesForBrowser(parentPath) )
+                  .then(() => resolve())
+                  .catch(error => {
+                    logger.error('Failed to save page: ' + error)
+                    reject('Unable to save change. ' + error)
+                  })
+            })
+            .catch((error) => {
+              logger.error('Failed to save page: ' + error)
+              reject('Unable to save change. ' + error)
+            });
       }
       else {
         const formData = new FormData()
         formData.append('content', json(nodeData))
 
         updateWithForm('/admin/updateResource.json' + path + node.path, formData)
-          // .then( (data) => this.populateNodesForBrowser(parentPath) )
-          .then(() => resolve())
-          .catch(function (error) {
-            logger.error('Failed to save page: ' + error)
-            reject('Unable to save change. ' + error)
-          });
+            // .then( (data) => this.populateNodesForBrowser(parentPath) )
+            .then(() => resolve())
+            .catch(function (error) {
+              logger.error('Failed to save page: ' + error)
+              reject('Unable to save change. ' + error)
+            });
       }
     })
   }
@@ -1314,7 +1314,7 @@ class PerAdminImpl {
             clearInterval(noticeFunction)
             $perAdminApp.notifyUser('Errors',
                 `were encountered when ${deactivate ? 'un'
-                    : ''}publishing ${data.sourcePath}. Please check with your admin.`)
+                    : ''}publishing ${path}. Please check with your admin.`)
             if (error.response && error.response.data
                 && error.response.data.message) {
               reject(error.response.data.message)

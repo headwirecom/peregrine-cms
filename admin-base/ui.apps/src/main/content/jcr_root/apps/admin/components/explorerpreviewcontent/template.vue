@@ -66,12 +66,12 @@
                :src="currentObject"
                class="info-view-image"
                v-on:click="openModal"
-               />
+          />
           <video v-else-if="isVideo"
-              ref="videoPreview"
-              :src="currentObject"
-              class="info-view-video"
-              controls>
+                 ref="videoPreview"
+                 :src="currentObject"
+                 class="info-view-video"
+                 controls>
           </video>
           <iframe
               v-else
@@ -317,12 +317,12 @@
         @select="onCopySelect">
     </path-browser>
 
-      <dialog v-if="modalVisible" class="modal-overlay" ref="previewModal" @click.self="closeModal" @keydown.esc="closeModal" tabindex="-1">
-        <div class="modal-content">
-          <img :src="currentObject" alt="Modal Image" />
-          <button @click="closeModal"><i class="material-icons">close</i></button>
-        </div>
-      </dialog>
+    <dialog v-if="modalVisible" class="modal-overlay" ref="previewModal" @click.self="closeModal" @keydown.esc="closeModal" tabindex="-1">
+      <div class="modal-content">
+        <img :src="currentObject" alt="Modal Image" />
+        <button @click="closeModal"><i class="material-icons">close</i></button>
+      </div>
+    </dialog>
   </div>
 </template>
 
@@ -559,12 +559,12 @@ export default {
       }
     },
     selfOrAnyDescendantActivated() {
-      const node = this.node;
+      const node = this.nodeFromPath;
       if (!node) {
         console.warn('selfOrAnyDescendantActivated() failed')
         return
       }
-      return node.activated || node.selfOrAnyDescendantActivated;
+      return node.activated || node.anyDescendantActivated;
     },
     classForActionDisabledOnActivatedResource() {
       return this.selfOrAnyDescendantActivated ? 'action operationDisabledOnActivatedItem' : 'action';
@@ -783,19 +783,19 @@ export default {
     },
     unPublishResource(me, path) {
       if (me.anyDescendantActivated) {
-          $perAdminApp.toast("One of the children of this resource is still published. Please unpublish all of them first.", "warn", 5000)
+        $perAdminApp.toast("One of the children of this resource is still published. Please unpublish all of them first.", "warn", 5000)
       }
       else if (me.isReferencedInPublish) {
-          $perAdminApp.askUser('Warning',
-              ("Unpublishing may break references. Would you like to continue ?"), {
-                  yesText: 'Yes',
-                  yes: function yes() {
-                      $perAdminApp.stateAction('unreplicate', path);
-                  },
-              });
+        $perAdminApp.askUser('Warning',
+            ("Unpublishing may break references. Would you like to continue ?"), {
+              yesText: 'Yes',
+              yes: function yes() {
+                $perAdminApp.stateAction('unreplicate', path);
+              },
+            });
       }
       else {
-          $perAdminApp.stateAction('unreplicate', path);
+        $perAdminApp.stateAction('unreplicate', path);
       }
     },
     closePublishing(){
@@ -804,10 +804,19 @@ export default {
     },
 
     checkActivationStatusAndPerform(action) {
-      if (this.selfOrAnyDescendantActivated) {
-        $perAdminApp.toast("You cannot perform this operation yet. The resource or one of its children is still published." +
-                    " Please unpublish all of them first.", "warn", 5000);
-      } else {
+      if (this.nodeFromPath.activated) {
+        $perAdminApp.toast("The resource is still published. Please unpublish it first.", "warn", 5000);
+      } else if (this.nodeFromPath.anyDescendantActivated) {
+        $perAdminApp.toast("One of the children of this resource is still published. Please unpublish all of them first.", "warn", 5000);
+      } else if (this.nodeFromPath.isReferenced) {
+        $perAdminApp.askUser('Warning', "Deleting may break references. Would you like to continue ?", {
+          yesText: 'Yes',
+          yes: function yes() {
+            action();
+          }
+        });
+      }
+      else {
         action();
       }
     },
@@ -852,8 +861,11 @@ export default {
           $perAdminApp.stateAction(`unselect${me.uNodeType}`, {})
         }).then(() => {
           const path = $perAdminApp.getNodeFromView('/state/tools/pages')
-          $perAdminApp.loadContent(
-              '/content/admin/pages/pages.html/path' + SUFFIX_PARAM_SEPARATOR + path)
+          if (path) {
+            $perAdminApp.loadContent(
+                '/content/admin/pages/pages.html/path' + SUFFIX_PARAM_SEPARATOR + path)
+          }
+
           me.isOpen = false
         })
       });
@@ -917,9 +929,9 @@ export default {
           resourceType: this.node.resourceType,
           mimeType: this.node.mimeType,
         }).then(() => {
-          // dumb hack to make copy source render properly.
-          // Assets lose their resourceType and mimeType after being copied in explorer children array but it still exists
-          setTimeout(() => { $perAdminApp.getApi().populateNodesForBrowser(this.path.selected) }, 100);
+          setTimeout(() => {
+            $perAdminApp.loadContent(`/content/admin/pages/${this.nodeType}s.html/path${SUFFIX_PARAM_SEPARATOR}${this.path.selected}`, false);
+          }, 100);
         });
       }
       this.isCopyOpen = false;
@@ -1035,11 +1047,11 @@ export default {
       }
 
       $perAdminApp.getApi().isReferencedInPublish(path)
-        .then(data => {
-          this.isReferencedInPublish = data.result;
-        }).catch(() => {
-          this.isReferencedInPublish = false;
-        });
+          .then(data => {
+            this.isReferencedInPublish = data.result;
+          }).catch(() => {
+        this.isReferencedInPublish = false;
+      });
     },
 
     getGeneratedFileSchema() {
@@ -1102,19 +1114,19 @@ export default {
 
 <style scoped>
 .info-view-image {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .info-view-video {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 .explorer-preview .explorer-preview-content.preview-asset .asset-info-view img {
-    max-height: 50vh;
-    height: 100%;
-    width: 100%;
-    object-fit: contain;
+  max-height: 50vh;
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
 }
 
 .modal-overlay {
@@ -1127,41 +1139,41 @@ export default {
   align-items: center;
   z-index: 1000;
 
-    .modal-content {
-        img {
-            width: auto;
-            height: auto;
-            object-fit: contain;
-            min-width: 50vw;
-            min-height: 50vh;
-            max-width: 90vw;
-            max-height: 90vh;
-            display: block;
-            margin: auto;
-        }
-
-        img {
-            pointer-events: none;
-        }
-
-        button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            display: flex;
-            background-color: white;
-            color: black;
-            border: 2px solid black;
-            border-radius: 100%;
-            aspect-ratio: 1 / 1;
-            align-items: center;
-
-            &:hover, &:focus, &:active {
-                background-color: black;
-                color: white;
-                border: 2px solid white;
-            }
-        }
+  .modal-content {
+    img {
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      min-width: 50vw;
+      min-height: 50vh;
+      max-width: 90vw;
+      max-height: 90vh;
+      display: block;
+      margin: auto;
     }
+
+    img {
+      pointer-events: none;
+    }
+
+    button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      background-color: white;
+      color: black;
+      border: 2px solid black;
+      border-radius: 100%;
+      aspect-ratio: 1 / 1;
+      align-items: center;
+
+      &:hover, &:focus, &:active {
+        background-color: black;
+        color: white;
+        border: 2px solid white;
+      }
+    }
+  }
 }
 </style>
