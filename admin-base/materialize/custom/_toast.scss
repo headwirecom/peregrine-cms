@@ -64,6 +64,18 @@
       }
     }
 
+    &.delete {
+      background-color: var(--warn-bg);
+      color: var(--warn-color);
+      display: flex;
+      align-items: center;
+
+      &:before {
+        content: 'delete';
+        flex-shrink: 0;
+      }
+    }
+
     &.error {
       background-color: var(--error-bg);
       color: var(--error-color);

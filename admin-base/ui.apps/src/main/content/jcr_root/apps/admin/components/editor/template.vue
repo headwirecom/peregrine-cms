@@ -199,25 +199,109 @@ export default {
       })
     },
 
-    onDelete(e) {
+    async onDelete(e) {
       const vm = this
-      var view = $perAdminApp.getView()
+      const view = $perAdminApp.getView()
+      const pagePath = view.pageView.path
+      const componentPath = view.state.editor.path
+
+      let undoEntry = null
+      if (componentPath !== '/jcr:content') {
+        try {
+          const jcrPath = pagePath + componentPath
+          const response = await fetch(jcrPath + '.infinity.json')
+          const jcrData = await response.json()
+          const nodeData = vm.jcrToInsertData(jcrData, componentPath)
+
+          const DROPTARGET = 'data-per-droptarget'
+          const PATH = 'data-per-path'
+          const editview = document.getElementById('editview')
+          const iframeDoc = editview && (editview.contentDocument || editview.contentWindow.document)
+          let dropPath = null
+          let drop = 'into'
+          const el = iframeDoc && iframeDoc.querySelector(`[data-per-path="${componentPath}"]`)
+          if (el) {
+            let sibling = el.nextElementSibling
+            while (sibling) {
+              if (sibling.hasAttribute(PATH) && !sibling.hasAttribute(DROPTARGET)) {
+                dropPath = sibling.getAttribute(PATH)
+                drop = 'before'
+                break
+              }
+              sibling = sibling.nextElementSibling
+            }
+            if (!dropPath) {
+              sibling = el.previousElementSibling
+              while (sibling) {
+                if (sibling.hasAttribute(PATH) && !sibling.hasAttribute(DROPTARGET)) {
+                  dropPath = sibling.getAttribute(PATH)
+                  drop = 'after'
+                  break
+                }
+                sibling = sibling.previousElementSibling
+              }
+            }
+            if (!dropPath) {
+              const parentEl = el.parentElement ? el.parentElement.closest(`[${DROPTARGET}]`) : null
+              if (parentEl) {
+                dropPath = parentEl.getAttribute(PATH) || parentEl.getAttribute(DROPTARGET)
+              }
+              if (!dropPath) {
+                dropPath = componentPath.substring(0, componentPath.lastIndexOf('/'))
+              }
+              drop = 'into'
+            }
+          } else {
+            dropPath = componentPath.substring(0, componentPath.lastIndexOf('/'))
+            drop = 'into'
+          }
+          undoEntry = { pagePath, dropPath, drop, data: nodeData }
+        } catch (err) {
+          console.warn('Failed to capture undo data for deletion', err)
+        }
+      }
+
       $perAdminApp.askUser('Delete Component?', 'Are you sure you want to delete the component?', {
         yesText: 'Yes',
         noText: 'No',
         yes() {
           $perAdminApp.action(vm, 'onEditorExitFullscreen')
           $perAdminApp.stateAction('deletePageNode', {
-            pagePath: view.pageView.path,
-            path: view.state.editor.path
+            pagePath,
+            path: componentPath
           }).then(() => {
             $perAdminApp.action(vm, 'unselect')
             $perAdminApp.getNodeFromView('/state/tools')._deleted = {}
+            if (undoEntry) {
+              window.dispatchEvent(new CustomEvent('per:component-deleted', { detail: undoEntry }))
+            }
           })
         },
-        no() {
-        }
+        no() {}
       })
+    },
+
+    jcrToInsertData(jcrNode, path) {
+      const IGNORED_KEYS = new Set([
+        'jcr:primaryType', 'jcr:uuid', 'jcr:created', 'jcr:createdBy',
+        'jcr:baseVersion', 'jcr:isCheckedOut', 'jcr:predecessors',
+        'jcr:versionHistory', 'per:Replicated', 'per:ReplicatedBy',
+        'per:ReplicationLastAction', 'per:ReplicationRef', 'per:ReplicationStatus',
+      ])
+      const result = { path }
+      const children = []
+      for (const [key, value] of Object.entries(jcrNode)) {
+        if (IGNORED_KEYS.has(key)) continue
+        if (key === 'sling:resourceType') {
+          result.component = value
+        } else if (value !== null && typeof value === 'object' && !Array.isArray(value) && value['jcr:primaryType']) {
+          children.push(this.jcrToInsertData(value, path + '/' + key))
+        } else {
+          result[key] = value
+        }
+      }
+      if (children.length > 0) result.children = children
+      return result
     },
 
     hideGroups() {
