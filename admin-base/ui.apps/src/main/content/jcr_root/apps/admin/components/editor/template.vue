@@ -261,9 +261,37 @@ export default {
         }
       }
 
-      $perAdminApp.askUser('Delete Component?', 'Are you sure you want to delete the component?', {
+      let blockDelete = false
+      let deleteMessage = 'Are you sure you want to delete the component?'
+      const isTemplateOrSkeleton = pagePath.includes('/skeleton-pages/') || pagePath.includes('/templates/')
+      if (isTemplateOrSkeleton && componentPath !== '/jcr:content') {
+        try {
+          const fullJcrPath = pagePath + componentPath
+          const skeletonResponse = await fetch(
+            '/perapi/admin/isComponentUsedInSkeleton.json?path='
+            + encodeURIComponent(fullJcrPath)
+          )
+          const skeletonData = await skeletonResponse.json()
+          if (skeletonData && skeletonData.isTopLevelInSkeleton) {
+            blockDelete = true
+            const pageList = (skeletonData.skeletonPages || []).map(p => p.title || p.path).join(', ')
+            deleteMessage = 'This component cannot be deleted because it is used in a skeleton page'
+              + (pageList ? ': ' + pageList : '')
+              + '. Removing it could break every page created from that skeleton.'
+          }
+        } catch (err) {
+          console.warn('Failed to check skeleton usage', err)
+        }
+      }
+
+      $perAdminApp.askUser(
+        blockDelete ? 'Cannot Delete Component' : 'Delete Component?',
+        deleteMessage,
+        {
         yesText: 'Yes',
-        noText: 'No',
+        noText: blockDelete ? 'Close' : 'No',
+        warning: blockDelete,
+        blockDelete,
         yes() {
           $perAdminApp.action(vm, 'onEditorExitFullscreen')
           $perAdminApp.stateAction('deletePageNode', {

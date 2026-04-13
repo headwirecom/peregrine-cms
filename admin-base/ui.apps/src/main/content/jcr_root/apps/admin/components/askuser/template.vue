@@ -23,9 +23,12 @@
   #L%
   -->
 <template>
-    <dialog id="askUserModal" ref="modal">
+    <dialog id="askUserModal" ref="modal" :class="{ 'ask-user-warning': warning }">
         <div class="modal-content">
-            <h4>{{title}}</h4>
+            <h4>
+                <i v-if="warning" class="material-icons ask-user-warning-icon">warning</i>
+                {{title}}
+            </h4>
             <p>{{message}}</p>
         </div>
         <div class="modal-footer">
@@ -45,6 +48,7 @@
                 {{noText}}
             </button>
             <button
+                v-if="!blockDelete"
                 type="button"
                 class="btn-flat"
                 v-on:click="yesFn()"
@@ -82,6 +86,12 @@
             },
             keepEditingFn() {
                 return $perAdminApp.getNodeFromViewOrNull('/state/notification/keepEditingFn')
+            },
+            warning() {
+                return $perAdminApp.getNodeFromViewOrNull('/state/notification/warning')
+            },
+            blockDelete() {
+                return $perAdminApp.getNodeFromViewOrNull('/state/notification/blockDelete')
             },
         },
     }
@@ -128,4 +138,37 @@ dialog .modal-footer {
   text-align: right;
 }
 
+dialog.ask-user-warning {
+  background-color: var(--warn-bg);
+  border-top: 3px solid var(--pcms-orange);
+}
+
+dialog.ask-user-warning h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+dialog.ask-user-warning .btn-flat[title="cancel"] {
+  background-color: white;
+}
+
+dialog.ask-user-warning .btn-flat[title="cancel"]:hover {
+  background-color: color-mix(in srgb, white 85%, black);
+}
+
+dialog.ask-user-warning .btn-flat[title="ok"] {
+  background-color: var(--error-bg);
+  color: var(--error-color);
+}
+
+dialog.ask-user-warning .btn-flat[title="ok"]:hover {
+  background-color: color-mix(in srgb, var(--error-bg) 85%, black);
+}
+
+.ask-user-warning-icon {
+  color: var(--error-bg);
+  font-size: 1.4em;
+  vertical-align: middle;
+}
 </style>

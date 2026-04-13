@@ -708,6 +708,8 @@ function askUserImpl(title, message, options) {
     set(view, '/state/notification/yesText', yesText);
     set(view, '/state/notification/noText', noText);
     set(view, '/state/notification/keepEditingText', keepEditingText);
+    set(view, '/state/notification/warning', options.warning ? true : false);
+    set(view, '/state/notification/blockDelete', options.blockDelete ? true : false);
 
     set(view, '/state/notification/yesFn', () => {
         if (options.yes && typeof options.yes === 'function') options.yes()
