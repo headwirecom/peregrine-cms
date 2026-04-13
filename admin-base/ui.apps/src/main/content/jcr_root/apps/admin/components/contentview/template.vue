@@ -460,17 +460,7 @@ export default {
           if (vm.component !== vm.previousComponent) {
             set(this.view, '/state/inline/rich', null)
             set(this.view, '/state/inline/model', null)
-            if (vm.autoSave && vm.node && vm.view.state.editor.path) {
-              vm.autoSave = false
-              $perAdminApp.stateAction('savePageEdit', {
-                data: vm.node,
-                path: vm.view.state.editor.path
-              }).then(() => {
-                vm.updateSelectedComponent()
-              })
-            } else {
-              vm.updateSelectedComponent()
-            }
+            vm.updateSelectedComponent()
           } else {
             vm.flushInlineState()
           }

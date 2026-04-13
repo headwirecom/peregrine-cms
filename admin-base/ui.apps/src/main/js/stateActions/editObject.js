@@ -31,52 +31,95 @@ export default function(me, target) {
 
     log.fine(target)
 
+    $perAdminApp.clearBeforeStateActions();
+    $perAdminApp.clearBeforeUnloadHandler();
+
     let checksum = ''
+    let originalData = null
     set(me.getView(), '/state/tools/save/confirmed', false)
 
-    me.beforeStateAction((name) => {
-        const confirmed = get(me.getView(), '/state/tools/save/confirmed',
-            false)
-        const currentObject = deepClone(
-            me.getNodeFromView('/state/tools/object'))
-
-        if (name !== 'saveObjectEdit') {
-            // if there was no change skip asking to save
-            const newChecksum = JSON.stringify(
-                me.getNodeFromView('/state/tools/object/data'))
-            if (confirmed || checksum === newChecksum) {
-                return true
-            } else {
-                return new Promise((resolve) => {
-                    $perAdminApp.askUser(
-                        'Save Object Edit?',
-                        'Would you like to save your object edits?',
-                        {
-                            defaultFocus: 'yes',
-                            yesText: 'Save',
-                            noText: 'Cancel',
-                            yes() {
-                                me.stateAction('saveObjectEdit', {
-                                    data: currentObject.data,
-                                    path: currentObject.show
-                                })
-                                resolve()
-                            },
-                            no() {
-                                resolve()
-                            }
-                        }
-                    )
-                })
-            }
+    const beforeUnloadHandler = function(e) {
+        const objectData = me.getNodeFromView('/state/tools/object/data');
+        if (!objectData) {
+            $perAdminApp.clearBeforeUnloadHandler();
+            return;
         }
-        return true
-    })
+        const confirmed = get(me.getView(), '/state/tools/save/confirmed', false)
+        const newChecksum = JSON.stringify(objectData)
+        if (!confirmed && checksum !== newChecksum) {
+            e.preventDefault();
+            e.returnValue = '';
+            return '';
+        }
+    };
+    $perAdminApp.setBeforeUnloadHandler(beforeUnloadHandler);
+
+    me.beforeStateAction((name) => {
+        if (name === 'saveObjectEdit') {
+            return true;
+        }
+
+        const objectData = me.getNodeFromView('/state/tools/object/data');
+        if (!objectData) {
+            $perAdminApp.clearBeforeStateActions();
+            $perAdminApp.clearBeforeUnloadHandler();
+            return true;
+        }
+
+        const confirmed = get(me.getView(), '/state/tools/save/confirmed', false);
+        const newChecksum = JSON.stringify(objectData);
+        
+        if (confirmed || checksum === newChecksum) {
+            return true;
+        }
+
+        return new Promise((resolve) => {
+            $perAdminApp.askUser(
+                'Save Object Edit?',
+                'Would you like to save your object edits?',
+                {
+                    defaultFocus: 'keepEditing',
+                    yesText: 'Save',
+                    noText: 'Discard Changes',
+                    keepEditingText: 'Keep Editing',
+                    yes() {
+                        const currentObject = deepClone(me.getNodeFromView('/state/tools/object'));
+                        me.stateAction('saveObjectEdit', {
+                            data: currentObject.data,
+                            path: currentObject.show
+                        }).then(() => {
+                            $perAdminApp.clearBeforeStateActions();
+                            $perAdminApp.clearBeforeUnloadHandler();
+                            resolve(true);
+                        }).catch(() => {
+                            $perAdminApp.clearBeforeStateActions();
+                            $perAdminApp.clearBeforeUnloadHandler();
+                            resolve(true);
+                        });
+                    },
+                    no() {
+                        if (originalData !== null) {
+                            set(me.getView(), '/state/tools/object/data', deepClone(originalData));
+                        }
+                        checksum = JSON.stringify(originalData);
+                        $perAdminApp.clearBeforeStateActions();
+                        $perAdminApp.clearBeforeUnloadHandler();
+                        resolve(true);
+                    },
+                    keepEditing() {
+                        resolve(false);
+                    }
+                }
+            );
+        });
+    });
 
     let view = me.getView()
     set(me.getView(), `/state/tools/edit`, false)
     me.getApi().populateObject(target.selected, '/state/tools/object', 'data').then( () => {
-        checksum = JSON.stringify(me.getNodeFromView('/state/tools/object/data'))
+        const loadedData = me.getNodeFromView('/state/tools/object/data')
+        checksum = JSON.stringify(loadedData)
+        originalData = deepClone(loadedData)
         set(view, '/state/tools/object/show', target.selected)
         set(me.getView(), `/state/tools/edit`, true)
     })

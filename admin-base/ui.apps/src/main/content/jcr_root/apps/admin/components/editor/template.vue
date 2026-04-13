@@ -80,6 +80,7 @@ export default {
         validateAfterChanged: true,
         focusFirstField: true
       },
+      initialLoadComplete: false,
       focus: {
         loop: null,
         timeout: null,
@@ -126,6 +127,14 @@ export default {
     'view.state.inline.model'(val) {
       if (!val) return
       this.focusFieldByModel(val)
+    },
+    dataModel: {
+      handler(val) {
+        if (val && this.initialLoadComplete) {
+          set($perAdminApp.getView(), '/state/editor/hasChanges', true)
+        }
+      },
+      deep: true
     }
   },
   mounted() {
@@ -133,6 +142,9 @@ export default {
     if (this.schema && this.schema.hasOwnProperty('groups')) {
       this.hideGroups()
     }
+    setTimeout(() => {
+      this.initialLoadComplete = true
+    }, 100)
   },
   methods: {
     onOk(e) {
@@ -169,6 +181,7 @@ export default {
       var view = $perAdminApp.getView()
       $perAdminApp.action(this, 'onEditorExitFullscreen')
       $perAdminApp.stateAction('savePageEdit', {data: data, path: view.state.editor.path}).then(() => {
+        set(view, '/state/editor/hasChanges', false)
         $perAdminApp.action(this, 'unselect')
         $perAdminApp.getNodeFromView('/state/tools')._deleted = {}
       })

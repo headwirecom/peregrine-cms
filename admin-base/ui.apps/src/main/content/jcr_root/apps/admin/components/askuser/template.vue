@@ -32,6 +32,14 @@
             <button
                 type="button"
                 class="btn-flat"
+                v-on:click="keepEditingFn()"
+                v-if="keepEditingText"
+                title="keepEditing">
+                {{keepEditingText}}
+            </button>
+            <button
+                type="button"
+                class="btn-flat"
                 v-on:click="noFn()"
                 title="cancel">
                 {{noText}}
@@ -68,6 +76,12 @@
             },
             noFn() {
                 return $perAdminApp.getNodeFromViewOrNull('/state/notification/noFn')
+            },
+            keepEditingText() {
+                return $perAdminApp.getNodeFromViewOrNull('/state/notification/keepEditingText')
+            },
+            keepEditingFn() {
+                return $perAdminApp.getNodeFromViewOrNull('/state/notification/keepEditingFn')
             },
         },
     }

@@ -702,7 +702,6 @@ export default {
                     $perAdminApp.stateAction('selectFile', {path, resourceType});
                 } else {
                     if(path.startsWith(`/content/${tenant.name}/objects`)) {
-                        set($perAdminApp.getView(), `/state/tools/edit`, false);
                         $perAdminApp.stateAction('selectObject', { selected: path, path: model.dataFrom });
                     } else if (path.startsWith(`/content/${tenant.name}/templates`)) {
                         $perAdminApp.stateAction('showTemplateInfo', { selected: path });
