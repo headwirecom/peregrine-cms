@@ -378,9 +378,18 @@ class PerAdminImpl {
                   }
                 }
 
-                if (field.type === 'collection' && Array.isArray(field.fields)) {
-                  for (let i = 0; i < field.fields.length; i++) {
-                    processField(field.fields[i])
+                if (field.type === 'collection') {
+                  if (Array.isArray(field.fields)) {
+                    for (let i = 0; i < field.fields.length; i++) {
+                      processField(field.fields[i])
+                    }
+                  }
+                  if (field.serialized) {
+                    try {
+                      field.values = json.parse(field.values)
+                    } catch (error) {
+                      console.error('error parsing list values', error)
+                    }
                   }
                 }
               };
@@ -456,11 +465,23 @@ class PerAdminImpl {
         .then((data) => populateView('/pageView', 'page', data))
   }
 
-  populateObject(path, target, name) {
+  populateObject(path, target, name, schema) {
     return this.populateComponentDefinitionFromNode(path)
       .then(() => {
         return fetch('/admin/getObject.json' + path)
-          .then((data) => {
+          .then(async (data) => {
+            if (!schema) {
+              schema = await fetch('/admin/componentDefinition.json' + path).then((data) => data.model);
+            }
+            if (schema && schema.fields && schema.fields.forEach) schema.fields.forEach((field) => {
+              if (data[field.model] && field.multifield && field.serialized) {
+                try {
+                  data[field.model] = JSON.parse(data[field.model])
+                } catch(e) {
+                  data[field.model] = []
+                }
+              }
+            });
             if (data.tags) {
               data.tags = JSON.parse(data.tags)
             }
@@ -1134,7 +1155,7 @@ class PerAdminImpl {
     })
   }
 
-  saveObjectEdit(path, node) {
+  saveObjectEdit(path, node, schema) {
     let formData = new FormData()
     // convert to a new object
     let nodeData = JSON.parse(JSON.stringify(node))
@@ -1144,6 +1165,15 @@ class PerAdminImpl {
     delete nodeData['jcr:lastModified']
     delete nodeData['jcr:lastModifiedBy']
 
+    if (schema && schema.fields && schema.fields.forEach) schema.fields.forEach((field) => {
+      if (nodeData[field.model] && field.multifield && field.serialized) {
+        const list = [];
+        Object.values(nodeData[field.model]).forEach((item) => {
+          list.push(item)
+        });
+        nodeData[field.model] = JSON.stringify(list)
+      }
+    })
     if (nodeData.tags) {
       const tags = []
       Object.keys(nodeData.tags).forEach((tag) => {

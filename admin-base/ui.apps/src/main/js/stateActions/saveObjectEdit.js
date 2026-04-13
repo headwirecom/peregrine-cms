@@ -32,7 +32,7 @@ export default function(me, target) {
 
     set(me.getView(), '/state/tools/save/confirmed', false)
     return new Promise( (resolve, reject) => {
-        me.getApi().saveObjectEdit(target.path, target.data).then( () => {
+        me.getApi().saveObjectEdit(target.path, target.data, target.schema).then( () => {
             resolve()
         })
     })

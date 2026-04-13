@@ -84,8 +84,8 @@ class PerApi {
     }
 
 
-    populateObject(path, target, name) {
-        return impl.populateObject(path, target, name)
+    populateObject(path, target, name, schema) {
+        return impl.populateObject(path, target, name, schema)
     }
 
     populatePageView(path) {
@@ -255,8 +255,8 @@ class PerApi {
         return impl.savePageEdit(path, node)
     }
 
-    saveObjectEdit(path, node) {
-        return impl.saveObjectEdit(path, node)
+    saveObjectEdit(path, node, schema) {
+        return impl.saveObjectEdit(path, node, schema)
     }
 
     saveAssetProperties(node) {
