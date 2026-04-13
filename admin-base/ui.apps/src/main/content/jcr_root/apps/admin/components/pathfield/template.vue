@@ -11,9 +11,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -25,7 +25,8 @@
 <template>
     <div class="pathfield">
         <template v-for="(item, index) in pathSegments">
-            /&nbsp;<admin-components-action
+            /&nbsp;<strong class="pathfield_current" v-if="index === pathSegments.length - 1">{{ index === 0 ? $i18n(item.name) : item.name }}</strong><admin-components-action
+                v-else
                 v-bind:model="{
                     target: { path: item.path },
                     title: (index == 0)? $i18n(item.name) : item.name,
@@ -55,3 +56,9 @@
         }
     }
 </script>
+<style scoped>
+    .pathfield_current {
+        font-weight: bold;
+        cursor: default;
+    }
+</style>

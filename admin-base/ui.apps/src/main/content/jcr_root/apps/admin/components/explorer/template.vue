@@ -24,6 +24,7 @@
   -->
 <template>
 <div class="explorer"
+    :class="{ 'drag-enabled': sortBy === 'natural' }"
     v-on:dragover.prevent  ="onDragOverExplorer"
     v-on:dragenter.prevent ="onDragEnterExplorer"
     v-on:dragleave.prevent ="onDragLeaveExplorer"
@@ -33,36 +34,50 @@
     <div class="row">
         <div v-if="pt" class="col s12 m8 explorer-main">
             <ul class="collection">
-                <li v-if="showNavigateToParent"
-                    v-on:click.stop.prevent="selectParent()"
-                    id="back-to-parent"
-                    class="collection-item">
-                    <admin-components-action
-                            v-bind:model="{
-                            target: null,
-                            command: 'selectParent',
-                            tooltipTitle: $i18n('backToParentDir')
-                        }"><i class="material-icons">folder_open</i><i class="material-icons">arrow_upward</i>
-                    </admin-components-action>
-                </li>
-            <li class="sort-controls">
-                <span class="sort-label">Sort by:</span>
-                <button
-                    v-for="option in sortOptions"
-                    :key="option.value"
-                    :class="['sort-btn', { active: sortBy === option.value }]"
-                    @click="toggleSort(option.value)">
-                    {{ option.label }}
-                </button>
-                <button class="sort-direction-btn" @click="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'" :title="sortOrder === 'asc' ? 'Ascending' : 'Descending'">
-                    <i class="material-icons" :style="sortOrder === 'asc' ? 'transform: rotateX(180deg);' : ''">sort</i>
-                </button>
+            <li class="topbar">
+                <div class="topbar-controls">
+                    <div class="topbar-dropdown-wrapper">
+                        <button v-if="showNavigateToParent" class="topbar-btn" @click.stop="selectParent()" :title="$i18n('backToParentDir')">
+                            <i class="material-icons">folder_open</i>
+                            <svg class="topbar-btn-symbol" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor"><path d="M680-160v-400H313l144 144-56 57-241-241 240-240 57 57-144 143h447v480h-80Z"/></svg>
+                        </button>
+                        <button class="topbar-btn" :class="{ 'topbar-btn--active': sortBy !== 'natural' }" @click.stop="showSortDropdown = !showSortDropdown; showTypeDropdown = false">
+                            <i class="material-icons">sort</i>
+                            <span>Sort</span>
+                            <i v-if="sortBy !== 'natural'" class="material-icons topbar-caret">{{ sortOrder === 'asc' ? 'arrow_drop_up' : 'arrow_drop_down' }}</i>
+                        </button>
+                        <div v-if="showSortDropdown" class="topbar-dropdown">
+                            <button v-for="option in sortOptions" :key="option.value"
+                                :class="['topbar-dropdown-item', { active: sortBy === option.value }]"
+                                @click.stop="selectSort(option.value)">
+                                <span>{{ option.label }}</span>
+                                <i v-if="sortBy === option.value && option.value !== 'natural'" class="material-icons">{{ sortOrder === 'asc' ? 'arrow_drop_up' : 'arrow_drop_down' }}</i>
+                            </button>
+                            <template v-if="sortBy !== 'natural'">
+                                <div class="topbar-dropdown-divider"></div>
+                                <button :class="['topbar-dropdown-item', { active: sortOrder === 'asc' }]" @click.stop="setSortOrder('asc')">
+                                    <i class="material-icons">arrow_drop_up</i> Ascending
+                                </button>
+                                <button :class="['topbar-dropdown-item', { active: sortOrder === 'desc' }]" @click.stop="setSortOrder('desc')">
+                                    <i class="material-icons">arrow_drop_down</i> Descending
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="switch">
+                    <label v-if="model.showFilter === 'true'" class="filter-toggle">
+                        <input type="checkbox" v-model="filter">
+                        <span class="lever"></span>
+                        <span>filter secondary items</span>
+                    </label>
+                    </div>
+                </div>
             </li>
                 <li
                     v-for ="child in children"
                     v-bind:key="child.path"
                     v-bind:class="`collection-item ${isSelected(child) ? 'explorer-item-selected' : ''}`"
-                    draggable ="true"
+                    :draggable="sortBy === 'natural'"
                     v-on:dragstart ="onDragRowStart(child,$event)"
                     v-on:drag      ="onDragRow"
                     v-on:click     ="showRow(child,$event)"
@@ -232,17 +247,6 @@
                     </admin-components-action>
                 </li>
             </ul>
-            <div style="width: inherit; position: absolute; bottom: .5em;" v-if="model.showFilter ==='true'">
-                <div style="padding-left: 3em; padding-right: 1em;">
-                    <div class="switch">
-                        <label>
-                            <input type="checkbox" v-model="filter" style="direction: rtl;">
-                            <span class="lever"></span>
-                            filter secondary items
-                        </label>
-                    </div>
-                </div>
-            </div>
             <div v-if="children && children.length == 0" class="empty-explorer">
                 <div v-if="path.includes('assets')">
                     {{ $i18n('emptyExplorerHintAssets') }}.
@@ -309,13 +313,15 @@ export default {
                 uploadProgress: 0,
                 filter: true,
                 publishDialogPath: null,
-                sortBy: 'name',
+                sortBy: 'natural',
                 sortOrder: 'desc',
                 sortOptions: [
+                    { value: 'natural', label: 'Natural Order' },
                     { value: 'name', label: 'Name' },
                     { value: 'date', label: 'Date' },
                     { value: 'lastChanged', label: 'Last Changed' },
-                ]
+                ],
+                showSortDropdown: false
             }
         },
 
@@ -357,27 +363,41 @@ export default {
         },
         created() {
           document.addEventListener('paste', this.onDocumentPaste)
+          document.addEventListener('click', this.closeDropdowns)
         },
         beforeDestroy() {
           document.removeEventListener('paste', this.onDocumentPaste)
+          document.removeEventListener('click', this.closeDropdowns)
         },
         methods: {
             getTenant() {
               return $perAdminApp.getView().state.tenant || {name: 'example'}
             },
 
-            toggleSort(value) {
-                if (this.sortBy === value) {
+            selectSort(value) {
+                if (this.sortBy === value && value !== 'natural') {
                     this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc'
                 } else {
                     this.sortBy = value
                 }
+                this.showSortDropdown = false
+            },
+
+            setSortOrder(order) {
+                this.sortOrder = order
+                this.showSortDropdown = false
+            },
+
+            closeDropdowns() {
+                this.showSortDropdown = false
             },
 
             sortChildren(children) {
                 const sorted = [...children]
                 const order = this.sortOrder === 'asc' ? 1 : -1
                 switch(this.sortBy) {
+                    case 'natural':
+                        break
                     case 'name':
                         sorted.sort((a, b) => (a.name || '').localeCompare(b.name || '') * order)
                         break
@@ -495,7 +515,7 @@ export default {
             },
 
             onDragOverRow(ev) {
-                if(this.isDraggingUiEl) {
+                if(this.isDraggingUiEl && this.sortBy === 'natural') {
                     const center = ev.target.offsetHeight / 2 ;
                     this.dropType = ev.offsetY > center ? 'after' : 'before';
                     ev.target.classList.toggle('drop-after', ev.offsetY > center );
@@ -507,13 +527,13 @@ export default {
             },
 
             onDragLeaveRow(ev) {
-                if(this.isDraggingUiEl) {
+                if(this.isDraggingUiEl && this.sortBy === 'natural') {
                     ev.target.classList.remove('drop-after','drop-before')
                 }
             },
 
             onDropRow(item, ev, type) {
-                if(this.isDraggingUiEl) {
+                if(this.isDraggingUiEl && this.sortBy === 'natural') {
                     ev.target.classList.remove('drop-after','drop-before')
                     const dataFrom = this.model.dataFrom
                     const path = $perAdminApp.getNodeFrom($perAdminApp.getView(), dataFrom)
@@ -909,60 +929,130 @@ export default {
         justify-content: center;
         align-items: center;
     }
+</style>
 
-    .sort-controls {
+<style scoped>
+    .topbar {
         padding: 0.4rem 1rem;
         background: #f9f9f9;
         border-bottom: 1px solid #e0e0e0;
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
         gap: 0.25rem;
+        min-height: 45px;
     }
 
-    .sort-label {
-        font-size: 0.85rem;
-        color: #666;
-        margin-right: 0.5rem;
+    .topbar-controls {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.4rem;
+        flex-grow: 1;
+        flex-wrap: wrap;
     }
 
-    .sort-direction-btn,
-    .sort-direction-btn:focus {
-        background: transparent;
-        border: 1px solid #ccc;
-        width: 28px;
-        height: 28px;
-        padding: 0;
-        cursor: pointer;
-        border-radius: 3px;
-        margin-left: 0.5rem;
-        font-size: 1.1rem;
-        line-height: 26px;
+    .topbar-dropdown-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
     }
 
-    .sort-btn {
-        background: transparent;
+    .topbar-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        height: 2rem;
+        background: #455A64;
+        color: #fff;
         border: none;
-        padding: 0.25rem 0.5rem;
-        cursor: pointer;
-        border-radius: 3px;
+        border-radius: 4px;
+        padding: 0 0.6rem;
         font-size: 0.8rem;
-        color: #555;
-        transition: all 0.15s;
+        cursor: pointer;
+        transition: background 0.15s;
+        white-space: nowrap;
+        box-sizing: border-box;
     }
 
-    .sort-direction-btn:hover,
-    .sort-btn:hover {
-        background: #e8e8e8;
+    .topbar-btn .material-icons {
+        font-size: 1rem;
+        line-height: 1;
     }
 
-    .sort-btn.active {
-        background: #ddd;
-        font-weight: 500;
+    .topbar-btn-symbol {
+        width: 1rem;
+        height: 1rem;
+        flex-shrink: 0;
+    }
+
+    .topbar-btn:hover,
+    .topbar-btn:focus {
+        background: #546E7A;
+    }
+
+    .topbar-btn--active {
+        background: #455A64;
+    }
+
+    .topbar-caret {
+        font-size: 1rem;
+        line-height: 1;
+        margin-left: -2px;
+    }
+
+    .topbar-dropdown {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        z-index: 100;
+        min-width: 150px;
+        padding: 4px 0;
+    }
+
+    .topbar-dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        width: 100%;
+        background: none;
+        border: none;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.8rem;
         color: #333;
+        cursor: pointer;
+        text-align: left;
+        white-space: nowrap;
     }
-</style>
 
-<style scoped>
+    .topbar-dropdown-item:hover,
+    .topbar-dropdown-item:focus {
+        background: #f0f0f0;
+    }
+
+    .topbar-dropdown-item.active {
+        font-weight: 600;
+        color: #455A64;
+    }
+
+    .topbar-dropdown-item .material-icons {
+        font-size: 1rem;
+    }
+
+    .topbar-dropdown-divider {
+        border-top: 1px solid #eee;
+        margin: 4px 0;
+    }
+
+    .switch .filter-toggle .lever {
+        margin: 0 4px !important;
+    }
+
 .icon.label {
   height: 24px;
   width: 24px;
@@ -973,7 +1063,9 @@ export default {
   color: #000000;
 }
 
-.explorer .explorer-layout .row .explorer-main .collection .collection-item:not(#back-to-parent) {
+.explorer .explorer-layout .row .explorer-main .collection {
+    height: 100%;
+    > .collection-item {
         display: flex;
         align-items: center;
 
@@ -1009,5 +1101,6 @@ export default {
             align-items: center;
             flex: 1;
         }
+    }
 }
 </style>
