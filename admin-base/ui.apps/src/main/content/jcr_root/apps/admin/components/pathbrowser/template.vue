@@ -339,7 +339,7 @@
                       :value="linkTitle"
                       @input="setLinkTitle"/>
                 </div>
-                <div v-if="isImageExtension({path: selectedPath})" class="img-group">
+                <div v-if="isImageExtension({path: selectedPath}) && isAsset" class="img-group">
                   <div class="form-group">
                     <label for="linkTitle">Image Width (px)</label>
                     <input
@@ -598,6 +598,9 @@ export default {
     allowFolderSelection() {
       return !this.isBrowserTypeImage && !this.isBrowserTypeObjectDefinition
     },
+    isAsset() {
+      return this.isType(PathBrowser.Type.ASSET)
+    },
     isBrowserTypePage() {
       return this.isType(PathBrowser.Type.PAGE)
     },
@@ -605,7 +608,7 @@ export default {
       return this.isType(PathBrowser.Type.IMAGE)
     },
     isBrowserTypeAsset() {
-      return this.isType(PathBrowser.Type.ASSET) || this.isType(PathBrowser.Type.IMAGE)
+      return this.isAsset || this.isType(PathBrowser.Type.IMAGE)
     },
     isBrowserTypeObjectDefinition() {
       return this.isType(PathBrowser.Type.OBJECT_DEFINITION)
@@ -658,10 +661,10 @@ export default {
       if (item) {
           return item.hasChildren ? 'folder_open' : 'description'
       }
-      return this.isType(PathBrowser.Type.ASSET) ? 'folder_open' : 'description'
+      return this.isAsset ? 'folder_open' : 'description'
     },
     getEmptyText() {
-      return this.isType(PathBrowser.Type.ASSET) ? 'Folder is empty' : 'No child pages'
+      return this.isAsset ? 'Folder is empty' : 'No child pages'
     },
     cardIconSize: function (cardSize) {
       return Math.floor(cardSize / 3)
