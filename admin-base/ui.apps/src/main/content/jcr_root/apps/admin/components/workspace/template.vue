@@ -161,7 +161,16 @@ export default {
 
       const originalData = view.state.editor ? view.state.editor.originalData : null
       const currentNode = originalData ? $perAdminApp.findNodeFromPath(view.pageView.page, editorPath) : null
-      if (!originalData || !currentNode || JSON.stringify(originalData) === JSON.stringify(currentNode)) {
+      const replacer = (k, v) => k === '_opDeleteProps' || k === 'children' || v === null || v === '' ? undefined : v
+      const originalStr = JSON.stringify(originalData, replacer)
+      const currentStr = JSON.stringify(currentNode, replacer)
+      if (originalStr !== currentStr) {
+          let diffIdx = -1
+          for (let i = 0; i < Math.max(originalStr.length, currentStr.length); i++) {
+            if (originalStr[i] !== currentStr[i]) { diffIdx = i; break; }
+          }
+        }
+      if (!originalData || !currentNode || originalStr === currentStr) {
         return this.openEditor(target)
       }
 

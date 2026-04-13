@@ -38,8 +38,9 @@ function bringUpEditor(me, view, target) {
         if (!view.state.editor || !view.state.editor.originalData) return;
         const currentNode = me.findNodeFromPath(view.pageView.page, view.state.editor.path)
         if (!currentNode) return;
-        const originalStr = JSON.stringify(view.state.editor.originalData)
-        const currentStr = JSON.stringify(currentNode)
+        const replacer = (k, v) => k === '_opDeleteProps' || k === 'children' || v === null || v === '' ? undefined : v
+        const originalStr = JSON.stringify(view.state.editor.originalData, replacer)
+        const currentStr = JSON.stringify(currentNode, replacer)
         if (originalStr !== currentStr) {
             e.preventDefault();
             e.returnValue = '';
@@ -59,8 +60,8 @@ function bringUpEditor(me, view, target) {
         if (!currentNode) {
             return true;
         }
-        const originalStr = JSON.stringify(view.state.editor.originalData)
-        const currentStr = JSON.stringify(currentNode)
+        const originalStr = JSON.stringify(view.state.editor.originalData, (k, v) => k === '_opDeleteProps' || k === 'children' || v === null || v === '' ? undefined : v)
+        const currentStr = JSON.stringify(currentNode, (k, v) => k === '_opDeleteProps' || k === 'children' || v === null || v === '' ? undefined : v)
         if (originalStr === currentStr) {
             return true;
         }
