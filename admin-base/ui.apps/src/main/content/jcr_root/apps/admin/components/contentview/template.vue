@@ -436,8 +436,21 @@ export default {
       if (!vm.target || !vm.component || !vm.path) return
 
       if (!vm.dragging && vm.isTemplateNode) {
+        let templatePath = vm.pageView.page.template
+        if (!templatePath) {
+          // templates do not have a templatePath. Building from edit path.
+          const editPath = window.location.pathname.split('/path:')[1]
+          const editPathParts = editPath.split('/')
+          editPathParts.pop()
+          if (editPathParts.includes('templates') && editPathParts.at(-1) !== 'templates') {
+            templatePath = editPathParts.join('/')
+          }
+        }
         vm.unselect(vm)
-        this.toast.templateComponent = $perAdminApp.toast(vm.$i18n('fromTemplateNotifyMsg'),
+        this.toast.templateComponent = $perAdminApp.toast(`
+            <div>${vm.$i18n('fromTemplateNotifyMsg')}</div>
+            ${templatePath ? `<div><a class="btn" style="white-space: nowrap;" href="/content/admin/pages/templates/edit.html/path:${templatePath}">modify</a></div>` : ''}
+          `,
             Toast.Level.WARNING)
       } else {
         if (vm.dragging || vm.path !== '/jcr:content') {
