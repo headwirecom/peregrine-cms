@@ -92,6 +92,13 @@ export const MimeType = {
     SVG: 'image/svg+xml',
     WEBP: 'image/webp',
   },
+  Video: {
+    MP4: 'video/mp4',
+    WEBM: 'video/webm',
+    OGG: 'video/ogg',
+    MOV: 'video/quicktime',
+    AVI: 'video/x-msvideo',
+  },
 };
 
 export const Admin = {

@@ -67,6 +67,12 @@
                class="info-view-image"
                v-on:click="openModal"
                />
+          <video v-else-if="isVideo"
+              ref="videoPreview"
+              :src="currentObject"
+              class="info-view-video"
+              controls>
+          </video>
           <iframe
               v-else
               :src="currentObject"
@@ -510,6 +516,15 @@ export default {
       }
       const mime = node.mimeType;
       return Object.values(MimeType.Image).indexOf(mime) >= 0
+    },
+    isVideo() {
+      const node = $perAdminApp.findNodeFromPath(
+          $perAdminApp.getView().admin.nodes, this.currentObject);
+      if (!node) {
+        return false;
+      }
+      const mime = node.mimeType;
+      return Object.values(MimeType.Video).indexOf(mime) >= 0
     },
     hasInfoView() {
       return [NodeType.ASSET].indexOf(this.nodeType) > -1;
@@ -1084,6 +1099,11 @@ export default {
 <style scoped>
 .info-view-image {
     cursor: pointer;
+}
+
+.info-view-video {
+    width: 100%;
+    height: 100%;
 }
 
 .explorer-preview .explorer-preview-content.preview-asset .asset-info-view img {
