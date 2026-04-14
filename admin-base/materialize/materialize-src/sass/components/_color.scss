@@ -396,17 +396,44 @@ $colors: (
 }
 
 
-// usage: color("name_of_color", "type_of_color")
+// usage: customColor("name_of_color", "type_of_color")
 // to avoid to repeating map-get($colors, ...)
 
-@function color($color, $type) {
+@function customColor($color, $type) {
   @if map-has-key($colors, $color) {
     $curr_color: map-get($colors, $color);
     @if map-has-key($curr_color, $type) {
-      @return map-get($curr_color, $type);
+      $result: map-get($curr_color, $type);
+
+      // Try to cast string hex to color if needed
+      @if type-of($result) == 'string' and str-index($result, '#') == 1 {
+        @return unquote($result);
+      }
+      
+      @return $result;
+    } @else {
+      @warn "Type `#{$type}` not found in `#{$color}` map.";
     }
+  } @else {
+    @warn "Color `#{$color}` not found in colors map.";
   }
-  @warn "Unknown `#{$color}` - `#{$type}` in $colors.";
-  @return null;
+  @return #000;
 }
 
+// usage: customLighten("name_of_color", "percentage_to_lighten")
+
+@function customLighten($color, $percentage) {
+  @return lighten($color, $percentage);
+}
+
+// usage: customDarken("name_of_color", "percentage_to_darken")
+
+@function customDarken($color, $percentage) {
+  @return darken($color, $percentage);
+}
+
+// usage: customDesaturate("name_of_color", "percentage_to_desaturate")
+
+@function customDesaturate($color, $percentage) {
+  @return desaturate($color, $percentage);
+}

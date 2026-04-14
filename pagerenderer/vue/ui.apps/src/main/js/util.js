@@ -42,15 +42,20 @@ export function pathToPathInfo(path) {
 export function pagePathToDataPath(path) {
 
     log.fine('converting',path,'to dataPath')
-    var firstHtmlExt = path.indexOf('.html')
-    var res = null
-    if(firstHtmlExt >= 0) {
-        var pathNoExt = path.substring(0,firstHtmlExt)
-        res = pathNoExt + DATA_EXTENSION
-    }
-    else {
-        res = path + DATA_EXTENSION
-    }
+    let res = null
+    const hasExtension = /\.[^\/\\]+$/.test(path);
+    if (hasExtension) {
+      if (path.endsWith('.html')) {
+        // .html found replace with DATA_EXTENSION
+        res = path.slice(0, -5) + DATA_EXTENSION;
+      } else {
+        // has another extension, don't modify
+        res = path;
+      }
+    } else {
+      // no extension found, add DATA_EXTENSION
+      res = path + DATA_EXTENSION;
+  }
     log.fine('result',res)
     return res
 

@@ -13,9 +13,9 @@ package com.peregrine.admin.servlets;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -26,10 +26,14 @@ package com.peregrine.admin.servlets;
  * Contributed by Cris Rockwell, University of Michigan
  */
 
-import com.peregrine.replication.PerReplicable;
+import com.peregrine.admin.resource.AdminResourceHandler;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.replication.PerReplicable;
+import org.apache.sling.api.resource.Resource;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
+import javax.jcr.RepositoryException;
 import javax.servlet.Servlet;
 import java.io.IOException;
 import java.util.Calendar;
@@ -67,15 +71,33 @@ import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 public class ListReplicationStatusServlet extends AbstractBaseServlet {
 
     private static final String RESOURCE_NOT_FOUND = "Resource not found";
+    private static final String LAST_RESOURCE_PARAM = "lastResource";
+
+    @Reference
+    AdminResourceHandler resourceManagement;
 
     @Override
     protected Response handleRequest(Request request) throws IOException {
         final JsonResponse answer = new JsonResponse();
         final String suffix = request.getSuffix();
-        final PerReplicable replicable = Optional.ofNullable(suffix)
+        PerReplicable replicable = Optional.ofNullable(suffix)
                 .map(request::getResourceByPath)
                 .map(r ->  r.adaptTo(PerReplicable.class))
                 .orElse(null);
+
+        Resource resource = replicable.getMainResource();
+        try {
+            if (resourceManagement.isAssetsFolder(resource)) {
+                String lastResourcePath = request.getParameter(LAST_RESOURCE_PARAM);
+                Resource lastResource = request.getResourceResolver().getResource(lastResourcePath);
+                if (!isNull(lastResource)) {
+                    replicable = lastResource.adaptTo(PerReplicable.class);
+                }
+            }
+        } catch (RepositoryException e) {
+            logger.error("Failed to check resource is folder for {}", resource.getPath(), e);
+        }
+
         if(isNull(replicable)) {
             return new ErrorResponse()
                 .setHttpErrorCode(SC_BAD_REQUEST)

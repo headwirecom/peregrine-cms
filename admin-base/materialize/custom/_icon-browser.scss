@@ -72,27 +72,27 @@
             width: auto;
             max-width: 100%;
             text-align: center;
-            background-color: color("blue-grey", "lighten-5");
+            background-color: customColor("blue-grey", "lighten-5");
             .item-content {
               width: 100%;
-              color: color("blue-grey", "darken-2");
+              color: customColor("blue-grey", "darken-2");
               position: absolute;
               top: 50%;
               transform: translateY(-50%);
               padding: 0.75rem;
               i {
-                color: color("blue-grey", "darken-1");
+                color: customColor("blue-grey", "darken-1");
               }
               > .truncate {
                 width: 100%;
               }
             }
             &.selected {
-              background-color: color("blue-grey", "base");
+              background-color: customColor("blue-grey", "base");
               .item-content {
                 i,
                 > .truncate {
-                  color: color("blue-grey", "lighten-5");
+                  color: customColor("blue-grey", "lighten-5");
                 }
               }
             }

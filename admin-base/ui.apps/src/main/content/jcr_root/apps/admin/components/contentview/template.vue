@@ -50,6 +50,11 @@
       <div v-if="enableEditableFeatures" class="editable-actions">
         <ul>
           <li class="waves-effect waves-light">
+            <a href="#" :title="$i18n('add')" @click.stop.prevent="onAdd">
+                <i class="material-icons">add_circle</i>
+            </a>
+          </li>
+          <li class="waves-effect waves-light">
             <a href="#" :title="$i18n('copy')" @click.stop.prevent="onCopy">
               <i class="material-icons">content_copy</i>
             </a>
@@ -89,6 +94,7 @@
 </template>
 
 <script>
+import '../../../../../../js/jquery-longpress'
 import {Attribute, Key, Toast} from '../../../../../../js/constants'
 import {Error} from '../../../../../../js/messages'
 import {
@@ -100,6 +106,41 @@ import {
   saveSelection,
   set
 } from '../../../../../../js/utils'
+
+
+const allowedStylesMap = {
+  // bold, italic, etc handled by html tags
+  'text-align':true,
+  'font-size':true,
+  'width':true,
+  'height':true,
+}
+const allowedStylesElementsMap = {
+  IMG: true,
+}
+function removeUnwantedStyles(htmlText) {
+  const tempDiv = document.createElement('div')
+  tempDiv.innerHTML = htmlText
+
+  tempDiv.querySelectorAll('[style]').forEach((span) => {
+    if (allowedStylesElementsMap[span.nodeName]) return;
+    const propertiesToRemove = []
+    for (let i = 0; i < span.style.length; i++) {
+      const property = span.style.item(i);
+      if (!allowedStylesMap[property]) {
+        propertiesToRemove.push(property);
+      }
+    }
+    // must be done in later step, otherwise length changes
+    for (let i = 0; i < propertiesToRemove.length; i++) {
+      span.style.removeProperty(propertiesToRemove[i]);
+    }
+  })
+
+  return tempDiv.innerHTML
+}
+
+
 
 export default {
   props: ['model'],
@@ -153,12 +194,16 @@ export default {
       dynWatchers: [],
       toast: {
         templateComponent: null,
-        missingEventPath: null
+        missingEventPath: null,
+        invalidDrop: null,
+        showDeleteToast: null,
       },
       pingDebouncer: {
         id: null,
         timeout: 150
-      }
+      },
+      undoItem: null,
+      redoItem: null
     }
   },
   computed: {
@@ -307,6 +352,7 @@ export default {
       handler(val) {
         if (!this.component) return
         this.wrapEditableAroundSelected()
+
         this.$nextTick(() => {
           this.refreshIframeElements()
         })
@@ -346,6 +392,11 @@ export default {
       if (old) {
         old.remove()
       }
+    },
+    'toast.showDeleteToast'(val, old) {
+      if (old) {
+        old.remove()
+      }
     }
   },
   mounted() {
@@ -368,9 +419,14 @@ export default {
         set($perAdminApp.getView(), '/state/contentview/editor/active', false)
       }
     })
+    window.addEventListener('keydown', this.onUndoKeyDown)
+    this._onComponentDeleted = (e) => this.showDeleteToast(e.detail)
+    window.addEventListener('per:component-deleted', this._onComponentDeleted)
   },
   beforeDestroy() {
     set($perAdminApp.getView(), '/state/contentview/editor/active', false)
+    window.removeEventListener('keydown', this.onUndoKeyDown)
+    window.removeEventListener('per:component-deleted', this._onComponentDeleted)
   },
   methods: {
     componentKey(component) {
@@ -393,8 +449,21 @@ export default {
       if (!vm.target || !vm.component || !vm.path) return
 
       if (!vm.dragging && vm.isTemplateNode) {
+        let templatePath = vm.pageView.page.template
+        if (!templatePath) {
+          // templates do not have a templatePath. Building from edit path.
+          const editPath = window.location.pathname.split('/path:')[1]
+          const editPathParts = editPath.split('/')
+          editPathParts.pop()
+          if (editPathParts.includes('templates') && editPathParts.at(-1) !== 'templates') {
+            templatePath = editPathParts.join('/')
+          }
+        }
         vm.unselect(vm)
-        this.toast.templateComponent = $perAdminApp.toast(vm.$i18n('fromTemplateNotifyMsg'),
+        this.toast.templateComponent = $perAdminApp.toast(`
+            <div>${vm.$i18n('fromTemplateNotifyMsg')}</div>
+            ${templatePath ? `<div><a class="btn" style="white-space: nowrap;" href="/content/admin/pages/templates/edit.html/path:${templatePath}">modify</a></div>` : ''}
+          `,
             Toast.Level.WARNING)
       } else {
         if (vm.dragging || vm.path !== '/jcr:content') {
@@ -404,17 +473,7 @@ export default {
           if (vm.component !== vm.previousComponent) {
             set(this.view, '/state/inline/rich', null)
             set(this.view, '/state/inline/model', null)
-            if (vm.autoSave && vm.node && vm.view.state.editor.path) {
-              vm.autoSave = false
-              $perAdminApp.stateAction('savePageEdit', {
-                data: vm.node,
-                path: vm.view.state.editor.path
-              }).then(() => {
-                vm.updateSelectedComponent()
-              })
-            } else {
-              vm.updateSelectedComponent()
-            }
+            vm.updateSelectedComponent()
           } else {
             vm.flushInlineState()
           }
@@ -494,6 +553,7 @@ export default {
       let content = ''
       if (vm.isRich) {
         content = vm.target.innerHTML.replace(/(?:\r\n|\r|\n)/g, '<br>')
+        content = removeUnwantedStyles(content);
       } else {
         content = vm.target.innerText
       }
@@ -503,7 +563,21 @@ export default {
       while (dataInline.length > 1) {
         parentProp = parentProp[dataInline.pop()]
       }
-      parentProp[dataInline.pop()] = content
+      const keyStr = dataInline.pop()
+      parentProp[keyStr] = content;
+    },
+
+    writeElementToModel(vm = this, element) {
+      let content = element.innerHTML.replace(/(?:\r\n|\r|\n)/g, '<br>')
+      content = removeUnwantedStyles(content)
+      const dataInline = (element.getAttribute('data-per-inline') || '').split('.').slice(1)
+      dataInline.reverse()
+      let parentProp = vm.node
+      while (dataInline.length > 1) {
+        parentProp = parentProp[dataInline.pop()]
+      }
+      const keyStr = dataInline.pop()
+      if (keyStr) parentProp[keyStr] = content
     },
 
     onInlineEdit(event) {
@@ -578,6 +652,15 @@ export default {
     onInlineFocusOut(event) {
       event.target.classList.remove('inline-editing')
       this.editing = false
+      const iframeSel = this.iframe.doc ? this.iframe.doc.defaultView.getSelection() : null
+      const anchorNode = iframeSel && iframeSel.rangeCount > 0 ? iframeSel.anchorNode : null
+      const el = anchorNode
+        ? (anchorNode.nodeType === Node.TEXT_NODE ? anchorNode.parentElement : anchorNode)
+        : null
+      set(this.view, '/state/inline/lastAnchor', el ? el.closest('a') : null)
+      set(this.view, '/state/inline/lastContainer', event.target)
+      set(this.view, '/state/inline/lastDoc', this.iframe.doc)
+      set(this.view, '/state/inline/lastSelectionBuffer', saveSelection(event.target, this.iframe.doc))
       set(this.view, '/state/inline/doc', null)
       if (!isChromeBrowser() && event.target.innerHTML) {
         event.target.innerHTML = event.target.innerHTML.trim()
@@ -599,8 +682,30 @@ export default {
       const backspaceOrDelete = key === Key.BACKSPACE || key === Key.DELETE
       const arrowKey = key >= Key.ARROW_LEFT && key <= Key.ARROW_DOWN
 
-      if (key === Key.A && ctrlOrCmd) {
+      if (key === Key.ESC) {
+        event.target.blur()
+      } else if (key === Key.A && ctrlOrCmd) {
         this.onInlineSelectAll(event)
+      } else if (key === Key.B && ctrlOrCmd) {
+        event.preventDefault()
+        window.dispatchEvent(new CustomEvent('inline-richtoolbar:cmd', { detail: { cmd: 'bold' } }))
+      } else if (key === Key.I && ctrlOrCmd) {
+        event.preventDefault()
+        window.dispatchEvent(new CustomEvent('inline-richtoolbar:cmd', { detail: { cmd: 'italic' } }))
+      } else if (key === Key.U && ctrlOrCmd) {
+        event.preventDefault()
+        window.dispatchEvent(new CustomEvent('inline-richtoolbar:cmd', { detail: { cmd: 'underline' } }))
+      } else if (ctrlOrCmd && event.altKey && ((key >= Key.DIGIT_0 && key <= Key.DIGIT_6) || (key >= Key.NUMPAD_0 && key <= Key.NUMPAD_6))) {
+        event.preventDefault()
+        const digit = key >= Key.NUMPAD_0 ? key - Key.NUMPAD_0 : key - Key.DIGIT_0
+        const value = digit === 0 ? 'p' : `h${digit}`
+        window.dispatchEvent(new CustomEvent('inline-richtoolbar:cmd', { detail: { cmd: 'formatBlock', value } }))
+      } else if (key === Key.Z && ctrlOrCmd) {
+        event.preventDefault()
+        window.dispatchEvent(new CustomEvent('inline-richtoolbar:cmd', { detail: { cmd: 'undo' } }))
+      } else if (key === Key.Y && ctrlOrCmd) {
+        event.preventDefault()
+        window.dispatchEvent(new CustomEvent('inline-richtoolbar:cmd', { detail: { cmd: 'redo' } }))
       } else if (backspaceOrDelete) {
         this.onInlineDelete(event)
       } else if (arrowKey && !shift) {
@@ -625,7 +730,8 @@ export default {
 
     onInlineDblClick(event) {
       if (event.target.tagName === 'IMG') {
-        $perAdminApp.action(this, 'editImage', event.target)
+        const action = event.target.classList.contains('peregrine-icon') ? 'editIcon' : 'editImage'
+        $perAdminApp.action(this, action, event.target)
       }
     },
 
@@ -692,15 +798,54 @@ export default {
       } else {
         this.iframePreviewMode()
       }
+      this.iframe.doc.execCommand('defaultParagraphSeparator', false, 'p')
+      window.dispatchEvent(new CustomEvent('peregrine:iframe-loaded', { detail: { iframeEl: this.$refs.editview } }))
     },
 
     onIframeClick(ev) {
       if (!this.isContentEditableOrNested(ev.target)) {
+        this.editable.class = ''
         this.target = ev.target
       }
       if (this.target !== ev.target) {
         //this.
       }
+    },
+
+    onIframeLongPress() {
+        if (this.editable.class === 'selected') {
+            const editable = document.getElementById('editable');
+            if (editable) {
+                const handle1 = editable.querySelector('.drag-handle.top-right');
+                const handle2 = editable.querySelector('.drag-handle.bottom-left');
+                if (handle1 && !handle1.classList.contains('full')) {
+                    handle1.style.top = '0';
+                    handle1.style.left = '0';
+                    handle1.style.width = '100%';
+                    handle1.style.height = '100%';
+                    handle1.style.opacity = '.8';
+                    handle1.classList.add('full');
+                    handle1.ondblclick = () => {
+                        handle1.removeAttribute('style');
+                        handle1.classList.remove('full');
+                        handle2.style.visibility = '';
+                    };
+
+                    let timer = null;
+                    handle1.onwheel = () => {
+                        handle1.style.pointerEvents = 'none';
+                        if (timer) {
+                            clearTimeout(timer);
+                        }
+                        timer = setTimeout(() => {
+                            handle1.style.pointerEvents = '';
+                            timer = null;
+                        }, 100);
+                    };
+                    handle2.style.visibility = 'hidden';
+                }
+            }
+        }
     },
 
     onIframeScroll() {
@@ -743,14 +888,16 @@ export default {
             if (relMousePos['y%'] <= 10 && dropLocation === 'before' && !isRoot) {
               this.dropPosition = 'before'
               this.editable.class = 'drop-top'
-            } else if (relMousePos['y%'] >= 90 && dropLocation === 'after' && !isRoot) {
+            } else if (relMousePos['y%'] >= 70 && dropLocation === 'after' && !isRoot) {
               this.dropPosition = 'after'
               this.editable.class = 'drop-bottom'
             } else if (dropLocation) {
               this.dropPosition = 'into-' + dropLocation
               this.editable.class = 'selected'
             } else {
+              // invalid drop position
               this.dropPosition = 'none'
+              this.editable.class = 'mouseover-orange'
               event.dataTransfer.effectAllowed = ''
             }
           }
@@ -762,6 +909,7 @@ export default {
             this.dropPosition = 'after'
             this.editable.class = 'drop-bottom'
           }
+          return
         } else {
           this.editable.class = ''
           this.dropPosition = 'none'
@@ -769,6 +917,7 @@ export default {
         }
       } else {
         this.dropPosition = 'none'
+        this.editable.class = ''
         event.dataTransfer.dropEffect = 'none'
       }
     },
@@ -780,7 +929,10 @@ export default {
         this.selected.draggable = false
       }
       if (typeof this.component === 'undefined' || this.component === null) return false
-      if (this.dropPosition === 'none') return false
+      if (this.dropPosition === 'none') {
+        this.toast.invalidDrop = $perAdminApp.toast('Invalid drop position', Toast.Level.WARNING)
+        return false
+      }
 
       const componentPath = event.dataTransfer.getData('text')
 
@@ -819,7 +971,7 @@ export default {
     },
 
     onIframeMouseOver(event) {
-      if (this.editable.class === 'selected') return
+      if (this.enableEditableFeatures) return
 
       const cmpEl = this.findComponentEl(event.target)
 
@@ -870,10 +1022,12 @@ export default {
     iframeEditMode() {
       set($perAdminApp.getView(), '/state/contentview/editor/active', true)
       this.iframe.doc.addEventListener('click', this.onIframeClick)
+      $(this.iframe.doc).longpress(this.onIframeLongPress);
       this.iframe.doc.addEventListener('scroll', this.onIframeScroll)
       this.iframe.doc.addEventListener('dragover', this.onIframeDragOver)
       this.iframe.doc.addEventListener('drop', this.onIframeDrop)
       this.iframe.doc.addEventListener('mouseover', this.onIframeMouseOver)
+      this.iframe.win.addEventListener('keydown', this.onUndoKeyDown)
       this.iframe.html.classList.add('edit-mode')
       const elements = this.iframe.app.querySelectorAll(`[${Attribute.INLINE}]`)
       elements.forEach((el, index) => {
@@ -890,6 +1044,7 @@ export default {
         this.iframe.doc.removeEventListener('click', this.onIframeClick)
         this.iframe.doc.removeEventListener('scroll', this.onIframeScroll)
         this.iframe.doc.removeEventListener('mouseover', this.onIframeScroll)
+        this.iframe.win.removeEventListener('keydown', this.onUndoKeyDown)
       } catch (err) {
         console.debug('no event listener to be removed from iframe', err)
       }
@@ -963,14 +1118,16 @@ export default {
       if (!el) return
 
       this.$nextTick(() => {
-        const {top, left, width, height} = this.getBoundingClientRect(el)
-        const offset = this.getBoundingClientRect(this.$refs.editview)
+        const {top, left, width, height} = this.dragging ? el.getBoundingClientRect() : this.getBoundingClientRectWithMargin(el)
+        const offset = this.getBoundingClientRectWithMargin(this.$refs.editview)
 
         this.editable.styles.top = `${top}px`
         this.editable.styles.left = `${left + offset.left}px`
         this.editable.styles.width = `${width}px`
         this.editable.styles.height = `${height}px`
-        this.editable.class = 'selected'
+        if (!this.dragging && !this.editable.class) { // prevent breaking oniframedrag setup classes
+          this.editable.class = 'selected'
+        }
       })
     },
 
@@ -998,7 +1155,7 @@ export default {
       return styleValue
     },
 
-    getBoundingClientRect(e) {
+    getBoundingClientRectWithMargin(e) {
       const rect = e.getBoundingClientRect()
       const marginTop = parseFloat(this.getElementStyle(e, 'margin-top'))
       const marginLeft = parseFloat(this.getElementStyle(e, 'margin-left'))
@@ -1024,7 +1181,7 @@ export default {
     },
 
     getRelativeMousePosition(event) {
-      const offset = this.getBoundingClientRect(this.component)
+      const offset = this.getBoundingClientRectWithMargin(this.component)
       return {
         width: offset.width,
         x: event.pageX - offset.left,
@@ -1074,20 +1231,249 @@ export default {
       this.editable.class = 'draggable'
     },
 
-    onDelete(e) {
+    async onDelete(e) {
       const view = this.view
-      const pagePath = view.pageView.path
       const payload = {
         pagePath: view.pageView.path,
         path: this.path
       }
+      const vm = this
+
+      let undoEntry = null
       if (payload.path !== '/jcr:content') {
-        $perAdminApp.stateAction('deletePageNode', payload).then((data) => {
-          this.cleanUpAfterDelete(payload.path)
-          this.refreshIframeElements()
+        try {
+          const jcrPath = view.pageView.path + payload.path
+          const response = await fetch(jcrPath + '.infinity.json')
+          const jcrData = await response.json()
+          const nodeData = vm.jcrToInsertData(jcrData, payload.path)
+
+          let dropPath = null
+          let drop = 'into'
+          const el = vm.iframe.app.querySelector(`[${Attribute.PATH}="${payload.path}"]`)
+          if (el) {
+            let sibling = el.nextElementSibling
+            while (sibling) {
+              if (sibling.hasAttribute(Attribute.PATH) && !sibling.hasAttribute(Attribute.DROPTARGET)) {
+                dropPath = sibling.getAttribute(Attribute.PATH)
+                drop = 'before'
+                break
+              }
+              sibling = sibling.nextElementSibling
+            }
+            if (!dropPath) {
+              sibling = el.previousElementSibling
+              while (sibling) {
+                if (sibling.hasAttribute(Attribute.PATH) && !sibling.hasAttribute(Attribute.DROPTARGET)) {
+                  dropPath = sibling.getAttribute(Attribute.PATH)
+                  drop = 'after'
+                  break
+                }
+                sibling = sibling.previousElementSibling
+              }
+            }
+            if (!dropPath) {
+              const parentEl = el.parentElement ? el.parentElement.closest(`[${Attribute.DROPTARGET}]`) : null
+              if (parentEl) {
+                dropPath = parentEl.getAttribute(Attribute.PATH) || parentEl.getAttribute(Attribute.DROPTARGET)
+              }
+              if (!dropPath) {
+                dropPath = payload.path.substring(0, payload.path.lastIndexOf('/'))
+              }
+              drop = 'into'
+            }
+          } else {
+            dropPath = payload.path.substring(0, payload.path.lastIndexOf('/'))
+            drop = 'into'
+          }
+          undoEntry = { pagePath: payload.pagePath, dropPath, drop, data: nodeData }
+        } catch (err) {
+          console.warn('Failed to capture undo data for deletion', err)
+        }
+      }
+
+      let blockDelete = false
+      let deleteMessage = 'Are you sure you want to delete the component?'
+      const isTemplateOrSkeleton = payload.pagePath.includes('/skeleton-pages/') || payload.pagePath.includes('/templates/')
+      if (isTemplateOrSkeleton && payload.path !== '/jcr:content') {
+        try {
+          const fullJcrPath = payload.pagePath + payload.path
+          const skeletonResponse = await fetch(
+            '/perapi/admin/isComponentUsedInSkeleton.json?path='
+            + encodeURIComponent(fullJcrPath)
+          )
+          const skeletonData = await skeletonResponse.json()
+          if (skeletonData && skeletonData.isTopLevelInSkeleton) {
+            blockDelete = true
+            const pageList = (skeletonData.skeletonPages || []).map(p => p.title || p.path).join(', ')
+            deleteMessage = 'This component cannot be deleted because it is used in a skeleton page'
+              + (pageList ? ': ' + pageList : '')
+              + '. Removing it could break every page created from that skeleton.'
+          }
+        } catch (err) {
+          console.warn('Failed to check skeleton usage', err)
+        }
+      }
+
+      $perAdminApp.askUser(
+        blockDelete ? 'Cannot Delete Component' : 'Delete Component?',
+        deleteMessage,
+        {
+        yesText: 'Yes',
+        noText: blockDelete ? 'Close' : 'No',
+        warning: blockDelete,
+        blockDelete,
+        yes() {
+          if (payload.path !== '/jcr:content') {
+            $perAdminApp.stateAction('deletePageNode', payload).then((data) => {
+              vm.cleanUpAfterDelete(payload.path)
+              vm.refreshIframeElements()
+              if (undoEntry) {
+                vm.showDeleteToast(undoEntry)
+              }
+            })
+          }
+          vm.unselect(vm)
+        },
+        no() {},
+      })
+    },
+
+    showDeleteToast(undoEntry) {
+      const vm = this
+      vm.undoItem = undoEntry
+      vm.redoItem = null
+      const toastObj = $perAdminApp.toast(
+        `<span style="flex: 1;">Component deleted.</span><a class="btn per-undo-btn" style="white-space: nowrap; margin-left: 16px;">Undo</a>`,
+        'delete'
+      )
+      vm.toast.showDeleteToast = toastObj
+      const undoBtn = toastObj.el.querySelector('.per-undo-btn')
+      if (undoBtn) {
+        undoBtn.addEventListener('click', (e) => {
+          e.stopPropagation()
+          vm.performUndo()
+          toastObj.remove()
         })
       }
-      this.unselect(this)
+    },
+
+    jcrToInsertData(jcrNode, path) {
+      const IGNORED_KEYS = new Set([
+        'jcr:primaryType', 'jcr:uuid', 'jcr:created', 'jcr:createdBy',
+        'jcr:baseVersion', 'jcr:isCheckedOut', 'jcr:predecessors',
+        'jcr:versionHistory', 'per:Replicated', 'per:ReplicatedBy',
+        'per:ReplicationLastAction', 'per:ReplicationRef', 'per:ReplicationStatus',
+      ])
+      const result = { path }
+      const children = []
+      for (const [key, value] of Object.entries(jcrNode)) {
+        if (IGNORED_KEYS.has(key)) continue
+        if (key === 'sling:resourceType') {
+          result.component = value
+        } else if (value !== null && typeof value === 'object' && !Array.isArray(value) && value['jcr:primaryType']) {
+          children.push(this.jcrToInsertData(value, path + '/' + key))
+        } else {
+          result[key] = value
+        }
+      }
+      if (children.length > 0) result.children = children
+      return result
+    },
+
+    performUndo() {
+      if (!this.undoItem) return
+      const undoItem = this.undoItem
+      this.undoItem = null
+      const vm = this
+      const api = $perAdminApp.getApi()
+      api.insertNodeWithDataAt(undoItem.pagePath + undoItem.dropPath, undoItem.data, undoItem.drop)
+        .then(() => api.populatePageView(undoItem.pagePath))
+        .then(() => {
+          if (vm.$refs.editview) {
+            const editview = vm.$refs.editview
+            const onLoad = () => {
+              editview.removeEventListener('load', onLoad)
+              const newPath = vm.findRestoredPath(editview.contentDocument, undoItem)
+              if (newPath) {
+                vm.redoItem = { pagePath: undoItem.pagePath, path: newPath, undoItem }
+              }
+            }
+            editview.addEventListener('load', onLoad)
+            editview.contentWindow.location.reload()
+          }
+        })
+    },
+
+    performRedo() {
+      if (!this.redoItem) return
+      const redoItem = this.redoItem
+      this.redoItem = null
+      const vm = this
+      $perAdminApp.stateAction('deletePageNode', { pagePath: redoItem.pagePath, path: redoItem.path })
+        .then(() => {
+          vm.undoItem = redoItem.undoItem
+          if (vm.$refs.editview) {
+            vm.$refs.editview.contentWindow.location.reload()
+          }
+        })
+    },
+
+    onUndoKeyDown(event) {
+      const key = event.which || event.keyCode
+      const ctrlOrCmd = event.ctrlKey || event.metaKey
+      if (!ctrlOrCmd) return
+      const isUndo = key === Key.Z && !event.shiftKey
+      const isRedo = key === Key.Y || (key === Key.Z && event.shiftKey)
+      if (!isUndo && !isRedo) return
+      if (this.inline !== null) {
+        const inlineHasFocus = this.iframe.doc &&
+          this.iframe.doc.activeElement &&
+          this.iframe.doc.activeElement.hasAttribute('data-per-inline')
+        if (inlineHasFocus) return
+        this.flushInlineState()
+      }
+      if (isUndo && !this.undoItem) return
+      if (isRedo && !this.redoItem) return
+      event.preventDefault()
+      event.stopPropagation()
+
+      if (isUndo) {
+        this.performUndo()
+      } else {
+        this.performRedo()
+      }
+    },
+
+    findRestoredPath(doc, undoItem) {
+      const { dropPath, drop } = undoItem
+      if (drop === 'before') {
+        const refEl = doc.querySelector(`[${Attribute.PATH}="${dropPath}"]`)
+        if (refEl) {
+          let sibling = refEl.previousElementSibling
+          while (sibling) {
+            if (sibling.hasAttribute(Attribute.PATH)) return sibling.getAttribute(Attribute.PATH)
+            sibling = sibling.previousElementSibling
+          }
+        }
+      } else if (drop === 'after') {
+        const refEl = doc.querySelector(`[${Attribute.PATH}="${dropPath}"]`)
+        if (refEl) {
+          let sibling = refEl.nextElementSibling
+          while (sibling) {
+            if (sibling.hasAttribute(Attribute.PATH)) return sibling.getAttribute(Attribute.PATH)
+            sibling = sibling.nextElementSibling
+          }
+        }
+      } else {
+        const segments = dropPath.split('/').filter(Boolean).length
+        const directChildren = Array.from(doc.querySelectorAll(`[${Attribute.PATH}]`))
+          .filter(el => {
+            const p = el.getAttribute(Attribute.PATH)
+            return p.startsWith(dropPath + '/') && p.split('/').filter(Boolean).length === segments + 1
+          })
+        if (directChildren.length > 0) return directChildren[directChildren.length - 1].getAttribute(Attribute.PATH)
+      }
+      return null
     },
 
     cleanUpAfterDelete(path) {
@@ -1097,6 +1483,136 @@ export default {
       remains.forEach((remain) => {
         remain.remove()
       })
+    },
+
+    onAdd() {
+        const components = this.view.admin.components.data;
+        if (!components) {
+            return;
+        }
+
+        const tenant = this.view.pageView.path.split('/')[2];
+        const groups = [];
+        const filteredComponents = components.filter((component) => {
+            if (component.path.startsWith(`/apps/${tenant}/`) && component.group !== '.hidden') {
+                if (!groups.includes(component.group)) {
+                    groups.push(component.group);
+                }
+                return true;
+            }
+            return false;
+        });
+
+        const id = 'admin-components-modal';
+        let $modal = $(`#${id}`);
+
+        if (!$modal.length) {
+            document.body.insertAdjacentHTML('beforeend', `<div id="${id}" class="modal materialize-modal"></div>`);
+            $modal = $(`#${id}`);
+            $modal.modal({
+                dismissible: true,
+                opacity: .5,
+                inDuration: 300,
+                outDuration: 300,
+                startingTop: '4%',
+                endingTop: '10%'
+            });
+        }
+
+        const modal = $modal[0];
+        modal.innerHTML = `
+            <div class="modal-header">
+              Components
+            </div>
+            <div class="modal-content">
+                  <div style="display: flex;flex-direction:column;justify-content: center;gap: 16px;">
+                    <input class="component-filter" placeholder="Filter" autocomplete="off">
+                    <select class="browser-default group-filter">
+                        <option value="all">All Groups</option>
+                        ${groups.map(group => `<option value="${group}">${group}</option>`).join('')}
+                    </select>
+                    <div style="display: flex;flex-direction: column;gap: 16px;">
+                        <style>.component[hidden] {display: none !important;}</style>
+                        ${filteredComponents.map(component => `
+                            <div class="component" style="flex-direction: column;align-items: flex-start;gap: 8px;display: flex; width: 100%; background: #fff; border: 1px solid #cfd8dc; padding: 1rem;" data-group="${component.group}" data-title="${component.title.trim().toLowerCase()}" data-path="${this.componentKey(component)}">
+                                <div>
+                                    ${this.componentDisplayName(component)}
+                                    <div style="margin-block: 16px;display: flex;gap: 16px; flex-wrap: wrap;">
+                                        ${this.dropTarget ? `<!--<button data-drop="into-before" class="btn">Add into first</button><button data-drop="into-last" class="btn">Add into last</button>-->` : ''}
+  <!--                                                <button data-drop="before" class="btn">Add before</button>-->
+                                        <button data-drop="after" class="btn">Add</button>
+                                    </div>
+                                </div>
+                                ${component.thumbnail ? `<img style="object-fit: contain;width: 100%;background: #eee;height: 150px;" src="${component.thumbnail}">` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        modal.querySelector('.component-filter').oninput = (event) => {
+            const value = event.target.value;
+            if (!value) {
+                modal.querySelectorAll(`.component:not([hidden])`).forEach((btn) => {
+                    btn.style.display = 'flex';
+                });
+            }
+            else {
+                modal.querySelectorAll(`.component:not([hidden])`).forEach((btn) => {
+                    if (btn.dataset.title.includes(value.trim().toLowerCase())) {
+                        btn.style.display = 'flex';
+                    }
+                    else {
+                        btn.style.display = 'none';
+                    }
+                });
+            }
+            modal.querySelectorAll(`.component:not([hidden])`).forEach((btn) => {
+                btn.hidden = false;
+            });
+        };
+
+        modal.querySelector('.group-filter').onchange = (event) => {
+            const value = event.target.value;
+
+            if (value === 'all') {
+                modal.querySelectorAll(`.component`).forEach((btn) => {
+                    btn.hidden = false;
+                });
+            }
+            else {
+                modal.querySelectorAll(`.component`).forEach((btn) => {
+                    btn.hidden = btn.dataset.group !== value;
+                });
+            }
+        };
+
+        modal.querySelectorAll('.component').forEach((component) => {
+            component.querySelectorAll('.btn').forEach((btn) => {
+                btn.onclick = () => {
+                    const payload = {
+                        pagePath: this.view.pageView.path,
+                        path: this.path,
+                        component: component.dataset.path,
+                        drop: btn.dataset.drop
+                    };
+
+                    $modal.modal('close');
+
+                    $perAdminApp.stateAction('addComponentToPath', payload).then((data) => {
+                        this.refreshIframeElements();
+
+                        const save = document.querySelector('.editor-panel-buttons button[title="save"]');
+                        if (save) {
+                            save.click();
+                        }
+                    });
+                };
+            });
+        });
+
+        $modal.modal('open');
     },
 
     onCopy(e) {

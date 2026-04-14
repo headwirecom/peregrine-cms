@@ -6,6 +6,7 @@ export default (vm) => {
     icon: 'list-ul',
     iconLib: IconLib.FONT_AWESOME,
     cmd: 'insertUnorderedList',
-    isActive: () => vm.itemIsTag('insertUnorderedList')
+    isActive: () => vm.itemIsTag('UL'),
+    isDisabled: () => !vm.hasEditorSelection
   }
 }

@@ -6,6 +6,7 @@ export default (vm) => {
     icon: 'align-right',
     iconLib: IconLib.FONT_AWESOME,
     cmd: 'justifyRight',
-    isActive: () => vm.queryCmdState('justifyRight')
+    isActive: () => vm.queryCmdState('justifyRight'),
+    isDisabled: () => !vm.hasEditorSelection
   }
 }

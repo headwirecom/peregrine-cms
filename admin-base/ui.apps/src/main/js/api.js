@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -84,8 +84,8 @@ class PerApi {
     }
 
 
-    populateObject(path, target, name) {
-        return impl.populateObject(path, target, name)
+    populateObject(path, target, name, schema) {
+        return impl.populateObject(path, target, name, schema)
     }
 
     populatePageView(path) {
@@ -159,8 +159,8 @@ class PerApi {
         return impl.movePage(path, to, type)
     }
 
-    copyPage(srcPath, targetPath, name=null) {
-        return impl.copyPage(srcPath, targetPath, name)
+    copyPage(srcPath, targetPath, name=null, otherProperties) {
+        return impl.copyPage(srcPath, targetPath, name, otherProperties)
     }
 
     deletePageNode(path, nodePath) {
@@ -255,8 +255,8 @@ class PerApi {
         return impl.savePageEdit(path, node)
     }
 
-    saveObjectEdit(path, node) {
-        return impl.saveObjectEdit(path, node)
+    saveObjectEdit(path, node, schema) {
+        return impl.saveObjectEdit(path, node, schema)
     }
 
     saveAssetProperties(node) {

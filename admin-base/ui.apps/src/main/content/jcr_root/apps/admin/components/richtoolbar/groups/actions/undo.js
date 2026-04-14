@@ -5,6 +5,7 @@ export default (vm) => {
     label: 'undo',
     icon: 'undo',
     iconLib: IconLib.FONT_AWESOME,
-    cmd: 'undo'
+    cmd: 'undo',
+    isDisabled: () => vm.onSubNav ? vm.sharedHistoryIndex <= 0 : vm.historyIndex <= 0
   }
 }

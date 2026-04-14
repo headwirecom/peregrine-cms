@@ -5,6 +5,7 @@ export default (vm) => {
     label: 'redo',
     icon: 'repeat',
     iconLib: IconLib.FONT_AWESOME,
-    cmd: 'redo'
+    cmd: 'redo',
+    isDisabled: () => vm.onSubNav ? vm.sharedHistoryIndex >= vm.sharedHistoryLength - 1 : vm.historyIndex >= vm.historyStack.length - 1
   }
 }

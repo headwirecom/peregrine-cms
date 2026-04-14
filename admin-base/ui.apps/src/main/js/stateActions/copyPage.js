@@ -29,9 +29,41 @@ let log = LoggerFactory.logger('copyPage').setLevelDebug();
 export default function(me, copy) {
   log.fine(copy);
   const api = me.getApi();
-  const { srcPath, targetPath, name } = copy;
+  let fileName = null;
+  const { srcPath, targetPath, name, title, resourceType, mimeType } = copy;
 
-  api.copyPage(srcPath, targetPath, name).then(() => {
+  // change name for assets.
+  // Not really sure why this is used for assets, but copyFile() behaves wildly different and causes many unwanted sideeffects when copying assets.
+  if (resourceType === 'per:Asset') {
+    const file = srcPath.split('/').pop();
+    fileName = file;
+    let extension = "";
+    const fileSplit = file.split('.');
+    if (fileSplit.length > 1) {
+      extension = "." + fileSplit.pop();
+    }
+    fileName = `${fileSplit.join('.')}-copy${extension}`;
+
+    let existingNode = me.findNodeFromPath(
+      me.getView().admin.nodes,
+      `${targetPath}/${fileName}`
+    );
+
+    if (existingNode) {
+      let counter = 2;
+
+      while (existingNode) {
+        fileName = `${fileSplit.join('.')}-copy-${counter}${extension}`;
+        existingNode = me.findNodeFromPath(
+          me.getView().admin.nodes,
+          `${targetPath}/${fileName}`
+        );
+        counter++;
+      }
+    }
+  }
+
+  api.copyPage(srcPath, targetPath, name || fileName || null, {title, resourceType, mimeType}).then(() => {
     log.fine(`copy from ${srcPath} to ${targetPath} complete`);
   });
 }

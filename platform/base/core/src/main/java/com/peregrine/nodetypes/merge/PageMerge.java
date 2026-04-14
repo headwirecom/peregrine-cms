@@ -13,9 +13,9 @@ package com.peregrine.nodetypes.merge;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -211,10 +211,11 @@ public class PageMerge implements Use {
             Object value = page.get(key);
             log.debug("key is {}", key);
             log.debug("value is {}", value == null ? value : value.getClass());
+            if(key.equals("experiences")) continue;
             if(key.equals(COMPONENT) && value.equals(NT_UNSTRUCTURED)) continue;
             if(value instanceof Map) {
 
-            } else if(value instanceof ArrayList && res.containsKey(key)) {
+            } else if(value instanceof ArrayList && res.containsKey(key) && res.get(key) instanceof ArrayList) {
                 mergeArrays((ArrayList) res.get(key), (ArrayList) value);
             } else {
                 res.put(key, value);

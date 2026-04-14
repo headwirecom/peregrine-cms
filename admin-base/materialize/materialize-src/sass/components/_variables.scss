@@ -1,3 +1,4 @@
+@use "sass:math";
 // ==========================================================================
 // Materialize variables
 // ==========================================================================
@@ -35,14 +36,14 @@
 // 1. Colors
 // ==========================================================================
 
-$primary-color: color("blue-grey", "base") !default;
-$primary-color-light: color("blue-grey", "lighten-3") !default;
-$primary-color-dark: color("blue-grey", "darken-2") !default;
+$primary-color: customColor("blue-grey", "base") !default;
+$primary-color-light: customColor("blue-grey", "lighten-3") !default;
+$primary-color-dark: customColor("blue-grey", "darken-2") !default;
 
-$secondary-color: color("blue-grey", "darken-3") !default;
-$success-color: color("green", "base") !default;
-$error-color: color("red", "base") !default;
-$link-color: color("blue-grey", "darken-3") !default;
+$secondary-color: customColor("blue-grey", "darken-3") !default;
+$success-color: customColor("green", "base") !default;
+$error-color: customColor("red", "base") !default;
+$link-color: customColor("blue-grey", "darken-3") !default;
 
 
 // 2. Badges
@@ -57,7 +58,7 @@ $badge-height: 22px !default;
 
 // Shared styles
 $button-border: none !default;
-$button-background-focus: lighten($secondary-color, 4%) !default;
+$button-background-focus: customLighten($secondary-color, 4%) !default;
 $button-font-size: 1rem !default;
 $button-icon-font-size: 1.3rem !default;
 $button-height: 36px !default;
@@ -65,12 +66,12 @@ $button-padding: 0 2rem !default;
 $button-radius: 2px !default;
 
 // Disabled styles
-$button-disabled-background: color("blue-grey", "lighten-5") !default;
-$button-disabled-color: color("blue-grey", "lighten-4") !default;
+$button-disabled-background: customColor("blue-grey", "lighten-5") !default;
+$button-disabled-color: customColor("blue-grey", "lighten-4") !default;
 
 // Raised buttons
 $button-raised-background: $secondary-color !default;
-$button-raised-background-hover: color("orange", "base") !default;
+$button-raised-background-hover: customColor("orange", "base") !default;
 $button-raised-color: #fff !default;
 
 // Large buttons
@@ -78,12 +79,12 @@ $button-large-icon-font-size: 1.6rem !default;
 $button-large-height: $button-height * 1.5 !default;
 
 // Flat buttons
-$button-flat-color: color("blue-grey", "darken-2") !default;
-$button-flat-disabled-color: color("blue-grey", "lighten-2") !default;
+$button-flat-color: customColor("blue-grey", "darken-2") !default;
+$button-flat-disabled-color: customColor("blue-grey", "lighten-2") !default;
 
 // Floating buttons
 $button-floating-background: $secondary-color !default;
-$button-floating-background-hover: color("orange", "base") !default;
+$button-floating-background-hover: customColor("orange", "base") !default;
 $button-floating-color: #fff !default;
 $button-floating-size: 40px !default;
 $button-floating-large-size: 56px !default;
@@ -95,15 +96,15 @@ $button-floating-radius: 50% !default;
 
 $card-padding: 24px !default;
 $card-bg-color: #fff !default;
-$card-link-color: color("orange", "accent-2") !default;
-$card-link-color-light: lighten($card-link-color, 20%) !default;
+$card-link-color: customColor("orange", "accent-2") !default;
+$card-link-color-light: customLighten($card-link-color, 20%) !default;
 
 
 // 5. Carousel
 // ==========================================================================
 
 $carousel-height: 400px !default;
-$carousel-item-height: $carousel-height / 2 !default;
+$carousel-item-height: math.div($carousel-height, 2) !default;
 $carousel-item-width: $carousel-item-height !default;
 
 
@@ -130,12 +131,12 @@ $chip-margin: 5px !default;
 
 $datepicker-display-font-size: 2.8rem;
 $datepicker-weekday-color: rgba(0, 0, 0, .87) !default;
-$datepicker-weekday-bg: darken($secondary-color, 7%) !default;
+$datepicker-weekday-bg: customDarken($secondary-color, 7%) !default;
 $datepicker-date-bg: $secondary-color !default;
 $datepicker-year: rgba(255, 255, 255, .7) !default;
 $datepicker-focus: rgba(0,0,0, .05) !default;
 $datepicker-selected: $secondary-color !default;
-$datepicker-selected-outfocus: desaturate(lighten($secondary-color, 35%), 15%) !default;
+$datepicker-selected-outfocus: customDesaturate(customLighten($secondary-color, 35%), 15%) !default;
 
 $timepicker-clock-color: rgba(0, 0, 0, .87) !default;
 $timepicker-clock-plate-bg: #eee;
@@ -161,27 +162,27 @@ $roboto-font-path: "../fonts/roboto/" !default;
 
 // Text Inputs + Textarea
 $input-height: 3rem !default;
-$input-border-color: color("blue-grey", "lighten-4") !default;
+$input-border-color: customColor("blue-grey", "lighten-4") !default;
 $input-border: 1px solid $input-border-color !default;
 $input-background: #fff !default;
 $input-error-color: $error-color !default;
 $input-success-color: $success-color !default;
-$input-focus-color: color("blue-grey", "base") !default;
+$input-focus-color: customColor("blue-grey", "base") !default;
 $input-font-size: 1rem !default;
 $input-margin-bottom: 1.25rem;
 $input-margin: 0 0 $input-margin-bottom 0 !default;
 $input-padding: 0 0.75rem !default;
 $input-transition: all .3s !default;
 $label-font-size: 0.9rem !default;
-$input-disabled-color: color("blue-grey", "lighten-3") !default;
+$input-disabled-color: customColor("blue-grey", "lighten-3") !default;
 $input-disabled-solid-color: #BDBDBD !default;
 $input-disabled-border: 1px dotted $input-disabled-color !default;
 $input-invalid-border: 1px solid $input-error-color !default;
 $placeholder-text-color: $input-border-color !default;
 
 // Radio Buttons
-$radio-fill-color: color("blue-grey", "darken-1") !default;
-$radio-empty-color: color("blue-grey", "darken-2") !default;
+$radio-fill-color: customColor("blue-grey", "darken-1") !default;
+$radio-empty-color: customColor("blue-grey", "darken-2") !default;
 $radio-border: 2px solid $radio-fill-color !default;
 
 // Range
@@ -192,7 +193,7 @@ $track-height: 3px !default;
 // Select
 $select-border: 1px solid #f2f2f2 !default;
 $select-background: rgba(255, 255, 255, 0.90) !default;
-$select-focus: 1px solid lighten($secondary-color, 47%) !default;
+$select-focus: 1px solid customLighten($secondary-color, 47%) !default;
 $select-option-hover: rgba(0,0,0,.06) !default;
 $select-option-focus: rgba(0,0,0,.03) !default;
 $select-padding: 5px !default;
@@ -201,7 +202,7 @@ $select-disabled-color: rgba(0, 0, 0, .3) !default;
 
 // Switches
 $switch-bg-color: $secondary-color !default;
-$switch-checked-lever-bg: desaturate(lighten($secondary-color, 25%), 25%) !default;
+$switch-checked-lever-bg: customDesaturate(customLighten($secondary-color, 25%), 25%) !default;
 $switch-unchecked-bg: #F1F1F1 !default;
 $switch-unchecked-lever-bg: rgba(0,0,0,.38) !default;
 $switch-radius: 15px !default;
@@ -231,8 +232,8 @@ $medium-only: "only screen and (min-width : #{$small-screen-up}) and (max-width 
 
 $num-cols: 12 !default;
 $gutter-width: 1.5rem !default;
-$element-top-margin: $gutter-width/3 !default;
-$element-bottom-margin: ($gutter-width*2)/3 !default;
+$element-top-margin: math.div($gutter-width, 3) !default;
+$element-bottom-margin: math.div(($gutter-width*2), 3) !default;
 
 
 // 14. Navigation Bar
@@ -260,9 +261,9 @@ $sidenav-line-height: $sidenav-item-height !default;
 // 16. Photo Slider
 // ==========================================================================
 
-$slider-bg-color: color('grey', 'base') !default;
-$slider-bg-color-light: color('grey', 'lighten-2') !default;
-$slider-indicator-color: color('green', 'base') !default;
+$slider-bg-color: customColor('grey', 'base') !default;
+$slider-bg-color-light: customColor('grey', 'lighten-2') !default;
+$slider-indicator-color: customColor('green', 'base') !default;
 
 
 // 17. Spinners | Loaders
@@ -274,16 +275,16 @@ $spinner-default-color: $secondary-color !default;
 // 18. Tabs
 // ==========================================================================
 
-$tabs-underline-color: color("blue-grey", "lighten-1") !default;
-$tabs-text-color: color("blue-grey", "darken-1") !default;
+$tabs-underline-color: customColor("blue-grey", "lighten-1") !default;
+$tabs-text-color: customColor("blue-grey", "darken-1") !default;
 $tabs-bg-color: #fff !default;
 
 
 // 19. Tables
 // ==========================================================================
 
-$table-border-color: color("blue-grey", "lighten-4") !default;
-$table-striped-color: color("blue-grey", "lighten-5") !default;
+$table-border-color: customColor("blue-grey", "lighten-4") !default;
+$table-striped-color: customColor("blue-grey", "lighten-5") !default;
 
 
 // 20. Toasts
@@ -322,17 +323,17 @@ $footer-copyright-bg-color: rgba(51,51,51,.08) !default;
 
 $range : $large-screen - $small-screen !default;
 $intervals: 20 !default;
-$interval-size: $range / $intervals !default;
+$interval-size: math.div($range, $intervals) !default;
 
 
 // 24. Collections
 // ==========================================================================
 
-$collection-border-color: color("blue-grey", "lighten-4") !default;
+$collection-border-color: customColor("blue-grey", "lighten-4") !default;
 $collection-bg-color: #fff !default;
-$collection-active-bg-color: color("blue-grey", "lighten-5") !default;
-$collection-active-color: color("blue-grey", "base") !default;
-$collection-hover-bg-color: color("blue-grey", "lighten-3") !default;
+$collection-active-bg-color: customColor("blue-grey", "lighten-5") !default;
+$collection-active-color: customColor("blue-grey", "base") !default;
+$collection-hover-bg-color: customColor("blue-grey", "lighten-3") !default;
 $collection-link-color: $secondary-color !default;
 $collection-line-height: 1.5rem !default;
 

@@ -4,9 +4,9 @@ const isValidObjectNameMixin = {
       if (!value || value.length === 0) {
         return ['name is required'];
       }
-      if (value.match(/[^0-9a-zA-Z_-]/)) {
+      if (value.match(/[^0-9a-zA-Z-]/)) {
         return [
-          'object names may only contain letters, numbers, underscores, and dashes',
+          'object names may only contain letters, numbers, underscores, and dashes. Google dislikes underscores in URLs',
         ];
       }
       return [];

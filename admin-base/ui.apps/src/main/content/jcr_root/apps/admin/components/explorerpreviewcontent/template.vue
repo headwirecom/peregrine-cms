@@ -64,7 +64,15 @@
              :class="`${nodeType}-info-view`">
           <img v-if="isImage"
                :src="currentObject"
-               class="info-view-image"/>
+               class="info-view-image"
+               v-on:click="openModal"
+          />
+          <video v-else-if="isVideo"
+                 ref="videoPreview"
+                 :src="currentObject"
+                 class="info-view-video"
+                 controls>
+          </video>
           <iframe
               v-else
               :src="currentObject"
@@ -80,7 +88,7 @@
             @validated="onValidated()"
             @model-updated="onModelUpdate">
         </vue-form-generator>
-        <div v-if="!nodeType === NodeType.FILE" class="explorer-confirm-dialog">
+        <div v-if="nodeType !== NodeType.FILE" class="explorer-confirm-dialog">
           <template v-if="edit">
             <button
                 class="btn btn-raised waves-effect waves-light right"
@@ -198,11 +206,11 @@
             <i class="material-icons">publish</i>
             Publish to Web ({{nodeType}})
           </div>
-          <div v-if="nodeFromPath.activated && !isReferencedInPublish" class="action" :title="`Deactivate ${nodeType}`">
+          <div v-if="nodeFromPath && nodeFromPath.activated" class="action" :title="`Deactivate ${nodeType}`">
             <admin-components-action :model="{
-                    target: node.path,
+                    target: node && node.path,
                     command: 'unPublishResource',
-                    tooltipTitle: `${$i18n('undo publish')} '${node.title || node.name}'`
+                    tooltipTitle: `${$i18n('undo publish')} '${node && (node.title || node.name)}'`
                 }">
               <i class="material-icons">remove_circle_outline</i>
               Unpublish ({{nodeType}})
@@ -309,7 +317,12 @@
         @select="onCopySelect">
     </path-browser>
 
-
+    <dialog v-if="modalVisible" class="modal-overlay" ref="previewModal" @click.self="closeModal" @keydown.esc="closeModal" tabindex="-1">
+      <div class="modal-content">
+        <img :src="currentObject" alt="Modal Image" />
+        <button @click="closeModal"><i class="material-icons">close</i></button>
+      </div>
+    </dialog>
   </div>
 </template>
 
@@ -400,6 +413,7 @@ export default {
       isOpen: false,
       isCopyOpen: false,
       isPublishDialogOpen: false,
+      modalVisible: false,
       selectedPath: null,
       options: {
         validateAfterLoad: true,
@@ -457,11 +471,13 @@ export default {
     },
     node() {
       if (this.nodeType === NodeType.OBJECT) {
+        if (!this.rawCurrentObject || !this.rawCurrentObject.data) return null;
         return this.rawCurrentObject.data
       }
       return this.nodeFromPath;
     },
     allowOperations() {
+      if (!this.currentObject) return false;
       return this.currentObject.split('/').length > 4;
     },
     allowMove() {
@@ -503,6 +519,15 @@ export default {
       const mime = node.mimeType;
       return Object.values(MimeType.Image).indexOf(mime) >= 0
     },
+    isVideo() {
+      const node = $perAdminApp.findNodeFromPath(
+          $perAdminApp.getView().admin.nodes, this.currentObject);
+      if (!node) {
+        return false;
+      }
+      const mime = node.mimeType;
+      return Object.values(MimeType.Video).indexOf(mime) >= 0
+    },
     hasInfoView() {
       return [NodeType.ASSET].indexOf(this.nodeType) > -1;
     },
@@ -510,6 +535,7 @@ export default {
       return $perAdminApp.getView().state.versions ? $perAdminApp.getView().state.versions.has_versions : false
     },
     nodeName() {
+      if (!this.node) return '';
       let nodeName = this.node.name;
       if (this.nodeType === NodeType.OBJECT) {
         nodeName = this.node.path.split('/').slice(-1).pop()
@@ -533,8 +559,12 @@ export default {
       }
     },
     selfOrAnyDescendantActivated() {
-      const node = this.node;
-      return node.activated || node.selfOrAnyDescendantActivated;
+      const node = this.nodeFromPath;
+      if (!node) {
+        console.warn('selfOrAnyDescendantActivated() failed')
+        return
+      }
+      return node.activated || node.anyDescendantActivated;
     },
     classForActionDisabledOnActivatedResource() {
       return this.selfOrAnyDescendantActivated ? 'action operationDisabledOnActivatedItem' : 'action';
@@ -546,7 +576,7 @@ export default {
       } else {
         return false
       }
-    }
+    },
   },
   watch: {
     edit(val) {
@@ -672,7 +702,7 @@ export default {
       this.formGenerator.original = deepClone(this.node)
 
       if (this.nodeType === NodeType.OBJECT) {
-        $perAdminApp.stateAction('editObject', {selected: this.currentObject})
+        $perAdminApp.stateAction('editObject', {selected: this.currentObject, schema: this.getSchemaByActiveTab()})
       }
     },
     onCancel() {
@@ -685,7 +715,7 @@ export default {
       this.formGenerator.changes = []
     },
     onModelUpdate(newVal, schemaKey) {
-      if (this.edit) {
+      if (this.edit && this.formGenerator.original) {
         this.formGenerator.changes.push({
           key: schemaKey,
           oldVal: this.formGenerator.original[schemaKey],
@@ -700,11 +730,12 @@ export default {
       this.valid.state = isValid;
       this.valid.errors = errors;
     },
+
     onConfirmDialog (event) {
       if (event === 'confirm') {
         const isValid = this.$refs.renameForm.validate()
         if (isValid) {
-          this.performRenameNode(this.formmodel.name, this.formmodel.title)
+          this.performRenameNode(this.formmodel.name, this.formmodel.title || "")
         } else {
           return
         }
@@ -719,12 +750,12 @@ export default {
       this.formmodel.name = this.node.name
       this.formmodel.title = this.node.title
     },
-    performRenameNode(newName, newTitle) {
+
+    performRenameNode(newName) {
       const vm = this;
       $perAdminApp.stateAction(`rename${this.uNodeType}`, {
         path: this.currentObject,
         name: newName,
-        title: newTitle,
         edit: this.isEdit
       }).then((data) => {
         if (vm.nodeType === 'asset' || vm.nodeType === 'object') {
@@ -744,27 +775,56 @@ export default {
         this.setActiveTab(Tab.INFO)
       })
     },
+
     openPublishingModal(){
       console.log("Open Publishing Modal")
       // this.$refs.publishingModal.open()
       this.isPublishDialogOpen = true;
     },
     unPublishResource(me, path) {
-      $perAdminApp.stateAction('unreplicate', path)
+      if (me.anyDescendantActivated) {
+        $perAdminApp.toast("One of the children of this resource is still published. Please unpublish all of them first.", "warn", 5000)
+      }
+      else if (me.isReferencedInPublish) {
+        $perAdminApp.askUser('Warning',
+            ("Unpublishing may break references. Would you like to continue ?"), {
+              yesText: 'Yes',
+              yes: function yes() {
+                $perAdminApp.stateAction('unreplicate', path);
+              },
+            });
+      }
+      else {
+        $perAdminApp.stateAction('unreplicate', path);
+      }
     },
     closePublishing(){
       console.log("Close Publishing Modal")
       this.isPublishDialogOpen = false;
     },
+
     checkActivationStatusAndPerform(action) {
-      if (this.selfOrAnyDescendantActivated) {
-        $perAdminApp.toast("You cannot perform this operation yet. The resource or one of its children is still published." +
-                    " Please unpublish all of them first.", "warn", 7500);
-      } else {
+      if (this.nodeFromPath.activated) {
+        $perAdminApp.toast("The resource is still published. Please unpublish it first.", "warn", 5000);
+      } else if (this.nodeFromPath.anyDescendantActivated) {
+        $perAdminApp.toast("One of the children of this resource is still published. Please unpublish all of them first.", "warn", 5000);
+      } else if (this.nodeFromPath.isReferenced) {
+        $perAdminApp.askUser('Warning', "Deleting may break references. Would you like to continue ?", {
+          yesText: 'Yes',
+          yes: function yes() {
+            action();
+          }
+        });
+      }
+      else {
         action();
       }
     },
+
     renameNode() {
+      // initialize with existing values
+      if (this.formmodel && !this.formmodel.title) this.formmodel.title = this.node.title
+      if (this.formmodel && !this.formmodel.name) this.formmodel.name = this.node.name
       this.checkActivationStatusAndPerform(() => {
         this.$refs.renameModal.open();
         this.$nextTick(() => {
@@ -772,6 +832,7 @@ export default {
         })
       });
     },
+
     moveNode() {
       this.checkActivationStatusAndPerform(() => {
         $perAdminApp.getApi().populateNodesForBrowser(this.path.current, 'pathBrowser')
@@ -782,6 +843,7 @@ export default {
         });
       });
     },
+
     copyNode() {
       $perAdminApp.getApi().populateNodesForBrowser(this.path.current, 'pathBrowser')
           .then(() => {
@@ -799,8 +861,11 @@ export default {
           $perAdminApp.stateAction(`unselect${me.uNodeType}`, {})
         }).then(() => {
           const path = $perAdminApp.getNodeFromView('/state/tools/pages')
-          $perAdminApp.loadContent(
-              '/content/admin/pages/pages.html/path' + SUFFIX_PARAM_SEPARATOR + path)
+          if (path) {
+            $perAdminApp.loadContent(
+                '/content/admin/pages/pages.html/path' + SUFFIX_PARAM_SEPARATOR + path)
+          }
+
           me.isOpen = false
         })
       });
@@ -838,10 +903,13 @@ export default {
             }
           })
     },
+
+    // after copy dialog
     onCopySelect() {
+      // Assets are not a nt:file, they are per:Asset. Using copyFile() on an asset gives it resouceType of nt:file and I could not seem to prevent that.
       if (this.node.resourceType === 'nt:file') {
         let to = this.path.selected
-        
+
         if (!to) {
           const split = this.currentObject.split('/');
           split.pop();
@@ -849,13 +917,21 @@ export default {
         }
 
         $perAdminApp.stateAction('copyFile', {
-          from: this.currentObject, 
-          to
+          from: this.currentObject,
+          to,
+          resourceType: this.node.resourceType,
+          mimeType: this.node.mimeType,
         });
       } else {
         $perAdminApp.stateAction('copyPage', {
           srcPath: this.currentObject,
           targetPath: this.path.selected,
+          resourceType: this.node.resourceType,
+          mimeType: this.node.mimeType,
+        }).then(() => {
+          setTimeout(() => {
+            $perAdminApp.loadContent(`/content/admin/pages/${this.nodeType}s.html/path${SUFFIX_PARAM_SEPARATOR}${this.path.selected}`, false);
+          }, 100);
         });
       }
       this.isCopyOpen = false;
@@ -925,7 +1001,8 @@ export default {
         }
       }
       set($perAdminApp.getView(), '/state/tools/save/confirmed', true)
-      const result = $perAdminApp.stateAction('saveObjectEdit', {data: data, path: show}).then(() => {
+
+      const result = $perAdminApp.stateAction('saveObjectEdit', {data: data, path: show, schema: this.getSchemaByActiveTab()}).then(() => {
         $perAdminApp.getNodeFromView('/state/tools')._deleted = {}
       });
       $perAdminApp.stateAction('selectObject', {selected: show})
@@ -970,11 +1047,11 @@ export default {
       }
 
       $perAdminApp.getApi().isReferencedInPublish(path)
-        .then(data => {
-          this.isReferencedInPublish = data.result;
-        }).catch(() => {
-          this.isReferencedInPublish = false;
-        });
+          .then(data => {
+            this.isReferencedInPublish = data.result;
+          }).catch(() => {
+        this.isReferencedInPublish = false;
+      });
     },
 
     getGeneratedFileSchema() {
@@ -1006,6 +1083,15 @@ export default {
           },
         ]
       };
+    },
+    openModal() {
+      this.modalVisible = true;
+      this.$nextTick(() => {
+        this.$refs.previewModal.focus();
+      });
+    },
+    closeModal() {
+      this.modalVisible = false;
     }
   }
 }
@@ -1023,5 +1109,71 @@ export default {
 .operationDisabledOnActivatedItem {
   opacity: 0.4;
   cursor: default!important;
+}
+</style>
+
+<style scoped>
+.info-view-image {
+  cursor: pointer;
+}
+
+.info-view-video {
+  width: 100%;
+  height: 100%;
+}
+
+.explorer-preview .explorer-preview-content.preview-asset .asset-info-view img {
+  max-height: 50vh;
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+
+  .modal-content {
+    img {
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      min-width: 50vw;
+      min-height: 50vh;
+      max-width: 90vw;
+      max-height: 90vh;
+      display: block;
+      margin: auto;
+    }
+
+    img {
+      pointer-events: none;
+    }
+
+    button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      background-color: white;
+      color: black;
+      border: 2px solid black;
+      border-radius: 100%;
+      aspect-ratio: 1 / 1;
+      align-items: center;
+
+      &:hover, &:focus, &:active {
+        background-color: black;
+        color: white;
+        border: 2px solid white;
+      }
+    }
+  }
 }
 </style>

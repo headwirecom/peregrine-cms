@@ -24,6 +24,7 @@
   -->
 <template>
 <div class="explorer"
+    :class="{ 'drag-enabled': sortBy === 'natural' }"
     v-on:dragover.prevent  ="onDragOverExplorer"
     v-on:dragenter.prevent ="onDragEnterExplorer"
     v-on:dragleave.prevent ="onDragLeaveExplorer"
@@ -33,22 +34,50 @@
     <div class="row">
         <div v-if="pt" class="col s12 m8 explorer-main">
             <ul class="collection">
-                <li v-if="showNavigateToParent"
-                    v-on:click.stop.prevent="selectParent()"
-                    class="collection-item">
-                    <admin-components-action
-                            v-bind:model="{
-                            target: null,
-                            command: 'selectParent',
-                            tooltipTitle: $i18n('backToParentDir')
-                        }"><i class="material-icons">folder_open</i><i class="material-icons">arrow_upward</i>
-                    </admin-components-action>
-                </li>
+            <li class="topbar">
+                <div class="topbar-controls">
+                    <div class="topbar-dropdown-wrapper">
+                        <button v-if="showNavigateToParent" class="topbar-btn" @click.stop="selectParent()" :title="$i18n('backToParentDir')">
+                            <i class="material-icons">folder_open</i>
+                            <svg class="topbar-btn-symbol" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor"><path d="M680-160v-400H313l144 144-56 57-241-241 240-240 57 57-144 143h447v480h-80Z"/></svg>
+                        </button>
+                        <button class="topbar-btn" :class="{ 'topbar-btn--active': sortBy !== 'natural' }" @click.stop="showSortDropdown = !showSortDropdown; showTypeDropdown = false">
+                            <i class="material-icons">sort</i>
+                            <span>Sort</span>
+                            <i v-if="sortBy !== 'natural'" class="material-icons topbar-caret">{{ sortOrder === 'asc' ? 'arrow_drop_up' : 'arrow_drop_down' }}</i>
+                        </button>
+                        <div v-if="showSortDropdown" class="topbar-dropdown">
+                            <button v-for="option in sortOptions" :key="option.value"
+                                :class="['topbar-dropdown-item', { active: sortBy === option.value }]"
+                                @click.stop="selectSort(option.value)">
+                                <span>{{ option.label }}</span>
+                                <i v-if="sortBy === option.value && option.value !== 'natural'" class="material-icons">{{ sortOrder === 'asc' ? 'arrow_drop_up' : 'arrow_drop_down' }}</i>
+                            </button>
+                            <template v-if="sortBy !== 'natural'">
+                                <div class="topbar-dropdown-divider"></div>
+                                <button :class="['topbar-dropdown-item', { active: sortOrder === 'asc' }]" @click.stop="setSortOrder('asc')">
+                                    <i class="material-icons">arrow_drop_up</i> Ascending
+                                </button>
+                                <button :class="['topbar-dropdown-item', { active: sortOrder === 'desc' }]" @click.stop="setSortOrder('desc')">
+                                    <i class="material-icons">arrow_drop_down</i> Descending
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="switch">
+                    <label v-if="model.showFilter === 'true'" class="filter-toggle">
+                        <input type="checkbox" v-model="filter">
+                        <span class="lever"></span>
+                        <span>filter secondary items</span>
+                    </label>
+                    </div>
+                </div>
+            </li>
                 <li
                     v-for ="child in children"
                     v-bind:key="child.path"
                     v-bind:class="`collection-item ${isSelected(child) ? 'explorer-item-selected' : ''}`"
-                    draggable ="true"
+                    :draggable="sortBy === 'natural'"
                     v-on:dragstart ="onDragRowStart(child,$event)"
                     v-on:drag      ="onDragRow"
                     v-on:click     ="showRow(child,$event)"
@@ -61,6 +90,7 @@
                     <admin-components-draghandle/>
 
                     <admin-components-action v-if="editable(child)"
+                                class="folder"
                                              v-bind:model="{
                                 target: child,
                                 command: 'selectPath',
@@ -87,7 +117,12 @@
                             command: 'selectPath',
                             tooltipTitle: `${$i18n('select')} '${child.title || child.name}'`
                         }">
-                      <icon v-bind="nodeTypeToIcon(child)"/> {{child.title ? child.title : child.name}}
+                            <div class="preview-container" v-if="child.mimeType">
+                                <img v-bind:src="child.path" v-if="child.mimeType.startsWith('image/')" class="preview" v-bind:alt="child.title || child.name">
+                                <icon v-else v-bind="nodeTypeToIcon(child)"/>
+                            </div>
+                            <icon v-else v-bind="nodeTypeToIcon(child)"/>
+                            <span>{{child.title ? child.title : child.name}}</span>
                     </admin-components-action>
 
                     <admin-components-extensions v-bind:model="{id: 'admin.components.explorer', item: child}"></admin-components-extensions>
@@ -130,6 +165,16 @@
                                 <i class="material-icons">visibility</i>
                             </a>
                         </span>
+
+                        <admin-components-action
+                            v-if="child.activated"
+                            v-bind:model="{
+                                    target: child,
+                                    command: 'unPublishResource',
+                                    tooltipTitle: `${$i18n('undo publish')} '${child.title || child.name}'`
+                                }">
+                            <i class="material-icons">cloud_off</i>
+                        </admin-components-action>
 
                         <admin-components-action
                             v-bind:model="{
@@ -202,17 +247,6 @@
                     </admin-components-action>
                 </li>
             </ul>
-            <div style="width: inherit; position: absolute; bottom: .5em;" v-if="model.showFilter ==='true'">
-                <div style="padding-left: 3em; padding-right: 1em;">
-                    <div class="switch">
-                        <label>
-                            <input type="checkbox" v-model="filter" style="direction: rtl;">
-                            <span class="lever"></span>
-                            filter secondary items
-                        </label>
-                    </div>
-                </div>
-            </div>
             <div v-if="children && children.length == 0" class="empty-explorer">
                 <div v-if="path.includes('assets')">
                     {{ $i18n('emptyExplorerHintAssets') }}.
@@ -278,7 +312,16 @@ export default {
                 isFileUploadVisible: false,
                 uploadProgress: 0,
                 filter: true,
-                publishDialogPath: null
+                publishDialogPath: null,
+                sortBy: 'natural',
+                sortOrder: 'desc',
+                sortOptions: [
+                    { value: 'natural', label: 'Natural Order' },
+                    { value: 'name', label: 'Name' },
+                    { value: 'date', label: 'Date' },
+                    { value: 'lastChanged', label: 'Last Changed' },
+                ],
+                showSortDropdown: false
             }
         },
 
@@ -297,7 +340,8 @@ export default {
             },
             children: function() {
                 if ( this.pt.children ) {
-                    return this.pt.children.filter( child => this.checkIfAllowed(child) )
+                    let filtered = this.pt.children.filter( child => this.checkIfAllowed(child) )
+                    return this.sortChildren(filtered)
                 }
             },
             parentPath: function() {
@@ -319,13 +363,60 @@ export default {
         },
         created() {
           document.addEventListener('paste', this.onDocumentPaste)
+          document.addEventListener('click', this.closeDropdowns)
         },
         beforeDestroy() {
           document.removeEventListener('paste', this.onDocumentPaste)
+          document.removeEventListener('click', this.closeDropdowns)
         },
         methods: {
             getTenant() {
               return $perAdminApp.getView().state.tenant || {name: 'example'}
+            },
+
+            selectSort(value) {
+                if (this.sortBy === value && value !== 'natural') {
+                    this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc'
+                } else {
+                    this.sortBy = value
+                }
+                this.showSortDropdown = false
+            },
+
+            setSortOrder(order) {
+                this.sortOrder = order
+                this.showSortDropdown = false
+            },
+
+            closeDropdowns() {
+                this.showSortDropdown = false
+            },
+
+            sortChildren(children) {
+                const sorted = [...children]
+                const order = this.sortOrder === 'asc' ? 1 : -1
+                switch(this.sortBy) {
+                    case 'natural':
+                        break
+                    case 'name':
+                        sorted.sort((a, b) => (a.name || '').localeCompare(b.name || '') * order)
+                        break
+                    case 'date':
+                        sorted.sort((a, b) => {
+                            const dateA = new Date(a['jcr:created'] || a.created || 0)
+                            const dateB = new Date(b['jcr:created'] || b.created || 0)
+                            return (dateB - dateA) * order
+                        })
+                        break
+                    case 'lastChanged':
+                        sorted.sort((a, b) => {
+                            const dateA = new Date(a['jcr:lastModified'] || a.lastModified || 0)
+                            const dateB = new Date(b['jcr:lastModified'] || b.lastModified || 0)
+                            return (dateB - dateA) * order
+                        })
+                        break
+                }
+                return sorted
             },
 
             isAssets(path) {
@@ -341,7 +432,7 @@ export default {
             },
 
             isObjectDefinitions(path) {
-                return !this.isInsideObjectDefinition(path) 
+                return !this.isInsideObjectDefinition(path)
                     && path.startsWith(`/content/${this.getTenant().name}/object-definitions`)
             },
 
@@ -368,7 +459,22 @@ export default {
             },
 
             replicatedClass(item) {
-                if(item.ReplicationStatus) {
+                if (this.isFolder(item)) {
+                    if (!item.hasChildren) {
+                      return 'item-replication-unknown';
+                    }
+
+                    if (item.allDescendantActivated) {
+                        return 'item-activated';
+                    }
+
+                    if (item.anyDescendantActivated) {
+                        return 'item-activated-modified';
+                    }
+
+                    return 'item-replication-unknown';
+                }
+                else if(item.ReplicationStatus) {
                     const modified = item.lastModified || item.created
                     const replicated = item.Replicated
                     return `item-${item.ReplicationStatus}${replicated < modified ? '-modified' : ''}`
@@ -390,7 +496,7 @@ export default {
             },
 
             replicable(item) {
-                return !this.isFolder(item)
+                return !this.isFolder(item) || item.path.startsWith(`/content/${this.getTenant().name}/assets/`);
             },
 
             onDragRowStart(item, ev) {
@@ -409,7 +515,7 @@ export default {
             },
 
             onDragOverRow(ev) {
-                if(this.isDraggingUiEl) {
+                if(this.isDraggingUiEl && this.sortBy === 'natural') {
                     const center = ev.target.offsetHeight / 2 ;
                     this.dropType = ev.offsetY > center ? 'after' : 'before';
                     ev.target.classList.toggle('drop-after', ev.offsetY > center );
@@ -421,13 +527,13 @@ export default {
             },
 
             onDragLeaveRow(ev) {
-                if(this.isDraggingUiEl) {
+                if(this.isDraggingUiEl && this.sortBy === 'natural') {
                     ev.target.classList.remove('drop-after','drop-before')
                 }
             },
 
             onDropRow(item, ev, type) {
-                if(this.isDraggingUiEl) {
+                if(this.isDraggingUiEl && this.sortBy === 'natural') {
                     ev.target.classList.remove('drop-after','drop-before')
                     const dataFrom = this.model.dataFrom
                     const path = $perAdminApp.getNodeFrom($perAdminApp.getView(), dataFrom)
@@ -535,21 +641,36 @@ export default {
                 if(child.resourceType === 'per:Page') {
                     return path + '.html'
                 }
+                if (child.resourceType === 'per:Object' && child.path.startsWith('/content/') && child.path.includes('/objects/news/')) {
+                  return path.replace("objects/news", "pages/news-details") + ".html"
+                }
                 return path + '.json'
             },
 
           nodeTypeToIcon: function (item) {
-            if (item.resourceType === 'per:Page') return {icon: 'description', lib: IconLib.MATERIAL_ICONS}
-            if (item.resourceType === 'per:Object') return {icon: 'layers', lib: IconLib.MATERIAL_ICONS}
+            if (item.resourceType === 'per:Page') return {icon: 'description', lib: IconLib.MATERIAL_ICONS};
+            if (item.resourceType === 'per:Object') return {icon: 'layers', lib: IconLib.MATERIAL_ICONS};
             if (item.resourceType === 'per:ObjectDefinition') return {
               icon: 'insert_drive_file',
               lib: IconLib.MATERIAL_ICONS
-            }
-            if (item.resourceType === 'nt:file') return this.fileExtToIcon(item)
-            if (item.resourceType === 'per:Asset') return {icon: 'image', lib: IconLib.MATERIAL_ICONS}
-            if (item.resourceType === 'sling:Folder') return {icon: 'folder', lib: IconLib.MATERIAL_ICONS}
+            };
+            if (item.resourceType === 'nt:file') return this.fileExtToIcon(item);
+            if (item.resourceType === 'per:Asset') {
+              if (item.mimeType) {
+                if (item.mimeType.startsWith('video/')) {
+                  return { icon: 'video_library', lib: IconLib.MATERIAL_ICONS }
+                } else if (item.mimeType.startsWith('audio/')) {
+                  return { icon: 'audiotrack', lib: IconLib.MATERIAL_ICONS }
+                } else {
+                  return { icon: 'image', lib: IconLib.MATERIAL_ICONS }
+                }
+              } else {
+                return { icon: 'image', lib: IconLib.MATERIAL_ICONS }
+              }
+            };
+            if (item.resourceType === 'sling:Folder') return {icon: 'folder', lib: IconLib.MATERIAL_ICONS};
             if (item.resourceType === 'sling:OrderedFolder') return {icon: 'folder', lib: IconLib.MATERIAL_ICONS}
-            return {icon: '█', lib: IconLib.PLAIN_TEXT}
+            return {icon: '█', lib: IconLib.PLAIN_TEXT};
           },
 
           fileExtToIcon(item) {
@@ -581,7 +702,6 @@ export default {
                     $perAdminApp.stateAction('selectFile', {path, resourceType});
                 } else {
                     if(path.startsWith(`/content/${tenant.name}/objects`)) {
-                        set($perAdminApp.getView(), `/state/tools/edit`, false);
                         $perAdminApp.stateAction('selectObject', { selected: path, path: model.dataFrom });
                     } else if (path.startsWith(`/content/${tenant.name}/templates`)) {
                         $perAdminApp.stateAction('showTemplateInfo', { selected: path });
@@ -592,7 +712,7 @@ export default {
             },
 
             showRow: function(item, ev) {
-                if (this.editable(item)) {  
+                if (this.editable(item)) {
                     this.showInfo(this, item);
                 }
             },
@@ -669,7 +789,7 @@ export default {
             addObjectDefinitionFile(me, target) {
                 const tenant = $perAdminApp.getView().state.tenant;
                 const path  = me.pt ? me.pt.path : `/content/${tenant.name}/object-definitions`;
-                
+
                 if (this.isInsideObjectDefinition(path)) {
                     $perAdminApp.stateAction('createObjectDefinitionFileWizard', {path, target});
                 }
@@ -693,13 +813,37 @@ export default {
                 return !(obj.activated || obj.anyDescendantActivated || obj.isReferenced);
             },
 
+            unPublishResource(me, target) {
+              if (target.anyDescendantActivated) {
+                $perAdminApp.toast("One of the children of this resource is still published. Please unpublish all of them first.", "warn", 5000)
+              }
+              else if (target.isReferenced) {
+                $perAdminApp.askUser('Warning',
+                  ("Unpublishing may break references. Would you like to continue ?"), {
+                    yesText: 'Yes',
+                    yes: function yes() {
+                      $perAdminApp.stateAction('unreplicate', target.path);
+                    },
+                  });
+              }
+              else {
+                $perAdminApp.stateAction('unreplicate', target.path);
+              }
+            },
+
             deleteTenantOrPage: function(me, target) {
                 if (target.activated) {
-                    $perAdminApp.toast("The resource is still published. Please unpublish it first.", "warn", 7500)
+                    $perAdminApp.toast("The resource is still published. Please unpublish it first.", "warn", 5000)
                 } else if (target.anyDescendantActivated) {
-                    $perAdminApp.toast("One of the children of this resource is still published. Please unpublish all of them first.", "warn", 7500)
+                    $perAdminApp.toast("One of the children of this resource is still published. Please unpublish all of them first.", "warn", 5000)
                 } else if (target.isReferenced) {
-                    $perAdminApp.toast("The resource is referenced somewhere. Please remove the references first.", "warn", 7500)
+                  $perAdminApp.askUser('Warning',
+                    ("Deleting may break references. Would you like to continue ?"), {
+                      yesText: 'Yes',
+                      yes: function yes() {
+                        me.deletePage(me, target);
+                      },
+                    });
                 } else if(me.path === '/content') {
                     me.deleteTenant(me, target)
                 } else {
@@ -711,6 +855,7 @@ export default {
                 const me = this
                 return new Promise((resolve, reject) => {
                     $perAdminApp.askUser(`Delete ${type}?`, me.$i18n(`Are you sure you want to delete this node and all its children?`), {
+                        defaultFocus: 'no',
                         yes() {
                             $perAdminApp.stateAction(`delete${type.charAt(0).toUpperCase() + type.slice(1)}`, path)
                             resolve()
@@ -786,6 +931,127 @@ export default {
 </style>
 
 <style scoped>
+    .topbar {
+        padding: 0.4rem 1rem;
+        background: #f9f9f9;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+        min-height: 45px;
+    }
+
+    .topbar-controls {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.4rem;
+        flex-grow: 1;
+        flex-wrap: wrap;
+    }
+
+    .topbar-dropdown-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .topbar-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        height: 2rem;
+        background: #455A64;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 0 0.6rem;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: background 0.15s;
+        white-space: nowrap;
+        box-sizing: border-box;
+    }
+
+    .topbar-btn .material-icons {
+        font-size: 1rem;
+        line-height: 1;
+    }
+
+    .topbar-btn-symbol {
+        width: 1rem;
+        height: 1rem;
+        flex-shrink: 0;
+    }
+
+    .topbar-btn:hover,
+    .topbar-btn:focus {
+        background: #546E7A;
+    }
+
+    .topbar-btn--active {
+        background: #455A64;
+    }
+
+    .topbar-caret {
+        font-size: 1rem;
+        line-height: 1;
+        margin-left: -2px;
+    }
+
+    .topbar-dropdown {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        z-index: 100;
+        min-width: 150px;
+        padding: 4px 0;
+    }
+
+    .topbar-dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        width: 100%;
+        background: none;
+        border: none;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.8rem;
+        color: #333;
+        cursor: pointer;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .topbar-dropdown-item:hover,
+    .topbar-dropdown-item:focus {
+        background: #f0f0f0;
+    }
+
+    .topbar-dropdown-item.active {
+        font-weight: 600;
+        color: #455A64;
+    }
+
+    .topbar-dropdown-item .material-icons {
+        font-size: 1rem;
+    }
+
+    .topbar-dropdown-divider {
+        border-top: 1px solid #eee;
+        margin: 4px 0;
+    }
+
+    .switch .filter-toggle .lever {
+        margin: 0 4px !important;
+    }
+
 .icon.label {
   height: 24px;
   width: 24px;
@@ -794,5 +1060,46 @@ export default {
   align-items: center;
   font-weight: bolder;
   color: #000000;
+}
+
+.explorer .explorer-layout .row .explorer-main .collection {
+    height: 100%;
+    > .collection-item {
+        display: flex;
+        align-items: center;
+
+        > * {
+            display: flex;
+            align-items: center;
+
+            > a {
+                width: 100%;
+            }
+
+            > a:has(.preview-container) {
+                display: flex;
+                align-items: flex-end;
+                gap: 0.5rem;
+                margin-left: 0.5rem;
+
+                > .preview-container:has(> img.preview) {
+                    height: 64px;
+                    width: 64px;
+                    > img.preview {
+                        height: 64px;
+                        width: 64px;
+                        object-fit: scale-down;
+                        object-position: bottom;
+                    }
+                }
+            }
+        }
+
+        > span:not(.draggable):not(.folder) {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+    }
 }
 </style>

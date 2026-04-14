@@ -30,7 +30,7 @@
              ref="pathbrowser"
              @click.stop.prevent="onPrevent">
           <!-- @mousedown.prevent="() => {}" -->
-          <div class="modal-header" v-if="">
+          <div class="modal-header">
             {{ header }}
           </div>
           <ul class="pathbrowser-tabs">
@@ -47,6 +47,11 @@
             <li v-if="withLinkTab" class="tab">
               <a href="#" :class="tab === 'link' ? 'active' : ''" v-on:click="select('link')">
                 <i class="material-icons">link</i>
+              </a>
+            </li>
+            <li v-if="withImageTab" class="tab">
+              <a href="#" :class="tab === 'image' ? 'active' : ''" v-on:click="select('image')">
+                <i class="material-icons">image</i>
               </a>
             </li>
             <li
@@ -109,7 +114,7 @@
                 <ul class="browse-list" v-if="list.length > 0">
                   <template v-for="item in list">
                     <li v-if="isFolder(item)"
-                        v-on:click.stop.prevent="navigateFolder(item)"
+                        v-on:click.stop.prevent="isBrowserTypePage ? selectItem(item) : navigateFolder(item)"
                         :class="isSelected(item.path) ? 'selected' : ''">
                       <template v-if="allowFolderSelection">
                         <input name="selectedItem"
@@ -118,10 +123,12 @@
                                :checked="isSelected(item.path)"/>
                         <label v-on:click.stop.prevent="selectItem(item)"></label>
                       </template>
-                      <i class="material-icons">{{ getFolderIcon() }}</i>
+                      <i class="material-icons"
+                         v-on:click.stop.prevent="navigateFolder(item)"
+                         :title="isBrowserTypePage ? 'Open' : ''">{{ getFolderIcon(item) }}</i>
                       <span>{{ item.name }}</span>
                     </li>
-                    <li v-if="isFile(item) && isFileAllowed()"
+                    <li v-if="isFile(item)"
                         v-on:click.stop.prevent="selectItem(item)"
                         :class="isSelected(item.path) ? 'selected' : ''">
                       <template v-if="isSelectable(item)">
@@ -265,13 +272,13 @@
                           <i
                               class="material-icons"
                               :style="`font-size: ${cardIconSize(cardSize)}px`">{{
-                              getFolderIcon()
+                              getFolderIcon(item)
                             }}</i>
                           <br/>
                           <span class="truncate">{{ item.name }}</span>
                         </div>
                       </div>
-                      <template v-if="isFile(item) && isFileAllowed()">
+                      <template v-if="isFile(item)">
                         <img
                             v-if="isImage(item)"
                             :class="isSelected(item.path) ? 'item-image selected' : 'item-image'"
@@ -309,7 +316,7 @@
                       id="pathBrowserLink"
                       ref="pathBrowserLink"
                       type="url"
-                      placeholder="https://"
+                      placeholder="URL"
                       :value="selectedPath"
                       @mousedown=""
                       @input="selectLink"/>
@@ -332,7 +339,7 @@
                       :value="linkTitle"
                       @input="setLinkTitle"/>
                 </div>
-                <div v-if="isImageExtension({path: selectedPath})" class="img-group">
+                <div v-if="isImageExtension({path: selectedPath}) && isAsset" class="img-group">
                   <div class="form-group">
                     <label for="linkTitle">Image Width (px)</label>
                     <input
@@ -354,9 +361,9 @@
                 </div>
                 <div class="checkboxes-group">
                   <div class="pathbrowser-newwindow" v-if="newWindow !== undefined"
-                       @click="toggleNewWindow"
-                       @keyup.space="toggleNewWindow">
-                    <input type="checkbox" id="newWindow" :checked="newWindow"/>
+                       @click="$emit('toggle-newWindow')"
+                       @keyup.space="$emit('toggle-newWindow')">
+                    <input type="checkbox" id="newWindow" v-model="newWindow"/>
                     <label for="newWindow">Open in new window?</label>
                   </div>
                   <div class="pathbrowser-rel"
@@ -366,6 +373,37 @@
                        @keyup.space="$emit('toggle-rel')">
                     <input type="checkbox" id="rel" v-model="rel"/>
                     <label for="rel"> Add rel="noopener noreferrer" to link? </label>
+                  </div>
+                </div>
+              </template>
+              <template v-if="withImageTab && tab === 'image'">
+                <div class="form-group" v-if="altText !== undefined">
+                  <label for="imageTabAltText">Image Alternate Text</label>
+                  <input
+                      id="imageTabAltText"
+                      type="text"
+                      placeholder="Alt Text"
+                      :value="altText"
+                      @input="setAltText"/>
+                </div>
+                <div class="img-group">
+                  <div class="form-group">
+                    <label for="imageTabWidth">Width (px)</label>
+                    <input
+                        id="imageTabWidth"
+                        type="number"
+                        placeholder="Width"
+                        :value="imgWidth"
+                        @input="onUpdateImgDimension('width', $event)"/>
+                  </div>
+                  <div class="form-group">
+                    <label for="imageTabHeight">Height (px)</label>
+                    <input
+                        id="imageTabHeight"
+                        type="number"
+                        placeholder="Height"
+                        :value="imgHeight"
+                        @input="onUpdateImgDimension('height', $event)"/>
                   </div>
                 </div>
               </template>
@@ -443,10 +481,15 @@ export default {
     currentPath: String,
     selectedPath: String,
     withLinkTab: Boolean,
-    newWindow: Boolean,
+    withImageTab: Boolean,
+    newWindow: {
+      type: Boolean,
+      default: false
+    },
     toggleNewWindow: Function,
     setCurrentPath: Function,
     setSelectedPath: Function,
+    setResourceType: Function,
     linkTitle: String,
     setLinkTitle: Function,
     altText: String,
@@ -470,7 +513,9 @@ export default {
   },
   mounted() {
     // set initial tab
-    if (this.withLinkTab && this.selectedPath && this.selectedPath.match(/^(https?:)?\/\//)) {
+    if (this.withImageTab) {
+      this.tab = 'image'
+    } else if (this.withLinkTab && this.selectedPath && this.selectedPath.match(/^(https?:)?\/\//)) {
       this.tab = 'link'
     } else {
       this.tab = 'browse'
@@ -515,7 +560,7 @@ export default {
       return {}
     },
     list() {
-      if (this.nodes.children) {
+      if (this?.nodes?.children) {
         return this.nodes.children
       }
       return []
@@ -532,6 +577,9 @@ export default {
         case ('link'):
           position = 144
           break
+        case ('image'):
+          position = this.withLinkTab ? 216 : 144
+          break
         default:
           position = 0
           break
@@ -539,7 +587,9 @@ export default {
       return position
     },
     searchTabOffset() {
-      if (this.withLinkTab) {
+      if (this.withLinkTab && this.withImageTab) {
+        return 288
+      } else if (this.withLinkTab || this.withImageTab) {
         return 216
       } else {
         return 144
@@ -548,11 +598,17 @@ export default {
     allowFolderSelection() {
       return !this.isBrowserTypeImage && !this.isBrowserTypeObjectDefinition
     },
+    isAsset() {
+      return this.isType(PathBrowser.Type.ASSET)
+    },
+    isBrowserTypePage() {
+      return this.isType(PathBrowser.Type.PAGE)
+    },
     isBrowserTypeImage() {
       return this.isType(PathBrowser.Type.IMAGE)
     },
     isBrowserTypeAsset() {
-      return this.isType(PathBrowser.Type.ASSET) || this.isType(PathBrowser.Type.IMAGE)
+      return this.isAsset || this.isType(PathBrowser.Type.IMAGE)
     },
     isBrowserTypeObjectDefinition() {
       return this.isType(PathBrowser.Type.OBJECT_DEFINITION)
@@ -575,12 +631,13 @@ export default {
         'image/jpg',
         'image/gif',
         'timage/tiff',
-        'image/svg+xml'
+        'image/svg+xml',
+        'image/webp',
       ].indexOf(item.mimeType) >= 0
     },
     isImageExtension(item) {
       if (item.path) {
-        return item.path.match(/.(jpg|jpeg|png|gif|svg)$/i)
+        return item.path.match(/.(jpg|jpeg|png|gif|svg|webp)$/i)
       } else {
         return false
       }
@@ -600,11 +657,14 @@ export default {
         return {icon: 'insert_drive_file', lib: IconLib.MATERIAL_ICONS}
       }
     },
-    getFolderIcon() {
-      return this.isType(PathBrowser.Type.ASSET) ? 'folder_open' : 'description'
+    getFolderIcon(item) {
+      if (item) {
+          return item.hasChildren ? 'folder_open' : 'description'
+      }
+      return this.isAsset ? 'folder_open' : 'description'
     },
     getEmptyText() {
-      return this.isType(PathBrowser.Type.ASSET) ? 'Folder is empty' : 'No child pages'
+      return this.isAsset ? 'Folder is empty' : 'No child pages'
     },
     cardIconSize: function (cardSize) {
       return Math.floor(cardSize / 3)
@@ -675,10 +735,7 @@ export default {
       return item.name !== 'jcr:content'
     },
     isFile(item) {
-      return ['per:Asset', 'nt:file'].indexOf(item.resourceType) >= 0
-    },
-    isFileAllowed() {
-      return this.browserType !== PathBrowser.Type.PAGE
+      return ['per:Asset', 'per:Object', 'nt:file'].indexOf(item.resourceType) >= 0
     },
     isFolder(item) {
       return [
@@ -702,14 +759,15 @@ export default {
             this.previewType = 'current'
             this.setCurrentPath(item.path)
             if (this.tab === 'cards' && this.list.length > 0) this.updateIsotopeLayout('masonry')
-            this.selectItem(item)
           })
     },
     selectItem(item) {
       if (this.isSelectable(item)) {
         this.previewType = 'selected'
         this.setSelectedPath(item.path)
-
+        if (item.resourceType && typeof this.setResourceType === 'function') {
+          this.setResourceType(item.resourceType)
+        }
       }
     },
     selectLink(ev) {
@@ -719,7 +777,7 @@ export default {
       this.setSelectedPath(ev.target.value)
     },
     isType(browserType) {
-      return this.browserType === browserType
+      return this.browserType?.toLowerCase() === browserType?.toLowerCase()
     },
     isSelectable(item) {
       if (!this.isBrowserTypeImage) {
@@ -747,6 +805,24 @@ export default {
 </script>
 
 <style scoped>
+.browse-list li i.material-icons {
+  cursor: pointer;
+}
+
+.form-group label,
+.form-group input {
+  color: #222;
+}
+
+.img-group {
+  display: flex;
+  gap: 8px;
+}
+
+.img-group .form-group {
+  flex: 1;
+}
+
 .browse-list .icon {
   height:36px;
   width: 36px;

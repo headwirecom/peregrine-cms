@@ -1,7 +1,7 @@
 <template>
   <div class="btn-group" :class="[`group-${vLabel}`]">
     <materialize-drop-down
-        v-if="collapse && items && items.length > 1"
+        v-if="collapse && items && items.length > 0"
         tag="button"
         class="btn"
         :class="[{'active': active}]"
@@ -9,6 +9,7 @@
         :below-origin="true"
         :items="vItems"
         :searchable="searchable"
+        :disabled="disabled"
         @mousedown.native.prevent="() => {}"
         @toggle-click="$emit('toggle-click')"
         @item-click="$emit('click', {btn: $event})">
@@ -19,7 +20,7 @@
     <template v-else>
       <template v-for="(btn, i) in items">
         <richtoolbar-group
-            v-if="btn.items && btn.items.length > 1"
+            v-if="btn.items && btn.items.length > 0"
             :key="`rich-toolbar-sub-group-${i}`"
             :icon="btn.icon"
             :iconLib="btn.iconLib"
@@ -79,6 +80,10 @@ export default {
       type: [Array, Function]
     },
     searchable: {
+      type: Boolean,
+      default: false
+    },
+    disabled: {
       type: Boolean,
       default: false
     }

@@ -8,7 +8,6 @@
     :currentPath="`${getBasePath()}/pages`"
     :onDelete="onDelete"
   >
-    {{ nodeType }}
     <admin-components-componentexplorer
       v-if="isEditPage"
       :model="{ text: 'Components', source: '/admin/components' }"

@@ -5,6 +5,7 @@ export default (vm) => {
     label: 'insert image',
     icon: 'picture-o',
     iconLib: IconLib.FONT_AWESOME,
-    cmd: 'insertImage'
+    cmd: 'insertImage',
+    isDisabled: () => false
   }
 }

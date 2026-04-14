@@ -6,6 +6,7 @@ export default (vm) => {
     icon: 'align-center',
     iconLib: IconLib.FONT_AWESOME,
     cmd: 'justifyCenter',
-    isActive: () => vm.queryCmdState('justifyCenter')
+    isActive: () => vm.queryCmdState('justifyCenter'),
+    isDisabled: () => !vm.hasEditorSelection
   }
 }

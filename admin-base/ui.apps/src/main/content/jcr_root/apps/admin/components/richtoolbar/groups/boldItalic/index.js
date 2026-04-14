@@ -1,5 +1,6 @@
 import bold from './bold'
 import italic from './italic'
+import underline from './underline'
 import {IconLib} from '../../../../../../../../js/constants'
 
 export default (vm) => {
@@ -10,7 +11,8 @@ export default (vm) => {
     rules: () => !vm.responsive || !vm.hiddenGroups['bold-italic'],
     items: [
       bold(vm),
-      italic(vm)
+      italic(vm),
+      underline(vm)
     ]
   }
 }

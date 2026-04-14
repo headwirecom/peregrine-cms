@@ -342,8 +342,17 @@ nav {
       line-height: 20px;
       vertical-align: middle;
       margin-right: auto;
+      display: flex;
+      overflow: hidden;
 
       > span {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex: 1 1 0;
+        min-width: 4px;
+        max-width: max-content;
+
         > a {
           &:hover,
           &:focus,

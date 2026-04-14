@@ -11,9 +11,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -31,7 +31,7 @@
         v-on:complete="$emit('complete',$event)"
         v-bind:modalTitle="modalTitle" >
 
-        <table>           
+        <table>
             <tbody v-if="references">
                 <tr>
                     <th>Publish Item</th>
@@ -54,7 +54,7 @@
                     <td class="switch">
                         <label> <input type="checkbox" v-model="ref.publish"> <span class="lever publishingaction"></span> </label>
                     </td>
-                    <td class="printaction">{{printAction(ref)}}</td>              
+                    <td class="printaction">{{printAction(ref)}}</td>
                 </tr>
             </tbody>
             <tbody v-if="referencedBy && referencedBy.length > 0">
@@ -68,6 +68,18 @@
                     </td>
                     <td class="printaction">{{printAction(refed)}}</td>
                 </tr>
+            </tbody>
+            <tbody v-if="children && children.length > 0">
+              <tr>
+                <th>Publish items</th>
+              </tr>
+              <tr v-for="refed in children" v-bind:key="refed.path">
+                <td>{{refed.path}} <span>({{printStatus(refed)}})</span></td>
+                <td class="switch">
+                  <label> <input type="checkbox" v-model="refed.publish"> <span class="lever publishingaction"></span> </label>
+                </td>
+                <td class="printaction">{{printAction(refed)}}</td>
+              </tr>
             </tbody>
         </table>
 
@@ -88,11 +100,12 @@ export default {
         'isOpen',
         'path',
         'modalTitle',
-        
+
     ],
     data(){
         return {
-            'referencedBy':[]
+            'referencedBy':[],
+            'children':[]
         }
     },
     computed: {
@@ -100,7 +113,7 @@ export default {
             var node = this.path
             return $perAdminApp.findNodeFromPath(this.$root.$data.admin.nodes, node)
         },
-        references(){            
+        references(){
             return $perAdminApp.getView().state.references
         },
     },
@@ -136,19 +149,27 @@ export default {
                         }
                     });
                 }
-                if (this.referencedBy !== undefined){
-                    this.references.references.forEach(ref => {
-                        if (ref.publish){
-                            referencesToRepl.push(ref.path)
-                        }
-                    });
+                this.referencedBy.forEach(ref => {
+                  if (ref.publish && !referencesToRepl.includes(ref.path)){
+                    referencesToRepl.push(ref.path)
+                  }
+                });
+                this.children.forEach(ref => {
+                  if (ref.publish && !referencesToRepl.includes(ref.path)){
+                    referencesToRepl.push(ref.path)
+                  }
+                });
+                if (this.references.is_assets_folder && !referencesToRepl.length) {
+                  $perAdminApp.toast("No items to publish. Please select at least one item.", "error")
+                  return;
                 }
                 const target = {
                     path: this.path,
                     references: referencesToRepl
-                }                
-                $perAdminApp.stateAction('publish', target)
-            } 
+                }
+                $perAdminApp.stateAction('publish', target, true)
+                $perAdminApp.toast("The publishing process is ongoing. You will be notified once it is completed.", "success")
+            }
             this.close()
         },
         initializePublishActionFlag(reference){
@@ -170,24 +191,32 @@ export default {
         const me = this
         $perAdminApp.getApi().populateReferences(this.path, true)
             .then(function(){
-                Vue.set(me.references, 'publish', true)
+                Vue.set(me.references, 'publish', !me.references.is_assets_folder)
                 if(me.references.references != undefined){
                     me.references.references.forEach((ref)=> {
                         me.initializePublishActionFlag(ref)
                     })
                 }
-            })        
+
+                if(me.references.children){
+                  me.children = me.references.children;
+                  me.children.forEach((ref)=> {
+                    me.initializePublishActionFlag(ref)
+                  })
+                }
+            })
         $perAdminApp.getApi().populateReferencedBy(this.path, true)
             .then(function(){
                 me.referencedBy = me.trimReferences($perAdminApp.getView().state.referencedBy.referencedBy)
                 if(me.referencedBy){
                     me.referencedBy.forEach((ref)=> {
-                        me.initializePublishActionFlag(ref)
+                        // Don't publish referencedBy items by default
+                        Vue.set(ref, 'publish', false);
                     })
                 }
             })
             .then(()=>this.$refs.materializemodal.open())
-        
+
     }
 }
 </script>

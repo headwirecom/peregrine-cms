@@ -12,7 +12,7 @@
 
     &:hover,
     &:focus {
-      background-color: color("orange", "base") !important;
+      background-color: customColor("orange", "base") !important;
     }
 
     &.outline {
@@ -22,7 +22,7 @@
 
       &:hover,
       &:focus {
-        background-color: color("orange", "base") !important;
+        background-color: customColor("orange", "base") !important;
       }
     }
 
@@ -50,7 +50,7 @@
 
           &:hover,
           &:focus {
-            background-color: color("orange", "base") !important;
+            background-color: customColor("orange", "base") !important;
           }
 
           &.wizard-btn-wd {

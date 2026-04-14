@@ -11,9 +11,9 @@
   to you under the Apache License, Version 2.0 (the
   "License"); you may not use this file except in compliance
   with the License.  You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing,
   software distributed under the License is distributed on an
   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -32,7 +32,8 @@
             ref="vfg"
             :schema="schema"
             :model="dataModel"
-            :options="formOptions"/>
+            :options="formOptions"
+        />
       </template>
     </div>
     <div class="editor-panel-buttons">
@@ -65,9 +66,6 @@ export default {
   updated: function () {
     let stateTools = $perAdminApp.getNodeFromViewWithDefault('/state/tools', {})
     stateTools._deleted = {} // reset to empty?
-    if (this.schema && this.schema.hasOwnProperty('groups')) {
-      this.hideGroups()
-    }
     setTimeout(() => {
       const node = $perAdminApp.getNodeFromViewOrNull('/state/editor') || {}
       this.path = node.path
@@ -82,6 +80,7 @@ export default {
         validateAfterChanged: true,
         focusFirstField: true
       },
+      initialLoadComplete: false,
       focus: {
         loop: null,
         timeout: null,
@@ -96,10 +95,10 @@ export default {
       return $perAdminApp.getView()
     },
     schema: function () {
-      var view = $perAdminApp.getView()
-      var component = view.state.editor.component
-      var schema = view.admin.componentDefinitions[component].model
-      return schema
+      const view = this.view;
+      const component = view.state.editor.component;
+      const schema = view.admin.componentDefinitions[component].model;
+      return schema;
     },
     dataModel: function () {
       const model = $perAdminApp.findNodeFromPath($perAdminApp.getNodeFromView('/pageView/page'), this.path)
@@ -128,6 +127,14 @@ export default {
     'view.state.inline.model'(val) {
       if (!val) return
       this.focusFieldByModel(val)
+    },
+    dataModel: {
+      handler(val) {
+        if (val && this.initialLoadComplete) {
+          set($perAdminApp.getView(), '/state/editor/hasChanges', true)
+        }
+      },
+      deep: true
     }
   },
   mounted() {
@@ -135,6 +142,9 @@ export default {
     if (this.schema && this.schema.hasOwnProperty('groups')) {
       this.hideGroups()
     }
+    setTimeout(() => {
+      this.initialLoadComplete = true
+    }, 100)
   },
   methods: {
     onOk(e) {
@@ -171,6 +181,7 @@ export default {
       var view = $perAdminApp.getView()
       $perAdminApp.action(this, 'onEditorExitFullscreen')
       $perAdminApp.stateAction('savePageEdit', {data: data, path: view.state.editor.path}).then(() => {
+        set(view, '/state/editor/hasChanges', false)
         $perAdminApp.action(this, 'unselect')
         $perAdminApp.getNodeFromView('/state/tools')._deleted = {}
       })
@@ -188,45 +199,162 @@ export default {
       })
     },
 
-    onDelete(e) {
+    async onDelete(e) {
       const vm = this
-      var view = $perAdminApp.getView()
-      $perAdminApp.askUser('Delete Component?', 'Are you sure you want to delete the component?', {
+      const view = $perAdminApp.getView()
+      const pagePath = view.pageView.path
+      const componentPath = view.state.editor.path
+
+      let undoEntry = null
+      if (componentPath !== '/jcr:content') {
+        try {
+          const jcrPath = pagePath + componentPath
+          const response = await fetch(jcrPath + '.infinity.json')
+          const jcrData = await response.json()
+          const nodeData = vm.jcrToInsertData(jcrData, componentPath)
+
+          const DROPTARGET = 'data-per-droptarget'
+          const PATH = 'data-per-path'
+          const editview = document.getElementById('editview')
+          const iframeDoc = editview && (editview.contentDocument || editview.contentWindow.document)
+          let dropPath = null
+          let drop = 'into'
+          const el = iframeDoc && iframeDoc.querySelector(`[data-per-path="${componentPath}"]`)
+          if (el) {
+            let sibling = el.nextElementSibling
+            while (sibling) {
+              if (sibling.hasAttribute(PATH) && !sibling.hasAttribute(DROPTARGET)) {
+                dropPath = sibling.getAttribute(PATH)
+                drop = 'before'
+                break
+              }
+              sibling = sibling.nextElementSibling
+            }
+            if (!dropPath) {
+              sibling = el.previousElementSibling
+              while (sibling) {
+                if (sibling.hasAttribute(PATH) && !sibling.hasAttribute(DROPTARGET)) {
+                  dropPath = sibling.getAttribute(PATH)
+                  drop = 'after'
+                  break
+                }
+                sibling = sibling.previousElementSibling
+              }
+            }
+            if (!dropPath) {
+              const parentEl = el.parentElement ? el.parentElement.closest(`[${DROPTARGET}]`) : null
+              if (parentEl) {
+                dropPath = parentEl.getAttribute(PATH) || parentEl.getAttribute(DROPTARGET)
+              }
+              if (!dropPath) {
+                dropPath = componentPath.substring(0, componentPath.lastIndexOf('/'))
+              }
+              drop = 'into'
+            }
+          } else {
+            dropPath = componentPath.substring(0, componentPath.lastIndexOf('/'))
+            drop = 'into'
+          }
+          undoEntry = { pagePath, dropPath, drop, data: nodeData }
+        } catch (err) {
+          console.warn('Failed to capture undo data for deletion', err)
+        }
+      }
+
+      let blockDelete = false
+      let deleteMessage = 'Are you sure you want to delete the component?'
+      const isTemplateOrSkeleton = pagePath.includes('/skeleton-pages/') || pagePath.includes('/templates/')
+      if (isTemplateOrSkeleton && componentPath !== '/jcr:content') {
+        try {
+          const fullJcrPath = pagePath + componentPath
+          const skeletonResponse = await fetch(
+            '/perapi/admin/isComponentUsedInSkeleton.json?path='
+            + encodeURIComponent(fullJcrPath)
+          )
+          const skeletonData = await skeletonResponse.json()
+          if (skeletonData && skeletonData.isTopLevelInSkeleton) {
+            blockDelete = true
+            const pageList = (skeletonData.skeletonPages || []).map(p => p.title || p.path).join(', ')
+            deleteMessage = 'This component cannot be deleted because it is used in a skeleton page'
+              + (pageList ? ': ' + pageList : '')
+              + '. Removing it could break every page created from that skeleton.'
+          }
+        } catch (err) {
+          console.warn('Failed to check skeleton usage', err)
+        }
+      }
+
+      $perAdminApp.askUser(
+        blockDelete ? 'Cannot Delete Component' : 'Delete Component?',
+        deleteMessage,
+        {
         yesText: 'Yes',
-        noText: 'No',
+        noText: blockDelete ? 'Close' : 'No',
+        warning: blockDelete,
+        blockDelete,
         yes() {
           $perAdminApp.action(vm, 'onEditorExitFullscreen')
           $perAdminApp.stateAction('deletePageNode', {
-            pagePath: view.pageView.path,
-            path: view.state.editor.path
+            pagePath,
+            path: componentPath
           }).then(() => {
             $perAdminApp.action(vm, 'unselect')
             $perAdminApp.getNodeFromView('/state/tools')._deleted = {}
+            if (undoEntry) {
+              window.dispatchEvent(new CustomEvent('per:component-deleted', { detail: undoEntry }))
+            }
           })
         },
-        no() {
-        }
+        no() {}
       })
     },
 
-    hideGroups() {
-      const $groups = $('.vue-form-generator fieldset')
-      $groups.each(function (i) {
-        const $group = $(this)
-        const $title = $group.find('legend')
-        $title.click(function (e) {
-          const isActive = $group.hasClass('active')
-          $groups.filter('.active').removeClass('active')
-          if (!isActive) {
-            $group.addClass('active')
-          }
-        })
-        if (i !== 0) {
-          $group.removeClass('active')
+    jcrToInsertData(jcrNode, path) {
+      const IGNORED_KEYS = new Set([
+        'jcr:primaryType', 'jcr:uuid', 'jcr:created', 'jcr:createdBy',
+        'jcr:baseVersion', 'jcr:isCheckedOut', 'jcr:predecessors',
+        'jcr:versionHistory', 'per:Replicated', 'per:ReplicatedBy',
+        'per:ReplicationLastAction', 'per:ReplicationRef', 'per:ReplicationStatus',
+      ])
+      const result = { path }
+      const children = []
+      for (const [key, value] of Object.entries(jcrNode)) {
+        if (IGNORED_KEYS.has(key)) continue
+        if (key === 'sling:resourceType') {
+          result.component = value
+        } else if (value !== null && typeof value === 'object' && !Array.isArray(value) && value['jcr:primaryType']) {
+          children.push(this.jcrToInsertData(value, path + '/' + key))
+        } else {
+          result[key] = value
         }
-        if (i === 0) $group.addClass('active')
-        $group.addClass('vfg-group')
-      })
+      }
+      if (children.length > 0) result.children = children
+      return result
+    },
+
+    hideGroups() {
+        var $vueFormGenerators = $('.vue-form-generator');
+        $vueFormGenerators.each(function() {
+            var $groups = $(this).children('fieldset');
+            $groups.each(function (i) {
+                var $group = $(this);
+                var $title = $group.find('legend');
+                $title.click(function () {
+                    var isActive = $group.hasClass('active');
+                    $groups.filter('.active').removeClass('active');
+                    if (!isActive) {
+                        $group.addClass('active');
+                    }
+                });
+                if (i !== 0) {
+                    $group.removeClass('active');
+                }
+                if (i === 0) {
+                    $group.addClass('active');
+                }
+                $group.addClass('vfg-group');
+            });
+        });
     },
 
     getFieldAndIndexByModel(schema, model) {
@@ -335,4 +463,3 @@ export default {
 //      }
 }
 </script>
-

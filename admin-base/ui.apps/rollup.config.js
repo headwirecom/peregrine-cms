@@ -1,11 +1,21 @@
-import buble from 'rollup-plugin-buble';
+import babel from "@rollup/plugin-babel";
 
 export default {
 	input: 'src/main/js/perAdminApp.js',
 	output: {
-		file: 'target/classes/etc/felibs/admin/js/perAdminApp.js', 
+		file: 'target/classes/etc/felibs/admin/js/perAdminApp.js',
 		format: 'iife',
 		name: '$perAdminApp',
 	},
-	plugins: [ buble() ],
+  plugins: [
+    babel({
+      babelHelpers: 'bundled',
+      exclude: 'node_modules/**',
+      extensions: [
+        '.js',
+        '.jsx',
+        '.vue',
+      ]
+    }),
+  ],
 }

@@ -13,9 +13,9 @@ package com.peregrine.admin.servlets;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -25,61 +25,35 @@ package com.peregrine.admin.servlets;
  * #L%
  */
 
-import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_NODES;
-import static com.peregrine.admin.servlets.ReferenceServletUtils.IS_STALE;
-import static com.peregrine.commons.util.PerConstants.ALLOWED_OBJECTS;
-import static com.peregrine.commons.util.PerConstants.ASSET_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.COMPONENT;
-import static com.peregrine.commons.util.PerConstants.ECMA_DATE_FORMAT;
-import static com.peregrine.commons.util.PerConstants.ECMA_DATE_FORMAT_LOCALE;
-import static com.peregrine.commons.util.PerConstants.JCR_CONTENT;
-import static com.peregrine.commons.util.PerConstants.JCR_CREATED;
-import static com.peregrine.commons.util.PerConstants.JCR_CREATED_BY;
-import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED;
-import static com.peregrine.commons.util.PerConstants.JCR_LAST_MODIFIED_BY;
-import static com.peregrine.commons.util.PerConstants.JCR_MIME_TYPE;
-import static com.peregrine.commons.util.PerConstants.JCR_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.JCR_TITLE;
-import static com.peregrine.commons.util.PerConstants.METAPROPERTIES;
-import static com.peregrine.commons.util.PerConstants.NAME;
-import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
-import static com.peregrine.commons.util.PerConstants.PATH;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATED_BY;
-import static com.peregrine.commons.util.PerConstants.PER_REPLICATION_REF;
-import static com.peregrine.commons.util.PerConstants.TAGS;
-import static com.peregrine.commons.util.PerConstants.TITLE;
-import static com.peregrine.commons.util.PerUtil.EQUALS;
-import static com.peregrine.commons.util.PerUtil.GET;
-import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
-import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
-import static com.peregrine.commons.util.PerUtil.getProperties;
-import static com.peregrine.commons.util.PerUtil.isPrimaryType;
-import static java.util.Objects.nonNull;
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
-import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
-import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
-import static org.osgi.framework.Constants.SERVICE_VENDOR;
-
+import com.peregrine.commons.servlets.AbstractBaseServlet;
+import com.peregrine.commons.util.PerUtil;
 import com.peregrine.reference.ReferenceLister;
 import com.peregrine.replication.PerReplicable;
 import com.peregrine.replication.ReplicationUtil;
-import com.peregrine.commons.servlets.AbstractBaseServlet;
-import com.peregrine.commons.util.PerUtil;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ValueMap;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+import javax.servlet.Servlet;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import javax.servlet.Servlet;
 
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ValueMap;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
+import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_NODES;
+import static com.peregrine.admin.servlets.ReferenceServletUtils.IS_STALE;
+import static com.peregrine.commons.util.PerConstants.*;
+import static com.peregrine.commons.util.PerUtil.*;
+import static java.util.Objects.nonNull;
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
+import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 /**
  * List all the resources part of the given Path
@@ -107,6 +81,7 @@ public class NodesServlet extends AbstractBaseServlet {
     public static final String DEACTIVATED = "deactivated";
     public static final String REPLICATION_STATUS = "ReplicationStatus";
     public static final String ANY_DESCENDANT_ACTIVATED = "anyDescendantActivated";
+    public static final String ALL_DESCENDANT_ACTIVATED = "allDescendantActivated";
     public static final String IS_REFERENCED = "isReferenced";
     public static final String RESOURCE_TYPE = "resourceType";
     public static final String JCR_PREFIX = "jcr:";
@@ -156,7 +131,7 @@ public class NodesServlet extends AbstractBaseServlet {
         for (Resource child : res.getChildren()) {
             if(!JCR_CONTENT.equals(child.getName())) {
                 return true;
-            }            
+            }
         }
         return false;
     }
@@ -214,7 +189,7 @@ public class NodesServlet extends AbstractBaseServlet {
                             }
                             json.writeClose();
                         }
-                    
+
                     }
                     if(isPrimaryType(child, PAGE_PRIMARY_TYPE)) {
                         Resource content = child.getChild(JCR_CONTENT);
@@ -239,6 +214,7 @@ public class NodesServlet extends AbstractBaseServlet {
                     }
 
                     json.writeAttribute(ANY_DESCENDANT_ACTIVATED, ReplicationUtil.isAnyDescendantReplicated(child));
+                    json.writeAttribute(ALL_DESCENDANT_ACTIVATED, ReplicationUtil.isAllDescendantReplicated(child));
                     json.writeAttribute(IS_REFERENCED, referenceLister.isReferenced(child));
                     json.writeClose();
                 }

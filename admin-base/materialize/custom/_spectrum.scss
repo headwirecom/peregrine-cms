@@ -99,7 +99,7 @@ License: MIT
     height: 8px;
 }
 .sp-alpha-inner {
-    border: solid 1px color("blue-grey", "darken-2");
+    border: solid 1px customColor("blue-grey", "darken-2");
 }
 
 .sp-clear {
@@ -256,7 +256,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 .sp-container {
     border-radius: 0;
     background-color: #fff;
-    border: solid 1px color("blue-grey", "lighten-4");
+    border: solid 1px customColor("blue-grey", "lighten-4");
     padding: 0;
 }
 .sp-container, .sp-container button, .sp-container input, .sp-color, .sp-hue, .sp-clear {
@@ -270,7 +270,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
     margin-bottom: 3px;
 }
 .sp-color, .sp-hue, .sp-clear {
-    border: solid 1px color("blue-grey", "lighten-4");
+    border: solid 1px customColor("blue-grey", "lighten-4");
 }
 
 /* Input */
@@ -340,7 +340,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 /* Initial */
 .sp-initial {
     float: left;
-    border: solid 1px color("blue-grey", "darken-2");
+    border: solid 1px customColor("blue-grey", "darken-2");
 }
 .sp-initial span {
     width: 30px;
@@ -371,9 +371,9 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
     display:inline-block;
     *zoom: 1;
     *display: inline;
-    border: solid 1px color("blue-grey", "lighten-4");
+    border: solid 1px customColor("blue-grey", "lighten-4");
     background: #fff;
-    color: color("blue-grey", "darken-2");
+    color: customColor("blue-grey", "darken-2");
     vertical-align: middle;
 
     position: relative;
@@ -404,7 +404,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
     line-height: 10px;
     display: inline-block;
     transition: transform 0.2s ease;
-    color: color("blue-grey", "base");
+    color: customColor("blue-grey", "base");
     font-size: 12px;
     padding: 0 0.75rem;
 }
@@ -445,7 +445,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
     -webkit-tap-highlight-color: transparent;
     text-decoration: none;
     color: #fff;
-    background-color: color("blue-grey", "darken-3");
+    background-color: customColor("blue-grey", "darken-3");
     text-align: center;
     letter-spacing: .5px;
     transition: .2s ease-out;
@@ -460,7 +460,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 }
 .sp-cancel {
     font-size: 12px;
-    color: color("blue-grey", "base") !important;
+    color: customColor("blue-grey", "base") !important;
     margin:0;
     padding:2px;
     margin-right: 5px;
@@ -469,7 +469,7 @@ See http://bgrins.github.io/spectrum/themes/ for instructions.
 
 }
 .sp-cancel:hover {
-    color: color("blue-grey", "darken-2") !important;
+    color: customColor("blue-grey", "darken-2") !important;
     text-decoration: underline;
 }
 
