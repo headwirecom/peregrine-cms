@@ -157,10 +157,13 @@ public class CreateTenantServlet extends AbstractBaseServlet {
             // Get User Password
             String userPwd = request.getParameter(TENANT_USER_PWD);
             boolean isPwdProvided = isNotEmpty(userPwd);
+            boolean dontCreateUser = "TEST_DONT_CREATE_USER".equals(userPwd);
             // Create Tenant Group
             String tenantGroupId = toTenant + GROUP_NAME_SUFFIX;
             String tenantUserId = toTenant + USER_NAME_SUFFIX;
 
+            isAdmin = dontCreateUser ? false: isAdmin;
+            
             // check if we re trying to create a user that already exists
             if(isAdmin && userManager.getAuthorizable(tenantUserId) != null) {
                 return new ErrorResponse()
