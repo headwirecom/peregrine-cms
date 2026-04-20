@@ -158,11 +158,13 @@
                     </execution>
                 </executions>
             </plugin>
+            
             <plugin>
-                <groupId>io.wcm.maven.plugins</groupId>
-                <artifactId>wcmio-content-package-maven-plugin</artifactId>
+                <groupId> org.apache.jackrabbit</groupId>
+                <artifactId>filevault-package-maven-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
+                    <packageType>mixed</packageType>
                     <!--<serviceURL>http://${sling.host}:${sling.port}/bin/cpm/package.service.html</serviceURL>-->
                     <userId>${sling.user}</userId>
                     <password>${sling.password}</password>

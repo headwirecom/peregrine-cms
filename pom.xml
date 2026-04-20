@@ -318,6 +318,12 @@
                     </configuration>
                 </plugin>
                 <plugin>
+                  <groupId>org.apache.jackrabbit</groupId>
+                  <artifactId>filevault-package-maven-plugin</artifactId>
+                  <version>1.3.6</version>
+                </plugin>
+
+                <plugin>
                     <groupId>org.apache.sling</groupId>
                     <artifactId>maven-sling-plugin</artifactId>
                     <version>${org.apache.sling.commons.testing.version}</version>
