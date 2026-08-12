@@ -26,6 +26,7 @@ package com.peregrine.admin.servlets;
  */
 
 import static com.peregrine.admin.servlets.AdminPaths.RESOURCE_TYPE_NODE;
+import static com.peregrine.commons.util.PerConstants.DATA;
 import static com.peregrine.commons.util.PerConstants.DATA_JSON_EXTENSION;
 import static com.peregrine.commons.util.PerConstants.JSON;
 import static com.peregrine.commons.util.PerConstants.JSON_MIME_TYPE;
@@ -77,11 +78,18 @@ public class NodeServlet extends AbstractBaseServlet {
         Resource resource = request.getResourceByPath(path);
 	 // Load that content internally  and return as JSON Content. If it fails redirect
         try {
+            // Pass the selector and extension separately. Handing the compound
+            // ".data.json" string to setExtension() makes the internal request
+            // URI render as "<path>..data.json"; Sling 14's engine rejects the
+            // ".." sequence with a 400, so the call always failed and fell back
+            // to the redirect below. selector "data" + extension "json" produces
+            // a clean "<path>.data.json" that the page model exporter serves.
             byte[] response = intraSlingCaller.call(
                 intraSlingCaller.createContext()
                     .setResourceResolver(request.getRequest().getResourceResolver())
                     .setPath(resource.getPath())
-                    .setExtension(DATA_JSON_EXTENSION)
+                    .setSelectors(DATA)
+                    .setExtension(JSON)
             );
             return new TextResponse(JSON, JSON_MIME_TYPE)
                 .write(new String(response, Charset.forName("utf-8")));
