@@ -259,7 +259,8 @@ public final class VersioningResourceResolver extends ResourceResolverWrapper {
 
     @Override
     public Resource resolve(final String absPath) {
-        return resolve(null, absPath);
+        // cast disambiguates between the javax and jakarta resolve() overloads (Sling API 3.x)
+        return resolve((HttpServletRequest) null, absPath);
     }
 
     @Override

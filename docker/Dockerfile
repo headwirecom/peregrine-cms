@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:latest AS builder
+FROM eclipse-temurin:17-jdk-jammy AS builder
 
 WORKDIR /app
 
@@ -16,7 +16,7 @@ RUN apt update -q \
     && echo npx: $(npx --version)
 
 COPY files/* /app/binaries/
-COPY files/org.apache.sling.feature.launcher-1.3.0/ /app/binaries/org.apache.sling.feature.launcher-1.3.0/
+COPY files/org.apache.sling.feature.launcher-1.3.4/ /app/binaries/org.apache.sling.feature.launcher-1.3.4/
 COPY scripts/*.sh /app/scripts/
 
 ARG runmode=none
@@ -27,7 +27,7 @@ RUN scripts/install-peregrine.sh ${RUNMODE}
 
 
 
-FROM adoptopenjdk/openjdk11:latest
+FROM eclipse-temurin:17-jdk-jammy
 
 WORKDIR /app
 

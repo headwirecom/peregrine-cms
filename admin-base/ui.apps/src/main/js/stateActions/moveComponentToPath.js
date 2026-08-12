@@ -60,6 +60,7 @@ export default function(me, target) {
                 {
                     Vue.set(targetNodeUpdate, 'children', data.children)
                 }
+                window.$rendererBridge.modelChanged(targetNodeUpdate.path, targetNodeUpdate)
                 resolve()
             }
         })

@@ -149,6 +149,7 @@ export default {
       rootWin: window,
       target: null,
       previousTarget: null,
+      dialogSyncTimer: null,
       inline: null,
       scrollTop: 0,
       dragging: false,
@@ -350,6 +351,20 @@ export default {
     node: {
       deep: true,
       handler(val) {
+        // live preview for protocol renderers: stream dialog edits as
+        // debounced component:update messages while the user types
+        // (no-op on the legacy transport, where the shared reactive
+        // object already keeps the preview live).
+        // While an INLINE edit is active the contenteditable in the preview
+        // already shows the typed text; pushing component:update would
+        // re-render the node and drop the caret, so we skip it (the model is
+        // still updated by writeInlineToModel, keeping the dialog in sync).
+        if (val && val.path && !this.editing && window.$rendererBridge.isPostMessage()) {
+          clearTimeout(this.dialogSyncTimer)
+          this.dialogSyncTimer = setTimeout(() => {
+            window.$rendererBridge.modelChanged(val.path, val)
+          }, 150)
+        }
         if (!this.component) return
         this.wrapEditableAroundSelected()
 
@@ -595,13 +610,20 @@ export default {
         throw Error.MISSING_EVENT_PATH
       }
 
-      const vnode = this.findVnode(this.component.__vue__, eventPath)
-      const attr = this.isRich ? 'innerHTML' : 'innerText'
-      if (vnode.data.domProps) {
-        if (this.isRich) {
-          vnode.data.domProps.innerHTML = this.target.innerHTML.replace(/(?:\r\n|\r|\n)/g, '<br>')
-        } else {
-          vnode.data.domProps.innerHTML = this.target.innerText
+      // Legacy renderers expose a Vue 2 instance on the component element; we
+      // patch its vnode domProps so Vue 2 doesn't revert the contenteditable
+      // on its next render. Protocol renderers (e.g. Vue 3) have no __vue__ and
+      // do not re-render the edited node while inline editing is active
+      // (see the node watcher guard), so this step is skipped for them.
+      const legacyVm = this.component.__vue__
+      if (legacyVm) {
+        const vnode = this.findVnode(legacyVm, eventPath)
+        if (vnode && vnode.data && vnode.data.domProps) {
+          if (this.isRich) {
+            vnode.data.domProps.innerHTML = this.target.innerHTML.replace(/(?:\r\n|\r|\n)/g, '<br>')
+          } else {
+            vnode.data.domProps.innerHTML = this.target.innerText
+          }
         }
       }
       this.writeInlineToModel()
@@ -620,7 +642,7 @@ export default {
     },
 
     refreshEditor(vm) {
-      vm.$refs.editview.contentWindow.location.reload()
+      window.$rendererBridge.reload()
     },
 
     onInlineClick(event) {
@@ -638,6 +660,9 @@ export default {
       this.target = event.target
       const dataInline = this.targetInline.split('.').slice(1)
       this.inline = dataInline.join('.')
+      const inlineHost = event.target.closest(`[${Attribute.PATH}]`)
+      window.$rendererBridge.inlineEditStart(
+          inlineHost ? inlineHost.getAttribute(Attribute.PATH) : null, this.inline)
       set(this.view, '/state/inline/doc', this.iframe.doc)
       const modelPropName = this.getCurrentModelPropName()
       this.dynWatchers.some((w, index) => {
@@ -652,6 +677,9 @@ export default {
     onInlineFocusOut(event) {
       event.target.classList.remove('inline-editing')
       this.editing = false
+      const inlineEndHost = event.target.closest(`[${Attribute.PATH}]`)
+      window.$rendererBridge.inlineEditEnd(
+          inlineEndHost ? inlineEndHost.getAttribute(Attribute.PATH) : null, this.inline)
       const iframeSel = this.iframe.doc ? this.iframe.doc.defaultView.getSelection() : null
       const anchorNode = iframeSel && iframeSel.rangeCount > 0 ? iframeSel.anchorNode : null
       const el = anchorNode
@@ -783,6 +811,7 @@ export default {
 
     onIframeLoaded(ev) {
       this.iframe.loaded = true
+      window.$rendererBridge.attach(this.$refs.editview)
       this.iframe.win = this.$refs.editview.contentWindow
       this.iframe.doc = this.iframe.win.document
       this.iframe.html = this.iframe.doc.querySelector('html')

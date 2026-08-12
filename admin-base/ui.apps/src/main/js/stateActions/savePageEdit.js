@@ -35,6 +35,7 @@ export default function(me, target) {
 
     return new Promise( (resolve, reject) => {
         me.getApi().savePageEdit(view.pageView.path, target.data).then( () => {
+            window.$rendererBridge.modelChanged(target.data.path, target.data)
             delete view.state.editor;
             set(view, '/state/editorVisible', false)
             $perAdminApp.clearBeforeStateActions();

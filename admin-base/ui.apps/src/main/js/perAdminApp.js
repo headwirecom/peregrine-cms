@@ -38,6 +38,7 @@ console.error= function() {
 
 import {LoggerFactory} from './logger'
 import i18n from './i18n'
+import './rendererBridge'
 import experiences from './experiences'
 import PeregrineApi from './api'
 import PerAdminImpl from './apiImpl'

@@ -40,7 +40,7 @@ export default function(me, target) {
     // resolve path to component name
     let componentName = componentPath ? componentPath.split('/').slice(2).join('-') : target.data.component
     log.fine('load',componentName, 'into edit view (make sure it is available)')
-    document.getElementById('editview').contentWindow.$peregrineApp.loadComponent(componentName)
+    window.$rendererBridge.loadComponent(componentName)
 
     let targetNode = null
     let targetNodeUpdate = null
@@ -74,6 +74,7 @@ export default function(me, target) {
                     {
                         Vue.set(targetNodeUpdate, 'children', data.children)
                     }
+                    window.$rendererBridge.modelChanged(targetNodeUpdate.path, targetNodeUpdate)
                     log.fine(data)
                 }
             })
@@ -93,6 +94,7 @@ export default function(me, target) {
                             else if (target.drop === 'before' || target.drop === 'after') {
                                 Vue.set(targetNodeUpdate, 'children', data.children)
                             }
+                            window.$rendererBridge.modelChanged(targetNodeUpdate.path, targetNodeUpdate)
                             log.fine(data)
                             return
                         }
@@ -117,6 +119,7 @@ export default function(me, target) {
                         {
                             Vue.set(targetNodeUpdate, 'children', data.children)
                         }
+                        window.$rendererBridge.modelChanged(targetNodeUpdate.path, targetNodeUpdate)
                         log.fine(data)
                     }
                 }

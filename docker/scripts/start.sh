@@ -2,6 +2,9 @@
 
 echo starting sling with runmode $1
 
+# Required on Java 17+ for ThreadLocal cleanup (see Sling 12 release notes)
+export JAVA_OPTS="--add-opens java.base/java.lang=ALL-UNNAMED ${JAVA_OPTS}"
+
 cd /app/sling && /app/sling/org.apache.sling.feature.launcher-*/bin/launcher \
     -D sling.run.modes=$1 \
     -f /app/sling/com.peregrine-cms.sling.launchpad-*-SNAPSHOT-oak_tar_far.far \

@@ -99,7 +99,7 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v22.17.0</nodeVersion>
+                            <nodeVersion>${node.version}</nodeVersion>
                             <npmVersion>10.5.2</npmVersion>
                         </configuration>
                     </execution>

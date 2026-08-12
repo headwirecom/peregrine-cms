@@ -17,7 +17,7 @@
     <description>Peregrine CMS Root POM. It contains the plugin and dependencies definitions and profiles</description>
 
     <properties>
-        <node.version>v12.18.3</node.version>
+        <node.version>v20.20.2</node.version>
 
         <sling.host>localhost</sling.host>
         <sling.port>8080</sling.port>
@@ -25,59 +25,61 @@
         <sling.password>admin</sling.password>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
 
         <!-- OSGi Dependency Versions -->
-        <osgi.core>7.0.0</osgi.core>
-        <osgi.annotation.version>7.0.0</osgi.annotation.version>
-        <org.osgi.service.component.annotations.version>1.4.0</org.osgi.service.component.annotations.version>
+        <osgi.core>8.0.0</osgi.core>
+        <osgi.annotation.version>8.1.0</osgi.annotation.version>
+        <org.osgi.service.component.annotations.version>1.5.1</org.osgi.service.component.annotations.version>
         <org.osgi.service.metatype.annotations.version>1.4.1</org.osgi.service.metatype.annotations.version>
 
         <!-- Java Frameworks -->
         <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
         <javax.inject.version>1</javax.inject.version>
         <javax.jcr.version>2.0</javax.jcr.version>
-        <slf4j.version>1.7.32</slf4j.version>
+        <slf4j.version>1.7.36</slf4j.version>
 
         <!-- Sling Dependencies Versions -->
-        <org.apache.sling.api.version>2.27.0</org.apache.sling.api.version>
-        <org.apache.sling.jcr.api.version>2.4.0</org.apache.sling.jcr.api.version>
+        <!-- must match the Sling API shipped by peregrine-builder (Starter 14): provider-type
+             imports get narrow version ranges locked to the API this compiles against -->
+        <org.apache.sling.api.version>3.0.2</org.apache.sling.api.version>
+        <org.apache.sling.jcr.api.version>2.4.2</org.apache.sling.jcr.api.version>
         <org.apache.sling.jcr.base.version>3.2.0</org.apache.sling.jcr.base.version>
         <org.apache.sling.commons.mime.version>2.3.0</org.apache.sling.commons.mime.version>
-        <org.apache.sling.settings.version>1.4.2</org.apache.sling.settings.version>
+        <org.apache.sling.settings.version>1.5.0</org.apache.sling.settings.version>
         <org.apache.sling.commons.osgi.version>2.4.2</org.apache.sling.commons.osgi.version>
-        <org.apache.sling.models.api.version>1.5.4</org.apache.sling.models.api.version>
-        <org.apache.sling.engine.version>2.15.16</org.apache.sling.engine.version>
+        <org.apache.sling.models.api.version>2.0.0</org.apache.sling.models.api.version>
+        <org.apache.sling.engine.version>3.0.2</org.apache.sling.engine.version>
         <org.apache.sling.scripting.sightly.compiler.java.version>1.2.2-1.4.0</org.apache.sling.scripting.sightly.compiler.java.version>
         <org.apache.sling.scripting.sightly.runtime.version>1.2.6-1.4.0</org.apache.sling.scripting.sightly.runtime.version>
         <org.apache.sling.servlet-helpers.version>1.4.6</org.apache.sling.servlet-helpers.version>
         <distribution.api.version>0.4.0</distribution.api.version>
         <distribution.api.version.latest>0.3.1-SNAPSHOT</distribution.api.version.latest>
-        <org.apache.sling.xss.version>2.4.0</org.apache.sling.xss.version>
+        <org.apache.sling.xss.version>2.4.8</org.apache.sling.xss.version>
 
         <!-- Third Party Dependencies Versions -->
         <jackrabbit.version>2.19.3</jackrabbit.version>
-        <commons-lang3.version>3.12.0</commons-lang3.version>
-        <commons-io.version>2.11.0</commons-io.version>
+        <commons-lang3.version>3.20.0</commons-lang3.version>
+        <commons-io.version>2.21.0</commons-io.version>
         <commons-collections.version>3.2.2</commons-collections.version>
-        <com.fasterxml.jackson.version>2.13.0</com.fasterxml.jackson.version>
+        <com.fasterxml.jackson.version>2.21.1</com.fasterxml.jackson.version>
         <guava.version>18.0</guava.version>
         <!-- <aws-java-sdk-osgi.version>1.11.181</aws-java-sdk-osgi.version> -->
-        <metadata-extractor.version>2.16.0</metadata-extractor.version>
+        <metadata-extractor.version>2.21.0</metadata-extractor.version>
         <xmpcore.version>6.1.11</xmpcore.version>
         <tika.version>1.27</tika.version>
 
         <!-- Tests Dependencies Versions -->
         <junit.version>4.13.2</junit.version>
         <mockito-all.version>1.10.19</mockito-all.version>
-        <jmock-junit4.version>2.12.0</jmock-junit4.version>
-        <org.apache.sling.commons.testing.version>2.1.0</org.apache.sling.commons.testing.version>
-        <org.apache.sling.junit.core.version>1.1.6</org.apache.sling.junit.core.version>
+        <jmock-junit4.version>2.13.1</jmock-junit4.version>
+        <org.apache.sling.commons.testing.version>2.4.2</org.apache.sling.commons.testing.version>
+        <org.apache.sling.junit.core.version>1.2.0</org.apache.sling.junit.core.version>
         <org.apache.sling.testing.clients.version>2.0.12</org.apache.sling.testing.clients.version>
         <org.apache.sling.testing.rules.version>2.0.2</org.apache.sling.testing.rules.version>
         <org.apache.sling.testing.sling-mock.junit4.version>3.5.2</org.apache.sling.testing.sling-mock.junit4.version>
-        <org.apache.sling.junit.teleporter.version>1.0.22</org.apache.sling.junit.teleporter.version>
+        <org.apache.sling.junit.teleporter.version>1.1.0</org.apache.sling.junit.teleporter.version>
 
         <sourceReleaseAssemblyDescriptor>source-release</sourceReleaseAssemblyDescriptor>
 
@@ -90,7 +92,7 @@
 
         <noContent>true</noContent>
         <org.apache.sling.serviceusermapper.version>1.5.8</org.apache.sling.serviceusermapper.version>
-        <org.apache.sling.event.version>4.3.14</org.apache.sling.event.version>
+        <org.apache.sling.event.version>4.4.0</org.apache.sling.event.version>
     </properties>
 
     <build>
@@ -289,6 +291,10 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.18.1</version>
+                    <configuration>
+                        <!-- Required on Java 17: cglib-based Mockito 1.x reflects into JDK internals -->
+                        <argLine>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED</argLine>
+                    </configuration>
                 </plugin>
                 <!-- Maven Failsafe Plugin -->
                 <plugin>
@@ -331,14 +337,14 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>5.1.2</version>
+                    <version>5.1.9</version>
                     <inherited>true</inherited>
                 </plugin>
                 <!-- bnd plugin -->
                 <plugin>
                     <groupId>biz.aQute.bnd</groupId>
                     <artifactId>bnd-maven-plugin</artifactId>
-                    <version>5.3.0</version>
+                    <version>6.4.0</version>
                 </plugin>
                 <!-- Maven Dependency Plugin -->
                 <plugin>
@@ -355,7 +361,7 @@
                 <plugin>
                     <groupId>com.github.eirslett</groupId>
                     <artifactId>frontend-maven-plugin</artifactId>
-                    <version>1.11.2</version>
+                    <version>1.15.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -563,6 +569,13 @@
                 <version>${org.apache.sling.event.version}</version>
                 <scope>provided</scope>
             </dependency>
+            <!-- sling event 4.4+ moved the jobs API into its own artifact -->
+            <dependency>
+                <groupId>org.apache.sling</groupId>
+                <artifactId>org.apache.sling.event.api</artifactId>
+                <version>1.0.4</version>
+                <scope>provided</scope>
+            </dependency>
             <dependency>
                 <groupId>org.apache.sling</groupId>
                 <artifactId>org.apache.sling.serviceusermapper</artifactId>
@@ -612,7 +625,8 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
-                <version>${com.fasterxml.jackson.version}</version>
+                <!-- jackson-annotations dropped the patch digit as of 2.20 (matches platform) -->
+                <version>2.21</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -725,6 +739,18 @@
 
         </dependencies>
     </dependencyManagement>
+
+    <dependencies>
+        <!-- Sling API 3.x classes reference jakarta.servlet types (jakarta bridge);
+             needed on every module's classpath for compiling and for reflective
+             test mocking. Provided scope keeps it out of the bundles. -->
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 
     <reporting>
         <plugins>

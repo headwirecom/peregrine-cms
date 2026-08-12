@@ -463,6 +463,10 @@ class PerAdminImpl {
   populatePageView(path) {
     return fetch('/admin/readNode.json' + path)
         .then((data) => populateView('/pageView', 'page', data))
+        .then((data) => {
+          window.$rendererBridge.pageLoaded(path, data)
+          return data
+        })
   }
 
   populateObject(path, target, name, schema) {
@@ -661,8 +665,7 @@ class PerAdminImpl {
                   .then(function () {
                     const editView = document.getElementById('editview')
                     if (editView) {
-                      editView.contentWindow.$peregrineApp.loadContent(
-                          path + '.html')
+                      window.$rendererBridge.loadContent(path + '.html')
                     }
                   })
                   .then(function () {
