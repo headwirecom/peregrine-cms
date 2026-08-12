@@ -462,8 +462,12 @@ class PerAdminImpl {
 
   populatePageView(path) {
     return fetch('/admin/readNode.json' + path)
-        .then((data) => populateView('/pageView', 'page', data))
         .then((data) => {
+          // note: populateView resolves its promise to the view path, not the
+          // data, so capture the fetched page model here and hand that to the
+          // bridge (passing the wrong value corrupts protocol renderers, which
+          // echo page:update back into the shared model)
+          populateView('/pageView', 'page', data)
           window.$rendererBridge.pageLoaded(path, data)
           return data
         })
