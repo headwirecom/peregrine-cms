@@ -61,6 +61,7 @@
                                          com.peregrine.admin.models,\
                                          com.peregrine.admin.util
                         -noimportjava true
+                        -noee: true
                         -snapshot: SNAPSHOT
                         -removeheaders: Bundle-SCM
                         -snapshot: SNAPSHOT

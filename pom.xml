@@ -339,6 +339,16 @@
                     <artifactId>maven-bundle-plugin</artifactId>
                     <version>5.1.9</version>
                     <inherited>true</inherited>
+                    <configuration>
+                        <instructions>
+                            <!-- bnd 6.x predates Java 25's class-file version (69) and
+                                 stamps Require-Capability osgi.ee="UNKNOWN", which no
+                                 framework satisfies, so every bundle would stay unresolved
+                                 (Installed). Suppress the EE requirement; the runtime JDK
+                                 is pinned by the feature launcher / far. -->
+                            <_noee>true</_noee>
+                        </instructions>
+                    </configuration>
                 </plugin>
                 <!-- bnd plugin -->
                 <plugin>
