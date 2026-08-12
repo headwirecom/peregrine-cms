@@ -1,4 +1,7 @@
-FROM eclipse-temurin:17-jdk-jammy AS builder
+# Build the (architecture-independent) Sling repository on the native build
+# platform so the Sling boot + package install never runs under emulation.
+# The Oak segment store, the feature far and the launcher are all portable Java.
+FROM --platform=$BUILDPLATFORM eclipse-temurin:17-jdk-jammy AS builder
 
 WORKDIR /app
 
