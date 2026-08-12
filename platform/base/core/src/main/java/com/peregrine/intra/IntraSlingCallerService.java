@@ -69,7 +69,9 @@ public class IntraSlingCallerService
             logger.trace("Response Status: '{}'", resp.getStatus());
             //AS TODO: do we need to support redirects (301 / 302)
             if(resp.getStatus() != 200) {
-                String content = resp.getOutput().toString();
+                // getOutput() is a byte[]; toString() on it prints "[B@<hash>".
+                // Decode it so the failure log shows the real response body.
+                String content = new String(resp.getOutput(), java.nio.charset.StandardCharsets.UTF_8);
                 logger.error("Request of: '{}' failed (status: {}). Output : '{}'", req.getRequestURI(), resp.getStatus(), content);
                 throw new CallException(String.format(CALLING_REQUEST_FAILED, req.getRequestURI(), resp.getStatus()));
             } else {
