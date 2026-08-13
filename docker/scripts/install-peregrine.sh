@@ -36,6 +36,7 @@ PKG_ORDER=( \
   themecleanflex.ui.apps-1.0-SNAPSHOT.zip \
   pagerender-vue3.ui.apps-1.0-SNAPSHOT.zip \
   bayviewthemevue3-ui.apps-1.0-SNAPSHOT.zip \
+  adminv2.ui.apps-1.0-SNAPSHOT.zip \
 )
 
 # Upload a package and echo the package path ("/group/name.zip") on stdout.
