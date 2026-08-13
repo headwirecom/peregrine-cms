@@ -109,7 +109,12 @@ public class GetObjectServlet extends AbstractBaseServlet {
         }
 
         RequestDispatcherOptions rdOptions = new RequestDispatcherOptions();
-        rdOptions.setReplaceSelectors(MODEL);
+        // Sling 14's DefaultGetServlet rejects unknown selectors with a 400
+        // ("Invalid recursion selector value 'model'") instead of ignoring
+        // them. Objects have no Sling Model exporter, so the 'model' selector
+        // always fell through to the default renderer; clear the selectors to
+        // get the same plain JSON rendering without tripping the validation.
+        rdOptions.setReplaceSelectors("");
         return new ForwardResponse(resource, rdOptions);
     }
 }
