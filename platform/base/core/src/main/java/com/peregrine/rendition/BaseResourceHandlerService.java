@@ -206,14 +206,26 @@ public class BaseResourceHandlerService
         String user = resource.getResourceResolver().getUserID();
         Calendar now = Calendar.getInstance();
         final Resource base = PerUtil.getBaseResource(resource);
-        ModifiableValueMap properties = getModifiableProperties(base, false);
-        properties.put(JCR_LAST_MODIFIED_BY, user);
-        properties.put(JCR_LAST_MODIFIED, now);
-        Resource jcrContent = PerUtil.getProperJcrContent(base);
-        if (jcrContent != null) {
-            properties = getModifiableProperties(jcrContent, false);
+        stampModification(base, user, now);
+        stampModification(PerUtil.getProperJcrContent(base), user, now);
+    }
+
+    /**
+     * Stamps jcr:lastModified/By if the node type permits it. Strict types
+     * (nt:file, nt:folder, nt:resource - typical for theme-imported content)
+     * reject these properties with an IllegalArgumentException; a missing
+     * audit stamp must not fail the actual operation (rename, move, delete).
+     */
+    private void stampModification(final Resource resource, final String user, final Calendar now) {
+        if (isNull(resource)) {
+            return;
+        }
+        try {
+            ModifiableValueMap properties = getModifiableProperties(resource, false);
             properties.put(JCR_LAST_MODIFIED_BY, user);
             properties.put(JCR_LAST_MODIFIED, now);
+        } catch (IllegalArgumentException e) {
+            logger.debug("Node type of '{}' does not allow modification stamps - skipped", resource.getPath());
         }
     }
 }
