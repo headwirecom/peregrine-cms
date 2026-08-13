@@ -81,7 +81,7 @@
           id="editview"
           ref="editview"
           :src="pagePath"
-          :data-per-mode="previewMode"
+          :data-per-mode="previewMode || 'edit'"
           @load="onIframeLoaded"/>
     </template>
     <admin-components-addcomponentmodal
