@@ -63,6 +63,13 @@ public class AdminResourceHandlerService
     implements AdminResourceHandler {
     public static final String PN_DELETE_NODE = "_opDelete";
     public static final String PN_DELETE_PROPS = "_opDeleteProps";
+    /**
+     * Optional node name for insertNodeAt content payloads. New nodes are
+     * normally named 'n&lt;uuid&gt;'; a client restoring a previous state
+     * (undo) can ask for the original name to keep node identity - and with
+     * it any references to it. Ignored when the name is invalid or taken.
+     */
+    public static final String PN_NODE_NAME = "_opName";
     public static final String MODE_PROPERTY = "mode";
 
     private static final String PARENT_NOT_FOUND = "Could not find %s Parent Resource. Path: '%s', name: '%s'";
@@ -965,7 +972,7 @@ public class AdminResourceHandlerService
     ) throws RepositoryException, ManagementException {
         properties.remove(PATH);
         final String component = (String) properties.remove(COMPONENT);
-        final Node newNode = addNewNode(parent);
+        final Node newNode = addNewNode(parent, (String) properties.remove(PN_NODE_NAME));
         if (isEmpty(component)) {
             return newNode;
         }
@@ -985,6 +992,15 @@ public class AdminResourceHandlerService
     }
 
     private Node addNewNode(final Node parent) throws RepositoryException {
+        return addNewNode(parent, null);
+    }
+
+    private Node addNewNode(final Node parent, final String requestedName) throws RepositoryException {
+        if (isNotBlank(requestedName)
+            && nodeNameValidation.isValidPageName(requestedName)
+            && !parent.hasNode(requestedName)) {
+            return parent.addNode(requestedName, NT_UNSTRUCTURED);
+        }
         return parent.addNode("n" + UUID.randomUUID(), NT_UNSTRUCTURED);
     }
 

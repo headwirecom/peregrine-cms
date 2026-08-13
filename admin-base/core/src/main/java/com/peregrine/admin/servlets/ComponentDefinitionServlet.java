@@ -42,6 +42,7 @@ import static com.peregrine.commons.util.PerUtil.GET;
 import static com.peregrine.commons.util.PerUtil.PER_PREFIX;
 import static com.peregrine.commons.util.PerUtil.PER_VENDOR;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_METHODS;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static org.apache.sling.api.servlets.ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
@@ -78,6 +79,15 @@ public class ComponentDefinitionServlet extends AbstractBaseServlet {
     protected Response handleRequest(Request request) throws IOException {
         String path = request.getParameter(PATH);
         Resource resource = request.getResourceByPath(path);
+        if (resource == null) {
+            // e.g. a component inherited from the page template: it has no
+            // node of its own under the page. Answer properly instead of
+            // failing with an NPE so callers can fall back.
+            return new ErrorResponse()
+                .setHttpErrorCode(SC_NOT_FOUND)
+                .setErrorMessage("Resource not found")
+                .setRequestPath(path);
+        }
         boolean page = false;
         if (resource.getResourceType().equals(PerConstants.PAGE_PRIMARY_TYPE)) {
             page = true;
