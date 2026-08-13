@@ -314,10 +314,18 @@ window.addEventListener('message', function(event) {
                 msg.protocolVersion, 'vs', PROTOCOL_VERSION)
             return
         }
+        // renderers answer EVERY admin:ready probe with renderer:ready (their
+        // boot announce can be consumed before attach() resets the transport,
+        // so a single answer could leave us stranded on legacy). When we are
+        // already on postMessage just refresh the capabilities and do NOT
+        // reply with another admin:ready - that reply is what would loop.
+        const alreadyUpgraded = bridge.transport && bridge.transport.name === 'postMessage'
         bridge.transport = new PostMessageTransport(bridge.iframe, msg)
-        bridge.transport.send('admin:ready', { capabilities: EDITOR_CAPABILITIES })
-        log.info('renderer speaks protocol', msg.protocolVersion,
-            '(' + (msg.framework || 'unknown framework') + ') - upgraded to postMessage transport')
+        if (!alreadyUpgraded) {
+            bridge.transport.send('admin:ready', { capabilities: EDITOR_CAPABILITIES })
+            log.info('renderer speaks protocol', msg.protocolVersion,
+                '(' + (msg.framework || 'unknown framework') + ') - upgraded to postMessage transport')
+        }
         return
     }
 
