@@ -32,7 +32,6 @@ PKG_ORDER=( \
   admin.ui.materialize-1.0-SNAPSHOT.zip \
   admin.sling.ui.apps-1.0-SNAPSHOT.zip \
   example-vue.ui.apps-1.0-SNAPSHOT.zip \
-  themeclean-ui.apps-1.0-SNAPSHOT.zip \
   pagerender-vue3.ui.apps-1.0-SNAPSHOT.zip \
   bayviewthemevue3-ui.apps-1.0-SNAPSHOT.zip \
   pagerender-vanilla.ui.apps-1.0-SNAPSHOT.zip \
