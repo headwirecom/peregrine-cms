@@ -29,8 +29,11 @@
 </head>
 <body>
     <script>
-        document.location = '/admin/pages/index.html';
+        // Admin v2 is the default experience. It handles first-login consent
+        // and create-your-first-site itself; the classic console is still
+        // reachable at /admin/pages/index.html.
+        document.location = '/content/adminv2/pages/index.html';
     </script>
-    <a href="/admin/pages/index.html">go to the admin console</a>
+    <a href="/content/adminv2/pages/index.html">go to the admin console</a>
 </body>
 </html>
