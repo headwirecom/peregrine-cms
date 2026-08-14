@@ -377,6 +377,150 @@ function getAdminAppNodeImpl(path) {
     return null
 }
 
+// =============================================================================
+// Renderer protocol (postMessage) - editor communication
+// =============================================================================
+//
+// The renderer announces itself with 'renderer:ready'. An editor that speaks
+// the protocol (admin v2) replies 'admin:ready' and from then on pushes model
+// changes as explicit messages (page:update / component:update). The classic
+// admin does not speak the protocol and keeps using the shared-object bridge
+// (window.parent.$perAdminView.pageView) - both paths coexist: when the parent
+// is the classic admin no protocol messages ever arrive, and when the parent
+// is adminv2 there is no $perAdminView so getPerView() returns the local view.
+
+var PROTOCOL_VERSION = '1.0'
+
+var RENDERER_CAPABILITIES = {
+    serverRefresh: false,
+    reactiveUpdate: true,
+    inlineEdit: true,
+    dragDrop: true
+}
+
+function announceRenderer(editor) {
+    editor.postMessage({
+        type: 'renderer:ready',
+        protocolVersion: PROTOCOL_VERSION,
+        capabilities: RENDERER_CAPABILITIES,
+        framework: 'vue2'
+    }, window.location.origin)
+    log.fine('renderer:ready sent to editor')
+}
+
+function findNodeByPath(node, path) {
+    if(!node) return null
+    if(node.path === path) return node
+    if(node.children) {
+        for(var i = 0; i < node.children.length; i++) {
+            var found = findNodeByPath(node.children[i], path)
+            if(found) return found
+        }
+    }
+    return null
+}
+
+function applyPageUpdate(page) {
+    // register any components the updated model references that have not been
+    // seen yet (a freshly dropped component type), then swap the reactive page
+    // object. The Vue instance's data IS the registered view object, so
+    // assigning view.page fires Vue 2's reactive setter and the tree
+    // re-renders - same assignment processLoadedContent() does on navigation.
+    walkTreeAndLoad(page)
+    getPerView().page = page
+    log.fine('page:update applied')
+}
+
+function applyComponentUpdate(path, data) {
+    var current = getPerView().page
+    if(!current) return
+    // structural replace: clone the page, mutate the target node in the
+    // clone, reassign the page object. In-place mutation of a deep node can
+    // introduce keys Vue 2 has never observed (invisible without Vue.set), so
+    // the wholesale reassignment is the reliable path.
+    var nextPage = JSON.parse(JSON.stringify(current))
+    var node = findNodeByPath(nextPage, path)
+    if(!node) {
+        log.fine('component:update: no node found at', path)
+        return
+    }
+    Object.keys(data).forEach(function(key) {
+        // apply children only when the payload actually carries the subtree:
+        // structural changes (add/move/delete in a container) arrive as a
+        // children update and must re-render, while partial payloads without
+        // children must not clobber the existing subtree
+        if(key === 'children' && !Array.isArray(data.children)) return
+        node[key] = data[key]
+    })
+    walkTreeAndLoad(node)
+    getPerView().page = nextPage
+    log.fine('component:update applied at', path)
+}
+
+function initEditProtocol() {
+    // framed on the same origin is enough - do NOT require data-per-mode
+    // here: the editor binds that attribute to reactive state and it can
+    // appear only after this frame booted, which would silently skip the
+    // handshake. The listener only ever acts on same-origin editor messages.
+    var framed
+    try {
+        framed = window.parent && window.parent !== window
+    } catch(error) {
+        framed = false
+    }
+    if(!framed) return
+
+    // the CLASSIC admin shares its reactive pageView object with this frame
+    // (getView() above) and its whole vue2 editing flow is built on that.
+    // Announcing the protocol would upgrade its rendererBridge to the
+    // postMessage transport and abandon that battle-tested path, so when the
+    // parent exposes the classic admin globals stay silent and legacy. A
+    // cross-origin parent throws here, which is fine: it cannot be the
+    // classic admin, so the protocol announce below proceeds.
+    try {
+        if(window.parent.$perAdminApp || window.parent.$perAdminView) {
+            log.fine('classic admin detected - keeping legacy shared-object bridge')
+            return
+        }
+    } catch(error) {
+        // cross-origin parent: not the classic admin
+    }
+
+    var editor = window.parent
+
+    window.addEventListener('message', function(ev) {
+        if(ev.source !== editor) return
+        if(ev.origin !== window.location.origin) return
+        var msg = ev.data
+        if(!msg || typeof msg.type !== 'string') return
+        switch(msg.type) {
+            case 'admin:ready':
+                // ALWAYS answer the editor's probe: the editor resets its
+                // transport on every iframe load event and re-probes with
+                // admin:ready, and this frame's boot announce may have fired
+                // before the editor listened. The editor ignores
+                // renderer:ready once connected, so this cannot loop.
+                announceRenderer(editor)
+                break
+            case 'page:update':
+                if(msg.page && typeof msg.page === 'object') applyPageUpdate(msg.page)
+                break
+            case 'component:update':
+                if(msg.path && msg.data) applyComponentUpdate(msg.path, msg.data)
+                break
+            case 'page:reload':
+            case 'mode:change':
+                window.location.reload()
+                break
+            default:
+                // unknown message types are ignored per spec
+                break
+        }
+    })
+
+    announceRenderer(editor)
+}
+
 var peregrineApp = {
 
     registerView: function(view) {
@@ -420,6 +564,18 @@ var peregrineApp = {
         return (domains.indexOf(server) >= 0)
     }
 
+}
+
+// start the editor handshake as soon as the runtime is loaded (before the
+// page's inline boot script runs registerView/loadContentFrom) so the editor
+// hears from us no matter which side won the iframe-load race. Guarded for
+// non-browser (SSR) evaluation of this bundle.
+if(typeof window !== 'undefined') {
+    try {
+        initEditProtocol()
+    } catch(error) {
+        log.error('renderer protocol init failed', error)
+    }
 }
 
 /**
