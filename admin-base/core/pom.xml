@@ -38,6 +38,14 @@
     </description>
 
     <build>
+        <!-- the parent pom replaces the default resource dirs with only
+             src/main/content/META-INF; re-add src/main/resources so the
+             embedded API catalog reaches target/classes and the bundle -->
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>biz.aQute.bnd</groupId>
@@ -184,6 +192,11 @@
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.engine</artifactId>
         </dependency>
 
         <dependency>
