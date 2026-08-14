@@ -85,6 +85,15 @@
             </button>
           </template>
         </admin-components-materializemodal>
+        <li v-if="adminV2Available" class="nav-link">
+          <a :href="adminV2Url"
+             :title="$i18n('Open the same site in the new admin')"
+             class="admin-v2-link"
+             style="display:inline-flex;align-items:center;white-space:nowrap">
+            {{ $i18n('Admin v2') }}<i class="material-icons"
+               style="font-size:16px;margin-left:4px">open_in_new</i>
+          </a>
+        </li>
         <admin-components-materializedropdown
             tag="li"
             class="nav-link user-link"
@@ -161,10 +170,26 @@ export default {
         {name: 'objects', title: 'Objects'},
         {name: 'templates', title: 'Templates'},
       ],
-      helpSelection: 'Help'
+      helpSelection: 'Help',
+      // the new admin is an optional package: only offer the link when it
+      // is actually installed on this instance
+      adminV2Available: false
     }
   },
+  mounted() {
+    fetch('/content/adminv2/pages/index.html', {
+      method: 'HEAD', credentials: 'same-origin'
+    })
+      .then((r) => { this.adminV2Available = r.ok })
+      .catch(() => { this.adminV2Available = false })
+  },
   computed: {
+    // carry the tenant across, so the new admin opens on the same site
+    adminV2Url() {
+      const tenant = $perAdminApp.getView().state.tenant
+      const name = tenant && tenant.name
+      return '/content/adminv2/pages/index.html' + (name ? '?site=' + name : '')
+    },
     hideTenants() {
       return this.model.hideTenants ? true : $perAdminApp.getView().state.tenant ? false : true
     },
