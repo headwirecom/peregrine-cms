@@ -108,6 +108,20 @@ done
 
 log "All ${#PKG_ORDER[@]} packages installed and verified."
 
+# ---------------------------------------------------------------------------
+# Remove the classic (v1) admin UI. Admin v2 is the only console in this image.
+# We KEEP the shared backend and felib assets v2 depends on:
+#   /apps/admin/install  - the admin.core bundle that serves /perapi
+#   /etc/felibs/admin    - icon-browser fonts + i18n dictionaries v2 loads
+# and delete only the Vue 2 UI content:
+#   /content/admin, /apps/admin/components, /apps/admin/pages, /apps/field
+# ---------------------------------------------------------------------------
+log "Removing the classic (v1) admin UI (keeping admin.core + felibs/admin)..."
+for classic in /content/admin /apps/admin/components /apps/admin/pages /apps/field; do
+  code=$(curl -u admin:admin -s -o /dev/null -w '%{http_code}' -X POST "${SLING_URL}${classic}" -F ":operation=delete")
+  log "  deleted ${classic} (HTTP ${code})"
+done
+
 # Wait for Sling to be fully ready again
 # (package installs may have triggered bundle restarts / sling jobs)
 QUIESCE_TIMEOUT=300
