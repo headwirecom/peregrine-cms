@@ -1,5 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <!--
 
       Licensed to the Apache Software Foundation (ASF) under one
@@ -20,78 +19,98 @@
       under the License.
 
 -->
-<html xml:lang="en" lang="en"
-      xmlns="http://www.w3.org/1999/xhtml"
-      id="login-page"
->
+<html lang="en" id="login-page">
 <head>
    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-   <title>Login</title>
-   <link rel="stylesheet" href="${contextPath}/etc/felibs/materialize/materialize.css">
+   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+   <meta name="viewport" content="width=device-width, initial-scale=1"/>
+   <title>Peregrine — Log in</title>
+   <style>
+     :root {
+       --av2-bg: #f5f6f8; --av2-panel: #ffffff; --av2-ink: #1d2430;
+       --av2-muted: #6b7484; --av2-line: #e3e6eb; --av2-accent: #7c3aed;
+       --av2-danger: #d54848; --av2-side: #171c26;
+       --av2-font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+     }
+     @media (prefers-color-scheme: dark) {
+       :root { --av2-bg: #0f1218; --av2-panel: #171c26; --av2-ink: #e7eaf0;
+               --av2-muted: #8b93a5; --av2-line: #2b3140; }
+     }
+     * { box-sizing: border-box; }
+     html, body { height: 100%; margin: 0; }
+     body {
+       font-family: var(--av2-font); color: var(--av2-ink);
+       background:
+         radial-gradient(1100px 600px at 15% -10%, rgba(124,58,237,.12), transparent 60%),
+         var(--av2-bg);
+       display: flex; align-items: center; justify-content: center; padding: 24px;
+     }
+     .lg-card {
+       width: 100%; max-width: 380px; background: var(--av2-panel);
+       border: 1px solid var(--av2-line); border-radius: 14px;
+       box-shadow: 0 24px 70px rgba(20, 24, 34, .16); padding: 30px 28px 26px;
+     }
+     .lg-brand { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+     .lg-brand__mark { color: var(--av2-accent); font-size: 16px; }
+     .lg-brand__name { font-weight: 700; letter-spacing: .01em; }
+     .lg-brand__badge {
+       margin-left: auto; background: var(--av2-accent); color: #fff;
+       font: 700 10px/1 var(--av2-font); letter-spacing: .08em;
+       padding: 5px 8px; border-radius: 999px;
+     }
+     .lg-title { margin: 18px 0 18px; font-size: 20px; }
+     .lg-field { display: block; margin-bottom: 14px; }
+     .lg-field label {
+       display: block; font-size: 12.5px; color: var(--av2-muted); margin-bottom: 5px;
+     }
+     .lg-field input {
+       width: 100%; height: 42px; padding: 0 12px; font-size: 14px;
+       color: var(--av2-ink); background: var(--av2-bg);
+       border: 1px solid var(--av2-line); border-radius: 9px; outline: none;
+       transition: border-color .12s, background .12s;
+     }
+     .lg-field input:focus { border-color: var(--av2-accent); background: var(--av2-panel); }
+     .lg-btn {
+       width: 100%; height: 44px; margin-top: 6px; cursor: pointer;
+       background: var(--av2-accent); color: #fff; border: 0; border-radius: 9px;
+       font: 600 14.5px var(--av2-font);
+     }
+     .lg-btn:hover { filter: brightness(1.06); }
+     #err p { margin: 0 0 12px; color: var(--av2-danger); font-size: 13px; }
+     #err p:empty { display: none; }
+     .lg-foot { margin-top: 16px; text-align: center; color: var(--av2-muted); font-size: 12px; }
+   </style>
 </head>
-
 <body>
-<div class="top-bar">
-   <img border="0"
-        src="${contextPath}/etc/felibs/admin/peregrine-logo.png"
-        alt="Peregrine CMS Logo"/>
-   <!--a href="#help" class="help">Help</a-->
-</div>
-
-<div id="main">
-   <div class="login-wrapper">
-      <!--suppress CssUnknownTarget -->
-      <div class="login-image"></div>
-      <div class="login-form-wrapper">
-         <form id="loginform" method="POST" action="${contextPath}/j_security_check"
-               enctype="multipart/form-data" accept-charset="UTF-8">
-
-            <input type="hidden" name="_charset_" value="UTF-8"/>
-            <input type="hidden" name="resource" value="${resource}"/>
-
-            <h3 class="title">Log In</h3>
-
-            <div id="err">
-               <p>${j_reason}</p>
-            </div>
-
-            <div class="form-control">
-               <label for="j_username">Username</label>
-               <input id="j_username" name="j_username" placeholder="Username" autofocus/>
-            </div>
-
-            <div class="form-control">
-               <label for="j_password">Password</label>
-               <input id="j_password" name="j_password" type="password" placeholder="Password"/>
-            </div>
-
-            <!-- <div class="form-control remember-me-forgot-password">
-               <div class="remember-me">
-                  <input type="checkbox"/>
-                  <span>Remember me</span>
-               </div>
-               <div class="forgot-password"><a href="#forgot-password">Forgot Password?</a></div>
-            </div> -->
-
-            <div class="buttongroup form-control">
-               <button id="login" accesskey="l" class="form-button" type="submit">
-                  Log In
-               </button>
-            </div>
-
-            <!-- <div class="sign-up-wrapper form-control">
-               Don't have an account? <a href="#sign-up">Sign up now</a>
-            </div> -->
-         </form>
+   <main class="lg-card">
+      <div class="lg-brand">
+         <span class="lg-brand__mark">▲</span>
+         <span class="lg-brand__name">peregrine</span>
+         <span class="lg-brand__badge">ADMIN V2</span>
       </div>
-   </div>
-   <div class="legal">
-      <!-- <a href="#terms-and-conditions">Terms & Conditions</a>
-      <span class="separator"></span>
-      <a href="#privacy-policy">Privacy policy</a> -->
-   </div>
-</div>
+      <h1 class="lg-title">Log in</h1>
 
+      <form id="loginform" method="POST" action="${contextPath}/j_security_check"
+            enctype="multipart/form-data" accept-charset="UTF-8">
+         <input type="hidden" name="_charset_" value="UTF-8"/>
+         <input type="hidden" name="resource" value="${resource}"/>
+
+         <div id="err"><p>${j_reason}</p></div>
+
+         <label class="lg-field">
+            <label for="j_username">Username</label>
+            <input id="j_username" name="j_username" placeholder="Username" autofocus autocomplete="username"/>
+         </label>
+
+         <label class="lg-field">
+            <label for="j_password">Password</label>
+            <input id="j_password" name="j_password" type="password" placeholder="Password" autocomplete="current-password"/>
+         </label>
+
+         <button id="login" accesskey="l" class="lg-btn" type="submit">Log in</button>
+      </form>
+
+      <div class="lg-foot">Peregrine CMS</div>
+   </main>
 </body>
 </html>
