@@ -51,4 +51,6 @@
     </filter>
     <filter root="/apps/runmodes"/>
     <filter root="/perapi/public"/>
+    <!-- Generic Markdown (.md) fallback script for any resource lacking its own md.jsp -->
+    <filter root="/apps/sling/servlet/default/md.jsp"/>
 </workspaceFilter>
