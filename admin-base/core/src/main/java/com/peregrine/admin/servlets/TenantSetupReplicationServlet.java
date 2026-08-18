@@ -113,8 +113,15 @@ public final class TenantSetupReplicationServlet extends ReplicationServletBase 
             final ResourceResolver resourceResolver
     ) throws IOException, ReplicationException {
         final String path = site.getPath();
-        // Make sure that the Resource is a Site
-        if (!SITE_PRIMARY_TYPE.equals(site.getResourceType())) {
+        // Make sure that the Resource is a Site.
+        // By PRIMARY type, the way every other check in the codebase does it
+        // (ListTenantsServlet, DefaultSiteMapExtractor, AdminResourceHandler-
+        // Service). getResourceType() answers with sling:resourceType when the
+        // node carries one, and createTenant stamps every new site with
+        // "graphql/query" so its node serves the GraphQL endpoint - so this
+        // rejected every site an author had ever created, and only accepted
+        // the themes that ship without that property.
+        if (!PerUtil.isPrimaryType(site, SITE_PRIMARY_TYPE)) {
             return badRequest(String.format("Suffix: '%s' is not a Peregrine Site", path));
         }
 
