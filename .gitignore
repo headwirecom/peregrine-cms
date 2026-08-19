@@ -19,3 +19,6 @@ npm-debug.log
 nohup.out
 launcher
 icon?
+
+# build transcripts written next to the poms and under docker/
+*.log
