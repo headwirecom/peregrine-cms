@@ -1,0 +1,238 @@
+#0 building with "pmultiarch" instance using docker-container driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.55kB 0.0s done
+#1 DONE 0.0s
+
+#2 [linux/arm64 internal] load metadata for docker.io/library/eclipse-temurin:17-jdk-jammy
+#2 ...
+
+#3 [auth] library/eclipse-temurin:pull token for registry-1.docker.io
+#3 DONE 0.0s
+
+#4 [linux/amd64 internal] load metadata for docker.io/library/eclipse-temurin:17-jdk-jammy
+#4 DONE 0.7s
+
+#2 [linux/arm64 internal] load metadata for docker.io/library/eclipse-temurin:17-jdk-jammy
+#2 DONE 0.7s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 95B done
+#5 DONE 0.0s
+
+#6 [linux/amd64 builder 1/8] FROM docker.io/library/eclipse-temurin:17-jdk-jammy@sha256:29467857e8bde40ab1f7befecbda0ea764b95afec1cc7f89aa90f7a766577e19
+#6 resolve docker.io/library/eclipse-temurin:17-jdk-jammy@sha256:29467857e8bde40ab1f7befecbda0ea764b95afec1cc7f89aa90f7a766577e19 0.0s done
+#6 DONE 0.0s
+
+#7 [linux/arm64 stage-1 1/5] FROM docker.io/library/eclipse-temurin:17-jdk-jammy@sha256:29467857e8bde40ab1f7befecbda0ea764b95afec1cc7f89aa90f7a766577e19
+#7 resolve docker.io/library/eclipse-temurin:17-jdk-jammy@sha256:29467857e8bde40ab1f7befecbda0ea764b95afec1cc7f89aa90f7a766577e19 0.0s done
+#7 DONE 0.0s
+
+#8 [internal] load build context
+#8 transferring context: 82.15kB 0.0s done
+#8 DONE 0.0s
+
+#9 [linux/amd64 builder 2/8] WORKDIR /app
+#9 CACHED
+
+#10 [linux/amd64 builder 3/8] RUN apt update -q     && apt upgrade -q -y     && apt install -q -y --no-install-recommends         curl         jq         nodejs         npm     && apt clean -q -y     && apt autoremove --purge -q -y     && echo node: $(node --version)     && echo npm: $(npm --version)     && echo npx: $(npx --version)
+#10 CACHED
+
+#11 [linux/amd64 builder 4/8] COPY files/* /app/binaries/
+#11 DONE 0.4s
+
+#12 [linux/amd64 builder 5/8] COPY files/org.apache.sling.feature.launcher-1.3.4/ /app/binaries/org.apache.sling.feature.launcher-1.3.4/
+#12 DONE 0.0s
+
+#13 [linux/amd64 builder 6/8] COPY scripts/*.sh /app/scripts/
+#13 DONE 0.0s
+
+#14 [linux/amd64 builder 7/8] RUN scripts/install-sling.sh
+#14 0.159 mkdir: created directory '/app/sling'
+#14 0.196 created directory '/app/sling/org.apache.sling.feature.launcher-1.3.4'
+#14 0.196 renamed '/app/binaries/org.apache.sling.feature.launcher-1.3.4/LICENSE' -> '/app/sling/org.apache.sling.feature.launcher-1.3.4/LICENSE'
+#14 0.196 renamed '/app/binaries/org.apache.sling.feature.launcher-1.3.4/NOTICE' -> '/app/sling/org.apache.sling.feature.launcher-1.3.4/NOTICE'
+#14 0.196 renamed '/app/binaries/org.apache.sling.feature.launcher-1.3.4/README.md' -> '/app/sling/org.apache.sling.feature.launcher-1.3.4/README.md'
+#14 0.196 created directory '/app/sling/org.apache.sling.feature.launcher-1.3.4/bin'
+#14 0.196 renamed '/app/binaries/org.apache.sling.feature.launcher-1.3.4/bin/launcher' -> '/app/sling/org.apache.sling.feature.launcher-1.3.4/bin/launcher'
+#14 0.196 renamed '/app/binaries/org.apache.sling.feature.launcher-1.3.4/bin/launcher.bat' -> '/app/sling/org.apache.sling.feature.launcher-1.3.4/bin/launcher.bat'
+#14 0.196 created directory '/app/sling/org.apache.sling.feature.launcher-1.3.4/lib'
+#14 0.196 renamed '/app/binaries/org.apache.sling.feature.launcher-1.3.4/lib/commons-cli-1.4.jar' -> '/app/sling/org.apache.sling.feature.launcher-1.3.4/lib/commons-cli-1.4.jar'
+#14 0.196 renamed '/app/binaries/org.apache.sling.feature.launcher-1.3.4/lib/commons-lang3-3.12.0.jar' -> '/app/sling/org.apache.sling.feature.launcher-1.3.4/lib/commons-lang3-3.12.0.jar'
+#14 0.196 renamed '/app/binaries/org.apache.sling.feature.launcher-1.3.4/lib/commons-text-1.10.0.jar' -> '/app/sling/org.apache.sling.feature.launcher-1.3.4/lib/commons-text-1.10.0.jar'
+#14 0.196 renamed '/app/binaries/org.apache.sling.feature.launcher-1.3.4/lib/jakarta.json-api-2.0.2.jar' -> '/app/sling/org.apache.sling.feature.launcher-1.3.4/lib/jakarta.json-api-2.0.2.jar'
+#14 0.196 renamed '/app/binaries/org.apache.sling.feature.launcher-1.3.4/lib/johnzon-core-1.2.19-jakarta.jar' -> '/app/sling/org.apache.sling.feature.launcher-1.3.4/lib/johnzon-core-1.2.19-jakarta.jar'
+#14 0.196 renamed '/app/binaries/org.apache.sling.feature.launcher-1.3.4/lib/org.apache.felix.cm.json-2.0.0.jar' -> '/app/sling/org.apache.sling.feature.launcher-1.3.4/lib/org.apache.felix.cm.json-2.0.0.jar'
+#14 0.196 renamed '/app/binaries/org.apache.sling.feature.launcher-1.3.4/lib/org.apache.sling.feature-2.0.4.jar' -> '/app/sling/org.apache.sling.feature.launcher-1.3.4/lib/org.apache.sling.feature-2.0.4.jar'
+#14 0.196 renamed '/app/binaries/org.apache.sling.feature.launcher-1.3.4/lib/org.apache.sling.feature.launcher-1.3.4.jar' -> '/app/sling/org.apache.sling.feature.launcher-1.3.4/lib/org.apache.sling.feature.launcher-1.3.4.jar'
+#14 0.196 renamed '/app/binaries/org.apache.sling.feature.launcher-1.3.4/lib/org.osgi.util.converter-1.0.9.jar' -> '/app/sling/org.apache.sling.feature.launcher-1.3.4/lib/org.osgi.util.converter-1.0.9.jar'
+#14 0.196 renamed '/app/binaries/org.apache.sling.feature.launcher-1.3.4/lib/org.osgi.util.function-1.0.0.jar' -> '/app/sling/org.apache.sling.feature.launcher-1.3.4/lib/org.osgi.util.function-1.0.0.jar'
+#14 0.196 renamed '/app/binaries/org.apache.sling.feature.launcher-1.3.4/lib/osgi.core-8.0.0.jar' -> '/app/sling/org.apache.sling.feature.launcher-1.3.4/lib/osgi.core-8.0.0.jar'
+#14 0.196 renamed '/app/binaries/org.apache.sling.feature.launcher-1.3.4/lib/slf4j-api-1.7.25.jar' -> '/app/sling/org.apache.sling.feature.launcher-1.3.4/lib/slf4j-api-1.7.25.jar'
+#14 0.196 renamed '/app/binaries/org.apache.sling.feature.launcher-1.3.4/lib/slf4j-simple-1.7.25.jar' -> '/app/sling/org.apache.sling.feature.launcher-1.3.4/lib/slf4j-simple-1.7.25.jar'
+#14 0.196 removed directory '/app/binaries/org.apache.sling.feature.launcher-1.3.4/lib'
+#14 0.196 removed directory '/app/binaries/org.apache.sling.feature.launcher-1.3.4/bin'
+#14 0.196 removed directory '/app/binaries/org.apache.sling.feature.launcher-1.3.4/'
+#14 0.316 renamed '/app/binaries/com.peregrine-cms.sling.launchpad-14-SNAPSHOT-oak_tar_far.far' -> '/app/sling/com.peregrine-cms.sling.launchpad-14-SNAPSHOT-oak_tar_far.far'
+#14 DONE 0.3s
+
+#15 [linux/amd64 builder 8/8] RUN scripts/install-peregrine.sh none
+#15 0.111 Starting Sling for the first time...
+#15 0.112 starting sling with runmode none
+#15 0.267 [INFO] 
+#15 0.267 [INFO] Apache Sling Application Launcher
+#15 0.267 [INFO] ---------------------------------
+#15 0.267 [INFO] Initializing...
+#15 0.279 [INFO] Artifact Repositories: [file:///root/.m2/repository, https://repo.maven.apache.org/maven2, https://repository.apache.org/content/groups/snapshots]
+#15 0.279 [INFO] Assembling final feature model...
+#15 0.940 [INFO] 
+#15 0.940 [INFO] Assembling launcher...
+#15 1.731 [INFO] Using 0 local artifacts, 235 cached artifacts, and 1 downloaded artifacts
+#15 1.731 [INFO] 
+#15 1.731 [INFO] Starting launcher...
+#15 1.731 [INFO] Launcher Home: /app/sling
+#15 1.731 [INFO] Cache Directory: /app/sling/launcher/cache
+#15 1.731 [INFO] 
+#15 1.765 [INFO] Using framework factory class org.apache.felix.framework.FrameworkFactory
+#15 3.157 13.08.2026 16:11:41.061 *INFO* [FelixStartLevel] org.apache.sling.commons.log.logback.internal.LogConfigManager updating global configuration for org.apache.sling.commons.log.LogManager
+#15 3.164 13.08.2026 16:11:41.070 *INFO* [CM Configuration Updater (ManagedService Update: pid=[org.apache.sling.commons.log.LogManager])] org.apache.sling.commons.log.logback.internal.LogConfigManager updating global configuration for org.apache.sling.commons.log.LogManager
+#15 3.503 Aug 13, 2026 4:11:41 PM org.apache.aries.spifly.BaseActivator log
+#15 3.503 INFO: Registered provider org.eclipse.jetty.http.Http10FieldPreEncoder of service org.eclipse.jetty.http.HttpFieldPreEncoder in bundle org.apache.felix.http.jetty12
+#15 3.504 Aug 13, 2026 4:11:41 PM org.apache.aries.spifly.BaseActivator log
+#15 3.504 INFO: Registered provider org.eclipse.jetty.http.Http11FieldPreEncoder of service org.eclipse.jetty.http.HttpFieldPreEncoder in bundle org.apache.felix.http.jetty12
+#15 3.508 Aug 13, 2026 4:11:41 PM org.apache.aries.spifly.BaseActivator log
+#15 3.508 INFO: Registered provider org.eclipse.jetty.http2.hpack.HpackFieldPreEncoder of service org.eclipse.jetty.http.HttpFieldPreEncoder in bundle org.apache.felix.http.jetty12
+#15 4.472 Aug 13, 2026 4:11:42 PM org.apache.tika.config.InitializableProblemHandler$3 handleInitializableProblem
+#15 4.472 WARNING: TIFFImageWriter not loaded. tiff files will not be processed
+#15 4.472 See https://pdfbox.apache.org/2.0/dependencies.html#jai-image-io
+#15 4.472 for optional dependencies.
+#15 4.472 J2KImageReader not loaded. JPEG2000 files will not be processed.
+#15 4.472 See https://pdfbox.apache.org/2.0/dependencies.html#jai-image-io
+#15 4.472 for optional dependencies.
+#15 4.472 
+#15 4.479 Aug 13, 2026 4:11:42 PM org.apache.tika.config.InitializableProblemHandler$3 handleInitializableProblem
+#15 4.479 WARNING: org.xerial's sqlite-jdbc is not loaded.
+#15 4.479 Please provide the jar on your classpath to parse sqlite files.
+#15 4.479 See tika-parsers/pom.xml for the correct version.
+#15 4.551 Aug 13, 2026 4:11:42 PM org.apache.aries.spifly.BaseActivator log
+#15 4.551 INFO: Registered provider com.ctc.wstx.stax.WstxEventFactory of service javax.xml.stream.XMLEventFactory in bundle com.fasterxml.woodstox.woodstox-core
+#15 4.555 Aug 13, 2026 4:11:42 PM org.apache.aries.spifly.BaseActivator log
+#15 4.555 INFO: Registered provider com.ctc.wstx.stax.WstxInputFactory of service javax.xml.stream.XMLInputFactory in bundle com.fasterxml.woodstox.woodstox-core
+#15 4.557 Aug 13, 2026 4:11:42 PM org.apache.aries.spifly.BaseActivator log
+#15 4.557 INFO: Registered provider com.ctc.wstx.dtd.DTDSchemaFactory of service org.codehaus.stax2.validation.XMLValidationSchemaFactory in bundle com.fasterxml.woodstox.woodstox-core
+#15 4.559 Aug 13, 2026 4:11:42 PM org.apache.aries.spifly.BaseActivator log
+#15 4.559 INFO: Registered provider com.ctc.wstx.msv.RelaxNGSchemaFactory of service org.codehaus.stax2.validation.XMLValidationSchemaFactory in bundle com.fasterxml.woodstox.woodstox-core
+#15 4.561 Aug 13, 2026 4:11:42 PM org.apache.aries.spifly.BaseActivator log
+#15 4.561 INFO: Registered provider com.ctc.wstx.msv.W3CSchemaFactory of service org.codehaus.stax2.validation.XMLValidationSchemaFactory in bundle com.fasterxml.woodstox.woodstox-core
+#15 4.562 Aug 13, 2026 4:11:42 PM org.apache.aries.spifly.BaseActivator log
+#15 4.562 INFO: Registered provider com.ctc.wstx.stax.WstxOutputFactory of service javax.xml.stream.XMLOutputFactory in bundle com.fasterxml.woodstox.woodstox-core
+#15 5.983 Aug 13, 2026 4:11:43 PM org.apache.aries.spifly.BaseActivator log
+#15 5.983 INFO: Registered provider org.apache.groovy.json.DefaultFastStringServiceFactory of service org.apache.groovy.json.FastStringServiceFactory in bundle groovy-json
+#15 5.990 Aug 13, 2026 4:11:43 PM org.apache.aries.spifly.BaseActivator log
+#15 5.990 INFO: Registered provider org.codehaus.groovy.jsr223.GroovyScriptEngineFactory of service javax.script.ScriptEngineFactory in bundle groovy-jsr223
+#15 6.003 Aug 13, 2026 4:11:43 PM org.apache.aries.spifly.BaseActivator log
+#15 6.003 INFO: Registered provider groovy.junit5.plugin.JUnit5Runner of service org.apache.groovy.plugin.GroovyRunner in bundle groovy-test-junit5
+#15 6.006 Aug 13, 2026 4:11:43 PM org.apache.aries.spifly.BaseActivator log
+#15 6.006 INFO: Registered provider org.apache.groovy.plugin.testng.TestNgRunner of service org.apache.groovy.plugin.GroovyRunner in bundle groovy-testng
+#15 6.842 [INFO] Framework started
+#15 7.534 ESAPI: WARNING: System property [org.owasp.esapi.opsteam] is not set
+#15 7.534 ESAPI: WARNING: System property [org.owasp.esapi.devteam] is not set
+#15 7.534 ESAPI: Attempting to load ESAPI.properties via file I/O.
+#15 7.534 ESAPI: Attempting to load ESAPI.properties as resource file via file I/O.
+#15 7.534 ESAPI: Not found in 'org.owasp.esapi.resources' directory or file not readable: /app/sling/ESAPI.properties
+#15 7.535 ESAPI: Not found in SystemResource Directory/resourceDirectory: .esapi/ESAPI.properties
+#15 7.535 ESAPI: Not found in 'user.home' (/root) directory: /root/esapi/ESAPI.properties
+#15 7.535 ESAPI: Loading ESAPI.properties via file I/O failed. Exception was: java.io.FileNotFoundException
+#15 7.535 ESAPI: Attempting to load ESAPI.properties via the classpath.
+#15 7.537 ESAPI: SUCCESSFULLY LOADED ESAPI.properties via the CLASSPATH from '/ (root)' using class loader for DefaultSecurityConfiguration class!
+#15 7.537 ESAPI: SecurityConfiguration for Validator.ConfigurationFile.MultiValued not found in ESAPI.properties. Using default: false
+#15 7.537 ESAPI: Attempting to load validation.properties via file I/O.
+#15 7.537 ESAPI: Attempting to load validation.properties as resource file via file I/O.
+#15 7.537 ESAPI: Not found in 'org.owasp.esapi.resources' directory or file not readable: /app/sling/validation.properties
+#15 7.537 ESAPI: Not found in SystemResource Directory/resourceDirectory: .esapi/validation.properties
+#15 7.537 ESAPI: Not found in 'user.home' (/root) directory: /root/esapi/validation.properties
+#15 7.537 ESAPI: Loading validation.properties via file I/O failed.
+#15 7.537 ESAPI: Attempting to load validation.properties via the classpath.
+#15 7.538 ESAPI: SUCCESSFULLY LOADED validation.properties via the CLASSPATH from '/ (root)' using class loader for DefaultSecurityConfiguration class!
+#15 7.538 ESAPI: DefaultSecurityConfiguration: The code to print all the properties is currently commented out
+#15 7.547 ESAPI: Failed to read Log Prefix configuration Logger.LogPrefix. Defaulting to enabled. Caught org.owasp.esapi.errors.ConfigurationException; exception message was: org.owasp.esapi.errors.ConfigurationException: SecurityConfiguration for Logger.LogPrefix not found in ESAPI.properties
+#15 134.2 Sling still starting. Waiting for all bundles to be ready..
+#15 136.2 Installing Sling Packager
+#15 143.0 npm WARN deprecated deep-assign@3.0.0: Check out `lodash.merge` or `merge-options` instead.
+#15 143.8 npm WARN deprecated har-validator@5.1.5: this library is no longer supported
+#15 143.8 npm WARN deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+#15 143.9 npm WARN deprecated uuid@3.4.0: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+#15 144.0 npm WARN deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+#15 144.0 npm WARN deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
+#15 144.6 
+#15 144.6 added 313 packages, and audited 314 packages in 8s
+#15 144.6 
+#15 144.6 22 packages are looking for funding
+#15 144.6   run `npm fund` for details
+#15 144.6 
+#15 144.6 19 vulnerabilities (12 moderate, 5 high, 2 critical)
+#15 144.6 
+#15 144.6 To address all issues possible (including breaking changes), run:
+#15 144.6   npm audit fix --force
+#15 144.6 
+#15 144.6 Some issues need review, and may require choosing
+#15 144.6 a different dependency.
+#15 144.6 
+#15 144.6 Run `npm audit` for details.
+#15 144.6 [install-peregrine 2026-08-13T16:14:02Z] Uploading package 'base.ui.apps-1.0-SNAPSHOT.zip'...
+#15 145.1 ERROR: Unable to upload package /app/binaries/base.ui.apps-1.0-SNAPSHOT.zip
+#15 145.1 ERROR: Error calling service http://localhost:8080/bin/cpm/package.upload.json
+#15 145.1 1. Testing Composum Package Manager on http://localhost:8080
+#15 145.1 Checking Composum Package Manager.
+#15 145.1 Service call:  http://localhost:8080/bin/cpm/package.json
+#15 145.1 Uploading package /app/binaries/base.ui.apps-1.0-SNAPSHOT.zip on http://localhost:8080
+#15 145.1 0. Service call:  http://localhost:8080/bin/cpm/package.upload.json
+#15 145.1 {"uri":{"protocol":"http:","slashes":true,"auth":null,"host":"localhost:8080","port":"8080","hostname":"localhost","hash":null,"search":null,"query":null,"pathname":"/bin/cpm/package.upload.json","path":"/bin/cpm/package.upload.json","href":"http://localhost:8080/bin/cpm/package.upload.json"},"method":"POST","headers":{"host":"localhost:8080","authorization":"Basic YWRtaW46YWRtaW4="}}
+#15 145.1 Response: 400 : Bad Request
+#15 145.1 1. Service call:  http://localhost:8080/bin/cpm/package.upload.json
+#15 145.1 Response: 400 : Bad Request
+#15 145.1 2. Service call:  http://localhost:8080/bin/cpm/package.upload.json
+#15 145.1 Response: 400 : Bad Request
+#15 145.1 3. Service call:  http://localhost:8080/bin/cpm/package.upload.json
+#15 145.1 Response: 400 : Bad Request
+#15 145.1 4. Service call:  http://localhost:8080/bin/cpm/package.upload.json
+#15 145.1 Response: 400 : Bad Request
+#15 145.1 5. Service call:  http://localhost:8080/bin/cpm/package.upload.json
+#15 145.1 Response: 400 : Bad Request
+#15 145.1 6. Service call:  http://localhost:8080/bin/cpm/package.upload.json
+#15 145.1 Response: 400 : Bad Request
+#15 145.1 7. Service call:  http://localhost:8080/bin/cpm/package.upload.json
+#15 145.1 Response: 400 : Bad Request
+#15 145.1 8. Service call:  http://localhost:8080/bin/cpm/package.upload.json
+#15 145.1 Response: 400 : Bad Request
+#15 145.1 9. Service call:  http://localhost:8080/bin/cpm/package.upload.json
+#15 145.1 Response: 400 : Bad Request
+#15 145.1 10. Service call:  http://localhost:8080/bin/cpm/package.upload.json
+#15 145.1 Response: 400 : Bad Request
+#15 145.1 [install-peregrine 2026-08-13T16:14:03Z] FATAL: upload of 'base.ui.apps-1.0-SNAPSHOT.zip' failed - aborting image build
+#15 ERROR: process "/bin/sh -c scripts/install-peregrine.sh ${RUNMODE}" did not complete successfully: exit code: 1
+------
+ > [linux/amd64 builder 8/8] RUN scripts/install-peregrine.sh none:
+145.1 Response: 400 : Bad Request
+145.1 7. Service call:  http://localhost:8080/bin/cpm/package.upload.json
+145.1 Response: 400 : Bad Request
+145.1 8. Service call:  http://localhost:8080/bin/cpm/package.upload.json
+145.1 Response: 400 : Bad Request
+145.1 9. Service call:  http://localhost:8080/bin/cpm/package.upload.json
+145.1 Response: 400 : Bad Request
+145.1 10. Service call:  http://localhost:8080/bin/cpm/package.upload.json
+145.1 Response: 400 : Bad Request
+145.1 [install-peregrine 2026-08-13T16:14:03Z] FATAL: upload of 'base.ui.apps-1.0-SNAPSHOT.zip' failed - aborting image build
+------
+
+ [33m1 warning found (use docker --debug to expand):
+[0m - JSONArgsRecommended: JSON arguments recommended for ENTRYPOINT to prevent unintended behavior related to OS signals (line 51)
+Dockerfile:29
+--------------------
+  27 |     
+  28 |     RUN scripts/install-sling.sh
+  29 | >>> RUN scripts/install-peregrine.sh ${RUNMODE}
+  30 |     
+  31 |     
+--------------------
+ERROR: failed to build: failed to solve: process "/bin/sh -c scripts/install-peregrine.sh ${RUNMODE}" did not complete successfully: exit code: 1

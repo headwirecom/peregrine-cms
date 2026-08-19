@@ -1,0 +1,1903 @@
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] Peregrine CMS Root                                                 [pom]
+[INFO] Peregrine CMS - Admin - Build Scripts                              [jar]
+[INFO] Peregrine CMS - Platform Parent                                    [pom]
+[INFO] Peregrine CMS - Platform - Custom Login                         [bundle]
+[INFO] Peregrine CMS - Platform - Commons Test                            [jar]
+[INFO] Peregrine CMS - Platform - Commons                                 [jar]
+[INFO] Peregrine CMS - Platform - Base Parent                             [pom]
+[INFO] Peregrine CMS - Platform - Base - Core                          [bundle]
+[INFO] Peregrine CMS - Platform - Distribution (Configuration)         [bundle]
+[INFO] Peregrine CMS - Platform - GraphQL                                 [pom]
+[INFO] Peregrine CMS - Platform - GraphQL - Core                       [bundle]
+[INFO] Peregrine CMS - Platform - GraphQL - UI Apps           [content-package]
+[INFO] Peregrine CMS - Platform - Base - UI Apps              [content-package]
+[INFO] Peregrine CMS - Platform - Felib Parent                            [pom]
+[INFO] Peregrine CMS - Platform - Felib - Core                         [bundle]
+[INFO] Peregrine CMS - Platform - Felib - UI Apps             [content-package]
+[INFO] Peregrine CMS - Page Render Vue Parent                             [pom]
+[INFO] Peregrine CMS - Page Render Vue - Core                          [bundle]
+[INFO] Peregrine CMS - Page Render Vue - UI Apps              [content-package]
+[INFO] Peregrine CMS - Page Render Server Parent                          [pom]
+[INFO] Peregrine CMS - Page Render Server - Core                       [bundle]
+[INFO] Peregrine CMS - Page Render Server - UI Apps           [content-package]
+[INFO] Peregrine CMS - Admin Parent                                       [pom]
+[INFO] Peregrine CMS - Admin - Core                                       [jar]
+[INFO] Peregrine CMS - Admin - UI Apps                        [content-package]
+[INFO] Peregrine CMS - Admin - Materialize                    [content-package]
+[INFO] Peregrine CMS - Admin - UI Apps for Sling              [content-package]
+[INFO] Peregrine CMS - Example Vue Parent                                 [pom]
+[INFO] Peregrine CMS - Example Vue - Core                              [bundle]
+[INFO] Peregrine CMS - Example Vue - UI Apps                  [content-package]
+[INFO] themeclean-parent                                                  [pom]
+[INFO] themeclean - Core                                               [bundle]
+[INFO] themeclean - UI Apps                                   [content-package]
+[INFO] Peregrine Sling-JUnit Parent                                       [pom]
+[INFO] Peregrine Sling-JUnit Common Tests Bundle                       [bundle]
+[INFO] Peregrine Sling-JUnit 'remote' Runmode Tests                    [bundle]
+[INFO] Peregrine Sling-JUnit 'local' Runmode Tests                     [bundle]
+[INFO] Peregrine Sling-JUnit Testing Package                  [content-package]
+[INFO] Peregrine Sling-JUnit Testing Package (Remote Runmode) [content-package]
+[INFO] Peregrine Sling-JUnit Testing Package (Local Runmode)  [content-package]
+[INFO] 
+[INFO] ----------------------< com.peregrine-cms:parent >----------------------
+[INFO] Building Peregrine CMS Root 1.0-SNAPSHOT                          [1/40]
+[INFO]   from pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ parent ---
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ parent ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ parent ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ parent ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ parent ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\parent\1.0-SNAPSHOT\parent-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] -------------------< com.peregrine-cms:buildscripts >-------------------
+[INFO] Building Peregrine CMS - Admin - Build Scripts 1.0-SNAPSHOT       [2/40]
+[INFO]   from buildscripts\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ buildscripts ---
+[INFO] Deleting C:\work\peregrine-up\peregrine-cms\buildscripts\target
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ buildscripts ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ buildscripts ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ buildscripts ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] NPM 6.14.16 is already installed.
+[INFO] 
+[INFO] --- frontend:1.15.1:npm (npm install) @ buildscripts ---
+[INFO] Running 'npm install' in C:\work\peregrine-up\peregrine-cms\buildscripts
+[INFO] npm WARN acorn-dynamic-import@4.0.0 requires a peer of acorn@^6.0.0 but none is installed. You must install peer dependencies yourself.
+[INFO] 
+[INFO] npm notice This endpoint is being retired. Use the bulk advisory endpoint instead. See the following docs for more info: https://api-docs.npmjs.com/#tag/Audit
+[INFO] audited 290 packages in 0.76s
+[INFO] 
+[INFO] 18 packages are looking for funding
+[INFO]   run `npm fund` for details
+[INFO] 
+[INFO] found 53 vulnerabilities (2 low, 27 moderate, 22 high, 2 critical)
+[INFO]   run `npm audit fix` to fix them, or `npm audit` for details
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ buildscripts ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\buildscripts\src\main\content\META-INF
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ buildscripts ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- resources:3.2.0:testResources (default-testResources) @ buildscripts ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\buildscripts\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ buildscripts ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:2.18.1:test (default-test) @ buildscripts ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.2.0:jar (default-jar) @ buildscripts ---
+[WARNING] JAR will be empty - no content was marked for inclusion!
+[INFO] Building jar: C:\work\peregrine-up\peregrine-cms\buildscripts\target\buildscripts-1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ buildscripts ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\buildscripts\target\buildscripts-1.0-SNAPSHOT.jar to C:\Users\rr\.m2\repository\com\peregrine-cms\buildscripts\1.0-SNAPSHOT\buildscripts-1.0-SNAPSHOT.jar
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\buildscripts\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\buildscripts\1.0-SNAPSHOT\buildscripts-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] -----------------< com.peregrine-cms:platform.parent >------------------
+[INFO] Building Peregrine CMS - Platform Parent 1.0-SNAPSHOT             [3/40]
+[INFO]   from platform\pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ platform.parent ---
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ platform.parent ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ platform.parent ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ platform.parent ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ platform.parent ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\platform\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\platform.parent\1.0-SNAPSHOT\platform.parent-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] ----------------------< com.peregrine-cms:login >-----------------------
+[INFO] Building Peregrine CMS - Platform - Custom Login 1.0-SNAPSHOT     [4/40]
+[INFO]   from platform\login\pom.xml
+[INFO] -------------------------------[ bundle ]-------------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ login ---
+[INFO] Deleting C:\work\peregrine-up\peregrine-cms\platform\login\target
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ login ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ login ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ login ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ login ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ login ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- slingfeature:1.3.4:include-artifact (create-login-artifact) @ login ---
+[INFO] 
+[INFO] --- slingfeature:1.3.4:attach-features (install-artifact) @ login ---
+[INFO] 
+[INFO] --- resources:3.2.0:testResources (default-testResources) @ login ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\platform\login\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ login ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:2.18.1:test (default-test) @ login ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- bundle:5.1.9:bundle (default-bundle) @ login ---
+[WARNING] Bundle com.peregrine-cms:login:bundle:1.0-SNAPSHOT : Host org.apache.sling.auth.form= for this fragment/require bundle cannot be found on the classpath
+[INFO] Building bundle: C:\work\peregrine-up\peregrine-cms\platform\login\target\login-1.0-SNAPSHOT.jar
+[INFO] Writing manifest: C:\work\peregrine-up\peregrine-cms\platform\login\target\classes\META-INF\MANIFEST.MF
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ login ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\platform\login\target\login-1.0-SNAPSHOT.jar to C:\Users\rr\.m2\repository\com\peregrine-cms\login\1.0-SNAPSHOT\login-1.0-SNAPSHOT.jar
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\platform\login\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\login\1.0-SNAPSHOT\login-1.0-SNAPSHOT.pom
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\platform\login\target\slingfeature-tmp\feature.json to C:\Users\rr\.m2\repository\com\peregrine-cms\login\1.0-SNAPSHOT\login-1.0-SNAPSHOT.slingosgifeature
+[INFO] 
+[INFO] --- bundle:5.1.9:install (default-install) @ login ---
+[INFO] Local OBR update disabled (enable with -DobrRepository)
+[INFO] 
+[INFO] -------------------< com.peregrine-cms:commons-test >-------------------
+[INFO] Building Peregrine CMS - Platform - Commons Test 1.0-SNAPSHOT     [5/40]
+[INFO]   from platform\commons-test\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ commons-test ---
+[INFO] Deleting C:\work\peregrine-up\peregrine-cms\platform\commons-test\target
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ commons-test ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ commons-test ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ commons-test ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ commons-test ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\platform\commons-test\src\main\content\META-INF
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ commons-test ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 2 source files to C:\work\peregrine-up\peregrine-cms\platform\commons-test\target\classes
+[INFO] /C:/work/peregrine-up/peregrine-cms/platform/commons-test/src/main/java/com/peregrine/commons/test/AbstractTest.java: C:\work\peregrine-up\peregrine-cms\platform\commons-test\src\main\java\com\peregrine\commons\test\AbstractTest.java uses or overrides a deprecated API.
+[INFO] /C:/work/peregrine-up/peregrine-cms/platform/commons-test/src/main/java/com/peregrine/commons/test/AbstractTest.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.2.0:testResources (default-testResources) @ commons-test ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\platform\commons-test\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ commons-test ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:2.18.1:test (default-test) @ commons-test ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.2.0:jar (default-jar) @ commons-test ---
+[INFO] Building jar: C:\work\peregrine-up\peregrine-cms\platform\commons-test\target\commons-test-1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ commons-test ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\platform\commons-test\target\commons-test-1.0-SNAPSHOT.jar to C:\Users\rr\.m2\repository\com\peregrine-cms\commons-test\1.0-SNAPSHOT\commons-test-1.0-SNAPSHOT.jar
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\platform\commons-test\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\commons-test\1.0-SNAPSHOT\commons-test-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] ---------------------< com.peregrine-cms:commons >----------------------
+[INFO] Building Peregrine CMS - Platform - Commons 1.0-SNAPSHOT          [6/40]
+[INFO]   from platform\commons\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ commons ---
+[INFO] Deleting C:\work\peregrine-up\peregrine-cms\platform\commons\target
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ commons ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ commons ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ commons ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ commons ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\platform\commons\src\main\content\META-INF
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ commons ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 12 source files to C:\work\peregrine-up\peregrine-cms\platform\commons\target\classes
+[INFO] /C:/work/peregrine-up/peregrine-cms/platform/commons/src/main/java/com/peregrine/commons/Strings.java: Some input files use or override a deprecated API.
+[INFO] /C:/work/peregrine-up/peregrine-cms/platform/commons/src/main/java/com/peregrine/commons/Strings.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.2.0:testResources (default-testResources) @ commons ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\platform\commons\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ commons ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 23 source files to C:\work\peregrine-up\peregrine-cms\platform\commons\target\test-classes
+[INFO] /C:/work/peregrine-up/peregrine-cms/platform/commons/src/test/java/com/peregrine/SlingServletTest.java: Some input files use or override a deprecated API.
+[INFO] /C:/work/peregrine-up/peregrine-cms/platform/commons/src/test/java/com/peregrine/SlingServletTest.java: Recompile with -Xlint:deprecation for details.
+[INFO] /C:/work/peregrine-up/peregrine-cms/platform/commons/src/test/java/com/peregrine/mock/ResourceMock.java: Some input files use unchecked or unsafe operations.
+[INFO] /C:/work/peregrine-up/peregrine-cms/platform/commons/src/test/java/com/peregrine/mock/ResourceMock.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- surefire:2.18.1:test (default-test) @ commons ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.2.0:jar (default-jar) @ commons ---
+[INFO] Building jar: C:\work\peregrine-up\peregrine-cms\platform\commons\target\commons-1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- jar:3.2.0:test-jar (default) @ commons ---
+[INFO] Building jar: C:\work\peregrine-up\peregrine-cms\platform\commons\target\commons-1.0-SNAPSHOT-tests.jar
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ commons ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\platform\commons\target\commons-1.0-SNAPSHOT.jar to C:\Users\rr\.m2\repository\com\peregrine-cms\commons\1.0-SNAPSHOT\commons-1.0-SNAPSHOT.jar
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\platform\commons\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\commons\1.0-SNAPSHOT\commons-1.0-SNAPSHOT.pom
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\platform\commons\target\commons-1.0-SNAPSHOT-tests.jar to C:\Users\rr\.m2\repository\com\peregrine-cms\commons\1.0-SNAPSHOT\commons-1.0-SNAPSHOT-tests.jar
+[INFO] 
+[INFO] -------------------< com.peregrine-cms:base.parent >--------------------
+[INFO] Building Peregrine CMS - Platform - Base Parent 1.0-SNAPSHOT      [7/40]
+[INFO]   from platform\base\pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ base.parent ---
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ base.parent ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ base.parent ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ base.parent ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ base.parent ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\platform\base\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\base.parent\1.0-SNAPSHOT\base.parent-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] --------------------< com.peregrine-cms:base.core >---------------------
+[INFO] Building Peregrine CMS - Platform - Base - Core 1.0-SNAPSHOT      [8/40]
+[INFO]   from platform\base\core\pom.xml
+[INFO] -------------------------------[ bundle ]-------------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ base.core ---
+[INFO] Deleting C:\work\peregrine-up\peregrine-cms\platform\base\core\target
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ base.core ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ base.core ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ base.core ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ base.core ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] Copying 25 resources
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ base.core ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 152 source files to C:\work\peregrine-up\peregrine-cms\platform\base\core\target\classes
+[INFO] /C:/work/peregrine-up/peregrine-cms/platform/base/core/src/main/java/com/peregrine/replication/impl/ReplicationsContainerWithDefaultImpl.java: Some input files use or override a deprecated API.
+[INFO] /C:/work/peregrine-up/peregrine-cms/platform/base/core/src/main/java/com/peregrine/replication/impl/ReplicationsContainerWithDefaultImpl.java: Recompile with -Xlint:deprecation for details.
+[INFO] /C:/work/peregrine-up/peregrine-cms/platform/base/core/src/main/java/com/peregrine/replication/DefaultReplicationMapperService.java: Some input files use unchecked or unsafe operations.
+[INFO] /C:/work/peregrine-up/peregrine-cms/platform/base/core/src/main/java/com/peregrine/replication/DefaultReplicationMapperService.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- resources:3.2.0:testResources (default-testResources) @ base.core ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] Copying 2 resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ base.core ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 50 source files to C:\work\peregrine-up\peregrine-cms\platform\base\core\target\test-classes
+[INFO] /C:/work/peregrine-up/peregrine-cms/platform/base/core/src/test/java/com/peregrine/sitemap/SiteMapExtractorBaseTest.java: C:\work\peregrine-up\peregrine-cms\platform\base\core\src\test\java\com\peregrine\sitemap\SiteMapExtractorBaseTest.java uses or overrides a deprecated API.
+[INFO] /C:/work/peregrine-up/peregrine-cms/platform/base/core/src/test/java/com/peregrine/sitemap/SiteMapExtractorBaseTest.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- surefire:2.18.1:test (default-test) @ base.core ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- bundle:5.1.9:bundle (default-bundle) @ base.core ---
+[INFO] Building bundle: C:\work\peregrine-up\peregrine-cms\platform\base\core\target\base.core-1.0-SNAPSHOT.jar
+[INFO] Writing manifest: C:\work\peregrine-up\peregrine-cms\platform\base\core\target\classes\META-INF\MANIFEST.MF
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ base.core ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\platform\base\core\target\base.core-1.0-SNAPSHOT.jar to C:\Users\rr\.m2\repository\com\peregrine-cms\base.core\1.0-SNAPSHOT\base.core-1.0-SNAPSHOT.jar
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\platform\base\core\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\base.core\1.0-SNAPSHOT\base.core-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] --- bundle:5.1.9:install (default-install) @ base.core ---
+[INFO] Installing com/peregrine-cms/base.core/1.0-SNAPSHOT/base.core-1.0-SNAPSHOT.jar
+[INFO] Writing OBR metadata
+[INFO] 
+[INFO] -------------------< com.peregrine-cms:distribution >-------------------
+[INFO] Building Peregrine CMS - Platform - Distribution (Configuration) 1.0-SNAPSHOT [9/40]
+[INFO]   from platform\distribution\pom.xml
+[INFO] -------------------------------[ bundle ]-------------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ distribution ---
+[INFO] Deleting C:\work\peregrine-up\peregrine-cms\platform\distribution\target
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ distribution ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ distribution ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ distribution ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ distribution ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] Copying 25 resources
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ distribution ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- resources:3.2.0:testResources (default-testResources) @ distribution ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\platform\distribution\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ distribution ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:2.18.1:test (default-test) @ distribution ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- bundle:5.1.9:bundle (default-bundle) @ distribution ---
+[INFO] Building bundle: C:\work\peregrine-up\peregrine-cms\platform\distribution\target\distribution-1.0-SNAPSHOT.jar
+[INFO] Writing manifest: C:\work\peregrine-up\peregrine-cms\platform\distribution\target\classes\META-INF\MANIFEST.MF
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ distribution ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\platform\distribution\target\distribution-1.0-SNAPSHOT.jar to C:\Users\rr\.m2\repository\com\peregrine-cms\distribution\1.0-SNAPSHOT\distribution-1.0-SNAPSHOT.jar
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\platform\distribution\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\distribution\1.0-SNAPSHOT\distribution-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] --- bundle:5.1.9:install (default-install) @ distribution ---
+[INFO] Installing com/peregrine-cms/distribution/1.0-SNAPSHOT/distribution-1.0-SNAPSHOT.jar
+[INFO] Writing OBR metadata
+[INFO] 
+[INFO] ------------------< com.peregrine-cms:graphql.parent >------------------
+[INFO] Building Peregrine CMS - Platform - GraphQL 1.0-SNAPSHOT         [10/40]
+[INFO]   from platform\graphql\pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ graphql.parent ---
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ graphql.parent ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ graphql.parent ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ graphql.parent ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ graphql.parent ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\platform\graphql\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\graphql.parent\1.0-SNAPSHOT\graphql.parent-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] -------------------< com.peregrine-cms:graphql.core >-------------------
+[INFO] Building Peregrine CMS - Platform - GraphQL - Core 1.0-SNAPSHOT  [11/40]
+[INFO]   from platform\graphql\core\pom.xml
+[INFO] -------------------------------[ bundle ]-------------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ graphql.core ---
+[INFO] Deleting C:\work\peregrine-up\peregrine-cms\platform\graphql\core\target
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ graphql.core ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ graphql.core ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ graphql.core ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ graphql.core ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\platform\graphql\core\src\main\content\META-INF
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ graphql.core ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 27 source files to C:\work\peregrine-up\peregrine-cms\platform\graphql\core\target\classes
+[INFO] /C:/work/peregrine-up/peregrine-cms/platform/graphql/core/src/main/java/com/peregrine/graphql/servlets/GraphQLSchemaServlet.java: C:\work\peregrine-up\peregrine-cms\platform\graphql\core\src\main\java\com\peregrine\graphql\servlets\GraphQLSchemaServlet.java uses or overrides a deprecated API.
+[INFO] /C:/work/peregrine-up/peregrine-cms/platform/graphql/core/src/main/java/com/peregrine/graphql/servlets/GraphQLSchemaServlet.java: Recompile with -Xlint:deprecation for details.
+[INFO] /C:/work/peregrine-up/peregrine-cms/platform/graphql/core/src/main/java/com/peregrine/graphql/schema/SchemaProviderService.java: C:\work\peregrine-up\peregrine-cms\platform\graphql\core\src\main\java\com\peregrine\graphql\schema\SchemaProviderService.java uses unchecked or unsafe operations.
+[INFO] /C:/work/peregrine-up/peregrine-cms/platform/graphql/core/src/main/java/com/peregrine/graphql/schema/SchemaProviderService.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- resources:3.2.0:testResources (default-testResources) @ graphql.core ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\platform\graphql\core\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ graphql.core ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:2.18.1:test (default-test) @ graphql.core ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- bundle:5.1.9:bundle (default-bundle) @ graphql.core ---
+[INFO] Building bundle: C:\work\peregrine-up\peregrine-cms\platform\graphql\core\target\graphql.core-1.0-SNAPSHOT.jar
+[INFO] Writing manifest: C:\work\peregrine-up\peregrine-cms\platform\graphql\core\target\classes\META-INF\MANIFEST.MF
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ graphql.core ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\platform\graphql\core\target\graphql.core-1.0-SNAPSHOT.jar to C:\Users\rr\.m2\repository\com\peregrine-cms\graphql.core\1.0-SNAPSHOT\graphql.core-1.0-SNAPSHOT.jar
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\platform\graphql\core\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\graphql.core\1.0-SNAPSHOT\graphql.core-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] --- bundle:5.1.9:install (default-install) @ graphql.core ---
+[INFO] Installing com/peregrine-cms/graphql.core/1.0-SNAPSHOT/graphql.core-1.0-SNAPSHOT.jar
+[INFO] Writing OBR metadata
+[INFO] 
+[INFO] -----------------< com.peregrine-cms:graphql.ui.apps >------------------
+[INFO] Building Peregrine CMS - Platform - GraphQL - UI Apps 1.0-SNAPSHOT [12/40]
+[INFO]   from platform\graphql\ui.apps\pom.xml
+[INFO] --------------------------[ content-package ]---------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ graphql.ui.apps ---
+[INFO] Deleting C:\work\peregrine-up\peregrine-cms\platform\graphql\ui.apps\target
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ graphql.ui.apps ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ graphql.ui.apps ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ graphql.ui.apps ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- frontend:1.15.1:npm (npm install) @ graphql.ui.apps ---
+[INFO] Running 'npm install' in C:\work\peregrine-up\peregrine-cms\platform\graphql\ui.apps
+[INFO] npm WARN ts-node@9.1.1 requires a peer of typescript@>=2.7 but none is installed. You must install peer dependencies yourself.
+[INFO] 
+[INFO] npm notice This endpoint is being retired. Use the bulk advisory endpoint instead. See the following docs for more info: https://api-docs.npmjs.com/#tag/Audit
+[INFO] audited 161 packages in 0.665s
+[INFO] 
+[INFO] 15 packages are looking for funding
+[INFO]   run `npm fund` for details
+[INFO] 
+[INFO] found 193 vulnerabilities (40 low, 74 moderate, 79 high)
+[INFO]   run `npm audit fix` to fix them, or `npm audit` for details
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ graphql.ui.apps ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] Copying 2 resources to ../vault-work/META-INF
+[INFO] Copying 9 resources
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ graphql.ui.apps ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- frontend:1.15.1:npm (npm run build) @ graphql.ui.apps ---
+[INFO] Running 'npm run build' in C:\work\peregrine-up\peregrine-cms\platform\graphql\ui.apps
+[INFO] 
+[INFO] > graphql@1.0.0 build C:\work\peregrine-up\peregrine-cms\platform\graphql\ui.apps
+[INFO] > node ./index.js
+[INFO] 
+[INFO] 
+[INFO] --- resources:3.2.0:testResources (default-testResources) @ graphql.ui.apps ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\platform\graphql\ui.apps\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ graphql.ui.apps ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:2.18.1:test (default-test) @ graphql.ui.apps ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- wcmio-content-package:1.6.0:package (default-package) @ graphql.ui.apps ---
+[INFO] Building content-package: C:\work\peregrine-up\peregrine-cms\platform\graphql\ui.apps\target\graphql.ui.apps-1.0-SNAPSHOT.zip
+[INFO] 
+[INFO] --- wcmio-content-package:1.6.0:package (default) @ graphql.ui.apps ---
+[INFO] Embedding Bundle 'EmbeddedBundle{groupId='org.apache.sling', artifactId='org.apache.sling.graphql.core', scope=null, type='null', classifier='null', generateFilter=true, target='null', destFileName='null', excludeTransitive=false}'
+[INFO] Embedding Bundle 'EmbeddedBundle{groupId='com.graphql-java', artifactId='graphql-java', scope=null, type='null', classifier='null', generateFilter=true, target='null', destFileName='null', excludeTransitive=false}'
+[INFO] Embedding Bundle 'EmbeddedBundle{groupId='com.graphql-java', artifactId='java-dataloader', scope=null, type='null', classifier='null', generateFilter=true, target='null', destFileName='null', excludeTransitive=false}'
+[INFO] Embedding Bundle 'EmbeddedBundle{groupId='org.reactivestreams', artifactId='reactive-streams', scope=null, type='null', classifier='null', generateFilter=true, target='null', destFileName='null', excludeTransitive=false}'
+[INFO] Embedding Bundle 'EmbeddedBundle{groupId='org.apache.johnzon', artifactId='johnzon-mapper', scope=null, type='null', classifier='null', generateFilter=true, target='null', destFileName='null', excludeTransitive=false}'
+[INFO] Embedding Bundle 'EmbeddedBundle{groupId='org.apache.sling', artifactId='org.apache.sling.servlet-helpers', scope=null, type='null', classifier='null', generateFilter=true, target='null', destFileName='null', excludeTransitive=false}'
+[INFO] Embedding Bundle 'EmbeddedBundle{groupId='com.peregrine-cms', artifactId='graphql.core', scope=null, type='null', classifier='null', generateFilter=true, target='null', destFileName='null', excludeTransitive=false}'
+[INFO] Building content-package: C:\work\peregrine-up\peregrine-cms\platform\graphql\ui.apps\target\graphql.ui.apps-1.0-SNAPSHOT.zip
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ graphql.ui.apps ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\platform\graphql\ui.apps\target\graphql.ui.apps-1.0-SNAPSHOT.zip to C:\Users\rr\.m2\repository\com\peregrine-cms\graphql.ui.apps\1.0-SNAPSHOT\graphql.ui.apps-1.0-SNAPSHOT.zip
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\platform\graphql\ui.apps\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\graphql.ui.apps\1.0-SNAPSHOT\graphql.ui.apps-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] -------------------< com.peregrine-cms:base.ui.apps >-------------------
+[INFO] Building Peregrine CMS - Platform - Base - UI Apps 1.0-SNAPSHOT  [13/40]
+[INFO]   from platform\base\ui.apps\pom.xml
+[INFO] --------------------------[ content-package ]---------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ base.ui.apps ---
+[INFO] Deleting C:\work\peregrine-up\peregrine-cms\platform\base\ui.apps\target
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ base.ui.apps ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ base.ui.apps ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ base.ui.apps ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ base.ui.apps ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] Copying 2 resources to ../vault-work/META-INF
+[INFO] Copying 43 resources
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ base.ui.apps ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- resources:3.2.0:testResources (default-testResources) @ base.ui.apps ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\platform\base\ui.apps\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ base.ui.apps ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:2.18.1:test (default-test) @ base.ui.apps ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- wcmio-content-package:1.6.0:package (default-package) @ base.ui.apps ---
+[INFO] Building content-package: C:\work\peregrine-up\peregrine-cms\platform\base\ui.apps\target\base.ui.apps-1.0-SNAPSHOT.zip
+[INFO] 
+[INFO] --- wcmio-content-package:1.6.0:package (default) @ base.ui.apps ---
+[INFO] Embedding Bundle 'EmbeddedBundle{groupId='com.peregrine-cms', artifactId='base.core', scope=null, type='null', classifier='null', generateFilter=true, target='null', destFileName='null', excludeTransitive=false}'
+[INFO] Embedding Bundle 'EmbeddedBundle{groupId='com.peregrine-cms', artifactId='login', scope=null, type='null', classifier='null', generateFilter=true, target='null', destFileName='null', excludeTransitive=false}'
+[INFO] Embedding Bundle 'EmbeddedBundle{groupId='com.peregrine-cms', artifactId='distribution', scope=null, type='null', classifier='null', generateFilter=true, target='null', destFileName='null', excludeTransitive=false}'
+[INFO] Embedding Bundle 'EmbeddedBundle{groupId='com.peregrine-cms', artifactId='graphql.ui.apps', scope=null, type='null', classifier='null', generateFilter=true, target='null', destFileName='null', excludeTransitive=false}'
+[INFO] Building content-package: C:\work\peregrine-up\peregrine-cms\platform\base\ui.apps\target\base.ui.apps-1.0-SNAPSHOT.zip
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ base.ui.apps ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\platform\base\ui.apps\target\base.ui.apps-1.0-SNAPSHOT.zip to C:\Users\rr\.m2\repository\com\peregrine-cms\base.ui.apps\1.0-SNAPSHOT\base.ui.apps-1.0-SNAPSHOT.zip
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\platform\base\ui.apps\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\base.ui.apps\1.0-SNAPSHOT\base.ui.apps-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] -------------------< com.peregrine-cms:felib.parent >-------------------
+[INFO] Building Peregrine CMS - Platform - Felib Parent 1.0-SNAPSHOT    [14/40]
+[INFO]   from platform\felib\pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ felib.parent ---
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ felib.parent ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ felib.parent ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ felib.parent ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ felib.parent ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\platform\felib\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\felib.parent\1.0-SNAPSHOT\felib.parent-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] --------------------< com.peregrine-cms:felib.core >--------------------
+[INFO] Building Peregrine CMS - Platform - Felib - Core 1.0-SNAPSHOT    [15/40]
+[INFO]   from platform\felib\core\pom.xml
+[INFO] -------------------------------[ bundle ]-------------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ felib.core ---
+[INFO] Deleting C:\work\peregrine-up\peregrine-cms\platform\felib\core\target
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ felib.core ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ felib.core ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ felib.core ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ felib.core ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\platform\felib\core\src\main\content\META-INF
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ felib.core ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 5 source files to C:\work\peregrine-up\peregrine-cms\platform\felib\core\target\classes
+[INFO] /C:/work/peregrine-up/peregrine-cms/platform/felib/core/src/main/java/com/peregrine/felib/models/SampleRequestModel.java: C:\work\peregrine-up\peregrine-cms\platform\felib\core\src\main\java\com\peregrine\felib\models\SampleRequestModel.java uses or overrides a deprecated API.
+[INFO] /C:/work/peregrine-up/peregrine-cms/platform/felib/core/src/main/java/com/peregrine/felib/models/SampleRequestModel.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.2.0:testResources (default-testResources) @ felib.core ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\platform\felib\core\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ felib.core ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:2.18.1:test (default-test) @ felib.core ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- bundle:5.1.9:bundle (default-bundle) @ felib.core ---
+[INFO] Building bundle: C:\work\peregrine-up\peregrine-cms\platform\felib\core\target\felib.core-1.0-SNAPSHOT.jar
+[INFO] Writing manifest: C:\work\peregrine-up\peregrine-cms\platform\felib\core\target\classes\META-INF\MANIFEST.MF
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ felib.core ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\platform\felib\core\target\felib.core-1.0-SNAPSHOT.jar to C:\Users\rr\.m2\repository\com\peregrine-cms\felib.core\1.0-SNAPSHOT\felib.core-1.0-SNAPSHOT.jar
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\platform\felib\core\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\felib.core\1.0-SNAPSHOT\felib.core-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] --- bundle:5.1.9:install (default-install) @ felib.core ---
+[INFO] Installing com/peregrine-cms/felib.core/1.0-SNAPSHOT/felib.core-1.0-SNAPSHOT.jar
+[INFO] Writing OBR metadata
+[INFO] 
+[INFO] ------------------< com.peregrine-cms:felib.ui.apps >-------------------
+[INFO] Building Peregrine CMS - Platform - Felib - UI Apps 1.0-SNAPSHOT [16/40]
+[INFO]   from platform\felib\ui.apps\pom.xml
+[INFO] --------------------------[ content-package ]---------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ felib.ui.apps ---
+[INFO] Deleting C:\work\peregrine-up\peregrine-cms\platform\felib\ui.apps\target
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ felib.ui.apps ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ felib.ui.apps ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ felib.ui.apps ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ felib.ui.apps ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] Copying 2 resources to ../vault-work/META-INF
+[INFO] Copying 13 resources
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ felib.ui.apps ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- resources:3.2.0:testResources (default-testResources) @ felib.ui.apps ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\platform\felib\ui.apps\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ felib.ui.apps ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:2.18.1:test (default-test) @ felib.ui.apps ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- wcmio-content-package:1.6.0:package (default-package) @ felib.ui.apps ---
+[INFO] Building content-package: C:\work\peregrine-up\peregrine-cms\platform\felib\ui.apps\target\felib.ui.apps-1.0-SNAPSHOT.zip
+[INFO] 
+[INFO] --- wcmio-content-package:1.6.0:package (default) @ felib.ui.apps ---
+[INFO] Embedding Bundle 'EmbeddedBundle{groupId='com.peregrine-cms', artifactId='felib.core', scope=null, type='null', classifier='null', generateFilter=true, target='null', destFileName='null', excludeTransitive=false}'
+[INFO] Building content-package: C:\work\peregrine-up\peregrine-cms\platform\felib\ui.apps\target\felib.ui.apps-1.0-SNAPSHOT.zip
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ felib.ui.apps ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\platform\felib\ui.apps\target\felib.ui.apps-1.0-SNAPSHOT.zip to C:\Users\rr\.m2\repository\com\peregrine-cms\felib.ui.apps\1.0-SNAPSHOT\felib.ui.apps-1.0-SNAPSHOT.zip
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\platform\felib\ui.apps\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\felib.ui.apps\1.0-SNAPSHOT\felib.ui.apps-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] --------------< com.peregrine-cms:pagerender-vue.parent >---------------
+[INFO] Building Peregrine CMS - Page Render Vue Parent 1.0-SNAPSHOT     [17/40]
+[INFO]   from pagerenderer\vue\pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ pagerender-vue.parent ---
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ pagerender-vue.parent ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ pagerender-vue.parent ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ pagerender-vue.parent ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ pagerender-vue.parent ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\pagerenderer\vue\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\pagerender-vue.parent\1.0-SNAPSHOT\pagerender-vue.parent-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] ---------------< com.peregrine-cms:pagerender-vue.core >----------------
+[INFO] Building Peregrine CMS - Page Render Vue - Core 1.0-SNAPSHOT     [18/40]
+[INFO]   from pagerenderer\vue\core\pom.xml
+[INFO] -------------------------------[ bundle ]-------------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ pagerender-vue.core ---
+[INFO] Deleting C:\work\peregrine-up\peregrine-cms\pagerenderer\vue\core\target
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ pagerender-vue.core ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ pagerender-vue.core ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ pagerender-vue.core ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ pagerender-vue.core ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\pagerenderer\vue\core\src\main\content\META-INF
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ pagerender-vue.core ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 4 source files to C:\work\peregrine-up\peregrine-cms\pagerenderer\vue\core\target\classes
+[INFO] 
+[INFO] --- resources:3.2.0:testResources (default-testResources) @ pagerender-vue.core ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\pagerenderer\vue\core\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ pagerender-vue.core ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:2.18.1:test (default-test) @ pagerender-vue.core ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- bundle:5.1.9:bundle (default-bundle) @ pagerender-vue.core ---
+[INFO] Building bundle: C:\work\peregrine-up\peregrine-cms\pagerenderer\vue\core\target\pagerender-vue.core-1.0-SNAPSHOT.jar
+[INFO] Writing manifest: C:\work\peregrine-up\peregrine-cms\pagerenderer\vue\core\target\classes\META-INF\MANIFEST.MF
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ pagerender-vue.core ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\pagerenderer\vue\core\target\pagerender-vue.core-1.0-SNAPSHOT.jar to C:\Users\rr\.m2\repository\com\peregrine-cms\pagerender-vue.core\1.0-SNAPSHOT\pagerender-vue.core-1.0-SNAPSHOT.jar
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\pagerenderer\vue\core\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\pagerender-vue.core\1.0-SNAPSHOT\pagerender-vue.core-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] --- bundle:5.1.9:install (default-install) @ pagerender-vue.core ---
+[INFO] Installing com/peregrine-cms/pagerender-vue.core/1.0-SNAPSHOT/pagerender-vue.core-1.0-SNAPSHOT.jar
+[INFO] Writing OBR metadata
+[INFO] 
+[INFO] --------------< com.peregrine-cms:pagerender-vue.ui.apps >--------------
+[INFO] Building Peregrine CMS - Page Render Vue - UI Apps 1.0-SNAPSHOT  [19/40]
+[INFO]   from pagerenderer\vue\ui.apps\pom.xml
+[INFO] --------------------------[ content-package ]---------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ pagerender-vue.ui.apps ---
+[INFO] Deleting C:\work\peregrine-up\peregrine-cms\pagerenderer\vue\ui.apps\target
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ pagerender-vue.ui.apps ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ pagerender-vue.ui.apps ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ pagerender-vue.ui.apps ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] NPM 6.14.16 is already installed.
+[INFO] 
+[INFO] --- frontend:1.15.1:npm (npm install) @ pagerender-vue.ui.apps ---
+[INFO] Running 'npm install' in C:\work\peregrine-up\peregrine-cms\pagerenderer\vue\ui.apps
+[INFO] npm notice This endpoint is being retired. Use the bulk advisory endpoint instead. See the following docs for more info: https://api-docs.npmjs.com/#tag/Audit
+[INFO] audited 198 packages in 0.619s
+[INFO] 
+[INFO] 1 package is looking for funding
+[INFO]   run `npm fund` for details
+[INFO] 
+[INFO] found 96 vulnerabilities (4 low, 51 moderate, 36 high, 5 critical)
+[INFO]   run `npm audit fix` to fix them, or `npm audit` for details
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ pagerender-vue.ui.apps ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] Copying 2 resources to ../vault-work/META-INF
+[INFO] Copying 6 resources to etc/felibs/pagerendervue/jquery
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\pagerenderer\vue\ui.apps\node_modules\popper\dist
+[INFO] Copying 20 resources to etc/felibs/pagerendervue/bootstrap
+[INFO] Copying 4 resources to etc/felibs/pagerendervue/axios
+[INFO] Copying 15 resources to etc/felibs/pagerendervue/vue
+[INFO] Copying 6 resources to etc/felibs/pagerendervue/vue/composition-api
+[INFO] Copying 1 resource to etc/felibs/pagerendervue/conditional-js
+[INFO] Copying 42 resources
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ pagerender-vue.ui.apps ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- frontend:1.15.1:npm (npm run build) @ pagerender-vue.ui.apps ---
+[INFO] Running 'npm run build' in C:\work\peregrine-up\peregrine-cms\pagerenderer\vue\ui.apps
+[INFO] 
+[INFO] > pcms-pagerender-vue@1.0.0 build C:\work\peregrine-up\peregrine-cms\pagerenderer\vue\ui.apps
+[INFO] > node ./node_modules/rollup/bin/rollup -c && node ../../../buildscripts/buildvue.js pagerendervue
+[INFO] 
+[INFO] 
+[INFO] src/main/js/peregrineApp.js ? target/classes/etc/felibs/pagerendervue/js/perview.js...
+[INFO] created target/classes/etc/felibs/pagerendervue/js/perview.js in 88ms
+[INFO] ========== building vue files ==========
+[INFO] building felib pagerendervue
+[INFO] compiling vue file: ./pagerendervue/components/base/template.vue
+[INFO] compiling vue file: ./pagerendervue/components/placeholder/template.vue
+[INFO] compiling vue file: ./pagerendervue/structure/container/template.vue
+[INFO] compiling vue file: ./pagerendervue/structure/page/template.vue
+[INFO] done compiling
+[INFO] 
+[INFO] --- resources:3.2.0:testResources (default-testResources) @ pagerender-vue.ui.apps ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\pagerenderer\vue\ui.apps\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ pagerender-vue.ui.apps ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:2.18.1:test (default-test) @ pagerender-vue.ui.apps ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- wcmio-content-package:1.6.0:package (default-package) @ pagerender-vue.ui.apps ---
+[INFO] Building content-package: C:\work\peregrine-up\peregrine-cms\pagerenderer\vue\ui.apps\target\pagerender-vue.ui.apps-1.0-SNAPSHOT.zip
+[INFO] 
+[INFO] --- wcmio-content-package:1.6.0:package (default) @ pagerender-vue.ui.apps ---
+[INFO] Embedding Bundle 'EmbeddedBundle{groupId='com.peregrine-cms', artifactId='pagerender-vue.core', scope=null, type='null', classifier='null', generateFilter=true, target='null', destFileName='null', excludeTransitive=false}'
+[INFO] Building content-package: C:\work\peregrine-up\peregrine-cms\pagerenderer\vue\ui.apps\target\pagerender-vue.ui.apps-1.0-SNAPSHOT.zip
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ pagerender-vue.ui.apps ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\pagerenderer\vue\ui.apps\target\pagerender-vue.ui.apps-1.0-SNAPSHOT.zip to C:\Users\rr\.m2\repository\com\peregrine-cms\pagerender-vue.ui.apps\1.0-SNAPSHOT\pagerender-vue.ui.apps-1.0-SNAPSHOT.zip
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\pagerenderer\vue\ui.apps\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\pagerender-vue.ui.apps\1.0-SNAPSHOT\pagerender-vue.ui.apps-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] -------------< com.peregrine-cms:pagerender-server.parent >-------------
+[INFO] Building Peregrine CMS - Page Render Server Parent 1.0-SNAPSHOT  [20/40]
+[INFO]   from pagerenderer\server\pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ pagerender-server.parent ---
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ pagerender-server.parent ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ pagerender-server.parent ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ pagerender-server.parent ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ pagerender-server.parent ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\pagerenderer\server\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\pagerender-server.parent\1.0-SNAPSHOT\pagerender-server.parent-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] --------------< com.peregrine-cms:pagerender-server.core >--------------
+[INFO] Building Peregrine CMS - Page Render Server - Core 1.0-SNAPSHOT  [21/40]
+[INFO]   from pagerenderer\server\core\pom.xml
+[INFO] -------------------------------[ bundle ]-------------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ pagerender-server.core ---
+[INFO] Deleting C:\work\peregrine-up\peregrine-cms\pagerenderer\server\core\target
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ pagerender-server.core ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ pagerender-server.core ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ pagerender-server.core ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ pagerender-server.core ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\pagerenderer\server\core\src\main\content\META-INF
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ pagerender-server.core ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 8 source files to C:\work\peregrine-up\peregrine-cms\pagerenderer\server\core\target\classes
+[INFO] /C:/work/peregrine-up/peregrine-cms/pagerenderer/server/core/src/main/java/com/peregrine/pagerender/server/models/Container.java: Some input files use or override a deprecated API.
+[INFO] /C:/work/peregrine-up/peregrine-cms/pagerenderer/server/core/src/main/java/com/peregrine/pagerender/server/models/Container.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.2.0:testResources (default-testResources) @ pagerender-server.core ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\pagerenderer\server\core\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ pagerender-server.core ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:2.18.1:test (default-test) @ pagerender-server.core ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- bundle:5.1.9:bundle (default-bundle) @ pagerender-server.core ---
+[INFO] Building bundle: C:\work\peregrine-up\peregrine-cms\pagerenderer\server\core\target\pagerender-server.core-1.0-SNAPSHOT.jar
+[INFO] Writing manifest: C:\work\peregrine-up\peregrine-cms\pagerenderer\server\core\target\classes\META-INF\MANIFEST.MF
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ pagerender-server.core ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\pagerenderer\server\core\target\pagerender-server.core-1.0-SNAPSHOT.jar to C:\Users\rr\.m2\repository\com\peregrine-cms\pagerender-server.core\1.0-SNAPSHOT\pagerender-server.core-1.0-SNAPSHOT.jar
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\pagerenderer\server\core\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\pagerender-server.core\1.0-SNAPSHOT\pagerender-server.core-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] --- bundle:5.1.9:install (default-install) @ pagerender-server.core ---
+[INFO] Installing com/peregrine-cms/pagerender-server.core/1.0-SNAPSHOT/pagerender-server.core-1.0-SNAPSHOT.jar
+[INFO] Writing OBR metadata
+[INFO] 
+[INFO] ------------< com.peregrine-cms:pagerender-server.ui.apps >-------------
+[INFO] Building Peregrine CMS - Page Render Server - UI Apps 1.0-SNAPSHOT [22/40]
+[INFO]   from pagerenderer\server\ui.apps\pom.xml
+[INFO] --------------------------[ content-package ]---------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ pagerender-server.ui.apps ---
+[INFO] Deleting C:\work\peregrine-up\peregrine-cms\pagerenderer\server\ui.apps\target
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ pagerender-server.ui.apps ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ pagerender-server.ui.apps ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ pagerender-server.ui.apps ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- frontend:1.15.1:npm (npm install) @ pagerender-server.ui.apps ---
+[INFO] Running 'npm install' in C:\work\peregrine-up\peregrine-cms\pagerenderer\server\ui.apps
+[INFO] npm WARN acorn-dynamic-import@4.0.0 requires a peer of acorn@^6.0.0 but none is installed. You must install peer dependencies yourself.
+[INFO] 
+[INFO] npm notice This endpoint is being retired. Use the bulk advisory endpoint instead. See the following docs for more info: https://api-docs.npmjs.com/#tag/Audit
+[INFO] audited 122 packages in 0.504s
+[INFO] 
+[INFO] 2 packages are looking for funding
+[INFO]   run `npm fund` for details
+[INFO] 
+[INFO] found 54 vulnerabilities (2 low, 28 moderate, 21 high, 3 critical)
+[INFO]   run `npm audit fix` to fix them, or `npm audit` for details
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ pagerender-server.ui.apps ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] Copying 2 resources to ../vault-work/META-INF
+[INFO] Copying 41 resources
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ pagerender-server.ui.apps ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- frontend:1.15.1:npm (npm run build) @ pagerender-server.ui.apps ---
+[INFO] Running 'npm run build' in C:\work\peregrine-up\peregrine-cms\pagerenderer\server\ui.apps
+[INFO] 
+[INFO] > pcms-pagerender-server@1.0.0 build C:\work\peregrine-up\peregrine-cms\pagerenderer\server\ui.apps
+[INFO] > node ../../../buildscripts/buildvue.js pagerenderserver
+[INFO] 
+[INFO] ========== building vue files ==========
+[INFO] building felib pagerenderserver
+[INFO] 
+[INFO] --- resources:3.2.0:testResources (default-testResources) @ pagerender-server.ui.apps ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\pagerenderer\server\ui.apps\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ pagerender-server.ui.apps ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:2.18.1:test (default-test) @ pagerender-server.ui.apps ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- wcmio-content-package:1.6.0:package (default-package) @ pagerender-server.ui.apps ---
+[INFO] Building content-package: C:\work\peregrine-up\peregrine-cms\pagerenderer\server\ui.apps\target\pagerender-server.ui.apps-1.0-SNAPSHOT.zip
+[INFO] 
+[INFO] --- wcmio-content-package:1.6.0:package (default) @ pagerender-server.ui.apps ---
+[INFO] Embedding Bundle 'EmbeddedBundle{groupId='com.peregrine-cms', artifactId='pagerender-server.core', scope=null, type='null', classifier='null', generateFilter=true, target='null', destFileName='null', excludeTransitive=false}'
+[INFO] Building content-package: C:\work\peregrine-up\peregrine-cms\pagerenderer\server\ui.apps\target\pagerender-server.ui.apps-1.0-SNAPSHOT.zip
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ pagerender-server.ui.apps ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\pagerenderer\server\ui.apps\target\pagerender-server.ui.apps-1.0-SNAPSHOT.zip to C:\Users\rr\.m2\repository\com\peregrine-cms\pagerender-server.ui.apps\1.0-SNAPSHOT\pagerender-server.ui.apps-1.0-SNAPSHOT.zip
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\pagerenderer\server\ui.apps\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\pagerender-server.ui.apps\1.0-SNAPSHOT\pagerender-server.ui.apps-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] -------------------< com.peregrine-cms:admin.parent >-------------------
+[INFO] Building Peregrine CMS - Admin Parent 1.0-SNAPSHOT               [23/40]
+[INFO]   from admin-base\pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ admin.parent ---
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ admin.parent ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ admin.parent ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ admin.parent ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ admin.parent ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\admin-base\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\admin.parent\1.0-SNAPSHOT\admin.parent-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] --------------------< com.peregrine-cms:admin.core >--------------------
+[INFO] Building Peregrine CMS - Admin - Core 1.0-SNAPSHOT               [24/40]
+[INFO]   from admin-base\core\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ admin.core ---
+[INFO] Deleting C:\work\peregrine-up\peregrine-cms\admin-base\core\target
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ admin.core ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ admin.core ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ admin.core ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ admin.core ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\admin-base\core\src\main\content\META-INF
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ admin.core ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 76 source files to C:\work\peregrine-up\peregrine-cms\admin-base\core\target\classes
+[INFO] /C:/work/peregrine-up/peregrine-cms/admin-base/core/src/main/java/com/peregrine/admin/servlets/RestrictedSearchServlet.java: Some input files use or override a deprecated API.
+[INFO] /C:/work/peregrine-up/peregrine-cms/admin-base/core/src/main/java/com/peregrine/admin/servlets/RestrictedSearchServlet.java: Recompile with -Xlint:deprecation for details.
+[INFO] /C:/work/peregrine-up/peregrine-cms/admin-base/core/src/main/java/com/peregrine/admin/resource/AdminResourceHandlerService.java: Some input files use unchecked or unsafe operations.
+[INFO] /C:/work/peregrine-up/peregrine-cms/admin-base/core/src/main/java/com/peregrine/admin/resource/AdminResourceHandlerService.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- bnd:6.4.0:bnd-process (jar) @ admin.core ---
+[INFO] 
+[INFO] --- resources:3.2.0:testResources (default-testResources) @ admin.core ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] Copying 2 resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ admin.core ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 5 source files to C:\work\peregrine-up\peregrine-cms\admin-base\core\target\test-classes
+[INFO] /C:/work/peregrine-up/peregrine-cms/admin-base/core/src/test/java/com/peregrine/admin/security/PackageValidatorServiceTest.java: C:\work\peregrine-up\peregrine-cms\admin-base\core\src\test\java\com\peregrine\admin\security\PackageValidatorServiceTest.java uses or overrides a deprecated API.
+[INFO] /C:/work/peregrine-up/peregrine-cms/admin-base/core/src/test/java/com/peregrine/admin/security/PackageValidatorServiceTest.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- surefire:2.18.1:test (default-test) @ admin.core ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.2.0:jar (default-jar) @ admin.core ---
+[INFO] Building jar: C:\work\peregrine-up\peregrine-cms\admin-base\core\target\admin.core-1.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ admin.core ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\admin-base\core\target\admin.core-1.0-SNAPSHOT.jar to C:\Users\rr\.m2\repository\com\peregrine-cms\admin.core\1.0-SNAPSHOT\admin.core-1.0-SNAPSHOT.jar
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\admin-base\core\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\admin.core\1.0-SNAPSHOT\admin.core-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] ------------------< com.peregrine-cms:admin.ui.apps >-------------------
+[INFO] Building Peregrine CMS - Admin - UI Apps 1.0-SNAPSHOT            [25/40]
+[INFO]   from admin-base\ui.apps\pom.xml
+[INFO] --------------------------[ content-package ]---------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ admin.ui.apps ---
+[INFO] Deleting C:\work\peregrine-up\peregrine-cms\admin-base\ui.apps\target
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ admin.ui.apps ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ admin.ui.apps ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ admin.ui.apps ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] NPM 6.14.16 is already installed.
+[INFO] 
+[INFO] --- frontend:1.15.1:npm (npm install) @ admin.ui.apps ---
+[INFO] Running 'npm install' in C:\work\peregrine-up\peregrine-cms\admin-base\ui.apps
+[INFO] npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@2.3.3 (node_modules\fsevents):
+[INFO] npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@2.3.3: wanted {"os":"darwin","arch":"any"} (current: {"os":"win32","arch":"x64"})
+[INFO] 
+[INFO] npm notice This endpoint is being retired. Use the bulk advisory endpoint instead. See the following docs for more info: https://api-docs.npmjs.com/#tag/Audit
+[INFO] audited 753 packages in 1.86s
+[INFO] 
+[INFO] 26 packages are looking for funding
+[INFO]   run `npm fund` for details
+[INFO] 
+[INFO] found 250 vulnerabilities (14 low, 87 moderate, 127 high, 22 critical)
+[INFO]   run `npm audit fix` to fix them, or `npm audit` for details
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ admin.ui.apps ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] Copying 2 resources to ../vault-work/META-INF
+[INFO] Copying 91 resources to apps/admin/docs
+[INFO] Copying 7 resources to etc/felibs/admin/dependencies/jquery
+[INFO] Copying 14 resources to etc/felibs/admin/dependencies/materialize-css
+[INFO] Copying 4 resources to etc/felibs/admin/dependencies/axios
+[INFO] Copying 15 resources to etc/felibs/admin/dependencies/vue
+[INFO] Copying 9 resources to etc/felibs/admin/dependencies/material-design-icons
+[INFO] Copying 41 resources to etc/felibs/admin/dependencies/font-awesome
+[INFO] Copying 125 resources to etc/felibs/admin/dependencies/codemirror/mode
+[INFO] Copying 5 resources to etc/felibs/admin/dependencies/codemirror/formatting
+[INFO] Copying 571 resources
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ admin.ui.apps ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- frontend:1.15.1:npm (npm run build) @ admin.ui.apps ---
+[INFO] Running 'npm run build' in C:\work\peregrine-up\peregrine-cms\admin-base\ui.apps
+[INFO] 
+[INFO] > pcms-admin-base@1.0.0 build C:\work\peregrine-up\peregrine-cms\admin-base\ui.apps
+[INFO] > node ./node_modules/rollup/bin/rollup -c --silent && node ../../buildscripts/buildbabelvue.js admin && node ../../buildscripts/copyfelibs.js && node src/main/buildjs/mdtopage.js
+[INFO] 
+[INFO] ========== building vue files ==========
+[INFO] building felib admin
+[INFO] compiling vue file: ./admin/components/about/template.vue
+[INFO] compiling vue file: ./admin/components/action/template.vue
+[INFO] compiling vue file: ./admin/components/addcomponentmodal/template.vue
+[INFO] compiling vue file: ./admin/components/askuser/template.vue
+[INFO] compiling vue file: ./admin/components/assetbrowser/template.vue
+[INFO] compiling vue file: ./admin/components/assetview/template.vue
+[INFO] compiling vue file: ./admin/components/col/template.vue
+[INFO] compiling vue file: ./admin/components/colorpaletteselector/template.vue
+[INFO] compiling vue file: ./admin/components/componentexplorer/template.vue
+[INFO] compiling vue file: ./admin/components/componentlist/template.vue
+[INFO] compiling vue file: ./admin/components/configuretenant/template.vue
+[INFO] compiling vue file: ./admin/components/confirmdialog/template.vue
+[INFO] compiling vue file: ./admin/components/container/template.vue
+[INFO] compiling vue file: ./admin/components/contentview/template.vue
+[INFO] compiling vue file: ./admin/components/createassetfolderwizard/template.vue
+[INFO] compiling vue file: ./admin/components/createobjectdefinitionfilewizard/template.vue
+[INFO] compiling vue file: ./admin/components/createobjectdefinitionwizard/template.vue
+[INFO] compiling vue file: ./admin/components/createobjectfolderwizard/template.vue
+[INFO] compiling vue file: ./admin/components/createobjectwizard/template.vue
+[INFO] compiling vue file: ./admin/components/createpagewizard/template.vue
+[INFO] compiling vue file: ./admin/components/createtemplatewizard/template.vue
+[INFO] compiling vue file: ./admin/components/createtenantwizard/template.vue
+[INFO] compiling vue file: ./admin/components/debugger/template.vue
+[INFO] compiling vue file: ./admin/components/draghandle/template.vue
+[INFO] compiling vue file: ./admin/components/dropdowndivider/template.vue
+[INFO] compiling vue file: ./admin/components/editor/template.vue
+[INFO] compiling vue file: ./admin/components/explorer/template.vue
+[INFO] compiling vue file: ./admin/components/explorerpreview/template.vue
+[INFO] compiling vue file: ./admin/components/explorerpreviewcontent/template.vue
+[INFO] compiling vue file: ./admin/components/explorerpreviewnavitem/template.vue
+[INFO] compiling vue file: ./admin/components/extensions/template.vue
+[INFO] compiling vue file: ./admin/components/filedropper/template.vue
+[INFO] compiling vue file: ./admin/components/fileeditor/template.vue
+[INFO] compiling vue file: ./admin/components/filepreview/template.vue
+[INFO] compiling vue file: ./admin/components/fileupload/template.vue
+[INFO] compiling vue file: ./admin/components/icon/template.vue
+[INFO] compiling vue file: ./admin/components/iconaction/template.vue
+[INFO] compiling vue file: ./admin/components/iconbrowser/template.vue
+[INFO] compiling vue file: ./admin/components/iconeditpage/template.vue
+[INFO] compiling vue file: ./admin/components/iconlist/template.vue
+[INFO] compiling vue file: ./admin/components/iconopenfolder/template.vue
+[INFO] compiling vue file: ./admin/components/iconrename/template.vue
+[INFO] compiling vue file: ./admin/components/linearpreloader/template.vue
+[INFO] compiling vue file: ./admin/components/logo/template.vue
+[INFO] compiling vue file: ./admin/components/materialicondropdown/template.vue
+[INFO] compiling vue file: ./admin/components/materializedropdown/template.vue
+[INFO] compiling vue file: ./admin/components/materializedropdownfilter/template.vue
+[INFO] compiling vue file: ./admin/components/materializemodal/template.vue
+[INFO] compiling vue file: ./admin/components/materializespinner/template.vue
+[INFO] compiling vue file: ./admin/components/materializeswitch/template.vue
+[INFO] compiling vue file: ./admin/components/multiselect/template.vue
+[INFO] compiling vue file: ./admin/components/nav/template.vue
+[INFO] compiling vue file: ./admin/components/nodetreeitem/template.vue
+[INFO] compiling vue file: ./admin/components/notifyuser/template.vue
+[INFO] compiling vue file: ./admin/components/objectview/template.vue
+[INFO] compiling vue file: ./admin/components/pagebrowser/template.vue
+[INFO] compiling vue file: ./admin/components/pageview/template.vue
+[INFO] compiling vue file: ./admin/components/pathbrowser/template.vue
+[INFO] compiling vue file: ./admin/components/pathfield/template.vue
+[INFO] compiling vue file: ./admin/components/promptuser/template.vue
+[INFO] compiling vue file: ./admin/components/publishinginfo/template.vue
+[INFO] compiling vue file: ./admin/components/publishingmodal/template.vue
+[INFO] compiling vue file: ./admin/components/querytool/template.vue
+[INFO] compiling vue file: ./admin/components/recyclebin/template.vue
+[INFO] compiling vue file: ./admin/components/richtoolbar/template.vue
+[INFO] compiling vue file: ./admin/components/richtoolbarbtn/template.vue
+[INFO] compiling vue file: ./admin/components/richtoolbarfontsize/template.vue
+[INFO] compiling vue file: ./admin/components/richtoolbargroup/template.vue
+[INFO] compiling vue file: ./admin/components/row/template.vue
+[INFO] compiling vue file: ./admin/components/separator/template.vue
+[INFO] compiling vue file: ./admin/components/sourceimagewizard/template.vue
+[INFO] compiling vue file: ./admin/components/spinner/template.vue
+[INFO] compiling vue file: ./admin/components/subnav/template.vue
+[INFO] compiling vue file: ./admin/components/tab/template.vue
+[INFO] compiling vue file: ./admin/components/tabswrapper/template.vue
+[INFO] compiling vue file: ./admin/components/templateview/template.vue
+[INFO] compiling vue file: ./admin/components/tenants/template.vue
+[INFO] compiling vue file: ./admin/components/toolingpage/template.vue
+[INFO] compiling vue file: ./admin/components/tour/template.vue
+[INFO] compiling vue file: ./admin/components/workspace/template.vue
+[INFO] compiling vue file: ./field/collection/template.vue
+[INFO] compiling vue file: ./field/headline/template.vue
+[INFO] compiling vue file: ./field/horizontal-line/template.vue
+[INFO] compiling vue file: ./field/iconbrowser/template.vue
+[INFO] compiling vue file: ./field/list/template.vue
+[INFO] compiling vue file: ./field/listselection/template.vue
+[INFO] compiling vue file: ./field/location-input/template.vue
+[INFO] compiling vue file: ./field/material-checkbox/template.vue
+[INFO] compiling vue file: ./field/material-checklist/template.vue
+[INFO] compiling vue file: ./field/material-datepicker/template.vue
+[INFO] compiling vue file: ./field/material-datetime/template.vue
+[INFO] compiling vue file: ./field/material-multiselect/template.vue
+[INFO] compiling vue file: ./field/material-radios/template.vue
+[INFO] compiling vue file: ./field/material-range/template.vue
+[INFO] compiling vue file: ./field/material-select/template.vue
+[INFO] compiling vue file: ./field/material-textarea/template.vue
+[INFO] compiling vue file: ./field/material-timepicker/template.vue
+[INFO] compiling vue file: ./field/materialswitch/template.vue
+[INFO] compiling vue file: ./field/object-definition-reference/template.vue
+[INFO] compiling vue file: ./field/pathbrowser/template.vue
+[INFO] compiling vue file: ./field/texteditor/template.vue
+[INFO] done compiling
+[INFO] === copying node_modules dependencies ========================================
+[INFO] Copying	node_modules/lodash/lodash.min.js 
+[INFO] to	./target/classes/etc/felibs/admin/dependencies/lodash.min.js
+[INFO] 
+[INFO] Copying	node_modules/moment/min/moment.min.js 
+[INFO] to	./target/classes/etc/felibs/admin/dependencies/moment.min.js
+[INFO] 
+[INFO] Copying	node_modules/isotope-layout/dist/isotope.pkgd.min.js 
+[INFO] to	./target/classes/etc/felibs/admin/dependencies/isotope.pkgd.min.js
+[INFO] 
+[INFO] Copying	node_modules/vue-form-generator/dist/vfg.css 
+[INFO] to	./target/classes/etc/felibs/admin/dependencies/vfg.css
+[INFO] 
+[INFO] Copying	node_modules/vue-form-generator/dist/vfg.js 
+[INFO] to	./target/classes/etc/felibs/admin/dependencies/vfg.js
+[INFO] 
+[INFO] Copying	node_modules/vueisotope/dist/vue_isotope.min.js 
+[INFO] to	./target/classes/etc/felibs/admin/dependencies/vue_isotope.min.js
+[INFO] 
+[INFO] Copying	node_modules/vue-images-loaded/dist/vueimagesloaded.js 
+[INFO] to	./target/classes/etc/felibs/admin/dependencies/vueimagesloaded.js
+[INFO] 
+[INFO] Copying	node_modules/vue-multiselect/dist/vue-multiselect.min.js 
+[INFO] to	./target/classes/etc/felibs/admin/dependencies/vue-multiselect.min.js
+[INFO] 
+[INFO] Copying	node_modules/vue-form-wizard/dist/vue-form-wizard.js 
+[INFO] to	./target/classes/etc/felibs/admin/dependencies/vue-form-wizard.js
+[INFO] 
+[INFO] Copying	node_modules/luxon/build/global/luxon.min.js 
+[INFO] to	./target/classes/etc/felibs/admin/dependencies/luxon.min.js
+[INFO] 
+[INFO] Copying	node_modules/weekstart/dist/min/main.js 
+[INFO] to	./target/classes/etc/felibs/admin/dependencies/main.js
+[INFO] 
+[INFO] Copying	node_modules/vue-datetime/dist/vue-datetime.min.js 
+[INFO] to	./target/classes/etc/felibs/admin/dependencies/vue-datetime.min.js
+[INFO] 
+[INFO] Copying	node_modules/vue-datetime/dist/vue-datetime.min.css 
+[INFO] to	./target/classes/etc/felibs/admin/dependencies/vue-datetime.min.css
+[INFO] 
+[INFO] Copying	node_modules/drag-drop-touch/DragDropTouch.js 
+[INFO] to	./target/classes/etc/felibs/admin/dependencies/DragDropTouch.js
+[INFO] 
+[INFO] Copying	node_modules/expr-eval/dist/bundle.min.js 
+[INFO] to	./target/classes/etc/felibs/admin/dependencies/bundle.min.js
+[INFO] 
+[INFO] Copying	node_modules/vue-codemirror-lite/dist/vuecodemirror.min.js 
+[INFO] to	./target/classes/etc/felibs/admin/dependencies/vuecodemirror.min.js
+[INFO] 
+[INFO] Copying	node_modules/ionicons/css/ionicons.min.css 
+[INFO] to	./target/classes/etc/felibs/admin/dependencies/ionicons.min.css
+[INFO] 
+[INFO] target/classes/content/docs/pages/public/distribution/index.md
+[INFO] target/classes/content/docs/pages/public/docker/index.md
+[INFO] target/classes/content/docs/pages/public/hatch/index.md
+[INFO] target/classes/content/docs/pages/public/hatch/internals.md
+[INFO] target/classes/content/docs/pages/public/index.md
+[INFO] target/classes/content/docs/pages/public/renditions/index.md
+[INFO] target/classes/content/docs/pages/public/replication/index.md
+[INFO] target/classes/content/docs/pages/public/replication/replication-explorer.md
+[INFO] target/classes/content/docs/pages/public/replication/resource-deleted.md
+[INFO] target/classes/content/docs/pages/public/replication/resource-new.md
+[INFO] target/classes/content/docs/pages/public/replication/resource-unpublished.md
+[INFO] target/classes/content/docs/pages/public/replication/resource-updated.md
+[INFO] target/classes/content/docs/pages/public/replication/root-site-deleted.md
+[INFO] target/classes/content/docs/pages/public/replication/root-site-new.md
+[INFO] target/classes/content/docs/pages/public/replication/root-site-unpublished.md
+[INFO] target/classes/content/docs/pages/public/replication/root-site-updated.md
+[INFO] target/classes/content/docs/pages/public/replication/sitemap-deleted.md
+[INFO] target/classes/content/docs/pages/public/replication/sitemap-new.md
+[INFO] target/classes/content/docs/pages/public/replication/sitemap-updated.md
+[INFO] target/classes/content/docs/pages/public/sitemaps/index.md
+[INFO] target/classes/content/docs/pages/public/versioning/index.md
+[INFO] target/classes/content/docs/pages/public/write/index.md
+[INFO] 
+[INFO] --- resources:3.2.0:testResources (default-testResources) @ admin.ui.apps ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\admin-base\ui.apps\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ admin.ui.apps ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:2.18.1:test (default-test) @ admin.ui.apps ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- wcmio-content-package:1.6.0:package (default-package) @ admin.ui.apps ---
+[INFO] Building content-package: C:\work\peregrine-up\peregrine-cms\admin-base\ui.apps\target\admin.ui.apps-1.0-SNAPSHOT.zip
+[INFO] 
+[INFO] --- wcmio-content-package:1.6.0:package (default) @ admin.ui.apps ---
+[INFO] Embedding Bundle 'EmbeddedBundle{groupId='com.peregrine-cms', artifactId='admin.core', scope=null, type='null', classifier='null', generateFilter=true, target='null', destFileName='null', excludeTransitive=false}'
+[INFO] Building content-package: C:\work\peregrine-up\peregrine-cms\admin-base\ui.apps\target\admin.ui.apps-1.0-SNAPSHOT.zip
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ admin.ui.apps ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\admin-base\ui.apps\target\admin.ui.apps-1.0-SNAPSHOT.zip to C:\Users\rr\.m2\repository\com\peregrine-cms\admin.ui.apps\1.0-SNAPSHOT\admin.ui.apps-1.0-SNAPSHOT.zip
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\admin-base\ui.apps\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\admin.ui.apps\1.0-SNAPSHOT\admin.ui.apps-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] ---------------< com.peregrine-cms:admin.ui.materialize >---------------
+[INFO] Building Peregrine CMS - Admin - Materialize 1.0-SNAPSHOT        [26/40]
+[INFO]   from admin-base\materialize\pom.xml
+[INFO] --------------------------[ content-package ]---------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ admin.ui.materialize ---
+[INFO] Deleting C:\work\peregrine-up\peregrine-cms\admin-base\materialize\target
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ admin.ui.materialize ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ admin.ui.materialize ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.0:install-node-and-npm (install node and npm) @ admin.ui.materialize ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] NPM 6.14.16 was installed, but we need version 10.5.2
+[INFO] Installing npm version 10.5.2
+[INFO] Unpacking C:\Users\rr\.m2\repository\com\github\eirslett\npm\10.5.2\npm-10.5.2.tar.gz into C:\work\peregrine-up\peregrine-cms\node\node_modules
+[INFO] Installed npm locally.
+[INFO] 
+[INFO] --- frontend:1.15.0:npm (npm install) @ admin.ui.materialize ---
+[INFO] Running 'npm install' in C:\work\peregrine-up\peregrine-cms\admin-base\materialize
+[INFO] 
+[INFO] up to date, audited 25 packages in 10s
+[INFO] 
+[INFO] 4 packages are looking for funding
+[INFO]   run `npm fund` for details
+[INFO] 
+[INFO] 2 high severity vulnerabilities
+[INFO] 
+[INFO] To address all issues, run:
+[INFO]   npm audit fix
+[INFO] 
+[INFO] Run `npm audit` for details.
+[INFO] 
+[INFO] --- frontend:1.15.0:npm (npm run build) @ admin.ui.materialize ---
+[INFO] Running 'npm run build' in C:\work\peregrine-up\peregrine-cms\admin-base\materialize
+[INFO] 
+[INFO] > materialize@1.0.0 build
+[INFO] > sass -q peregrine.scss target/classes/etc/felibs/materialize/materialize.css
+[INFO] 
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ admin.ui.materialize ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] Copying 2 resources to ../vault-work/META-INF
+[INFO] Copying 10 resources to C:\work\peregrine-up\peregrine-cms\admin-base\materialize/src/main/content/jcr_root/etc/felibs/fonts
+[INFO] Copying 13 resources
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ admin.ui.materialize ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- resources:3.2.0:testResources (default-testResources) @ admin.ui.materialize ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\admin-base\materialize\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ admin.ui.materialize ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:2.18.1:test (default-test) @ admin.ui.materialize ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- wcmio-content-package:1.6.0:package (default-package) @ admin.ui.materialize ---
+[INFO] Building content-package: C:\work\peregrine-up\peregrine-cms\admin-base\materialize\target\admin.ui.materialize-1.0-SNAPSHOT.zip
+[INFO] 
+[INFO] --- wcmio-content-package:1.6.0:package (default) @ admin.ui.materialize ---
+[INFO] Building content-package: C:\work\peregrine-up\peregrine-cms\admin-base\materialize\target\admin.ui.materialize-1.0-SNAPSHOT.zip
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ admin.ui.materialize ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\admin-base\materialize\target\admin.ui.materialize-1.0-SNAPSHOT.zip to C:\Users\rr\.m2\repository\com\peregrine-cms\admin.ui.materialize\1.0-SNAPSHOT\admin.ui.materialize-1.0-SNAPSHOT.zip
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\admin-base\materialize\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\admin.ui.materialize\1.0-SNAPSHOT\admin.ui.materialize-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] ---------------< com.peregrine-cms:admin.sling.ui.apps >----------------
+[INFO] Building Peregrine CMS - Admin - UI Apps for Sling 1.0-SNAPSHOT  [27/40]
+[INFO]   from admin-base\sling.ui.apps\pom.xml
+[INFO] --------------------------[ content-package ]---------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ admin.sling.ui.apps ---
+[INFO] Deleting C:\work\peregrine-up\peregrine-cms\admin-base\sling.ui.apps\target
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ admin.sling.ui.apps ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ admin.sling.ui.apps ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ admin.sling.ui.apps ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ admin.sling.ui.apps ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] Copying 2 resources to ../vault-work/META-INF
+[INFO] Copying 3 resources
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ admin.sling.ui.apps ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- resources:3.2.0:testResources (default-testResources) @ admin.sling.ui.apps ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\admin-base\sling.ui.apps\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ admin.sling.ui.apps ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:2.18.1:test (default-test) @ admin.sling.ui.apps ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- wcmio-content-package:1.6.0:package (default-package) @ admin.sling.ui.apps ---
+[INFO] Building content-package: C:\work\peregrine-up\peregrine-cms\admin-base\sling.ui.apps\target\admin.sling.ui.apps-1.0-SNAPSHOT.zip
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ admin.sling.ui.apps ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\admin-base\sling.ui.apps\target\admin.sling.ui.apps-1.0-SNAPSHOT.zip to C:\Users\rr\.m2\repository\com\peregrine-cms\admin.sling.ui.apps\1.0-SNAPSHOT\admin.sling.ui.apps-1.0-SNAPSHOT.zip
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\admin-base\sling.ui.apps\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\admin.sling.ui.apps\1.0-SNAPSHOT\admin.sling.ui.apps-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] ----------------< com.peregrine-cms:example-vue.parent >----------------
+[INFO] Building Peregrine CMS - Example Vue Parent 1.0-SNAPSHOT         [28/40]
+[INFO]   from samples\example-vue-site\pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ example-vue.parent ---
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ example-vue.parent ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ example-vue.parent ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ example-vue.parent ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ example-vue.parent ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\samples\example-vue-site\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\example-vue.parent\1.0-SNAPSHOT\example-vue.parent-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] -----------------< com.peregrine-cms:example-vue.core >-----------------
+[INFO] Building Peregrine CMS - Example Vue - Core 1.0-SNAPSHOT         [29/40]
+[INFO]   from samples\example-vue-site\core\pom.xml
+[INFO] -------------------------------[ bundle ]-------------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ example-vue.core ---
+[INFO] Deleting C:\work\peregrine-up\peregrine-cms\samples\example-vue-site\core\target
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ example-vue.core ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ example-vue.core ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ example-vue.core ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ example-vue.core ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\samples\example-vue-site\core\src\main\content\META-INF
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ example-vue.core ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 11 source files to C:\work\peregrine-up\peregrine-cms\samples\example-vue-site\core\target\classes
+[INFO] 
+[INFO] --- resources:3.2.0:testResources (default-testResources) @ example-vue.core ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\samples\example-vue-site\core\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ example-vue.core ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:2.18.1:test (default-test) @ example-vue.core ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- bundle:5.1.9:bundle (default-bundle) @ example-vue.core ---
+[INFO] Building bundle: C:\work\peregrine-up\peregrine-cms\samples\example-vue-site\core\target\example-vue.core-1.0-SNAPSHOT.jar
+[INFO] Writing manifest: C:\work\peregrine-up\peregrine-cms\samples\example-vue-site\core\target\classes\META-INF\MANIFEST.MF
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ example-vue.core ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\samples\example-vue-site\core\target\example-vue.core-1.0-SNAPSHOT.jar to C:\Users\rr\.m2\repository\com\peregrine-cms\example-vue.core\1.0-SNAPSHOT\example-vue.core-1.0-SNAPSHOT.jar
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\samples\example-vue-site\core\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\example-vue.core\1.0-SNAPSHOT\example-vue.core-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] --- bundle:5.1.9:install (default-install) @ example-vue.core ---
+[INFO] Installing com/peregrine-cms/example-vue.core/1.0-SNAPSHOT/example-vue.core-1.0-SNAPSHOT.jar
+[INFO] Writing OBR metadata
+[INFO] 
+[INFO] ---------------< com.peregrine-cms:example-vue.ui.apps >----------------
+[INFO] Building Peregrine CMS - Example Vue - UI Apps 1.0-SNAPSHOT      [30/40]
+[INFO]   from samples\example-vue-site\ui.apps\pom.xml
+[INFO] --------------------------[ content-package ]---------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ example-vue.ui.apps ---
+[INFO] Deleting C:\work\peregrine-up\peregrine-cms\samples\example-vue-site\ui.apps\target
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ example-vue.ui.apps ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ example-vue.ui.apps ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ example-vue.ui.apps ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] NPM 10.5.2 was installed, but we need version 6.14.16
+[INFO] Installing npm version 6.14.16
+[INFO] Unpacking C:\Users\rr\.m2\repository\com\github\eirslett\npm\6.14.16\npm-6.14.16.tar.gz into C:\work\peregrine-up\peregrine-cms\node\node_modules
+[INFO] Installed npm locally.
+[INFO] 
+[INFO] --- frontend:1.15.1:npm (npm install) @ example-vue.ui.apps ---
+[INFO] Running 'npm install' in C:\work\peregrine-up\peregrine-cms\samples\example-vue-site\ui.apps
+[INFO] npm WARN acorn-dynamic-import@4.0.0 requires a peer of acorn@^6.0.0 but none is installed. You must install peer dependencies yourself.
+[INFO] 
+[INFO] npm notice This endpoint is being retired. Use the bulk advisory endpoint instead. See the following docs for more info: https://api-docs.npmjs.com/#tag/Audit
+[INFO] audited 99 packages in 0.612s
+[INFO] 
+[INFO] 2 packages are looking for funding
+[INFO]   run `npm fund` for details
+[INFO] 
+[INFO] found 34 vulnerabilities (1 low, 19 moderate, 13 high, 1 critical)
+[INFO]   run `npm audit fix` to fix them, or `npm audit` for details
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ example-vue.ui.apps ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] Copying 2 resources to ../vault-work/META-INF
+[INFO] Copying 83 resources
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ example-vue.ui.apps ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- frontend:1.15.1:npm (npm run build) @ example-vue.ui.apps ---
+[INFO] Running 'npm run build' in C:\work\peregrine-up\peregrine-cms\samples\example-vue-site\ui.apps
+[INFO] 
+[INFO] > exampleVueSite@1.0.0 build C:\work\peregrine-up\peregrine-cms\samples\example-vue-site\ui.apps
+[INFO] > node ../../../buildscripts/buildvue.js examplesite
+[INFO] 
+[INFO] ========== building vue files ==========
+[INFO] building felib examplesite
+[INFO] compiling vue file: ./example/components/carousel/template.vue
+[INFO] compiling vue file: ./example/components/col/template.vue
+[INFO] compiling vue file: ./example/components/container/template.vue
+[INFO] compiling vue file: ./example/components/footer/template.vue
+[INFO] compiling vue file: ./example/components/image/template.vue
+[INFO] compiling vue file: ./example/components/jumbotron/template.vue
+[INFO] compiling vue file: ./example/components/nav/template.vue
+[INFO] compiling vue file: ./example/components/page/template.vue
+[INFO] compiling vue file: ./example/components/row/template.vue
+[INFO] compiling vue file: ./example/components/secondpage/template.vue
+[INFO] compiling vue file: ./example/components/text/template.vue
+[INFO] compiling vue file: ./example/extensions/adminpagessubnav/template.vue
+[INFO] done compiling
+[INFO] 
+[INFO] --- resources:3.2.0:testResources (default-testResources) @ example-vue.ui.apps ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\samples\example-vue-site\ui.apps\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ example-vue.ui.apps ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:2.18.1:test (default-test) @ example-vue.ui.apps ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- wcmio-content-package:1.6.0:package (default-package) @ example-vue.ui.apps ---
+[INFO] Building content-package: C:\work\peregrine-up\peregrine-cms\samples\example-vue-site\ui.apps\target\example-vue.ui.apps-1.0-SNAPSHOT.zip
+[INFO] 
+[INFO] --- wcmio-content-package:1.6.0:package (default) @ example-vue.ui.apps ---
+[INFO] Embedding Bundle 'EmbeddedBundle{groupId='com.peregrine-cms', artifactId='example-vue.core', scope=null, type='null', classifier='null', generateFilter=true, target='null', destFileName='null', excludeTransitive=false}'
+[INFO] Building content-package: C:\work\peregrine-up\peregrine-cms\samples\example-vue-site\ui.apps\target\example-vue.ui.apps-1.0-SNAPSHOT.zip
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ example-vue.ui.apps ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\samples\example-vue-site\ui.apps\target\example-vue.ui.apps-1.0-SNAPSHOT.zip to C:\Users\rr\.m2\repository\com\peregrine-cms\example-vue.ui.apps\1.0-SNAPSHOT\example-vue.ui.apps-1.0-SNAPSHOT.zip
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\samples\example-vue-site\ui.apps\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\example-vue.ui.apps\1.0-SNAPSHOT\example-vue.ui.apps-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] ------------------< com.themeclean:themeclean-parent >------------------
+[INFO] Building themeclean-parent 1.0-SNAPSHOT                          [31/40]
+[INFO]   from themes\themeclean\pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ themeclean-parent ---
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ themeclean-parent ---
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ themeclean-parent ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\themes\themeclean\pom.xml to C:\Users\rr\.m2\repository\com\themeclean\themeclean-parent\1.0-SNAPSHOT\themeclean-parent-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] -------------------< com.themeclean:themeclean-core >-------------------
+[INFO] Building themeclean - Core 1.0-SNAPSHOT                          [32/40]
+[INFO]   from themes\themeclean\core\pom.xml
+[INFO] -------------------------------[ bundle ]-------------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ themeclean-core ---
+[INFO] Deleting C:\work\peregrine-up\peregrine-cms\themes\themeclean\core\target
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ themeclean-core ---
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ themeclean-core ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\themes\themeclean\core\src\main\resources
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ themeclean-core ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 28 source files to C:\work\peregrine-up\peregrine-cms\themes\themeclean\core\target\classes
+[INFO] 
+[INFO] --- resources:3.2.0:testResources (default-testResources) @ themeclean-core ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\themes\themeclean\core\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ themeclean-core ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:2.20:test (default-test) @ themeclean-core ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- bundle:5.1.2:bundle (default-bundle) @ themeclean-core ---
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ themeclean-core ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\themes\themeclean\core\target\themeclean-core-1.0-SNAPSHOT.jar to C:\Users\rr\.m2\repository\com\themeclean\themeclean-core\1.0-SNAPSHOT\themeclean-core-1.0-SNAPSHOT.jar
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\themes\themeclean\core\pom.xml to C:\Users\rr\.m2\repository\com\themeclean\themeclean-core\1.0-SNAPSHOT\themeclean-core-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] --- bundle:5.1.2:install (default-install) @ themeclean-core ---
+[INFO] Installing com/themeclean/themeclean-core/1.0-SNAPSHOT/themeclean-core-1.0-SNAPSHOT.jar
+[INFO] Writing OBR metadata
+[INFO] 
+[INFO] -----------------< com.themeclean:themeclean-ui.apps >------------------
+[INFO] Building themeclean - UI Apps 1.0-SNAPSHOT                       [33/40]
+[INFO]   from themes\themeclean\ui.apps\pom.xml
+[INFO] --------------------------[ content-package ]---------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ themeclean-ui.apps ---
+[INFO] Deleting C:\work\peregrine-up\peregrine-cms\themes\themeclean\ui.apps\target
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ themeclean-ui.apps ---
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ themeclean-ui.apps ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- frontend:1.15.1:npm (npm install) @ themeclean-ui.apps ---
+[INFO] Running 'npm install' in C:\work\peregrine-up\peregrine-cms\themes\themeclean\ui.apps
+[INFO] npm WARN acorn-dynamic-import@4.0.0 requires a peer of acorn@^6.0.0 but none is installed. You must install peer dependencies yourself.
+[INFO] 
+[INFO] npm notice This endpoint is being retired. Use the bulk advisory endpoint instead. See the following docs for more info: https://api-docs.npmjs.com/#tag/Audit
+[INFO] audited 102 packages in 0.467s
+[INFO] 
+[INFO] 2 packages are looking for funding
+[INFO]   run `npm fund` for details
+[INFO] 
+[INFO] found 41 vulnerabilities (2 low, 24 moderate, 13 high, 2 critical)
+[INFO]   run `npm audit fix` to fix them, or `npm audit` for details
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ themeclean-ui.apps ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] Copying 2 resources to ../vault-work/META-INF
+[INFO] Copying 353 resources
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ themeclean-ui.apps ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- frontend:1.15.1:npm (npm run build) @ themeclean-ui.apps ---
+[INFO] Running 'npm run build' in C:\work\peregrine-up\peregrine-cms\themes\themeclean\ui.apps
+[INFO] 
+[INFO] > themecleanBuild@1.0.0 build C:\work\peregrine-up\peregrine-cms\themes\themeclean\ui.apps
+[INFO] > node ./src/main/content/buildscripts/buildvue.js themeclean
+[INFO] 
+[INFO] === building vue files ========================================
+[INFO] building felib themeclean
+[INFO] compiling vue file: ./themeclean/components/accordion/template.vue
+[INFO] compiling vue file: ./themeclean/components/articleheader/template.vue
+[INFO] compiling vue file: ./themeclean/components/articlemediafull/template.vue
+[INFO] compiling vue file: ./themeclean/components/articlepager/template.vue
+[INFO] compiling vue file: ./themeclean/components/articlequote/template.vue
+[INFO] compiling vue file: ./themeclean/components/articletabs/template.vue
+[INFO] compiling vue file: ./themeclean/components/articletextblock/template.vue
+[INFO] compiling vue file: ./themeclean/components/articletextmedia/template.vue
+[INFO] compiling vue file: ./themeclean/components/articletwocolumn/template.vue
+[INFO] compiling vue file: ./themeclean/components/block/template.vue
+[INFO] compiling vue file: ./themeclean/components/breadcrumb/template.vue
+[INFO] compiling vue file: ./themeclean/components/cards/template.vue
+[INFO] compiling vue file: ./themeclean/components/carousel/template.vue
+[INFO] compiling vue file: ./themeclean/components/container/template.vue
+[INFO] compiling vue file: ./themeclean/components/footer/template.vue
+[INFO] compiling vue file: ./themeclean/components/header/template.vue
+[INFO] compiling vue file: ./themeclean/components/media/template.vue
+[INFO] compiling vue file: ./themeclean/components/mediablock/template.vue
+[INFO] compiling vue file: ./themeclean/components/mediavisible/template.vue
+[INFO] compiling vue file: ./themeclean/components/menubuttons/template.vue
+[INFO] compiling vue file: ./themeclean/components/page/template.vue
+[INFO] compiling vue file: ./themeclean/components/pagelist/template.vue
+[INFO] compiling vue file: ./themeclean/components/pagelistnested/template.vue
+[INFO] compiling vue file: ./themeclean/components/socialicons/template.vue
+[INFO] compiling vue file: ./themeclean/components/spacer/template.vue
+[INFO] compiling vue file: ./themeclean/components/tabs/template.vue
+[INFO] compiling vue file: ./themeclean/components/teaserhorizontal/template.vue
+[INFO] compiling vue file: ./themeclean/components/teaservertical/template.vue
+[INFO] compiling vue file: ./themeclean/components/textlinks/template.vue
+[INFO] 
+[INFO] --- resources:3.2.0:testResources (default-testResources) @ themeclean-ui.apps ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\themes\themeclean\ui.apps\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ themeclean-ui.apps ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:2.20:test (default-test) @ themeclean-ui.apps ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- wcmio-content-package:1.5.0:package (default-package) @ themeclean-ui.apps ---
+[INFO] Building content-package: C:\work\peregrine-up\peregrine-cms\themes\themeclean\ui.apps\target\themeclean-ui.apps-1.0-SNAPSHOT.zip
+[INFO] 
+[INFO] --- wcmio-content-package:1.5.0:package (default) @ themeclean-ui.apps ---
+[INFO] Embedding Bundle 'EmbeddedBundle{groupId='com.themeclean', artifactId='themeclean-core', scope=null, type='null', classifier='null', generateFilter=true, target='null', destFileName='null', excludeTransitive=false}'
+[INFO] Building content-package: C:\work\peregrine-up\peregrine-cms\themes\themeclean\ui.apps\target\themeclean-ui.apps-1.0-SNAPSHOT.zip
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ themeclean-ui.apps ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\themes\themeclean\ui.apps\target\themeclean-ui.apps-1.0-SNAPSHOT.zip to C:\Users\rr\.m2\repository\com\themeclean\themeclean-ui.apps\1.0-SNAPSHOT\themeclean-ui.apps-1.0-SNAPSHOT.zip
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\themes\themeclean\ui.apps\pom.xml to C:\Users\rr\.m2\repository\com\themeclean\themeclean-ui.apps\1.0-SNAPSHOT\themeclean-ui.apps-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] ----------------< com.peregrine-cms:slingjunit.parent >-----------------
+[INFO] Building Peregrine Sling-JUnit Parent 1.0-SNAPSHOT               [34/40]
+[INFO]   from slingjunit.parent\pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ slingjunit.parent ---
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ slingjunit.parent ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ slingjunit.parent ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ slingjunit.parent ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ slingjunit.parent ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\slingjunit.parent\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\slingjunit.parent\1.0-SNAPSHOT\slingjunit.parent-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] -----------------< com.peregrine-cms:slingjunit.core >------------------
+[INFO] Building Peregrine Sling-JUnit Common Tests Bundle 1.0-SNAPSHOT  [35/40]
+[INFO]   from slingjunit.parent\core\pom.xml
+[INFO] -------------------------------[ bundle ]-------------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ slingjunit.core ---
+[INFO] Deleting C:\work\peregrine-up\peregrine-cms\slingjunit.parent\core\target
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ slingjunit.core ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ slingjunit.core ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ slingjunit.core ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ slingjunit.core ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ slingjunit.core ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 5 source files to C:\work\peregrine-up\peregrine-cms\slingjunit.parent\core\target\classes
+[INFO] /C:/work/peregrine-up/peregrine-cms/slingjunit.parent/core/src/main/java/com/peregrine/slingjunit/AdaptionJTest.java: Some input files use or override a deprecated API.
+[INFO] /C:/work/peregrine-up/peregrine-cms/slingjunit.parent/core/src/main/java/com/peregrine/slingjunit/AdaptionJTest.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.2.0:testResources (default-testResources) @ slingjunit.core ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] skip non existing resourceDirectory C:\work\peregrine-up\peregrine-cms\slingjunit.parent\core\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ slingjunit.core ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:2.18.1:test (default-test) @ slingjunit.core ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- bundle:5.1.9:bundle (default-bundle) @ slingjunit.core ---
+[INFO] Building bundle: C:\work\peregrine-up\peregrine-cms\slingjunit.parent\core\target\slingjunit.core-1.0-SNAPSHOT.jar
+[INFO] Writing manifest: C:\work\peregrine-up\peregrine-cms\slingjunit.parent\core\target\classes\META-INF\MANIFEST.MF
+[INFO] 
+[INFO] --- install:2.5.2:install (default-install) @ slingjunit.core ---
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\slingjunit.parent\core\target\slingjunit.core-1.0-SNAPSHOT.jar to C:\Users\rr\.m2\repository\com\peregrine-cms\slingjunit.core\1.0-SNAPSHOT\slingjunit.core-1.0-SNAPSHOT.jar
+[INFO] Installing C:\work\peregrine-up\peregrine-cms\slingjunit.parent\core\pom.xml to C:\Users\rr\.m2\repository\com\peregrine-cms\slingjunit.core\1.0-SNAPSHOT\slingjunit.core-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] --- bundle:5.1.9:install (default-install) @ slingjunit.core ---
+[INFO] Installing com/peregrine-cms/slingjunit.core/1.0-SNAPSHOT/slingjunit.core-1.0-SNAPSHOT.jar
+[INFO] Writing OBR metadata
+[INFO] 
+[INFO] --------------< com.peregrine-cms:slingjunit.core.remote >--------------
+[INFO] Building Peregrine Sling-JUnit 'remote' Runmode Tests 1.0-SNAPSHOT [36/40]
+[INFO]   from slingjunit.parent\core.remote\pom.xml
+[INFO] -------------------------------[ bundle ]-------------------------------
+[INFO] 
+[INFO] --- clean:3.0.0:clean (default-clean) @ slingjunit.core.remote ---
+[INFO] Deleting C:\work\peregrine-up\peregrine-cms\slingjunit.parent\core.remote\target
+[INFO] 
+[INFO] --- enforcer:3.0.0-M3:enforce (enforce-maven) @ slingjunit.core.remote ---
+[INFO] 
+[INFO] --- directory:0.3.1:highest-basedir (directories) @ slingjunit.core.remote ---
+[INFO] Highest basedir set to: C:\work\peregrine-up\peregrine-cms
+[INFO] 
+[INFO] --- frontend:1.15.1:install-node-and-npm (install node and npm) @ slingjunit.core.remote ---
+[INFO] Node v20.20.2 is already installed.
+[INFO] 
+[INFO] --- resources:3.2.0:resources (default-resources) @ slingjunit.core.remote ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Using 'UTF-8' encoding to copy filtered properties files.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ slingjunit.core.remote ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 2 source files to C:\work\peregrine-up\peregrine-cms\slingjunit.parent\core.remote\target\classes
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /C:/work/peregrine-up/peregrine-cms/slingjunit.parent/core.remote/src/main/java/com/peregrine/slingjunit/author/RemoteReplAuthorJTest.java:[24,38] extraneous semicolon
+[INFO] 1 error
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for Peregrine CMS Root 1.0-SNAPSHOT:
+[INFO] 
+[INFO] Peregrine CMS Root ................................. SUCCESS [  0.348 s]
+[INFO] Peregrine CMS - Admin - Build Scripts .............. SUCCESS [  1.720 s]
+[INFO] Peregrine CMS - Platform Parent .................... SUCCESS [  0.050 s]
+[INFO] Peregrine CMS - Platform - Custom Login ............ SUCCESS [  0.657 s]
+[INFO] Peregrine CMS - Platform - Commons Test ............ SUCCESS [  0.460 s]
+[INFO] Peregrine CMS - Platform - Commons ................. SUCCESS [  2.279 s]
+[INFO] Peregrine CMS - Platform - Base Parent ............. SUCCESS [  0.051 s]
+[INFO] Peregrine CMS - Platform - Base - Core ............. SUCCESS [  3.553 s]
+[INFO] Peregrine CMS - Platform - Distribution (Configuration) SUCCESS [  0.561 s]
+[INFO] Peregrine CMS - Platform - GraphQL ................. SUCCESS [  0.075 s]
+[INFO] Peregrine CMS - Platform - GraphQL - Core .......... SUCCESS [  0.793 s]
+[INFO] Peregrine CMS - Platform - GraphQL - UI Apps ....... SUCCESS [  5.851 s]
+[INFO] Peregrine CMS - Platform - Base - UI Apps .......... SUCCESS [  0.432 s]
+[INFO] Peregrine CMS - Platform - Felib Parent ............ SUCCESS [  0.060 s]
+[INFO] Peregrine CMS - Platform - Felib - Core ............ SUCCESS [  0.496 s]
+[INFO] Peregrine CMS - Platform - Felib - UI Apps ......... SUCCESS [  0.587 s]
+[INFO] Peregrine CMS - Page Render Vue Parent ............. SUCCESS [  0.064 s]
+[INFO] Peregrine CMS - Page Render Vue - Core ............. SUCCESS [  0.608 s]
+[INFO] Peregrine CMS - Page Render Vue - UI Apps .......... SUCCESS [  2.976 s]
+[INFO] Peregrine CMS - Page Render Server Parent .......... SUCCESS [  0.078 s]
+[INFO] Peregrine CMS - Page Render Server - Core .......... SUCCESS [  1.048 s]
+[INFO] Peregrine CMS - Page Render Server - UI Apps ....... SUCCESS [  1.956 s]
+[INFO] Peregrine CMS - Admin Parent ....................... SUCCESS [  0.076 s]
+[INFO] Peregrine CMS - Admin - Core ....................... SUCCESS [  3.532 s]
+[INFO] Peregrine CMS - Admin - UI Apps .................... SUCCESS [ 15.215 s]
+[INFO] Peregrine CMS - Admin - Materialize ................ SUCCESS [ 14.930 s]
+[INFO] Peregrine CMS - Admin - UI Apps for Sling .......... SUCCESS [  0.197 s]
+[INFO] Peregrine CMS - Example Vue Parent ................. SUCCESS [  0.076 s]
+[INFO] Peregrine CMS - Example Vue - Core ................. SUCCESS [  0.695 s]
+[INFO] Peregrine CMS - Example Vue - UI Apps .............. SUCCESS [ 14.718 s]
+[INFO] themeclean-parent .................................. SUCCESS [  0.089 s]
+[INFO] themeclean - Core .................................. SUCCESS [  0.982 s]
+[INFO] themeclean - UI Apps ............................... SUCCESS [  5.037 s]
+[INFO] Peregrine Sling-JUnit Parent ....................... SUCCESS [  0.066 s]
+[INFO] Peregrine Sling-JUnit Common Tests Bundle .......... SUCCESS [  0.432 s]
+[INFO] Peregrine Sling-JUnit 'remote' Runmode Tests ....... FAILURE [  0.094 s]
+[INFO] Peregrine Sling-JUnit 'local' Runmode Tests ........ SKIPPED
+[INFO] Peregrine Sling-JUnit Testing Package .............. SKIPPED
+[INFO] Peregrine Sling-JUnit Testing Package (Remote Runmode) SKIPPED
+[INFO] Peregrine Sling-JUnit Testing Package (Local Runmode) SKIPPED
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:22 min
+[INFO] Finished at: 2026-08-13T00:27:40+02:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.8.1:compile (default-compile) on project slingjunit.core.remote: Compilation failure
+[ERROR] /C:/work/peregrine-up/peregrine-cms/slingjunit.parent/core.remote/src/main/java/com/peregrine/slingjunit/author/RemoteReplAuthorJTest.java:[24,38] extraneous semicolon
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+[ERROR] 
+[ERROR] After correcting the problems, you can resume the build with the command
+[ERROR]   mvn <args> -rf :slingjunit.core.remote
