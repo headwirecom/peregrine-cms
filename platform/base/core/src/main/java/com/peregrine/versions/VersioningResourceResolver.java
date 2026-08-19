@@ -270,9 +270,42 @@ public final class VersioningResourceResolver extends ResourceResolverWrapper {
 
     @Override
     public Resource resolve(final HttpServletRequest request, final String absPath) {
-        final Resource resource = resolver.resolve(request, absPath);
-        final Resource wrap = wrap(resource);
-        return nonNull(wrap) ? wrap : new NonExistingResource(this, resource.getPath());
+        return wrapResolved(resolver.resolve(request, absPath));
+    }
+
+    /**
+     * The JAKARTA overload, and the one that actually decides what a request
+     * serves: Sling 14's RequestData.initResource calls
+     * {@code resolve(jakarta.servlet.http.HttpServletRequest, String)}. Only
+     * the javax overloads were implemented here, so the request's primary
+     * resource fell through ResourceResolverWrapper to the wrapped resolver
+     * and came back UNVERSIONED - the head of the repository.
+     *
+     * What that looked like: a published page still rendered its published
+     * content, because the script's own getResource() calls for jcr:content
+     * did go through this class; an unpublished page answered 500 rather than
+     * 404, because that include resolved to null halfway through rendering;
+     * and .json read straight off the primary resource, so it returned live
+     * unpublished content with a 200. A public host pinned to a version label
+     * was leaking every draft on the instance as JSON.
+     */
+    @Override
+    public Resource resolve(final jakarta.servlet.http.HttpServletRequest request, final String absPath) {
+        return wrapResolved(resolver.resolve(request, absPath));
+    }
+
+    /**
+     * resolve() must never answer null - the contract is a NonExistingResource
+     * - so a resource with no version under this label becomes one, and Sling
+     * turns that into a clean 404.
+     */
+    private Resource wrapResolved(final Resource resource) {
+        if (isNull(resource)) {
+            return null;
+        }
+
+        final Resource wrapped = wrap(resource);
+        return nonNull(wrapped) ? wrapped : new NonExistingResource(this, resource.getPath());
     }
 
     @Override
