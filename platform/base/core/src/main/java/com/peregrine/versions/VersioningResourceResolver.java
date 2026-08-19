@@ -186,8 +186,20 @@ public final class VersioningResourceResolver extends ResourceResolverWrapper {
     }
 
     private boolean forceVersion(final Resource resource) {
+        /*
+         * By PRIMARY type, not isResourceType(). The list is literally named
+         * exemptedPrimaryTypes, and isResourceType() answers with
+         * sling:resourceType when the node carries one - and createTenant
+         * stamps every site it makes with "graphql/query". So a CREATED
+         * site's per:Site node was never exempted, wrapped to null (it has no
+         * jcr:content to version), and PageMerge NPE'd on getParent() while
+         * walking a template chain - every page of every created tenant
+         * answered an empty model under a version label, while the shipped
+         * themes (no stamp) worked. Same bug shape as
+         * TenantSetupReplicationServlet (d0d352037).
+         */
         if (exemptedPrimaryTypes.stream()
-                .map(resource::isResourceType)
+                .map(t -> PerUtil.isPrimaryType(resource, t))
                 .anyMatch(x -> x)
         ) {
             return false;
