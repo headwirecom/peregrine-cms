@@ -47,7 +47,11 @@ The `hint` field is where "did you mean `deep=true`?" lives.
 **Markdown rendering for every page.** `<page>.md` alongside `.html` and
 `.data.json`: the rendered content as plain markdown, which is the cheapest
 tokens an LLM can read. With it, an `llms-sitemap` (every public page with its
-`.md` URL) makes a whole site consumable in one crawl.
+`.md` URL) makes a whole site consumable in one crawl. *Prior art: hatch3
+reportedly already renders resources as markdown — if so, this item is
+"absorb that into the shipped image and advertise it from `/llms.txt`", not a
+rebuild. (Nothing in the current peregrine-cms core does it, and hatch3 is not
+in the public repos, so this needs checking against that codebase.)*
 
 **Permission introspection.** `access.json` says who you are; it should also
 say what you may do: readable site roots, writable paths, whether you can
