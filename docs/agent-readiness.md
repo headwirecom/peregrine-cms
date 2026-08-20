@@ -44,14 +44,19 @@ error pages and ad-hoc JSON. A uniform envelope (`{status, code, message,
 path, hint}`) means an agent can branch on `code` instead of parsing prose.
 The `hint` field is where "did you mean `deep=true`?" lives.
 
-**Markdown rendering for every page.** `<page>.md` alongside `.html` and
-`.data.json`: the rendered content as plain markdown, which is the cheapest
-tokens an LLM can read. With it, an `llms-sitemap` (every public page with its
-`.md` URL) makes a whole site consumable in one crawl. *Prior art: hatch3
-reportedly already renders resources as markdown — if so, this item is
-"absorb that into the shipped image and advertise it from `/llms.txt`", not a
-rebuild. (Nothing in the current peregrine-cms core does it, and hatch3 is not
-in the public repos, so this needs checking against that codebase.)*
+**Markdown rendering for every page — SHIPPED.** `<page>.md` works today:
+`/apps/per/Page/md.jsp` renders front matter and dispatches each component,
+and `/apps/sling/servlet/default/md.jsp` is the generic fallback (authored
+properties as a table, children recurse) — both in `base.ui.apps`
+(5ef2e17f6). percli hatch3's `--md` (headwirecom/percli,
+`feature/vue3-and-vanilla-renderers`, 74f6fe4) generates a proper per-component
+`md.jsp` from the same model.json that drives dialog and model. What remains:
+
+- per-component `md.jsp` for themes not built through hatch3 (postervanilla's
+  generator could emit them the same way it emits dialog+model)
+- an `llms-sitemap` (every public page with its `.md` URL) so a whole site is
+  consumable in one crawl
+- advertise `.md` from `/llms.txt` (done for this instance's guide)
 
 **Permission introspection.** `access.json` says who you are; it should also
 say what you may do: readable site roots, writable paths, whether you can
