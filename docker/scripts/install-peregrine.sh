@@ -36,6 +36,7 @@ PKG_ORDER=( \
   bayviewthemevue3-ui.apps-1.0-SNAPSHOT.zip \
   pagerender-vanilla.ui.apps-1.0-SNAPSHOT.zip \
   bayviewvanilla-ui.apps-1.0-SNAPSHOT.zip \
+  postervanilla-ui.apps-1.0-SNAPSHOT.zip \
   adminv2.ui.apps-1.0-SNAPSHOT.zip \
 )
 

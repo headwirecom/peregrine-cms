@@ -21,7 +21,7 @@ import org.junit.runner.RunWith;
 
 import org.apache.sling.jcr.jackrabbit.accessmanager.PrivilegesInfo;
 import javax.jcr.Node;
-import javax.jcr.RepositoryException;;
+import javax.jcr.RepositoryException;
 import javax.jcr.security.Privilege;
 import java.io.IOException;
 import java.util.*;
