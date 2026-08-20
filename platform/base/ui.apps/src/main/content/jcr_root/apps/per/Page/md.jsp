@@ -1,4 +1,4 @@
-<%@ page session="false" contentType="text/plain;charset=UTF-8" pageEncoding="UTF-8"
+<%@ page session="false" trimDirectiveWhitespaces="true" contentType="text/plain;charset=UTF-8" pageEncoding="UTF-8"
     import="org.apache.sling.api.resource.Resource,org.apache.sling.api.resource.ValueMap" %>
 <%@ taglib prefix="sling" uri="http://sling.apache.org/taglibs/sling/1.0" %>
 <sling:defineObjects/>
@@ -12,7 +12,7 @@
   out.write("# " + p.get("jcr:title", resource.getName()) + "\n\n");
   String d = p.get("jcr:description", "");
   if (!d.isEmpty()) out.write(d.replaceAll("<[^>]+>", " ").trim() + "\n\n");
-  out.write("<!-- source: " + resource.getPath() + " -->\n");
+  out.write("<!-- source: " + resource.getPath() + " -->\n\n");
   for (Resource c : content.getChildren()) {
     String n = c.getName();
     if (n.startsWith("jcr:") || n.startsWith("rep:")) continue;
