@@ -15,9 +15,20 @@ cd /app/sling && /app/sling/org.apache.sling.feature.launcher-*/bin/launcher \
     -p /app/sling \
     -c /app/sling/launcher/cache &
 
-# Wait for Sling to fully start up
-while [ "$(curl -u admin:admin -s --fail  http://localhost:8080/system/console/bundles.json | jq '.s[3:5]' -c)" != "[0,0]" ]
+# Wait for Sling to fully start up. On a repository whose admin password has
+# been changed (a mounted volume), admin:admin answers 401 forever - but a 401
+# means authentication is up, which is as ready as this loop can observe, so
+# accept it instead of spinning for the container's lifetime.
+while :
 do
+  code=$(curl -u admin:admin -s -o /tmp/bundles.json -w '%{http_code}' http://localhost:8080/system/console/bundles.json)
+  if [ "$code" = "401" ]; then
+    echo "Sling is up (custom admin password - skipping the bundle check)."
+    break
+  fi
+  if [ "$code" = "200" ] && [ "$(jq '.s[3:5]' -c < /tmp/bundles.json)" = "[0,0]" ]; then
+    break
+  fi
   echo "Sling still starting. Waiting for all bundles to be ready.."
   sleep 2
 done
