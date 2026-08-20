@@ -94,6 +94,7 @@
                         </Sling-Nodetypes>
 
                         <Sling-Initial-Content>
+                            SLING-INF/apps/per/models;path:=/apps/per/models;overwrite=true,
                             SLING-INF/apps/per/sitemaps;path:=/apps/per/sitemaps;overwrite=true,
                             SLING-INF/content/startup;path:=/content/startup;overwrite=true
                         </Sling-Initial-Content>
