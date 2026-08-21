@@ -164,8 +164,15 @@ public class PerComponentModel extends Container {
             }
             final Declaration fresh;
             if (file == null) {
-                // nothing declared anywhere: baseline-only export (path/name/component)
+                // Nothing declared anywhere: baseline export PLUS children.
+                // Declaration-less components (adminv2's console components,
+                // hand-built stubs) keep their state in nt:unstructured child
+                // nodes - the config/nav-items pattern - and those children
+                // have always flowed through the export. Only DECLARED
+                // components get the strict leaf-vs-container split, because
+                // their declaration says which they are.
                 fresh = new Declaration(0L, now);
+                fresh.container = true;
             } else {
                 final long stamp = lastModified(file);
                 if (cached != null && cached.stamp == stamp) {
