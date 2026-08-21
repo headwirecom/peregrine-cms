@@ -169,7 +169,17 @@ public class PageMerge implements Use {
                 }
             }
             if(templatePath != null) {
-                Map template = getMerged(this.resolver.getResource(templatePath));
+                Resource templateResource = this.resolver.getResource(templatePath);
+                if(templateResource == null) {
+                    // a labeled (published) request resolves only published
+                    // content: an unpublished template used to NPE here and
+                    // the page rendered as an EMPTY 200. Render the page's
+                    // own content instead, and say why in the log.
+                    log.warn("template '{}' of '{}' is not resolvable (unpublished?) - rendering the page without its template",
+                            templatePath, resource.getPath());
+                    return page;
+                }
+                Map template = getMerged(templateResource);
                 flagFromTemplate(template);
                 return merge(template, page);
             }

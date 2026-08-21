@@ -173,6 +173,15 @@ public final class VersioningResourceResolver extends ResourceResolverWrapper {
             }
         }
 
+        // FLAT versionable nodes version THEMSELVES: a per:Object has no
+        // jcr:content child, so publishing labels a version of the node
+        // itself. Without this branch a published object wrapped to null and
+        // was invisible on the published host.
+        final Resource ownVersion = getVersionedNode(resource);
+        if (nonNull(ownVersion)) {
+            return new VersionedResource(this, resource, ownVersion);
+        }
+
         final Resource content = resource.getChild(JCR_CONTENT);
         if (nonNull(content) && isVersioned(content)) {
             return new VersionedResource(this, resource);

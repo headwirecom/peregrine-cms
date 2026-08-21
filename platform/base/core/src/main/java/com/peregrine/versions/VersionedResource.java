@@ -151,7 +151,15 @@ public final class VersionedResource extends ResourceWrapper {
     @Override
     public ResourceMetadata getResourceMetadata() {
         if (hasVersion()) {
-            return version.getResourceMetadata();
+            // report the LIVE path, not the frozen node's version-storage
+            // path: Sling's servlet resolution redirects (302) a request
+            // whose resolution path differs from the requested one, which
+            // made directly-versioned resources (flat per:Object nodes)
+            // unreachable under a version label
+            final ResourceMetadata metadata = new ResourceMetadata();
+            metadata.putAll(version.getResourceMetadata());
+            metadata.setResolutionPath(getPath());
+            return metadata;
         }
 
         return super.getResourceMetadata();
