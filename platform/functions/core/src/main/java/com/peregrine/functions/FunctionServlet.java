@@ -138,7 +138,8 @@ public class FunctionServlet extends SlingAllMethodsServlet {
             return Arrays.asList(values);
         }
         if (raw instanceof String value && !value.isBlank()) {
-            return List.of(value.toUpperCase());
+            return Arrays.stream(value.toUpperCase().split(","))
+                    .map(String::trim).filter(s -> !s.isEmpty()).toList();
         }
         return Arrays.asList(DEFAULT_METHODS);
     }
