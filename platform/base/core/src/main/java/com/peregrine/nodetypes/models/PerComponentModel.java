@@ -119,12 +119,23 @@ public class PerComponentModel extends Container {
         for (final String name : declared.collections) {
             final Resource itemsNode = getResource().getChild(name);
             if (itemsNode != null) {
-                final List<IComponent> items = new ArrayList<>();
+                final List<Map<String, Object>> items = new ArrayList<>();
                 for (final Resource item : itemsNode.getChildren()) {
-                    final IComponent component = item.adaptTo(IComponent.class);
-                    if (component != null) {
-                        items.add(component);
-                    }
+                    // Emit the item as a plain map read through getValueMap()
+                    // - the ONE access path that is correct on every resource
+                    // flavor. Under a version label, collection children can
+                    // surface as RAW frozen nodes (nt:frozenNode, version
+                    // storage paths); adapting those to IComponent loses
+                    // every property, while their ValueMap still carries the
+                    // authored fields.
+                    final Map<String, Object> entry = new LinkedHashMap<>();
+                    entry.put("name", item.getName());
+                    item.getValueMap().forEach((key, value) -> {
+                        if (!key.startsWith("jcr:") && !key.startsWith("sling:")) {
+                            entry.put(key, value);
+                        }
+                    });
+                    items.add(entry);
                 }
                 out.put(name, items);
             }
