@@ -87,6 +87,10 @@ public class ObjectModel extends AbstractComponent {
         return name;
     }
 
+    public String getObjectPath() {
+        return objectPath;
+    }
+
     @Override
     public String getComponent() {
         String cmpName = super.getComponent();

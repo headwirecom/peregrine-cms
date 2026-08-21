@@ -252,8 +252,17 @@ public class AdminResourceHandlerService
             }
             Node newObject = parent.addNode(name, OBJECT_PRIMARY_TYPE);
             newObject.setProperty(JCR_TITLE, name);
-            if (!isEmpty(resourceType) && resourceType.indexOf("/object-definitions/") < 0) {
-                newObject.setProperty(SLING_RESOURCE_TYPE, resourceType);
+            if (!isEmpty(resourceType)) {
+                // A definition under /content/<tenant>/object-definitions must not
+                // become the sling:resourceType: Sling would resolve scripts and
+                // models against the definition node instead of per:Object. Such
+                // objects are identified by their primary type alone.
+                if (!resourceType.contains(SLASH + OBJECT_DEFINITIONS + SLASH)) {
+                    newObject.setProperty(SLING_RESOURCE_TYPE, resourceType);
+                }
+                // ObjectModel, GetObjectServlet, GraphQL and the admin editors all
+                // resolve an object's definition through this property.
+                newObject.setProperty(OBJECT_PATH, toAbsoluteDefinitionPath(resourceType));
             }
             baseResourceHandler.updateModification(resourceResolver, newObject);
             return adaptNodeToResource(resourceResolver, newObject);
@@ -261,6 +270,20 @@ public class AdminResourceHandlerService
             logger.debug("Failed to create Object. Parent Path: '{}', Name: '{}'", parentPath, name);
             throw new ManagementException(String.format(FAILED_TO_HANDLE, OBJECT, parentPath, name), e);
         }
+    }
+
+    /**
+     * Object definitions are addressed either absolutely (/apps/... or
+     * /content/<tenant>/object-definitions/...) or as a search-path relative
+     * resource type (admin/objects/x, <tenant>/object-definitions/x). The
+     * objectPath property always holds the absolute form.
+     */
+    private static String toAbsoluteDefinitionPath(String resourceType) {
+        if (resourceType.startsWith(SLASH)) {
+            return resourceType;
+        }
+        final String root = resourceType.contains(OBJECT_DEFINITIONS + SLASH) ? CONTENT_ROOT : APPS_ROOT;
+        return root + SLASH + resourceType;
     }
 
     @Override
