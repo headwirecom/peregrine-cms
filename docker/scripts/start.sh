@@ -2,8 +2,12 @@
 
 echo starting sling with runmode $1
 
-# Required on Java 17+ for ThreadLocal cleanup (see Sling 12 release notes)
-export JAVA_OPTS="--add-opens java.base/java.lang=ALL-UNNAMED ${JAVA_OPTS}"
+# Required on Java 17+ for ThreadLocal cleanup (see Sling 12 release notes).
+# The jdk.internal add-exports and native-access flags are for the GraalJS
+# functions runtime (Truffle) - paired with the jdk.internal.* entries in the
+# launchpad's org.osgi.framework.bootdelegation; one without the other fails
+# with ClassNotFoundException: jdk.internal.access.JavaLangAccess.
+export JAVA_OPTS="--add-opens java.base/java.lang=ALL-UNNAMED --add-exports java.base/jdk.internal.access=ALL-UNNAMED --add-exports java.base/jdk.internal.misc=ALL-UNNAMED --enable-native-access=ALL-UNNAMED ${JAVA_OPTS}"
 
 # The felix.http proxy flag makes jetty honour X-Forwarded-Proto/-Port: behind
 # an https tunnel or proxy, redirects (e.g. anonymous -> login form) otherwise

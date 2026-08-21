@@ -22,6 +22,7 @@
         <module>distribution</module>
         <module>felib</module>
         <module>graphql</module>
+        <module>functions</module>
     </modules>
 
 </project>
