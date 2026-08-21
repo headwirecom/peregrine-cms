@@ -95,7 +95,7 @@ public final class ReplicationServlet extends ReplicationServletBase {
             final ResourceResolver resourceResolver
     ) throws IOException, ReplicationException, RepositoryException {
         if (parseBoolean(request.getParameter(DEACTIVATE))) {
-            return performDeactivation(replication, resource);
+            return performDeactivation(replication, request, resource);
         }
 
         final boolean deep = parseBoolean(request.getParameter("deep"));
@@ -121,9 +121,13 @@ public final class ReplicationServlet extends ReplicationServletBase {
                 .map(Resource::getPath)
                 .forEach(p -> {
                     try {
-                        resourceManagement.createVersion(resourceResolver, p, PerConstants.PUBLISHED_LABEL);
+                        // a failed version means the Published label never moves and
+                        // the public host silently serves stale content - never trace
+                        if (resourceManagement.createVersion(resourceResolver, p, PerConstants.PUBLISHED_LABEL) == null) {
+                            logger.warn("No version created for path: {} (node not checked out?) - Published label unchanged", p);
+                        }
                     } catch (final AdminResourceHandler.ManagementException e) {
-                        logger.trace("Unable to create a version for path: {} ", p, e);
+                        logger.warn("Unable to create a version for path: {} ", p, e);
                     }
                 });
         return prepareResponse(resource, replication.replicate(toBeReplicated));
@@ -132,9 +136,22 @@ public final class ReplicationServlet extends ReplicationServletBase {
     @NotNull
     private Response performDeactivation(
             final Replication replication,
+            final Request request,
             final Resource resource
     ) throws ReplicationException, IOException {
         final var replicatedStuff = replication.deactivate(resource);
+        // The Published label must come off the SAME set publish labels, not
+        // merely what the replication implementation chose to deactivate: a
+        // file-export service only handles the primary types it exports, and a
+        // node outside that list (e.g. a function) would otherwise keep its
+        // label and stay live on the labelled public host forever.
+        final boolean deep = parseBoolean(request.getParameter("deep"));
+        final ResourceChecker tenantChecker = new ReplicationUtil.TenantOwnedResourceChecker(resource);
+        final List<Resource> labelled = listMissingResources(resource, tenantChecker, deep, new LinkedList<>());
+        for (final Resource r : streamReplicableResources(labelled)
+                .collect(Collectors.toList())) {
+            resourceManagement.deleteVersionLabel(r, PerConstants.PUBLISHED_LABEL);
+        }
         for (final Resource r : streamReplicableResources(replicatedStuff)
                 .collect(Collectors.toList())) {
             resourceManagement.deleteVersionLabel(r, PerConstants.PUBLISHED_LABEL);
