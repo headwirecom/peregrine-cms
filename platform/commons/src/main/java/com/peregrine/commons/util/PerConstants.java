@@ -111,6 +111,7 @@ public class PerConstants {
     public static final String OBJECT_DEFINITIONS_ROOT = CONTENT_ROOT + SLASH + TENANT + SLASH + OBJECT_DEFINITIONS;
     public static final String PAGES_ROOT = CONTENT_ROOT + SLASH + TENANT + SLASH + PAGES;
     public static final String TEMPLATES_ROOT = CONTENT_ROOT + SLASH + TENANT + SLASH + TEMPLATES;
+    public static final String FUNCTIONS_ROOT = CONTENT_ROOT + SLASH + TENANT + SLASH + "functions";
 
     public static final String FOLDER = "folder";
     public static final String ASSET = "asset";

@@ -1327,6 +1327,9 @@ public class AdminResourceHandlerService
         resourcesToPackage.add(copier.copyFromRoot(OBJECTS_ROOT));
         // copy /content/<fromTenant>/object-definitions to /content/<toTenant>/object-definitions and fix all references
         resourcesToPackage.add(copier.copyFromRoot(OBJECT_DEFINITIONS_ROOT));
+        // a theme may ship server-side functions the same way it ships pages
+        // and objects - a site created from it gets its own copy to edit
+        resourcesToPackage.add(copier.copyFromRoot(FUNCTIONS_ROOT));
         // copy /content/<fromTenant>/templates to /content/<toTenant>/templates and fix all references
         Resource templatesCopy = copier.copyFromRoot(TEMPLATES_ROOT);
         resourcesToPackage.add(templatesCopy);
