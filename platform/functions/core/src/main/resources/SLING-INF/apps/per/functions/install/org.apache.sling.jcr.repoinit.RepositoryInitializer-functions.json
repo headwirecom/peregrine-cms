@@ -1,6 +1,6 @@
 {
     "jcr:primaryType": "sling:OsgiConfig",
     "scripts": [
-        "create service user functions-storage\n\nset ACL for functions-storage\n    allow jcr:read on /content\n    allow rep:write on /content\nend"
+        "create service user functions-storage\n\nset ACL for functions-storage\n    allow jcr:read on /content\n    allow rep:write on /content\n    allow jcr:readAccessControl,jcr:modifyAccessControl on /content\nend"
     ]
 }

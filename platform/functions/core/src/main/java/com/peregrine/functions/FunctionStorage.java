@@ -7,6 +7,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.security.Principal;
+
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.security.AccessControlManager;
+import javax.jcr.security.Privilege;
+
+import org.apache.jackrabbit.api.JackrabbitSession;
+import org.apache.jackrabbit.api.security.JackrabbitAccessControlList;
+import org.apache.jackrabbit.commons.jackrabbit.authorization.AccessControlUtils;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
@@ -58,6 +68,7 @@ public class FunctionStorage {
     private static final String OBJECT_PATH = "objectPath";
     private static final int MAX_DEPTH = 6;
     private static final int MAX_LIST = 500;
+    private static final String ANONYMOUS = "anonymous";
 
     @Reference
     private ResourceResolverFactory resolverFactory;
@@ -217,6 +228,52 @@ public class FunctionStorage {
         }
     }
 
+    /**
+     * Close the storage root to anonymous readers.
+     *
+     * Form submissions are not site content: a deep JSON listing of the
+     * folder would otherwise hand every stored address to any visitor who
+     * asks for it. Denying the anonymous principal read on the root covers
+     * every bucket and record underneath, while leaving the data visible to
+     * signed-in authors - which is what the admin screens run as.
+     */
+    private void denyAnonymous(ResourceResolver resolver, String path) {
+        try {
+            final Session session = resolver.adaptTo(Session.class);
+            if (session == null) {
+                throw new FunctionException(500, "no JCR session for function storage");
+            }
+            Principal anonymous = null;
+            if (session instanceof JackrabbitSession) {
+                anonymous = ((JackrabbitSession) session).getPrincipalManager().getPrincipal(ANONYMOUS);
+            }
+            if (anonymous == null) {
+                // the service session may not be allowed to read the principal
+                // manager; Oak resolves a deny entry by principal NAME just as
+                // well, so carry on with a plain named principal
+                anonymous = () -> ANONYMOUS;
+            }
+            final AccessControlManager acm = session.getAccessControlManager();
+            final JackrabbitAccessControlList acl =
+                    AccessControlUtils.getAccessControlList(session, path);
+            if (acl == null) {
+                throw new FunctionException(500, "no access control list applies to " + path);
+            }
+            final boolean added = acl.addEntry(anonymous,
+                    new Privilege[] { acm.privilegeFromName(Privilege.JCR_READ) }, false);
+            if (!added) {
+                LOG.error("repository refused the anonymous deny entry on {}", path);
+                throw new FunctionException(500, "storage could not be secured - refusing to write");
+            }
+            acm.setPolicy(path, acl);
+            session.save();
+            LOG.info("function storage root {} is closed to anonymous readers", path);
+        } catch (final RepositoryException e) {
+            LOG.error("could not close {} to anonymous readers", path, e);
+            throw new FunctionException(500, "storage could not be secured - refusing to write");
+        }
+    }
+
     /** Make every missing folder between the storage root and a path. */
     private Resource ensureFolders(ResourceResolver resolver, String root, String path)
             throws PersistenceException {
@@ -227,7 +284,12 @@ public class FunctionStorage {
         final Resource parent = ensureFolders(resolver, root, path.substring(0, path.lastIndexOf('/')));
         final Map<String, Object> props = new LinkedHashMap<>();
         props.put(JCR_PRIMARY_TYPE, FOLDER_PRIMARY_TYPE);
-        return resolver.create(parent, path.substring(path.lastIndexOf('/') + 1), props);
+        final Resource created = resolver.create(parent, path.substring(path.lastIndexOf('/') + 1), props);
+        if (path.equals(root)) {
+            resolver.commit();
+            denyAnonymous(resolver, path);
+        }
+        return created;
     }
 
 }

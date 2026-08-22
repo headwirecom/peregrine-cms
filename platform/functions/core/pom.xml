@@ -54,6 +54,24 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.jackrabbit</groupId>
+            <artifactId>jackrabbit-jcr-commons</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.jackrabbit</groupId>
+            <artifactId>jackrabbit-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.jcr</groupId>
+            <artifactId>jcr</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.api</artifactId>
             <scope>provided</scope>
@@ -90,6 +108,9 @@
                         <Import-Package>
                             org.apache.sling.api.*,
                             javax.servlet.*,
+                            javax.jcr.*,
+                            org.apache.jackrabbit.api.*,
+                            org.apache.jackrabbit.commons.*,
                             org.slf4j.*,
                             !*
                         </Import-Package>
