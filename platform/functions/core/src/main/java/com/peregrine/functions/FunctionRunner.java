@@ -7,6 +7,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,6 +25,7 @@ import org.graalvm.polyglot.HostAccess;
 import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
+import org.graalvm.polyglot.proxy.ProxyArray;
 import org.graalvm.polyglot.proxy.ProxyExecutable;
 import org.graalvm.polyglot.proxy.ProxyObject;
 import org.osgi.service.component.annotations.Activate;
@@ -127,6 +129,10 @@ public class FunctionRunner {
             this.suggestedStatus = suggestedStatus;
         }
     }
+
+    /** The only repository access a function has - see FunctionStorage. */
+    @org.osgi.service.component.annotations.Reference
+    private FunctionStorage storage;
 
     @Activate
     protected void activate(Configuration configuration) {
@@ -286,7 +292,58 @@ public class FunctionRunner {
         log.put("warn", (ProxyExecutable) args -> { fnLog.warn(join(args)); return null; });
         log.put("error", (ProxyExecutable) args -> { fnLog.error(join(args)); return null; });
         ctx.put("log", ProxyObject.fromMap(log));
+        // context.objects: the tenant's own storage tree, and nothing else
+        // (see FunctionStorage - a function may not touch the repository
+        // any other way)
+        final Map<String, Object> objects = new HashMap<>();
+        objects.put("get", (ProxyExecutable) args -> {
+            final Map<String, Object> found = storage.get(settings, str(args, 0));
+            return found == null ? null : ProxyObject.fromMap(found);
+        });
+        objects.put("list", (ProxyExecutable) args -> {
+            final List<Object> rows = new ArrayList<>();
+            for (final Map<String, Object> row : storage.list(settings, str(args, 0))) {
+                rows.add(ProxyObject.fromMap(row));
+            }
+            return ProxyArray.fromList(rows);
+        });
+        objects.put("put", (ProxyExecutable) args -> {
+            if (args.length < 2 || !args[1].hasMembers()) {
+                throw new FunctionException(500, "objects.put(path, values[, definition])");
+            }
+            final Map<String, Object> values = new LinkedHashMap<>();
+            for (final String key : args[1].getMemberKeys()) {
+                final Value member = args[1].getMember(key);
+                values.put(key, member.isNull() ? null : jsToString(member));
+            }
+            return ProxyObject.fromMap(
+                    storage.put(settings, str(args, 0), values, args.length > 2 ? str(args, 2) : null));
+        });
+        objects.put("remove", (ProxyExecutable) args -> storage.remove(settings, str(args, 0)));
+        ctx.put("objects", ProxyObject.fromMap(objects));
         return ProxyObject.fromMap(ctx);
+    }
+
+    /**
+     * A guest value as the string we store. Value.toString() on a JS string
+     * yields the Truffle class name rather than the text, so every property
+     * would otherwise read "com.oracle.truffle.api.strings.TruffleString".
+     */
+    private static String jsToString(Value value) {
+        if (value.isString()) {
+            return value.asString();
+        }
+        if (value.isBoolean()) {
+            return String.valueOf(value.asBoolean());
+        }
+        if (value.isNumber()) {
+            return value.fitsInLong() ? String.valueOf(value.asLong()) : String.valueOf(value.asDouble());
+        }
+        return value.toString();
+    }
+
+    private static String str(Value[] args, int index) {
+        return args.length > index && !args[index].isNull() ? args[index].asString() : "";
     }
 
     private static String join(Value[] args) {
@@ -359,6 +416,8 @@ public class FunctionRunner {
         boolean allowsHost(String host);
         Map<String, String> entries();
         List<String> hosts();
+        /** Absolute path a function may read and write under, or null. */
+        String storageRoot();
     }
 
 }

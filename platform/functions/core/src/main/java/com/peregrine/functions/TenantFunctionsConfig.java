@@ -15,6 +15,8 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Per-tenant settings for the functions runtime - an OSGi FACTORY
@@ -29,6 +31,8 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @Designate(ocd = TenantFunctionsConfig.Configuration.class, factory = true)
 public class TenantFunctionsConfig {
 
+    private static final Logger LOG = LoggerFactory.getLogger(TenantFunctionsConfig.class);
+
     @ObjectClassDefinition(
         name = "Peregrine: Functions Tenant Settings",
         description = "Per-site fetch allowlist and configuration entries for server-side functions (factory - one per tenant)"
@@ -40,6 +44,10 @@ public class TenantFunctionsConfig {
         @AttributeDefinition(name = "Fetch allowlist",
             description = "Hosts context.fetch may reach; a leading dot allows the whole suffix (.example.com). Empty = this site's functions cannot fetch.")
         String[] fetchAllowlist() default {};
+
+        @AttributeDefinition(name = "Storage root",
+            description = "Subfolder of /content/<tenant>/objects that context.objects may read and write, e.g. \"signups\". Empty = this site's functions cannot write at all.")
+        String storageRoot() default "";
 
         @AttributeDefinition(name = "Entries",
             description = "key=value entries exposed as context.config; name/key scopes an entry to one function. Secrets belong here.")
@@ -71,8 +79,22 @@ public class TenantFunctionsConfig {
                 entries.put(entry.substring(0, eq).trim(), entry.substring(eq + 1));
             }
         }
+        // the storage root always sits inside this tenant's own objects
+        // tree: the configuration names a SUBFOLDER, never an absolute
+        // path, so a site cannot be pointed at another site (or at /apps)
+        String storageRoot = null;
+        final String configured = configuration.storageRoot();
+        if (configured != null && !configured.isBlank()) {
+            final String relative = configured.trim().replaceAll("^/+|/+$", "");
+            if (relative.matches("[a-z0-9][a-z0-9-]*(/[a-z0-9][a-z0-9-]*)*")) {
+                storageRoot = "/content/" + tenant + "/objects/" + relative;
+            } else {
+                LOG.warn("functions storage root '{}' for tenant '{}' is not a plain relative path - ignored",
+                        configured, tenant);
+            }
+        }
         registry.put(tenant, new FunctionTenantRegistry.Instance(
-                Collections.unmodifiableList(hosts), Collections.unmodifiableMap(entries)));
+                Collections.unmodifiableList(hosts), Collections.unmodifiableMap(entries), storageRoot));
     }
 
     @Deactivate

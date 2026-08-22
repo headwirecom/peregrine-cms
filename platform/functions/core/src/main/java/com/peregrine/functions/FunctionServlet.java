@@ -121,8 +121,11 @@ public class FunctionServlet extends SlingAllMethodsServlet {
                     tenants.forTenantAndFunction(tenant, name),
                     tenant + "." + name);
             response.setStatus(outcome.status);
-            response.setCharacterEncoding("utf-8");
             outcome.headers.forEach(response::setHeader);
+            // AFTER the function's own headers: a Content-Type without a
+            // charset (the usual "application/json") resets the encoding, so
+            // setting it first silently mangled every non-ASCII response
+            response.setCharacterEncoding("utf-8");
             if (!"HEAD".equals(method)) {
                 response.getWriter().write(outcome.body);
             }

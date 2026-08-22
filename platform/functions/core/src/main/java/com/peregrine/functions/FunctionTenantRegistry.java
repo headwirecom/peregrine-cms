@@ -23,15 +23,18 @@ public class FunctionTenantRegistry {
         @Override public boolean allowsHost(String host) { return false; }
         @Override public Map<String, String> entries() { return Collections.emptyMap(); }
         @Override public List<String> hosts() { return Collections.emptyList(); }
+        @Override public String storageRoot() { return null; }
     };
 
     static final class Instance {
         final List<String> hosts;
         final Map<String, String> entries;
+        final String storageRoot;
 
-        Instance(List<String> hosts, Map<String, String> entries) {
+        Instance(List<String> hosts, Map<String, String> entries, String storageRoot) {
             this.hosts = hosts;
             this.entries = entries;
+            this.storageRoot = storageRoot;
         }
     }
 
@@ -65,6 +68,7 @@ public class FunctionTenantRegistry {
             }
         });
         final List<String> allowed = instance.hosts;
+        final String root = instance.storageRoot;
         return new FunctionRunner.TenantSettings() {
             @Override
             public boolean allowsHost(String host) {
@@ -85,6 +89,7 @@ public class FunctionTenantRegistry {
 
             @Override public Map<String, String> entries() { return merged; }
             @Override public List<String> hosts() { return allowed; }
+            @Override public String storageRoot() { return root; }
         };
     }
 

@@ -66,6 +66,13 @@
     </dependencies>
 
     <build>
+        <!-- the parent pom REPLACES the default resources block, so a bundle
+             that ships initial content has to re-add src/main/resources -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -74,6 +81,9 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>com.peregrine-cms.functions.core</Bundle-SymbolicName>
+                        <Sling-Initial-Content>
+                            SLING-INF/apps/per/functions;path:=/apps/per/functions;overwrite=true
+                        </Sling-Initial-Content>
                         <Embed-Dependency>*;scope=compile|runtime;inline=false</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                         <_dsannotations>*</_dsannotations>
