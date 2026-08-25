@@ -159,6 +159,13 @@ public final class VersionedResource extends ResourceWrapper {
             final ResourceMetadata metadata = new ResourceMetadata();
             metadata.putAll(version.getResourceMetadata());
             metadata.setResolutionPath(getPath());
+            // and keep the LIVE resolution path info: the frozen node was
+            // fetched by getResource(), so its metadata has no selectors or
+            // extension. Without ".3.json" here Sling re-derives an empty
+            // SlingRequestPathInfo, hands the request to the StreamRenderer,
+            // and that answers a directory with its add-a-slash redirect -
+            // the 302 that made published flat objects unreachable
+            metadata.setResolutionPathInfo(super.getResourceMetadata().getResolutionPathInfo());
             return metadata;
         }
 

@@ -25,6 +25,19 @@
 <'per'='http://www.peregrine-cms.com/jcr/cms/1.0'>
 <'nt'='http://www.jcp.org/jcr/nt/1.0'>
 
+// The nodes INSIDE an object - collections and their rows. COPY at every
+// level, against the folder types' inherited VERSION: these are parts of
+// the record, not documents of their own. Under OPV=VERSION a checkin froze
+// them as jcr:childVersionHistory references, so the published view of an
+// object with a collection served the reference instead of the rows and the
+// collection was empty on the public host. COPY snapshots the whole record
+// into each version. The type is the DEFAULT below, so nodes the editor
+// creates inside an object get copy semantics without asking for them.
+[per:ObjectPart] > nt:unstructured
+  orderable
+  + * (nt:base) = per:ObjectPart copy
+
 [per:Object] > nt:hierarchyNode, sling:OrderedFolder, per:Replication
   orderable
+  + * (nt:base) = per:ObjectPart copy
 
