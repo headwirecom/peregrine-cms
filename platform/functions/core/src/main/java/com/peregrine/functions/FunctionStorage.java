@@ -15,6 +15,7 @@ import javax.jcr.security.AccessControlManager;
 import javax.jcr.security.Privilege;
 
 import org.apache.jackrabbit.api.JackrabbitSession;
+import javax.jcr.security.AccessControlEntry;
 import org.apache.jackrabbit.api.security.JackrabbitAccessControlList;
 import org.apache.jackrabbit.commons.jackrabbit.authorization.AccessControlUtils;
 import org.apache.sling.api.resource.LoginException;
@@ -279,6 +280,18 @@ public class FunctionStorage {
             throws PersistenceException {
         Resource resource = resolver.getResource(path);
         if (resource != null) {
+            /*
+             * The root can EXIST without ever having passed through this
+             * class: createTenant copies the theme's whole objects tree, so a
+             * theme that was used for live testing hands every new site a
+             * ready-made storage root - created by the copy, carrying no ACL.
+             * "Closed the moment it is created" therefore has to be "closed
+             * the moment it is USED": cheap read check on every write, the
+             * deny written only when it is missing.
+             */
+            if (path.equals(root)) {
+                ensureRootClosed(resolver, root);
+            }
             return resource;
         }
         final Resource parent = ensureFolders(resolver, root, path.substring(0, path.lastIndexOf('/')));
@@ -290,6 +303,29 @@ public class FunctionStorage {
             denyAnonymous(resolver, path);
         }
         return created;
+    }
+
+    /** Add the anonymous deny to a root that predates this class, once. */
+    private void ensureRootClosed(ResourceResolver resolver, String root) {
+        try {
+            final Session session = resolver.adaptTo(Session.class);
+            if (session == null) {
+                throw new FunctionException(500, "no JCR session for function storage");
+            }
+            final JackrabbitAccessControlList acl =
+                    AccessControlUtils.getAccessControlList(session, root);
+            if (acl != null) {
+                for (final AccessControlEntry entry : acl.getAccessControlEntries()) {
+                    if (ANONYMOUS.equals(entry.getPrincipal().getName())) {
+                        return;                       // already closed
+                    }
+                }
+            }
+        } catch (final RepositoryException e) {
+            LOG.error("could not inspect the ACL on {}", root, e);
+            throw new FunctionException(500, "storage could not be secured - refusing to write");
+        }
+        denyAnonymous(resolver, root);
     }
 
 }
