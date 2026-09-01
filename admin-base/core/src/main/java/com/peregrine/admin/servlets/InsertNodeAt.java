@@ -108,14 +108,33 @@ public class InsertNodeAt extends AbstractBaseServlet {
     @Override
     protected Response handleRequest(Request request) throws IOException {
         final String path = request.getParameter(PATH);
+
+        String type = request.getParameter(TYPE);
+        // Next Block is only here to be backwards compatible
+        if (isEmpty(type)) {
+            type = request.getParameter(DROP, NOT_PROVIDED);
+        }
+
+        final boolean addAsChild = ORDER_CHILD_TYPE.equals(type) || type.startsWith(INTO);
+
         final Resource resource;
-        try {
-            resource = getOrCreateResource(request.getResourceResolver(), path);
-        } catch(ManagementException e) {
-            return new ErrorResponse()
-                    .setHttpErrorCode(SC_BAD_REQUEST)
-                    .setErrorMessage(FAILED_TO_CREATE_INTERMEDIATE_RESOURCES)
-                    .setRequestPath(path);
+        if(addAsChild) {
+            // inserting INTO a container the template provides is legitimate,
+            // so missing intermediate nodes are created on demand
+            try {
+                resource = getOrCreateResource(request.getResourceResolver(), path);
+            } catch(ManagementException e) {
+                return new ErrorResponse()
+                        .setHttpErrorCode(SC_BAD_REQUEST)
+                        .setErrorMessage(FAILED_TO_CREATE_INTERMEDIATE_RESOURCES)
+                        .setRequestPath(path);
+            }
+        } else {
+            // inserting BEFORE/AFTER needs a real sibling on the page. Creating
+            // the anchor here used to conjure an empty node named after a
+            // template part at the end of the page and append behind it -
+            // a pasted component "after the footer" (v2-preview-issues #1)
+            resource = getResource(request.getResourceResolver(), path);
         }
 
         //AS End of Patch
@@ -125,14 +144,6 @@ public class InsertNodeAt extends AbstractBaseServlet {
                 .setErrorMessage(RESOURCE_NOT_FOUND_BY_PATH)
                 .setRequestPath(path);
         }
-
-        String type = request.getParameter(TYPE);
-        // Next Block is only here to be backwards compatible
-        if (isEmpty(type)) {
-            type = request.getParameter(DROP, NOT_PROVIDED);
-        }
-
-        final boolean addAsChild = ORDER_CHILD_TYPE.equals(type) || type.startsWith(INTO);
         final boolean addBefore = ORDER_BEFORE_TYPE.equals(type) || type.endsWith(BEFORE_POSTFIX);
         String component = request.getParameter(COMPONENT);
         if(startsWith(component, APPS_PREFIX)) {
