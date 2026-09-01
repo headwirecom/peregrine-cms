@@ -1148,15 +1148,14 @@ public class AdminResourceHandlerService
     }
 
     private void applyChildProperties(@NotNull Node parent, @NotNull Map properties, int position) throws RepositoryException, ManagementException {
-        // Find matching child by name
+        // Find matching child by name. A child WITHOUT name or path is still
+        // content: it falls through to the create path below (which generates
+        // a name) instead of being dropped - a pasted container used to lose
+        // every nameless child silently this way.
         final String name = extractName(properties);
-        if (isBlank(name)) {
-            logger.warn("Neither Name nor Path Found in Object: '{}'", properties);
-            return;
-        }
 
         // Apply data
-        if (parent.hasNode(name)) {
+        if (isNotBlank(name) && parent.hasNode(name)) {
             applyProperties(parent.getNode(name), properties);
             return;
         }
