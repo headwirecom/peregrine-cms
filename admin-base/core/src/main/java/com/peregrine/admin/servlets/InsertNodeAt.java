@@ -96,6 +96,8 @@ public class InsertNodeAt extends AbstractBaseServlet {
     private static final String APPS_PREFIX = APPS_ROOT + SLASH;
     private static final String FAILED_TO_CREATE_INTERMEDIATE_RESOURCES = "Failed to create intermediate resources";
     private static final String RESOURCE_NOT_FOUND_BY_PATH = "Resource not found by Path";
+    private static final String NO_ROOT_LEVEL_SIBLINGS =
+        "Components cannot be placed next to the page's root parts - drop into a container instead";
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -135,6 +137,18 @@ public class InsertNodeAt extends AbstractBaseServlet {
             // template part at the end of the page and append behind it -
             // a pasted component "after the footer" (v2-preview-issues #1)
             resource = getResource(request.getResourceResolver(), path);
+
+            // ...and a sibling of a ROOT-LEVEL node (the template's container
+            // itself) would land at the page root, outside every container,
+            // and render after the footer just the same. Components live
+            // inside containers; the page root belongs to the template.
+            if(nonNull(resource) && nonNull(resource.getParent())
+                    && JCR_CONTENT.equals(resource.getParent().getName())) {
+                return new ErrorResponse()
+                    .setHttpErrorCode(SC_BAD_REQUEST)
+                    .setErrorMessage(NO_ROOT_LEVEL_SIBLINGS)
+                    .setRequestPath(path);
+            }
         }
 
         //AS End of Patch
