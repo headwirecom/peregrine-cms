@@ -41,6 +41,7 @@ import static com.peregrine.commons.util.PerConstants.ORDER_CHILD_TYPE;
 import static com.peregrine.commons.util.PerConstants.PAGE_PRIMARY_TYPE;
 import static com.peregrine.commons.util.PerConstants.PATH;
 import static com.peregrine.commons.util.PerConstants.SLASH;
+import static com.peregrine.commons.util.PerConstants.TEMPLATE;
 import static com.peregrine.commons.util.PerConstants.TYPE;
 import static com.peregrine.commons.util.PerConstants.VARIATION;
 import static com.peregrine.commons.util.PerUtil.EQUALS;
@@ -66,6 +67,8 @@ import com.peregrine.admin.resource.ResourceRelocation;
 import com.peregrine.commons.servlets.AbstractBaseServlet;
 import com.peregrine.commons.servlets.ServletHelper;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.Servlet;
@@ -96,6 +99,8 @@ public class InsertNodeAt extends AbstractBaseServlet {
     private static final String APPS_PREFIX = APPS_ROOT + SLASH;
     private static final String FAILED_TO_CREATE_INTERMEDIATE_RESOURCES = "Failed to create intermediate resources";
     private static final String RESOURCE_NOT_FOUND_BY_PATH = "Resource not found by Path";
+    private static final String NO_SIBLINGS_OF_TEMPLATE_PARTS =
+        "Components cannot be placed next to a part the template defines - drop into a container instead";
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -108,14 +113,47 @@ public class InsertNodeAt extends AbstractBaseServlet {
     @Override
     protected Response handleRequest(Request request) throws IOException {
         final String path = request.getParameter(PATH);
+
+        String type = request.getParameter(TYPE);
+        // Next Block is only here to be backwards compatible
+        if (isEmpty(type)) {
+            type = request.getParameter(DROP, NOT_PROVIDED);
+        }
+
+        final boolean addAsChild = ORDER_CHILD_TYPE.equals(type) || type.startsWith(INTO);
+
         final Resource resource;
-        try {
-            resource = getOrCreateResource(request.getResourceResolver(), path);
-        } catch(ManagementException e) {
-            return new ErrorResponse()
+        if(addAsChild) {
+            // inserting INTO a container the template provides is legitimate,
+            // so missing intermediate nodes are created on demand
+            try {
+                resource = getOrCreateResource(request.getResourceResolver(), path);
+            } catch(ManagementException e) {
+                return new ErrorResponse()
+                        .setHttpErrorCode(SC_BAD_REQUEST)
+                        .setErrorMessage(FAILED_TO_CREATE_INTERMEDIATE_RESOURCES)
+                        .setRequestPath(path);
+            }
+        } else {
+            // inserting BEFORE/AFTER needs a real sibling on the page. Creating
+            // the anchor here used to conjure an empty node named after a
+            // template part at the end of the page and append behind it -
+            // a pasted component "after the footer" (v2-preview-issues #1)
+            resource = getResource(request.getResourceResolver(), path);
+
+            // ...and a sibling of a TEMPLATE-DEFINED part would land outside
+            // the structure the template lays out (a root-level one renders
+            // after the footer). The check follows the page's template CHAIN
+            // and matches the anchor's relative path, so it holds at ANY
+            // nesting depth - and it naturally frees the template editor: a
+            // template only refuses siblings of parts its own parent
+            // template defines.
+            if(nonNull(resource) && isTemplateDefined(request.getResourceResolver(), path)) {
+                return new ErrorResponse()
                     .setHttpErrorCode(SC_BAD_REQUEST)
-                    .setErrorMessage(FAILED_TO_CREATE_INTERMEDIATE_RESOURCES)
+                    .setErrorMessage(NO_SIBLINGS_OF_TEMPLATE_PARTS)
                     .setRequestPath(path);
+            }
         }
 
         //AS End of Patch
@@ -125,14 +163,6 @@ public class InsertNodeAt extends AbstractBaseServlet {
                 .setErrorMessage(RESOURCE_NOT_FOUND_BY_PATH)
                 .setRequestPath(path);
         }
-
-        String type = request.getParameter(TYPE);
-        // Next Block is only here to be backwards compatible
-        if (isEmpty(type)) {
-            type = request.getParameter(DROP, NOT_PROVIDED);
-        }
-
-        final boolean addAsChild = ORDER_CHILD_TYPE.equals(type) || type.startsWith(INTO);
         final boolean addBefore = ORDER_BEFORE_TYPE.equals(type) || type.endsWith(BEFORE_POSTFIX);
         String component = request.getParameter(COMPONENT);
         if(startsWith(component, APPS_PREFIX)) {
@@ -167,6 +197,43 @@ public class InsertNodeAt extends AbstractBaseServlet {
                 .setErrorMessage(e.getMessage())
                 .setException(e);
         }
+    }
+
+    /**
+     * Does the node at this content path correspond to a part the page's
+     * TEMPLATE defines? Follows the template chain (a template can build on
+     * another template) and matches the anchor's path RELATIVE to jcr:content,
+     * so nesting depth does not matter. A path outside jcr:content, a page
+     * without a template, or a broken/cyclic chain all answer false - the
+     * guard only fires on a positive match.
+     */
+    private boolean isTemplateDefined(final ResourceResolver resourceResolver, final String path) {
+        if(!contains(path, INNER_JCR_CONTENT)) {
+            return false;
+        }
+        final String pagePath = substringBefore(path, INNER_JCR_CONTENT);
+        final String relativePath = substringAfter(path, INNER_JCR_CONTENT);
+        if(isEmpty(relativePath)) {
+            return false;
+        }
+        Resource content = resourceResolver.getResource(pagePath + SLASH + JCR_CONTENT);
+        final Set<String> visited = new HashSet<>();
+        while(nonNull(content)) {
+            final String templatePath = content.getValueMap().get(TEMPLATE, String.class);
+            if(isEmpty(templatePath) || !visited.add(templatePath)) {
+                return false;
+            }
+            final Resource templateContent =
+                resourceResolver.getResource(templatePath + SLASH + JCR_CONTENT);
+            if(isNull(templateContent)) {
+                return false;
+            }
+            if(nonNull(templateContent.getChild(relativePath))) {
+                return true;
+            }
+            content = templateContent;
+        }
+        return false;
     }
 
     private Resource getOrCreateResource(final ResourceResolver resourceResolver, final String path) throws ManagementException {
