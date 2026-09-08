@@ -93,11 +93,19 @@
                             SLING-INF/nodetypes/extension.cnd
                         </Sling-Nodetypes>
 
+                        <!-- etcmap stays overwrite:=false ON PURPOSE: the
+                             content loader's overwrite replaces the whole
+                             /etc/map target and destroys live sibling
+                             mappings (verified on a throwaway instance,
+                             directory- and file-scoped alike). A corrupted
+                             felibcb node is repaired by hand: Sling POST the
+                             match/internalRedirect props from
+                             SLING-INF/etcmap/felibcb.json. -->
                         <Sling-Initial-Content>
                             SLING-INF/apps/per/models;path:=/apps/per/models;overwrite=true,
                             SLING-INF/apps/per/sitemaps;path:=/apps/per/sitemaps;overwrite=true,
                             SLING-INF/content/startup;path:=/content/startup;overwrite=true,
-                            SLING-INF/etcmap;path:=/etc/map;overwrite=false
+                            SLING-INF/etcmap;path:=/etc/map;overwrite:=false
                         </Sling-Initial-Content>
                     </instructions>
                 </configuration>
