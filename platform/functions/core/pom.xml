@@ -34,7 +34,7 @@
         </dependency>
         <dependency>
             <groupId>org.graalvm.polyglot</groupId>
-            <artifactId>js-community</artifactId>
+            <artifactId>js</artifactId>
             <version>${graal.version}</version>
             <type>pom</type>
         </dependency>
@@ -102,7 +102,14 @@
                         <Sling-Initial-Content>
                             SLING-INF/apps/per/functions;path:=/apps/per/functions;overwrite=true
                         </Sling-Initial-Content>
-                        <Embed-Dependency>*;scope=compile|runtime;inline=false</Embed-Dependency>
+                        <Embed-Dependency>
+                            polyglot;
+                            js-language;
+                            truffle-api;
+                            truffle-runtime;
+                            regex;
+                            icu4j
+                        </Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                         <_dsannotations>*</_dsannotations>
                         <Import-Package>
