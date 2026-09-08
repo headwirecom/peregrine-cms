@@ -30,6 +30,7 @@
     </parent>
 
     <artifactId>admin.core</artifactId>
+    <packaging>bundle</packaging>
 
     <name>Peregrine CMS - Admin - Core</name>
     <description>
@@ -48,43 +49,24 @@
         </resources>
         <plugins>
             <plugin>
-                <groupId>biz.aQute.bnd</groupId>
-                <artifactId>bnd-maven-plugin</artifactId>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
-                <executions>
-                    <execution>
-                        <id>jar</id>
-                        <goals>
-                            <goal>bnd-process</goal>
-                        </goals>
-                    </execution>
-                </executions>
                 <configuration>
-                    <bnd><![CDATA[
-                        Bundle-SymbolicName: com.peregrine-cms.admin.core
-                        Sling-Model-Packages: com.peregrine.admin.models
-                        Sling-Test-Regexp: .*JTest
-                        -exportcontents: com.peregrine.admin.resource,\
-                                         com.peregrine.admin.servlets,\
-                                         com.peregrine.admin.models,\
-                                         com.peregrine.admin.util
-                        -noimportjava true
-                        -noee: true
-                        -snapshot: SNAPSHOT
-                        -removeheaders: Bundle-SCM
-                        -snapshot: SNAPSHOT
-                        -conditionalpackage: com.drew.*,com.adobe.internal.xmp.*
-                    ]]>
-                    </bnd>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                    </archive>
+                    <instructions>
+                        <Bundle-SymbolicName>com.peregrine-cms.admin.core</Bundle-SymbolicName>
+                        <Sling-Model-Packages>com.peregrine.admin.models</Sling-Model-Packages>
+                        <Sling-Test-Regexp>.*JTest</Sling-Test-Regexp>
+                        <_exportcontents>
+                            com.peregrine.admin.resource,
+                            com.peregrine.admin.servlets,
+                            com.peregrine.admin.models,
+                            com.peregrine.admin.util
+                        </_exportcontents>
+                        <_snapshot>SNAPSHOT</_snapshot>
+                        <_removeheaders>Bundle-SCM</_removeheaders>
+                        <_conditionalpackage>com.drew.*,com.adobe.internal.xmp.*</_conditionalpackage>
+                    </instructions>
                 </configuration>
             </plugin>
             <plugin>
