@@ -1,0 +1,5 @@
+{
+  "jcr:primaryType": "sling:Mapping",
+  "sling:match": "[^/]+/[^/]+/etc/felibs/(.+)[.](js|css)/cb-[^/]+$",
+  "sling:internalRedirect": "/etc/felibs/$1.$2"
+}
