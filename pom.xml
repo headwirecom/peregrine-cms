@@ -266,7 +266,9 @@
                 <!-- Maven Compiler Plugin -->
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
+                    <!-- JDKs from 9 onwards support the release flag automatically, plugin is upgraded as it ports
+                         this to older versions, particularly JDK 8 -->
+                    <version>3.16.0</version>
                     <configuration>
                         <!-- Maven Compiler Source and Target are set in the properties 'maven.compiler.source' and 'maven.compiler.target'-->
                         <encoding>UTF-8</encoding>
