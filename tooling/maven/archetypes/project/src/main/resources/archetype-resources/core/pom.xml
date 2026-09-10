@@ -57,8 +57,6 @@
                     <instructions>
                         <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
                         <Sling-Model-Packages>${package}.${slingModelSubPackage}</Sling-Model-Packages>
-                        <_dsannotations>*</_dsannotations>
-                        <_metatypeannotations>*</_metatypeannotations>
                         <_removeheaders>
                             Embed-Dependency,
                             Private-Package,

@@ -342,6 +342,8 @@
                     <inherited>true</inherited>
                     <configuration>
                         <instructions>
+                            <_dsannotations>*</_dsannotations>
+                            <_metatypeannotations>*</_metatypeannotations>
                             <_noimportjava>true</_noimportjava>
 <!--                            <_noee>true</_noee>-->
                         </instructions>
