@@ -345,9 +345,17 @@
                             <_dsannotations>*</_dsannotations>
                             <_metatypeannotations>*</_metatypeannotations>
                             <_noimportjava>true</_noimportjava>
+                            <_plugin>org.apache.sling.bnd.models.ModelsScannerPlugin;generatePackagesHeader=true</_plugin>
 <!--                            <_noee>true</_noee>-->
                         </instructions>
                     </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.apache.sling</groupId>
+                            <artifactId>org.apache.sling.bnd.models</artifactId>
+                            <version>1.0.0</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
                 <!-- bnd plugin -->
                 <plugin>

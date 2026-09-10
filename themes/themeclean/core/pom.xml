@@ -53,7 +53,6 @@
                 <configuration>
                     <instructions>
                         <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
-                        <Sling-Model-Packages>com.themeclean.models</Sling-Model-Packages>
                         <_removeheaders>
                             Embed-Dependency,
                             Private-Package,

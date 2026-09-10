@@ -55,7 +55,6 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>com.peregrine-cms.admin.core</Bundle-SymbolicName>
-                        <Sling-Model-Packages>com.peregrine.admin.models</Sling-Model-Packages>
                         <Sling-Test-Regexp>.*JTest</Sling-Test-Regexp>
                         <_exportcontents>
                             com.peregrine.admin.resource,
