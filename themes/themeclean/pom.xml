@@ -56,7 +56,7 @@
         <jar.plugin.version>3.2.0</jar.plugin.version>
         <enforcer.plugin.version>3.0.0-M3</enforcer.plugin.version>
         <compiler.plugin.version>3.8.1</compiler.plugin.version>
-        <bundle.plugin.version>5.1.2</bundle.plugin.version>
+        <bundle.plugin.version>6.1.0</bundle.plugin.version>
         <clean.plugin.version>3.0.0</clean.plugin.version>
         <installer.plugin.version>2.5.2</installer.plugin.version>
         <surfire.plugin.version>2.20</surfire.plugin.version>
@@ -264,6 +264,21 @@
                     <artifactId>maven-bundle-plugin</artifactId>
                     <version>${bundle.plugin.version}</version>
                     <inherited>true</inherited>
+                    <configuration>
+                        <instructions>
+                            <_dsannotations>*</_dsannotations>
+                            <_metatypeannotations>*</_metatypeannotations>
+                            <_noimportjava>true</_noimportjava>
+                            <_plugin>org.apache.sling.bnd.models.ModelsScannerPlugin;generatePackagesHeader=true</_plugin>
+                        </instructions>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.apache.sling</groupId>
+                            <artifactId>org.apache.sling.bnd.models</artifactId>
+                            <version>1.0.0</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
                 <!-- Maven Dependency Plugin -->
                 <plugin>

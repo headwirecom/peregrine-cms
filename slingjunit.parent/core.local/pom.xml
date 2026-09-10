@@ -150,9 +150,6 @@
                         <Sling-Initial-Content>
                             SLING-INF/contents;overwrite=true
                         </Sling-Initial-Content>
-                        <instructions>
-                            <_noee>true</_noee>
-                        </instructions>
                     </instructions>
                 </configuration>
             </plugin>

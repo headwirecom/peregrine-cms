@@ -115,7 +115,7 @@
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.jcr.jackrabbit.accessmanager</artifactId>
-            <version>4.0.2</version>
+            <version>5.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -166,9 +166,6 @@
                         <Sling-Initial-Content>
                             SLING-INF/contents;overwrite=true
                         </Sling-Initial-Content>
-                        <instructions>
-                            <_noee>true</_noee>
-                        </instructions>
                     </instructions>
                 </configuration>
             </plugin>

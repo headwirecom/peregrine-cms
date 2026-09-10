@@ -145,20 +145,6 @@
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.distribution.api</artifactId>
         </dependency>
-
-        <!-- Note: we do not use Felix SCR Annotations anymore so we keep this here for Sling Distributions -->
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.scr.annotations</artifactId>
-            <version>1.12.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>biz.aQute</groupId>
-            <artifactId>bndlib</artifactId>
-            <version>2.0.0.20130123-133441</version>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 
     <profiles>

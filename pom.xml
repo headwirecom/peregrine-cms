@@ -25,8 +25,7 @@
         <sling.password>admin</sling.password>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.source>25</maven.compiler.source>
-        <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
 
         <!-- OSGi Dependency Versions -->
         <osgi.core>8.0.0</osgi.core>
@@ -267,7 +266,9 @@
                 <!-- Maven Compiler Plugin -->
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
+                    <!-- JDKs from 9 onwards support the release flag automatically, plugin is upgraded as it ports
+                         this to older versions, particularly JDK 8 -->
+                    <version>3.16.0</version>
                     <configuration>
                         <!-- Maven Compiler Source and Target are set in the properties 'maven.compiler.source' and 'maven.compiler.target'-->
                         <encoding>UTF-8</encoding>
@@ -337,18 +338,24 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>5.1.9</version>
+                    <version>6.1.0</version>
                     <inherited>true</inherited>
                     <configuration>
                         <instructions>
-                            <!-- bnd 6.x predates Java 25's class-file version (69) and
-                                 stamps Require-Capability osgi.ee="UNKNOWN", which no
-                                 framework satisfies, so every bundle would stay unresolved
-                                 (Installed). Suppress the EE requirement; the runtime JDK
-                                 is pinned by the feature launcher / far. -->
-                            <_noee>true</_noee>
+                            <_dsannotations>*</_dsannotations>
+                            <_metatypeannotations>*</_metatypeannotations>
+                            <_noimportjava>true</_noimportjava>
+                            <_plugin>org.apache.sling.bnd.models.ModelsScannerPlugin;generatePackagesHeader=true</_plugin>
+<!--                            <_noee>true</_noee>-->
                         </instructions>
                     </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.apache.sling</groupId>
+                            <artifactId>org.apache.sling.bnd.models</artifactId>
+                            <version>1.0.0</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
                 <!-- bnd plugin -->
                 <plugin>
