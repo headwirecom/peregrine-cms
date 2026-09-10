@@ -102,14 +102,7 @@
                         <Sling-Initial-Content>
                             SLING-INF/apps/per/functions;path:=/apps/per/functions;overwrite=true
                         </Sling-Initial-Content>
-                        <Embed-Dependency>
-                            polyglot;
-                            js-language;
-                            truffle-api;
-                            truffle-runtime;
-                            regex;
-                            icu4j
-                        </Embed-Dependency>
+                        <Embed-Dependency>*;scope=compile|runtime;type=jar;inline=false</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                         <_dsannotations>*</_dsannotations>
                         <Import-Package>
