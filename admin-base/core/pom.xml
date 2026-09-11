@@ -63,7 +63,6 @@
                             com.peregrine.admin.util
                         </_exportcontents>
                         <_snapshot>SNAPSHOT</_snapshot>
-                        <_removeheaders>Bundle-SCM</_removeheaders>
                         <_conditionalpackage>com.drew.*,com.adobe.internal.xmp.*</_conditionalpackage>
                     </instructions>
                 </configuration>
