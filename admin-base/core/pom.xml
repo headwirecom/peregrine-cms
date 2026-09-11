@@ -56,13 +56,12 @@
                     <instructions>
                         <Bundle-SymbolicName>com.peregrine-cms.admin.core</Bundle-SymbolicName>
                         <Sling-Test-Regexp>.*JTest</Sling-Test-Regexp>
-                        <_exportcontents>
+                        <Export-Package>
                             com.peregrine.admin.resource,
                             com.peregrine.admin.servlets,
                             com.peregrine.admin.models,
                             com.peregrine.admin.util
-                        </_exportcontents>
-                        <_snapshot>SNAPSHOT</_snapshot>
+                        </Export-Package>
                         <_conditionalpackage>com.drew.*,com.adobe.internal.xmp.*</_conditionalpackage>
                     </instructions>
                 </configuration>

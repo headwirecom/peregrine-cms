@@ -270,6 +270,13 @@
                             <_metatypeannotations>*</_metatypeannotations>
                             <_noimportjava>true</_noimportjava>
                             <_plugin>org.apache.sling.bnd.models.ModelsScannerPlugin;generatePackagesHeader=true</_plugin>
+                            <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
+                            <_removeheaders>
+                                Embed-Dependency,
+                                Private-Package,
+                                Include-Resource
+                            </_removeheaders>
+                            <_snapshot>SNAPSHOT</_snapshot>
                         </instructions>
                     </configuration>
                     <dependencies>

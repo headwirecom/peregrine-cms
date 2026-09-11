@@ -270,7 +270,7 @@
                          this to older versions, particularly JDK 8 -->
                     <version>3.16.0</version>
                     <configuration>
-                        <!-- Maven Compiler Source and Target are set in the properties 'maven.compiler.source' and 'maven.compiler.target'-->
+                        <!-- Maven Compiler Source and Target are set in the properties as a single 'maven.compiler.release' -->
                         <encoding>UTF-8</encoding>
                     </configuration>
                 </plugin>
@@ -347,6 +347,13 @@
                             <_noimportjava>true</_noimportjava>
                             <_plugin>org.apache.sling.bnd.models.ModelsScannerPlugin;generatePackagesHeader=true</_plugin>
 <!--                            <_noee>true</_noee>-->
+                            <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
+                            <_removeheaders>
+                                Embed-Dependency,
+                                Private-Package,
+                                Include-Resource
+                            </_removeheaders>
+                            <_snapshot>SNAPSHOT</_snapshot>
                         </instructions>
                     </configuration>
                     <dependencies>
