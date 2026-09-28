@@ -43,19 +43,6 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
-<!--                        <Sling-Model-Packages>com.peregrine.felib.models</Sling-Model-Packages>-->
-                        <_dsannotations>*</_dsannotations>
-                        <_metatypeannotations>*</_metatypeannotations>
-                        <_removeheaders>
-                            Embed-Dependency,
-                            Private-Package,
-                            Include-Resource
-                        </_removeheaders>
-                    </instructions>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.sling</groupId>

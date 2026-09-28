@@ -50,11 +50,12 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
+                            com.peregrine.adaption,
                             com.peregrine.commons,
                             com.peregrine.commons.*,
-                            com.peregrine.adaption,
-                            com.peregrine.nodetypes.*,
                             com.peregrine.intra,
+                            com.peregrine.model.api,
+                            com.peregrine.nodetypes.*,
                             com.peregrine.reference,
                             com.peregrine.render,
                             com.peregrine.rendition,
@@ -62,18 +63,9 @@
                             com.peregrine.sitemap,
                             com.peregrine.transform,
                             com.peregrine.transform.*,
-                            com.peregrine.model.api,
                             com.peregrine.versions
                         </Export-Package>
-                        <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
-                        <Sling-Model-Packages>com.peregrine.models,com.peregrine.nodetypes.models</Sling-Model-Packages>
-                        <_dsannotations>*</_dsannotations>
-                        <_metatypeannotations>*</_metatypeannotations>
-                        <_removeheaders>
-                            Embed-Dependency,
-                            Private-Package,
-                            Include-Resource
-                        </_removeheaders>
+
 
                         <Sling-Namespaces>
                             per=http://www.peregrine-cms.com/jcr/cms/1.0

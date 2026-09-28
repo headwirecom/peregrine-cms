@@ -42,19 +42,6 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
-                        <Sling-Model-Packages>com.peregrine.pagerender.vue.models</Sling-Model-Packages>
-                        <_dsannotations>*</_dsannotations>
-                        <_metatypeannotations>*</_metatypeannotations>
-                        <_removeheaders>
-                            Embed-Dependency,
-                            Private-Package,
-                            Include-Resource
-                        </_removeheaders>
-                    </instructions>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.sling</groupId>
@@ -147,7 +134,7 @@
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>

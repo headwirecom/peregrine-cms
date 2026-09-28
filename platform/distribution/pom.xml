@@ -7,9 +7,9 @@
     to you under the Apache License, Version 2.0 (the
     "License"); you may not use this file except in compliance
     with the License.  You may obtain a copy of the License at
-    
+
     http://www.apache.org/licenses/LICENSE-2.0
-    
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the License is distributed on an
     "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -85,7 +85,6 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>com.peregrine-cms.distribution</Bundle-SymbolicName>
-                        <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
                         <Sling-Initial-Content>
                             SLING-CONTENT/libs/sling/distribution;path:=/libs/sling/distribution;overwrite:=true,
                             SLING-CONTENT/var/sling/distribution;path:=/var/sling/distribution;overwrite:=true,
@@ -144,20 +143,6 @@
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.distribution.api</artifactId>
-        </dependency>
-
-        <!-- Note: we do not use Felix SCR Annotations anymore so we keep this here for Sling Distributions -->
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.scr.annotations</artifactId>
-            <version>1.12.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>biz.aQute</groupId>
-            <artifactId>bndlib</artifactId>
-            <version>2.0.0.20130123-133441</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 
