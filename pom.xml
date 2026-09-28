@@ -250,7 +250,7 @@
                 <!-- Maven Enforcer Plugin -->
                 <plugin>
                     <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>3.0.0-M3</version>
+                    <version>3.6.3</version>
                     <configuration>
                         <rules>
                             <requireMavenVersion>
@@ -338,7 +338,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>6.1.0</version>
+                    <version>6.1.2</version>
                     <inherited>true</inherited>
                     <configuration>
                         <instructions>
